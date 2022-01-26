@@ -12,6 +12,11 @@ This project is at its very early stage. It does not do anything yet, besides ac
 
 * Maven 3                                  
 * Java 11
+* A running [ds-storage](https://github.com/kb-dk/ds-storage)
+
+## Setup
+
+copy `conf/ds-present-behaviour.yaml` to `conf/ds-present-environment.yaml` and adjust URLs for the storages in the new file.
 
 ## Build & run
 
@@ -25,10 +30,6 @@ Test the webservice with
 mvn jetty:run
 ```
 
-The default port is 8080 and the default Hello World service can be accessed at
-<http://localhost:8080/ds-present/v1/hello>
-
-The Swagger UI is available at <http://localhost:8080/ds-present/api/>, providing access to both the `v1` and the 
-`devel` versions of the GUI. 
+The Swagger UI is available at <http://localhost:9073/ds-present/api/>. 
 
 See the file [DEVELOPER.md](DEVELOPER.md) for developer specific details and how to deploy to tomcat.
