@@ -21,17 +21,9 @@ paths:
         - '${project.name}'
       summary: 'Ping the server to check if the server is reachable.'
       operationId: ping
-      x-useGenericResponse: false # If enabled the method will return Response
-      x-streamingOutput: false # If enabled the method will return StreamingOutput.
       responses:
         '200':
           description: 'OK'
-          content:
-            text/plain:
-              schema:
-                type: string
-        '500':
-          description: 'Internal Error'
           content:
             text/plain:
               schema:
@@ -42,11 +34,8 @@ paths:
     get:
       tags:
         - '${project.name}'
-      summary: 'Retrieve metadata for the record with the given ID'
+      summary: 'Retrieve metadata for the record with the given ID and in the given format'
       operationId: getRecord
-      # We assume a very large response here: Too large for showing directly in the Swagger UI.
-      # The Content-Disposition for "x-streamingOutput: true" is set to disable inline display in Swagger UI, but
-      # keep inline display when the link is pasted directly in a browser. Inspect the generated code for tweaks.
       parameters:
         - name: id
           in: path
@@ -54,14 +43,13 @@ paths:
           required: true
           schema:
             type: string
-            # Note: Constraints are not enforced by Swagger. They are only used as a contract
             minLength: 1
             example: 'images-dsfl_image-1234'
         - name: format
           in: query
           description: |
             The delivery format for the record:
-            * JSON-LD: [Linked Data in JSON](https://json-ld.org/)
+            * JSON-LD: [Linked Data in JSON](https://json-ld.org/) (default)
             * MODS: [Metadata Object Description Schema[(http://www.loc.gov/standards/mods/)
             * SolrXML: [Solr XML Formatted Index Updates)(https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#xml-formatted-index-updates)
             * raw: Metadata unchanged from the source.
@@ -72,16 +60,21 @@ paths:
             default: 'JSON-LD'
       responses:
         '200':
-          description: 'OK'
+          description: 'OK: The record was available in the requested format'
           content:
             application/json:
               schema:
-                description: 'Format-specific representation of the record in JSON or JSON-LD'
+                description: 'Format specific representation of the record in JSON or JSON-LD. Used for JSON-LD'
                 type: string
                 format: binary
             application/xml:
               schema:
-                description: 'Format-specific representation of the record in XML'
+                description: 'Format-specific representation of the record in XML. Used for MODS and SolrXML'
+                type: string
+                format: binary
+            text/plain:
+              schema:
+                description: 'Format-specific representation of the record as plain text. Used for raw'
                 type: string
                 format: binary
         '404':
@@ -91,6 +84,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  # TODO: Specify records/
+  # The tricky part is how to represent multiple entries as the source can be both JSON & XML (and unknown in the form
+  # of raw but maybe raw should not be available here?).
+  # Another thing is that JSON can be delivered both as a large array and as JSON-Lines. Likewise, the packing of
+  # multiple SolrXMLs is already defined in https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#xml-formatted-index-updates
+  # but there is no defined packing of multiole MODS (Sub-TODO: Check is this is true)
 
 components:
   schemas:
