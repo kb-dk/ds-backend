@@ -66,17 +66,14 @@ paths:
               schema:
                 description: 'Format specific representation of the record in JSON or JSON-LD. Used for JSON-LD'
                 type: string
-                format: binary
             application/xml:
               schema:
                 description: 'Format-specific representation of the record in XML. Used for MODS and SolrXML'
                 type: string
-                format: binary
             text/plain:
               schema:
                 description: 'Format-specific representation of the record as plain text. Used for raw'
                 type: string
-                format: binary
         '404':
           description: 'Record ID is unknown'
           content:
