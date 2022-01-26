@@ -9,22 +9,91 @@
 #
 #
 config:
-  limits:
-    min: 10
-    max: 100
-  mylist:
-    - Hello
-    - World
-    - from
-    - java-template
+  # List of backing storages. The real URLs should be overridden in ds-present-environment.yaml
+  storages:
+    - main
+      url: 'http://localhost:8080/ds-storage/v1/'
+      default: true # This will be used for all collections, unless the 'storage' property is set for the collection
+    - special
+      url: 'http://example.com:/some-other-storage/v1/'
 
-# The entries below are just place holders.
-#  
-# There should be a corresponding `-environment.yaml`-file with the structure below, but with real values.
-# The entries in the environment-YAML will override the ones in the behaviour-YAML. The sole purpose of having the
-# structure in the behaviour-YAML is to document what needs to be defined in the environment.
-  backend:
-   db: 'http://placeholdermachine:8090/foobar/'
-   user: 'placeholder_dbuser'
-   password: 'placeholder_dbpassword'
-                                                                                                                                                                                           
+  # The collections available for this instance of ds-present 
+  collections:
+      
+    # Straight forward collection with the core format being MODS
+    - dsfl: # ds-present internal
+        prefix: 'images-dsfl' # The prefix to match on incoming IDs
+        description: 'Images from the collection Danmark Set Fra Luften'
+        # Different views on the material. Note that all collections has at least mods, jsonld and solrxml as views 
+        views:
+          - mods:
+              mime: 'application/xml'
+              transformers: # No transformation steps as mods is the core format for images-dsfl
+          - jsonld:
+              mime: 'application/json'
+              transformers:
+                - xslt:
+                  stylesheet: 'path/to/xslts/mods2jsonld.xsl'
+          - solrxml:
+              mime: 'application/xml'
+              transformers:
+                - xslt:
+                  stylesheet: 'path/to/xslts/mods2solr.xsl'
+
+    # Internal format is TEI 
+    - manuscripts:
+        prefix: 'text-manuscripts'
+        description: 'Multi page manuscripts'
+        views:
+          - mods:
+              mime: 'application/xml'
+              transformers:
+                - xslt:
+                  stylesheet: 'path/to/xslts/tei2mods.xsl'
+          - jsonld:
+              mime: 'application/json'
+              transformers:
+                # Chained re-use of existing XSLTs 
+                - xslt:
+                  stylesheet: 'path/to/xslts/tei2mods.xsl'
+                - xslt:
+                  stylesheet: 'path/to/xslts/mods2jsonld.xsl'
+          - solrxml:
+              mime: 'application/xml'
+              transformers:
+                - xslt:
+                  stylesheet: 'path/to/xslts/tei2mods.xsl'
+                - xslt:
+                  stylesheet: 'path/to/xslts/mods2solr.xsl'
+          - alto:
+              mime: 'application/xml'
+              transformers:
+                - xslt:
+                  stylesheet: 'path/to/xslts/tei2mods.xsl'
+                # Demonstration of special handling by a Java class. Maybe this is overengineering?
+                - java:
+                  class: 'dk.db.present.transformers.RetrieveALTOForMODS.class'
+                  javaconfig: # This configuration is given to the constructor for RetrieveALTOForMODS
+                    - alto_source: 'http://localhost:8765/altoservice/v2'
+
+    # Some fantasy source where the metadata is delivered in something neither XML nor JSON
+    - problemchild:
+        prefix: 'strange-times'
+        storage: 'special'
+        description: 'Images from the site Strange Times. NOTE: MODS is not available for this source'
+        views:
+          - mods:
+              mime: 'application/xml'
+              transformers:
+                - fail: 'MODS not supported for material from Strange Times'
+          - jsonld:
+              mime: 'application/json'
+              transformers:
+                - java:
+                  class: 'dk.db.present.transformers.ST2JSON_LD.class'
+          - solrxml:
+              mime: 'application/xml'
+              transformers:
+                - java:
+                  class: 'dk.db.present.transformers.ST2Solr.class'
+
