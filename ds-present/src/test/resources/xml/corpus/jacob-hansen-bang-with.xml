@@ -1,0 +1,1424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:modsCollection xmlns:md="http://www.loc.gov/mods/v3" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+  <startIndex xmlns="http://a9.com/-/spec/opensearch/1.1/">1</startIndex>
+  <itemsPerPage xmlns="http://a9.com/-/spec/opensearch/1.1/">40</itemsPerPage>
+  <Query xmlns="http://a9.com/-/spec/opensearch/1.1/" role="request" searchTerms="{id=/pamphlets/dasmaa/2012/jul/smaatryk/object107080}" startPage="1"/>
+  <totalResults xmlns="http://a9.com/-/spec/opensearch/1.1/">1</totalResults>
+  <link xmlns="http://www.w3.org/2005/Atom" href="http://www.kb.dk/cop/pamphlets/dasmaa/2012/jul/smaatryk" rel="search" type="application/opensearchdescription+xml"/>
+  <link xmlns="http://www.w3.org/2005/Atom" href="http://www.kb.dk/cop/syndication/pamphlets/dasmaa/2012/jul/smaatryk/" rel="search" type="application/mods+xml"/>
+  <md:mods xmlns:exslt="http://exslt.org/common" xmlns:x="urn:x" xmlns:md="http://www.loc.gov/mods/v3" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <md:recordInfo>
+      <!-- hit recordInfo -->
+      <md:languageOfCataloging xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+        <md:languageTerm authority="rfc4646">da</md:languageTerm>
+      </md:languageOfCataloging>
+      <!-- hit recordIdentifier -->
+      <md:recordIdentifier>http://www.kb.dk/cop/pamphlets/dasmaa/2012/jul/smaatryk/object107080</md:recordIdentifier>
+    </md:recordInfo>
+    <md:titleInfo xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" xml:lang="da">
+      <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+    </md:titleInfo>
+    <md:name xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" xml:lang="da">
+      <md:namePart>Jacob Hansen Bang With = Kontorchef With</md:namePart>
+      <md:role>
+        <md:roleTerm type="text">creator</md:roleTerm>
+      </md:role>
+    </md:name>
+    <md:originInfo xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <md:dateCreated encoding="w3cdtf">1881</md:dateCreated>
+    </md:originInfo>
+    <md:note xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" xml:lang="da">Han bliver fuldmægtig ved Københavns Amts søndre Birk. Han bliver medlem af Forening for Ligbrænding. Han bliver medlem af Selskabet Athenæum. Han deltager i Det fjerde Skandinaviske Nationaløkonomiske Møde i Malmø 1881.</md:note>
+    <md:language xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <md:languageTerm authority="rfc4646" type="code">da</md:languageTerm>
+    </md:language>
+    <md:subject xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <md:topic xml:lang="da">Sange/Sørgesange afsunget ved diverse begravelser Musikforeningen Forening for Ligbrænding - inklusiv medlemskort Kammermusikforeningen - inklusiv Forslag til reviderede Love 1881 Koncertforeningen Teaterprogrammer Kasino Folketheatret Frederiks Kirke paa Kristianshavn Rosenborg Sundhedsbrønde - Brøndkursaison 1880 Selskabet Athenæum - inklusiv Love Koncertprogrammer Det Kongelige Theater Materiale fra Det fjerde Skandinaviske Nationaløkonomiske Møde i Malmø 1881 Tivoli programmer Beretning om Drenge-Asylskoleselskabets Virksomhed 1877-1880 Kammermusikforeningen Juridisk Forening - adgangskort Visitkort Casino</md:topic>
+    </md:subject>
+    <md:subject xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <md:topic xlink:href="#5144">Småtryk</md:topic>
+    </md:subject>
+    <md:subject xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <md:topic xlink:href="#6540">1881</md:topic>
+    </md:subject>
+    <md:subject xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <md:topic xlink:href="#6529">Kontorchef Withs samling af scrapbøger</md:topic>
+    </md:subject>
+    <md:extension xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <!--
+	node=5144-->
+      <h:div xmlns:h="http://www.w3.org/1999/xhtml" xmlns:exsl="http://exslt.org/common" xlink:href="#5144"><h:a href="/editions/any/2009/jul/editions/en/" xml:lang="en">Home</h:a><h:a href="/editions/any/2009/jul/editions/da/" xml:lang="da">Hjem</h:a>/<h:a href="../../subject5144/en/" xml:lang="en">Småtryk</h:a><h:a href="../../subject5144/da/" xml:lang="da">Småtryk</h:a></h:div>
+    </md:extension>
+    <md:extension xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <!--
+	node=6540-->
+      <h:div xmlns:h="http://www.w3.org/1999/xhtml" xmlns:exsl="http://exslt.org/common" xlink:href="#6540"><h:a href="/editions/any/2009/jul/editions/en/" xml:lang="en">Home</h:a><h:a href="/editions/any/2009/jul/editions/da/" xml:lang="da">Hjem</h:a>/<h:a href="../../subject5144/en/" xml:lang="en">Småtryk</h:a><h:a href="../../subject5144/da/" xml:lang="da">Småtryk</h:a>/<h:a href="../../subject6529/en/" xml:lang="en">Kontorchef Withs samling af scrapbøger</h:a><h:a href="../../subject6529/da/" xml:lang="da">Kontorchef Withs samling af scrapbøger</h:a>/<h:a href="../../subject6540/en/" xml:lang="en">1881</h:a><h:a href="../../subject6540/da/" xml:lang="da">1881</h:a></h:div>
+    </md:extension>
+    <md:extension xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <!--
+	node=6529-->
+      <h:div xmlns:h="http://www.w3.org/1999/xhtml" xmlns:exsl="http://exslt.org/common" xlink:href="#6529"><h:a href="/editions/any/2009/jul/editions/en/" xml:lang="en">Home</h:a><h:a href="/editions/any/2009/jul/editions/da/" xml:lang="da">Hjem</h:a>/<h:a href="../../subject5144/en/" xml:lang="en">Småtryk</h:a><h:a href="../../subject5144/da/" xml:lang="da">Småtryk</h:a>/<h:a href="../../subject6529/en/" xml:lang="en">Kontorchef Withs samling af scrapbøger</h:a><h:a href="../../subject6529/da/" xml:lang="da">Kontorchef Withs samling af scrapbøger</h:a></h:div>
+    </md:extension>
+    <md:identifier xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" displayLabel="image" type="uri">http://www.kb.dk/imageService/online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_001.jpg</md:identifier>
+    <md:identifier xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" displayLabel="thumbnail" type="uri">http://www.kb.dk/imageService/w150/h150/online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_001.jpg</md:identifier>
+    <md:name xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" type="cumulus" xml:lang="da">
+      <md:namePart>cumulus:rtt</md:namePart>
+      <md:role>
+        <md:roleTerm type="text">last-modified-by</md:roleTerm>
+      </md:role>
+    </md:name>
+    <md:location xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <md:physicalLocation displayLabel="Shelf Mark">DA-Småtryk : Kontorchef Withs samling af scrapbøger</md:physicalLocation>
+    </md:location>
+    <md:typeOfResource xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" xml:lang="da">Småtryk</md:typeOfResource>
+    <md:typeOfResource xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" xml:lang="en">Leaf</md:typeOfResource>
+    <md:relatedItem xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" xlink="http://www.kb.dk/da/nb/samling/smtr/index.html">Det Kongelige Biblioteks Småtrykssamling</md:relatedItem>
+    <md:accessCondition xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" xml:lang="da">CC BY-NC-ND</md:accessCondition>
+    <!--This is more or less a kind of processing
+                instruction. Here we tell the rendering software whether we
+                should browse the images LTR or RTL
+            -->
+    <md:physicalDescription xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <md:note type="pageOrientation">LTR</md:note>
+    </md:physicalDescription>
+    <md:identifier xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10" type="domsGuid">Uid:dk:kb:doms:2007-01/cad59330-6e7d-11e5-826b-0016357f605f</md:identifier>
+    <md:extension xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <mix:mix>
+        <mix:BasicDigitalObjectInformation>
+          <mix:fileSize/>
+        </mix:BasicDigitalObjectInformation>
+        <mix:BasicImageInformation>
+          <mix:BasicImageCharacteristics>
+            <mix:imageHeight>4112</mix:imageHeight>
+            <mix:imageWidth>2737</mix:imageWidth>
+          </mix:BasicImageCharacteristics>
+        </mix:BasicImageInformation>
+      </mix:mix>
+    </md:extension>
+    <relatedItem xmlns="http://www.loc.gov/mods/v3" xmlns:java="http://xml.apache.org/xalan/java" xmlns:mix="http://www.loc.gov/mix/v10">
+      <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_001.tif</md:identifier>
+      <md:titleInfo xml:lang="da">
+        <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+      </md:titleInfo>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_002.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_003.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_004.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_005.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_006.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_007.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_008.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_009.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_010.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_011.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_012.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_013.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_014.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_015.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_016.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_017.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_018.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_019.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_020.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_021.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_022.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_023.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_024.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_025.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_026.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_027.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_028.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_029.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_030.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_031.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_032.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_033.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_034.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_035.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_036.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_037.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_038.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_039.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_040.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_041.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_042.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_043.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_044.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_045.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_046.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_047.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_048.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_049.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_050.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_051.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_052.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_053.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_054.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_055.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_056.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_057.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_058.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_059.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_060.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_061.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_062.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_063.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_064.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_065.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_066.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_067.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_068.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_069.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_070.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_071.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_072.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_073.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_074.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_075.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_076.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_077.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_078.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_079.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_080.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_081.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_082.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_083.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_084.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_085.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_086.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_087.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_088.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_089.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_090.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_091.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_092.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_093.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_094.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_095.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_096.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_097.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_098.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_099.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_100.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_101.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_102.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_103.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_104.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_105.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_106.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_107.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_108.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_109.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_110.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_111.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_112.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_113.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_114.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_115.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_116.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_117.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_118.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_119.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_120.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_121.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_122.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_123.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_124.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_125.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_126.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_127.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_128.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_129.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_130.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_131.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_132.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_133.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_134.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_135.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_136.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_137.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_138.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_139.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_140.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_141.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_142.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_143.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_144.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_145.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_146.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_147.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_148.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_149.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_150.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_151.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_152.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_153.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_154.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_155.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_156.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_157.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_158.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_159.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_160.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_161.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_162.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_163.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_164.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_165.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_166.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_167.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_168.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_169.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_170.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_171.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_172.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_173.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_174.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_175.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_176.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_177.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_178.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_179.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_180.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_181.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_182.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_183.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_184.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_185.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_186.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_187.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_188.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_189.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_190.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_191.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_192.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_193.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_194.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_195.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_196.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_197.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_198.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_199.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_200.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_201.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_202.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_203.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_204.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_205.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_206.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_207.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_208.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_209.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_210.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_211.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_212.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_213.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_214.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_215.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_216.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_217.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+      <md:relatedItem type="constituent">
+        <md:identifier>online_master_arkiv_3/non-archival/Pamphlets/DASMAA/2015/Kontorchef_Withs_scrapboeger/with_1881/with_1881_218.tif</md:identifier>
+        <md:titleInfo xml:lang="da">
+          <md:title>Kontorchef Withs samling af scrapbøger : 1881</md:title>
+        </md:titleInfo>
+      </md:relatedItem>
+    </relatedItem>
+    <md:subject>
+      <md:cartographics>
+        <md:coordinates>0.0,0.0</md:coordinates>
+      </md:cartographics>
+    </md:subject>
+    <?cobject_id /pamphlets/dasmaa/2012/jul/smaatryk/object107080?>
+    <?cobject_correctness 0?>
+    <?cobject_interestingness 0?>
+    <?cobject_title Kontorchef Withs samling af scrapbøger : 1881?>
+    <?cobject_edition /pamphlets/dasmaa/2012/jul/smaatryk?>
+    <?cobject_bookmark 0?>
+    <?cobject_random_number 0.9759941977377224464618166166474111378192?>
+    <?cobject_likes 0?>
+    <?cobject_not_before 1881-01-01?>
+    <?cobject_not_after 1881-01-01?>
+    <?cobject_last_modified 1490100242041?>
+    <?cobject_last_modified_by cumulus?>
+    <?cumulus_catalog Smaatryk?>
+  </md:mods>
+</md:modsCollection>
