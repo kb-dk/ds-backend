@@ -28,17 +28,18 @@ config:
         views:
           - mods:
               mime: 'application/xml'
-              transformers: # No transformation steps as mods is the core format for images-dsfl
+              transformers:
+                - identity: # No transformation steps as mods is the core format for images-dsfl
           - jsonld:
               mime: 'application/json'
               transformers:
                 - xslt:
-                  stylesheet: 'path/to/xslts/mods2jsonld.xsl'
+                  stylesheet: 'xslt/mods2jsonld.xsl'
           - solrxml:
               mime: 'application/xml'
               transformers:
                 - xslt:
-                  stylesheet: 'path/to/xslts/mods2solr.xsl'
+                  stylesheet: 'xslt/mods2solr.xsl'
 
     # Internal format is TEI 
     - manuscripts:
