@@ -36,6 +36,11 @@ public class CollectionHandler {
     private final StorageHandler storageHandler;
     private final Map<String, DSCollection> collections; // prefix, collection
 
+    /**
+     * Creates a {@link StorageHandler} and a set of {@link DSStorage}s based on the given configuration.
+     * @param conf top-level configuration. The part for this handler is expected to be found at
+     * {@code .config.collections}
+     */
     public CollectionHandler(YAML conf) {
         storageHandler = new StorageHandler(ServiceConfig.getConfig());
         collections = conf.getYAMLList(COLLECTIONS_KEY).stream()

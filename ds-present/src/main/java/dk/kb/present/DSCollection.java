@@ -14,7 +14,6 @@
  */
 package dk.kb.present;
 
-import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.present.webservice.exception.ServiceException;
 import dk.kb.util.yaml.YAML;
@@ -26,7 +25,11 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
- * Encapsulation of backend and transformations for a collection.
+ * A collection encapsulates access to a logical collection ("samling"). It uses the same collections as ds-storage and
+ * is typically backed by a ds-storage instance.
+ *
+ * Access is read-only and always with an explicit export format. The format can be {@code raw} for direct proxying to
+ * the connected ds-storage, but common use case is to request MODS, JSON-LD (schema.org) or SolrJSON representations.
  */
 public class DSCollection {
     private static final Logger log = LoggerFactory.getLogger(DSCollection.class);
@@ -35,12 +38,40 @@ public class DSCollection {
     private static final String STORAGE_KEY = "storage";
     private static final String VIEWS_KEY = "views";
 
+    /**
+     * The ID of the collection, primarily used for debugging and configuration.
+     */
     private final String id;
+
+    /**
+     * recordIDs always starts with the collection followed by underscore, e.g. {@code images-dsfl_internalid1234}.
+     * The prefix must be present for all recordIDs used for lookup.
+     * This might be the same as the {@link #id} but it is not a requirement.
+     */
     private final String prefix;
+
+    /**
+     * Human readable description of the collection.
+     */
     private final String description;
+
+    /**
+     * Encapsulation of the backing storage for the collection. This will typically be a ds-storage service.
+     */
     private final DSStorage storage;
+
+    /**
+     * Map from format -> view. A view is at the core an array of transformations and responsible for transforming
+     * metadata to the requested format.
+     */
     private final Map<String, View> views;
 
+    /**
+     * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
+     * the storage specified for the collection.
+     * @param conf configuration for the collection.
+     * @param storageHandler previously initialized pool of storages.
+     */
     public DSCollection(YAML conf, StorageHandler storageHandler) {
         // TODO: Derive id properly
         id = "collection_" + new Random().nextInt(Integer.MAX_VALUE);
@@ -62,18 +93,35 @@ public class DSCollection {
         return view.apply(storage.getRecord(recordID));
     }
 
+    /**
+     * @return the ID of the collection, primarily used for debugging and configuration.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * recordIDs always starts with the collection followed by underscore, e.g. {@code images-dsfl_internalid1234}.
+     * The prefix must be present for all recordIDs used for lookup.
+     * This might be the same as the {@link #id} but it is not a requirement.
+     * @return the prefix for recordIDs in the collection.
+     */
     public String getPrefix() {
         return prefix;
     }
 
+    /**
+     * @return human readable description of the collection.
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Map from format -> view. A view is at the core an array of transformations and responsible for transforming
+     * metadata to the requested format.
+     * @return the available views (aka formats) for this collection.
+     */
     public Map<String, View> getViews() {
         return views;
     }

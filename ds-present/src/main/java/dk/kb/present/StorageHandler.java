@@ -26,15 +26,21 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Creates {@link DSStorage} from a given configuration and provides access to them based on ID-prefix.
+ * Creates {@link DSStorage}s from a given configuration. Storages are used for retrieving raw records by
+ * {@link DSCollection} and can be shared between multiple collections.
  */
 public class StorageHandler {
     private static final Logger log = LoggerFactory.getLogger(StorageHandler.class);
     private static final String STORAGES_KEY = ".config.storages";
 
     private final Map<String, DSStorage> storages; // storageID, storage
-    private DSStorage defaultStorage;
+    private DSStorage defaultStorage; // If the ID for the requested storage is null
 
+    /**
+     * Given a top-level configuration, iterate the storages defined under {@link #STORAGES_KEY} and create
+     * storages with the given sub-configurations.
+     * @param conf top-level configuration.
+     */
     public StorageHandler(YAML conf) {
         storages = conf.getYAMLList(STORAGES_KEY).stream()
                 .map(DSStorage::new)
@@ -47,26 +53,19 @@ public class StorageHandler {
         log.info("Created " + this);
     }
 
-    public DSStorage getStorage(String storageID) {
-        DSStorage storage = storageID == null ? defaultStorage : storages.get(storageID);
+    /**
+     * Get the storage with the given ID.
+     * @param id storage ID, as defined in the configuration. If null is provided, the default storage is returned.
+     * @return a storage for the given id.
+     * @throws NullPointerException is the storage could not be located.
+     */
+    public DSStorage getStorage(String id) {
+        DSStorage storage = id == null ? defaultStorage : storages.get(id);
         if (storage == null) {
             throw new NullPointerException(
-                    "Unable to locate a storage with ID '" + storageID + "'. Available storages: " + storages.keySet());
+                    "Unable to locate a storage with ID '" + id + "'. Available storages: " + storages.keySet());
         }
         return storage;
-    }
-
-    public String getRecord(String id) throws NotFoundException {
-        log.debug("Getting record with id '" + id + "'");
-        String[] parts = id.split("_", 2);
-        if (parts.length < 2) {
-            throw new NotFoundException("Unable to isolate collection part for id '" + id + "'");
-        }
-        DSStorage storage = storages.get(parts[0]);
-        if (storage == null) {
-            throw new NotFoundException("The collection '" + parts[0] + "' is not available. Full ID was '" + id + "'");
-        }
-        return storage.getRecord(id);
     }
 
     @Override
