@@ -17,7 +17,7 @@ package dk.kb.present.transform;
 import dk.kb.util.yaml.YAML;
 
 /**
- * Factory for creating a specific type of {@link AbstractTransformer}s.
+ * Factory for creating a specific type of {@link DSTransformer}s.
  *
  * The class primarily exists as a mechanism for the ServiceLoader to discover transformers.
  *
@@ -25,7 +25,7 @@ import dk.kb.util.yaml.YAML;
  * Implementations of AbstractTransformerFactory cannot be inner classes due to the way ServiceLoader works.
  * Implementations must be registered in src/main/resources/META-INF/services/dk.kb.present.transformer.AbstractTransformerFactory.
  */
-public interface AbstractTransformerFactory {
+public interface DSTransformerFactory {
 
     /**
      * @return the ID for the transformer that this factory creates, e.g. {@code mods2solr}.
@@ -34,9 +34,9 @@ public interface AbstractTransformerFactory {
 
     /**
      * Create a new transformer of the supported type and return it.
-     * @param conf configuration for the {@link AbstractTransformer} to create.
-     * @return a {@link AbstractTransformer} of the supported type with the given configuration;
+     * @param conf configuration for the {@link DSTransformer} to create.
+     * @return a {@link DSTransformer} of the supported type with the given configuration;
      * @throws Exception if the transformer could not be created.
      */
-    AbstractTransformer createTransformer(YAML conf) throws Exception;
+    DSTransformer createTransformer(YAML conf) throws Exception;
 }

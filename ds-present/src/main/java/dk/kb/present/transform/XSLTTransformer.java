@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -39,7 +38,7 @@ import java.nio.charset.StandardCharsets;
  * XSLT transformer using Saxon HE 3.
  *
  */
-public class XSLTTransformer extends AbstractTransformer {
+public class XSLTTransformer extends DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(XSLTTransformer.class);
     public static final String ID = "xslt";
 

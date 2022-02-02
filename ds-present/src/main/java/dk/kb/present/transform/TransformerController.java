@@ -18,8 +18,6 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -27,24 +25,41 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Scans the classes for implementations of {@link AbstractTransformerFactory} and makes it possible to get
- * {@link AbstractTransformer}s by their ID and a configuration.
+ * Scans the classes for implementations of {@link DSTransformerFactory} and makes it possible to get
+ * {@link DSTransformer}s by their ID and a configuration.
  */
 public class TransformerController {
     private static final Logger log = LoggerFactory.getLogger(TransformerController.class);
 
-    private static final Map<String, AbstractTransformerFactory> factories = getTransformerFactories();
+    private static final Map<String, DSTransformerFactory> factories = getTransformerFactories();
+
+    /**
+     * Create a transformer with the given configuration, there the configuration contains a single key which is the
+     * transformer ID, with the value being the configuration to use for the transformer.
+     * @return a configured transformer for the given ID, ready for use.
+     * @throws NullPointerException if no transformer with the given id could be located.
+     * @throws Exception if the transformer could not be created.
+     */
+    public static DSTransformer createTransformer(YAML conf) throws Exception {
+        if (conf.size() != 1) {
+            throw new IllegalArgumentException
+                    ("Expected a single entry in the configuration but there was " + conf.size());
+        }
+        String id = conf.keySet().stream().findFirst().orElseThrow();
+        conf = conf.containsKey(id) ? conf.getSubMap(id) : new YAML(); // Some transformers does not have a config
+        return createTransformer(id, conf);
+    }
 
     /**
      * Create a transformer with the given configuration.
      * @param id the ID of the transformer to create. Call {@link #getSupportedTransformerIDs()} for a complete list.
      * @param conf transformer specific configuration.
-     * @return a configured transformer for the given ID, readu for use.
+     * @return a configured transformer for the given ID, ready for use.
      * @throws NullPointerException if no transformer with the given id could be located.
      * @throws Exception if the transformer could not be created.
      */
-    public static AbstractTransformer createTransformer(String id, YAML conf) throws Exception {
-        AbstractTransformerFactory factory = factories.get(id);
+    public static DSTransformer createTransformer(String id, YAML conf) throws Exception {
+        DSTransformerFactory factory = factories.get(id);
         if (factory == null) {
             throw new NullPointerException(String.format(
                     Locale.ROOT, "A factory with the ID '%s' was not available. Supported factories are %s",
@@ -55,7 +70,7 @@ public class TransformerController {
     }
 
     /**
-     * @return the IDs for the {@link AbstractTransformer}s that can be created.
+     * @return the IDs for the {@link DSTransformer}s that can be created.
      */
     public static Set<String> getSupportedTransformerIDs() {
         return factories.keySet();
@@ -65,10 +80,11 @@ public class TransformerController {
      * Build a map of transformer factories from the classpath.
      * @return map of [transformerID, transformer].
      */
-    private static Map<String, AbstractTransformerFactory> getTransformerFactories() {
-        return ServiceLoader.load(AbstractTransformerFactory.class).stream()
+    private static Map<String, DSTransformerFactory> getTransformerFactories() {
+        return ServiceLoader.load(DSTransformerFactory.class).stream()
                 .map(ServiceLoader.Provider::get)
                 .peek(factory -> log.info("Discovered {} factory", factory.getTransformerID()))
-                .collect(Collectors.toMap(AbstractTransformerFactory::getTransformerID, factory -> factory));
+                .collect(Collectors.toMap(DSTransformerFactory::getTransformerID, factory -> factory));
     }
+
 }

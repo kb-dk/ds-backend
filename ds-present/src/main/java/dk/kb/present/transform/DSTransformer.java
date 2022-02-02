@@ -21,10 +21,10 @@ import java.util.function.Function;
 /**
  * Takes a textual input and transforms it to another textual input.
  */
-public abstract class AbstractTransformer implements Function<String, String> {
+public abstract class DSTransformer implements Function<String, String> {
     private final YAML conf;
 
-    public AbstractTransformer(YAML conf) {
+    public DSTransformer(YAML conf) {
         this.conf = conf;
     }
 

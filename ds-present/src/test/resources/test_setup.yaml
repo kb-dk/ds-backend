@@ -1,0 +1,40 @@
+#
+# Only used for unit testing
+#
+config:
+  # List of backing storages. The real URLs should be overridden in ds-present-environment.yaml
+  storages:
+    - main:
+        url: 'http://localhost:8080/ds-storage/v1/'
+        default: true # This will be used for all collections, unless the 'storage' property is set for the collection
+    - special:
+        url: 'http://example.com:/some-other-storage/v1/'
+
+  # The collections available for this instance of ds-present 
+  collections:
+      
+    # Straight forward collection with the core format being MODS
+    - dsfl: # ds-present internal
+        prefix: 'images-dsfl' # The prefix to match on incoming IDs
+        description: 'Images from the collection Danmark Set Fra Luften'
+        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+        views:
+          - mods:
+              mime: 'application/xml'
+              transformers:
+                - identity: # No transformation steps as mods is the core format for images-dsfl
+          - jsonld:
+              mime: 'application/json'
+              transformers:
+                - xslt:
+                    stylesheet: 'xslt/mods2schemaorg.xsl'
+          - solrjson:
+              mime: 'application/json'
+              transformers:
+                - xslt:
+                    stylesheet: 'xslt/mods2solr.xsl'
+          - raw:
+              mime: 'text/plain'
+              transformers:
+                - fail:
+                  message: 'Raw format contains confidential information and cannot be delivered'

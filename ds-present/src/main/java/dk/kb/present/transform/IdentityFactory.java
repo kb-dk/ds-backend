@@ -15,20 +15,18 @@
 package dk.kb.present.transform;
 
 import dk.kb.util.yaml.YAML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Constructs {@link IdentityTransformer}s.
  */
-public class IdentityFactory implements AbstractTransformerFactory {
+public class IdentityFactory implements DSTransformerFactory {
     @Override
     public String getTransformerID() {
         return IdentityTransformer.ID;
     }
 
     @Override
-    public AbstractTransformer createTransformer(YAML conf) {
+    public DSTransformer createTransformer(YAML conf) {
         return new IdentityTransformer(conf);
     }
 }

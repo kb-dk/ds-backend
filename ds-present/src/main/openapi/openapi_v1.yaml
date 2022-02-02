@@ -51,11 +51,11 @@ paths:
             The delivery format for the record:
             * JSON-LD: [Linked Data in JSON](https://json-ld.org/) (default)
             * MODS: [Metadata Object Description Schema[(http://www.loc.gov/standards/mods/)
-            * SolrXML: [Solr XML Formatted Index Updates)(https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#xml-formatted-index-updates)
+            * SolrJSON: [Solr JSON Formatted Index Updates)(https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates)
             * raw: Metadata unchanged from the source.
           schema:
             type: string
-            enum:  ['JSON-LD', 'MODS', 'SolrXML', "raw"]
+            enum:  ['JSON-LD', 'MODS', 'SolrJSON', "raw"]
             example: 'JSON-LD'
             default: 'JSON-LD'
       responses:
@@ -68,7 +68,7 @@ paths:
                 type: string
             application/xml:
               schema:
-                description: 'Format-specific representation of the record in XML. Used for MODS and SolrXML'
+                description: 'Format-specific representation of the record in XML. Used for MODS and SolrJSON'
                 type: string
             text/plain:
               schema:

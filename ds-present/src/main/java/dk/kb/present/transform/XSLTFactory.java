@@ -21,14 +21,14 @@ import java.io.IOException;
 /**
  * Constructs {@link IdentityTransformer}s.
  */
-public class XSLTFactory implements AbstractTransformerFactory {
+public class XSLTFactory implements DSTransformerFactory {
     @Override
     public String getTransformerID() {
         return XSLTTransformer.ID;
     }
 
     @Override
-    public AbstractTransformer createTransformer(YAML conf) throws IOException {
+    public DSTransformer createTransformer(YAML conf) throws IOException {
         return new XSLTTransformer(conf);
     }
 }

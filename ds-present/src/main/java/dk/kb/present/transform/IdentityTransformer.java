@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The identity transformer returns the given input unchanged.
  */
-public class IdentityTransformer extends AbstractTransformer {
+public class IdentityTransformer extends DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(IdentityTransformer.class);
     public static final String ID = "identity";
 

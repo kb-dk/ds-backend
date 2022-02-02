@@ -1,6 +1,6 @@
 # ds-present
 
-Transforming access layer for metadata. Intended as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) prividing multiple views on metadata, such as MODS, JSON-LD and SolrXMLDocument.
+Transforming access layer for metadata. Intended as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) prividing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.
 
 Developed and maintained by the Royal Danish Library.
 
