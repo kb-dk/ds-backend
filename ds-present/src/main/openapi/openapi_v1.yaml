@@ -81,12 +81,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  # TODO: Specify records/
+  # TODO: Specify records/ (multiple records)
   # The tricky part is how to represent multiple entries as the source can be both JSON & XML (and unknown in the form
   # of raw but maybe raw should not be available here?).
   # Another thing is that JSON can be delivered both as a large array and as JSON-Lines. Likewise, the packing of
   # multiple SolrXMLs is already defined in https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#xml-formatted-index-updates
   # but there is no defined packing of multiole MODS (Sub-TODO: Check is this is true)
+
+  /collection/{id}:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Retrieve a formal description of a single collection'
+      operationId: getCollection
+      parameters:
+        - name: id
+          in: path
+          description: 'The ID of the collection'
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            example: 'images-dsfl'
+      responses:
+        '200':
+          description: 'OK: The collection was known and a description is returned'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '404':
+          description: 'Collection is unknown'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /collections:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Retrieve a formal description of all collections'
+      operationId: getCollections
+      responses:
+        '200':
+          description: 'OK: Collections are returned'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Collection'
 
 components:
   schemas:
@@ -102,3 +147,39 @@ components:
           format: int32
         message:
           type: string
+
+    Collection:
+      type: object
+      required:
+        - id
+        - description
+        - views
+      properties:
+        id:
+          description: 'The ID of the collection'
+          type: string
+          example: 'images-dsfl'
+        description:
+          description: 'A human readable description fo the collection'
+          type: string
+          example: 'Images from the Danmark Set Fra Luften (Denmark seen from the air) project'
+        views:
+          description: 'Metadata views (aka formats) supported by this collection'
+          type: array
+          items:
+            $ref: '#/components/schemas/View'
+
+    View:
+      type: object
+      required:
+        - id
+        - mime
+      properties:
+        id:
+          description: 'The ID (aka format) of the view'
+          type: string
+          example: 'jsonld'
+        mime:
+          description: 'MIME type for the delivered metadata'
+          type: string
+          example: 'application/json'
