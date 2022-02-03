@@ -33,6 +33,13 @@ public class PresentFacade {
 
     private static CollectionHandler collectionHandler;
 
+    /**
+     * Optional warmUp (initialization) for fail early.
+     */
+    public static void warmUp() {
+        getCollectionHandler();
+    }
+
     private static CollectionHandler getCollectionHandler() {
         if (collectionHandler == null) {
             collectionHandler = new CollectionHandler(ServiceConfig.getConfig());
