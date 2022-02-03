@@ -31,6 +31,6 @@ public abstract class DSTransformer implements Function<String, String> {
     /**
      * @return the ID for the transformer, e.g. {@code mods2solr}.
      */
-    abstract String getID();
+    abstract public String getID();
 
 }

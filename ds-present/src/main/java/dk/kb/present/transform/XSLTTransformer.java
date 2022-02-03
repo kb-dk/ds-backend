@@ -75,7 +75,7 @@ public class XSLTTransformer extends DSTransformer {
     }
 
     @Override
-    String getID() {
+    public String getID() {
         return ID;
     }
 

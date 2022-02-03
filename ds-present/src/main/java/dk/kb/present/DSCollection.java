@@ -14,12 +14,14 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.storage.Storage;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.present.webservice.exception.ServiceException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -58,7 +60,7 @@ public class DSCollection {
     /**
      * Encapsulation of the backing storage for the collection. This will typically be a ds-storage service.
      */
-    private final DSStorage storage;
+    private final Storage storage;
 
     /**
      * Map from format -> view. A view is at the core an array of transformations and responsible for transforming
@@ -69,12 +71,14 @@ public class DSCollection {
     /**
      * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
      * the storage specified for the collection.
-     * @param conf configuration for the collection.
+     * @param conf configuration for the collection, should contain a single key:value with the key being the
+     *             collection ID and the value being the configuration for the collection.
      * @param storageHandler previously initialized pool of storages.
      */
     public DSCollection(YAML conf, StorageHandler storageHandler) {
-        // TODO: Derive id properly
-        id = "collection_" + new Random().nextInt(Integer.MAX_VALUE);
+
+        id = conf.keySet().stream().findFirst().orElseThrow();
+        conf = conf.getSubMap(id); // There must be some properties for a storage
         prefix = conf.getString(PREFIX_KEY);
         description = conf.getString(DESCRIPTION_KEY, null);
         storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
@@ -90,7 +94,13 @@ public class DSCollection {
             throw new NotFoundServiceException(
                     "The format '" + format + "' is unsupported for collection '" + id + "'");
         }
-        return view.apply(storage.getRecord(recordID));
+        String record;
+        try {
+            record = storage.getRecord(recordID);
+        } catch (IOException e) {
+            throw new NotFoundServiceException("Unable to locate record '" + recordID + "' in collection '" + id + "'");
+        }
+        return view.apply(record);
     }
 
     /**

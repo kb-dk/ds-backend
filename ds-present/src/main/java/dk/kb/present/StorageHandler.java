@@ -14,6 +14,8 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.storage.Storage;
+import dk.kb.present.storage.StorageController;
 import dk.kb.util.yaml.YAML;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
@@ -33,8 +35,8 @@ public class StorageHandler {
     private static final Logger log = LoggerFactory.getLogger(StorageHandler.class);
     private static final String STORAGES_KEY = ".config.storages";
 
-    private final Map<String, DSStorage> storages; // storageID, storage
-    private DSStorage defaultStorage; // If the ID for the requested storage is null
+    private final Map<String, Storage> storages; // storageID, storage
+    private Storage defaultStorage; // If the ID for the requested storage is null
 
     /**
      * Given a top-level configuration, iterate the storages defined under {@link #STORAGES_KEY} and create
@@ -43,13 +45,19 @@ public class StorageHandler {
      */
     public StorageHandler(YAML conf) {
         storages = conf.getYAMLList(STORAGES_KEY).stream()
-                .map(DSStorage::new)
+                .map(storageConf -> {
+                    try {
+                        return StorageController.createStorage(storageConf);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Exception creating Storage", e);
+                    }
+                })
                 .peek(storage -> {
                     if (storage.isDefault() || defaultStorage == null) {
                         defaultStorage = storage;
                     }
                 })
-                .collect(Collectors.toMap(DSStorage::getId, storage -> storage));
+                .collect(Collectors.toMap(Storage::getID, storage -> storage));
         log.info("Created " + this);
     }
 
@@ -59,8 +67,8 @@ public class StorageHandler {
      * @return a storage for the given id.
      * @throws NullPointerException is the storage could not be located.
      */
-    public DSStorage getStorage(String id) {
-        DSStorage storage = id == null ? defaultStorage : storages.get(id);
+    public Storage getStorage(String id) {
+        Storage storage = id == null ? defaultStorage : storages.get(id);
         if (storage == null) {
             throw new NullPointerException(
                     "Unable to locate a storage with ID '" + id + "'. Available storages: " + storages.keySet());

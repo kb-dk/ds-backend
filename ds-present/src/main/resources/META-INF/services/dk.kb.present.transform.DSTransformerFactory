@@ -1,2 +1,3 @@
 dk.kb.present.transform.IdentityFactory
 dk.kb.present.transform.XSLTFactory
+dk.kb.present.transform.FailFactory

@@ -18,15 +18,23 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The identity transformer returns the given input unchanged.
- */
-public class IdentityTransformer extends DSTransformer {
-    private static final Logger log = LoggerFactory.getLogger(IdentityTransformer.class);
-    public static final String ID = "identity";
+import javax.naming.ServiceUnavailableException;
 
-    public IdentityTransformer(YAML conf) {
+/**
+ * The fail transformer always fails. Used to signal unavailable views.
+ */
+public class FailTransformer extends DSTransformer {
+    private static final Logger log = LoggerFactory.getLogger(FailTransformer.class);
+    public static final String ID = "fail";
+
+    public static final String MESSAGE_KEY = "message";
+    public static final String MESSAGE_DEFAULT = "This view always fails";
+
+    private final String message;
+
+    public FailTransformer(YAML conf) {
         super(conf);
+        message = conf.getString(MESSAGE_KEY, MESSAGE_DEFAULT);
         log.debug("Constructed " + this);
     }
 
@@ -35,15 +43,15 @@ public class IdentityTransformer extends DSTransformer {
         return ID;
     }
 
-    // A "real" transformer would do something here
     @Override
     public String apply(String s) {
-        return s;
+        throw new RuntimeException(message);
     }
 
     @Override
     public String toString() {
-        return "IdentityTransformer()";
+        return "FailTransformer(" +
+               "message='" + message + '\'' +
+               ')';
     }
-
 }

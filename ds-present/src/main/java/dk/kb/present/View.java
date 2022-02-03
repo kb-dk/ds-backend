@@ -44,7 +44,8 @@ public class View extends ArrayList<DSTransformer> implements Function<String, S
         super();
         if (conf.size() != 1) {
             throw new IllegalArgumentException
-                    ("Expected a single entry in the configuration but there was " + conf.size());
+                    ("Expected a single entry in the configuration but there was " + conf.size() +
+                     ". Maybe indenting was not correct in the config file?");
         }
         id = conf.keySet().stream().findFirst().orElseThrow();
         conf = conf.getSubMap(id);

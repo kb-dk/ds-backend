@@ -15,35 +15,20 @@
 package dk.kb.present.transform;
 
 import dk.kb.util.yaml.YAML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The identity transformer returns the given input unchanged.
+ * Constructs {@link FailTransformer}s.
  */
-public class IdentityTransformer extends DSTransformer {
-    private static final Logger log = LoggerFactory.getLogger(IdentityTransformer.class);
-    public static final String ID = "identity";
-
-    public IdentityTransformer(YAML conf) {
-        super(conf);
-        log.debug("Constructed " + this);
-    }
+public class FailFactory implements DSTransformerFactory {
+    private static final String ID = "fail";
 
     @Override
-    public String getID() {
+    public String getTransformerID() {
         return ID;
     }
 
-    // A "real" transformer would do something here
     @Override
-    public String apply(String s) {
-        return s;
+    public FailTransformer createTransformer(YAML conf) {
+        return new FailTransformer(conf);
     }
-
-    @Override
-    public String toString() {
-        return "IdentityTransformer()";
-    }
-
 }

@@ -12,38 +12,25 @@
  *  limitations under the License.
  *
  */
-package dk.kb.present.transform;
+package dk.kb.present.storage;
 
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The identity transformer returns the given input unchanged.
+ * Constructs {@link FileStorage}s.
  */
-public class IdentityTransformer extends DSTransformer {
-    private static final Logger log = LoggerFactory.getLogger(IdentityTransformer.class);
-    public static final String ID = "identity";
+public class FileStorageFactory implements StorageFactory {
+    private static final Logger log = LoggerFactory.getLogger(FileStorageFactory.class);
 
-    public IdentityTransformer(YAML conf) {
-        super(conf);
-        log.debug("Constructed " + this);
+    @Override
+    public String getStorageType() {
+        return FileStorage.TYPE;
     }
 
     @Override
-    public String getID() {
-        return ID;
+    public Storage createStorage(String id, YAML conf, boolean isDefault) throws Exception {
+        return new FileStorage(id, conf, isDefault);
     }
-
-    // A "real" transformer would do something here
-    @Override
-    public String apply(String s) {
-        return s;
-    }
-
-    @Override
-    public String toString() {
-        return "IdentityTransformer()";
-    }
-
 }

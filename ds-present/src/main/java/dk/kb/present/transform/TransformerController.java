@@ -43,7 +43,8 @@ public class TransformerController {
     public static DSTransformer createTransformer(YAML conf) throws Exception {
         if (conf.size() != 1) {
             throw new IllegalArgumentException
-                    ("Expected a single entry in the configuration but there was " + conf.size());
+                    ("Expected a single entry in the configuration but there was " + conf.size() +
+                     ". Maybe indenting was not correct in the config file?");
         }
         String id = conf.keySet().stream().findFirst().orElseThrow();
         conf = conf.containsKey(id) ? conf.getSubMap(id) : new YAML(); // Some transformers does not have a config

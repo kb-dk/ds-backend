@@ -15,6 +15,7 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.storage.Storage;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
 import javassist.NotFoundException;
@@ -27,7 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Creates {@link DSStorage} from a given configuration and provides access to them based on ID-prefix.
+ * Creates {@link DSCollection}s from a given configuration and provides access to them based on ID-prefix.
  */
 public class CollectionHandler {
     private static final Logger log = LoggerFactory.getLogger(CollectionHandler.class);
@@ -37,27 +38,28 @@ public class CollectionHandler {
     private final Map<String, DSCollection> collections; // prefix, collection
 
     /**
-     * Creates a {@link StorageHandler} and a set of {@link DSStorage}s based on the given configuration.
+     * Creates a {@link StorageHandler} and a set of {@link Storage}s based on the given configuration.
      * @param conf top-level configuration. The part for this handler is expected to be found at
      * {@code .config.collections}
      */
     public CollectionHandler(YAML conf) {
-        storageHandler = new StorageHandler(ServiceConfig.getConfig());
+        storageHandler = new StorageHandler(conf);
         collections = conf.getYAMLList(COLLECTIONS_KEY).stream()
                 .map(collectionConf -> new DSCollection(collectionConf, storageHandler))
-                .collect(Collectors.toMap(DSCollection::getId, storage -> storage));
+                .collect(Collectors.toMap(DSCollection::getPrefix, storage -> storage));
         log.info("Created " + this);
     }
 
     public String getRecord(String id, String format) throws NotFoundServiceException {
         String[] parts = id.split("_", 2);
         if (parts.length < 2) {
-            throw new NotFoundServiceException("Unable to isolate collection part for id '" + id + "'");
+            throw new NotFoundServiceException(
+                    "Unable to isolate collection part for id '" + id + "'. Expected the delimiter '_'");
         }
         DSCollection collection = collections.get(parts[0]);
         if (collection == null) {
             throw new NotFoundServiceException(
-                    "The collection '" + parts[0] + "' is not available. Full ID was '" + id + "'");
+                    "A collection for IDs with prefix '" + parts[0] + "' is not available. Full ID was '" + id + "'");
         }
         return collection.getRecord(id, format);
     }

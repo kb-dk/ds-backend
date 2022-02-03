@@ -12,10 +12,27 @@ config:
   # List of backing storages. The real URLs should be overridden in ds-present-environment.yaml
   storages:
     - main:
-        url: 'http://localhost:8080/ds-storage/v1/'
         default: true # This will be used for all collections, unless the 'storage' property is set for the collection
+        backends:
+          - ds-storage:
+              url: 'http://localhost:8080/ds-storage/v1/'
     - special:
-        url: 'http://example.com:/some-other-storage/v1/'
+        backends:
+          - ds-storage:
+              url: 'http://example.com:/some-other-storage/v1/'
+    - test:
+        # Order is used when multiple backends are specified. Possible values are:
+        # sequential: The backends are queried one after each other in the same order as stated in the configuration,
+        #             until one of them delivers the record or there are no more backends.
+        # parallel:   The backends are queried in parallel. In case of multiple matches, it is undefined which record
+        #             will be returned.
+        order: sequential
+        backends:
+          # If multiple storages are defined, they are all queried. The property order controls how
+          - folder:
+              root: '/use/only/for/test/purposes'
+          - folder:
+              root: '/some/other/path'
 
   # The collections available for this instance of ds-present 
   collections:
@@ -98,7 +115,7 @@ config:
               mime: 'application/xml'
               transformers:
                 - fail:
-                  message: 'MODS not supported for material from Strange Times'
+                    message: 'MODS not supported for material from Strange Times'
           - jsonld:
               mime: 'application/json'
               transformers:

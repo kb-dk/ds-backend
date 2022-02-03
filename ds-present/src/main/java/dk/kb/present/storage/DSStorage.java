@@ -12,52 +12,53 @@
  *  limitations under the License.
  *
  */
-package dk.kb.present;
+package dk.kb.present.storage;
 
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
+import java.io.IOException;
 
 /**
- * Encapsulation of a connection to a https://github.com/kb-dk/ds-storage
+ * Proxy for a ds-storage https://github.com/kb-dk/ds-storage instance.
  */
-public class DSStorage {
+public class DSStorage implements Storage {
     private static final Logger log = LoggerFactory.getLogger(DSStorage.class);
+
+    public static final String TYPE = "ds-storage";
     private static final String URL_KEY = "url"; // IDs for this collection starts with <prefix>_ (note the underscore)
-    private static final String DEFAULT_KEY = "default";
 
     private final String id;
     private final String url;
     private final boolean isDefault;
 
-    /**
-     * @param conf the full configuration.
-     */
-    public DSStorage(YAML conf) {
+    public DSStorage(String id, YAML conf, boolean isDefault) {
+        this.id = id;
         this.url = conf.getString(URL_KEY);
-        isDefault = conf.getBoolean(DEFAULT_KEY, false);
-        // TODO: Create a concrete client here
-        // TODO: Extract name from the conf
-        id = "storage_" + new Random().nextInt(Integer.MAX_VALUE);
+        this.isDefault = isDefault;
         log.info("Created " + this);
     }
 
-    public String getRecord(String id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    @Override
+    public String getRecord(String id) throws IOException {
+        // TODO: Create a client for ds-storage and use that
+        throw new UnsupportedOperationException("Not implemented yet!");
     }
 
-    public boolean isDefault() {
-        return isDefault;
-    }
-
-    public String getId() {
+    @Override
+    public String getID() {
         return id;
     }
 
-    public String getUrl() {
-        return url;
+    @Override
+    public String getType() {
+        return TYPE;
+    }
+
+    @Override
+    public boolean isDefault() {
+        return isDefault;
     }
 
     @Override
