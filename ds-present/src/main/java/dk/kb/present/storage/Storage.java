@@ -39,10 +39,12 @@ public interface Storage {
      */
     boolean isDefault();
 
+    // TODO: Use DtoRecord from ds-storage as return type to enrich meta data information
     /**
      * @param id the ID for a record.
-     * @return a record with the given ID, if available.
+     * @return the record with the given ID, if available.
      * @throws IOException if the record could not be retrieved.
      */
     String getRecord(String id) throws IOException;
+
 }

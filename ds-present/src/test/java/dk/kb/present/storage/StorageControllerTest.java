@@ -3,7 +3,6 @@ package dk.kb.present.storage;
 import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;

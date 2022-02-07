@@ -305,6 +305,13 @@
             <version>10.6</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable -->
+        <!-- Needed for the ds-storage client -->
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -388,7 +395,67 @@
                     </configOptions>
                     <packageName>${project.package}</packageName>
                 </configuration>
+
+                <dependencies>
+                    <dependency>
+                        <!-- This is a dependency here, as we need the openapi_ds-storage_v1.yaml on build time and no more-->
+                        <groupId>dk.kb.storage</groupId>
+                        <artifactId>ds-storage</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                        <type>jar</type>
+                        <classifier>classes</classifier>
+                        <exclusions>
+                            <!-- We really just need the openapi_ds-storage_v1.yaml...-->
+                            <exclusion>
+                                <groupId>*</groupId>
+                                <artifactId>*</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+
+                </dependencies>
+
                 <executions>
+
+                    <!-- Client for the ds-storage backend -->
+                    <execution>
+                        <id>Generate client for the ds-storage backend</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Loaded from dependency above-->
+                            <inputSpec>openapi_ds-storage_v1.yaml</inputSpec>
+
+                            <generatorName>java</generatorName>
+                            <library>native</library>
+
+                            <!-- Do not generate doc or tests for this client, we will handle this ourselves-->
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <!-- Ensure ONLY the ApiClient and supporting classes are created, not the gradle mess-->
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <supportingFilesToGenerate>ApiClient.java,ApiException.java,Configuration.java,Pair.java
+                            </supportingFilesToGenerate>
+
+                            <!-- Do NOT use the customised templates as they are only for the webservice part, not the client-->
+                            <!-- Hacked by Asger by setting to an existing folder without templates -->
+                            <templateDirectory>src/main/</templateDirectory>
+                            <packageName>${project.package}.backend</packageName>
+                            <configOptions>
+                                <apiPackage>${project.package}.backend.api.v1</apiPackage>
+                                <modelPackage>${project.package}.backend.model.v1</modelPackage>
+                                <invokerPackage>${project.package}.backend.invoker.v1</invokerPackage>
+
+                                <sourceFolder>target/generated-sources</sourceFolder>
+                                <implFolder>target/generated-sources</implFolder>
+
+                            </configOptions>
+                        </configuration>
+                    </execution>
 
                     <!-- Version 1 -->
                     <!-- When a new version is needed, make a copy of two v1-related executions below, then change

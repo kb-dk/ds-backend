@@ -9,17 +9,41 @@
 #
 #
 config:
-  # List of backing storages. The real URLs should be overridden in ds-present-environment.yaml
+  # List of backing storages. This information overridden in ds-present-environment.yaml
   storages:
+    # There can be multiple maching storages. The outer YAML key is used as the ID for the storage.
     - main:
-        default: true # This will be used for all collections, unless the 'storage' property is set for the collection
+        # If default is true, this will be the default storage for collections.
+        # The default storage choice can be overridden in a collection with the 'storage' property
+        default: true
+        # Backends contains a list of one or more implementations and their configuration, with the primary key being
+        # the implementation (aka type) of the backend
         backends:
+          # Available backends are
+          # - ds-storage: 
+          #    host: 'localhost'
+          #    port: 8080
+          #    basepath: 'ds-storage/v1/'
+          #    scheme: 'http'
+          -
           - ds-storage:
-              url: 'http://localhost:8080/ds-storage/v1/'
+              host: 'localhost'
+              port: 8080
+              basepath: 'ds-storage/v1/'
+              scheme: 'http'
+        # If there is more that one backend implementation, the property 'order' controls how they are queried:
+        # * parallel:   All backends are queried in parallel. Whoever answers with a record first wins.
+        # * sequential: All backends are queried one at a time in the order in this configuration.
+        #               When a backend responds with a record, itertaion is stopped and the record is returned
+        # Optional, default value is 'sequential'
+        order: sequential
     - special:
         backends:
           - ds-storage:
-              url: 'http://example.com:/some-other-storage/v1/'
+              host: 'example.com'
+              port: 1234
+              basepath: 'some-other-ds-storage/v1/'
+              scheme: 'https'
     - test:
         # Order is used when multiple backends are specified. Possible values are:
         # sequential: The backends are queried one after each other in the same order as stated in the configuration,
