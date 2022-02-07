@@ -44,14 +44,14 @@ paths:
           schema:
             type: string
             minLength: 1
-            example: 'images-dsfl_image-1234'
+            example: 'images.dsfl:luftfoto-sample.xml'
         - name: format
           in: query
           description: |
             The delivery format for the record:
             * JSON-LD: [Linked Data in JSON](https://json-ld.org/) (default)
-            * MODS: [Metadata Object Description Schema[(http://www.loc.gov/standards/mods/)
-            * SolrJSON: [Solr JSON Formatted Index Updates)(https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates)
+            * MODS: [Metadata Object Description Schema](http://www.loc.gov/standards/mods/)
+            * SolrJSON: [Solr JSON Formatted Index Updates](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates)
             * raw: Metadata unchanged from the source.
           schema:
             type: string
@@ -158,7 +158,7 @@ components:
         id:
           description: 'The ID of the collection'
           type: string
-          example: 'images-dsfl'
+          example: 'images.dsfl'
         description:
           description: 'A human readable description fo the collection'
           type: string

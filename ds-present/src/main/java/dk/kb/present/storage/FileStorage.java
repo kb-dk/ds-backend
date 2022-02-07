@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Simple storage backed by static files on the file system.
@@ -73,7 +74,8 @@ public class FileStorage implements Storage {
     @Override
     public String getRecord(String recordID) throws IOException {
         if (stripPrefix) {
-            String[] tokens = recordID.split("_", 2);
+            // TODO: Switch to using .config.record.id.pattern
+            String[] tokens = recordID.split(":", 2);
             if (tokens.length < 2) {
                 log.warn("Attemped to strip prefix from '" + recordID + "' but there was no '_' delimiter");
             } else {

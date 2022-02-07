@@ -4,6 +4,7 @@ import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,6 +23,13 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  */
 class CollectionHandlerTest {
+
+    @Test
+    void idPattern() {
+        final Pattern recordIDPattern = Pattern.compile("^([a-z0-9.]+):([a-z0-9._-]+)$");
+        final String ID = "images.dsfl:luftfoto-sample.xml";
+        assertTrue(recordIDPattern.matcher(ID).matches());
+    }
 
     @Test
     void localCorpusMODS() throws IOException {

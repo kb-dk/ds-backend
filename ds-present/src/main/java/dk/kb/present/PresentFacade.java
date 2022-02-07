@@ -18,7 +18,6 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
-import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

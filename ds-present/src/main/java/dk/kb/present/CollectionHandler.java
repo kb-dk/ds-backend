@@ -14,17 +14,17 @@
  */
 package dk.kb.present;
 
-import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.storage.Storage;
+import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
-import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -33,43 +33,53 @@ import java.util.stream.Collectors;
 public class CollectionHandler {
     private static final Logger log = LoggerFactory.getLogger(CollectionHandler.class);
     private static final String COLLECTIONS_KEY = ".config.collections";
+    private static final String RECORD_ID_PATTERN_KEY = ".config.record.id.pattern";
 
     private final StorageHandler storageHandler;
     private final Map<String, DSCollection> collections; // prefix, collection
+    private static Pattern recordIDPattern;
 
     /**
      * Creates a {@link StorageHandler} and a set of {@link Storage}s based on the given configuration.
-     * @param conf top-level configuration. The part for this handler is expected to be found at
-     * {@code .config.collections}
+     * @param conf top-level configuration. The parts for this handler is expected to be found at
+     * {@code .config.collections} and {@code .config.record.id.pattern}
      */
     public CollectionHandler(YAML conf) {
         storageHandler = new StorageHandler(conf);
         collections = conf.getYAMLList(COLLECTIONS_KEY).stream()
                 .map(collectionConf -> new DSCollection(collectionConf, storageHandler))
                 .collect(Collectors.toMap(DSCollection::getPrefix, storage -> storage));
+        try {
+            recordIDPattern = Pattern.compile(conf.getString(RECORD_ID_PATTERN_KEY));
+        } catch (Exception e) {
+            String message = "Unable to create pattern from configuration, expected key " + RECORD_ID_PATTERN_KEY;
+            log.warn(message, e);
+            throw new RuntimeException(e);
+        }
         log.info("Created " + this);
     }
 
     public String getRecord(String id, String format) throws NotFoundServiceException {
-        String[] parts = id.split("_", 2);
-        if (parts.length < 2) {
-            throw new NotFoundServiceException(
-                    "Unable to isolate collection part for id '" + id + "'. Expected the delimiter '_'");
+        Matcher matcher = recordIDPattern.matcher(id);
+        if (!matcher.matches()) {
+            throw new InvalidArgumentServiceException(
+                    "ID '" + id + "' should conform to pattern '" + recordIDPattern + "'");
         }
-        DSCollection collection = collections.get(parts[0]);
+        DSCollection collection = collections.get(matcher.group(1));
         if (collection == null) {
             throw new NotFoundServiceException(
-                    "A collection for IDs with prefix '" + parts[0] + "' is not available. Full ID was '" + id + "'");
+                    "A collection for IDs with prefix '" + matcher.group(1) + "' is not available. " +
+                    "Full ID was '" + id + "'");
         }
         return collection.getRecord(id, format);
     }
 
     /**
-     * @param id an ID for a collection.
+     * @param collectionID an ID for a collection.
      * @return a collection with the given ID or null if it does not exist.
      */
-    public DSCollection getCollection(String id) {
-        return collections.get(id);
+    public DSCollection getCollection(String collectionID) {
+        return collections.get(collectionID);
     }
 
     /**
@@ -83,6 +93,7 @@ public class CollectionHandler {
     public String toString() {
         return "CollectionHandler(" +
                "collections=" + collections +
+               "recordIDPattern: '" + recordIDPattern + "'" +
                ')';
     }
 }

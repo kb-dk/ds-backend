@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -83,12 +84,12 @@ public class DSCollection {
         storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
         views = conf.getYAMLList(VIEWS_KEY).stream()
                 .map(View::new)
-                .collect(Collectors.toMap(View::getId, view -> view));
+                .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
         log.info("Created " + this);
     }
 
     public String getRecord(String recordID, String format) throws ServiceException {
-        View view = views.get(format);
+        View view = views.get(format.toLowerCase(Locale.ROOT));
         if (view == null) {
             throw new NotFoundServiceException(
                     "The format '" + format + "' is unsupported for collection '" + id + "'");
