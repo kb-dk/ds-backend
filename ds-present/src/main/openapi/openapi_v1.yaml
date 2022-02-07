@@ -44,7 +44,13 @@ paths:
           schema:
             type: string
             minLength: 1
-            example: 'images.dsfl:luftfoto-sample.xml'
+          examples:
+            local:
+              value: 'local.test:luftfoto-sample.xml'
+              summary: 'Record fetched from fixed local test corpus'
+            remote:
+              value: 'remote.images:luftfoto-sample.xml'
+              summary: 'Record fetched from (hopefully) running ds-storage'
         - name: format
           in: query
           description: |

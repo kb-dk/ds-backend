@@ -30,7 +30,7 @@ config:
               # The port for the service. Mandatory
               port: 8080
               # The path the the service. Optional, default is 'ds-storage/v1/'
-              basepath: 'ds-storage/v1/'
+              basepath: '/ds-storage/v1/'
               # The connection scheme: http or https. Optional, default is http for localhost, https for everything else
               scheme: 'http'
     - test:
@@ -69,9 +69,35 @@ config:
     # If any of those are not supported, the transformer 'fail' should be used with a telling message.
 
     # Straight forward collection with the core format being MODS
-    - dsfl: # ds-present internal
-        prefix: 'images.dsfl' # The prefix to match on incoming IDs
-        description: 'Images from the collection Danmark Set Fra Luften'
+    # Uses the default storage, which connects to a running ds-storage instance
+    - remote: # ds-present internal
+        prefix: 'remote.images' # The prefix to match on incoming IDs
+        description: 'Images from the collections at the Royal Danish Library'
+        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+        views:
+          - raw:
+              mime: 'text/plain'
+              transformers:
+                - identity:
+          - MODS:
+              mime: 'application/xml'
+              transformers:
+                - identity: # No transformation steps as mods is the core format for images-dsfl
+          - JSON-LD:
+              mime: 'application/json'
+              transformers:
+                - xslt:
+                    stylesheet: 'xslt/mods2schemaorg.xsl'
+          - SolrJSON:
+              mime: 'application/json'
+              transformers:
+                - xslt:
+                    stylesheet: 'xslt/mods2solr.xsl'
+
+    # Straight forward collection with the core format being MODS, using test data
+    - local: # ds-present internal
+        prefix: 'local.test' # The prefix to match on incoming IDs
+        description: 'Selected image data from the collections at the Royal Danish Library'
         storage: 'test' # Not production here
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
         views:
