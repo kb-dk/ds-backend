@@ -92,6 +92,6 @@ public class PresentFacade {
     }
 
     private static ViewDto toDto(View view) {
-        return new ViewDto().id(view.getId());
+        return new ViewDto().id(view.getId()).mime(view.getMime().toString());
     }
 }
