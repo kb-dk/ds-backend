@@ -9,54 +9,59 @@
 #
 #
 config:
-  # List of backing storages. This information overridden in ds-present-environment.yaml
+  # List of backing storages. This information should be overridden in ds-present-environment.yaml
   storages:
-    # There can be multiple maching storages. The outer YAML key is used as the ID for the storage.
+    # There can be multiple defined storages. The outer YAML key is used as the ID for the storage.
     - main:
         # If default is true, this will be the default storage for collections.
         # The default storage choice can be overridden in a collection with the 'storage' property
         default: true
         # Backends contains a list of one or more implementations and their configuration, with the primary key being
         # the implementation (aka type) of the backend
+        #
+        # Available backends are
+        # ds-storage: Connection to a https://github.com/kb-dk/ds-storage/ instance
+        # folder:     Local files under the stated folder. Use only for test as the implementation in unsecure
         backends:
-          # Available backends are
-          # - ds-storage: 
-          #    host: 'localhost'
-          #    port: 8080
-          #    basepath: 'ds-storage/v1/'
-          #    scheme: 'http'
-          -
+          # The ds-storage backend connects to a running https://github.com/kb-dk/ds-storage/ instance
           - ds-storage:
+              # The name of the machine running the service. Mandatory
               host: 'localhost'
+              # The port for the service. Mandatory
               port: 8080
+              # The path the the service. Optional, default is 'ds-storage/v1/'
               basepath: 'ds-storage/v1/'
+              # The connection scheme: http or https. Optional, default is http for localhost, https for everything else
               scheme: 'http'
+    - test:
         # If there is more that one backend implementation, the property 'order' controls how they are queried:
         # * parallel:   All backends are queried in parallel. Whoever answers with a record first wins.
         # * sequential: All backends are queried one at a time in the order in this configuration.
         #               When a backend responds with a record, itertaion is stopped and the record is returned
         # Optional, default value is 'sequential'
         order: sequential
-    - special:
         backends:
-          - ds-storage:
-              host: 'example.com'
-              port: 1234
-              basepath: 'some-other-ds-storage/v1/'
-              scheme: 'https'
-    - test:
-        # Order is used when multiple backends are specified. Possible values are:
-        # sequential: The backends are queried one after each other in the same order as stated in the configuration,
-        #             until one of them delivers the record or there are no more backends.
-        # parallel:   The backends are queried in parallel. In case of multiple matches, it is undefined which record
-        #             will be returned.
-        order: sequential
-        backends:
-          # If multiple storages are defined, they are all queried. The property order controls how
+          # The folder backend expects content to be stored in a local folder. The ID is used as the file name.
+          # WARNING: Insecure implementation (files outside of the folder can be read). Do not use for production!
+          # The src/test/resources/xml/corpus contains a small sample corpus. this is only likely to work when
+          # running with `mvn jetty:run` and even the we're unsure of the current folder, so we se up alternatives.
           - folder:
-              root: '/use/only/for/test/purposes'
+              root: 'src/test/resources/xml/corpus' # Expected
+              # Whether or not remove ID-prefix (the part from the beginning to the first `:` (inclusive) of the ID)
+              # from the ID when perforaing the lookup. Optional, default is true.
+              stripprefix: true
           - folder:
-              root: '/some/other/path'
+              root: '../src/test/resources/xml/corpus' # Maybe PWD is target/
+          - folder:
+              root: 'ds-present/src/test/resources/xml/corpus' # Maybe PWD is outsid eof the checkout (unlikely)
+
+  # Settings for handling at the record level
+  record:
+    id:
+      # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the collection prefix
+      # and the second being the collection-specifix par of the ID
+      # Mandatory. Suggested value: '$([a-z][0-9][.]):([a-z][0-9][.-_])$', e.g. 'images.dsfl:image1234'
+      pattern: '$([a-z][0-9][.]):([a-z][0-9][.-_])$'
 
   # The collections available for this instance of ds-present 
   collections:

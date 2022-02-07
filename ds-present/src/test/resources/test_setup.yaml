@@ -13,9 +13,16 @@ config:
           - folder:
               root: 'src/test/resources/xml/corpus'
 
+  # Settings for handling at the record level
+  record:
+    id:
+      # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the collection prefix
+      # and the second being the collection-specifix par of the ID
+      # Mandatory. Suggested value: '$([a-z][0-9][.]):([a-z][0-9][.-_])$', e.g. 'images.dsfl:image1234'
+      pattern: '$([a-z][0-9][.]):([a-z][0-9][.-_])$'
+
   # The collections available for this instance of ds-present 
   collections:
-      
     # Straight forward collection with the core format being MODS
     - dsfl: # ds-present internal
         prefix: 'local' # The prefix to match on incoming IDs

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 /**
  * Simple storage backed by static files on the file system.
@@ -36,6 +37,7 @@ public class FileStorage implements Storage {
     public static final String TYPE = "folder";
     public static final String FOLDER_KEY = "root";
     public static final String STRIP_PREFIX_KEY = "stripprefix";
+    public static final boolean STRIP_PREFIX_DEFAULT = true;
 
     private final String id;
     private final Path folder;
@@ -50,10 +52,15 @@ public class FileStorage implements Storage {
         }
         folder = Path.of(folderStr);
         if (!Files.isReadable(folder)) {
-            throw new IOException("Unable to access the folder '" + folder + "'");
+            // We accept non-readable folders as the FileStorage is only intended for testing
+            log.warn(String.format(Locale.ROOT, "Unable to access the configured folder '%s'. Current folder is '%s'",
+                                   folder, new java.io.File(".").getCanonicalPath()));
+        } else {
+            log.info(String.format(Locale.ROOT, "The configured folder '%s' is readable with current folder being '%s'",
+                                   folder, new java.io.File(".").getCanonicalPath()));
         }
         this.isDefault = isDefault;
-        this.stripPrefix = conf.getBoolean(STRIP_PREFIX_KEY, true);
+        this.stripPrefix = conf.getBoolean(STRIP_PREFIX_KEY, STRIP_PREFIX_DEFAULT);
         log.info("Created " + this);
     }
 
