@@ -49,7 +49,8 @@ paths:
               value: 'local.test:luftfoto-sample.xml'
               summary: 'Record fetched from fixed local test corpus'
             remote:
-              value: 'remote.images:luftfoto-sample.xml'
+              value: 'doms.radio:illum.xml'
+              #value: 'remote.images:luftfoto-sample.xml'
               summary: 'Record fetched from (hopefully) running ds-storage'
         - name: format
           in: query

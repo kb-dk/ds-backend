@@ -71,7 +71,7 @@ config:
     # Straight forward collection with the core format being MODS
     # Uses the default storage, which connects to a running ds-storage instance
     - remote: # ds-present internal
-        prefix: 'remote.images' # The prefix to match on incoming IDs
+        prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
         description: 'Images from the collections at the Royal Danish Library'
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
         views:

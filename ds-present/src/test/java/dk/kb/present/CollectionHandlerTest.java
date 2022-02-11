@@ -4,6 +4,7 @@ import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,10 +27,49 @@ class CollectionHandlerTest {
 
     @Test
     void idPattern() {
-        final Pattern recordIDPattern = Pattern.compile("^([a-z0-9.]+):([a-z0-9._-]+)$");
-        final String ID = "images.dsfl:luftfoto-sample.xml";
-        assertTrue(recordIDPattern.matcher(ID).matches());
+        final Pattern recordIDPattern = Pattern.compile("([a-z0-9.]+):([a-zA-Z0-9:._-]+)");
+        for (String TEST: new String[]{
+                "1::", // Degenerate example
+                ".::_..-", // Degenerate example
+                "images.dsfl:luftfoto-sample.xml",
+                "images:luftfoto:sample.xml"
+        }) {
+            assertTrue(recordIDPattern.matcher(TEST).matches());
+        }
+
     }
+
+    @Test
+    void demoPattern() {
+        final Pattern recordIDPattern = Pattern.compile("([a-z0-9.]+):([a-zA-Z0-9:._-]+)");
+        String id = "images.dsfl:luftfoto-sample.xml";
+        Matcher matcher = recordIDPattern.matcher(id);
+        if (matcher.matches()) {
+            System.out.println("Collection=" + matcher.group(1) + ", material-id=" + matcher.group(2));
+        } else {
+            throw new IllegalArgumentException("Unsupported ID format '" + id + "'");
+        }
+    }
+
+    @Test
+    void normaliseID() {
+        final Pattern NO_GO = Pattern.compile("[^a-zA-Z0-9:._-]");
+
+        // Note: Not a proper id as the collection is not added
+        String id = "himmel/luftfoto-sampleæøå .xml";
+        for (String[] subst: new String[][]{
+                {"æ", "ae"}, {"ä", "ae"}, {"Æ", "Ae"}, {"Ä", "Ae"},
+                {"ø", "oe"}, {"ö", "oe"}, {"Ø", "Oe"}, {"Ö", "Oe"},
+                {"å", "aa"}, {"Å", "Aa"},
+                {" ", "-"}, {"/", "-"}, {"~", "-"}
+        }) {
+            id = id.replace(subst[0], subst[1]);
+        }
+        id = NO_GO.matcher(id).replaceAll(".");
+
+        System.out.println("Prepend collection and colon to this: " + id);
+    }
+
 
     @Test
     void localCorpusMODS() throws IOException {
