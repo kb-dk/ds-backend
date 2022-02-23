@@ -44,6 +44,9 @@ public class DSStorage implements Storage {
     private final String basepath;
     private final String scheme;
 
+    // Used for logging and debugging
+    private final String serverHuman;
+
     private final boolean isDefault;
     private final DsStorageApi dsStorageClient;
 
@@ -65,6 +68,8 @@ public class DSStorage implements Storage {
         apiClient.setBasePath(basepath);
         apiClient.setScheme(scheme);
 
+        serverHuman = scheme + "://" + host + ":" + port + "/" + basepath;
+
         dsStorageClient = new DsStorageApi(apiClient);
         log.info("Created " + this);
     }
@@ -74,6 +79,7 @@ public class DSStorage implements Storage {
         try {
             return dsStorageClient.getRecord(id).getData();
         } catch (ApiException e) {
+            log.debug("Unable to retrieve record '" + id + "' from " + serverHuman + "...", e);
             throw new IOException("Unable to retrieve record '" + id + "'", e);
         }
     }
