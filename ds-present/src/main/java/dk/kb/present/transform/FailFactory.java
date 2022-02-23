@@ -22,6 +22,9 @@ import dk.kb.util.yaml.YAML;
 public class FailFactory implements DSTransformerFactory {
     private static final String ID = "fail";
 
+    public static final String MESSAGE_KEY = "message";
+    public static final String MESSAGE_DEFAULT = "This view always fails";
+
     @Override
     public String getTransformerID() {
         return ID;
@@ -29,6 +32,6 @@ public class FailFactory implements DSTransformerFactory {
 
     @Override
     public FailTransformer createTransformer(YAML conf) {
-        return new FailTransformer(conf);
+        return new FailTransformer(conf.getString(MESSAGE_KEY, MESSAGE_DEFAULT));
     }
 }

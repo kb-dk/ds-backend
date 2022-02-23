@@ -27,14 +27,14 @@ public class FailTransformer extends DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(FailTransformer.class);
     public static final String ID = "fail";
 
-    public static final String MESSAGE_KEY = "message";
-    public static final String MESSAGE_DEFAULT = "This view always fails";
-
     private final String message;
 
-    public FailTransformer(YAML conf) {
-        super(conf);
-        message = conf.getString(MESSAGE_KEY, MESSAGE_DEFAULT);
+    /**
+     * Construct a transformer that always fails with the given message.
+     * @param message the message to throw in a {@link RuntimeException} when {@link #apply(String)} is called.
+     */
+    public FailTransformer(String message) {
+        this.message = message;
         log.debug("Constructed " + this);
     }
 

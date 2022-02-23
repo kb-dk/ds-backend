@@ -25,8 +25,10 @@ public class IdentityTransformer extends DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(IdentityTransformer.class);
     public static final String ID = "identity";
 
-    public IdentityTransformer(YAML conf) {
-        super(conf);
+    /**
+     * Construct a transformer that returns its input unchanged.
+     */
+    public IdentityTransformer() {
         log.debug("Constructed " + this);
     }
 

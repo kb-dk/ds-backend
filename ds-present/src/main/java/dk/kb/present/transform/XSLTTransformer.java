@@ -42,8 +42,6 @@ public class XSLTTransformer extends DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(XSLTTransformer.class);
     public static final String ID = "xslt";
 
-    public static final String KEY_STYLESHEET = "stylesheet";
-
     public static final TransformerFactory transformerFactory;
 
     static {
@@ -53,13 +51,14 @@ public class XSLTTransformer extends DSTransformer {
     public final String stylesheet;
     public final Transformer transformer;
 
-    public XSLTTransformer(YAML conf) throws IOException {
-        super(conf);
-        if (!conf.containsKey(KEY_STYLESHEET)) {
-            throw new IllegalArgumentException(
-                    "Expected the property '" + KEY_STYLESHEET + "' to be present in the config");
-        }
-        stylesheet = conf.getString(KEY_STYLESHEET);
+    /**
+     * Construct a transformer that uses Saxon to perform an XSLT transformation on its input.
+     * @param stylesheet the stylesheet for the transformation. This can be be a file resolved relatively to the current
+     *                   folder, under the user.home or on the classpath.
+     * @throws IOException if the stylesheet could not be resolved.
+     */
+    public XSLTTransformer(String stylesheet) throws IOException {
+        this.stylesheet = stylesheet;
         URL stylesheetURL = Resolver.resolveURL(stylesheet);
         if (stylesheetURL == null) {
             throw new FileNotFoundException("Unable to resolve stylesheet '" + stylesheet + "'");

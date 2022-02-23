@@ -22,11 +22,6 @@ import java.util.function.Function;
  * Takes a textual input and transforms it to another textual input.
  */
 public abstract class DSTransformer implements Function<String, String> {
-    private final YAML conf;
-
-    public DSTransformer(YAML conf) {
-        this.conf = conf;
-    }
 
     /**
      * @return the ID for the transformer, e.g. {@code mods2solr}.

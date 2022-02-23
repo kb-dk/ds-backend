@@ -50,8 +50,7 @@ class XSLTTransformerTest {
     }
 
     private String getTransformed(String xsltResource, String xmlResource) throws IOException {
-        YAML conf = new YAML(Map.of(XSLTTransformer.KEY_STYLESHEET, xsltResource));
-        XSLTTransformer transformer = new XSLTTransformer(conf);
+        XSLTTransformer transformer = new XSLTTransformer(xsltResource);
         String mods = Resolver.resolveUTF8String(xmlResource);
         return transformer.apply(mods);
     }
