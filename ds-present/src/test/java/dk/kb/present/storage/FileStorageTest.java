@@ -31,9 +31,8 @@ class FileStorageTest {
     void basicAccess() throws IOException {
         URL albert = Resolver.resolveURL("xml/corpus/albert-einstein.xml");
         assertNotNull(albert, "The test file albert-einstein.xml should be available");
-        String rootFolder = Path.of(albert.getPath()).getParent().toString();
-        YAML conf = new YAML(Map.of(FileStorage.FOLDER_KEY, rootFolder));
-        Storage storage = new FileStorage("test", conf, false);
+        Path rootFolder = Path.of(albert.getPath()).getParent();
+        Storage storage = new FileStorage("test", rootFolder, false, false);
         assertTrue(storage.getRecord("henrik-hertz.xml").contains("Henrik"));
     }
 }

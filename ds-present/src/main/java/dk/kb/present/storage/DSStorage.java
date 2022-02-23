@@ -30,12 +30,6 @@ public class DSStorage implements Storage {
     private static final Logger log = LoggerFactory.getLogger(DSStorage.class);
 
     public static final String TYPE = "ds-storage";
-    private static final String HOST_KEY = "host";
-    private static final String PORT_KEY = "port";
-    private static final String BASEPATH_KEY = "basepath";
-    private static final String BASEPATH_DEFAULT = "ds-storage/v1/";
-    private static final String SCHEME_KEY = "scheme";
-    private static final String SCHEME_DEFAULT = "https"; // Special handling: Will be 'http' if host = localhost
 
     private final String id;
 
@@ -50,15 +44,22 @@ public class DSStorage implements Storage {
     private final boolean isDefault;
     private final DsStorageApi dsStorageClient;
 
-    public DSStorage(String id, YAML conf, boolean isDefault) {
+    /**
+     * Create a Storage connection to a ds-storage server.
+     * @param id the ID for the storage, used for connecting collections to storages.
+     * @param scheme the scheme for the connection: {@code http} or {@code https}.
+     * @param host the host name for the server: {@code example.com}.
+     * @param port the port for the server: {@code 8080}.
+     * @param basepath the basepath for the service: {@code /ds-storage/v1/}.
+     * @param isDefault if true, this is the default storage for collections.
+     */
+    public DSStorage(String id, String scheme, String host, int port, String basepath, boolean isDefault) {
         this.id = id;
 
-        this.host = conf.getString(HOST_KEY);
-        this.port = conf.getInteger(PORT_KEY);
-        this.basepath = conf.getString(BASEPATH_KEY,
-                                       BASEPATH_DEFAULT);
-        this.scheme = conf.getString(SCHEME_KEY,
-                                     "localhost".equals(host) || "127.0.0.1".equals(host) ? "http" : SCHEME_DEFAULT);
+        this.scheme = scheme;
+        this.host = host;
+        this.port = port;
+        this.basepath = basepath;
 
         this.isDefault = isDefault;
 

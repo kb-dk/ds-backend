@@ -23,15 +23,27 @@ import org.slf4j.LoggerFactory;
  */
 public class DSStorageFactory implements StorageFactory {
     private static final Logger log = LoggerFactory.getLogger(DSStorageFactory.class);
-    private static final String TYPE = "ds-storage";
+
+    private static final String HOST_KEY = "host";
+    private static final String PORT_KEY = "port";
+    private static final String BASEPATH_KEY = "basepath";
+    private static final String BASEPATH_DEFAULT = "ds-storage/v1/";
+    private static final String SCHEME_KEY = "scheme";
+    private static final String SCHEME_DEFAULT = "https"; // Special handling: Will be 'http' if host = localhost
 
     @Override
     public String getStorageType() {
-        return TYPE;
+        return DSStorage.TYPE;
     }
 
     @Override
     public Storage createStorage(String id, YAML conf, boolean isDefault) throws Exception {
-        return new DSStorage(id, conf, isDefault);
+        String host = conf.getString(HOST_KEY);
+        int port = conf.getInteger(PORT_KEY);
+        String basepath = conf.getString(BASEPATH_KEY, BASEPATH_DEFAULT);
+        String scheme = conf.getString(SCHEME_KEY,
+                                       "localhost".equals(host) || "127.0.0.1".equals(host) ? "http" : SCHEME_DEFAULT);
+
+        return new DSStorage(id, scheme, host, port, basepath, isDefault);
     }
 }
