@@ -29,7 +29,7 @@ config:
               host: 'localhost'
               # The port for the service. Mandatory
               port: 8080
-              # The path the the service. Optional, default is 'ds-storage/v1/'
+              # The path the the service. Optional, default is '/ds-storage/v1/'
               basepath: '/ds-storage/v1/'
               # The connection scheme: http or https. Optional, default is http for localhost, https for everything else
               scheme: 'http'
