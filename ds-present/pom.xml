@@ -11,7 +11,7 @@
     <artifactId>ds-present</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.
+    <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
 
     <repositories>
         <repository>
