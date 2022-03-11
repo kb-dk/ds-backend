@@ -32,7 +32,8 @@ class CollectionHandlerTest {
                 "1::", // Degenerate example
                 ".::_..-", // Degenerate example
                 "images.dsfl:luftfoto-sample.xml",
-                "images:luftfoto:sample.xml"
+                "images:luftfoto:sample.xml",
+                "oai:kb.dk:images:luftfo:2011:maj:luftfoto:object967062"
         }) {
             assertTrue(recordIDPattern.matcher(TEST).matches());
         }

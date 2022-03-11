@@ -22,6 +22,8 @@ import java.io.IOException;
  * Constructs {@link IdentityTransformer}s.
  */
 public class XSLTFactory implements DSTransformerFactory {
+    public static final String STYLESHEET_KEY = "stylesheet";
+
     @Override
     public String getTransformerID() {
         return XSLTTransformer.ID;
@@ -29,6 +31,10 @@ public class XSLTFactory implements DSTransformerFactory {
 
     @Override
     public DSTransformer createTransformer(YAML conf) throws IOException {
-        return new XSLTTransformer(conf);
+        if (!conf.containsKey(STYLESHEET_KEY)) {
+            throw new IllegalArgumentException(
+                    "Expected the property '" + STYLESHEET_KEY + "' to be present in the config");
+        }
+        return new XSLTTransformer(conf.getString(STYLESHEET_KEY));
     }
 }

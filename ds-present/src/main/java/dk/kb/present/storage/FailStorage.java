@@ -31,16 +31,20 @@ public class FailStorage implements Storage {
     private static final Logger log = LoggerFactory.getLogger(FailStorage.class);
 
     public static final String TYPE = "fail";
-    public static final String MESSAGE_KEY = "message";
-    public static final String MESSAGE_DEFAULT = "No records can be delivered from this Storage";
 
     private final String id;
     private final String message;
     private final boolean isDefault;
 
-    public FailStorage(String id, YAML conf, boolean isDefault) throws IOException {
+    /**
+     * Create a storage where all lookups fails.
+     * @param id the ID for the storage, used for connecting collections to storages.
+     * @param message the message to deliver when {@link #getRecord(String)} is called.
+     * @param isDefault if true, this is the default storage for collections.
+     */
+    public FailStorage(String id, String message, boolean isDefault) {
         this.id = id;
-        this.message = conf.getString(MESSAGE_KEY, MESSAGE_DEFAULT);
+        this.message = message;
         this.isDefault = isDefault;
         log.info("Created " + this);
     }

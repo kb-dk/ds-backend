@@ -36,22 +36,22 @@ public class FileStorage implements Storage {
     private static final Logger log = LoggerFactory.getLogger(FileStorage.class);
 
     public static final String TYPE = "folder";
-    public static final String FOLDER_KEY = "root";
-    public static final String STRIP_PREFIX_KEY = "stripprefix";
-    public static final boolean STRIP_PREFIX_DEFAULT = true;
 
     private final String id;
     private final Path folder;
     private final boolean isDefault;
     private final boolean stripPrefix;
 
-    public FileStorage(String id, YAML conf, boolean isDefault) throws IOException {
+    /**
+     * Create a file backed Storage.
+     * @param id the ID for the storage, used for connecting collections to storages.
+     * @param folder the folder containing the files to deliver upon request.
+     * @param stripPrefix if true, the ID {@code collection:subid} is reduced to {subid} before lookup.
+     * @param isDefault if true, this is the default storage for collections.
+     * @throws IOException if the given folder could not be accessed.
+     */
+    public FileStorage(String id, Path folder, boolean stripPrefix, boolean isDefault) throws IOException {
         this.id = id;
-        String folderStr = conf.getString(FOLDER_KEY);
-        if (folderStr == null) {
-            throw new NullPointerException("The root folder was not specified under the key '" + FOLDER_KEY + "'");
-        }
-        folder = Path.of(folderStr);
         if (!Files.isReadable(folder)) {
             // We accept non-readable folders as the FileStorage is only intended for testing
             log.warn(String.format(Locale.ROOT, "Unable to access the configured folder '%s'. Current folder is '%s'",
@@ -60,8 +60,9 @@ public class FileStorage implements Storage {
             log.info(String.format(Locale.ROOT, "The configured folder '%s' is readable with current folder being '%s'",
                                    folder, new java.io.File(".").getCanonicalPath()));
         }
+        this.folder = folder;
+        this.stripPrefix = stripPrefix;
         this.isDefault = isDefault;
-        this.stripPrefix = conf.getBoolean(STRIP_PREFIX_KEY, STRIP_PREFIX_DEFAULT);
         log.info("Created " + this);
     }
 

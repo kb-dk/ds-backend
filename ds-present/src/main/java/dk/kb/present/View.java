@@ -29,6 +29,7 @@ import java.util.function.Function;
  */
 public class View extends ArrayList<DSTransformer> implements Function<String, String> {
     private static final Logger log = LoggerFactory.getLogger(View.class);
+
     private static final String MIME_KEY = "mime";
     private static final String TRANSFORMERS_KEY = "transformers";
 

@@ -29,7 +29,7 @@ config:
               host: 'localhost'
               # The port for the service. Mandatory
               port: 8080
-              # The path the the service. Optional, default is 'ds-storage/v1/'
+              # The path the the service. Optional, default is '/ds-storage/v1/'
               basepath: '/ds-storage/v1/'
               # The connection scheme: http or https. Optional, default is http for localhost, https for everything else
               scheme: 'http'
@@ -60,8 +60,8 @@ config:
     id:
       # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the collection prefix
       # and the second being the collection specific par of the ID
-      # Mandatory. Suggested value: '$([a-z][0-9][.]):([a-z][0-9][.-_])$', e.g. 'images.dsfl:image1234'
-      pattern: '^([a-z0-9.]+):([a-z0-9._-]+)$'
+      # Mandatory. Suggested value: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)', e.g. 'images.dsfl:Image1234:2_3-b'
+      pattern: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)'
 
   # The collections available for this instance of ds-present 
   collections:

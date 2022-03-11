@@ -25,6 +25,9 @@ public class FailStorageFactory implements StorageFactory {
     private static final Logger log = LoggerFactory.getLogger(FailStorageFactory.class);
     private static final String TYPE = "fail";
 
+    public static final String MESSAGE_KEY = "message";
+    public static final String MESSAGE_DEFAULT = "No records can be delivered from this Storage";
+
     @Override
     public String getStorageType() {
         return TYPE;
@@ -32,6 +35,8 @@ public class FailStorageFactory implements StorageFactory {
 
     @Override
     public Storage createStorage(String id, YAML conf, boolean isDefault) throws Exception {
-        return new FailStorage(id, conf, isDefault);
+        String message = conf.getString(MESSAGE_KEY, MESSAGE_DEFAULT);
+
+        return new FailStorage(id, message, isDefault);
     }
 }

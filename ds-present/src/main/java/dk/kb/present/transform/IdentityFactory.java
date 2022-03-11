@@ -27,6 +27,6 @@ public class IdentityFactory implements DSTransformerFactory {
 
     @Override
     public DSTransformer createTransformer(YAML conf) {
-        return new IdentityTransformer(conf);
+        return new IdentityTransformer();
     }
 }
