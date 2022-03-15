@@ -14,6 +14,7 @@
  */
 package dk.kb.present.storage;
 
+import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +57,18 @@ public class MultiStorage implements Storage {
 
     @Override
     public String getRecord(String id) throws IOException {
-        subStorages.stream().forEach(s -> System.out.println("Available_: " + s));
         switch (order) {
             case sequential: return getRecord(subStorages.stream(), id);
             case parallel: return getRecord(subStorages.parallelStream(), id);
+            default: throw new UnsupportedOperationException("The order '" + order + "' is not supported");
+        }
+    }
+
+    @Override
+    public DsRecordDto getDSRecord(String id) throws IOException {
+        switch (order) {
+            case sequential: return getDSRecord(subStorages.stream(), id);
+            case parallel: return getDSRecord(subStorages.parallelStream(), id);
             default: throw new UnsupportedOperationException("The order '" + order + "' is not supported");
         }
     }
@@ -99,6 +108,25 @@ public class MultiStorage implements Storage {
     }
 
     /**
+     * Iterate the storageStream and attempt to retrieve a record with the given ID.
+     * @param storageStream stream of storages to query. If a parallel stream is given,
+     *                      the requests will be done in parallel.
+     * @param id a record ID.
+     * @return the record.
+     * @throws IOException if the record could not be located.
+     */
+    private DsRecordDto getDSRecord(Stream<Storage> storageStream, String id) throws IOException {
+        Optional<DsRecordDto> record = storageStream
+                .map(subStorage -> safeGetDSRecord(subStorage, id))
+                .filter(Objects::nonNull)
+                .findFirst();
+        if (record.isPresent()) {
+            return record.get();
+        }
+        throw new IOException("Unable to locate record with id '" + id + "'");
+    }
+
+    /**
      * Retrieve the record from the storage, returning either the content or null, instead of throwing an IOException.
      * @param storage the storage to use for retrieval.
      * @param id the ID of the record.
@@ -108,6 +136,23 @@ public class MultiStorage implements Storage {
         try {
             System.out.println("Requesting from "+ storage);
             return storage.getRecord(id);
+        } catch (IOException|NotFoundServiceException e) {
+            log.trace("Unable to retrieve record '" + id + "' from storage " + storage.getType() +
+                      ". Trying another storage");
+            return null;
+        }
+    }
+
+    /**
+     * Retrieve the record from the storage, returning either the content or null, instead of throwing an IOException.
+     * @param storage the storage to use for retrieval.
+     * @param id the ID of the record.
+     * @return the content for the record or null.
+     */
+    private DsRecordDto safeGetDSRecord(Storage storage, String id) {
+        try {
+            System.out.println("Requesting from "+ storage);
+            return storage.getDSRecord(id);
         } catch (IOException|NotFoundServiceException e) {
             log.trace("Unable to retrieve record '" + id + "' from storage " + storage.getType() +
                       ". Trying another storage");

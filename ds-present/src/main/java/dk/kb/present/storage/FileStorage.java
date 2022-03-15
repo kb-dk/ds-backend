@@ -14,17 +14,20 @@
  */
 package dk.kb.present.storage;
 
+import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 /**
  * Simple storage backed by static files on the file system.
@@ -36,6 +39,7 @@ public class FileStorage implements Storage {
     private static final Logger log = LoggerFactory.getLogger(FileStorage.class);
 
     public static final String TYPE = "folder";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ", Locale.getDefault());
 
     private final String id;
     private final Path folder;
@@ -74,20 +78,27 @@ public class FileStorage implements Storage {
      */
     @Override
     public String getRecord(String recordID) throws IOException {
-        if (stripPrefix) {
-            // TODO: Switch to using .config.record.id.pattern
-            String[] tokens = recordID.split(":", 2);
-            if (tokens.length < 2) {
-                log.warn("Attemped to strip prefix from '" + recordID + "' but there was no '_' delimiter");
-            } else {
-                recordID = tokens[1];
-            }
-        }
-        Path file = folder.resolve(recordID);
-        if (!Files.isReadable(file)) {
-            throw new NotFoundServiceException("Unable to locate record '" + recordID + "'");
-        }
+        Path file = getPath(recordID);
         return Resolver.resolveUTF8String(file.toAbsolutePath().toString());
+    }
+
+    /**
+     * Locate a file where the name is the recordID and deliver the content. Works with sub-folders.
+     * @param recordID the ID (aka file name) for a record.
+     * @return the content of the file with the given name.
+     * @throws IOException if the file could not be located or the content not delivered.
+     */
+    @Override
+    public DsRecordDto getDSRecord(String recordID) throws IOException {
+        Path path = getPath(recordID);
+        long mTime = path.toFile().lastModified()*1000; // DsRecordDto used epoch * 1000
+
+        return new DsRecordDto()
+                .id(recordID)
+                .data(IOUtils.toString(path.toUri(), StandardCharsets.UTF_8))
+                .deleted(false)
+                .mTime(mTime)
+                .mTimeHuman(DATE_FORMAT.format(new Date(mTime / 1000)));
     }
 
     @Override
@@ -103,6 +114,23 @@ public class FileStorage implements Storage {
     @Override
     public boolean isDefault() {
         return isDefault;
+    }
+
+    private Path getPath(String recordID) throws IOException {
+        if (stripPrefix) {
+            // TODO: Switch to using .config.record.id.pattern
+            String[] tokens = recordID.split(":", 2);
+            if (tokens.length < 2) {
+                log.warn("Attemped to strip prefix from '" + recordID + "' but there was no '_' delimiter");
+            } else {
+                recordID = tokens[1];
+            }
+        }
+        Path file = folder.resolve(recordID);
+        if (!Files.isReadable(file)) {
+            throw new NotFoundServiceException("Unable to locate record '" + recordID + "'");
+        }
+        return file.toAbsolutePath();
     }
 
     @Override

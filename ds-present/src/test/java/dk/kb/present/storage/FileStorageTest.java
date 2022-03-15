@@ -29,10 +29,22 @@ class FileStorageTest {
 
     @Test
     void basicAccess() throws IOException {
+        Storage storage = getStorage();
+        assertTrue(storage.getRecord("henrik-hertz.xml").contains("Henrik"));
+    }
+
+    @Test
+    void DSRecordAccess() throws IOException {
+        Storage storage = getStorage();
+        assertTrue(storage.getDSRecord("henrik-hertz.xml").getData().contains("Henrik"));
+        System.out.println(storage.getDSRecord("henrik-hertz.xml"));
+    }
+
+    private Storage getStorage() throws IOException {
         URL albert = Resolver.resolveURL("xml/corpus/albert-einstein.xml");
         assertNotNull(albert, "The test file albert-einstein.xml should be available");
         Path rootFolder = Path.of(albert.getPath()).getParent();
         Storage storage = new FileStorage("test", rootFolder, false, false);
-        assertTrue(storage.getRecord("henrik-hertz.xml").contains("Henrik"));
+        return storage;
     }
 }

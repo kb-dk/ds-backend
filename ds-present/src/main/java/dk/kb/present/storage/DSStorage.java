@@ -17,6 +17,7 @@ package dk.kb.present.storage;
 import dk.kb.present.backend.api.v1.DsStorageApi;
 import dk.kb.present.backend.invoker.v1.ApiClient;
 import dk.kb.present.backend.invoker.v1.ApiException;
+import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,8 +78,13 @@ public class DSStorage implements Storage {
 
     @Override
     public String getRecord(String id) throws IOException {
+        return getDSRecord(id).getData();
+    }
+
+    @Override
+    public DsRecordDto getDSRecord(String id) throws IOException {
         try {
-            return dsStorageClient.getRecord(id).getData();
+            return dsStorageClient.getRecord(id);
         } catch (ApiException e) {
             log.debug("Unable to retrieve record '" + id + "' from " + serverHuman + "...", e);
             throw new IOException("Unable to retrieve record '" + id + "'", e);

@@ -14,6 +14,7 @@
  */
 package dk.kb.present.storage;
 
+import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.util.yaml.YAML;
 
 import java.io.IOException;
@@ -39,12 +40,20 @@ public interface Storage {
      */
     boolean isDefault();
 
-    // TODO: Use DtoRecord from ds-storage as return type to enrich meta data information
     /**
      * @param id the ID for a record.
      * @return the record with the given ID, if available.
      * @throws IOException if the record could not be retrieved.
      */
     String getRecord(String id) throws IOException;
+
+    /**
+     * Return the record as a ds-storage record. This is "best effort", as some element such as
+     * {@link DsRecordDto#getcTime()} might not be available.
+     * @param id the ID for a record.
+     * @return the record with the given ID, if available.
+     * @throws IOException if the record could not be retrieved.
+     */
+    DsRecordDto getDSRecord(String id) throws IOException;
 
 }
