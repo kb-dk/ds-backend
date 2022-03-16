@@ -15,13 +15,14 @@
 package dk.kb.present.storage;
 
 import dk.kb.present.backend.model.v1.DsRecordDto;
-import dk.kb.util.yaml.YAML;
 
-import java.io.IOException;
-import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Provides access to records.
+ *
+ * Note that no methods uses checked Exceptions. Implementations are aimed towards web services and should throw
+ * appropriate {@link dk.kb.present.webservice.exception.ServiceException}s instead.
  */
 public interface Storage {
 
@@ -43,17 +44,23 @@ public interface Storage {
     /**
      * @param id the ID for a record.
      * @return the record with the given ID, if available.
-     * @throws IOException if the record could not be retrieved.
      */
-    String getRecord(String id) throws IOException;
+    String getRecord(String id);
 
     /**
      * Return the record as a ds-storage record. This is "best effort", as some element such as
      * {@link DsRecordDto#getcTime()} might not be available.
      * @param id the ID for a record.
      * @return the record with the given ID, if available.
-     * @throws IOException if the record could not be retrieved.
      */
-    DsRecordDto getDSRecord(String id) throws IOException;
+    DsRecordDto getDSRecord(String id);
+
+    /**
+     * Return records in mTime order, where all record.mTimes are > the given mTime.
+     * @param mTime point in time (epoch * 1000) for the records to deliver, exclusive.
+     * @param maxRecords the maximum number of records to deliver. -1 means no limit.
+     * @return a stream of records after the given mTime.
+     */
+    Stream<DsRecordDto> getDSRecords(long mTime, long maxRecords);
 
 }

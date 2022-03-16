@@ -14,6 +14,7 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.present.webservice.exception.ServiceException;
@@ -21,7 +22,6 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -88,6 +88,13 @@ public class DSCollection {
         log.info("Created " + this);
     }
 
+    /**
+     * Retrieve the record with the given id and transform it to the given format before delivery.
+     * @param recordID an ID for a record.
+     * @param format the format of the record. See {@link #getViews()} for available formats.
+     * @return the record with the given id in the given format.
+     * @throws ServiceException if the record could not be retrieved or transformed.
+     */
     public String getRecord(String recordID, String format) throws ServiceException {
         View view = views.get(format.toLowerCase(Locale.ROOT));
         if (view == null) {
@@ -97,10 +104,26 @@ public class DSCollection {
         String record;
         try {
             record = storage.getRecord(recordID);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new NotFoundServiceException("Unable to locate record '" + recordID + "' in collection '" + id + "'");
         }
         return view.apply(record);
+    }
+
+    /**
+     * Retrieve a record with the given ID in ds-storage record format.
+     * Storages that are not {@link dk.kb.present.storage.DSStorage} will deliver best-effort {@link DsRecordDto}s,
+     * but full representation is not guaranteed.
+     * @param recordID an ID for a record.
+     * @return the record in ds-storage record format.
+     * @throws ServiceException if the record could not be tretrieved.
+     */
+    public DsRecordDto getDSRecord(String recordID) throws ServiceException {
+        try {
+            return storage.getDSRecord(recordID);
+        } catch (Exception e) {
+            throw new NotFoundServiceException("Unable to locate record '" + recordID + "' in collection '" + id + "'");
+        }
     }
 
     /**

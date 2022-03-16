@@ -24,12 +24,15 @@ import org.slf4j.LoggerFactory;
 public class DSStorageFactory implements StorageFactory {
     private static final Logger log = LoggerFactory.getLogger(DSStorageFactory.class);
 
+    private static final String RECORD_BASE_KEY = "base";
     private static final String HOST_KEY = "host";
     private static final String PORT_KEY = "port";
     private static final String BASEPATH_KEY = "basepath";
     private static final String BASEPATH_DEFAULT = "ds-storage/v1/";
     private static final String SCHEME_KEY = "scheme";
     private static final String SCHEME_DEFAULT = "https"; // Special handling: Will be 'http' if host = localhost
+    public static final String BATCH_COUNT_KEY = "batch.count";
+    public static final int BATCH_COUNT_DEFAULT = 100;
 
     @Override
     public String getStorageType() {
@@ -38,12 +41,17 @@ public class DSStorageFactory implements StorageFactory {
 
     @Override
     public Storage createStorage(String id, YAML conf, boolean isDefault) throws Exception {
+        String recordBase = conf.getString(RECORD_BASE_KEY, null);
+        if (recordBase == null) {
+            log.warn("For the DSStorage '" + id + "', the recordBase==null, calls to getRecords will fail");
+        }
         String host = conf.getString(HOST_KEY);
         int port = conf.getInteger(PORT_KEY);
         String basepath = conf.getString(BASEPATH_KEY, BASEPATH_DEFAULT);
         String scheme = conf.getString(SCHEME_KEY,
                                        "localhost".equals(host) || "127.0.0.1".equals(host) ? "http" : SCHEME_DEFAULT);
+        int batchCount = conf.getInteger(BATCH_COUNT_KEY, BATCH_COUNT_DEFAULT);
 
-        return new DSStorage(id, scheme, host, port, basepath, isDefault);
+        return new DSStorage(id, recordBase, scheme, host, port, basepath, batchCount, isDefault);
     }
 }
