@@ -115,7 +115,11 @@ public class ExportWriterFactory {
      */
     public static ExportWriter wrap(OutputStream output, HttpServletResponse response,
                                     FORMAT format, boolean writeNulls, String rootElement) {
-        format.setContentType(response);
+        if (response == null) {
+            log.warn("warp: No HttpServletResponse given so the content MIME type could not be set");
+        } else {
+            format.setContentType(response);
+        }
         Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
         switch (format) {
             case jsonl: return new JSONStreamWriter(writer, JSONStreamWriter.FORMAT.jsonl, writeNulls);
