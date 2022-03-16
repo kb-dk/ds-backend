@@ -2,12 +2,7 @@ package dk.kb.present.api.v1.impl;
 
 import dk.kb.present.PresentFacade;
 import dk.kb.present.api.v1.*;
-import java.util.ArrayList;
 import dk.kb.present.model.v1.CollectionDto;
-import dk.kb.present.model.v1.ErrorDto;
-import java.util.List;
-import java.util.Map;
-import dk.kb.present.model.v1.ViewDto;
 
 import dk.kb.present.webservice.exception.ServiceException;
 import dk.kb.present.webservice.exception.InternalServiceException;
@@ -15,34 +10,15 @@ import dk.kb.present.webservice.exception.InternalServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
-import java.util.Map;
-import java.io.File;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Providers;
-import javax.ws.rs.core.MediaType;
-import org.apache.cxf.jaxrs.model.wadl.Description;
-import org.apache.cxf.jaxrs.model.wadl.DocTarget;
-import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.apache.cxf.jaxrs.ext.multipart.*;
 
-import io.swagger.annotations.Api;
+import org.apache.cxf.jaxrs.ext.MessageContext;
 
 /**
  * ds-present
@@ -153,6 +129,20 @@ public class DsPresentApiServiceImpl implements DsPresentApi {
     public String getRecord(String id, String format) throws ServiceException {
         try {
             return PresentFacade.getRecord(id, format);
+        } catch (Exception e){
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public StreamingOutput getRecords(String recordBase, Long mTime, Long maxRecords, String format) {
+        if (recordBase == null) {
+            throw new InternalServiceException("recordBase must be specified but was not");
+        }
+        long finalMTime = mTime == null ? 0L : mTime;
+        long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
+        try {
+            return PresentFacade.getRecords(httpServletResponse, recordBase, finalMTime, finalMaxRecords, format);
         } catch (Exception e){
             throw handleException(e);
         }

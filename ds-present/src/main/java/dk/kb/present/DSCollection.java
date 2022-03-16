@@ -16,7 +16,7 @@ package dk.kb.present;
 
 import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.storage.Storage;
-import dk.kb.present.webservice.exception.NotFoundServiceException;
+import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.present.webservice.exception.ServiceException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A collection encapsulates access to a logical collection ("samling"). It uses the same collections as ds-storage and
@@ -66,7 +67,7 @@ public class DSCollection {
      * Map from format -> view. A view is at the core an array of transformations and responsible for transforming
      * metadata to the requested format.
      */
-    private final Map<String, View> views;
+    private final Map<String, View> views; // keys are lowercase
 
     /**
      * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
@@ -96,17 +97,8 @@ public class DSCollection {
      * @throws ServiceException if the record could not be retrieved or transformed.
      */
     public String getRecord(String recordID, String format) throws ServiceException {
-        View view = views.get(format.toLowerCase(Locale.ROOT));
-        if (view == null) {
-            throw new NotFoundServiceException(
-                    "The format '" + format + "' is unsupported for collection '" + id + "'");
-        }
-        String record;
-        try {
-            record = storage.getRecord(recordID);
-        } catch (Exception e) {
-            throw new NotFoundServiceException("Unable to locate record '" + recordID + "' in collection '" + id + "'");
-        }
+        View view = getView(format);
+        String record = storage.getRecord(recordID);
         return view.apply(record);
     }
 
@@ -116,14 +108,24 @@ public class DSCollection {
      * but full representation is not guaranteed.
      * @param recordID an ID for a record.
      * @return the record in ds-storage record format.
-     * @throws ServiceException if the record could not be tretrieved.
+     * @throws ServiceException if the record could not be retrieved.
      */
     public DsRecordDto getDSRecord(String recordID) throws ServiceException {
-        try {
-            return storage.getDSRecord(recordID);
-        } catch (Exception e) {
-            throw new NotFoundServiceException("Unable to locate record '" + recordID + "' in collection '" + id + "'");
-        }
+        return storage.getDSRecord(recordID);
+    }
+
+    /**
+     * Returns a stream of records where the data are transformed to the given format.
+     * @param mTime point in time (epoch * 1000) for the records to deliver, exclusive.
+     * @param maxRecords the maximum number of records to deliver. -1 means no limit.
+     * @param format the format of the record. See {@link #getViews()} for available formats.
+     * @return a stream of records in the requested format.
+     * @throws ServiceException if anything went wrong during construction of the stream.
+     */
+    public Stream<DsRecordDto> getDSRecords(Long mTime, Long maxRecords, String format) {
+        View view = getView(format);
+        return storage.getDSRecords(mTime, maxRecords)
+                .peek(record -> record.data(view.apply(record.getData())));
     }
 
     /**
@@ -153,10 +155,33 @@ public class DSCollection {
     /**
      * Map from format -> view. A view is at the core an array of transformations and responsible for transforming
      * metadata to the requested format.
-     * @return the available views (aka formats) for this collection.
+     * @return the available views (aka formats) for this collection. Keys are lowercase.
      */
     public Map<String, View> getViews() {
         return views;
+    }
+
+    /**
+     * Locate the View which matches the given format (View ID == format.toLowerCase()).
+     * @param format the ID of the View.
+     * @return a View matching the given format aka ID.
+     * @throws InvalidArgumentServiceException if no View could be located.
+     */
+    public View getView(String format) {
+        View view = views.get(format.toLowerCase(Locale.ROOT));
+        if (view == null) {
+            throw new InvalidArgumentServiceException(
+                    "The format '" + format + "' is not supported for collection '" + id + "'");
+        }
+        return view;
+    }
+
+    /**
+     * @param view any given view, e.g. {@code DOMS} or {@code raw}.
+     * @return true if the collection supports the view.
+     */
+    public boolean supportsView(String view) {
+        return views.containsKey(view.toLowerCase(Locale.ROOT));
     }
 
     @Override
@@ -169,4 +194,5 @@ public class DSCollection {
                ", views=" + views +
                ')';
     }
+
 }

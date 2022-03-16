@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,6 +81,13 @@ public class CollectionHandler {
      */
     public DSCollection getCollection(String collectionID) {
         return collections.get(collectionID);
+    }
+
+    /**
+     * @return a complete list of supported collections.
+     */
+    public List<String> getCollectionNames() {
+        return collections.values().stream().map(DSCollection::getId).collect(Collectors.toList());
     }
 
     /**
