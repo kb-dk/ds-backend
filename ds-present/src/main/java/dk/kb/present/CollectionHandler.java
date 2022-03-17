@@ -21,6 +21,7 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,8 @@ public class CollectionHandler {
     private static final String RECORD_ID_PATTERN_KEY = ".config.record.id.pattern";
 
     private final StorageHandler storageHandler;
-    private final Map<String, DSCollection> collections; // prefix, collection
+    private final Map<String, DSCollection> collectionsByPrefix; // prefix, collection
+    private final Map<String, DSCollection> collectionsByID; // id, collection
     private static Pattern recordIDPattern;
 
     /**
@@ -47,9 +49,11 @@ public class CollectionHandler {
      */
     public CollectionHandler(YAML conf) {
         storageHandler = new StorageHandler(conf);
-        collections = conf.getYAMLList(COLLECTIONS_KEY).stream()
+        collectionsByPrefix = conf.getYAMLList(COLLECTIONS_KEY).stream()
                 .map(collectionConf -> new DSCollection(collectionConf, storageHandler))
                 .collect(Collectors.toMap(DSCollection::getPrefix, storage -> storage));
+        collectionsByID = collectionsByPrefix.values().stream()
+                .collect(Collectors.toMap(DSCollection::getId, storage -> storage));
         try {
             recordIDPattern = Pattern.compile(conf.getString(RECORD_ID_PATTERN_KEY));
         } catch (Exception e) {
@@ -66,7 +70,7 @@ public class CollectionHandler {
             throw new InvalidArgumentServiceException(
                     "ID '" + id + "' should conform to pattern '" + recordIDPattern + "'");
         }
-        DSCollection collection = collections.get(matcher.group(1));
+        DSCollection collection = collectionsByPrefix.get(matcher.group(1));
         if (collection == null) {
             throw new NotFoundServiceException(
                     "A collection for IDs with prefix '" + matcher.group(1) + "' is not available. " +
@@ -80,27 +84,27 @@ public class CollectionHandler {
      * @return a collection with the given ID or null if it does not exist.
      */
     public DSCollection getCollection(String collectionID) {
-        return collections.get(collectionID);
+        return collectionsByID.get(collectionID);
     }
 
     /**
      * @return a complete list of supported collections.
      */
-    public List<String> getCollectionNames() {
-        return collections.values().stream().map(DSCollection::getId).collect(Collectors.toList());
+    public List<String> getCollectionIDs() {
+        return new ArrayList<>(collectionsByID.keySet());
     }
 
     /**
      * @return all collections.
      */
     public Collection<DSCollection> getCollections() {
-        return collections.values();
+        return collectionsByPrefix.values();
     }
 
     @Override
     public String toString() {
         return "CollectionHandler(" +
-               "collections=" + collections +
+               "collections=" + collectionsByPrefix.values() +
                "recordIDPattern: '" + recordIDPattern + "'" +
                ')';
     }
