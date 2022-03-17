@@ -10,8 +10,10 @@ config:
           # Problematic: Can we rely on the test being started with the working folder at the root of the project?
           - folder:
               root: 'src/test/resources/xml'
+              extension: '.xml'
           - folder:
               root: 'src/test/resources/xml/corpus'
+              extension: '.xml'
 
   # Settings for handling at the record level
   record:
@@ -33,7 +35,7 @@ config:
               mime: 'application/xml'
               transformers:
                 - identity: # No transformation steps as mods is the core format for images-dsfl
-          - jsonld:
+          - json-ld:
               mime: 'application/json'
               transformers:
                 - xslt:
@@ -48,3 +50,8 @@ config:
               transformers:
                 - fail:
                     message: 'Raw format contains confidential information and cannot be delivered'
+          # For testing purposes
+          - raw-bypass:
+              mime: 'text/plain'
+              transformers:
+                - identity:
