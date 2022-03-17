@@ -47,6 +47,7 @@ public class FileStorage implements Storage {
 
     private final String id;
     private final Path folder;
+    private final String extension;
     private final boolean isDefault;
     private final boolean stripPrefix;
 
@@ -54,11 +55,12 @@ public class FileStorage implements Storage {
      * Create a file backed Storage.
      * @param id the ID for the storage, used for connecting collections to storages.
      * @param folder the folder containing the files to deliver upon request.
+     * @param extension if defined, {@link #getDSRecords(long, long)} will only return files with this extension.
      * @param stripPrefix if true, the ID {@code collection:subid} is reduced to {subid} before lookup.
      * @param isDefault if true, this is the default storage for collections.
      * @throws IOException if the given folder could not be accessed.
      */
-    public FileStorage(String id, Path folder, boolean stripPrefix, boolean isDefault){
+    public FileStorage(String id, Path folder, String extension, boolean stripPrefix, boolean isDefault){
         this.id = id;
         String current;
         try {
@@ -75,6 +77,7 @@ public class FileStorage implements Storage {
                                    folder, current));
         }
         this.folder = folder;
+        this.extension = extension == null ? "" : extension;
         this.stripPrefix = stripPrefix;
         this.isDefault = isDefault;
         log.info("Created " + this);
@@ -159,11 +162,21 @@ public class FileStorage implements Storage {
             // TODO: Switch to using .config.record.id.pattern
             String[] tokens = recordID.split(":", 2);
             if (tokens.length < 2) {
-                log.warn("Attemped to strip prefix from '" + recordID + "' but there was no '_' delimiter");
+                log.warn("Attempted to strip prefix from '" + recordID + "' but there was no '_' delimiter");
             } else {
                 recordID = tokens[1];
             }
         }
+        return getPathDirect(recordID);
+    }
+
+    /**
+     * Resolves the recordID to a file path without attempting to strip prefix.
+     * @param recordID a record ID.
+     * @return the file path corresponding to the ID.
+     * @throws IOException if the ID could not be resolved.
+     */
+    private Path getPathDirect(String recordID) throws IOException {
         Path file = folder.resolve(recordID);
         if (!Files.isReadable(file)) {
             throw new NotFoundServiceException("Unable to locate record '" + recordID + "'");
@@ -177,7 +190,7 @@ public class FileStorage implements Storage {
         // populate them when delivering the next stream element
 
         final List<DsRecordDto> shallow = getShallow(mTime, maxRecords);
-        Iterator<DsRecordDto> iterator = new Iterator<DsRecordDto>() {
+        Iterator<DsRecordDto> iterator = new Iterator<>() {
             int pos = 0;
 
             @Override
@@ -203,6 +216,7 @@ public class FileStorage implements Storage {
         try {
             //noinspection ConstantConditions
             return Files.list(folder)
+                    .filter(path -> path.toString().endsWith(extension))
                     .map(Path::toFile)
                     .filter(f -> mTime/1000 < f.lastModified())
                     .map(this::getShallow)
@@ -222,7 +236,7 @@ public class FileStorage implements Storage {
      */
     private DsRecordDto populate(DsRecordDto shallow) {
         try {
-            Path path = getPath(shallow.getId());
+            Path path = getPathDirect(shallow.getId());
             return shallow.data(IOUtils.toString(path.toUri(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new InternalServiceException("Unable to populate record '" + shallow.getId() + "' with data");
@@ -247,6 +261,7 @@ public class FileStorage implements Storage {
         return "FileStorage(" +
                "id='" + id + '\'' +
                ", folder=" + folder +
+               ", extension=" + extension +
                ", isDefault=" + isDefault +
                ", stripPrefix=" + stripPrefix +
                ')';

@@ -18,10 +18,7 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Locale;
 
 /**
  * Constructs {@link FileStorage}s.
@@ -30,6 +27,8 @@ public class FileStorageFactory implements StorageFactory {
     private static final Logger log = LoggerFactory.getLogger(FileStorageFactory.class);
 
     public static final String FOLDER_KEY = "root";
+    public static final String EXTENSION_KEY = "extension";
+    public static final String EXTENSION_DEFAULT = ""; // All extensions
     public static final String STRIP_PREFIX_KEY = "stripprefix";
     public static final boolean STRIP_PREFIX_DEFAULT = true;
 
@@ -46,8 +45,9 @@ public class FileStorageFactory implements StorageFactory {
                     "The root folder was not specified under the key '" + FOLDER_KEY + "' for storage '" + id + "'");
         }
         Path folder = Path.of(folderStr);
+        String extension = conf.getString(EXTENSION_KEY, EXTENSION_DEFAULT);
         boolean stripPrefix = conf.getBoolean(STRIP_PREFIX_KEY, STRIP_PREFIX_DEFAULT);
 
-        return new FileStorage(id, folder, stripPrefix, isDefault);
+        return new FileStorage(id, folder, extension, stripPrefix, isDefault);
     }
 }
