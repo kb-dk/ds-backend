@@ -16,6 +16,7 @@ package dk.kb.present;
 
 import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.storage.Storage;
+import dk.kb.present.transform.RuntimeTransformerException;
 import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.present.webservice.exception.ServiceException;
 import dk.kb.util.yaml.YAML;
@@ -125,7 +126,14 @@ public class DSCollection {
     public Stream<DsRecordDto> getDSRecords(Long mTime, Long maxRecords, String format) {
         View view = getView(format);
         return storage.getDSRecords(mTime, maxRecords)
-                .peek(record -> record.data(view.apply(record.getData())));
+                .peek(record -> {
+                    try {
+                        record.data(view.apply(record.getData()));
+                    } catch (Exception e) {
+                        throw new RuntimeTransformerException("Exception transforming record '" + record.getId() + "'");
+
+                    }
+                });
     }
 
     /**
