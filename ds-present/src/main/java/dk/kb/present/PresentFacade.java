@@ -38,6 +38,8 @@ public class PresentFacade {
     private static final Logger log = LoggerFactory.getLogger(PresentFacade.class);
 
     private static CollectionHandler collectionHandler;
+    // TODO: The whole retrieval of raw records through getRecords does nok look very clean
+    static String recordView = "raw"; // View used when retrieving the full records
 
     /**
      * Optional warmUp (initialization) for fail early.
@@ -75,7 +77,7 @@ public class PresentFacade {
         DSCollection collection = getCollectionHandler().getCollection(id);
         if (collection == null) {
             throw new NotFoundServiceException("A collection with the id '" + id + "' could not be located. " +
-                                               "Supported collections are " + collectionHandler.getCollectionNames());
+                                               "Supported collections are " + collectionHandler.getCollectionIDs());
         }
         return toDto(collection);
     }
@@ -100,7 +102,9 @@ public class PresentFacade {
     }
 
     private static ViewDto toDto(View view) {
-        return new ViewDto().id(view.getId()).mime(view.getMime().toString());
+        return new ViewDto()
+                .id(view.getId())
+                .mime(view.getMime().toString());
     }
 
     public static StreamingOutput getRecords(
@@ -109,7 +113,8 @@ public class PresentFacade {
         if (collection == null) {
             throw new InvalidArgumentServiceException(String.format(
                     Locale.ROOT, "The collection '%s' was unknown. Known collections are %s",
-                    collectionID, collectionHandler.getCollections()));
+                    collectionID,
+                    collectionHandler.getCollections().stream().map(DSCollection::getId).collect(Collectors.toList())));
         }
 
         // enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON', "StorageRecord"]
@@ -134,6 +139,7 @@ public class PresentFacade {
         }
     }
 
+    // Only deliver the data-part of the Records
     private static StreamingOutput getRecordsData(
             DSCollection collection, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, String recordFormat, ExportWriterFactory.FORMAT deliveryFormat) {
@@ -148,14 +154,14 @@ public class PresentFacade {
         };
     }
 
-    // Only deliver the data-part of the Records
+    // Retrieve full records to support deletions
     private static StreamingOutput getRecordsFull(
             DSCollection collection, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT deliveryFormat) {
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
-                collection.getDSRecords(mTime, maxRecords, "raw") // Does not contain deleted records
+                collection.getDSRecords(mTime, maxRecords, recordView) // Does not contain deleted records
                         .forEach(writer::write);
             }
         };
