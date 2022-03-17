@@ -86,7 +86,7 @@ public class XSLTTransformer extends DSTransformer {
             }
             return out.toString(StandardCharsets.UTF_8);
         } catch (IOException | TransformerException e) {
-            throw new RuntimeTransformerException("Excaption transforming with stylesheet '" + stylesheet + "'", e);
+            throw new RuntimeTransformerException("Exception transforming with stylesheet '" + stylesheet + "'", e);
         }
     }
 
