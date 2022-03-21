@@ -33,6 +33,6 @@ class StorageControllerTest {
     void multiBackend() throws Exception {
         YAML multiConf = YAML.resolveMultiConfig("test_setup.yaml");
         Storage storage = StorageController.createStorage(multiConf.getYAMLList(".config.storages").get(0));
-        assertTrue(storage.getRecord("henrik-hertz.xml").contains("Henrik"));
+        assertTrue(storage.getRecord("albert-einstein.xml").contains("Albert"));
     }
 }

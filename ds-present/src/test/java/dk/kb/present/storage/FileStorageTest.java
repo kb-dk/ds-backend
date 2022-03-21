@@ -42,7 +42,7 @@ class FileStorageTest {
         URL albert = Resolver.resolveURL("xml/corpus/albert-einstein.xml");
         assertNotNull(albert, "The test file albert-einstein.xml should be available");
         Path rootFolder = Path.of(albert.getPath()).getParent();
-        Storage storage = new FileStorage("test", rootFolder, "", false, false);
+        Storage storage = new FileStorage("test", rootFolder, "", false, null, null, false);
         return storage;
     }
 }
