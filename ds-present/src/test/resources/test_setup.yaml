@@ -2,6 +2,18 @@
 # Only used for unit testing
 #
 config:
+
+  # Only some of the sample files can be properly transformed to SolrJSONDocuments
+  filewhitelist: &whitelist
+     - '.*albert-einstein.xml'
+     - '.*hvidovre-teater.xml'
+     - '.*simonsen-brandes.xml'
+     - '.*tystrup-soroe.xml'
+     - '.*homiliae-super-psalmos.xml'
+     - '.*work_on_logic.xml'
+     - '.*joergen_hansens_visebog.xml'
+     - '.*responsa.xml'
+
   # List of backing storages. The real URLs should be overridden in ds-present-environment.yaml
   storages:
     - test:
@@ -11,9 +23,11 @@ config:
           - folder:
               root: 'src/test/resources/xml'
               extension: '.xml'
+              whitelist: *whitelist
           - folder:
               root: 'src/test/resources/xml/corpus'
               extension: '.xml'
+              whitelist: *whitelist
 
   # Settings for handling at the record level
   record:
