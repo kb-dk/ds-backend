@@ -15,6 +15,7 @@
 package dk.kb.present.storage;
 
 import dk.kb.present.backend.model.v1.DsRecordDto;
+import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.present.webservice.exception.InternalServiceException;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.util.Resolver;
@@ -29,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -50,6 +52,8 @@ public class FileStorage implements Storage {
     private final String extension;
     private final boolean isDefault;
     private final boolean stripPrefix;
+    private final List<Pattern> whitelist; // Applied after stripPrefix
+    private final List<Pattern> blacklist; // Applied after whitelist
 
     /**
      * Create a file backed Storage.
@@ -57,10 +61,13 @@ public class FileStorage implements Storage {
      * @param folder the folder containing the files to deliver upon request.
      * @param extension if defined, {@link #getDSRecords(long, long)} will only return files with this extension.
      * @param stripPrefix if true, the ID {@code collection:subid} is reduced to {subid} before lookup.
+     * @param whitelist if not null, ID's must pass the whitelist in order to be delivered.
+     * @param blacklist if not null, ID's that matches the blacklist are not delivered.
      * @param isDefault if true, this is the default storage for collections.
      * @throws IOException if the given folder could not be accessed.
      */
-    public FileStorage(String id, Path folder, String extension, boolean stripPrefix, boolean isDefault){
+    public FileStorage(String id, Path folder, String extension,
+                       boolean stripPrefix, List<Pattern> whitelist, List<Pattern> blacklist, boolean isDefault){
         this.id = id;
         String current;
         try {
@@ -79,6 +86,8 @@ public class FileStorage implements Storage {
         this.folder = folder;
         this.extension = extension == null ? "" : extension;
         this.stripPrefix = stripPrefix;
+        this.whitelist = whitelist;
+        this.blacklist = blacklist;
         this.isDefault = isDefault;
         log.info("Created " + this);
     }
@@ -91,6 +100,9 @@ public class FileStorage implements Storage {
      */
     @Override
     public String getRecord(String recordID) {
+        if (!isAllowed(recordID)) {
+            throw new ForbiddenServiceException("Access to rhe record with ID '" + recordID + "' is forbidden");
+        }
         Path file;
         try {
             file = getPath(recordID);
@@ -112,6 +124,9 @@ public class FileStorage implements Storage {
      */
     @Override
     public DsRecordDto getDSRecord(String recordID) {
+        if (!isAllowed(recordID)) {
+            throw new ForbiddenServiceException("Access to rhe record with ID '" + recordID + "' is forbidden");
+        }
         Path path = null;
         try {
             path = getPath(recordID);
@@ -152,22 +167,61 @@ public class FileStorage implements Storage {
     }
 
     /**
+     * Checks the given ID against {@link #whitelist} and {@link #blacklist}.
+     * @param recordID any record ID.
+     * @return true if record delivery is allowed. This does not guarantee that the record can be delivered.
+     */
+    public boolean isAllowed(String recordID) {
+        recordID = stripToID(recordID);
+
+        out:
+        if (whitelist != null && !whitelist.isEmpty()) {
+            for (Pattern white: whitelist) {
+                if (white.matcher(recordID).matches()) {
+                    break out;
+                }
+            }
+            return false;
+        }
+        
+        if (blacklist != null && !blacklist.isEmpty()) {
+            for (Pattern black: blacklist) {
+                if (black.matcher(recordID).matches()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    /**
      * Resolves the recordID to a file path.
      * @param recordID a record ID.
      * @return the file path corresponding to the ID.
      * @throws IOException if the ID could not be resolved.
      */
     private Path getPath(String recordID) throws IOException {
-        if (stripPrefix) {
-            // TODO: Switch to using .config.record.id.pattern
-            String[] tokens = recordID.split(":", 2);
-            if (tokens.length < 2) {
-                log.warn("Attempted to strip prefix from '" + recordID + "' but there was no '_' delimiter");
-            } else {
-                recordID = tokens[1];
-            }
-        }
+        recordID = stripToID(recordID);
         return getPathDirect(recordID);
+    }
+
+    /**
+     * If {@link #stripPrefix} is true, the prefix is stripped before returning the ID.
+     * @param recordID a record ID with a prefix.
+     * @return the sub-ID part of the record if {@link #stripPrefix} is true, else the input record.
+     */
+    private String stripToID(String recordID) {
+        if (!stripPrefix) {
+            return recordID;
+        }
+        // TODO: Switch to using .config.record.id.pattern
+        String[] tokens = recordID.split(":", 2);
+        if (tokens.length < 2) {
+            log.warn("Attempted to strip prefix from '" + recordID + "' but there was no '_' delimiter");
+            return recordID;
+        } else {
+            return tokens[1];
+        }
     }
 
     /**
@@ -217,6 +271,7 @@ public class FileStorage implements Storage {
             //noinspection ConstantConditions
             return Files.list(folder)
                     .filter(path -> path.toString().endsWith(extension))
+                    .filter(path -> isAllowed(path.getFileName().toString()))
                     .map(Path::toFile)
                     .filter(f -> mTime/1000 < f.lastModified())
                     .map(this::getShallow)
