@@ -7,7 +7,7 @@
 : ${FILE:="illum.xml"}
 
 : ${STORAGE:="http://localhost:8080/ds-storage/v1"}
-: ${ENDPOINT:="$STORAGE/record/createOrUpdateRecord"}
+: ${ENDPOINT:="$STORAGE/record"}
 
 ID="doms.radio:$FILE"
 
