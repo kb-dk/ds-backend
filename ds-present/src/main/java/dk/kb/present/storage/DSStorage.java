@@ -119,7 +119,7 @@ public class DSStorage implements Storage {
             boolean finished = pending == 0;
 
             void ensureFilled() {
-                if (finished || !records.isEmpty()) {
+                if (finished || (records != null && !records.isEmpty())) {
                     return;
                 }
                 if (pending <= 0) {
