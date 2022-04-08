@@ -28,26 +28,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ServiceConfigTest {
 
-    /*
-     * This unit-test probably fails when the template is applied and a proper project is taking form.
-     * That is okay. It is only here to serve as a temporary demonstration of unit-testing and configuration.
-     */
-    @Test
+    //maybe implement something here.
     void sampleConfigTest() throws IOException {
-        // Pretty hacky, but it is only a sample unit test
-        Path knownFile = Path.of(Resolver.resolveURL("logback-test.xml").getPath());
-        String projectRoot = knownFile.getParent().getParent().getParent().toString();
-
-        Path sampleEnvironmentSetup = Path.of(projectRoot, "conf/ds-license-environment.yaml");
-        assertTrue(Files.exists(sampleEnvironmentSetup),
-                   "The sample setup is expected to be present at '" + sampleEnvironmentSetup + "'");
-
-        ServiceConfig.initialize(projectRoot + File.separator + "conf" + File.separator + "ds-license*.yaml");
-
-        // Defined in behaviour
-        assertEquals(10, ServiceConfig.getConfig().getInteger("config.limits.min"));
-
-        // Real value in environment
-        assertEquals("real_dbpassword", ServiceConfig.getConfig().getString("config.backend.password"));
+   
     }
 }
