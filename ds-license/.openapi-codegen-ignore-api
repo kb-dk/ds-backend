@@ -1,0 +1,6 @@
+# Swagger Codegen Ignore
+## API generation may never overwrite impl files
+**/impl/*
+
+## We don't want any auto tests
+**/*Test.java
