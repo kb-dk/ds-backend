@@ -9,22 +9,20 @@
 #
 #
 config:
-  limits:
-    min: 10
-    max: 100
-  mylist:
-    - Hello
-    - World
-    - from
-    - java-template
-
-# The entries below are just place holders.
-#  
-# There should be a corresponding `-environment.yaml`-file with the structure below, but with real values.
-# The entries in the environment-YAML will override the ones in the behaviour-YAML. The sole purpose of having the
-# structure in the behaviour-YAML is to document what needs to be defined in the environment.
-  backend:
-   db: 'http://placeholdermachine:8090/foobar/'
-   user: 'placeholder_dbuser'
-   password: 'placeholder_dbpassword'
-                                                                                                                                                                                           
+  license_solr_servers: http://XXXX:50001/solr/doms.1.devel , http://XXXX:50001/solr/aviser.2.devel         
+  license_solr_filter_field: authID
+    
+  #change URL path to local h2 storage for unittest   
+  db:  
+   url: jdbc:h2:/home/XXX/workspace/ds-license/target/h2/ds_license;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+   driver: org.h2.Driver
+   username: ''
+   password: ''
+   
+   # Example for postgres
+   #url: jdbc:postgresql://localhost:5432/ds-storage
+   #driver: org.postgresql.Driver
+   #username: username
+   #password: password
+   
+   

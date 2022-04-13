@@ -1,8 +1,14 @@
 package dk.kb.license.config;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import dk.kb.license.solr.SolrServerClient;
 import dk.kb.util.yaml.YAML;
 
 /**
@@ -11,6 +17,11 @@ import dk.kb.util.yaml.YAML;
  */
 public class ServiceConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(ServiceConfig.class);
+    
+    public static String SOLR_FILTER_FIELD = null;
+    public static ArrayList<SolrServerClient> SOLR_SERVERS = null;
+    
     /**
      * Besides parsing of YAML files using SnakeYAML, the YAML helper class provides convenience
      * methods like {@code getInteger("someKey", defaultValue)} and {@code getSubMap("config.sub1.sub2")}.
@@ -26,18 +37,33 @@ public class ServiceConfig {
      */
     public static synchronized void initialize(String configFile) throws IOException {
         serviceConfig = YAML.resolveLayeredConfigs(configFile);
+    
+        String solr_servers= serviceConfig.getString("config.license_solr_servers");
+        SOLR_FILTER_FIELD = serviceConfig.getString("config.license_solr_filter_field");
+        
+        StringTokenizer tokens = new StringTokenizer(solr_servers, ",");  
+        SOLR_SERVERS  = new ArrayList<SolrServerClient>(); 
+        
+        while (tokens.hasMoreTokens()){
+          SOLR_SERVERS.add(new SolrServerClient(tokens.nextToken().trim()));               
+        }       
+            
+    
+        log.info("Loaded solr-servers:"+solr_servers);
+        log.info("Loaded solr filter field:"+SOLR_FILTER_FIELD);
+        
     }
 
-    /**
-     * Demonstration of a first-class property, meaning that an explicit method has been provided.
-     * @see #getConfig() for alternative.
-     * @return the "Hello World" lines defined in the config file.
-     */
-    public static List<String> getHelloLines() {
-        List<String> lines = serviceConfig.getList("config.helloLines");
-        return lines;
+    
+    //For unittest
+    public static void setSOLR_FILTER_FIELD(String sOLR_FILTER_FIELD) {
+        SOLR_FILTER_FIELD = sOLR_FILTER_FIELD;
     }
 
+    
+    
+    
+    
     /**
      * Direct access to the backing YAML-class is used for configurations with more flexible content
      * and/or if the service developer prefers key-based property access.
@@ -51,4 +77,25 @@ public class ServiceConfig {
         return serviceConfig;
     }
   
+    public static  String getDBDriver() {
+        String dbDriver= serviceConfig.getString("config.db.driver");
+        return dbDriver;
+    }
+
+    public static  String getDBUrl() {
+        String dbUrl= serviceConfig.getString("config.db.url");
+        return dbUrl;
+    }
+
+    public static  String getDBUserName() {
+        String dbUserName= serviceConfig.getString("config.db.username");
+        return dbUserName;
+    }
+
+    public static  String getDBPassword() {
+        String dbPassword= serviceConfig.getString("config.db.password");
+        return dbPassword;
+    }
+    
+    
 }

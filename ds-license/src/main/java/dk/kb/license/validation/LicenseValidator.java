@@ -6,8 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.license.LicenseModulePropertiesLoader;
 import dk.kb.license.Util;
+import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.*;
 import dk.kb.license.storage.License;
@@ -90,7 +90,7 @@ public class LicenseValidator {
 		output.setPresentationType(input.getPresentationType());
 		output.setQuery(query.getQuery());
 
-		ArrayList<SolrServerClient> servers = LicenseModulePropertiesLoader.SOLR_SERVERS;
+		ArrayList<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
 	
 		  // merge (union) results.   
         Set<String> filteredIdsSet = new HashSet<String>();

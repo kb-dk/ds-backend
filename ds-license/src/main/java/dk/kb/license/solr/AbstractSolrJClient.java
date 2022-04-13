@@ -11,7 +11,9 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.license.LicenseModulePropertiesLoader;
+import dk.kb.license.config.ServiceConfig;
+
+
 
 
 public class AbstractSolrJClient {
@@ -28,7 +30,7 @@ public class AbstractSolrJClient {
         java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.OFF); 
         java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.OFF);
    
-        filterField=LicenseModulePropertiesLoader.SOLR_FILTER_FIELD;
+        filterField=ServiceConfig.SOLR_FILTER_FIELD;
     }
 
   

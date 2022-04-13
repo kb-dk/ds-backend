@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.license.LicenseModulePropertiesLoader;
 import dk.kb.license.Util;
+import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.solr.AbstractSolrJClient;
 import dk.kb.license.validation.LicenseValidator;
 import dk.kb.license.webservice.dto.GetUserGroupsInputDTO;
@@ -100,7 +100,7 @@ public class LicenseModuleStorageTest {
 
 	    @BeforeAll
 	    public static void beforeClass() throws Exception {
-	      LicenseModulePropertiesLoader.setSOLR_FILTER_FIELD("authID");
+	      ServiceConfig.setSOLR_FILTER_FIELD("authID");
 	        LicenseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);	        
 	        createEmptyDBFromDDL();	        	        
 	    }
