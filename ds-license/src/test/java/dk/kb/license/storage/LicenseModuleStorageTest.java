@@ -31,6 +31,7 @@ import dk.kb.license.webservice.dto.GetUserGroupsInputDTO;
 import dk.kb.license.webservice.dto.UserGroupDTO;
 import dk.kb.license.webservice.dto.UserObjAttributeDTO;
 
+
 /*
  * Unittest class for the H2Storage.
  * All tests creates and use H2 database in the directory: target/h2
@@ -42,7 +43,7 @@ import dk.kb.license.webservice.dto.UserObjAttributeDTO;
  * open and open the database and see what the unit-tests did.
  */
 
-public class LicenseModuleStorageTest {
+public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
 	
@@ -63,55 +64,10 @@ public class LicenseModuleStorageTest {
 
 
 	
-	
-	/*
-	 * Delete database file if it exists. Create database with tables
-	 */
-
-	 private static void createEmptyDBFromDDL() throws Exception {
-	        //Delete if exists
-	        doDelete(new File("target/test-classes/h2"));
-	        Connection connection = null;
-
-	        try {
-	            Class.forName(DRIVER); // load the driver
-	        } catch (ClassNotFoundException e) {
-	            throw new SQLException(e);
-	        }
-	        connection = DriverManager.getConnection(URL, "", "");
-
-	        File file = getFile(CREATE_TABLES_DDL_FILE);
-	        log.info("Running DDL script:" + file.getAbsolutePath());
-
-	        if (!file.exists()) {
-	            log.error("DDL script not found:" + file.getAbsolutePath());
-	            throw new RuntimeException("DDLscript file not found:" + file.getAbsolutePath());
-	        }
-
-	        String scriptStatement = "RUNSCRIPT FROM '" + file.getAbsolutePath() + "'";
-
-	        connection.prepareStatement(scriptStatement).execute();
-
-	        PreparedStatement shutdown = connection.prepareStatement("SHUTDOWN");
-	        shutdown.execute();
-	        connection.close();
-	    }
 
 
-	    @BeforeAll
-	    public static void beforeClass() throws Exception {
-	      ServiceConfig.setSOLR_FILTER_FIELD("authID");
-	        LicenseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);	        
-	        createEmptyDBFromDDL();	        	        
-	    }
 
-	    @AfterAll
-	    public static void afterClass() throws Exception {
-	        // No reason to delete DB data after test, since we delete it before each test.
-	        // This way you can open the DB in a DB-browser after a unittest and see the result.
-	        LicenseModuleStorage.shutdown();
-	    }
-
+	    
 	    /*
 	     * Delete data from all tables before each unittest
 	     * TODO remove delete when commit is handled in facade class
@@ -1111,19 +1067,9 @@ public class LicenseModuleStorageTest {
        assertEquals("(authID:\"testId3\")", solrIdsQuery);                 
    }
 
-   
-   
-   //file.delete does not work for a directory unless it is empty. hence this method
-   private static void doDelete(File path) throws IOException
-   {
-       if (path.isDirectory()) {
-           for (File child : path.listFiles()) {
-               doDelete(child);
-           }
-       }
-       if (!path.delete()) {
-        //ignore.
-       }
-   }
+  
+
+
+ 
 	
 }

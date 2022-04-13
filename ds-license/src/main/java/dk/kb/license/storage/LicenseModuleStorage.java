@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *  PRESENTATION (parent = LICENSECONTENT)
  * 
  */
-public class LicenseModuleStorage {
+public class LicenseModuleStorage  implements AutoCloseable{
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorage.class);
 
@@ -150,7 +150,9 @@ public class LicenseModuleStorage {
 
     private final static String deleteLicenseByLicenseIdQuery = " DELETE FROM " + LICENSE_TABLE + " WHERE " + ID_COLUMN + " = ?";
 
-    public static void initialize(String driverName, String driverUrl, String userName, String password) throws SQLException {
+
+
+    public static void initialize(String driverName, String driverUrl, String userName, String password) {
         dataSource = new BasicDataSource();
         dataSource.setDriverClassName(driverName);
         dataSource.setUsername(userName);
@@ -160,22 +162,33 @@ public class LicenseModuleStorage {
         dataSource.setDefaultReadOnly(false);
         dataSource.setDefaultAutoCommit(false);
 
+
+
+        //TODO maybe set some datasource options.
         // enable detection and logging of connection leaks
-        dataSource.setRemoveAbandonedOnBorrow(true);
-        dataSource.setRemoveAbandonedOnMaintenance(true);
-        dataSource.setRemoveAbandonedTimeout(3600); // 1 hour
-        dataSource.setLogAbandoned(true);
-        dataSource.setMaxWaitMillis(60000);
-        dataSource.setMaxTotal(20);
+        /*
+         * dataSource.setRemoveAbandonedOnBorrow(
+         * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
+         * > 0); dataSource.setRemoveAbandonedOnMaintenance(
+         * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
+         * > 0); dataSource.setRemoveAbandonedTimeout(AlmaPickupNumbersPropertiesHolder.
+         * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM); //1 hour
+         * dataSource.setLogAbandoned(AlmaPickupNumbersPropertiesHolder.
+         * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM > 0);
+         * dataSource.setMaxWaitMillis(AlmaPickupNumbersPropertiesHolder.
+         * PICKUPNUMBERS_DATABASE_POOL_CONNECT_TIMEOUT);
+         */
+        dataSource.setMaxTotal(10); //
 
         INITDATE = new Date();
-    }
-    
-    
-    public LicenseModuleStorage() throws Exception {
-        connection = dataSource.getConnection();
+
+        log.info("DsLicence storage initialized");
     }
 
+    public LicenseModuleStorage() throws SQLException {
+        connection = dataSource.getConnection();
+    }
+ 
 
     public void persistDomLicensePresentationType(String key, String value_dk, String value_en) throws Exception {
         log.info("Persisting new dom license presentationtype: " + key);
@@ -1031,15 +1044,27 @@ public class LicenseModuleStorage {
     }
 
     
-    public void close() {
-        try {
-            connection.close();
-        } catch (Exception e) {
-            //nothing to do here
-        }
+    /*
+     * FOR TEST JETTY RUN ONLY!
+     * 
+     */
+    public void createNewDatabase(String ddlFile) throws SQLException { 
+        connection.createStatement().execute("RUNSCRIPT FROM '" + ddlFile+ "'");        
+    }
+
+
+    /*
+     * Only called from unittests, not exposed on facade class
+     * 
+     */
+    public void clearTableRecords() throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(clearTableRecordsStatement);) {
+            stmt.execute(); //No resultset to close
+        }        
     }
     
-    public void commit() throws Exception {
+
+    public void commit() throws SQLException {
         connection.commit();
     }
 
@@ -1051,20 +1076,20 @@ public class LicenseModuleStorage {
         }
     }
 
-    private void closeStatement(PreparedStatement stmt) {
+    @Override
+    public void close() {
         try {
-            if (stmt != null) {
-                stmt.close();
-            }
-        } catch (SQLException e) {
-            log.error("Failed to close statement");
-            // ignore..
+            connection.close();
+        } catch (Exception e) {
+            // nothing to do here
         }
     }
 
+    // This is called by from InialialziationContextListener by the Web-container
+    // when server is shutdown,
     // Just to be sure the DB lock file is free.
     public static void shutdown() {
-        log.info("Shutdown Storage");
+        log.info("Shutdown ds-storage");
         try {
             if (dataSource != null) {
                 dataSource.close();
@@ -1074,6 +1099,7 @@ public class LicenseModuleStorage {
             log.error("shutdown failed", e);
         }
     }
+
     
 
 }
