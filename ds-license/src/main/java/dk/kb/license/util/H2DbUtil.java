@@ -16,14 +16,13 @@ import dk.kb.util.Resolver;
  * 
  */
 public class H2DbUtil {
-    protected static final String CREATE_TABLES_DDL_FILE = "ddl/create_ds_license_h2_unittest.ddl";
+    protected static final String CREATE_TABLES_DDL_FILE = "ddl/licensemodule_create_db.ddl";
     
     private static final Logger log = LoggerFactory.getLogger(H2DbUtil.class);
     
     
     public static void createEmptyH2DBFromDDL(String url, String driver, String username, String password) throws Exception {
-        //  Instead of deleting h2 database completely, we reuse the table between unittests instead.
-        // doDelete(new File(TEST_CLASSES_PATH +"/h2"));
+        //  
         try {
             Class.forName(driver); // load the driver
         } catch (ClassNotFoundException e) {
@@ -32,7 +31,7 @@ public class H2DbUtil {
         }
 
         try (Connection connection = DriverManager.getConnection(url,username,password)){
-            File file = getFile(CREATE_TABLES_DDL_FILE);
+            File file = getFile(CREATE_TABLES_DDL_FILE);            
             log.info("Running DDL script:" + file.getAbsolutePath());
 
             if (!file.exists()) {
@@ -50,8 +49,8 @@ public class H2DbUtil {
     }
     
     //Use KB-util to resolve file. 
-    protected static File getFile(String resource) throws IOException {
-       return Resolver.getPathFromClasspath(resource).toFile(); 
+    protected static File getFile(String resource) throws IOException {        
+        return Resolver.getPathFromClasspath(resource).toFile(); 
     }
 
 

@@ -41,10 +41,10 @@ public class LicenseModuleFacade {
         }
     }
 
-    public static void deleteLicense(long licenseId, boolean commit) throws Exception {
+    public static void deleteLicense(long licenseId) throws Exception {
         LicenseModuleStorage storage = new LicenseModuleStorage();
         try {
-            storage.deleteLicense(licenseId, commit);
+            storage.deleteLicense(licenseId);
         } catch (Exception e) {
             storage.rollback();
             throw e;

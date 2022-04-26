@@ -29,7 +29,18 @@ import dk.kb.util.Resolver;
  */
 public abstract class DsLicenseUnitTestUtil {
 
+
+    private static final String CREATE_TABLES_DDL_FILE = "src/test/resources/H2_DDL_scripts/create_ds_storage_h2_unittest.ddl";
+    private static final String DELETE_TABLES_DDL_FILE = "src/test/resources/H2_DDL_scripts/delete_from_all_tables.ddl";
+    private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/H2_DDL_scripts/dom_licensemodule_default_configuration.ddl";
+
+
+
     
+    public static void insertDefaultConfigurationTypes() throws Exception {
+        File insert_ddl_file = new File(INSERT_DEFAULT_CONFIGURATION_DDL_FILE);
+        storage.runDDLScript(insert_ddl_file);
+    }
 
     protected static final String DRIVER = "org.h2.Driver";
 
@@ -49,7 +60,7 @@ public abstract class DsLicenseUnitTestUtil {
 
         ServiceConfig.initialize("conf/ds-license*.yaml"); 	    
         ServiceConfig.setSOLR_FILTER_FIELD("authID");
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD);
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD);        
         LicenseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         storage = new LicenseModuleStorage();
 
