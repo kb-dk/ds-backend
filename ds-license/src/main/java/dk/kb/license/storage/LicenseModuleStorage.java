@@ -81,7 +81,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     private final static String persistDomLicensePresentationTypeQuery = "INSERT INTO "
             + DOMLICENSEPRESENTATIONTYPES_TABLE + " (" + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + ","
-            + VALUE_EN_COLUMN + "," + ") VALUES (?,?,?,?)"; // #|?|=4
+            + VALUE_EN_COLUMN +  ") VALUES (?,?,?,?)"; // #|?|=4
 
     private final static String persistAttributeGroupForLicenseQuery = "INSERT INTO " + ATTRIBUTEGROUP_TABLE + " ("
             + ID_COLUMN + "," + NUMBER_COLUMN + "," + LICENSEID_COLUMN + ") VALUES (?,?,?)"; // #|?|=3
