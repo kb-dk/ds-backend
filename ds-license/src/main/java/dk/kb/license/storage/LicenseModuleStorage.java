@@ -1009,11 +1009,7 @@ public class LicenseModuleStorage implements AutoCloseable {
      * 
      */
  
-   //TODO
-    
-    public void clearTableRecords() throws SQLException {
-        
-    }
+   
 
     public void commit() throws SQLException {
         connection.commit();
@@ -1036,6 +1032,35 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
     }
 
+    /*
+     * Only called from unittests, not exposed on facade class
+     * 
+     */
+    
+    
+    public void clearTableRecords() throws SQLException {
+      ArrayList<String> tables = new ArrayList<String>();
+      tables.add("PRESENTATIONTYPES");
+      tables.add("GROUPTYPES");
+      tables.add("ATTRIBUTETYPES");
+      tables.add("LICENSE");
+      tables.add("ATTRIBUTEGROUP");
+      tables.add("ATTRIBUTE");
+      tables.add("VALUE_ORG");
+      tables.add("LICENSECONTENT");    
+      tables.add("PRESENTATION");
+      
+      for (String table : tables) {
+          String deleteSQL="DELETE FROM " +table; 
+        try (PreparedStatement stmt = connection.prepareStatement(deleteSQL);) {
+         System.out.println(deleteSQL);
+            stmt.execute();
+        }   
+        
+      }
+    }
+    
+    
     // This is called by from InialialziationContextListener by the Web-container
     // when server is shutdown,
     // Just to be sure the DB lock file is free.
