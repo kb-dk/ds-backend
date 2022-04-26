@@ -32,7 +32,7 @@ public abstract class DsLicenseUnitTestUtil {
 
     private static final String CREATE_TABLES_DDL_FILE = "src/test/resources/H2_DDL_scripts/create_ds_storage_h2_unittest.ddl";
     private static final String DELETE_TABLES_DDL_FILE = "src/test/resources/H2_DDL_scripts/delete_from_all_tables.ddl";
-    private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/H2_DDL_scripts/dom_licensemodule_default_configuration.ddl";
+    private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";
 
 
 
