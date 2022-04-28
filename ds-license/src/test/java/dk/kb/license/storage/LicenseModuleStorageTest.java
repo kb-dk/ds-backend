@@ -182,15 +182,18 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         License license = createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);
 
+        
+        
         ArrayList<ConfiguredDomLicensePresentationType> list = storage.getDomLicensePresentationTypes();
         assertEquals(5, list.size());
         storage.deleteDomPresentationType("10_sec_stream");
         list = storage.getDomLicensePresentationTypes();
         assertEquals(4, list.size()); // only 4 now
 
-        // must not delete since it is used in a license
+        // must not delete since it is used in a license      
         try {
             storage.deleteDomPresentationType("Thumbnails");
+            
             fail();
         } catch (IllegalArgumentException e) {
             // expected
@@ -338,7 +341,9 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     @Test
     public void testFilterLicenseByValidDate() throws Exception {
         License license = createTestLicenseWithAssociations(1L);
-        storage.persistLicense(license);
+        storage.persistLicense(license);                
+        storage.commit();//So the licence cache can read it.
+        LicenseCache.reloadCache();
         ArrayList<License> licenses = LicenseCache.getAllLicense();
         assertEquals(1, licenses.size());
 
@@ -364,7 +369,9 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     public void testAllLicesesCache() throws Exception {
         License license = createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);
-
+        storage.commit();//So the licence cache can read it.
+        LicenseCache.reloadCache();
+                      
         ArrayList<License> licenses = LicenseCache.getAllLicense();
         assertEquals(1, licenses.size());
     }
@@ -481,6 +488,10 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         input.setAttributes(userObjAttributes);
         input.setLocale("da");
+        
+        storage.commit();
+        LicenseCache.reloadCache();
+        
         ArrayList<UserGroupDTO> usersGroups = LicenseValidator.getUsersGroups(input);		
         //Test danish names
         UserGroupDTO group1 = usersGroups.get(0);

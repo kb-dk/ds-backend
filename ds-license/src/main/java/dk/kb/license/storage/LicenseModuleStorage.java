@@ -432,6 +432,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
             if (rs.next()) {
                 int number = rs.getInt(1);
+               System.out.println("presentation used times:"+number + " with name:"+presentationName);
                 if (number > 0) {
                     throw new IllegalArgumentException("Can not delete presentationtype with name:" + presentationName
                             + " because it is used in at least 1 license");
@@ -495,11 +496,15 @@ public class LicenseModuleStorage implements AutoCloseable {
             persistAttributeGroupsForLicense(licenseId, license.getAttributeGroups());
             persistLicenseContentsForLicense(licenseId, license.getLicenseContents());
 
+            
         } catch (Exception e) {
             log.error("SQL Exception in persistLicense:" + e.getMessage());
             throw e;
         }
-        LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
+    
+        
+        //TODO! Important! Remove to facade!
+        //LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
     public ArrayList<ConfiguredDomLicenseGroupType> getDomLicenseGroupTypes() throws SQLException {
@@ -860,7 +865,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
 
         for (Presentation current : presentations) {
-            try (PreparedStatement stmt = connection.prepareStatement(persistLicenseContentForLicenseQuery);) {
+            try (PreparedStatement stmt = connection.prepareStatement(persistPresentationTypesForLicenseContentQuery);) {
 
                 stmt.setLong(1, generateUniqueID());
                 stmt.setString(2, current.getKey());
@@ -993,7 +998,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
         String scriptStatement = "RUNSCRIPT FROM '" + file.getAbsolutePath() + "'";
 
-        connection.prepareStatement(scriptStatement).execute();
+        connection.prepareStatement(scriptStatement).execute();        
     }
 
     /*
@@ -1012,6 +1017,7 @@ public class LicenseModuleStorage implements AutoCloseable {
    
 
     public void commit() throws SQLException {
+        System.out.println("commit");
         connection.commit();
     }
 

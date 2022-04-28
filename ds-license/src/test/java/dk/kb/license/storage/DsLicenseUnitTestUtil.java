@@ -39,7 +39,7 @@ public abstract class DsLicenseUnitTestUtil {
     
     public static void insertDefaultConfigurationTypes() throws Exception {
         File insert_ddl_file = new File(INSERT_DEFAULT_CONFIGURATION_DDL_FILE);
-        storage.runDDLScript(insert_ddl_file);
+        storage.runDDLScript(insert_ddl_file);        
     }
 
     protected static final String DRIVER = "org.h2.Driver";
@@ -73,8 +73,7 @@ public abstract class DsLicenseUnitTestUtil {
      */
     @BeforeEach
     public void beforeEach() throws Exception {                     
-        storage.clearTableRecords();
-        storage.commit();
+        storage.clearTableRecords();                     
     }
 
 
