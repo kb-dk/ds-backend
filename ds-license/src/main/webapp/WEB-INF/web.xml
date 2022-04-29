@@ -2,6 +2,12 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>${project.name}</display-name>
 
+  
+  <welcome-file-list>
+    <welcome-file>configuration.jsp</welcome-file>
+  </welcome-file-list>
+
+
     <!-- When a new version is needed, make a copy of the servlet and the servlet-mapping for v1,
          then change v1 to v2 in the copy. Also remember to:
          * Create dk.kb.license.webservice.Application_v2
