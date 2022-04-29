@@ -231,8 +231,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             log.error("SQL Exception in persistPresentationType:" + e.getMessage());
             throw e;
         }
-        LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
-        // We are not closing the connection (EVAR!)
+       
     }
 
     public ArrayList<ConfiguredDomLicensePresentationType> getDomLicensePresentationTypes() throws SQLException {
