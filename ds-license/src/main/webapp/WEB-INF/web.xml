@@ -46,6 +46,29 @@
         <url-pattern>/v1/*</url-pattern>
     </servlet-mapping>
 
+
+ 
+  <servlet>
+    <servlet-name>createLicenseServlet</servlet-name>
+    <servlet-class>dk.kb.license.servlets.CreateLicenseServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>createLicenseServlet</servlet-name>
+    <url-pattern>/createLicenseServlet</url-pattern>
+  </servlet-mapping>
+
+ <servlet>
+    <servlet-name>configurationServlet</servlet-name>
+    <servlet-class>dk.kb.license.servlets.ConfigurationServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>configurationServlet</servlet-name>
+    <url-pattern>/configurationServlet</url-pattern>
+  </servlet-mapping>
+
+
     <listener>
         <listener-class>dk.kb.license.webservice.ContextListener</listener-class>
     </listener>
