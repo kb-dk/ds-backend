@@ -16,9 +16,7 @@ import dk.kb.util.Resolver;
  * 
  */
 public class H2DbUtil {
-    protected static final String CREATE_TABLES_DDL_FILE = "ddl/licensemodule_create_db.ddl";
-    protected static final String CLEAR_TABLES_DDL_FILE = "ddl/delete_from_all_tables.ddl";
-    
+    protected static final String CREATE_TABLES_DDL_FILE = "ddl/licensemodule_create_h2_unittest.ddl";
     
     private static final Logger log = LoggerFactory.getLogger(H2DbUtil.class);
     
