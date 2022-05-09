@@ -28,7 +28,7 @@ config:
               # The name of the machine running the service. Mandatory
               host: 'localhost'
               # The port for the service. Mandatory
-              port: 8080
+              port: 9072
               # The path the the service. Optional, default is '/ds-storage/v1/'
               basepath: '/ds-storage/v1/'
               # The connection scheme: http or https. Optional, default is http for localhost, https for everything else
