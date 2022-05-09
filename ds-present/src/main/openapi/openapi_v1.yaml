@@ -15,7 +15,7 @@ servers:
     description: 'Version 1'
 
 paths:
-  /ping:
+  /monitor/ping:
     get:
       tags:
         - '${project.name}'
