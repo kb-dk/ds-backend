@@ -3,28 +3,37 @@
 # Requires a running instance of https://github.com/kb-dk/ds-storage/
 # with default test setup
 
-: ${FILE:="$1"}
-: ${FILE:="illum.xml"}
+: ${RECORD_FILES:="$@"}
+: ${RECORD_FILES:="illum.xml"}
 
-: ${STORAGE:="http://localhost:8080/ds-storage/v1"}
+: ${STORAGE:="http://localhost:9072/ds-storage/v1"}
 : ${ENDPOINT:="$STORAGE/record"}
 
-ID="doms.radio:$FILE"
+post_record() {
+    local RECORD_FILE="$1"
 
-T=$(mktemp)
-echo '{"id":"'$ID'", "base":"doms.radio", "data":'$(jq -R -s '.' < $FILE)'}' > $T
+    ID="doms.radio:$RECORD_FILE"
 
-STATUSCODE=$(curl -s --output /dev/stderr --write-out "%{http_code}" -X POST "$ENDPOINT" -H  "accept: */*" -H  "Content-Type: application/json" -d @${T})
+    T=$(mktemp)
+    echo '{"id":"'$ID'", "base":"doms.radio", "data":'$(jq -R -s '.' < $RECORD_FILE)'}' > $T
 
-if [ ! "$STATUSCODE" -eq 204 ]; then
-    >&2 echo "Error: Unable to post content to ds-storage"
-    >&2 echo "Got HTTP code $STATUSCODE for POST to $ENDPOINT"
-    >&2 echo "Check if storage is running at ${STORAGE}"
-    exit 2
-fi
+    STATUSCODE=$(curl -s --output /dev/stderr --write-out "%{http_code}" -X POST "$ENDPOINT" -H  "accept: */*" -H  "Content-Type: application/json" -d @${T})
 
-#curl -s -X POST "$STORAGE/record/createOrUpdateRecord" -H  "accept: */*" -H  "Content-Type: application/json" -d @${T}
-rm "$T"
+    if [ ! "$STATUSCODE" -eq 204 ]; then
+        >&2 echo "Error: Unable to post content to ds-storage"
+        >&2 echo "Got HTTP code $STATUSCODE for POST to $ENDPOINT"
+        >&2 echo "Check if storage is running at ${STORAGE}"
+        exit 2
+    fi
 
-echo "Indexed $ID to ds-storage."
-echo "Access at ${STORAGE}/record/$ID"
+    #curl -s -X POST "$STORAGE/record/createOrUpdateRecord" -H  "accept: */*" -H  "Content-Type: application/json" -d @${T}
+    rm "$T"
+
+    echo "Indexed ${ID}. Access at ${STORAGE}/record/$ID"
+}
+
+for RECORD_FILE in $RECORD_FILES; do
+    post_record "$RECORD_FILE"
+done
+
+echo "All done."
