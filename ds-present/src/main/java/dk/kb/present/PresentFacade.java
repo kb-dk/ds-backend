@@ -14,22 +14,32 @@
  */
 package dk.kb.present;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.webservice.ExportWriter;
 import dk.kb.present.webservice.ExportWriterFactory;
+import dk.kb.present.webservice.exception.InternalServiceException;
 import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
+import dk.kb.util.json.JSON;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.StreamingOutput;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -170,22 +180,73 @@ public class PresentFacade {
     // Direct ds-storage record JSON
     private static StreamingOutput getRecordsSolr(DSCollection collection, Long mTime, Long maxRecords,
                                                   HttpServletResponse httpServletResponse) {
+        System.out.println("************ 0");
+
         return output -> {
-            try (ExportWriter writer = ExportWriterFactory.wrap(
-                    output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records")) {
-                collection.getDSRecords(mTime, maxRecords, "SolrJSON")
+            System.out.println("************ 1");
+            ExportWriter writer = ExportWriterFactory.wrap(
+                    output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records");
+            System.out.println("************ 2");
+            Stream<DsRecordDto> records;
+            try {
+                records = collection.getDSRecords(mTime, maxRecords, "SolrJSON");
+            } catch (Exception e) {
+                writer.close();
+                log.warn("Exception requesting records for Solr export with collection='{}', mTime={}, maxRecords={}",
+                         collection, mTime, maxRecords);
+                throw new InternalServerErrorException("Exception requesting records for SolrJSON format", e);
+            }
+            System.out.println("************ 3");
+            //records.forEach(r -> System.out.println("Rec " + r.getId()));
+            System.out.println("************ 4");
+            try {
+                records.peek(r -> System.out.println("Delivering " + r.getId()))
                         .map(PresentFacade::wrapSolrJSON)
                         .forEach(writer::write);
+                writer.close();
+                System.out.println("************ E");
+            } catch (Exception e) {
+                log.warn(String.format(
+                                 Locale.ROOT,
+                                 "Exception delivering Solr records with collection='%s', mTime=%d, maxRecords=%d",
+                                 collection, mTime, maxRecords),
+                        e);
             }
         };
     }
 
     // https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates
     private static String wrapSolrJSON(DsRecordDto record) {
-        return Boolean.TRUE.equals(record.getDeleted()) ?
-                "\"delete\": { \"id\": \"" + record.getId() + "\" }" :
-                "\"add\": \n{ \"doc\" : " + record.getData() + "\n}\n}";
+        System.out.println("************** Wrapping " + record.getId());
+        if (Boolean.TRUE.equals(record.getDeleted())) {
+            return "\"delete\": { \"id\": \"" + record.getId() + "\" }";
+        }
+        List<String> solrJSONs = splitSolrJSON(record.getData());
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0 ; i < solrJSONs.size() ; i++) {
+            sb.append("\"add\": { \"doc\" : ").append(solrJSONs.get(i)).append(" }");
+            if (i != solrJSONs.size()-1) {
+                sb.append(",\n");
+            }
+        }
+        return sb.toString();
+    }
 
+    // Really hacking here to handle the case of the source containing multiple MODS-sections
+    // TODO: Hopefully determine that 1 record = 1 mods
+    private static List<String> splitSolrJSON(String solrJSONs) {
+        ObjectMapper mapper = new ObjectMapper();
+        List<?> jsonArray = JSON.fromJson(solrJSONs, List.class);
+        List<String> strArray = new ArrayList<>(jsonArray.size());
+        for (int i = 0 ; i < jsonArray.size() ; i++) {
+            try {
+                strArray.add(mapper.writeValueAsString(jsonArray.get(i)));
+            } catch (JsonProcessingException e) {
+                log.error("Unable to convert map to JSONObject", e); // Should not happen as we just deserialized above
+                throw new InternalServiceException("Unable to convert map to JSONObject");
+            }
+        }
+        return strArray;
     }
 
     private static void setFilename(
