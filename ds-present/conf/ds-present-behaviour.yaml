@@ -33,6 +33,9 @@ config:
               basepath: '/ds-storage/v1/'
               # The connection scheme: http or https. Optional, default is http for localhost, https for everything else
               scheme: 'http'
+              # The recordBase for the ds-storage
+              # Optional, but needed for the /records endpoint
+              base: 'doms.radio'
     - test:
         # If there is more that one backend implementation, the property 'order' controls how they are queried:
         # * parallel:   All backends are queried in parallel. Whoever answers with a record first wins.
