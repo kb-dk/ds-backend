@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
@@ -69,7 +70,6 @@ public class DSStorage implements Storage {
                      String scheme, String host, int port, String basepath,
                      int batchCount, boolean isDefault) {
         this.id = id;
-
         this.scheme = scheme;
         this.host = host;
         this.port = port;
@@ -88,7 +88,14 @@ public class DSStorage implements Storage {
         serverHuman = scheme + "://" + host + ":" + port + "/" + basepath;
 
         dsStorageClient = new DsStorageApi(apiClient);
+//        if (isEmpty(id) || isEmpty(scheme) || isEmpty(host) || isEmpty(basepath) || isEmpty(recordBase)) {
+//            throw new IllegalArgumentException("All parameters must be specified for " + this);
+//        }
         log.info("Created " + this);
+    }
+
+    private boolean isEmpty(String s) {
+        return s == null || s.isEmpty();
     }
 
     @Override
@@ -108,6 +115,11 @@ public class DSStorage implements Storage {
 
     @Override
     public Stream<DsRecordDto> getDSRecords(long mTime, long maxRecords) {
+
+        if (recordBase == null || recordBase.isEmpty()) {
+            throw new InternalServiceException(
+                    "recordBase not defined for DSStorage '" + getID() + "'. Only single record lookups are possible");
+        }
 
         // Unfortunately the OpenAPI generator creates a client which requests all records as a list in a single call
         // instead of doing streaming, so we need to page.
@@ -131,11 +143,23 @@ public class DSStorage implements Storage {
                 try {
                     records = dsStorageClient.getRecordsModifiedAfter(recordBase, lastMTime.get(), request);
                 } catch (ApiException e) {
-                    throw new InternalServiceException(
-                            "Exception making remote call to ds-storage client.getRecordsModifiedAfter", e);
+                    String message = String.format(
+                            Locale.ROOT,
+                            "Exception making remote call to ds-storage client " +
+                            "getRecordsModifiedAfter(base='%s', mTime=%d, maxRecords=%d)",
+                            recordBase, mTime, maxRecords);
+                    throw new InternalServiceException(message, e);
                 }
                 pending -= records.size();
                 finished = records.isEmpty();
+                if (!finished) {
+                    Long lastRecordMTime = records.get(records.size()-1).getmTime();
+                    if (lastRecordMTime == null) {
+                        throw new InternalServiceException(
+                                "Got null as mTime for record '" + records.get(records.size()-1).getId());
+                    }
+                    lastMTime.set(lastRecordMTime);
+                }
             }
             @Override
             public boolean hasNext() {
@@ -180,6 +204,7 @@ public class DSStorage implements Storage {
                ", basepath='" + basepath + '\'' +
                ", scheme='" + scheme + '\'' +
                ", batchCount='" + batchCount + '\'' +
+               ", recordBase='" + recordBase + '\'' +
                ", isDefault=" + isDefault +
                ')';
     }
