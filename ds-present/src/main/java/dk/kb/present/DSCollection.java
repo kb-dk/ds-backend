@@ -130,7 +130,8 @@ public class DSCollection {
                     try {
                         record.data(view.apply(record.getData()));
                     } catch (Exception e) {
-                        throw new RuntimeTransformerException("Exception transforming record '" + record.getId() + "'");
+                        throw new RuntimeTransformerException(
+                                "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
 
                     }
                 });
