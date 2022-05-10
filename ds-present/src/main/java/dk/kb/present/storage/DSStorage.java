@@ -114,9 +114,10 @@ public class DSStorage implements Storage {
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecords(long mTime, long maxRecords) {
+    public Stream<DsRecordDto> getDSRecords(final String recordBase, long mTime, long maxRecords) {
+        String finalRecordBase = recordBase == null ? this.recordBase : recordBase;
 
-        if (recordBase == null || recordBase.isEmpty()) {
+        if (finalRecordBase == null || finalRecordBase.isEmpty()) {
             throw new InternalServiceException(
                     "recordBase not defined for DSStorage '" + getID() + "'. Only single record lookups are possible");
         }
@@ -141,13 +142,13 @@ public class DSStorage implements Storage {
 
                 long request = pending < batchCount ? (int) pending : batchCount;
                 try {
-                    records = dsStorageClient.getRecordsModifiedAfter(recordBase, lastMTime.get(), request);
+                    records = dsStorageClient.getRecordsModifiedAfter(finalRecordBase, lastMTime.get(), request);
                 } catch (ApiException e) {
                     String message = String.format(
                             Locale.ROOT,
                             "Exception making remote call to ds-storage client " +
                             "getRecordsModifiedAfter(base='%s', mTime=%d, maxRecords=%d)",
-                            recordBase, mTime, maxRecords);
+                            finalRecordBase, mTime, maxRecords);
                     throw new InternalServiceException(message, e);
                 }
                 pending -= records.size();

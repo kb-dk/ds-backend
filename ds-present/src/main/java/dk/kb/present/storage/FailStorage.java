@@ -57,7 +57,7 @@ public class FailStorage implements Storage {
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecords(long mTime, long maxRecords) {
+    public Stream<DsRecordDto> getDSRecords(String recordBase, long mTime, long maxRecords) {
         throw new NotFoundServiceException("Unable to locate any records after mTime " + mTime);
     }
 

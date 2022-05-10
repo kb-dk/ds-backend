@@ -65,6 +65,12 @@ public class DSCollection {
     private final Storage storage;
 
     /**
+     * Optional recordBase, with fallback to the default recordBase for {@link Storage}.
+     * Used when {@link #getDSRecords(Long, Long, String)} is called.
+     */
+    private final String recordBase;
+
+    /**
      * Map from format -> view. A view is at the core an array of transformations and responsible for transforming
      * metadata to the requested format.
      */
@@ -84,6 +90,7 @@ public class DSCollection {
         prefix = conf.getString(PREFIX_KEY);
         description = conf.getString(DESCRIPTION_KEY, null);
         storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
+        recordBase = conf.getString("BASE_KEY", null);
         views = conf.getYAMLList(VIEWS_KEY).stream()
                 .map(View::new)
                 .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
@@ -125,7 +132,7 @@ public class DSCollection {
      */
     public Stream<DsRecordDto> getDSRecords(Long mTime, Long maxRecords, String format) {
         View view = getView(format);
-        return storage.getDSRecords(mTime, maxRecords)
+        return storage.getDSRecords(recordBase, mTime, maxRecords)
                 .peek(record -> {
                     try {
                         record.data(view.apply(record.getData()));
@@ -200,6 +207,7 @@ public class DSCollection {
                ", prefix='" + prefix + '\'' +
                ", description='" + description + '\'' +
                ", storage=" + storage +
+               ", recordBase=" + recordBase +
                ", views=" + views +
                ')';
     }

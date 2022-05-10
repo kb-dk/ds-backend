@@ -57,10 +57,11 @@ public interface Storage {
 
     /**
      * Return records in mTime order, where all record.mTimes are > the given mTime.
+     * @param recordBase optional (can be null) recordBase.
      * @param mTime point in time (epoch * 1000) for the records to deliver, exclusive.
      * @param maxRecords the maximum number of records to deliver. -1 means no limit.
      * @return a stream of records after the given mTime.
      */
-    Stream<DsRecordDto> getDSRecords(long mTime, long maxRecords);
+    Stream<DsRecordDto> getDSRecords(String recordBase, long mTime, long maxRecords);
 
 }
