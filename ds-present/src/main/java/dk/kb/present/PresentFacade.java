@@ -22,6 +22,7 @@ import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.webservice.ExportWriter;
 import dk.kb.present.webservice.ExportWriterFactory;
+import dk.kb.present.webservice.JSONStreamWriter;
 import dk.kb.present.webservice.exception.InternalServiceException;
 import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
@@ -180,49 +181,43 @@ public class PresentFacade {
     // Direct ds-storage record JSON
     private static StreamingOutput getRecordsSolr(DSCollection collection, Long mTime, Long maxRecords,
                                                   HttpServletResponse httpServletResponse) {
-        System.out.println("************ 0");
-
         return output -> {
-            System.out.println("************ 1");
-            ExportWriter writer = ExportWriterFactory.wrap(
-                    output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records");
-            System.out.println("************ 2");
-            Stream<DsRecordDto> records;
-            try {
-                records = collection.getDSRecords(mTime, maxRecords, "SolrJSON");
-            } catch (Exception e) {
-                writer.close();
-                log.warn("Exception requesting records for Solr export with collection='{}', mTime={}, maxRecords={}",
-                         collection, mTime, maxRecords);
-                throw new InternalServerErrorException("Exception requesting records for SolrJSON format", e);
-            }
-            System.out.println("************ 3");
-            //records.forEach(r -> System.out.println("Rec " + r.getId()));
-            System.out.println("************ 4");
-            try {
-                records.peek(r -> System.out.println("Delivering " + r.getId()))
-                        .map(PresentFacade::wrapSolrJSON)
-                        .forEach(writer::write);
-                writer.close();
-                System.out.println("************ E");
-            } catch (Exception e) {
-                log.warn(String.format(
-                                 Locale.ROOT,
-                                 "Exception delivering Solr records with collection='%s', mTime=%d, maxRecords=%d",
-                                 collection, mTime, maxRecords),
-                        e);
+            try (ExportWriter writer = ExportWriterFactory.wrap(
+                    output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records")) {
+                // Hacking the output to confirm to Solr's non-valid JSON: https://solr.apache.org/guide/8_10/uploading-data-with-index-handlers.html#sending-json-update-commands
+                ((JSONStreamWriter) writer).setPreOutput("{\n");
+                ((JSONStreamWriter) writer).setPostOutput("\n}\n");
+                Stream<DsRecordDto> records;
+                try {
+                    records = collection.getDSRecords(mTime, maxRecords, "SolrJSON");
+                } catch (Exception e) {
+                    writer.close();
+                    log.warn("Exception requesting records for Solr export with collection='{}', mTime={}, maxRecords={}",
+                             collection, mTime, maxRecords);
+                    throw new InternalServerErrorException("Exception requesting records for SolrJSON format", e);
+                }
+                try {
+                    records.map(PresentFacade::wrapSolrJSON)
+                            .forEach(writer::write);
+             //       writer.close();
+                } catch (Exception e) {
+                    log.warn(String.format(
+                                     Locale.ROOT,
+                                     "Exception delivering Solr records with collection='%s', mTime=%d, maxRecords=%d",
+                                     collection, mTime, maxRecords),
+                             e);
+                }
             }
         };
     }
 
     // https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates
     private static String wrapSolrJSON(DsRecordDto record) {
-        System.out.println("************** Wrapping " + record.getId());
         if (Boolean.TRUE.equals(record.getDeleted())) {
             return "\"delete\": { \"id\": \"" + record.getId() + "\" }";
         }
         List<String> solrJSONs = splitSolrJSON(record.getData());
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0 ; i < solrJSONs.size() ; i++) {
             sb.append("\"add\": { \"doc\" : ").append(solrJSONs.get(i)).append(" }");
             if (i != solrJSONs.size()-1) {

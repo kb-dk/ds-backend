@@ -19,15 +19,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import dk.kb.present.webservice.exception.InternalServiceException;
-import io.swagger.util.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Writer;
+import java.util.regex.Pattern;
 
 /**
- * Wrapper that handles streamed output of a entries, either as a single valid JSON or
+ * Wrapper that handles streamed output of entries, either as a single valid JSON or
  * JSON Lines (1 independent JSON/line).
  *
  * Use the method {@link #write(Object)} and remember to call {@link #close} when finished.
@@ -41,6 +40,13 @@ public class JSONStreamWriter extends ExportWriter {
     private final FORMAT format;
     private boolean first = true;
     private boolean isclosing = false; // If the writer is in the process of closing (breaks infinite recursion)
+
+    // Used in write(String), e.g. for replacing newlines with spaces for JSON-Lines
+    private Pattern adjustPattern = null;
+    private String adjustReplacement = "";
+    private String preOutput;
+    private String postOutput;
+    private String elementDivider;
 
     /**
      * Wrap the given inner Writer in the JSONStreamWriter. Calls to {@link #write(Object)} writes directly to inner,
@@ -71,6 +77,24 @@ public class JSONStreamWriter extends ExportWriter {
             throw new IllegalArgumentException("Format was null, but must be defined");
         }
 
+        switch (format) {
+            case json: {
+                preOutput = "[\n";
+                postOutput = "\n]\n";
+                elementDivider = ",\n";
+                break;
+            }
+            case jsonl: {
+                adjustPattern = Pattern.compile("\n");
+                adjustReplacement = " ";
+                preOutput = "";
+                postOutput = "\n";
+                elementDivider = "\n";
+                break;
+            }
+            default: throw new UnsupportedOperationException("The format '" + format + "' is unknown");
+        }
+
         ObjectMapper mapper = createMapper();
         mapper.setSerializationInclusion(writeNulls ? JsonInclude.Include.ALWAYS : JsonInclude.Include.NON_NULL);
         jsonWriter = mapper.writer(new MinimalPrettyPrinter());
@@ -84,16 +108,17 @@ public class JSONStreamWriter extends ExportWriter {
      */
     @Override
     public void write(String jsonStr) {
-        if (format == FORMAT.jsonl) {
-            jsonStr = jsonStr.replace("\n", " ");
+        if (adjustPattern != null) {
+            jsonStr = adjustPattern.matcher(jsonStr).replaceAll(adjustReplacement);
         }
 
         if (first) {
-            super.write(format == FORMAT.json ? "[\n" : "");
+            super.write(preOutput);
             first = false;
         } else {
-            super.write(format == FORMAT.json ? ",\n" : "\n");
+            super.write(elementDivider);
         }
+
         super.write(jsonStr);
     }
 
@@ -124,11 +149,51 @@ public class JSONStreamWriter extends ExportWriter {
             return; // Avoid infinite recursion
         }
         isclosing = true;
-        if (format == FORMAT.json) {
-            super.write(first ? "[\n]\n" : "\n]\n");
-        } else {
-            super.write("\n");
+        if (first) {
+            super.write(preOutput);
         }
+        super.write(postOutput);
         super.close();
+    }
+
+    /**
+     * Used with {@link #adjustReplacement} in {@link #write(String)} to adjust the content before writing it.
+     * Example: This is used with JSON-Lines to replace newlines with spaces to uphold the single line contract.
+     * @param pattern used for adjusting the content in {@link #write(String)}. null means no adjustment.
+     */
+    public void setAdjustPattern(Pattern pattern) {
+        this.adjustPattern = pattern;
+    }
+
+    /**
+     * Used with {@link #adjustPattern} in {@link #write(String)} to adjust the content before writing it.
+     * Example: This is used with JSON-Lines to replace newlines with spaces to uphold the single line contract.
+     * @param replacement used for adjusting the content in {@link #write(String)}. null means no adjustment.
+     */
+    public void setAdjustReplacement(String replacement) {
+        this.adjustReplacement = replacement;
+    }
+
+    /**
+     * Written on first call to any {@link #write} or on {@link #close()} if there has been any writes.
+     * @param header written before any other content.
+     */
+    public void setPreOutput(String header) {
+        this.preOutput = header;
+    }
+
+    /**
+     * Written on {@link #close()}.
+     * @param footer written after any other content.
+     */
+    public void setPostOutput(String footer) {
+        this.postOutput = footer;
+    }
+
+    /**
+     * @param divider written before content in {@link #write} if write has been called previously.
+     */
+    public void setElementDivider(String divider) {
+        this.elementDivider = divider;
     }
 }
