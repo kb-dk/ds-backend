@@ -1,0 +1,72 @@
+#
+# Requires a running ds-storage and records added as described in the README
+#
+config:
+
+  # List of backing storages. The real URLs should be overridden in ds-present-environment.yaml
+  storages:
+    - main:
+        # If default is true, this will be the default storage for collections.
+        # The default storage choice can be overridden in a collection with the 'storage' property
+        default: true
+        # Backends contains a list of one or more implementations and their configuration, with the primary key being
+        # the implementation (aka type) of the backend
+        #
+        # Available backends are
+        # ds-storage: Connection to a https://github.com/kb-dk/ds-storage/ instance
+        # folder:     Local files under the stated folder. Use only for test as the implementation in unsecure
+        backends:
+          # The ds-storage backend connects to a running https://github.com/kb-dk/ds-storage/ instance
+          - ds-storage:
+              # The name of the machine running the service. Mandatory
+              host: 'localhost'
+              # The port for the service. Mandatory
+              port: 9072
+              # The path the the service. Optional, default is '/ds-storage/v1/'
+              basepath: '/ds-storage/v1/'
+              # The connection scheme: http or https. Optional, default is http for localhost, https for everything else
+              scheme: 'http'
+
+  # Settings for handling at the record level
+  record:
+    id:
+      # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the collection prefix
+      # and the second being the collection-specifix par of the ID
+      # Mandatory. Suggested value: '$([a-z][0-9][.]):([a-z][0-9][.-_])$', e.g. 'images.dsfl:image1234'
+      pattern: '^([a-z0-9.]+):([a-z0-9._-]+)$'
+
+  # Generic views for images represented as MODS, used for multiple collections
+  baseviews: &MODS_IMAGE_VIEWS
+    # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+    - raw:
+        mime: 'text/plain'
+        transformers:
+          - identity:
+    - MODS:
+        mime: 'application/xml'
+        transformers:
+          - identity: # No transformation steps as mods is the core format for images-dsfl
+    - JSON-LD:
+        mime: 'application/json'
+        transformers:
+          - xslt:
+              stylesheet: 'xslt/mods2schemaorg.xsl'
+    - SolrJSON:
+        mime: 'application/json'
+        transformers:
+          - xslt:
+              stylesheet: 'xslt/mods2solr.xsl'
+
+  # The collections available for this instance of ds-present
+  collections:
+    # Straight forward collection with the core format being MODS
+    - radio: # ds-present internal
+        prefix: 'doms.radio' # The prefix to match on incoming IDs
+        description: 'Sample records'
+        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+        views: *MODS_IMAGE_VIEWS
+    - images_jsmss:
+        description: 'Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library'
+        prefix: 'kb.image.judsam.jsmss'
+        base: 'kb.image.judsam.jsmss'
+        views: *MODS_IMAGE_VIEWS
