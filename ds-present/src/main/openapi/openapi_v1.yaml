@@ -102,7 +102,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 'images_hca'
+            example: 'images_jsmss'
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between seperate calls'
