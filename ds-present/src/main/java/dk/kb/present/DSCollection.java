@@ -40,6 +40,7 @@ public class DSCollection {
     private static final String PREFIX_KEY = "prefix"; // IDs for this collection starts with <prefix>_ (note the underscore)
     private static final String DESCRIPTION_KEY = "description";
     private static final String STORAGE_KEY = "storage";
+    private static final String BASE_KEY = "base";
     private static final String VIEWS_KEY = "views";
 
     /**
@@ -90,7 +91,7 @@ public class DSCollection {
         prefix = conf.getString(PREFIX_KEY);
         description = conf.getString(DESCRIPTION_KEY, null);
         storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
-        recordBase = conf.getString("BASE_KEY", null);
+        recordBase = conf.getString(BASE_KEY, null);
         views = conf.getYAMLList(VIEWS_KEY).stream()
                 .map(View::new)
                 .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
@@ -132,6 +133,8 @@ public class DSCollection {
      */
     public Stream<DsRecordDto> getDSRecords(Long mTime, Long maxRecords, String format) {
         View view = getView(format);
+        log.debug("Calling storage.getDSRecords(recordBase='{}', mTime={}, maxRecords={})",
+                  recordBase, mTime, maxRecords);
         return storage.getDSRecords(recordBase, mTime, maxRecords)
                 .peek(record -> {
                     try {
