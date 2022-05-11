@@ -147,7 +147,6 @@ public class MultiStorage implements Storage {
      */
     private String safeGetRecord(Storage storage, String id) {
         try {
-            System.out.println("Requesting from "+ storage);
             return storage.getRecord(id);
         } catch (Exception e) {
             log.trace("Unable to retrieve record '" + id + "' from storage " + storage.getType() +
@@ -164,7 +163,6 @@ public class MultiStorage implements Storage {
      */
     private DsRecordDto safeGetDSRecord(Storage storage, String id) {
         try {
-            System.out.println("Requesting from "+ storage);
             return storage.getDSRecord(id);
         } catch (Exception e) {
             log.trace("Unable to retrieve record '" + id + "' from storage " + storage.getType() +
