@@ -169,6 +169,7 @@ public class PresentFacade {
     private static StreamingOutput getRecordsFull(
             DSCollection collection, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT deliveryFormat) {
+        setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
@@ -181,33 +182,38 @@ public class PresentFacade {
     // Direct ds-storage record JSON
     private static StreamingOutput getRecordsSolr(DSCollection collection, Long mTime, Long maxRecords,
                                                   HttpServletResponse httpServletResponse) {
+        setFilename(httpServletResponse, mTime, maxRecords, ExportWriterFactory.FORMAT.json);
         return output -> {
-            try (ExportWriter writer = ExportWriterFactory.wrap(
-                    output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records")) {
-                // Hacking the output to confirm to Solr's non-valid JSON: https://solr.apache.org/guide/8_10/uploading-data-with-index-handlers.html#sending-json-update-commands
-                ((JSONStreamWriter) writer).setPreOutput("{\n");
-                ((JSONStreamWriter) writer).setPostOutput("\n}\n");
-                Stream<DsRecordDto> records;
-                try {
-                    records = collection.getDSRecords(mTime, maxRecords, "SolrJSON");
-                } catch (Exception e) {
-                    writer.close();
-                    log.warn("Exception requesting records for Solr export with collection='{}', mTime={}, maxRecords={}",
-                             collection, mTime, maxRecords);
-                    throw new InternalServerErrorException("Exception requesting records for SolrJSON format", e);
-                }
-                try {
-                    records.map(PresentFacade::wrapSolrJSON)
-                            .forEach(writer::write);
-             //       writer.close();
-                } catch (Exception e) {
-                    log.warn(String.format(
-                                     Locale.ROOT,
-                                     "Exception delivering Solr records with collection='%s', mTime=%d, maxRecords=%d",
-                                     collection, mTime, maxRecords),
-                             e);
-                }
+            ExportWriter writer = ExportWriterFactory.wrap(
+                    output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records");
+            // Hacking the output to confirm to Solr's non-valid JSON: https://solr.apache.org/guide/8_10/uploading-data-with-index-handlers.html#sending-json-update-commands
+            ((JSONStreamWriter) writer).setPreOutput("{\n");
+            ((JSONStreamWriter) writer).setPostOutput("\n}\n");
+            Stream<DsRecordDto> records;
+            try {
+                records = collection.getDSRecords(mTime, maxRecords, "SolrJSON");
+            } catch (Exception e) {
+                writer.close();
+                log.warn("Exception requesting records for Solr export with collection='{}', mTime={}, maxRecords={}",
+                         collection, mTime, maxRecords);
+                throw new InternalServerErrorException("Exception requesting records for SolrJSON format", e);
             }
+            try {
+                records.map(PresentFacade::wrapSolrJSON)
+                        .forEach(writer::write);
+                //       writer.close();
+            } catch (Exception e) {
+                String message = String.format(
+                        Locale.ROOT,
+                        "Exception delivering Solr records with collection='%s', mTime=%d, maxRecords=%d",
+                        collection.getId(), mTime, maxRecords);
+                log.warn(message, e);
+                throw new InternalServiceException(message);
+            }
+            // We do not use
+            // try (ExportWriter writer = ExportWriterFactory.wrap(...
+            // as that absorbs any thrown Exceptions
+            writer.close();
         };
     }
 
