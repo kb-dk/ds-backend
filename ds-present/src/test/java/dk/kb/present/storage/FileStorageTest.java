@@ -35,7 +35,6 @@ class FileStorageTest {
     void DSRecordAccess() throws IOException {
         Storage storage = getStorage();
         assertTrue(storage.getDSRecord("henrik-hertz.xml").getData().contains("Henrik"));
-        System.out.println(storage.getDSRecord("henrik-hertz.xml"));
     }
 
     private Storage getStorage() throws IOException {

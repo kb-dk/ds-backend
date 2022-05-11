@@ -28,8 +28,6 @@ class CombinerTest {
     void iterateFromStream() {
         Stream<Integer> foreverStream = Stream.generate(() -> new Random().nextInt());
         Iterator<Integer> foreverIterator = foreverStream.iterator();
-        System.out.println("First: " + foreverIterator.next());
-        System.out.println("Second: " + foreverIterator.next());
     }
 
     @Test

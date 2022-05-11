@@ -69,7 +69,6 @@ class PresentFacadeTest {
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord-lines");
         String result = toString(out);
-        System.out.println(result);
         assertTrue(result.contains("\"id\":\"tystrup-soroe.xml\",\"deleted\":false"));
         assertFalse(result.contains(",\n"), "Result should not contain a comma followed by newline as it should be a multi-entry JSON-Lines");
         assertFalse(result.endsWith("]\n"), "Result should not end with ']' as it should be in JSON-Lin es");
@@ -97,7 +96,6 @@ class PresentFacadeTest {
     void getRecordsSolr() throws IOException {
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "SolrJSON");
         String result = toString(out);
-        System.out.println(result);
     }
 
     private String toString(StreamingOutput out) throws IOException {

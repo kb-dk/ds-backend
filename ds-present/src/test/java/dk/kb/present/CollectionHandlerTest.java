@@ -77,7 +77,6 @@ class CollectionHandlerTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         CollectionHandler ch = new CollectionHandler(conf);
         String record = ch.getRecord("local:albert-einstein.xml", "mods");
-        System.out.println(record);
         assertTrue(record.contains("<md:title>Letter from Einstein, Albert to Simonsen, David</md:title>"));
     }
 
