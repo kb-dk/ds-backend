@@ -135,14 +135,14 @@ public class DsPresentApiServiceImpl implements DsPresentApi {
     }
 
     @Override
-    public StreamingOutput getRecords(String recordBase, Long mTime, Long maxRecords, String format) {
-        if (recordBase == null) {
-            throw new InternalServiceException("recordBase must be specified but was not");
+    public StreamingOutput getRecords(String collection, Long mTime, Long maxRecords, String format) {
+        if (collection == null) {
+            throw new InternalServiceException("collection must be specified but was not");
         }
         long finalMTime = mTime == null ? 0L : mTime;
         long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
         try {
-            return PresentFacade.getRecords(httpServletResponse, recordBase, finalMTime, finalMaxRecords, format);
+            return PresentFacade.getRecords(httpServletResponse, collection, finalMTime, finalMaxRecords, format);
         } catch (Exception e){
             throw handleException(e);
         }
