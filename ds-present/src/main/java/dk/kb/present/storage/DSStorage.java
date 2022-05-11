@@ -100,11 +100,13 @@ public class DSStorage implements Storage {
 
     @Override
     public String getRecord(String id) {
+        log.debug("getRecord(id='{}') called", id);
         return getDSRecord(id).getData();
     }
 
     @Override
     public DsRecordDto getDSRecord(String id){
+        log.debug("getDSRecord(id='{}') called", id);
         try {
             return dsStorageClient.getRecord(id);
         } catch (ApiException e) {
@@ -115,6 +117,7 @@ public class DSStorage implements Storage {
 
     @Override
     public Stream<DsRecordDto> getDSRecords(final String recordBase, long mTime, long maxRecords) {
+        log.debug("getDSRecords(recordBase='{}', mTime={}, maxRecords={}) called", recordBase, mTime, maxRecords);
         String finalRecordBase = recordBase == null ? this.recordBase : recordBase;
 
         if (finalRecordBase == null || finalRecordBase.isEmpty()) {
