@@ -266,17 +266,17 @@ public class FileStorage implements Storage {
      * @param maxRecords the maximum number of records to deliver. -1 means no limit.
      * @return a list of records in the folder satisfying the constraints.
      */
+    @SuppressWarnings("ConstantConditions")
     private List<DsRecordDto> getShallow(long mTime, long maxRecords) {
-        try {
-            //noinspection ConstantConditions
-            return Files.list(folder)
+        try (Stream<Path> fileStream = Files.list(folder)) {
+            return fileStream
                     .filter(path -> path.toString().endsWith(extension))
                     .filter(path -> isAllowed(path.getFileName().toString()))
                     .map(Path::toFile)
-                    .filter(f -> mTime/1000 < f.lastModified())
+                    .filter(f -> mTime / 1000 < f.lastModified())
                     .map(this::getShallow)
                     .sorted(Comparator.comparingLong(DsRecordDto::getmTime)) // We know it is always set in getShallow
-                    .limit(maxRecords == -1 ?Long.MAX_VALUE : maxRecords)
+                    .limit(maxRecords == -1 ? Long.MAX_VALUE : maxRecords)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new InternalServiceException("Unable to resolve records");
