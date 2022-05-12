@@ -5,10 +5,6 @@ providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument
 
 Developed and maintained by the Royal Danish Library.
 
-## Status
-
-This project is at the "first real attempt"-status: Connections to ds-storage and simple 1-input-1-output
-transformations are working.
 
 ## Requirements
 
@@ -56,13 +52,22 @@ the README, using the Solr setup from `nested-template/conf/`. This boils down t
 Check that the collection was created by visiting
 [http://localhost:10007/solr/#/~cloud?view=graph](http://localhost:10007/solr/#/~cloud?view=graph)
 
-### Extract SolrJSONDocuments
+### Extract SolrJSONDocuments and index in Solr
 
 With `ds-storage` populated with the sample documents and `ds-present` running, use the 
-[ds-present Swagger GUI](http://localhost:9073/ds-present/api/) to call 
-[/records](http://localhost:9073/ds-present/api/#/ds-present/records) for ``
+[ds-present API](http://localhost:9073/ds-present/api/) to call 
+[/records](http://localhost:9073/ds-present/api/#/ds-present/records) for collection `remote`
+and send them to Solr. 
 
+This can be done from the command line with
+```shell
+curl -s 'http://localhost:9073/ds-present/v1/records?collection=remote&maxRecords=1000&format=SolrJSON' > solrdocs.json
 
+Indekser dem i Solr:
+
+curl -X POST -H 'Content-Type: application/json' 'http://localhost:10007/solr/ds/update' --data-binary @solrdocs.json
+curl -X POST -H 'Content-Type: application/json' 'http://localhost:10007/solr/ds/update' --data-binary '{ "commit": {} }'
+```
 
 ## General setup
 

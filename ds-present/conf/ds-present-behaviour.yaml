@@ -10,6 +10,10 @@
 #
 config:
   # List of backing storages. This information should be overridden in ds-present-environment.yaml
+
+  # The storages defined in this file are
+  # * ds-storage, expecting https://github.com/kb-dk/ds-storage/ to be running locally with the default port
+  # * folder, serving sample files
   storages:
     # There can be multiple defined storages. The outer YAML key is used as the ID for the storage.
     - main:
@@ -20,7 +24,7 @@ config:
         # the implementation (aka type) of the backend
         #
         # Available backends are
-        # ds-storage: Connection to a https://github.com/kb-dk/ds-storage/ instance
+        # ds-storage: A local instance of https://github.com/kb-dk/ds-storage/
         # folder:     Local files under the stated folder. Use only for test as the implementation in unsecure
         backends:
           # The ds-storage backend connects to a running https://github.com/kb-dk/ds-storage/ instance
