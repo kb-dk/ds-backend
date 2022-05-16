@@ -208,7 +208,8 @@
                         <xsl:when test="@type">
                           <xsl:choose>
                             <xsl:when test="contains(@type,'citation/reference')">reference</xsl:when>
-                            <xsl:when test="contains( @displayLabel,'ript')">script</xsl:when>
+                            <xsl:when test="@displayLabel = 'Script'">script</xsl:when>
+                            <xsl:when test="@displayLabel = 'Script: detail'">script_detail</xsl:when>
                             <xsl:otherwise><xsl:value-of select="my:escape_stuff(@type)"/></xsl:otherwise>
                           </xsl:choose>
                         </xsl:when>
