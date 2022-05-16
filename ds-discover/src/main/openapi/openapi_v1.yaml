@@ -4,8 +4,6 @@ info:
   title: '${project.name}'
   description: |
     ${project.description}
-  contact:
-    email: '${user.name}@kb.dk'
   license:
     name: '${license.name}'
     url: '${license.url}'
@@ -81,290 +79,116 @@ paths:
               schema:
                 type: string
 
-  # TODO: Sample endpoint. Remove when building a concrete application
-  # This definition uses parameters: http://example.com/myservice/v1/hello?alternateHello=Boston
-  /hello:
+  /solr/{collection}/select:
     get:
       tags:
         - '${project.name}'
-      summary: 'Request a Hello World message, for testing purposes'
-      operationId: getGreeting
+      summary: 'Perform a Solr-compatible search in the stated collection'
+      operationId: solrSearch
       parameters:
-        - name: alternateHello
-          in: query
-          description: 'Optional alternative to using the word ''Hello'' in the reply'
-          required: false
-          schema:
-            type: string
-            default: 'World'
-      responses:
-        '200':
-          description: 'A JSON structure containing a Hello World message'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HelloReply'
-
-  # TODO: Sample endpoint. Remove when building a concrete application
-  # This definition uses path: http://example.com/api/article/article-123A-v2
-  /article/{id}:
-    get:
-      tags:
-        - '${project.name}'
-      summary: 'Sample OpenAPI definition for a service that constructs a PDF and delivers it'
-      operationId: getArticle
-      # We assume a very large response here: Too large for showing directly in the Swagger UI.
-      # The Content-Disposition for "x-streamingOutput: true" is set to disable inline display in Swagger UI, but
-      # keep inline display when the link is pasted directly in a browser. Inspect the generated code for tweaks.
-      x-streamingOutput: true
-      parameters:
-        - name: id
+        - name: collection
           in: path
-          description: 'The ID of the article to process'
+          description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections'
           required: true
           schema:
             type: string
-            # Note: Constraints are not enforced by Swagger. They are only used as a contract
-            minLength: 1
-            example: 'article-123A-v2'
-      responses:
-        '200':
-          description: 'OK'
-          content:
-            text/plain:
-              schema:
-                type: string
-        '404':
-          description: 'Article ID is unknown'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  # TODO: Sample endpoint. Remove when building a concrete application
-  # A demonstration of using the same API endpoint for retrieval, deletion and addition/update
-  # This is more or less a mirror of /pet in https://petstore3.swagger.io/
-  /book/{id}:
-    get:
-      tags:
-        - '${project.name}'
-      summary: 'Retrieves metadata for a single book'
-      operationId: getBook
-      parameters:
-        - name: id
-          in: path
-          description: 'The ID for the book to retrieve'
+            default: 'ds'
+            example: 'ds'
+        - name: q
+          in: query
+          description: 'Solr query param [https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters](q)'
           required: true
           schema:
             type: string
-            # Note: Constraints are not enforced by Swagger. They are only used as a contract
-            minLength: 1
-            example: 'book_id87'
+            default: '*:*'
+            example: '*:*'
       responses:
         '200':
-          description: 'Structured representation of the Book.'
+          description: 'JSON structure with Solr response'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Book'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Book'
-        '404':
-          description: 'Not found'
-          content:
-            text/plain:
-              schema:
+                description: |
+                  Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
                 type: string
-                example: "HTTP 404: Not Found"
-    delete:
-      tags:
-        - '${project.name}'
-      summary: 'Deletes metadata for a single book'
-      operationId: deleteBook
-      parameters:
-        - name: id
-          in: path
-          description: 'The ID for the book to delete'
-          required: true
-          schema:
-            type: string
-            # Note: Constraints are not enforced by Swagger. They are only used as a contract
-            minLength: 1
-            example: 'book_id87'
-      responses:
-        '200':
-          description: 'OK'
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: 'Metadata for book "book_id87" was successfully deleted'
-        '404':
-          description: 'Not found'
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "HTTP 404: Not Found"
 
-  # TODO: Sample endpoint. Remove when building a concrete application
-  /book:
-    post:
-      tags:
-        - '${project.name}'
-      summary: 'Add or update a single book'
-      operationId: addBook
-      responses:
-         '200':
-           description: 'If the book was added successfully'
-           content:
-             application/json:
-               schema:
-                 $ref: '#/components/schemas/Book'
-      requestBody:
-         description: 'Add or update a single book'
-         required: true
-         content:
-           application/json:
-             schema:
-               $ref: '#/components/schemas/Book'
-           application/xml:
-             schema:
-               $ref: '#/components/schemas/Book'
-           application/x-www-form-urlencoded:
-             schema:
-               $ref: '#/components/schemas/Book'
-
-  # TODO: Sample endpoint. Remove when building a concrete application
-  # A demonstration of streaming delivery of arbitrary size
-  # Also demonstrates different delivery formats (CVS, JSON, JSON-Lines)
-  /books:
+  /solr/admin/collections:
     get:
       tags:
         - '${project.name}'
-      summary: 'Delivers metadata on books'
-      operationId: getBooks
-      # We assume a very large response here: Too large for showing directly in the Swagger UI.
-      # The Content-Disposition for "x-streamingOutput: true" is set to disable inline display in Swagger UI, but
-      # keep inline display when the link is pasted directly in a browser. Inspect the generated code for tweaks.
-      x-streamingOutput: true
+      summary: 'Solr [Collection Management Commands](https://solr.apache.org/guide/8_10/collection-management.html)'
+      operationId: collectionAction
       parameters:
-        - name: query
+        - name: action
           in: query
-          description: 'Search query for the books'
+          description: | 
+            Collection-action to perform. Note that some actions require high-level permissions:
+            * [LIST](https://solr.apache.org/guide/8_10/collection-management.html#list)
+            * [DELETE](https://solr.apache.org/guide/8_10/collection-management.html#delete)
+          required: true
+          schema:
+            type: string
+            enum:  ['LIST', 'DELETE']
+            example: 'LIST'
+            default: 'LIST'
+        - name: name
+          in: query
+          description: | 
+            Mandatory for the action [DELETE](https://solr.apache.org/guide/8_10/collection-management.html#delete)
+            The name of the collection to delete.
           required: false
           schema:
             type: string
-            # Note: Constraints are not enforced by Swagger. They are only used as a contract
-            minLength: 1
-            example: 'horses OR cows'
-        - name: max
+            example: 'ds'
+        - name: async
           in: query
-          description: 'The maximum number of books to return'
+          description: | 
+            Optional for the action [DELETE](https://solr.apache.org/guide/8_10/collection-management.html#delete)
+            Request ID to track this action which will be processed asynchronously.
           required: false
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-            example: 87
-        - name: format
-          in: query
-          required: false
-          description: |
-            The delivery format. This can also be specified using headers, as seen in the Responses section.
-            If both headers and format are specified, format takes precedence.
-
-            * JSONL: Newline separated single-line JSON representations of Books
-            * JSON: Valid JSON in the form of a single array of Books
-            * XML: Valid XML in the form of a single container with Books
-            * CSV: Comma separated, missing values represented with nothing, strings encapsulated in quotes
           schema:
             type: string
-            enum:  ['JSONL', 'JSON', 'XML', 'CSV']
-            example: 'JSONL'
       responses:
         '200':
-          description: 'OK'
+          description: 'JSON structure with Solr collection action response'
           content:
-            # application/x-jsonlines is another possibility. Potayto, potahto
-            application/x-ndjson:
-              schema:
-                description: 'Newline separated single-line JSON representations of Books.\n
-                              See https://github.com/ndjson/ndjson-spec or https://jsonlines.org/ for the format'
-                type: string
             application/json:
               schema:
-                description: 'JSON-compliant representation of Books. Note that the structure can be unwieldy for
-                              parsing large exports, if the receiver does not use a streaming parser.
-                              Consider using application/x-ndjson instead'
-                type: array
-                items:
-                  $ref: '#/components/schemas/Book'
-            application/xml:
-              schema:
-                description: 'XML-compliant representation of Books.'
-                type: array
-                items:
-                  $ref: '#/components/schemas/Book'
-            text/csv:
-              schema:
-                description: 'Comma Separated Values, with strings quoted and newline as the string'
                 type: string
-        '400':
-          description: 'HTTP 400: Bad request'
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: 'Bad request'
 
-  # TODO: Sample endpoint. Remove when building a concrete application
-  # This definition uses multi-part POST to allow for uploading of an image with arguments
-  # https://swagger.io/docs/specification/describing-request-body/file-upload/
-  /colorizer:
-    post:
+  /solr/admin/configs:
+    get:
       tags:
         - '${project.name}'
-      summary: 'Perform some image processing and return the result as an image'
-      operationId: colorize
-      # In this case we would probably want to tweak the generated code for Content-Disposition so that the
-      # delivered image is displayed inline when using the Swagger UI. Inspect the generated code for how to do this.
-      x-streamingOutput: true
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              required:
-                - image
-              properties:
-                # The POSTed image can be retrieved using imageDetail.getDataHandler().getInputStream()
-                image:
-                  description: 'The image to use as source for the colorization'
-                  type: string
-                  format: binary
-                method:
-                  description: 'The algorithm used to colorize the image'
-                  type: string
-                  enum: [Random, CNN-1, GAN-1]
-                  default: GAN-1
-                  example: GAN-1
-                intensity:
-                  description: 'The intensity of the colorization'
-                  type: number
-                  format: double
-                  # Note: Constraints are not enforced by Swagger. They are only used as a contract
-                  minimum: 0.0
-                  maximum: 1.0
-                  default: 0.8
-                  example: 0.8
-
+      summary: 'Solr [Configsets Commands](https://solr.apache.org/guide/8_10/configsets-api.html)'
+      operationId: configAction
+      parameters:
+        - name: action
+          in: query
+          description: | 
+            Configset-action to perform. Note that some actions require high-level permissions:
+            * [LIST](https://solr.apache.org/guide/8_10/configsets-api.html#configsets-list)
+            * [DELETE](https://solr.apache.org/guide/8_10/configsets-api.html#configsets-delete)
+          required: true
+          schema:
+            type: string
+            enum:  ['LIST', 'DELETE']
+            example: 'LIST'
+            default: 'LIST'
+        - name: name
+          in: query
+          description: | 
+            Mandatory for the action [DELETE](https://solr.apache.org/guide/8_10/configsets-api.html#configsets-delete)
+            The name of the configset to delete.
+          required: false
+          schema:
+            type: string
+            example: 'ds-conf'
       responses:
         '200':
-          description: 'The colorized image'
+          description: 'JSON structure with Solr configset action response'
           content:
-            image/jpeg:
+            application/json:
               schema:
                 type: string
 
@@ -408,40 +232,6 @@ components:
           type: string
           description: 'Self diagnosed health'
           example: 'ok'
-
-    # TODO: Sample component. Remove when building a concrete application
-    HelloReply:
-      type: object
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          description: 'Greeting from the API'
-
-    # TODO: Sample component. Remove when building a concrete application
-    Book:
-      type: object
-      required:
-        - id
-        - title
-      properties:
-        id:
-          type: string
-          description: 'Book ID'
-          example: 'book_bookid87'
-          xml:
-            attribute: true
-        title:
-          type: string
-          description: 'Book title'
-          example: 'Disappeared by the Storm'
-        pages:
-          type: integer
-          format: int32
-          example: 43
-      xml:
-        name: book
 
     Error:
       type: object
