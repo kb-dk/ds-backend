@@ -26,6 +26,7 @@ import dk.kb.present.webservice.JSONStreamWriter;
 import dk.kb.present.webservice.exception.InternalServiceException;
 import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
+import dk.kb.present.webservice.exception.ServiceException;
 import dk.kb.util.json.JSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -203,6 +204,9 @@ public class PresentFacade {
                         .forEach(writer::write);
                 //       writer.close();
             } catch (Exception e) {
+                if (e instanceof ServiceException) {
+                    throw e;
+                }
                 String message = String.format(
                         Locale.ROOT,
                         "Exception delivering Solr records with collection='%s', mTime=%d, maxRecords=%d",
