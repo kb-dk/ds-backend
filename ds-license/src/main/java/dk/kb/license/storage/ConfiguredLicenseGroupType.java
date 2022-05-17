@@ -1,7 +1,7 @@
 package dk.kb.license.storage;
 
 
-public class ConfiguredDomLicenseGroupType extends Persistent {
+public class ConfiguredLicenseGroupType extends Persistent {
 
 
 	private String key;
@@ -12,7 +12,7 @@ public class ConfiguredDomLicenseGroupType extends Persistent {
 	private String query;
 	private boolean mustGroup;
 	
-	public ConfiguredDomLicenseGroupType(Long id, String key,  String value_dk ,String value_en, String description_dk,String description_en, String query, boolean mustGroup) {
+	public ConfiguredLicenseGroupType(Long id, String key,  String value_dk ,String value_en, String description_dk,String description_en, String query, boolean mustGroup) {
 		super();
 		this.id = id;
 		this.key=key;

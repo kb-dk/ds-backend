@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.license.storage.ConfiguredDomAttributeType;
-import dk.kb.license.storage.ConfiguredDomLicenseGroupType;
-import dk.kb.license.storage.ConfiguredDomLicensePresentationType;
+import dk.kb.license.storage.ConfiguredAttributeType;
+import dk.kb.license.storage.ConfiguredLicenseGroupType;
+import dk.kb.license.storage.ConfiguredLicensePresentationType;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.storage.LicenseModuleStorage;
@@ -30,7 +30,7 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache
     }
 
-    public static ArrayList<ConfiguredDomLicensePresentationType> getDomLicensePresentationTypes() throws Exception {
+    public static ArrayList<ConfiguredLicensePresentationType> getDomLicensePresentationTypes() throws Exception {
        return performStorageAction("persistDomLicensePresentationType()", storage -> {
             return storage.getDomLicensePresentationTypes();                   
         });
@@ -114,7 +114,7 @@ public class LicenseModuleFacade {
     
 
     
-    public static ArrayList<ConfiguredDomLicenseGroupType> getDomLicenseGroupTypes() throws Exception {
+    public static ArrayList<ConfiguredLicenseGroupType> getDomLicenseGroupTypes() throws Exception {
    
         return performStorageAction("getDomLicenseGroupTypes()", storage -> {
             return storage.getDomLicenseGroupTypes();
@@ -143,7 +143,7 @@ public class LicenseModuleFacade {
     }
      
     
-    public static ArrayList<ConfiguredDomAttributeType> getDomAttributeTypes() throws Exception {
+    public static ArrayList<ConfiguredAttributeType> getDomAttributeTypes() throws Exception {
         return performStorageAction("getDomAttributeTypes()", storage -> {
             return storage.getDomAttributeTypes();                    
         });                                       

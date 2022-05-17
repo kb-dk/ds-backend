@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.license.facade.LicenseModuleFacade;
-import dk.kb.license.storage.ConfiguredDomLicenseGroupType;
-import dk.kb.license.storage.ConfiguredDomLicensePresentationType;
+import dk.kb.license.storage.ConfiguredLicenseGroupType;
+import dk.kb.license.storage.ConfiguredLicensePresentationType;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.validation.LicenseValidator;
@@ -191,7 +191,7 @@ public class ConfigurationServlet extends HttpServlet {
 		StringBuilder infoMessage = new StringBuilder();   
 		//parse input first.
 		ValidateAccessInputDTO input = new ValidateAccessInputDTO();
-		ConfiguredDomLicensePresentationType presentationType = null;
+		ConfiguredLicensePresentationType presentationType = null;
 		ArrayList<UserObjAttributeDTO> attributes;
 		try{
 
@@ -217,8 +217,8 @@ public class ConfigurationServlet extends HttpServlet {
 		//The following logic is taken from LicenseValidator.validateAccess().
 		//I see no other way that to repeat it when I want to the decomposition.
 
-		ArrayList<ConfiguredDomLicenseGroupType> groupsType = null;
-		ArrayList<ConfiguredDomLicenseGroupType> mustGroups = null; 
+		ArrayList<ConfiguredLicenseGroupType> groupsType = null;
+		ArrayList<ConfiguredLicenseGroupType> mustGroups = null; 
 		try{
 			boolean validated = LicenseValidator.validateAccess(input);
 			infoMessage.append("Resultat af validateAccess() kald:"+validated +" \n");

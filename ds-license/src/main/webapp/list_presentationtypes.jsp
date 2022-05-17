@@ -1,6 +1,4 @@
-<%
-  ArrayList<ConfiguredDomLicensePresentationType> configuredLicenseTypes = LicenseCache.getConfiguredDomLicenseTypes();    
-%>
+<%ArrayList<ConfiguredLicensePresentationType> configuredLicenseTypes = LicenseCache.getConfiguredDomLicenseTypes();%>
 <table class="table table-condensed table-hover">
    <thead>
    <tr>
@@ -11,8 +9,9 @@
    </tr>
    </thead>
    <tbody>
-<% for (int i = 0;i< configuredLicenseTypes.size();i++ ){
-  ConfiguredDomLicensePresentationType current = configuredLicenseTypes.get(i);
+<%
+for (int i = 0;i< configuredLicenseTypes.size();i++ ){
+  ConfiguredLicensePresentationType current = configuredLicenseTypes.get(i);
 %>
    <tr class="<%=Util.getStyle(i)%>">
       <td><%=current.getId()%></td>

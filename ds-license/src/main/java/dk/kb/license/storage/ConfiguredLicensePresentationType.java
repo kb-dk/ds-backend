@@ -1,12 +1,12 @@
 package dk.kb.license.storage;
 
-public class ConfiguredDomLicensePresentationType extends Persistent {
+public class ConfiguredLicensePresentationType extends Persistent {
 	
 	private String key;
 	private String value_dk;
 	private String value_en;
 		
-	public ConfiguredDomLicensePresentationType(long id, String key, String value_dk, String value_en) {
+	public ConfiguredLicensePresentationType(long id, String key, String value_dk, String value_en) {
 		super();
 		this.id = id;
 		this.key=key;

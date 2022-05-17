@@ -21,15 +21,14 @@
 <body>
 <%
 String id = request.getParameter("grouptypeId");
-ArrayList<ConfiguredDomLicenseGroupType> allTypes  = LicenseCache.getConfiguredDomLicenseGroupTypes();      
-ConfiguredDomLicenseGroupType edit = null;
-for ( ConfiguredDomLicenseGroupType current : allTypes){
+ArrayList<ConfiguredLicenseGroupType> allTypes  = LicenseCache.getConfiguredDomLicenseGroupTypes();      
+ConfiguredLicenseGroupType edit = null;
+for ( ConfiguredLicenseGroupType current : allTypes){
    if (( current.getId() + "").equals(id)){
     edit=current;
     break;
    }
 }
-
 %>
 
 <script>

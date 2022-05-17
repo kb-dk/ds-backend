@@ -21,15 +21,14 @@
 <body>
 <%
 String id = request.getParameter("presentationtypeId");
-ArrayList<ConfiguredDomLicensePresentationType> allTypes  = LicenseCache.getConfiguredDomLicenseTypes();      
-ConfiguredDomLicensePresentationType edit = null;
-for ( ConfiguredDomLicensePresentationType current : allTypes){
+ArrayList<ConfiguredLicensePresentationType> allTypes  = LicenseCache.getConfiguredDomLicenseTypes();      
+ConfiguredLicensePresentationType edit = null;
+for ( ConfiguredLicensePresentationType current : allTypes){
    if (( current.getId() + "").equals(id)){
     edit=current;
     break;
    }
 }
-
 %>
 
 <script>

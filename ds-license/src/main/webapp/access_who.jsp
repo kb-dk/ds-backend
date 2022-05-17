@@ -1,11 +1,10 @@
 
 <%
- ArrayList<ConfiguredDomLicenseGroupType> configuredDomGroups = LicenseCache.getConfiguredDomLicenseGroupTypes();
- ArrayList<ConfiguredDomLicensePresentationType> configuredDomsLicenseTypes = LicenseCache.getConfiguredDomLicenseTypes();
+ArrayList<ConfiguredLicenseGroupType> configuredDomGroups = LicenseCache.getConfiguredDomLicenseGroupTypes();
+ ArrayList<ConfiguredLicensePresentationType> configuredDomsLicenseTypes = LicenseCache.getConfiguredDomLicenseTypes();
 
  //variable 'license' is already known here, from the page that included this page
  ArrayList<LicenseContent> domGroups =  license.getLicenseContents();
-
 %>
 
 <table class="table table-condensed table-hover">

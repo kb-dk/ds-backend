@@ -1,6 +1,4 @@
-<%  
-  ArrayList<ConfiguredDomAttributeType> configuredAttributeTypes = LicenseCache.getConfiguredDomAttributeTypes();
-%>
+<%ArrayList<ConfiguredAttributeType> configuredAttributeTypes = LicenseCache.getConfiguredDomAttributeTypes();%>
 <table class="table table-condensed table-hover">
    <thead>
    <tr>
@@ -10,8 +8,9 @@
    </tr>
    </thead>
    <tbody>
-<% for (int i = 0;i< configuredAttributeTypes.size();i++ ){
-  ConfiguredDomAttributeType current = configuredAttributeTypes.get(i);
+<%
+for (int i = 0;i< configuredAttributeTypes.size();i++ ){
+  ConfiguredAttributeType current = configuredAttributeTypes.get(i);
 %>
    <tr class="<%=Util.getStyle(i)%>">
       <td><%=current.getId()%></td>

@@ -1,8 +1,8 @@
 
 <%
-    String selectName = (String) request.getAttribute("selectName");
+String selectName = (String) request.getAttribute("selectName");
     String selectValue = (String) request.getAttribute("selectValue");
-    ArrayList<ConfiguredDomAttributeType> options= LicenseCache.getConfiguredDomAttributeTypes();
+    ArrayList<ConfiguredAttributeType> options= LicenseCache.getConfiguredDomAttributeTypes();
 %>
 
 <select name="<%=selectName%>" class="span4">  

@@ -17,12 +17,12 @@ public class LicenseCache {
 
 	// Cached instances
 	private static ArrayList<License> cachedLicenses;
-	private static ArrayList<ConfiguredDomLicenseGroupType> cachedDomLicenseGroupTypes;
-	private static ArrayList<ConfiguredDomLicenseGroupType> cachedDomLicenseMustGroupTypes;
-	private static ArrayList<ConfiguredDomAttributeType> cachedDomAttributeTypes;
-	private static ArrayList<ConfiguredDomLicensePresentationType> cachedDomLicensePresentationTypes;
-    private static HashMap<String, ConfiguredDomLicenseGroupType> groupIdMap;
-    private static HashMap<String, ConfiguredDomLicensePresentationType> presentationTypeIdMap;
+	private static ArrayList<ConfiguredLicenseGroupType> cachedDomLicenseGroupTypes;
+	private static ArrayList<ConfiguredLicenseGroupType> cachedDomLicenseMustGroupTypes;
+	private static ArrayList<ConfiguredAttributeType> cachedDomAttributeTypes;
+	private static ArrayList<ConfiguredLicensePresentationType> cachedDomLicensePresentationTypes;
+    private static HashMap<String, ConfiguredLicenseGroupType> groupIdMap;
+    private static HashMap<String, ConfiguredLicensePresentationType> presentationTypeIdMap;
     
 	private static final Logger log = LoggerFactory.getLogger(LicenseCache.class);
 	private static final long reloadIntervalInSec = 15 * 1000 * 60L; // 15 minutes
@@ -33,23 +33,23 @@ public class LicenseCache {
 		return cachedLicenses;
 	}
 
-	public static ArrayList<ConfiguredDomLicenseGroupType> getConfiguredDomLicenseGroupTypes() {
+	public static ArrayList<ConfiguredLicenseGroupType> getConfiguredDomLicenseGroupTypes() {
 		checkReload();
 		return cachedDomLicenseGroupTypes;
 	}
 
-	public static ArrayList<ConfiguredDomLicenseGroupType> getConfiguredMUSTDomLicenseGroupTypes() {
+	public static ArrayList<ConfiguredLicenseGroupType> getConfiguredMUSTDomLicenseGroupTypes() {
 		checkReload();
 		return cachedDomLicenseMustGroupTypes;
 	}
 
-	public static ArrayList<ConfiguredDomAttributeType> getConfiguredDomAttributeTypes() {
+	public static ArrayList<ConfiguredAttributeType> getConfiguredDomAttributeTypes() {
 		checkReload();
 		return cachedDomAttributeTypes;
 
 	}
 
-	public static ArrayList<ConfiguredDomLicensePresentationType> getConfiguredDomLicenseTypes() {
+	public static ArrayList<ConfiguredLicensePresentationType> getConfiguredDomLicenseTypes() {
 		checkReload();
 		return cachedDomLicensePresentationTypes;
 	}
@@ -83,7 +83,7 @@ public class LicenseCache {
 			cachedDomLicenseGroupTypes = storage.getDomLicenseGroupTypes();
 
 			// Load DomLicenseMustGroupTypes
-			ArrayList<ConfiguredDomLicenseGroupType> allList = storage.getDomLicenseGroupTypes();
+			ArrayList<ConfiguredLicenseGroupType> allList = storage.getDomLicenseGroupTypes();
 			cachedDomLicenseMustGroupTypes = LicenseValidator.filterMustGroups(allList);
 
 			// Load DomAttributeTypes
@@ -94,14 +94,14 @@ public class LicenseCache {
 			cachedDomLicensePresentationTypes = storage.getDomLicensePresentationTypes();
 		
 		    //create Dk2En name map
-			groupIdMap = new HashMap<String,ConfiguredDomLicenseGroupType>();
+			groupIdMap = new HashMap<String,ConfiguredLicenseGroupType>();
 			
-            for (ConfiguredDomLicenseGroupType current : cachedDomLicenseGroupTypes){
+            for (ConfiguredLicenseGroupType current : cachedDomLicenseGroupTypes){
             	groupIdMap.put(current.getKey(), current);            	
             }
             
-            presentationTypeIdMap = new HashMap<String, ConfiguredDomLicensePresentationType>();
-            for (ConfiguredDomLicensePresentationType current : cachedDomLicensePresentationTypes){
+            presentationTypeIdMap = new HashMap<String, ConfiguredLicensePresentationType>();
+            for (ConfiguredLicensePresentationType current : cachedDomLicensePresentationTypes){
             	presentationTypeIdMap.put(current.getKey(), current);            	
             }
 			

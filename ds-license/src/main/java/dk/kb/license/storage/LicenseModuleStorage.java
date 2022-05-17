@@ -234,9 +234,9 @@ public class LicenseModuleStorage implements AutoCloseable {
        
     }
 
-    public ArrayList<ConfiguredDomLicensePresentationType> getDomLicensePresentationTypes() throws SQLException {
+    public ArrayList<ConfiguredLicensePresentationType> getDomLicensePresentationTypes() throws SQLException {
 
-        ArrayList<ConfiguredDomLicensePresentationType> list = new ArrayList<ConfiguredDomLicensePresentationType>();
+        ArrayList<ConfiguredLicensePresentationType> list = new ArrayList<ConfiguredLicensePresentationType>();
 
         try (PreparedStatement stmt = connection.prepareStatement(selectDomLicensePresentationTypesQuery);) {
 
@@ -247,7 +247,7 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String key = rs.getString(KEY_COLUMN);
                 String value = rs.getString(VALUE_DK_COLUMN);
                 String value_en = rs.getString(VALUE_EN_COLUMN);
-                ConfiguredDomLicensePresentationType item = new ConfiguredDomLicensePresentationType(id, key, value,
+                ConfiguredLicensePresentationType item = new ConfiguredLicensePresentationType(id, key, value,
                         value_en);
                 list.add(item);
             }
@@ -506,9 +506,9 @@ public class LicenseModuleStorage implements AutoCloseable {
         //LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public ArrayList<ConfiguredDomLicenseGroupType> getDomLicenseGroupTypes() throws SQLException {
+    public ArrayList<ConfiguredLicenseGroupType> getDomLicenseGroupTypes() throws SQLException {
 
-        ArrayList<ConfiguredDomLicenseGroupType> list = new ArrayList<ConfiguredDomLicenseGroupType>();
+        ArrayList<ConfiguredLicenseGroupType> list = new ArrayList<ConfiguredLicenseGroupType>();
         try (PreparedStatement stmt = connection.prepareStatement(selectDomLicenseGroupTypesQuery);) {
 
             ResultSet rs = stmt.executeQuery();
@@ -522,7 +522,7 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
                 boolean mustGroup = rs.getBoolean(MUSTGROUP_COLUMN);
-                ConfiguredDomLicenseGroupType item = new ConfiguredDomLicenseGroupType(id, key, value_dk, value_en,
+                ConfiguredLicenseGroupType item = new ConfiguredLicenseGroupType(id, key, value_dk, value_en,
                         description, description_en, query, mustGroup);
                 list.add(item);
             }
@@ -586,16 +586,16 @@ public class LicenseModuleStorage implements AutoCloseable {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public ArrayList<ConfiguredDomAttributeType> getDomAttributeTypes() throws SQLException {
+    public ArrayList<ConfiguredAttributeType> getDomAttributeTypes() throws SQLException {
 
-        ArrayList<ConfiguredDomAttributeType> list = new ArrayList<ConfiguredDomAttributeType>();
+        ArrayList<ConfiguredAttributeType> list = new ArrayList<ConfiguredAttributeType>();
 
         try (PreparedStatement stmt = connection.prepareStatement(selectDomAttributeTypesQuery);) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Long id = rs.getLong(ID_COLUMN);
                 String value = rs.getString(VALUE_COLUMN);
-                ConfiguredDomAttributeType item = new ConfiguredDomAttributeType(id, value);
+                ConfiguredAttributeType item = new ConfiguredAttributeType(id, value);
                 list.add(item);
             }
             return list;
