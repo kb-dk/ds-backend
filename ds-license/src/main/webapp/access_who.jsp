@@ -23,7 +23,7 @@ for (int i=0;i<configuredDomGroups.size();i++){
 <tr class="<%=Util.getStyle(i)%>">
   <td  class="domsGroups">
     <label class="checkbox">
-      <input type="checkbox" <%if(Util.domGroupsContainGroupName(domGroups, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>"> <%=currentGroupName%> <%if (configuredDomGroups.get(i).isMustGroup()){out.println(" (MUST) ");} %>
+      <input type="checkbox" <%if(Util.groupsContainGroupName(domGroups, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>"> <%=currentGroupName%> <%if (configuredDomGroups.get(i).isMustGroup()){out.println(" (MUST) ");} %>
     </label>
   </td>
   <td class="allowedGroups">
@@ -33,7 +33,7 @@ for (int i=0;i<configuredDomGroups.size();i++){
     String presentationTypeName=configuredDomsLicenseTypes.get(j).getValue_dk();
    %>
   <label class="checkbox">
-      <input type="checkbox"  <%if(Util.domGroupsContainsGroupWithLicense(domGroups, currentGroupKey,presentationTypeKey)){out.println("checked");}%> name="domsGruppe_<%=i%>_license_<%=j%>"> <%=presentationTypeName%>
+      <input type="checkbox"  <%if(Util.groupsContainsGroupWithLicense(domGroups, currentGroupKey,presentationTypeKey)){out.println("checked");}%> name="domsGruppe_<%=i%>_license_<%=j%>"> <%=presentationTypeName%>
     </label>
    <%}%>
  </td>

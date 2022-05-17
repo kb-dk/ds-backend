@@ -27,7 +27,7 @@ public class Util {
 	};
 
 	// Used from JSP
-	public static boolean domGroupsContainGroupName(ArrayList<LicenseContent> groups, String domGroupName) {
+	public static boolean groupsContainGroupName(ArrayList<LicenseContent> groups, String domGroupName) {
 		for (int i = 0; i < groups.size(); i++) {
 			if (groups.get(i).getName().equalsIgnoreCase(domGroupName)) {
 				return true;
@@ -37,7 +37,7 @@ public class Util {
 	}
 
 	// Used from JSP
-	public static boolean domGroupsContainsGroupWithLicense(ArrayList<LicenseContent> groups, String domGroupKey, String presentationTypeKey) {
+	public static boolean groupsContainsGroupWithLicense(ArrayList<LicenseContent> groups, String domGroupKey, String presentationTypeKey) {
 		for (int i = 0; i < groups.size(); i++) {
 			if (groups.get(i).getName().equalsIgnoreCase(domGroupKey)) {
 				for (int j = 0; j < groups.get(i).getPresentations().size(); j++) {

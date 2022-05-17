@@ -383,7 +383,7 @@ public class LicenseValidator {
 			String groupKey = currentGroup.getKey();
 
 			for (License currentLicense : licenses){
-				boolean found = Util.domGroupsContainsGroupWithLicense(currentLicense.getLicenseContents(), groupKey, presentationType.getKey());                 
+				boolean found = Util.groupsContainsGroupWithLicense(currentLicense.getLicenseContents(), groupKey, presentationType.getKey());                 
 				if (found){ 
 					groupsFound++; //Can only happen once for each group due to the break below from inner loop
 					filteredSet.add(currentLicense); 				
@@ -408,7 +408,7 @@ public class LicenseValidator {
 		for (License currentLicense : licenses){		
 			for (ConfiguredLicenseGroupType currentGroup : groups){
 				String groupKey = currentGroup.getKey();
-				if (Util.domGroupsContainsGroupWithLicense(currentLicense.getLicenseContents(), groupKey, presentationType.getKey())){			     			        	 
+				if (Util.groupsContainsGroupWithLicense(currentLicense.getLicenseContents(), groupKey, presentationType.getKey())){			     			        	 
 					filtered.add(currentLicense);
 
 					return filtered;
