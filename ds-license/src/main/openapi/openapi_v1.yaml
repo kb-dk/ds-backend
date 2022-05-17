@@ -70,6 +70,19 @@ paths:
 components:
   schemas:
 
+
+    UserObjAttribute:
+      type: object
+      properties:
+        attribute:     
+          type: string
+          description: 'TODO'  
+        values:     
+           type: array
+           items:
+             type: integer       
+
+                    
     HelloReply:
       type: object
       required:
