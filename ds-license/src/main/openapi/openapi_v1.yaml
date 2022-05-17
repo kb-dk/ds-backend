@@ -70,6 +70,34 @@ paths:
 components:
   schemas:
 
+    CheckAccessForIdsInput:
+      properties: 
+        presentationType:
+          type: string
+        accessIds:     
+          type: array
+          items:
+            type: string       
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserObjAttribute'
+          
+          
+
+    CheckAccessForIdsOutput:    
+      type: object
+      properties:
+        presentationType:
+          type: string
+        query:     
+          type: string
+          description: 'Solr query'  
+        accessIds:     
+           type: array
+           items:
+             type: integer       
+
 
     UserObjAttribute:
       type: object
