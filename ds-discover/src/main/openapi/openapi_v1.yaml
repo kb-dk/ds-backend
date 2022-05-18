@@ -96,7 +96,7 @@ paths:
             example: 'ds'
         - name: q
           in: query
-          description: 'Solr query param [https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters](q)'
+          description: 'Solr query param [q](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)'
           required: true
           schema:
             type: string
