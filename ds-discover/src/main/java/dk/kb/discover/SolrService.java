@@ -32,6 +32,9 @@ import java.util.regex.Pattern;
 /**
  * Encapsulates assess to a Solr server.
  */
+/*
+  20220518: This is an extremely simple wrapper. No throttling, no client-side caching...
+ */
 public class SolrService {
     private static final Logger log = LoggerFactory.getLogger(SolrService.class);
 

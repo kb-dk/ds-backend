@@ -7,14 +7,20 @@ import dk.kb.discover.model.v1.ErrorDto;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import dk.kb.discover.model.v1.StatusDto;
 
 import dk.kb.discover.webservice.BuildInfoManager;
+import dk.kb.discover.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.discover.webservice.exception.ServiceException;
 import dk.kb.discover.webservice.exception.InternalServiceException;
 
+import org.apache.cxf.jaxrs.ext.MessageContextImpl;
+import org.apache.cxf.jaxrs.model.OperationResourceInfo;
+import org.apache.cxf.jaxrs.model.Parameter;
+import org.apache.cxf.jaxrs.model.ParameterType;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +29,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.io.File;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import javax.validation.constraints.NotNull;
@@ -188,6 +196,10 @@ public class DsDiscoverApiServiceImpl implements DsDiscoverApi {
      */
     @Override
     public String solrSearch(String collection, String q) throws ServiceException {
+        Map<String, String[]> extra = getExtraParams();
+        if (!extra.isEmpty()) {
+            throw new InvalidArgumentServiceException("Unsupported parameters: " + extra.keySet());
+        }
         SolrService solr = SolrManager.getSolrService(collection);
         try {
             return solr.query(q);
@@ -195,6 +207,24 @@ public class DsDiscoverApiServiceImpl implements DsDiscoverApi {
             throw handleException(e);
         }
     
+    }
+
+    /**
+     * Subtracts parameters defined for the called endpoint from the total set of parameters in the called URI,
+     * resulting in a map of unhendled parameters.
+     * @return a map of unhandled parameters.
+     */
+    private Map<String, String[]> getExtraParams() {
+        // All query params from the client call
+        Map<String, String[]> extras = new HashMap<>(httpServletRequest.getParameterMap());
+
+        // Iterate defined params and remove them from the client params, leaving unhandled params
+        // JAXRSUtils.getCurrentMessage() uses ThreadLocal, so it must be called from the caller Thread
+        JAXRSUtils.getCurrentMessage().getExchange().get(OperationResourceInfo.class).getParameters().stream()
+                .filter(param -> param.getType() == ParameterType.QUERY)
+                .map(Parameter::getName)
+                .forEach(extras::remove);
+        return extras;
     }
 
     /**
