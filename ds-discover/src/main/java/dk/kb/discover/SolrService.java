@@ -21,11 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.UriBuilder;
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -41,6 +42,13 @@ public class SolrService {
     public static final String SELECT = "select";
 
     public static final String Q = "q";
+    public static final String FQ = "fq";
+    public static final String FL = "fl";
+    public static final String QOP = "q.op";
+    public static final String WT = "wt";
+    public static final String INDENT = "indent";
+    public static final String DEBUG = "debug";
+    public static final String DEBUG_EXPLAIN_STRUCTURED = "debug.explain.structured";
 
     private final String id; // Abstract collection
 
@@ -49,6 +57,49 @@ public class SolrService {
     private final String solrCollection;
 
     private final HttpClient client = HttpClient.newHttpClient();
+
+    public enum QOP_ENUM {OR, AND;
+        static QOP_ENUM safeParse(String qOP) {
+            if (qOP == null) {
+                return AND;
+            }
+            try {
+                return QOP_ENUM.valueOf(qOP);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidArgumentServiceException(
+                        "Unsupported q.op='" + qOP + "'. Supported values are " + Arrays.toString(QOP_ENUM.values()));
+            }
+        }
+    }
+    public enum WT_ENUM {json, csv, xml;
+        static WT_ENUM safeParse(String wt) {
+            if (wt == null) {
+                return json;
+            }
+            try {
+                return WT_ENUM.valueOf(wt);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidArgumentServiceException(
+                        "Unsupported wt='" + wt + "'. Supported values are " + Arrays.toString(WT_ENUM.values()));
+            }
+        }
+    }
+    public enum DEBUG_ENUM {query, timing, results, all;
+        static DEBUG_ENUM safeParse(String debug) {
+            if (debug == null) {
+                return null;
+            }
+            if ("true".equals(debug)) {
+                return all;
+            }
+            try {
+                return DEBUG_ENUM.valueOf(debug);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidArgumentServiceException(
+                        "Unsupported debug='" + debug + "'. Supported values are " + Arrays.toString(DEBUG_ENUM.values()));
+            }
+        }
+    }
 
     public SolrService(String id, String server, String path, String solrCollection) {
         this.id = id;
@@ -60,26 +111,55 @@ public class SolrService {
 
     /**
      * Issue a Solr query and return the result.
-     * @param q Solr query, see https://solr.apache.org/guide/8_10/the-standard-query-parser.html
+     *
+     * @param q Solr query.
+     * @param fq Solr filter query.
+     * @param fl Solr field list.
+     * @param qOp Solr default boolean operator.
+     * @param wt Solr response format.
+     * @param indent if true, Solr response is indented (if possible).
+     * @param debug as enumerated in {@link DEBUG_ENUM}.
+     * @param debugExplainStructured true if debug information should be structuredinstead of just a string.
      * @return Solr response.
      */
-    public String query(String q) {
+    public String query(String q, List<String> fq, String fl, String qOp, String wt, String indent, String debug, String debugExplainStructured) {
         if (q == null) {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
         // TODO: Catch extra arguments and throw "not supported"
-        URI solrCall = UriBuilder.fromUri(server)
+        UriBuilder builder = UriBuilder.fromUri(server)
                 .path(path)
                 .path(solrCollection)
                 .path(SELECT)
                 .queryParam(Q, sanitiseQuery(q))
-                // TODO: Add role based filters
-                .build();
+                .queryParam(QOP, QOP_ENUM.safeParse(qOp))
+                .queryParam(WT, WT_ENUM.safeParse(wt));
+        // TODO: Add role based filters
+        if (fq != null) {
+            fq.forEach(fqs -> builder.queryParam(FQ, fqs));
+        }
+        if (fl != null) {
+            builder.queryParam(FL, fl);
+        }
+        if (indent != null) {
+            builder.queryParam(INDENT, indent);
+        }
+        if (debug != null) {
+            builder.queryParam(DEBUG, DEBUG_ENUM.safeParse(debug));
+        }
+        if (debugExplainStructured != null || debug != null) {
+            builder.queryParam(DEBUG_EXPLAIN_STRUCTURED, Boolean.parseBoolean(debugExplainStructured));
+        }
+
+        URI solrCall = builder.build();
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(solrCall)
                 .build();
+
         HttpResponse<String> response;
         try {
+            log.debug("Calling " + solrCall);
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             log.warn(String.format(

@@ -86,6 +86,7 @@ paths:
       summary: 'Perform a Solr-compatible search in the stated collection'
       operationId: solrSearch
       parameters:
+
         - name: collection
           in: path
           description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections'
@@ -94,6 +95,7 @@ paths:
             type: string
             default: 'ds'
             example: 'ds'
+
         - name: q
           in: query
           description: 'Solr query param [q](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)'
@@ -102,6 +104,104 @@ paths:
             type: string
             default: '*:*'
             example: '*:*'
+
+        - name: fq
+          in: query
+          description: | 
+            Solr filter query param [fq](https://solr.apache.org/guide/8_10/common-query-parameters.html#fq-filter-query-parameter)
+            
+            Standard query syntax, but all terms must be qualified. Does not affect scoring.
+            If multiple filter queries are provided, the result set is the intersection of the filters.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+
+        - name: fl
+          in: query
+          description: | 
+            Solr field list param [fl](https://solr.apache.org/guide/8_10/common-query-parameters.html#fl-field-list-parameter)
+            
+            Solr fields to return in the response. `*` means all available standard fields.
+            It is recommended to include the pseudo-field [[child]](https://solr.apache.org/guide/8_0/transforming-result-documents.html#child-childdoctransformerfactory)
+            to include nested documents.
+          required: false
+          schema:
+            type: string
+            example: '*, [child]'
+            default: '*, [child]'
+
+        - name: q.op
+          in: query
+          description: | 
+            Solr default operator param [q.op](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)
+            
+            Controls whether the implicit boolean operator is `OR` or `AND`.
+          required: false
+          schema:
+            type: string
+            enum:  ['OR', 'AND']
+            default: 'AND'
+            example: 'AND'
+
+        - name: wt
+          in: query
+          description: | 
+            Solr response writer [wt](https://solr.apache.org/guide/8_10/response-writers.html)
+
+            Controls whether the response delivery format. Common values (non exhaustive list) are
+            
+            * [json](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer) (default)
+            * [csv](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+            * [xml](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+          required: false
+          schema:
+            type: string
+            default: 'json'
+            example: 'json'
+
+        - name: indent
+          in: query
+          description: | 
+            Solr response writer [indent](https://solr.apache.org/guide/8_10/response-writers.html)
+            If non-blank, "Solr will make some attempts at indenting".
+          required: false
+          schema:
+            type: string
+            default: 'true'
+            example: 'true'
+
+        - name: debug
+          in: query
+          description: | 
+            Solr debug param [debug](https://solr.apache.org/guide/8_10/common-query-parameters.html#debug-parameter)
+            
+            Used for debugging queries and timing. Documentation from Solr docs:
+            * `query`:  Debug information about the query only
+            * `timing`: Debug information about how long the query took to process
+            * `results`: Debug information about the score results (also known as "explain"
+            * `all`: All available debug information about the request request 
+            * `true`: Backwards compatible version of `all`
+          required: false
+          schema:
+            type: string
+            enum:  ['query', 'timing', 'results', 'all', 'true']
+            default: 'query'
+            example: 'query'
+
+        - name: debug.explain.structured
+          in: query
+          description: | 
+            Solr debug param [debug](https://solr.apache.org/guide/8_10/common-query-parameters.html#debug-parameter)
+            
+            Solr Doc: Return debug information as nested data structures native to the response format requested by `wt`.
+          required: false
+          schema:
+            type: string
+            default: 'false'
+            example: 'false'
+
       responses:
         '200':
           description: 'JSON structure with Solr response'

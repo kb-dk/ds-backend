@@ -180,6 +180,7 @@ public class DsDiscoverApiServiceImpl implements DsDiscoverApi {
     
     }
 
+
     /**
      * Perform a Solr-compatible search in the stated collection
      * 
@@ -194,15 +195,16 @@ public class DsDiscoverApiServiceImpl implements DsDiscoverApi {
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
+
     @Override
-    public String solrSearch(String collection, String q) throws ServiceException {
+    public String solrSearch(String collection, String q, List<String> fq, String fl, String qOp, String wt, String indent, String debug, String debugExplainStructured) {
         Map<String, String[]> extra = getExtraParams();
         if (!extra.isEmpty()) {
             throw new InvalidArgumentServiceException("Unsupported parameters: " + extra.keySet());
         }
         SolrService solr = SolrManager.getSolrService(collection);
         try {
-            return solr.query(q);
+            return solr.query(q, fq, fl, qOp, wt, indent, debug, debugExplainStructured);
         } catch (Exception e){
             throw handleException(e);
         }
