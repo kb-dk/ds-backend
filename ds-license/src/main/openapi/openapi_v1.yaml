@@ -97,7 +97,7 @@ components:
         accessIds:     
            type: array
            items:
-             type: integer       
+             type: string       
 
 
     ValidateAccessInput:
@@ -143,8 +143,71 @@ components:
         values:     
            type: array
            items:
-             type: integer       
+             type: string     
 
+
+    GetUsersLicensesInput:
+      type: object
+      properties:                
+        locale:
+          type: string        
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserObjAttribute'
+
+
+    GetUsersLicensesOutput:
+      type: object
+      properties:                
+        licenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicenseOverview'
+
+
+
+    GetUserQueryInput:
+      type: object
+      properties: 
+        presentationType:
+          type: string             
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserObjAttribute'
+                      
+           
+    GetUserGroupInput:
+      type: object
+      properties: 
+        locale:
+          type: string             
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserObjAttribute'
+           
+           
+    GetUserGroupsOutput:
+      type: object
+      properties:                    
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGroup'
+            
+            
+    UserGroup:
+      type: object
+      properties:                    
+        groupName:
+          type: string                 
+        presentationTypes:   
+          type: array
+          items:
+            type: string 
+            
                     
     HelloReply:
       type: object
