@@ -112,11 +112,17 @@ paths:
             
             Standard query syntax, but all terms must be qualified. Does not affect scoring.
             If multiple filter queries are provided, the result set is the intersection of the filters.
+            
+            The default is `entity_type:the_object` to limit searches to the topmost document in the nested documents
+            structure. This is paired with `*, [child]` for the `fl` (Field List) parameter to retrieve sub-documents
+            for the search result.
           required: false
           schema:
             type: array
             items:
               type: string
+            example: ['entity_type:the_object']
+            default: ['entity_type:the_object']
 
         - name: fl
           in: query
