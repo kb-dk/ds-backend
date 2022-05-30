@@ -71,6 +71,7 @@ components:
   schemas:
 
     CheckAccessForIdsInput:
+      type: object
       properties: 
         presentationType:
           type: string
@@ -98,6 +99,40 @@ components:
            items:
              type: integer       
 
+
+    ValidateAccessInput:
+      type: object
+      properties: 
+        presentationType:
+          type: string
+        groups:     
+          type: array
+          items:
+            type: string       
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserObjAttribute'
+
+    ValidateAccessOutput:    
+      type: object
+      properties:
+        accesss:
+          type: boolean
+
+
+    LicenseOverview:
+      type: object
+      properties: 
+        name:
+          type: string
+        description:
+          type: string
+        validFrom:
+          type: string
+        validTo:
+          type: string
+     
 
     UserObjAttribute:
       type: object
