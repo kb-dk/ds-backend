@@ -35,22 +35,22 @@ config:
 
     # Royal Danish Library image collection with the core format being MODS
     # Uses the default storage, which connects to a running ds-storage instance
-    - images_hca:
+    - imageshca:
         description: 'Hans Christian Andersen images from the collections at the Royal Danish Library'
         prefix: 'kb.images.billed.hca' # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
         base: 'kb.images.billed.hca' # Overrides the default base for the storage
         views: *MODS_IMAGE_VIEWS
-    - images_jsmss:
+    - imagesjsmss:
         description: 'Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library'
         prefix: 'kb.image.judsam.jsmss'
         base: 'kb.image.judsam.jsmss'
         views: *MODS_IMAGE_VIEWS
-    - images_luftfoto:
+    - imagesluftfoto:
         description: 'Luftfoto (arial photographs) images from the collections at the Royal Danish Library'
         prefix: 'kb.image.luftfo.luftfoto'
         base: 'kb.images.luftfo.luftfoto'
         views: *MODS_IMAGE_VIEWS
-    - images_smaatryk:
+    - imagessmaatryk:
         description: 'Småtryk images from the collections at the Royal Danish Library'
         prefix: 'kb.pamphlets.dasmaa.smaatryk'
         base: 'kb.pamphlets.dasmaa.smaatryk'

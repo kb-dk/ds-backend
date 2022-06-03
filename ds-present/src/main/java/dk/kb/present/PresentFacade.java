@@ -107,6 +107,7 @@ public class PresentFacade {
     private static CollectionDto toDto(DSCollection collection) {
         return new CollectionDto()
                 .id(collection.getId())
+                .prefix(collection.getPrefix())
                 .description(collection.getDescription())
                 .views(collection.getViews().values().stream()
                                .map(PresentFacade::toDto)

@@ -36,11 +36,13 @@ public class CollectionHandler {
     private static final Logger log = LoggerFactory.getLogger(CollectionHandler.class);
     private static final String COLLECTIONS_KEY = ".config.collections";
     private static final String RECORD_ID_PATTERN_KEY = ".config.record.id.pattern";
+    private static final String COLLECTION_ID_PATTERN_KEY = ".config.collection.prefix.pattern";
 
     private final StorageHandler storageHandler;
     private final Map<String, DSCollection> collectionsByPrefix; // prefix, collection
     private final Map<String, DSCollection> collectionsByID; // id, collection
     private static Pattern recordIDPattern;
+    private static Pattern collectionPrefixPattern;
 
     /**
      * Creates a {@link StorageHandler} and a set of {@link Storage}s based on the given configuration.
@@ -48,9 +50,24 @@ public class CollectionHandler {
      * {@code .config.collections} and {@code .config.record.id.pattern}
      */
     public CollectionHandler(YAML conf) {
+        try {
+            collectionPrefixPattern = Pattern.compile(conf.getString(COLLECTION_ID_PATTERN_KEY));
+        } catch (Exception e) {
+            String message = "Unable to create pattern from configuration, expected key " + RECORD_ID_PATTERN_KEY;
+            log.warn(message, e);
+            throw new RuntimeException(e);
+        }
+
         storageHandler = new StorageHandler(conf);
         collectionsByPrefix = conf.getYAMLList(COLLECTIONS_KEY).stream()
                 .map(collectionConf -> new DSCollection(collectionConf, storageHandler))
+                .peek(collection -> {
+                    if (!collectionPrefixPattern.matcher(collection.getPrefix()).matches()) {
+                        throw new IllegalStateException(
+                                "The configured collection prefix '" + collection.getPrefix() + "' for collection '" +
+                                collection.getId() + "' does not match the collection prefix pattern '" +
+                                collectionPrefixPattern.pattern() + "'");
+                    }})
                 .collect(Collectors.toMap(DSCollection::getPrefix, storage -> storage));
         collectionsByID = collectionsByPrefix.values().stream()
                 .collect(Collectors.toMap(DSCollection::getId, storage -> storage));
@@ -74,7 +91,7 @@ public class CollectionHandler {
         if (collection == null) {
             throw new NotFoundServiceException(
                     "A collection for IDs with prefix '" + matcher.group(1) + "' is not available. " +
-                    "Full ID was '" + id + "'");
+                    "Full ID was '" + id + "'. Available collection-prefixess are " + collectionsByPrefix.keySet());
         }
         return collection.getRecord(id, format);
     }
