@@ -4,7 +4,7 @@
 # with default test setup
 
 : ${RECORD_FILES:="$@"}
-: ${RECORD_FILES:="illum.xml"}
+: ${RECORD_FILES:="albert-einstein.xml hvidovre-teater.xml simonsen-brandes.xml tystrup-soroe.xml homiliae-super-psalmos.xml work_on_logic.xml joergen_hansens_visebog.xml responsa.xml"}
 
 : ${STORAGE:="http://localhost:9072/ds-storage/v1"}
 : ${ENDPOINT:="$STORAGE/record"}
