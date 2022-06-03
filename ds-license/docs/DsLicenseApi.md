@@ -4,9 +4,71 @@ All URIs are relative to *http://localhost/ds-license/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**checkAccessForIds**](DsLicenseApi.md#checkAccessForIds) | **POST** /checkAccessForIds | TODO
 [**getGreeting**](DsLicenseApi.md#getGreeting) | **GET** /hello | Request a Hello World message, for testing purposes
 [**ping**](DsLicenseApi.md#ping) | **GET** /ping | Ping the server to check if the server is reachable.
+[**validateAccess**](DsLicenseApi.md#validateAccess) | **POST** /validateAccess | TODO
 
+
+<a name="checkAccessForIds"></a>
+# **checkAccessForIds**
+> CheckAccessForIdsOutputDto checkAccessForIds(checkAccessForIdsInput)
+
+TODO
+
+### Example
+```java
+// Import classes:
+import dk.kb.license.ApiClient;
+import dk.kb.license.ApiException;
+import dk.kb.license.Configuration;
+import dk.kb.license.models.*;
+import dk.kb.license.api.DsLicenseApi;
+
+public class Example {
+  public static void main(String[] args) {
+    ApiClient defaultClient = Configuration.getDefaultApiClient();
+    defaultClient.setBasePath("http://localhost/ds-license/v1");
+
+    DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
+    CheckAccessForIdsInputDto checkAccessForIdsInput = new CheckAccessForIdsInputDto(); // CheckAccessForIdsInputDto | TODO
+    try {
+      CheckAccessForIdsOutputDto result = apiInstance.checkAccessForIds(checkAccessForIdsInput);
+      System.out.println(result);
+    } catch (ApiException e) {
+      System.err.println("Exception when calling DsLicenseApi#checkAccessForIds");
+      System.err.println("Status code: " + e.getCode());
+      System.err.println("Reason: " + e.getResponseBody());
+      System.err.println("Response headers: " + e.getResponseHeaders());
+      e.printStackTrace();
+    }
+  }
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **checkAccessForIdsInput** | [**CheckAccessForIdsInputDto**](.md)| TODO |
+
+### Return type
+
+[**CheckAccessForIdsOutputDto**](CheckAccessForIdsOutputDto.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | TODO |  -  |
 
 <a name="getGreeting"></a>
 # **getGreeting**
@@ -125,4 +187,64 @@ No authorization required
 **200** | OK |  -  |
 **406** | Not Acceptable |  -  |
 **500** | Internal Error |  -  |
+
+<a name="validateAccess"></a>
+# **validateAccess**
+> ValidateAccessOutputDto validateAccess(validateAccess)
+
+TODO
+
+### Example
+```java
+// Import classes:
+import dk.kb.license.ApiClient;
+import dk.kb.license.ApiException;
+import dk.kb.license.Configuration;
+import dk.kb.license.models.*;
+import dk.kb.license.api.DsLicenseApi;
+
+public class Example {
+  public static void main(String[] args) {
+    ApiClient defaultClient = Configuration.getDefaultApiClient();
+    defaultClient.setBasePath("http://localhost/ds-license/v1");
+
+    DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
+    ValidateAccessInputDto validateAccess = new ValidateAccessInputDto(); // ValidateAccessInputDto | TODO
+    try {
+      ValidateAccessOutputDto result = apiInstance.validateAccess(validateAccess);
+      System.out.println(result);
+    } catch (ApiException e) {
+      System.err.println("Exception when calling DsLicenseApi#validateAccess");
+      System.err.println("Status code: " + e.getCode());
+      System.err.println("Reason: " + e.getResponseBody());
+      System.err.println("Response headers: " + e.getResponseHeaders());
+      e.printStackTrace();
+    }
+  }
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **validateAccess** | [**ValidateAccessInputDto**](.md)| TODO |
+
+### Return type
+
+[**ValidateAccessOutputDto**](ValidateAccessOutputDto.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | TODO |  -  |
 

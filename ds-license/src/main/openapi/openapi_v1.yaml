@@ -68,7 +68,7 @@ paths:
 
 
   /checkAccessForIds:
-    get:
+    post:
       tags:
         - '${project.name}'
       summary: 'TODO'
@@ -91,7 +91,29 @@ paths:
                 $ref: '#/components/schemas/CheckAccessForIdsOutput'
 
 
-
+  /validateAccess:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'TODO'
+      operationId: validateAccess  
+      x-streamingOutput: true
+      parameters:
+        - name: validateAccess
+          in: query
+          description: 'TODO'
+          required: true
+          schema:
+            $ref: '#/components/schemas/ValidateAccessInput'
+    
+      responses:
+        '200':
+          description: 'TODO'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateAccessOutput'
+                                            
 
 components:
   schemas:

@@ -5,6 +5,8 @@ import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.ErrorDto;
 import java.io.File;
 import dk.kb.license.model.v1.HelloReplyDto;
+import dk.kb.license.model.v1.ValidateAccessInputDto;
+
 import java.util.List;
 import java.util.Map;
 
@@ -153,6 +155,12 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
     }
     
 
+    @Override
+    public StreamingOutput validateAccess(@NotNull ValidateAccessInputDto validateAccess) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
     /**
     * This method simply converts any Exception into a Service exception
     * @param e: Any kind of exception
@@ -167,6 +175,8 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
             return new InternalServiceException(e.getMessage());
         }
     }
+
+  
 
    
 
