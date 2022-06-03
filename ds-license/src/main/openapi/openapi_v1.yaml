@@ -67,6 +67,32 @@ paths:
                 $ref: '#/components/schemas/HelloReply'
 
 
+  /checkAccessForIds:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'TODO'
+      operationId: checkAccessForIds  
+      x-streamingOutput: true
+      parameters:
+        - name: checkAccessForIdsInput
+          in: query
+          description: 'TODO'
+          required: true
+          schema:
+            $ref: '#/components/schemas/CheckAccessForIdsInput'
+    
+      responses:
+        '200':
+          description: 'TODO'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckAccessForIdsOutput'
+
+
+
+
 components:
   schemas:
 

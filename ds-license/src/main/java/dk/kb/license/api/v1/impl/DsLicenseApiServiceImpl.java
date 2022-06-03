@@ -1,7 +1,7 @@
 package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.*;
-
+import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.ErrorDto;
 import java.io.File;
 import dk.kb.license.model.v1.HelloReplyDto;
@@ -32,6 +32,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
@@ -145,6 +146,12 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
     
     }
 
+    @Override
+    public StreamingOutput checkAccessForIds(@NotNull CheckAccessForIdsInputDto recordBase) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 
     /**
     * This method simply converts any Exception into a Service exception
@@ -160,5 +167,7 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
             return new InternalServiceException(e.getMessage());
         }
     }
+
+   
 
 }
