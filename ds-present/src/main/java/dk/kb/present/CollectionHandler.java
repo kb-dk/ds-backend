@@ -41,8 +41,8 @@ public class CollectionHandler {
     private final StorageHandler storageHandler;
     private final Map<String, DSCollection> collectionsByPrefix; // prefix, collection
     private final Map<String, DSCollection> collectionsByID; // id, collection
-    private static Pattern recordIDPattern;
-    private static Pattern collectionPrefixPattern;
+    private final Pattern recordIDPattern;
+    private final Pattern collectionPrefixPattern;
 
     /**
      * Creates a {@link StorageHandler} and a set of {@link Storage}s based on the given configuration.

@@ -36,6 +36,13 @@ config:
       # and the second being the collection-specifix par of the ID
       # Mandatory. Suggested value: '$([a-z][0-9][.]):([a-z][0-9][.-_])$', e.g. 'images.dsfl:image1234'
       pattern: '^([a-z0-9.]+):([a-z0-9._-]+)$'
+  collection:
+    prefix:
+      # Pattern for acceptable collection prefixes. This will practically always be a mirror of the first capturing
+      # group for record.id.pattern.
+      # Primarily used for verifying configuration.
+      # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
+      pattern: '[a-z0-9.]+'
 
   # The collections available for this instance of ds-present 
   collections:
