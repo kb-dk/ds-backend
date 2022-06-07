@@ -190,6 +190,13 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
         return null;
     }
     
+    @Override
+    public String extractStatistics() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    
     /**
     * This method simply converts any Exception into a Service exception
     * @param e: Any kind of exception
@@ -205,6 +212,7 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
         }
     }
 
+  
   
 
    

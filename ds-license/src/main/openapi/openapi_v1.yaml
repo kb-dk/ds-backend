@@ -182,6 +182,23 @@ paths:
                 $ref: '#/components/schemas/GetUserGroupsOutput'
             
 
+  /monitor:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'TODO'
+      operationId: extractStatistics       
+     
+      responses:
+        '200':
+          description: 'TODO'
+          content:
+            application/json:
+              schema:           
+                type: string
+            
+
+
 
 components:
   schemas:
