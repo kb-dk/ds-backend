@@ -20,6 +20,7 @@ import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
+import dk.kb.present.util.DataCleanup;
 import dk.kb.present.webservice.ExportWriter;
 import dk.kb.present.webservice.ExportWriterFactory;
 import dk.kb.present.webservice.JSONStreamWriter;
@@ -162,6 +163,7 @@ public class PresentFacade {
                     output, httpServletResponse, deliveryFormat, false, "records")) {
                 collection.getDSRecords(mTime, maxRecords, recordFormat)
                         .map(DsRecordDto::getData)
+                        .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
             }
         };
@@ -176,6 +178,7 @@ public class PresentFacade {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
                 collection.getDSRecords(mTime, maxRecords, recordView) // Does not contain deleted records
+                        .peek(record -> record.setData(DataCleanup.removeXMLDeclaration(record.getData())))
                         .forEach(writer::write);
             }
         };
