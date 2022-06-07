@@ -133,7 +133,7 @@ No authorization required
 
 <a name="getUserLicenses"></a>
 # **getUserLicenses**
-> GetUsersLicensesOutputDto getUserLicenses(validateAccess)
+> GetUsersLicensesOutputDto getUserLicenses(getUserLicenses)
 
 TODO
 
@@ -152,9 +152,9 @@ public class Example {
     defaultClient.setBasePath("http://localhost/ds-license/v1");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
-    GetUsersLicensesInputDto validateAccess = new GetUsersLicensesInputDto(); // GetUsersLicensesInputDto | TODO
+    GetUsersLicensesInputDto getUserLicenses = new GetUsersLicensesInputDto(); // GetUsersLicensesInputDto | TODO
     try {
-      GetUsersLicensesOutputDto result = apiInstance.getUserLicenses(validateAccess);
+      GetUsersLicensesOutputDto result = apiInstance.getUserLicenses(getUserLicenses);
       System.out.println(result);
     } catch (ApiException e) {
       System.err.println("Exception when calling DsLicenseApi#getUserLicenses");
@@ -171,7 +171,7 @@ public class Example {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **validateAccess** | [**GetUsersLicensesInputDto**](.md)| TODO |
+ **getUserLicenses** | [**GetUsersLicensesInputDto**](.md)| TODO |
 
 ### Return type
 
