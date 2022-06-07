@@ -73,7 +73,6 @@ paths:
         - '${project.name}'
       summary: 'TODO'
       operationId: checkAccessForIds  
-      x-streamingOutput: true
       parameters:
         - name: checkAccessForIdsInput
           in: query
@@ -97,7 +96,6 @@ paths:
         - '${project.name}'
       summary: 'TODO'
       operationId: validateAccess  
-      x-streamingOutput: true
       parameters:
         - name: validateAccess
           in: query
@@ -113,7 +111,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidateAccessOutput'
-                                            
+             
+  /getUserLicenses:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'TODO'
+      operationId: getUserLicenses       
+      parameters:
+        - name: validateAccess
+          in: query
+          description: 'TODO'
+          required: true
+          schema:
+            $ref: '#/components/schemas/GetUsersLicensesInput'
+    
+      responses:
+        '200':
+          description: 'TODO'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsersLicensesOutput'
+             
+                                          
 
 components:
   schemas:

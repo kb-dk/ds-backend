@@ -2,10 +2,15 @@ package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.*;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
+import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.ErrorDto;
+import dk.kb.license.model.v1.GetUsersLicensesInputDto;
+import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
+
 import java.io.File;
 import dk.kb.license.model.v1.HelloReplyDto;
 import dk.kb.license.model.v1.ValidateAccessInputDto;
+import dk.kb.license.model.v1.ValidateAccessOutputDto;
 
 import java.util.List;
 import java.util.Map;
@@ -149,17 +154,23 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
     }
 
     @Override
-    public StreamingOutput checkAccessForIds(@NotNull CheckAccessForIdsInputDto recordBase) {
+    public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto checkAccessForIdsInput) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public GetUsersLicensesOutputDto getUserLicenses(@NotNull GetUsersLicensesInputDto validateAccess) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ValidateAccessOutputDto validateAccess(@NotNull ValidateAccessInputDto validateAccess) {
         // TODO Auto-generated method stub
         return null;
     }
     
-
-    @Override
-    public StreamingOutput validateAccess(@NotNull ValidateAccessInputDto validateAccess) {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
     /**
     * This method simply converts any Exception into a Service exception
@@ -175,6 +186,9 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
             return new InternalServiceException(e.getMessage());
         }
     }
+
+   
+
 
   
 

@@ -6,6 +6,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**checkAccessForIds**](DsLicenseApi.md#checkAccessForIds) | **POST** /checkAccessForIds | TODO
 [**getGreeting**](DsLicenseApi.md#getGreeting) | **GET** /hello | Request a Hello World message, for testing purposes
+[**getUserLicenses**](DsLicenseApi.md#getUserLicenses) | **POST** /getUserLicenses | TODO
 [**ping**](DsLicenseApi.md#ping) | **GET** /ping | Ping the server to check if the server is reachable.
 [**validateAccess**](DsLicenseApi.md#validateAccess) | **POST** /validateAccess | TODO
 
@@ -129,6 +130,66 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | A JSON structure containing a Hello World message |  -  |
+
+<a name="getUserLicenses"></a>
+# **getUserLicenses**
+> GetUsersLicensesOutputDto getUserLicenses(validateAccess)
+
+TODO
+
+### Example
+```java
+// Import classes:
+import dk.kb.license.ApiClient;
+import dk.kb.license.ApiException;
+import dk.kb.license.Configuration;
+import dk.kb.license.models.*;
+import dk.kb.license.api.DsLicenseApi;
+
+public class Example {
+  public static void main(String[] args) {
+    ApiClient defaultClient = Configuration.getDefaultApiClient();
+    defaultClient.setBasePath("http://localhost/ds-license/v1");
+
+    DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
+    GetUsersLicensesInputDto validateAccess = new GetUsersLicensesInputDto(); // GetUsersLicensesInputDto | TODO
+    try {
+      GetUsersLicensesOutputDto result = apiInstance.getUserLicenses(validateAccess);
+      System.out.println(result);
+    } catch (ApiException e) {
+      System.err.println("Exception when calling DsLicenseApi#getUserLicenses");
+      System.err.println("Status code: " + e.getCode());
+      System.err.println("Reason: " + e.getResponseBody());
+      System.err.println("Response headers: " + e.getResponseHeaders());
+      e.printStackTrace();
+    }
+  }
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **validateAccess** | [**GetUsersLicensesInputDto**](.md)| TODO |
+
+### Return type
+
+[**GetUsersLicensesOutputDto**](GetUsersLicensesOutputDto.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | TODO |  -  |
 
 <a name="ping"></a>
 # **ping**
