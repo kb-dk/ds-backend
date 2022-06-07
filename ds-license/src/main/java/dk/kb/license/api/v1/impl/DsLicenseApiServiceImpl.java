@@ -1,9 +1,13 @@
 package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.*;
+import dk.kb.license.model.GetUserGroupsInputDto;
+import dk.kb.license.model.GetUserGroupsOutputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.ErrorDto;
+
+import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersLicensesInputDto;
 import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
 
@@ -171,6 +175,20 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
         return null;
     }
     
+    @Override
+    public String getUserLicenseQuery(@NotNull GetUserQueryInputDto getUserQueryInput) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+   
+    //TODO WHY FULL PACKAGE NAME?
+    @Override
+    public dk.kb.license.model.v1.GetUserGroupsOutputDto getUserGroups(
+            dk.kb.license.model.v1.@NotNull GetUserGroupsInputDto getUserGroups) {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
     /**
     * This method simply converts any Exception into a Service exception
@@ -187,8 +205,12 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
         }
     }
 
+  
+
    
 
+
+   
 
   
 

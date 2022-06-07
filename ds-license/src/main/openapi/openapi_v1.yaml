@@ -135,6 +135,53 @@ paths:
                 $ref: '#/components/schemas/GetUsersLicensesOutput'
              
                                           
+                                          
+  /getUserLicenseQuery:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'TODO'
+      operationId: getUserLicenseQuery      
+      parameters:
+        - name: getUserQueryInput
+          in: query
+          description: 'TODO'
+          required: true
+          schema:
+            $ref: '#/components/schemas/GetUserQueryInput'
+    
+      responses:
+        '200':
+          description: 'TODO'
+          content:
+            application/json:
+              schema:           
+                type: string
+                                          
+
+  /getUserGroups:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'TODO'
+      operationId: getUserGroups       
+      parameters:
+        - name: getUserGroups
+          in: query
+          description: 'TODO'
+          required: true
+          schema:                                        
+            $ref: '#/components/schemas/GetUserGroupsInput'
+                             
+      responses:
+        '200':
+          description: 'TODO'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserGroupsOutput'
+            
+
 
 components:
   schemas:
@@ -247,7 +294,7 @@ components:
             $ref: '#/components/schemas/UserObjAttribute'
                       
            
-    GetUserGroupInput:
+    GetUserGroupsInput:
       type: object
       properties: 
         locale:
