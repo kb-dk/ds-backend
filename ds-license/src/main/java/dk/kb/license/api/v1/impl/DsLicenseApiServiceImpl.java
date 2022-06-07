@@ -160,7 +160,7 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
     }
 
     @Override
-    public GetUsersLicensesOutputDto getUserLicenses(@NotNull GetUsersLicensesInputDto validateAccess) {
+    public GetUsersLicensesOutputDto getUserLicenses(@NotNull GetUsersLicensesInputDto getUsersLicensesInput) {
         // TODO Auto-generated method stub
         return null;
     }

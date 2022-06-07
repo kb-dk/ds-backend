@@ -119,7 +119,7 @@ paths:
       summary: 'TODO'
       operationId: getUserLicenses       
       parameters:
-        - name: validateAccess
+        - name: getUserLicenses
           in: query
           description: 'TODO'
           required: true
