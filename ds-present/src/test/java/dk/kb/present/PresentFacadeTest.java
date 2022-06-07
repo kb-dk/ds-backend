@@ -25,6 +25,8 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -52,6 +54,20 @@ class PresentFacadeTest {
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods");
         String result = toString(out);
         assertTrue(result.contains("<md:namePart>Simonsen, David</md:namePart>"));
+    }
+
+    @Test
+    void getRecordsMODSDeclaration() throws IOException {
+        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods");
+        String result = toString(out);
+
+        Pattern DECLARATION = Pattern.compile("<[?]xml version=\"1.0\" encoding=\"UTF-8\"[?]>", Pattern.DOTALL);
+        Matcher m = DECLARATION.matcher(result);
+        int count = 0;
+        while (m.find()) {
+            count++;
+        }
+        assertTrue(count <= 1, "There should be at most 1 XML declaration but there was " + count);
     }
 
     @Test
