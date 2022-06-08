@@ -164,6 +164,10 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
     @Override
     public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
         try{
+            System.out.println("input:"+input);
+            System.out.println("presentationtype:"+input.getPresentationType());
+            System.out.println("presentationtype:"+input.getAccessIds());
+            
             ConfiguredLicensePresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
           }
           catch(IllegalArgumentException e){

@@ -73,13 +73,12 @@ paths:
         - '${project.name}'
       summary: 'TODO'
       operationId: checkAccessForIds  
-      parameters:
-        - name: checkAccessForIdsInput
-          in: query
-          description: 'TODO'
-          required: true
-          schema:
-            $ref: '#/components/schemas/CheckAccessForIdsInput'
+      requestBody:
+        content:
+          application/json:    # Media type
+            schema:            # Request body contents
+              $ref: '#/components/schemas/CheckAccessForIdsInput'
+                
     
       responses:
         '200':
