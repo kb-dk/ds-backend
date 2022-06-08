@@ -204,10 +204,9 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
     }
 
    
-    //TODO WHY FULL PACKAGE NAME?
+
     @Override
-    public dk.kb.license.model.v1.GetUserGroupsOutputDto getUserGroups(
-            dk.kb.license.model.v1.@NotNull GetUserGroupsInputDto getUserGroups) {
+    public GetUserGroupsOutputDto getUserGroups(GetUserGroupsInputDto getUserGroups) {
         // TODO Auto-generated method stub
         return null;
     }
