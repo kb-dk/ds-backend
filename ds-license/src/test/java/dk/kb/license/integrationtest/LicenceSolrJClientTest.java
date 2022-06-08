@@ -1,12 +1,13 @@
 package dk.kb.license.integrationtest;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import dk.kb.license.solr.SolrServerClient;
 
 
 //Integration test. Run manually to see solr integration is working
-public class DomsSolrJClientTest {
+public class LicenceSolrJClientTest {
 
 
      //Find url in property file on devel06 etc.
@@ -19,7 +20,7 @@ public class DomsSolrJClientTest {
 		ids.add("doms_reklamefilm:uuid:b12445f8-8b88-4d32-bc14-d7494debb491"); //reklame
 		
 		String queryPartAccess="recordBase:doms_radioTVCollection";
-		ArrayList<String> filteredIds =solrServer.filterIds(ids, queryPartAccess);		
+		List<String> filteredIds =solrServer.filterIds(ids, queryPartAccess);		
 		System.out.println("Size:"+filteredIds.size());
 	    System.out.println(filteredIds);		
 	}

@@ -1,8 +1,9 @@
 package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.*;
-import dk.kb.license.model.GetUserGroupsInputDto;
-import dk.kb.license.model.GetUserGroupsOutputDto;
+import dk.kb.license.facade.LicenseModuleFacade;
+import dk.kb.license.model.v1.GetUserGroupsInputDto;
+import dk.kb.license.model.v1.GetUserGroupsOutputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.ErrorDto;
@@ -15,7 +16,10 @@ import java.io.File;
 import dk.kb.license.model.v1.HelloReplyDto;
 import dk.kb.license.model.v1.ValidateAccessInputDto;
 import dk.kb.license.model.v1.ValidateAccessOutputDto;
+import dk.kb.license.storage.ConfiguredLicensePresentationType;
+import dk.kb.license.validation.LicenseValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -158,9 +162,27 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
     }
 
     @Override
-    public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto checkAccessForIdsInput) {
-        // TODO Auto-generated method stub
-        return null;
+    public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
+        try{
+            ConfiguredLicensePresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
+          }
+          catch(IllegalArgumentException e){
+           log.error("Unknown presentationtype:"+input.getPresentationType());
+           CheckAccessForIdsOutputDto output =  new CheckAccessForIdsOutputDto();
+           output.setAccessIds(new ArrayList<String>());
+           output.setPresentationType(input.getPresentationType());
+           output.setQuery("(NoAccess:NoAccess)"); //query that returns nothing
+              return output;
+          }
+          
+          try {      
+           CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForIds(input);      
+                 return output;
+          } catch (Exception e) {
+           log.error("Error in checkAccessForIds:",e);
+              throw handleException(e);
+          }   
+      
     }
 
     @Override

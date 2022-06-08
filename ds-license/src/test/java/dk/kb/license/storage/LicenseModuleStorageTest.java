@@ -25,11 +25,11 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.license.Util;
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.model.v1.GetUserGroupsInputDto;
+import dk.kb.license.model.v1.UserGroupDto;
+import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.solr.AbstractSolrJClient;
 import dk.kb.license.validation.LicenseValidator;
-import dk.kb.license.webservice.dto.GetUserGroupsInputDTO;
-import dk.kb.license.webservice.dto.UserGroupDTO;
-import dk.kb.license.webservice.dto.UserObjAttributeDTO;
 import dk.kb.license.storage.DsLicenseUnitTestUtil;
 
 /*
@@ -467,12 +467,12 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);
 
-        GetUserGroupsInputDTO input = new GetUserGroupsInputDTO();
+        GetUserGroupsInputDto input = new GetUserGroupsInputDto();
 
-        ArrayList<UserObjAttributeDTO> userObjAttributes = new ArrayList<UserObjAttributeDTO>(); 		
-        UserObjAttributeDTO newUserObjAtt1 = new UserObjAttributeDTO();
+        ArrayList<UserObjAttributeDto> userObjAttributes = new ArrayList<UserObjAttributeDto>(); 		
+        UserObjAttributeDto newUserObjAtt1 = new UserObjAttributeDto();
         userObjAttributes.add(newUserObjAtt1);
-        UserObjAttributeDTO newUserObjAtt2 = new UserObjAttributeDTO();
+        UserObjAttributeDto newUserObjAtt2 = new UserObjAttributeDto();
         userObjAttributes.add(newUserObjAtt2);
 
         newUserObjAtt1.setAttribute("wayf.schacHomeOrganization");
@@ -492,9 +492,9 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         storage.commit();
         LicenseCache.reloadCache();
         
-        ArrayList<UserGroupDTO> usersGroups = LicenseValidator.getUsersGroups(input);		
+        ArrayList<UserGroupDto> usersGroups = LicenseValidator.getUsersGroups(input);		
         //Test danish names
-        UserGroupDTO group1 = usersGroups.get(0);
+        UserGroupDto group1 = usersGroups.get(0);
         assertEquals("DR 1 TV",group1.getGroupName());
         assertEquals("Thumbnails_dk", group1.getPresentationTypes().get(0));
 
@@ -605,24 +605,24 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         //UserObj: xxx_wayf.schacHomeOrganization and values: au.dk
         //result: Not match
 
-        ArrayList<UserObjAttributeDTO> userObjAttributes = new ArrayList<UserObjAttributeDTO >(); 
+        ArrayList<UserObjAttributeDto> userObjAttributes = new ArrayList<UserObjAttributeDto>(); 
 
-        UserObjAttributeDTO newUserObjAtt = new UserObjAttributeDTO();
+        UserObjAttributeDto newUserObjAtt = new UserObjAttributeDto();
         userObjAttributes.add(newUserObjAtt);
         Attribute attribute = license.getAttributeGroups().get(0).getAttributes().get(0);       
         newUserObjAtt.setAttribute("xxx_wayf.schacHomeOrganization");
         ArrayList<String> values = new ArrayList<String>();
         values.add("au.dk");
         newUserObjAtt.setValues(values);
-        ArrayList<UserObjAttributeDTO> filtered = LicenseValidator.filterUserObjAttributesToValidatedOnly(attribute, userObjAttributes);
+        ArrayList<UserObjAttributeDto> filtered = LicenseValidator.filterUserObjAttributesToValidatedOnly(attribute, userObjAttributes);
         assertEquals(0,filtered.size());
 
 
         //Attribute: wayf.schacHomeOrganization and values: au.dk
         //UserObj: wayf.schacHomeOrganization and values: au.dk
         //result: Match
-        userObjAttributes = new ArrayList<UserObjAttributeDTO >();
-        newUserObjAtt = new UserObjAttributeDTO();      
+        userObjAttributes = new ArrayList<UserObjAttributeDto>();
+        newUserObjAtt = new UserObjAttributeDto();      
         userObjAttributes.add(newUserObjAtt);
         newUserObjAtt.setAttribute("wayf.schacHomeOrganization");
         values = new ArrayList<String>();
@@ -637,8 +637,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         //Attribute: wayf.schacHomeOrganization and values: au.dk
         //UserObj: wayf.schacHomeOrganization and values: sb.dk test.dk
         //result: not match
-        userObjAttributes = new ArrayList<UserObjAttributeDTO >();
-        newUserObjAtt = new UserObjAttributeDTO();      
+        userObjAttributes = new ArrayList<UserObjAttributeDto>();
+        newUserObjAtt = new UserObjAttributeDto();      
         userObjAttributes.add(newUserObjAtt);
         newUserObjAtt.setAttribute("wayf.schacHomeOrganization");
         values = new ArrayList<String>();
@@ -654,8 +654,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         //result: match
 
         attribute = license.getAttributeGroups().get(0).getAttributes().get(1); 
-        userObjAttributes = new ArrayList<UserObjAttributeDTO >();
-        newUserObjAtt = new UserObjAttributeDTO();      
+        userObjAttributes = new ArrayList<UserObjAttributeDto>();
+        newUserObjAtt = new UserObjAttributeDto();      
         userObjAttributes.add(newUserObjAtt);
         newUserObjAtt.setAttribute("wayf.eduPersonPrimaryAffiliation");
         values = new ArrayList<String>();
@@ -679,10 +679,10 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         ArrayList<License> allLicenses= new ArrayList<License>();
         allLicenses.add(license);
 
-        ArrayList<UserObjAttributeDTO> userObjAttributes = new ArrayList<UserObjAttributeDTO>();        
-        UserObjAttributeDTO newUserObjAtt1 = new UserObjAttributeDTO();
+        ArrayList<UserObjAttributeDto> userObjAttributes = new ArrayList<UserObjAttributeDto>();        
+        UserObjAttributeDto newUserObjAtt1 = new UserObjAttributeDto();
         userObjAttributes.add(newUserObjAtt1);
-        UserObjAttributeDTO newUserObjAtt2 = new UserObjAttributeDTO();
+        UserObjAttributeDto newUserObjAtt2 = new UserObjAttributeDto();
         userObjAttributes.add(newUserObjAtt2);
 
         newUserObjAtt1.setAttribute("wayf.schacHomeOrganization");
@@ -713,8 +713,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         ArrayList<License> allLicenses= new ArrayList<License>();
         allLicenses.add(license);
 
-        ArrayList<UserObjAttributeDTO> userObjAttributes = new ArrayList<UserObjAttributeDTO>();        
-        UserObjAttributeDTO newUserObjAtt1 = new UserObjAttributeDTO();
+        ArrayList<UserObjAttributeDto> userObjAttributes = new ArrayList<UserObjAttributeDto>();        
+        UserObjAttributeDto newUserObjAtt1 = new UserObjAttributeDto();
         userObjAttributes.add(newUserObjAtt1);
 
         newUserObjAtt1.setAttribute("wayf.schacHomeOrganization");
@@ -743,12 +743,12 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         ArrayList<License> allLicenses= new ArrayList<License>();
         allLicenses.add(license);
 
-        ArrayList<UserObjAttributeDTO> userObjAttributes = new ArrayList<UserObjAttributeDTO>();        
-        UserObjAttributeDTO newUserObjAtt1 = new UserObjAttributeDTO();
+        ArrayList<UserObjAttributeDto> userObjAttributes = new ArrayList<UserObjAttributeDto>();        
+        UserObjAttributeDto newUserObjAtt1 = new UserObjAttributeDto();
         userObjAttributes.add(newUserObjAtt1);
-        UserObjAttributeDTO newUserObjAtt2 = new UserObjAttributeDTO();
+        UserObjAttributeDto newUserObjAtt2 = new UserObjAttributeDto();
         userObjAttributes.add(newUserObjAtt2);
-        UserObjAttributeDTO newUserObjAtt3 = new UserObjAttributeDTO();
+        UserObjAttributeDto newUserObjAtt3 = new UserObjAttributeDto();
         userObjAttributes.add(newUserObjAtt3);
 
 
@@ -965,10 +965,10 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         //DR1: Thumbnails
         //TV2: Stream , Download
 
-        ArrayList<UserGroupDTO> filtered = LicenseValidator.filterGroupsWithPresentationtype(list);
+        ArrayList<UserGroupDto> filtered = LicenseValidator.filterGroupsWithPresentationtype(list);
         assertEquals(2, filtered.size());
-        UserGroupDTO group1 = filtered.get(0);
-        UserGroupDTO group2 = filtered.get(1);     
+        UserGroupDto group1 = filtered.get(0);
+        UserGroupDto group2 = filtered.get(1);     
         assertEquals("DR1",group1.getGroupName());
         assertEquals(1,group1.getPresentationTypes().size());
         assertEquals("TV2",group2.getGroupName());
@@ -991,10 +991,10 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         list.add(l2);
 
 
-        ArrayList<UserGroupDTO> filtered2 = LicenseValidator.filterGroupsWithPresentationtype(list);
+        ArrayList<UserGroupDto> filtered2 = LicenseValidator.filterGroupsWithPresentationtype(list);
         assertEquals(3, filtered2.size());
 
-        UserGroupDTO group3 = filtered2.get(2);
+        UserGroupDto group3 = filtered2.get(2);
         assertEquals("TV3",group3.getGroupName());
 
         assertEquals(1,group3.getPresentationTypes().size()); 

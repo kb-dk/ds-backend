@@ -3,6 +3,7 @@ package dk.kb.license.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,18 +16,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.license.facade.LicenseModuleFacade;
+import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
+import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
+import dk.kb.license.model.v1.GetUserQueryInputDto;
+import dk.kb.license.model.v1.GetUserQueryOutputDto;
+import dk.kb.license.model.v1.GetUsersLicensesInputDto;
+import dk.kb.license.model.v1.UserObjAttributeDto;
+import dk.kb.license.model.v1.ValidateAccessInputDto;
 import dk.kb.license.storage.ConfiguredLicenseGroupType;
 import dk.kb.license.storage.ConfiguredLicensePresentationType;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.validation.LicenseValidator;
-import dk.kb.license.webservice.dto.CheckAccessForIdsInputDTO;
-import dk.kb.license.webservice.dto.CheckAccessForIdsOutputDTO;
-import dk.kb.license.webservice.dto.GetUserQueryInputDTO;
-import dk.kb.license.webservice.dto.GetUserQueryOutputDTO;
-import dk.kb.license.webservice.dto.GetUsersLicensesInputDTO;
-import dk.kb.license.webservice.dto.UserObjAttributeDTO;
-import dk.kb.license.webservice.dto.ValidateAccessInputDTO;
 
 public class ConfigurationServlet extends HttpServlet {
 
@@ -190,9 +191,9 @@ public class ConfigurationServlet extends HttpServlet {
 	private String decomposeValidateAccess (String validation_attribute_values, String validation_groups, String validation_presentationtype) throws Exception{
 		StringBuilder infoMessage = new StringBuilder();   
 		//parse input first.
-		ValidateAccessInputDTO input = new ValidateAccessInputDTO();
+		ValidateAccessInputDto input = new ValidateAccessInputDto();
 		ConfiguredLicensePresentationType presentationType = null;
-		ArrayList<UserObjAttributeDTO> attributes;
+		ArrayList<UserObjAttributeDto> attributes;
 		try{
 
 			attributes = createUserObjFromFormData(validation_attribute_values);
@@ -247,7 +248,7 @@ public class ConfigurationServlet extends HttpServlet {
 
 
 			//Test method getUsersLicenseGroups
-			GetUsersLicensesInputDTO inputGroups = new GetUsersLicensesInputDTO();
+			GetUsersLicensesInputDto inputGroups = new GetUsersLicensesInputDto();
 			inputGroups.setAttributes(attributes);						
 
 			if (mustGroups.size() == 0){
@@ -284,8 +285,8 @@ public class ConfigurationServlet extends HttpServlet {
 	private String decomposeValidateQuery (String validation_attribute_values,  String validation_presentationtypes) throws Exception{
 		StringBuilder infoMessage = new StringBuilder();   
 		//parse input first.
-		GetUserQueryInputDTO input = new GetUserQueryInputDTO();
-		ArrayList<UserObjAttributeDTO> attributes;
+		GetUserQueryInputDto input = new GetUserQueryInputDto();
+		ArrayList<UserObjAttributeDto> attributes;
 		try{
 
 			attributes = createUserObjFromFormData(validation_attribute_values);		
@@ -309,7 +310,7 @@ public class ConfigurationServlet extends HttpServlet {
 		//I see no other way that to repeat it when I want to the decomposition.
 
 		try{
-			GetUserQueryOutputDTO output = LicenseValidator.getUserQuery(input);
+			GetUserQueryOutputDto output = LicenseValidator.getUserQuery(input);
 			infoMessage.append("Detaljer: \n");
 			infoMessage.append("Brugeren opfylder følgende grupper:"+output.getUserLicenseGroups() +"\n");
 			infoMessage.append("Brugeren mangler følgende MUST grupper:"+output.getUserNotInMustGroups() +"\n");	
@@ -324,13 +325,13 @@ public class ConfigurationServlet extends HttpServlet {
 
 	private String decomposCheckAccessIds(String checkAccessIds_attribute_values,  String checkAccessIds_presentationtype, String checkAccessIds_ids) throws Exception{
 		StringBuilder infoMessage = new StringBuilder();   
-		CheckAccessForIdsInputDTO input = new CheckAccessForIdsInputDTO();
-		ArrayList<UserObjAttributeDTO> attributes;
+		CheckAccessForIdsInputDto input = new CheckAccessForIdsInputDto();
+		ArrayList<UserObjAttributeDto> attributes;
 		try{
 			attributes = createUserObjFromFormData(checkAccessIds_attribute_values);		
 			input.setAttributes(attributes);
 			input.setPresentationType(checkAccessIds_presentationtype);
-            input.setIds(createIdsFormData(checkAccessIds_ids));			
+   input.setAccessIds(createIdsFormData(checkAccessIds_ids));			
 			
 		}
 		catch(Exception e){
@@ -339,7 +340,7 @@ public class ConfigurationServlet extends HttpServlet {
 		}        
 
 		try{
-			CheckAccessForIdsOutputDTO output = LicenseValidator.checkAccessForIds(input);
+			CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForIds(input);
 			infoMessage.append("Detaljer: \n");			
 			infoMessage.append("Presentationtype:"+output.getPresentationType() +" \n");
 			infoMessage.append("Access query part:"+output.getQuery() +" \n");
@@ -367,7 +368,7 @@ public class ConfigurationServlet extends HttpServlet {
 		return groups;		
 	}
 
-	private ArrayList<String> createIdsFormData(String validation_ids){
+	private List<String> createIdsFormData(String validation_ids){
 		ArrayList<String> ids = new ArrayList<String>();
 		String[] tmp = validation_ids.split(","); //StringUtils.split(validation_ids, ",");
 		if (tmp.length == 0){
@@ -391,16 +392,16 @@ public class ConfigurationServlet extends HttpServlet {
 		return presentationTypes;		
 	}
 
-	private ArrayList<UserObjAttributeDTO> createUserObjFromFormData(String validation_attribute_values){
+	private ArrayList<UserObjAttributeDto> createUserObjFromFormData(String validation_attribute_values){
 		String[] lines = validation_attribute_values.split("\n"); //StringUtils.split(validation_attribute_values, "\n");
 		if (lines.length == 0){
 			throw new IllegalArgumentException("Der skal være mindst 1 linie i attribut/values tekstboksen");
 		}
 
-		ArrayList<UserObjAttributeDTO> attributes = new ArrayList<UserObjAttributeDTO>(); 
+		ArrayList<UserObjAttributeDto> attributes = new ArrayList<UserObjAttributeDto>(); 
 		// every line on the form attributename: value1 , value2, value 3 ,...
 		for (String line : lines){
-			UserObjAttributeDTO attribute = new UserObjAttributeDTO();
+			UserObjAttributeDto attribute = new UserObjAttributeDto();
 			attributes.add(attribute);
 			String[] tmp = line.split(":");//StringUtils.split(line, ":");
 			if (tmp.length != 2){

@@ -435,7 +435,7 @@
                         <useSwaggerFeature>true</useSwaggerFeature>
                         <useSwaggerUI>true</useSwaggerUI>
                         <apiPackage>${project.package}.api</apiPackage>
-                        <modelPackage>${project.package}.model</modelPackage>
+                        <modelPackage>${project.package}.model.v1</modelPackage>
                         <!--<dateLibrary>threetenbp</dateLibrary>-->
                         <!--<dateLibrary>Java11</dateLibrary>-->
                         <implFolder>src/main/java</implFolder>

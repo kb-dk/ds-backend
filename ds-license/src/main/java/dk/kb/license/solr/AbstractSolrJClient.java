@@ -2,6 +2,7 @@ package dk.kb.license.solr;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -35,7 +36,7 @@ public class AbstractSolrJClient {
 
   
     
-    public ArrayList<String> filterIds(ArrayList<String> ids, String queryPartAccess) throws Exception{
+    public List<String> filterIds(List<String> ids, String queryPartAccess) throws Exception{
 
         if (ids == null || ids.size() == 0){
             return new ArrayList<String>();
@@ -60,7 +61,7 @@ public class AbstractSolrJClient {
      
     
     //Will also remove " from all ids to prevent Query-injection
-    public static String makeAuthIdPart (ArrayList<String> ids){
+    public static String makeAuthIdPart (List<String> ids){
         StringBuilder queryIdPart = new StringBuilder();
         queryIdPart.append("(");
         for (int i = 0 ;i<ids.size();i++){

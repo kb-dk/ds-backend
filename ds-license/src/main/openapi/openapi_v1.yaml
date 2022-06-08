@@ -310,6 +310,20 @@ components:
           items:
             $ref: '#/components/schemas/UserObjAttribute'
                       
+    GetUserQueryOutput:
+      type: object
+      properties: 
+        query:
+          type: string             
+        userLicenseGroups:   
+          type: array
+          items:
+            type: string 
+        userNotInMustGroups:   
+          type: array
+          items:
+            type: string 
+
            
     GetUserGroupsInput:
       type: object

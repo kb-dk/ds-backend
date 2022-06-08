@@ -8,10 +8,18 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.license.Util;
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
+import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
+import dk.kb.license.model.v1.GetUserGroupsInputDto;
+import dk.kb.license.model.v1.GetUserQueryInputDto;
+import dk.kb.license.model.v1.GetUserQueryOutputDto;
+import dk.kb.license.model.v1.GetUsersLicensesInputDto;
+import dk.kb.license.model.v1.UserGroupDto;
+import dk.kb.license.model.v1.UserObjAttributeDto;
+import dk.kb.license.model.v1.ValidateAccessInputDto;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.*;
 import dk.kb.license.storage.License;
-import dk.kb.license.webservice.dto.*;
 
 
 public class LicenseValidator {
@@ -29,7 +37,7 @@ public class LicenseValidator {
 	// The following 3 methods are the API
 
 	//TODO shitload of javadoc
-	public static ArrayList<License> getUsersLicenses(GetUsersLicensesInputDTO input) throws Exception{
+	public static ArrayList<License> getUsersLicenses(GetUsersLicensesInputDto input) throws Exception{
 		//validate
 		if (input.getAttributes() == null || input.getAttributes().size() == 0){
 			log.error("No attributes defined in input.");
@@ -48,7 +56,7 @@ public class LicenseValidator {
 	}
 
 	//TODO shitload of javadoc
-	public static ArrayList<UserGroupDTO> getUsersGroups(GetUserGroupsInputDTO input) throws Exception{
+	public static ArrayList<UserGroupDto> getUsersGroups(GetUserGroupsInputDto input) throws Exception{
 		//validate
 		if (input.getAttributes() == null || input.getAttributes().size() == 0){
 			log.error("No attributes defined in input.");
@@ -65,7 +73,7 @@ public class LicenseValidator {
 		//Find licenses that give access (not checking groups) for the dateFiltered licenses
 		ArrayList<License> accessLicenses = findLicensesValidatingAccess(input.getAttributes(),  dateFilteredLicenses);
 
-		ArrayList<UserGroupDTO> filteredGroups = filterGroupsWithPresentationtype(accessLicenses);
+		ArrayList<UserGroupDto> filteredGroups = filterGroupsWithPresentationtype(accessLicenses);
 		        
 	    LicenseValidator.fixLocale(filteredGroups, input.getLocale());       
 	    
@@ -73,20 +81,20 @@ public class LicenseValidator {
 	}
 
 	//TODO shitload of javadoc
-	public static CheckAccessForIdsOutputDTO checkAccessForIds(CheckAccessForIdsInputDTO input) throws Exception{
+	public static CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto input) throws Exception{
        
-	    if  (input.getIds() == null || input.getIds().size() == 0){
+	    if  (input.getAccessIds() == null || input.getAccessIds().size() == 0){
 	        throw new IllegalArgumentException("No ID's in input");	        
 	    }
 	    
 		//Get the query. This also validates the input 
-		GetUserQueryInputDTO inputQuery = new GetUserQueryInputDTO();		
+		GetUserQueryInputDto inputQuery = new GetUserQueryInputDto();		
 		inputQuery.setAttributes(input.getAttributes());
 		inputQuery.setPresentationType(input.getPresentationType());
-		GetUserQueryOutputDTO query = getUserQuery(inputQuery);
+		GetUserQueryOutputDto query = getUserQuery(inputQuery);
 		
 		
-		CheckAccessForIdsOutputDTO output = new  CheckAccessForIdsOutputDTO();
+		CheckAccessForIdsOutputDto output = new  CheckAccessForIdsOutputDto();
 		output.setPresentationType(input.getPresentationType());
 		output.setQuery(query.getQuery());
 
@@ -98,29 +106,29 @@ public class LicenseValidator {
 		//Next step: use Future's to make multithreaded when we get more servers. 
 		//But currently these requests are less 10 ms
 		for (SolrServerClient server: servers){
-	        ArrayList<String> filteredIds =server.filterIds(input.getIds(), query.getQuery());
+	        List<String> filteredIds =server.filterIds(input.getAccessIds(), query.getQuery());
 	        log.info("#filtered id for server ("+input.getPresentationType()+") "+ server.getServerUrl() +" : "+filteredIds.size());
 		    filteredIdsSet.addAll(filteredIds);
 		}
 		//Now we have to remove remove ID's not asked for that are here because of multivalue field. (set intersection)
-	    filteredIdsSet.retainAll(input.getIds());
+	    filteredIdsSet.retainAll(input.getAccessIds());
 						
 		output.setAccessIds(new ArrayList<String>(filteredIdsSet));
 		//Sanity check!
-		if (output.getAccessIds().size() > input.getIds().size()){
+		if (output.getAccessIds().size() > input.getAccessIds().size()){
 			throw new IllegalArgumentException("Security problem: More Id's in output than input. Check for query injection.");
 		}
 		
-		log.debug("#query IDs="+input.getIds().size() + " returned #filtered IDs="+output.getAccessIds().size());
+		log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size());
 		return output;		
 	}
 
 	//TODO shitload of javadoc
-	public static GetUserQueryOutputDTO getUserQuery(GetUserQueryInputDTO input) throws Exception{
+	public static GetUserQueryOutputDto getUserQuery(GetUserQueryInputDto input) throws Exception{
 		//validate
 		if (input.getAttributes() == null){
 			log.error("No attributes defined in input.");
-			input.setAttributes(new ArrayList<UserObjAttributeDTO>());
+			input.setAttributes(new ArrayList<UserObjAttributeDto>());
 			
 		}		
 
@@ -148,7 +156,7 @@ public class LicenseValidator {
 
 		//Now we have to find all MUST-groups the user is missing 
 		ArrayList<ConfiguredLicenseGroupType> configuredMUSTDomLicenseGroupTypes = LicenseCache.getConfiguredMUSTDomLicenseGroupTypes();
-		GetUserQueryOutputDTO output = new GetUserQueryOutputDTO();
+		GetUserQueryOutputDto output = new GetUserQueryOutputDto();
 		output.setUserLicenseGroups(filterGroups);
 
 		ArrayList<String> missingMustGroups = new ArrayList<String>();
@@ -169,7 +177,7 @@ public class LicenseValidator {
 
 
 	//TODO shitload of javadoc
-	public static boolean validateAccess(ValidateAccessInputDTO input) throws Exception{
+	public static boolean validateAccess(ValidateAccessInputDto input) throws Exception{
 
 		//validate
 		if (input.getAttributes() == null || input.getAttributes().size() == 0){
@@ -244,14 +252,14 @@ public class LicenseValidator {
 
 	//Get all dom-groups and for each dom-group find the union of presentationtypes
 	//Sort by dom group name
-	public static ArrayList<UserGroupDTO> filterGroupsWithPresentationtype(ArrayList<License> licenses){
-		TreeMap<String, UserGroupDTO> groups = new TreeMap<String, UserGroupDTO>();
+	public static ArrayList<UserGroupDto> filterGroupsWithPresentationtype(ArrayList<License> licenses){
+		TreeMap<String, UserGroupDto> groups = new TreeMap<String, UserGroupDto>();
 		for (License currentLicense : licenses){
 			for (LicenseContent currentGroup : currentLicense.getLicenseContents()){
 				String name = currentGroup.getName();
-				UserGroupDTO group = groups.get(name);
+				UserGroupDto group = groups.get(name);
 				if (group == null){
-					group = new UserGroupDTO();        	
+					group = new UserGroupDto();        	
 					group.setPresentationTypes(new ArrayList<String>());
 					group.setGroupName(name);
 					groups.put(name,group);
@@ -267,7 +275,7 @@ public class LicenseValidator {
 				}
 			}
 		}
-		return new ArrayList<UserGroupDTO>(groups.values());
+		return new ArrayList<UserGroupDto>(groups.values());
 	}
 
 
@@ -310,7 +318,7 @@ public class LicenseValidator {
 	 * is validated. If an attributegroup validates, the license is added to the return list.
 	 * 
 	 */
-	public static ArrayList<License> findLicensesValidatingAccess(ArrayList<UserObjAttributeDTO> attributes, ArrayList<License> allLicenses){		
+	public static ArrayList<License> findLicensesValidatingAccess(List<UserObjAttributeDto> attributes, ArrayList<License> allLicenses){		
 		ArrayList<License> licenses = new  ArrayList<License>();
 
 		//Iterate all licenses and test accesss
@@ -322,7 +330,7 @@ public class LicenseValidator {
 			for (AttributeGroup currentGroup : groups){			 
 				boolean allAttributeGroupPartsMatched = true;
 				for (Attribute currentAttribute : currentGroup.getAttributes()){
-					ArrayList<UserObjAttributeDTO> filtered = filterUserObjAttributesToValidatedOnly(currentAttribute, attributes);
+					ArrayList<UserObjAttributeDto> filtered = filterUserObjAttributesToValidatedOnly(currentAttribute, attributes);
 					if (filtered.size() == 0){ //Found attributegroup-part did not validate
 						allAttributeGroupPartsMatched = false; //Could break, but finding all attributegroup-parts matches is useful for debug purpose
 					}					
@@ -345,13 +353,13 @@ public class LicenseValidator {
 	}
 
 	//Filter so only the UserObjAttribute that match the license are returned. Values that does not match are also removed.
-	public static ArrayList<UserObjAttributeDTO> filterUserObjAttributesToValidatedOnly(Attribute licenseattribute,  ArrayList<UserObjAttributeDTO> userAttributes){
+	public static ArrayList<UserObjAttributeDto> filterUserObjAttributesToValidatedOnly(Attribute licenseattribute,  List<UserObjAttributeDto> userAttributes){
 		String name = licenseattribute.getAttributeName();
 		ArrayList<AttributeValue> values = licenseattribute.getValues();		
-		ArrayList<UserObjAttributeDTO> filteredUserObjAttributes = new ArrayList<UserObjAttributeDTO>();
+		ArrayList<UserObjAttributeDto> filteredUserObjAttributes = new ArrayList<UserObjAttributeDto>();
 
-		for (UserObjAttributeDTO currentUserObjAttribute : userAttributes){
-			UserObjAttributeDTO newFilteredObjAttribute = new UserObjAttributeDTO(); //will be added to list returned if match		     
+		for (UserObjAttributeDto currentUserObjAttribute : userAttributes){
+			UserObjAttributeDto newFilteredObjAttribute = new UserObjAttributeDto(); //will be added to list returned if match		     
 			ArrayList<String> newFilteredObjAttributeValues = new ArrayList<String>(); 
 			newFilteredObjAttribute.setValues(newFilteredObjAttributeValues);
 			if (currentUserObjAttribute.getAttribute().equals(name)){ //We have an attribute match, see if any values match				 
@@ -435,7 +443,7 @@ public class LicenseValidator {
 	}
 
 	//Maps the groups(String names) to the configured objects. 
-	public static ArrayList<ConfiguredLicenseGroupType> buildGroups(ArrayList<String> groups){
+	public static ArrayList<ConfiguredLicenseGroupType> buildGroups(List<String> groups){
 		ArrayList<ConfiguredLicenseGroupType> filteredGroups = new ArrayList<ConfiguredLicenseGroupType>();
 		ArrayList<ConfiguredLicenseGroupType> configuredGroups = LicenseCache.getConfiguredDomLicenseGroupTypes();
 
@@ -579,12 +587,12 @@ public class LicenseValidator {
 	
 	
    //recursive fix group name and presentationtype names to the locale
-	public static void fixLocale( ArrayList<UserGroupDTO> input, String locale){
+	public static void fixLocale( ArrayList<UserGroupDto> input, String locale){
 		if (locale == null){
 		    locale = LOCALE_DA;
 		}
 	    
-	    for (UserGroupDTO current : input){
+	    for (UserGroupDto current : input){
 			current.setGroupName(LicenseCache.getGroupName(current.getGroupName(), locale));
 			ArrayList<String> presentationTypesNames = new ArrayList<String>();
 			for (String name :  current.getPresentationTypes()){
