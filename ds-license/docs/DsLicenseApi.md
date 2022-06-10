@@ -16,7 +16,7 @@ Method | HTTP request | Description
 
 <a name="checkAccessForIds"></a>
 # **checkAccessForIds**
-> CheckAccessForIdsOutputDto checkAccessForIds(checkAccessForIdsInput)
+> CheckAccessForIdsOutputDto checkAccessForIds(checkAccessForIdsInputDto)
 
 TODO
 
@@ -35,9 +35,9 @@ public class Example {
     defaultClient.setBasePath("http://localhost/ds-license/v1");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
-    CheckAccessForIdsInputDto checkAccessForIdsInput = new CheckAccessForIdsInputDto(); // CheckAccessForIdsInputDto | TODO
+    CheckAccessForIdsInputDto checkAccessForIdsInputDto = new CheckAccessForIdsInputDto(); // CheckAccessForIdsInputDto | 
     try {
-      CheckAccessForIdsOutputDto result = apiInstance.checkAccessForIds(checkAccessForIdsInput);
+      CheckAccessForIdsOutputDto result = apiInstance.checkAccessForIds(checkAccessForIdsInputDto);
       System.out.println(result);
     } catch (ApiException e) {
       System.err.println("Exception when calling DsLicenseApi#checkAccessForIds");
@@ -54,7 +54,7 @@ public class Example {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **checkAccessForIdsInput** | [**CheckAccessForIdsInputDto**](.md)| TODO |
+ **checkAccessForIdsInputDto** | [**CheckAccessForIdsInputDto**](CheckAccessForIdsInputDto.md)|  | [optional]
 
 ### Return type
 
@@ -66,7 +66,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 ### HTTP response details
@@ -192,7 +192,7 @@ No authorization required
 
 <a name="getUserGroups"></a>
 # **getUserGroups**
-> GetUserGroupsOutputDto getUserGroups(getUserGroups)
+> GetUserGroupsOutputDto getUserGroups(getUserGroupsInputDto)
 
 TODO
 
@@ -211,9 +211,9 @@ public class Example {
     defaultClient.setBasePath("http://localhost/ds-license/v1");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
-    GetUserGroupsInputDto getUserGroups = new GetUserGroupsInputDto(); // GetUserGroupsInputDto | TODO
+    GetUserGroupsInputDto getUserGroupsInputDto = new GetUserGroupsInputDto(); // GetUserGroupsInputDto | 
     try {
-      GetUserGroupsOutputDto result = apiInstance.getUserGroups(getUserGroups);
+      GetUserGroupsOutputDto result = apiInstance.getUserGroups(getUserGroupsInputDto);
       System.out.println(result);
     } catch (ApiException e) {
       System.err.println("Exception when calling DsLicenseApi#getUserGroups");
@@ -230,7 +230,7 @@ public class Example {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **getUserGroups** | [**GetUserGroupsInputDto**](.md)| TODO |
+ **getUserGroupsInputDto** | [**GetUserGroupsInputDto**](GetUserGroupsInputDto.md)|  | [optional]
 
 ### Return type
 
@@ -242,7 +242,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 ### HTTP response details
@@ -252,7 +252,7 @@ No authorization required
 
 <a name="getUserLicenseQuery"></a>
 # **getUserLicenseQuery**
-> String getUserLicenseQuery(getUserQueryInput)
+> String getUserLicenseQuery(getUserQueryInputDto)
 
 TODO
 
@@ -271,9 +271,9 @@ public class Example {
     defaultClient.setBasePath("http://localhost/ds-license/v1");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
-    GetUserQueryInputDto getUserQueryInput = new GetUserQueryInputDto(); // GetUserQueryInputDto | TODO
+    GetUserQueryInputDto getUserQueryInputDto = new GetUserQueryInputDto(); // GetUserQueryInputDto | 
     try {
-      String result = apiInstance.getUserLicenseQuery(getUserQueryInput);
+      String result = apiInstance.getUserLicenseQuery(getUserQueryInputDto);
       System.out.println(result);
     } catch (ApiException e) {
       System.err.println("Exception when calling DsLicenseApi#getUserLicenseQuery");
@@ -290,7 +290,7 @@ public class Example {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **getUserQueryInput** | [**GetUserQueryInputDto**](.md)| TODO |
+ **getUserQueryInputDto** | [**GetUserQueryInputDto**](GetUserQueryInputDto.md)|  | [optional]
 
 ### Return type
 
@@ -302,7 +302,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 ### HTTP response details
@@ -312,7 +312,7 @@ No authorization required
 
 <a name="getUserLicenses"></a>
 # **getUserLicenses**
-> GetUsersLicensesOutputDto getUserLicenses(getUserLicenses)
+> GetUsersLicensesOutputDto getUserLicenses(getUsersLicensesInputDto)
 
 TODO
 
@@ -331,9 +331,9 @@ public class Example {
     defaultClient.setBasePath("http://localhost/ds-license/v1");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
-    GetUsersLicensesInputDto getUserLicenses = new GetUsersLicensesInputDto(); // GetUsersLicensesInputDto | TODO
+    GetUsersLicensesInputDto getUsersLicensesInputDto = new GetUsersLicensesInputDto(); // GetUsersLicensesInputDto | 
     try {
-      GetUsersLicensesOutputDto result = apiInstance.getUserLicenses(getUserLicenses);
+      GetUsersLicensesOutputDto result = apiInstance.getUserLicenses(getUsersLicensesInputDto);
       System.out.println(result);
     } catch (ApiException e) {
       System.err.println("Exception when calling DsLicenseApi#getUserLicenses");
@@ -350,7 +350,7 @@ public class Example {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **getUserLicenses** | [**GetUsersLicensesInputDto**](.md)| TODO |
+ **getUsersLicensesInputDto** | [**GetUsersLicensesInputDto**](GetUsersLicensesInputDto.md)|  | [optional]
 
 ### Return type
 
@@ -362,7 +362,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 ### HTTP response details
@@ -430,7 +430,7 @@ No authorization required
 
 <a name="validateAccess"></a>
 # **validateAccess**
-> ValidateAccessOutputDto validateAccess(validateAccess)
+> ValidateAccessOutputDto validateAccess(validateAccessInputDto)
 
 TODO
 
@@ -449,9 +449,9 @@ public class Example {
     defaultClient.setBasePath("http://localhost/ds-license/v1");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
-    ValidateAccessInputDto validateAccess = new ValidateAccessInputDto(); // ValidateAccessInputDto | TODO
+    ValidateAccessInputDto validateAccessInputDto = new ValidateAccessInputDto(); // ValidateAccessInputDto | 
     try {
-      ValidateAccessOutputDto result = apiInstance.validateAccess(validateAccess);
+      ValidateAccessOutputDto result = apiInstance.validateAccess(validateAccessInputDto);
       System.out.println(result);
     } catch (ApiException e) {
       System.err.println("Exception when calling DsLicenseApi#validateAccess");
@@ -468,7 +468,7 @@ public class Example {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **validateAccess** | [**ValidateAccessInputDto**](.md)| TODO |
+ **validateAccessInputDto** | [**ValidateAccessInputDto**](ValidateAccessInputDto.md)|  | [optional]
 
 ### Return type
 
@@ -480,7 +480,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 ### HTTP response details

@@ -93,16 +93,14 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'TODO'
-      operationId: validateAccess  
-      parameters:
-        - name: validateAccess
-          in: query
-          description: 'TODO'
-          required: true
-          schema:
-            $ref: '#/components/schemas/ValidateAccessInput'
-    
+      summary: 'TODO' 
+      operationId: validateAccess 
+      requestBody:
+        content:
+          application/json:    # Media type
+            schema:            # Request body contents
+              $ref: '#/components/schemas/ValidateAccessInput'
+                
       responses:
         '200':
           description: 'TODO'
@@ -117,13 +115,11 @@ paths:
         - '${project.name}'
       summary: 'TODO'
       operationId: getUserLicenses       
-      parameters:
-        - name: getUserLicenses
-          in: query
-          description: 'TODO'
-          required: true
-          schema:
-            $ref: '#/components/schemas/GetUsersLicensesInput'
+      requestBody:
+        content:
+          application/json:    # Media type
+            schema:            # Request body contents
+              $ref: '#/components/schemas/GetUsersLicensesInput'
     
       responses:
         '200':
@@ -141,13 +137,12 @@ paths:
         - '${project.name}'
       summary: 'TODO'
       operationId: getUserLicenseQuery      
-      parameters:
-        - name: getUserQueryInput
-          in: query
-          description: 'TODO'
-          required: true
-          schema:
-            $ref: '#/components/schemas/GetUserQueryInput'
+      requestBody:
+        content:
+          application/json:    # Media type
+            schema:            # Request body contents
+              $ref: '#/components/schemas/GetUserQueryInput'
+                
     
       responses:
         '200':
@@ -164,13 +159,11 @@ paths:
         - '${project.name}'
       summary: 'TODO'
       operationId: getUserGroups       
-      parameters:
-        - name: getUserGroups
-          in: query
-          description: 'TODO'
-          required: true
-          schema:                                        
-            $ref: '#/components/schemas/GetUserGroupsInput'
+      requestBody:
+        content:
+          application/json:    # Media type
+            schema:            # Request body contents                                             
+              $ref: '#/components/schemas/GetUserGroupsInput'
                              
       responses:
         '200':

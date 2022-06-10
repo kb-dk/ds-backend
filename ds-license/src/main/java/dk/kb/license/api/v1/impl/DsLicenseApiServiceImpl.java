@@ -36,6 +36,8 @@ import java.util.Map;
 import java.io.File;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.servlet.ServletConfig;
@@ -164,10 +166,7 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
     @Override
     public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
         try{
-            System.out.println("input:"+input);
-            System.out.println("presentationtype:"+input.getPresentationType());
-            System.out.println("presentationtype:"+input.getAccessIds());
-            
+             
             ConfiguredLicensePresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
           }
           catch(IllegalArgumentException e){
@@ -195,11 +194,14 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
         return null;
     }
 
+    
     @Override
-    public ValidateAccessOutputDto validateAccess(@NotNull ValidateAccessInputDto validateAccess) {
+    public ValidateAccessOutputDto validateAccess(@Valid ValidateAccessInputDto validateAccessInputDto) {
         // TODO Auto-generated method stub
         return null;
     }
+
+
     
     @Override
     public String getUserLicenseQuery(@NotNull GetUserQueryInputDto getUserQueryInput) {
@@ -236,6 +238,8 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
             return new InternalServiceException(e.getMessage());
         }
     }
+
+  
 
   
   
