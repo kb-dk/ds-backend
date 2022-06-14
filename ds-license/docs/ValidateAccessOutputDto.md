@@ -6,7 +6,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**accesss** | **Boolean** |  |  [optional]
+**access** | **Boolean** |  |  [optional]
 
 
 

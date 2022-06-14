@@ -242,7 +242,7 @@ components:
     ValidateAccessOutput:    
       type: object
       properties:
-        accesss:
+        access:
           type: boolean
 
 
@@ -331,7 +331,7 @@ components:
     GetUserGroupsOutput:
       type: object
       properties:                    
-        attributes:
+        groups:
           type: array
           items:
             $ref: '#/components/schemas/UserGroup'
