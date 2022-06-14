@@ -194,19 +194,11 @@ public class PresentFacade {
             // Hacking the output to confirm to Solr's non-valid JSON: https://solr.apache.org/guide/8_10/uploading-data-with-index-handlers.html#sending-json-update-commands
             ((JSONStreamWriter) writer).setPreOutput("{\n");
             ((JSONStreamWriter) writer).setPostOutput("\n}\n");
-            Stream<DsRecordDto> records;
+
             try {
-                records = collection.getDSRecords(mTime, maxRecords, "SolrJSON");
-            } catch (Exception e) {
-                writer.close();
-                log.warn("Exception requesting records for Solr export with collection='{}', mTime={}, maxRecords={}",
-                         collection, mTime, maxRecords);
-                throw new InternalServerErrorException("Exception requesting records for SolrJSON format", e);
-            }
-            try {
-                records.map(PresentFacade::wrapSolrJSON)
+                collection.getDSRecords(mTime, maxRecords, "SolrJSON")
+                        .map(PresentFacade::wrapSolrJSON)
                         .forEach(writer::write);
-                //       writer.close();
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
                     throw e;
@@ -215,6 +207,7 @@ public class PresentFacade {
                         Locale.ROOT,
                         "Exception delivering Solr records with collection='%s', mTime=%d, maxRecords=%d",
                         collection.getId(), mTime, maxRecords);
+                // We need to log here as the writer does not have information on collection, mTime and maxRecords
                 log.warn(message, e);
                 throw new InternalServiceException(message);
             }
@@ -225,7 +218,13 @@ public class PresentFacade {
         };
     }
 
-    // https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates
+    /**
+     * Uses information from the record object to wrap its data component in either {@code add} or {@code delete}.
+     * See https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates
+     * @param record a record where the data component contains a SolrJSONDocument.
+     * @return the record's data component wrapped as either {@code add} or {@code delete}.
+     */
+    //
     private static String wrapSolrJSON(DsRecordDto record) {
         if (Boolean.TRUE.equals(record.getDeleted())) {
             return "\"delete\": { \"id\": \"" + record.getId() + "\" }";
@@ -241,8 +240,14 @@ public class PresentFacade {
         return sb.toString();
     }
 
+    /**
+     * If the source data contains multiple DOMS, there will also be multiple SolrJSONDocuments.
+     * This method splits those from one JSON structure to one structure/document.
+     * @param solrJSONs one or more JSON documents in a JSON array.
+     * @return the JSON documents as a list.
+     */
     // Really hacking here to handle the case of the source containing multiple MODS-sections
-    // TODO: Hopefully determine that 1 record = 1 mods
+    // TODO: Hopefully determine that 1 record = 1 mods always
     private static List<String> splitSolrJSON(String solrJSONs) {
         ObjectMapper mapper = new ObjectMapper();
         List<?> jsonArray = JSON.fromJson(solrJSONs, List.class);

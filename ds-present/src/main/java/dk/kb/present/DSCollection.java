@@ -17,6 +17,7 @@ package dk.kb.present;
 import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.RuntimeTransformerException;
+import dk.kb.present.webservice.exception.InternalServiceException;
 import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.present.webservice.exception.ServiceException;
 import dk.kb.util.yaml.YAML;
@@ -135,16 +136,23 @@ public class DSCollection {
         View view = getView(format);
         log.debug("Calling storage.getDSRecords(recordBase='{}', mTime={}, maxRecords={})",
                   recordBase, mTime, maxRecords);
-        return storage.getDSRecords(recordBase, mTime, maxRecords)
-                .peek(record -> {
-                    try {
-                        record.data(view.apply(record.getData()));
-                    } catch (Exception e) {
-                        throw new RuntimeTransformerException(
-                                "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
+        try {
+            return storage.getDSRecords(recordBase, mTime, maxRecords)
+                    .peek(record -> {
+                        try {
+                            record.data(view.apply(record.getData()));
+                        } catch (Exception e) {
+                            throw new RuntimeTransformerException(
+                                    "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
 
-                    }
-                });
+                        }
+                    });
+        } catch (Exception e) {
+            log.warn("Exception calling getDSRecords with collection='{}', mTime={}, maxRecords={}",
+                     getId(), mTime, maxRecords, e);
+            throw new InternalServiceException(
+                    "Internal exception requesting records from collection '" + getId() + "' in format " + format);
+        }
     }
 
     /**
