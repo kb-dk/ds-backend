@@ -6,7 +6,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**attributes** | [**List&lt;UserGroupDto&gt;**](UserGroupDto.md) |  |  [optional]
+**groups** | [**List&lt;UserGroupDto&gt;**](UserGroupDto.md) |  |  [optional]
 
 
 

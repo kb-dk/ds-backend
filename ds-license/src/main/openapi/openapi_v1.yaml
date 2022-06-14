@@ -271,6 +271,37 @@ components:
              type: string     
 
 
+    GetUserGroupsAndLicensesInput:
+      type: object
+      properties:                
+        locale:
+          type: string        
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserObjAttribute'
+
+    GetUserGroupsAndLicensesOutput:
+      type: object
+      properties:                              
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserGroup'
+        licenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicenseOverview'
+        allPresentationTypes:
+           type: array
+           items:
+             type: string   
+        allGroups:
+          type: array
+          items:
+            type: string   
+
+       
     GetUsersLicensesInput:
       type: object
       properties:                
