@@ -15,7 +15,7 @@ servers:
     description: 'Version 1'
 
 paths:
-  /ping:
+  /monitor/ping:
     get:
       tags:
         - '${project.name}'
@@ -88,12 +88,100 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  # TODO: Specify records/ (multiple records)
-  # The tricky part is how to represent multiple entries as the source can be both JSON & XML (and unknown in the form
-  # of raw but maybe raw should not be available here?).
-  # Another thing is that JSON can be delivered both as a large array and as JSON-Lines. Likewise, the packing of
-  # multiple SolrXMLs is already defined in https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#xml-formatted-index-updates
-  # but there is no defined packing of multiole MODS (Sub-TODO: Check is this is true)
+  /records:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Extract records from a collection after a given mTime and up to a defined maximum. The records are returned in sorted order by mTime increasing. Records marked for delete will also be returned.'
+      operationId: getRecords
+      x-streamingOutput: true
+      parameters:
+        - name: collection
+          in: query
+          description: 'The collection to extract records from'
+          required: true
+          schema:
+            type: string
+            example: 'images_jsmss'
+        - name: mTime
+          in: query
+          description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between seperate calls'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 0
+            # Default values for longs does not work with the current version of OpenAPI generator
+            #default: 0
+        - name: maxRecords
+          in: query
+          description: 'Maximum number of records to return. -1 means no limit'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 1000
+            # Default values for longs does not work with the current version of OpenAPI generator
+            #default: 1000
+        - name: format
+          in: query
+          description: |
+            The delivery format for the record:
+            * JSON-LD: [Linked Data in JSON](https://json-ld.org/) (default)
+            * JSON-LD-Lines: [Linked Data in JSON-Lines](https://json-ld.org/)
+            * MODS: [Metadata Object Description Schema](http://www.loc.gov/standards/mods/)
+            * SolrJSON: [Solr JSON Formatted Index Updates](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates)
+            * StorageRecord: [ds-storage](https://github.com/kb-dk/ds-storage/) record in JSON
+            * StorageRecord-Lines: [ds-storage](https://github.com/kb-dk/ds-storage/) record in JSON-Lines
+            Note that deleted records are only represented in the SolrJSON and StorageRecord formats.
+            For the other formats, deleted records are skipped silently.
+          required: false
+          schema:
+            type: string
+            enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON', "StorageRecord", "StorageRecord-Lines"]
+            example: 'JSON-LD'
+            default: 'JSON-LD'
+      responses:
+        '200':
+          description: 'List of records in the requested format'
+          content:
+            application/ld+json:
+              schema:
+                description: |
+                  JSON-compliant representation of records as linked data. Note that the structure can be unwieldy for
+                  parsing large exports, if the receiver does not use a streaming parser.
+                  Consider using application/x-ndjson instead
+                type: array
+                items:
+                  type: string
+            application/x-ndjson:
+              schema:
+                description: |
+                  Newline separated single-line JSON representations of linked data content.\n
+                  See https://json-ld.org/ https://github.com/ndjson/ndjson-spec or https://jsonlines.org/ for the formats
+                type: string
+            application/xml:
+              schema:
+                description: 'XML-compliant representation of as MODS records.'
+                type: array
+                items:
+                  type: string
+            application/x-solrjsondocuments:
+              schema:
+                description: |
+                  SolrJSONDocuments representation of content, directly indexable in Solr.
+                  See [Solr JSON Formatted Index Updates](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates)
+                type: string
+            application/x-storagerecord:
+              schema:
+                description: |
+                  [ds-storage](https://github.com/kb-dk/ds-storage/) record as JSON.
+                type: string
+            application/x-storagerecord-ndjson:
+              schema:
+                description: |
+                  [ds-storage](https://github.com/kb-dk/ds-storage/) record as JSON-Lines.
+                type: string
 
   /collection/{id}:
     get:
@@ -165,7 +253,11 @@ components:
         id:
           description: 'The ID of the collection'
           type: string
-          example: 'images.dsfl'
+          example: 'images-DSFL'
+        prefix:
+          description: 'The prefix used by all records in the collection'
+          type: string
+          example: 'images.dsfl:'
         description:
           description: 'A human readable description fo the collection'
           type: string

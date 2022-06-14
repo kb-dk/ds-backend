@@ -14,15 +14,12 @@
  */
 package dk.kb.present.storage;
 
+import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
-import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.stream.Stream;
 
 /**
  * Storage that always fails. Can  used for signalling unsupported formats.
@@ -49,15 +46,19 @@ public class FailStorage implements Storage {
         log.info("Created " + this);
     }
 
-    /**
-     * Locate a file where the name is the recordID and deliver the content. Works with sub-folders.
-     * @param recordID the ID (aka file name) for a record.
-     * @return the content of the file with the given name.
-     * @throws IOException if the file could not be located or the content not delivered.
-     */
     @Override
-    public String getRecord(String recordID) throws IOException {
+    public String getRecord(String recordID) {
         throw new NotFoundServiceException("Unable to locate record '" + recordID + "': " + message);
+    }
+
+    @Override
+    public DsRecordDto getDSRecord(String id) {
+        throw new NotFoundServiceException("Unable to locate record '" + id + "': " + message);
+    }
+
+    @Override
+    public Stream<DsRecordDto> getDSRecords(String recordBase, long mTime, long maxRecords) {
+        throw new NotFoundServiceException("Unable to locate any records after mTime " + mTime);
     }
 
     @Override

@@ -5,10 +5,6 @@ providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument
 
 Developed and maintained by the Royal Danish Library.
 
-## Status
-
-This project is at the "first real attempt"-status: Connections to ds-storage and simple 1-input-1-output
-transformations are working.
 
 ## Requirements
 
@@ -33,15 +29,45 @@ slow to render the response).
 Install [ds-storage](https://github.com/kb-dk/ds-storage) and follow its instructions for starting
 a test instance.
 
-Navigate to the `ds-present`-corpus folder and upload a sample to the running `ds-storage`:
+Navigate to the `ds-present`-corpus folder and upload samples to the running `ds-storage`:
 ```shell
 cd src/test/resources/xml/corpus/
-./post_to_storage.sh illum.xml
-
+./post_to_storage.sh albert-einstein.xml hvidovre-teater.xml simonsen-brandes.xml tystrup-soroe.xml homiliae-super-psalmos.xml work_on_logic.xml joergen_hansens_visebog.xml responsa.xml
 ```
-After this, a record for ID `id=doms.radio:illum.xml` should be delivered when requested from the
-[record/{id}](http://localhost:9073/ds-present/api/#/ds-present/getRecord) endpoint.
+After this, a record for ID `doms.radio:albert-einstein.xml` should be delivered when requested from the
+[/record/{id}](http://localhost:9073/ds-present/api/#/ds-present/record) endpoint.
 
+
+## Test with Solr
+
+### Setup Solr
+
+Checkout [ds-solr](https://github.com/kb-dk/ds-solr/), change to the `solr-nested-indexing` branch and follow
+the README, using the Solr setup from `nested-template/conf/`. This boils down to
+```shell
+  bin/cloud_install.sh
+  bin/cloud_start.sh
+  bin/cloud_sync.sh nested-template/conf/ ds-conf ds
+```
+Check that the collection was created by visiting
+[http://localhost:10007/solr/#/~cloud?view=graph](http://localhost:10007/solr/#/~cloud?view=graph)
+
+### Extract SolrJSONDocuments and index in Solr
+
+With `ds-storage` populated with the sample documents and `ds-present` running, use the 
+[ds-present API](http://localhost:9073/ds-present/api/) to call 
+[/records](http://localhost:9073/ds-present/api/#/ds-present/records) for collection `remote`
+and send them to Solr. 
+
+This can be done from the command line with
+```shell
+curl -s 'http://localhost:9073/ds-present/v1/records?collection=remote&maxRecords=1000&format=SolrJSON' > solrdocs.json
+
+Indekser dem i Solr:
+
+curl -X POST -H 'Content-Type: application/json' 'http://localhost:10007/solr/ds/update' --data-binary @solrdocs.json
+curl -X POST -H 'Content-Type: application/json' 'http://localhost:10007/solr/ds/update' --data-binary '{ "commit": {} }'
+```
 
 ## General setup
 

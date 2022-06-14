@@ -10,6 +10,10 @@
 #
 config:
   # List of backing storages. This information should be overridden in ds-present-environment.yaml
+
+  # The storages defined in this file are
+  # * ds-storage, expecting https://github.com/kb-dk/ds-storage/ to be running locally with the default port
+  # * folder, serving sample files
   storages:
     # There can be multiple defined storages. The outer YAML key is used as the ID for the storage.
     - main:
@@ -20,7 +24,7 @@ config:
         # the implementation (aka type) of the backend
         #
         # Available backends are
-        # ds-storage: Connection to a https://github.com/kb-dk/ds-storage/ instance
+        # ds-storage: A local instance of https://github.com/kb-dk/ds-storage/
         # folder:     Local files under the stated folder. Use only for test as the implementation in unsecure
         backends:
           # The ds-storage backend connects to a running https://github.com/kb-dk/ds-storage/ instance
@@ -28,11 +32,14 @@ config:
               # The name of the machine running the service. Mandatory
               host: 'localhost'
               # The port for the service. Mandatory
-              port: 8080
+              port: 9072
               # The path the the service. Optional, default is '/ds-storage/v1/'
               basepath: '/ds-storage/v1/'
               # The connection scheme: http or https. Optional, default is http for localhost, https for everything else
               scheme: 'http'
+              # The recordBase for the ds-storage
+              # Optional, but needed for the /records endpoint
+              base: 'doms.radio'
     - test:
         # If there is more that one backend implementation, the property 'order' controls how they are queried:
         # * parallel:   All backends are queried in parallel. Whoever answers with a record first wins.
@@ -62,6 +69,13 @@ config:
       # and the second being the collection specific par of the ID
       # Mandatory. Suggested value: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)', e.g. 'images.dsfl:Image1234:2_3-b'
       pattern: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)'
+  collection:
+    prefix:
+      # Pattern for acceptable collection prefixes. This will practically always be a mirror of the first capturing
+      # group for record.id.pattern.
+      # Primarily used for verifying configuration.
+      # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
+      pattern: '[a-z0-9.]+'
 
   # The collections available for this instance of ds-present 
   collections:

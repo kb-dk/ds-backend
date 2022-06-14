@@ -38,7 +38,19 @@ public class ExportWriterFactory {
 
     /**
      * Wrap the given OutputStream and return an ExportWriter, serializing to the export format derived from httpHeaders
-     * and format.
+     * and format. Sample usage from ServiceImpl:
+     * <pre>
+     public StreamingOutput getRecordsModifiedAfter(String recordBase, Long mTime, Long maxRecords, String format) {
+         return output -> {
+             try (ExportWriter writer = ExportWriterFactory.wrap(
+                     output, httpServletResponse, httpHeaders,
+                     format, ExportWriterFactory.FORMAT.jsonl, false, "records")) {
+             Stream<RecordDto> records = Store.getRecordStream(recordBase, mTime, maxRecords);
+             records.forEach(record -> writer.write(record);
+         }
+        };
+     * </pre>
+     *
      * @param output      the destination stream.
      * @param response    used for setting the proper contentType.
      * @param httpHeaders headers from the calling client. The {@code accept} MIME types are used to determine the
@@ -47,12 +59,16 @@ public class ExportWriterFactory {
      *                    httpHeaders. Acceptable formats are stated in {@link FORMAT}.
      * @param defaultType if no export format could be derived from httpHeaders or format, use this format.
      * @param writeNulls  if true, null-values are exported as {@code "key":null} for JSON and JSONL.
-     *                    If false, null-values are not stated. For CSV export this has no effect.
-     * @return
+     *                    If false, null-values are not stated.
+     *                    For CSV export this has no effect.
+     * @param rootElement the name of the outer element containing the data elements
+     *                    {@code <outer> <inner>1</inner> <inner>2</inner> ... </outer>}
+     *                    Only used with XML.
+     * @return a writer that takes Jackson annotated objects and streams a serialization to output.
      */
     public static ExportWriter wrap(
             OutputStream output, HttpServletResponse response, HttpHeaders httpHeaders,
-            String format, FORMAT defaultType, boolean writeNulls) {
+            String format, FORMAT defaultType, boolean writeNulls, String rootElement) {
         FORMAT streamFormat = null;
         try {
             streamFormat = format == null ? null : FORMAT.valueOf(format.toLowerCase(Locale.ROOT));
@@ -67,13 +83,50 @@ public class ExportWriterFactory {
                     "Unable to determine streaming export format and default was null");
         }
 
-        streamFormat.setContentType(response);
+        return wrap(output, response, streamFormat, writeNulls, rootElement);
+    }
+
+    /**
+     * Wrap the given OutputStream and return an ExportWriter, serializing to the given export format.
+     * Consider using {@link #wrap(OutputStream, HttpServletResponse, FORMAT, boolean, String)} to support
+     * CSV, JSON, JSONL as well as XML as export formats.
+     * Sample usage from ServiceImpl:
+     * <pre>
+     public StreamingOutput getRecordsModifiedAfter(String recordBase, Long mTime, Long maxRecords) {
+         return output -> {
+             try (ExportWriter writer = ExportWriterFactory.wrap(
+                     output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records")) {
+                 Stream<RecordDto> records = Store.getRecordStream(recordBase, mTime, maxRecords);
+                 records.forEach(record -> writer.write(record);
+             }
+         };
+     }
+     * </pre>
+     * @param output      the destination stream.
+     * @param response    used for setting the proper contentType.
+     * @param format      the format to export to.
+     * @param writeNulls  if true, null-values are exported as {@code "key":null} for JSON and JSONL.
+     *                    If false, null-values are not stated.
+     *                    For CSV export this has no effect.
+     * @param rootElement the name of the outer element containing the data elements
+     *                    {@code <outer> <inner>1</inner> <inner>2</inner> ... </outer>}
+     *                    Only used with XML.
+     * @return a writer that takes Jackson annotated objects and streams a serialization to output.
+     */
+    public static ExportWriter wrap(OutputStream output, HttpServletResponse response,
+                                    FORMAT format, boolean writeNulls, String rootElement) {
+        if (response == null) {
+            log.warn("warp: No HttpServletResponse given so the content MIME type could not be set");
+        } else {
+            format.setContentType(response);
+        }
         Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
-        switch (streamFormat) {
-            case json: return new JSONStreamWriter(writer, JSONStreamWriter.FORMAT.json, writeNulls);
+        switch (format) {
             case jsonl: return new JSONStreamWriter(writer, JSONStreamWriter.FORMAT.jsonl, writeNulls);
+            case json: return new JSONStreamWriter(writer, JSONStreamWriter.FORMAT.json, writeNulls);
+            case xml: return new ExportXMLStreamWriter(writer, rootElement, writeNulls);
             case csv: return new CSVStreamWriter(writer);
-            default: throw new InternalServiceException("The export format '" + streamFormat + "' is unsupported");
+            default: throw new InternalServiceException("The export format '" + format + "' is unsupported");
         }
     }
 
@@ -83,6 +136,7 @@ public class ExportWriterFactory {
     public enum FORMAT {
         jsonl("application", "x-ndjson"),
         json("application", "json"),
+        xml("application", "xml"),
         csv("text", "csv");
 
         private final MediaType mime;

@@ -2,6 +2,18 @@
 # Only used for unit testing
 #
 config:
+
+  # Only some of the sample files can be properly transformed to SolrJSONDocuments
+  filewhitelist: &whitelist
+     - '.*albert-einstein.xml'
+     - '.*hvidovre-teater.xml'
+     - '.*simonsen-brandes.xml'
+     - '.*tystrup-soroe.xml'
+     - '.*homiliae-super-psalmos.xml'
+     - '.*work_on_logic.xml'
+     - '.*joergen_hansens_visebog.xml'
+     - '.*responsa.xml'
+
   # List of backing storages. The real URLs should be overridden in ds-present-environment.yaml
   storages:
     - test:
@@ -10,8 +22,12 @@ config:
           # Problematic: Can we rely on the test being started with the working folder at the root of the project?
           - folder:
               root: 'src/test/resources/xml'
+              extension: '.xml'
+              whitelist: *whitelist
           - folder:
               root: 'src/test/resources/xml/corpus'
+              extension: '.xml'
+              whitelist: *whitelist
 
   # Settings for handling at the record level
   record:
@@ -20,6 +36,13 @@ config:
       # and the second being the collection-specifix par of the ID
       # Mandatory. Suggested value: '$([a-z][0-9][.]):([a-z][0-9][.-_])$', e.g. 'images.dsfl:image1234'
       pattern: '^([a-z0-9.]+):([a-z0-9._-]+)$'
+  collection:
+    prefix:
+      # Pattern for acceptable collection prefixes. This will practically always be a mirror of the first capturing
+      # group for record.id.pattern.
+      # Primarily used for verifying configuration.
+      # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
+      pattern: '[a-z0-9.]+'
 
   # The collections available for this instance of ds-present 
   collections:
@@ -33,7 +56,7 @@ config:
               mime: 'application/xml'
               transformers:
                 - identity: # No transformation steps as mods is the core format for images-dsfl
-          - jsonld:
+          - json-ld:
               mime: 'application/json'
               transformers:
                 - xslt:
@@ -48,3 +71,8 @@ config:
               transformers:
                 - fail:
                     message: 'Raw format contains confidential information and cannot be delivered'
+          # For testing purposes
+          - raw-bypass:
+              mime: 'text/plain'
+              transformers:
+                - identity:

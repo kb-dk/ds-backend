@@ -16,12 +16,14 @@ package dk.kb.present;
 
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
+import dk.kb.present.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.function.Function;
 
 /**
@@ -76,7 +78,14 @@ public class View extends ArrayList<DSTransformer> implements Function<String, S
     @Override
     public String apply(String s) {
         for (DSTransformer transformer: this) {
-            s = transformer.apply(s);
+            try {
+                s = transformer.apply(s);
+            } catch (Exception e) {
+                String message = String.format(
+                        Locale.ROOT, "Exception in View '%s' while calling %s", getId(), transformer);
+                log.warn(message, e);
+                throw new InternalServiceException(message);
+            }
         }
         return s;
     }
