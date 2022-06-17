@@ -27,13 +27,13 @@ import dk.kb.license.model.v1.ValidateAccessOutputDto;
 public class LicenseModuleRestWSTester {
 
   
-  private static String serviceUrl = "http://localhost:9612/licensemodule/services";
+  private static String serviceUrl = "http://localhost:8080/ds-license/v1/";
    
   
   
 	public static void main(String[] args) throws Exception {
 		
-		 //testValidateAccess();
+		 testValidateAccess();
 		 //testGetUserLicenseQuery();
    	     //testCheckAccessForIds();
          //testGetUsersLicenses();
@@ -62,8 +62,8 @@ public class LicenseModuleRestWSTester {
 		input.setPresentationType("Download");
 				
 	    WebClient client = getWebClient();
-			    	   
 	    ValidateAccessOutputDto post = client.path("validateAccess").type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).post(input,ValidateAccessOutputDto.class);	    
+	    System.out.println(post);
 	    System.out.println(post.getAccess()); //true of false
 	}
 
