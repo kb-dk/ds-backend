@@ -27,7 +27,7 @@ public class LicenceSolrJClientTest {
 		ids.add("doms_reklamefilm:uuid:b12445f8-8b88-4d32-bc14-d7494debb491"); //reklame
 
 		
-		String queryPartAccess="recordBase:doms_radioTVCollection";
+		String queryPartAccess="title:doms_radioTVCollection";
 		List<String> filteredIds =solrServer.filterIds(ids, queryPartAccess);		
 		System.out.println("Size:"+filteredIds.size());
 	    System.out.println(filteredIds);		
