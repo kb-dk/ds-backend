@@ -175,6 +175,7 @@ paths:
           required: false
           schema:
             type: string
+            enum: ['true', 'false']
             default: 'true'
             example: 'true'
 
@@ -186,15 +187,13 @@ paths:
             Used for debugging queries and timing. Documentation from Solr docs:
             * `query`:  Debug information about the query only
             * `timing`: Debug information about how long the query took to process
-            * `results`: Debug information about the score results (also known as "explain"
+            * `results`: Debug information about the score results (also known as "explain")
             * `all`: All available debug information about the request request 
             * `true`: Backwards compatible version of `all`
           required: false
           schema:
             type: string
-            enum:  ['query', 'timing', 'results', 'all', 'true']
-            default: 'query'
-            example: 'query'
+            enum:  ['query', 'timing', 'results', 'all', 'true', 'false']
 
         - name: debug.explain.structured
           in: query
@@ -205,8 +204,6 @@ paths:
           required: false
           schema:
             type: string
-            default: 'false'
-            example: 'false'
 
       responses:
         '200':
