@@ -11,8 +11,10 @@ public class LicenceSolrJClientTest {
 
 
      //Find url in property file on devel06 etc.
-	private static SolrServerClient solrServer = new SolrServerClient("http://localhost:50001/solr/aviser.2.devel/");
+	//private static SolrServerClient solrServer = new SolrServerClient("http://localhost:50001/solr/aviser.2.devel/");
 		
+    private static SolrServerClient solrServer = new SolrServerClient("http://devel11:10001/ds-discover/v1/solr/ds/");
+    
 	public static void main(String[] args) throws Exception{
 		
 		ArrayList<String> ids = new ArrayList<String>(); 
