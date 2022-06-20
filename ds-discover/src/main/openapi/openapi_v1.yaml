@@ -261,12 +261,22 @@ paths:
 
       responses:
         '200':
-          description: 'JSON structure with Solr response'
+          description: 'Structured Solr response'
           content:
             application/json:
               schema:
                 description: |
                   Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
+                type: string
+            application/xml:
+              schema:
+                description: |
+                  Output compatible with [Solr XML response](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+                type: string
+            text/csv:
+              schema:
+                description: |
+                  Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
                 type: string
 
   /solr/admin/collections:

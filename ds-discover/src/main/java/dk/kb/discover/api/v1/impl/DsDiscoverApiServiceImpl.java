@@ -205,6 +205,7 @@ public class DsDiscoverApiServiceImpl implements DsDiscoverApi {
         SolrService solr = SolrManager.getSolrService(collection);
         try {
             // TODO: Pass the map of request parameters instead of all parameters as first class
+            httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
             return solr.query(q, fq, rows, fl, facet, facetField, qOp, wt, version, indent, debug, debugExplainStructured);
         } catch (Exception e){
             throw handleException(e);

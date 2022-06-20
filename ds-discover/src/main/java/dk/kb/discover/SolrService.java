@@ -77,7 +77,7 @@ public class SolrService {
     }
     public enum WT_ENUM {json, csv, xml;
         static WT_ENUM safeParse(String wt) {
-            if (wt == null) {
+            if (wt == null || wt.isEmpty()) {
                 return json;
             }
             try {
@@ -85,6 +85,14 @@ public class SolrService {
             } catch (IllegalArgumentException e) {
                 throw new InvalidArgumentServiceException(
                         "Unsupported wt='" + wt + "'. Supported values are " + Arrays.toString(WT_ENUM.values()));
+            }
+        }
+        String getMIME() {
+            switch (this) {
+                case json: return "application/json";
+                case xml: return "application/xml";
+                case csv: return "text/csv";
+                default: throw new UnsupportedOperationException("The WT '" + this + "' has no MIME type defined");
             }
         }
     }
@@ -195,6 +203,16 @@ public class SolrService {
         }
 
         return response.body();
+    }
+
+    /**
+     * Return the MIME type corresponding to the given Solr wt, defaulting to JSON.
+     * @param wt the Solr param wt. Can be null, which will result in {@code application/json}.
+     * @return the MIME type corresponding to the wt.
+     * @throws InvalidArgumentServiceException if the wt is unsupported.
+     */
+    public String getResponseMIMEType(String wt) {
+        return WT_ENUM.safeParse(wt).getMIME();
     }
 
     /**
