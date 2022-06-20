@@ -8,6 +8,7 @@ Method | HTTP request | Description
 [**extractStatistics**](DsLicenseApi.md#extractStatistics) | **POST** /monitor | TODO
 [**getGreeting**](DsLicenseApi.md#getGreeting) | **GET** /hello | Request a Hello World message, for testing purposes
 [**getUserGroups**](DsLicenseApi.md#getUserGroups) | **POST** /getUserGroups | TODO
+[**getUserGroupsAndLicenses**](DsLicenseApi.md#getUserGroupsAndLicenses) | **POST** /getUserGroupsAndLicenses | TODO
 [**getUserLicenseQuery**](DsLicenseApi.md#getUserLicenseQuery) | **POST** /getUserLicenseQuery | TODO
 [**getUserLicenses**](DsLicenseApi.md#getUserLicenses) | **POST** /getUserLicenses | TODO
 [**ping**](DsLicenseApi.md#ping) | **GET** /ping | Ping the server to check if the server is reachable.
@@ -235,6 +236,66 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**GetUserGroupsOutputDto**](GetUserGroupsOutputDto.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | TODO |  -  |
+
+<a name="getUserGroupsAndLicenses"></a>
+# **getUserGroupsAndLicenses**
+> GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses(getUserGroupsAndLicensesInputDto)
+
+TODO
+
+### Example
+```java
+// Import classes:
+import dk.kb.license.ApiClient;
+import dk.kb.license.ApiException;
+import dk.kb.license.Configuration;
+import dk.kb.license.models.*;
+import dk.kb.license.api.DsLicenseApi;
+
+public class Example {
+  public static void main(String[] args) {
+    ApiClient defaultClient = Configuration.getDefaultApiClient();
+    defaultClient.setBasePath("http://localhost/ds-license/v1");
+
+    DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
+    GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto = new GetUserGroupsAndLicensesInputDto(); // GetUserGroupsAndLicensesInputDto | 
+    try {
+      GetUserGroupsAndLicensesOutputDto result = apiInstance.getUserGroupsAndLicenses(getUserGroupsAndLicensesInputDto);
+      System.out.println(result);
+    } catch (ApiException e) {
+      System.err.println("Exception when calling DsLicenseApi#getUserGroupsAndLicenses");
+      System.err.println("Status code: " + e.getCode());
+      System.err.println("Reason: " + e.getResponseBody());
+      System.err.println("Response headers: " + e.getResponseHeaders());
+      e.printStackTrace();
+    }
+  }
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **getUserGroupsAndLicensesInputDto** | [**GetUserGroupsAndLicensesInputDto**](GetUserGroupsAndLicensesInputDto.md)|  | [optional]
+
+### Return type
+
+[**GetUserGroupsAndLicensesOutputDto**](GetUserGroupsAndLicensesOutputDto.md)
 
 ### Authorization
 

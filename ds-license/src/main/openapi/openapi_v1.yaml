@@ -173,6 +173,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsOutput'
             
+  /getUserGroupsAndLicenses:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'TODO'
+      operationId: getUserGroupsAndLicenses       
+      requestBody:
+        content:
+          application/json:    # Media type
+            schema:            # Request body contents                                             
+              $ref: '#/components/schemas/GetUserGroupsAndLicensesInput'
+                             
+      responses:
+        '200':
+          description: 'TODO'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
+  
+
+
 
   /monitor:
     post:

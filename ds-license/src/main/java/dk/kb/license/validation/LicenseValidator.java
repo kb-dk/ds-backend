@@ -20,6 +20,7 @@ import dk.kb.license.model.v1.ValidateAccessInputDto;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.*;
 import dk.kb.license.storage.License;
+import dk.kb.license.webservice.exception.InvalidArgumentServiceException;
 
 
 public class LicenseValidator {
@@ -60,7 +61,7 @@ public class LicenseValidator {
 		//validate
 		if (input.getAttributes() == null || input.getAttributes().size() == 0){
 			log.error("No attributes defined in input.");
-			throw new IllegalArgumentException("No attributes defined in input");
+			throw new InvalidArgumentServiceException("No attributes defined in input");
 		}
 
 		validateLocale(input.getLocale());
@@ -84,7 +85,7 @@ public class LicenseValidator {
 	public static CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto input) throws Exception{
        
 	    if  (input.getAccessIds() == null || input.getAccessIds().size() == 0){
-	        throw new IllegalArgumentException("No ID's in input");	        
+	        throw new InvalidArgumentServiceException("No ID's in input");	        
 	    }
 	    
 		//Get the query. This also validates the input 
@@ -116,7 +117,7 @@ public class LicenseValidator {
 		output.setAccessIds(new ArrayList<String>(filteredIdsSet));
 		//Sanity check!
 		if (output.getAccessIds().size() > input.getAccessIds().size()){
-			throw new IllegalArgumentException("Security problem: More Id's in output than input. Check for query injection.");
+			throw new InvalidArgumentServiceException("Security problem: More Id's in output than input. Check for query injection.");
 		}
 		
 		log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size());
@@ -134,7 +135,7 @@ public class LicenseValidator {
 
 		if (input.getPresentationType() == null){
 			log.error("No presentationtype defined in input.");
-			throw new IllegalArgumentException("No presentationtype defined in input.");
+			throw new InvalidArgumentServiceException("No presentationtype defined in input.");
 		}
 
 
@@ -182,7 +183,7 @@ public class LicenseValidator {
 		//validate
 		if (input.getAttributes() == null || input.getAttributes().size() == 0){
 			log.error("No attributes defined in input.");
-			throw new IllegalArgumentException("No attributes defined in input");
+			throw new InvalidArgumentServiceException("No attributes defined in input");
 		}
 
 
@@ -191,14 +192,14 @@ public class LicenseValidator {
 		//Validate presentationType exists
 		if (presentationType == null){
 			log.warn("Unknown presentationtype in validateAccess:"+input.getPresentationType());			
-			throw new IllegalArgumentException("Unknown presentationtype in validateAccess:"+input.getPresentationType());
+			throw new InvalidArgumentServiceException("Unknown presentationtype in validateAccess:"+input.getPresentationType());
 		}
 
 		ArrayList<ConfiguredLicenseGroupType> groups = buildGroups(input.getGroups());
 		//Validate groups. Same size or one was not matched.
 		if (groups.size() != input.getGroups().size()){
 			log.warn("At least 1 unknown group  in validateAccess:"+input.getGroups());			
-			throw new IllegalArgumentException("At least 1 unknown group  in validateAccess:"+input.getGroups());
+			throw new InvalidArgumentServiceException("At least 1 unknown group  in validateAccess:"+input.getGroups());
 		}		
 
 		ArrayList<ConfiguredLicenseGroupType> mustGroups = filterMustGroups(groups);
@@ -458,7 +459,7 @@ public class LicenseValidator {
 			}
 			else{
 				log.error("Group not found in Group configuration:"+currentGroup);
-				throw new IllegalArgumentException("Unknown group:"+currentGroup);
+				throw new InvalidArgumentServiceException("Unknown group:"+currentGroup);
 			}
 
 
@@ -475,7 +476,7 @@ public class LicenseValidator {
 			}
 
 		}				
-		throw new IllegalArgumentException("Unknown presentationType:"+presentationTypeName);		
+		throw new InvalidArgumentServiceException("Unknown presentationType:"+presentationTypeName);		
 	}
 
 
@@ -581,7 +582,7 @@ public class LicenseValidator {
 			return; // okie
 		}
 		if (!locales.contains(locale)){
-			throw new IllegalArgumentException("Unknown locale:"+locale);
+			throw new InvalidArgumentServiceException("Unknown locale:"+locale);
 		}		
 	}
 	
