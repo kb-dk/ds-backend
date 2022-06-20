@@ -238,20 +238,20 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
 
 
 
-    @Override
+    
     public String getUserLicenseQuery(@NotNull GetUserQueryInputDto input) {
 
         //MonitorCache.registerNewRestMethodCall("getUserLicenseQuery");
         log.info("getUserLicenseQuery called");
         try {
             GetUserQueryOutputDto output = LicenseValidator.getUserQuery(input);   
-            /*
+            
 log.info("-------------------getUserLicenseQuery----------------");
 log.info("input (presentationtype): "+input.getPresentationType());
 log.info("input (attributes): "+input.getAttributes());         
 log.info("output (User license query):"+output.getQuery());
 log.info("output (groups)" + output.getUserLicenseGroups());
-             */
+            
             return output.getQuery();  
         } catch (Exception e) {
             throw handleException(e);

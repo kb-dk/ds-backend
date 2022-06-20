@@ -43,9 +43,10 @@ public class AbstractSolrJClient {
         }
 
         String queryStr= makeAuthIdPart(ids); 
-        log.debug("query:"+queryStr);
+        System.out.println("query:"+queryStr);
         
         SolrQuery query = new SolrQuery( queryStr);        
+        
         query.setFilterQueries(queryPartAccess);
         log.debug("filter:"+queryPartAccess);
         

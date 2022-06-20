@@ -1,8 +1,10 @@
 package dk.kb.license.solr;
 
-import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.NoOpResponseParser;
+import org.apache.solr.client.solrj.impl.XMLResponseParser;
+import org.apache.solr.client.solrj.request.RequestWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +18,8 @@ public class SolrServerClient extends AbstractSolrJClient{
         try{           
           this.serverUrl = serverUrl;
             solrServer = new HttpSolrClient.Builder(serverUrl).build();       
-            solrServer.setRequestWriter(new BinaryRequestWriter()); //To avoid http error code 413/414, due to monster URI. (and it is faster)                
+           //solrServer.setParser(new NoOpResponseParser("json"));
+            solrServer.setParser(new XMLResponseParser());
         }
         catch(Exception e){            
             log.error("Unable to connect to solr-server:"+serverUrl,e);
