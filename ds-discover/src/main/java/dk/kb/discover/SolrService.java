@@ -44,8 +44,12 @@ public class SolrService {
     public static final String Q = "q";
     public static final String FQ = "fq";
     public static final String FL = "fl";
+    public static final String ROWS = "rows";
+    public static final String FACET = "facet";
+    public static final String FACET_FIELD = "facet.field";
     public static final String QOP = "q.op";
     public static final String WT = "wt";
+    public static final String VERSION = "version"; // Used with wt=xml, always 2.2, not mandatory
     public static final String INDENT = "indent";
     public static final String DEBUG = "debug";
     public static final String DEBUG_EXPLAIN_STRUCTURED = "debug.explain.structured";
@@ -112,17 +116,19 @@ public class SolrService {
     /**
      * Issue a Solr query and return the result.
      *
-     * @param q Solr query.
-     * @param fq Solr filter query.
-     * @param fl Solr field list.
-     * @param qOp Solr default boolean operator.
-     * @param wt Solr response format.
-     * @param indent if true, Solr response is indented (if possible).
-     * @param debug as enumerated in {@link DEBUG_ENUM}.
+     * @param q                      Solr query.
+     * @param fq                     Solr filter query.
+     * @param rows
+     * @param fl                     Solr field list.
+     * @param facetField
+     * @param qOp                    Solr default boolean operator.
+     * @param wt                     Solr response format.
+     * @param indent                 if true, Solr response is indented (if possible).
+     * @param debug                  as enumerated in {@link DEBUG_ENUM}.
      * @param debugExplainStructured true if debug information should be structuredinstead of just a string.
      * @return Solr response.
      */
-    public String query(String q, List<String> fq, String fl, String qOp, String wt, String indent, String debug, String debugExplainStructured) {
+    public String query(String q, List<String> fq, Integer rows, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
         if (q == null) {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
@@ -138,9 +144,22 @@ public class SolrService {
         if (fq != null) {
             fq.forEach(fqs -> builder.queryParam(FQ, fqs));
         }
+        if (rows != null) {
+            builder.queryParam(ROWS, rows);
+        }
         if (fl != null) {
             builder.queryParam(FL, fl);
         }
+        if (facet != null) {
+            builder.queryParam(FACET, Boolean.parseBoolean(facet));
+        }
+        if (facetField != null) {
+            facetField.forEach(ff -> builder.queryParam(FACET_FIELD, ff));
+        }
+        if (version != null) {
+            builder.queryParam(VERSION, version);
+        }
+
         if (indent != null) {
             builder.queryParam(INDENT, indent);
         }

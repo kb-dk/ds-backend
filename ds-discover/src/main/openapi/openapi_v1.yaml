@@ -124,6 +124,19 @@ paths:
             example: ['entity_type:the_object']
             default: ['entity_type:the_object']
 
+        - name: rows
+          in: query
+          description: | 
+            Solr rows param [rows](https://solr.apache.org/guide/8_10/common-query-parameters.html#rows-parameter)
+            
+            The number of documents to return. The default depends on the backing Solr setup, but is typically 10.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+
         - name: fl
           in: query
           description: | 
@@ -137,6 +150,35 @@ paths:
             type: string
             example: '*, [child]'
             default: '*, [child]'
+
+        - name: facet
+          in: query
+          description: | 
+            Solr facet enabling [facet](https://solr.apache.org/guide/8_10/faceting.html#general-facet-parameters)
+            
+            If true, faceting will be enabled. This is typically used together with `facet.field`
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+
+        - name: facet.field
+          in: query
+          description: | 
+            Solr facet fields [facet.field](https://solr.apache.org/guide/8_10/faceting.html#field-value-faceting-parameters)
+            
+            If `facet=true`, the listed fields for `facet.fields` will be used for faceting.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: ['keyword']
+            example: ['keyword']
+
+        # TODO: Add more facet variables
 
         - name: q.op
           in: query
@@ -166,6 +208,18 @@ paths:
             type: string
             default: 'json'
             example: 'json'
+
+        - name: version
+          in: query
+          description: | 
+            XML Response writer version [version](https://solr.apache.org/guide/8_11/response-writers.html#standard-xml-response-writer)
+            
+            Determines the XML protocol. Only supported value is 2.2.
+            Not mandatory and only included here for completeness.
+          required: false
+          schema:
+            type: string
+            example: '2.2'
 
         - name: indent
           in: query
