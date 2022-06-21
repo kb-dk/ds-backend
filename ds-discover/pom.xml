@@ -450,28 +450,10 @@
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
+                                <implPackage>${project.package}.v1.impl</implPackage>
                                 <generateOperationBody>true</generateOperationBody>
                             </configOptions>
                             <skipOverwrite>true</skipOverwrite>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <!-- Generate model files from the OpenAPI specification (positioned under the target/generated-sources/ folder).
-                             Note that this generator used the "java" implementation instead of the default.
-                             This is in order to get XML annotations used when generating XML responses.
-                             These files are overwritten on all builds, so they should never be edited manually. -->
-                        <id>v1: Generate models classes</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.build.outputDirectory}/openapi_v1.yaml</inputSpec>
-                            <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-model</ignoreFileOverride>
-                            <generatorName>java</generatorName>
-
-                            <configOptions>
-                                <generateOperationBody>false</generateOperationBody>
-                            </configOptions>
                         </configuration>
                     </execution>
 
