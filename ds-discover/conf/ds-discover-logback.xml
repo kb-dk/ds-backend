@@ -1,7 +1,8 @@
 <included>
     <contextName>ds-discover</contextName>
 
-    <property name="LOGFILE" value="${catalina.home}/logs/template-app.log" />
+    <property name="LOG_DIR" value="${catalina.base}/logs"/>
+    <property name="LOG_FILE" value="${CONTEXT_NAME}.log"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGFILE}</file>
