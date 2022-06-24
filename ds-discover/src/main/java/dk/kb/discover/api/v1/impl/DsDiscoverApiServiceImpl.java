@@ -5,6 +5,7 @@ import dk.kb.discover.SolrService;
 import dk.kb.discover.api.v1.*;
 import dk.kb.discover.model.v1.ErrorDto;
 
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -195,16 +196,17 @@ public class DsDiscoverApiServiceImpl implements DsDiscoverApi {
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
-
     @Override
-    public String solrSearch(String collection, String q, List<String> fq, String fl, String qOp, String wt, String indent, String debug, String debugExplainStructured) {
+    public String solrSearch(String collection, String q, List<String> fq, Integer rows, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
         Map<String, String[]> extra = getExtraParams();
         if (!extra.isEmpty()) {
             throw new InvalidArgumentServiceException("Unsupported parameters: " + extra.keySet());
         }
         SolrService solr = SolrManager.getSolrService(collection);
         try {
-            return solr.query(q, fq, fl, qOp, wt, indent, debug, debugExplainStructured);
+            // TODO: Pass the map of request parameters instead of all parameters as first class
+            httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
+            return solr.query(q, fq, rows, fl, facet, facetField, qOp, wt, version, indent, debug, debugExplainStructured);
         } catch (Exception e){
             throw handleException(e);
         }

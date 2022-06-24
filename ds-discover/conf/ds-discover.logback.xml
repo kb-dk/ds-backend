@@ -1,13 +1,14 @@
 <included>
     <contextName>ds-discover</contextName>
 
-    <property name="LOGFILE" value="${catalina.home}/logs/template-app.log" />
+    <property name="LOG_DIR" value="${catalina.base}/logs"/>
+    <property name="LOG_FILE" value="${CONTEXT_NAME}.log"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGFILE}</file>
+        <file>${LOG_DIR}/${LOG_FILE}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>${LOGFILE}.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/${LOG_FILE}.%d{yyyy-MM-dd}</fileNamePattern>
 
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
@@ -20,7 +21,7 @@
     </appender>
 
     <root level="INFO">
-      <appender-ref ref="STDOUT" />
+      <appender-ref ref="FILE" />
     </root>
     <logger name="dk.kb" level="DEBUG" />
  
