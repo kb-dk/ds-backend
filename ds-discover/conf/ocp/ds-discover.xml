@@ -2,7 +2,7 @@
 <Context override="true" docBase="/app/tomcat-apps/ds-discover.war">
 
     <Environment name="ds-discover-logback-config"
-        value="/app/conf/ds-discover-logback.xml"
+        value="/app/conf/ds-discover.logback.xml"
         type="java.lang.String"
         override="false"/>
     <Environment name="application-config"
