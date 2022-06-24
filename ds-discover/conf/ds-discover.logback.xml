@@ -8,7 +8,7 @@
         <file>${LOG_DIR}/${LOG_FILE}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>${LOGFILE}.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/${LOGFILE}.%d{yyyy-MM-dd}</fileNamePattern>
 
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
@@ -21,7 +21,7 @@
     </appender>
 
     <root level="INFO">
-      <appender-ref ref="STDOUT" />
+      <appender-ref ref="FILE" />
     </root>
     <logger name="dk.kb" level="DEBUG" />
  
