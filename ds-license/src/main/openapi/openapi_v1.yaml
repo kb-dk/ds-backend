@@ -222,10 +222,12 @@ components:
       properties: 
         presentationType:
           type: string
+          example: 'Stream'
         accessIds:     
           type: array
+          example: ['id1','id2']
           items:
-            type: string       
+            type: string                
         attributes:
           type: array
           items:
