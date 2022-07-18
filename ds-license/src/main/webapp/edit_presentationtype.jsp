@@ -1,10 +1,8 @@
 <%@page pageEncoding="UTF-8"%>
 <%@ page import="
     java.util.*,
-    dk.statsbiblioteket.doms.licensemodule.persistence.*,
-    dk.statsbiblioteket.doms.licensemodule.service.*,
-    org.apache.commons.lang.StringEscapeUtils,
-    dk.statsbiblioteket.doms.licensemodule.*"%>
+    dk.kb.license.storage.*,
+    dk.kb.license.model.v1.*"%>
 
 <!DOCTYPE html>
 <html>

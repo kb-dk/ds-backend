@@ -1,11 +1,10 @@
 <%@page pageEncoding="UTF-8"%>
 <%@ page import="
     java.util.*,
-    dk.statsbiblioteket.doms.licensemodule.persistence.*,
-    dk.statsbiblioteket.doms.licensemodule.service.*,
-    org.apache.commons.lang.StringEscapeUtils,
-    dk.statsbiblioteket.doms.licensemodule.*"%>
-
+    dk.kb.license.storage.*,
+   org.apache.commons.lang3.StringEscapeUtils,
+    dk.kb.license.model.v1.*"%>
+    
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,7 +53,7 @@ for ( ConfiguredLicenseGroupType current : allTypes){
   <span class="help-inline">Beskrivelse</span>  
   <input type="text" name="value_groupdescription" class="span3" value="<%=edit.getDescription_dk()%>">
   <span class="help-inline">Query</span>
-  <input type="text" name="value_groupquery" class="span3" value="<%=StringEscapeUtils.escapeHtml(edit.getQuery())%>">
+  <input type="text" name="value_groupquery" class="span3" value="<%=StringEscapeUtils.escapeHtml3(edit.getQuery())%>">
   <input type="checkbox"   name="mustGroupCheck"  <%if(edit.isMustGroup()){out.println("checked");}%> > Must group
 </div>
 <div class="infoGroup">
