@@ -28,7 +28,7 @@ public class LicenseValidator {
 	private static final Logger log = LoggerFactory.getLogger(LicenseValidator.class);		
 	public static final String LOCALE_DA = "da";
 	public static final String LOCALE_EN = "en";
-	public static final String NO_ACCESS = "(recordID:NoAccess)";
+	public static final String NO_ACCESS = ServiceConfig.SOLR_FILTER_FIELD+":NoAccess";
 
 	
 	
