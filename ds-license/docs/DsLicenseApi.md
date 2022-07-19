@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost/ds-license/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**checkAccessForIds**](DsLicenseApi.md#checkAccessForIds) | **POST** /checkAccessForIds | TODO
+[**checkAccessForIds**](DsLicenseApi.md#checkAccessForIds) | **POST** /checkAccessForIds | Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user.
 [**extractStatistics**](DsLicenseApi.md#extractStatistics) | **POST** /monitor | TODO
 [**getGreeting**](DsLicenseApi.md#getGreeting) | **GET** /hello | Request a Hello World message, for testing purposes
 [**getUserGroups**](DsLicenseApi.md#getUserGroups) | **POST** /getUserGroups | TODO
@@ -12,14 +12,14 @@ Method | HTTP request | Description
 [**getUserLicenseQuery**](DsLicenseApi.md#getUserLicenseQuery) | **POST** /getUserLicenseQuery | TODO
 [**getUserLicenses**](DsLicenseApi.md#getUserLicenses) | **POST** /getUserLicenses | TODO
 [**ping**](DsLicenseApi.md#ping) | **GET** /ping | Ping the server to check if the server is reachable.
-[**validateAccess**](DsLicenseApi.md#validateAccess) | **POST** /validateAccess | TODO
+[**validateAccess**](DsLicenseApi.md#validateAccess) | **POST** /validateAccess | Validate if user has access to all groups in input. If just 1 of the group is a must group, then all must group much match
 
 
 <a name="checkAccessForIds"></a>
 # **checkAccessForIds**
 > CheckAccessForIdsOutputDto checkAccessForIds(checkAccessForIdsInputDto)
 
-TODO
+Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user.
 
 ### Example
 ```java
@@ -493,7 +493,7 @@ No authorization required
 # **validateAccess**
 > ValidateAccessOutputDto validateAccess(validateAccessInputDto)
 
-TODO
+Validate if user has access to all groups in input. If just 1 of the group is a must group, then all must group much match
 
 ### Example
 ```java

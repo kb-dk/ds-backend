@@ -93,7 +93,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'TODO' 
+      summary: 'Validate if user has access to all groups in input. If just 1 of the group is a must group, then all must group much match' 
       operationId: validateAccess 
       requestBody:
         content:
@@ -113,7 +113,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'TODO'
+      summary: 'Get a list of all licences that validates from user attributes.'
       operationId: getUserLicenses       
       requestBody:
         content:
@@ -254,8 +254,10 @@ components:
       properties: 
         presentationType:
           type: string
+          example: 'Stream'
         groups:     
           type: array
+          example: ['group1','group2']
           items:
             type: string       
         attributes:

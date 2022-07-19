@@ -6,7 +6,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**attribute** | **String** | TODO |  [optional]
+**attribute** | **String** | Key/Values attributes describing the user |  [optional]
 **values** | **List&lt;String&gt;** |  |  [optional]
 
 
