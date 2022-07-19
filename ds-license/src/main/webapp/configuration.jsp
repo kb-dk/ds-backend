@@ -58,11 +58,7 @@
     <li class="active"><a href="#list_licenses">Vis alle licenser</a></li>
     <li><a href="#list_configured_presentationtypes">Præsentationstyper</a></li>
     <li><a href="#list_configured_grouptypes">Pakker</a></li>
-    <li><a href="#list_configured_attributetypes">Attributgrupper</a></li>
-    <li><a href="#test_validateAccess">Test validateAccess</a></li>
-    <li><a href="#test_validateQuery">Test getUserQuery</a></li>
-    <li><a href="#test_checkAccessIds">Test checkAccessIds</a></li>
-    <li><a href="#rest_api">REST API</a></li>
+    <li><a href="#list_configured_attributetypes">Attributgrupper</a></li>       
     <li><a href="#monitoring">Monitoring</a></li>
 
 </ul>
@@ -85,22 +81,7 @@
         </div>
         <div class="tab-pane" id="list_configured_attributetypes">
             <%@ include file="list_attributetypes.jsp" %>
-        </div>
-        <div class="tab-pane" id="test_validateAccess">
-            <%@ include file="test_validation.jsp" %>
-        </div>
-        <div class="tab-pane" id="test_validateQuery">
-            <%@ include file="test_validateQuery.jsp" %>
-        </div>            
-         <div class="tab-pane" id="test_checkAccessIds">
-            <%@ include file="test_checkAccessIds.jsp" %>
-        </div>                
-        <div class="tab-pane" id="rest_api">
-            <%@ include file="rest_api.jsp" %>
-        </div>
-        <div class="tab-pane" id="monitoring">
-            <%@ include file="monitoring.jsp" %>
-        </div>
+        </div>                                        
     </div>
 </form>
 
