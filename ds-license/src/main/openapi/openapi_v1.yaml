@@ -82,7 +82,7 @@ paths:
     
       responses:
         '200':
-          description: 'TODO'
+          description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used.'
           content:
             application/json:
               schema:
@@ -103,7 +103,7 @@ paths:
                 
       responses:
         '200':
-          description: 'TODO'
+          description: 'True or false'
           content:
             application/json:
               schema:
@@ -123,7 +123,7 @@ paths:
     
       responses:
         '200':
-          description: 'TODO'
+          description: 'Returns the names of all the licences that validates for the user.'
           content:
             application/json:
               schema:
@@ -135,7 +135,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'TODO'
+      summary: 'Shows the filter query for Solr generated from the user attributes. This query is used to filter IDs'
       operationId: getUserLicenseQuery      
       requestBody:
         content:
@@ -146,7 +146,7 @@ paths:
     
       responses:
         '200':
-          description: 'TODO'
+          description: 'The Solr filter query'
           content:
             application/json:
               schema:           
@@ -157,7 +157,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'TODO'
+      summary: 'Get the groups that the user has access to'
       operationId: getUserGroups       
       requestBody:
         content:
@@ -167,7 +167,7 @@ paths:
                              
       responses:
         '200':
-          description: 'TODO'
+          description: 'Names of the groups and presentationtype that the user has access to'
           content:
             application/json:
               schema:
@@ -177,7 +177,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'TODO'
+      summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
       operationId: getUserGroupsAndLicenses       
       requestBody:
         content:
@@ -187,7 +187,7 @@ paths:
                              
       responses:
         '200':
-          description: 'TODO'
+          description: 'List all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
           content:
             application/json:
               schema:
@@ -200,7 +200,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'TODO'
+      summary: 'Still TODO, Some statistics for monitoring the application'
       operationId: extractStatistics       
      
       responses:
@@ -302,8 +302,9 @@ components:
     GetUserGroupsAndLicensesInput:
       type: object
       properties:                
-        locale:
-          type: string        
+        locale:         
+          type: string
+          example: 'da'        
         attributes:
           type: array
           items:
@@ -379,8 +380,9 @@ components:
     GetUserGroupsInput:
       type: object
       properties: 
-        locale:
-          type: string             
+        locale:        
+          type: string
+          example: 'da'             
         attributes:
           type: array
           items:
