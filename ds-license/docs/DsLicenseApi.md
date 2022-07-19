@@ -5,12 +5,12 @@ All URIs are relative to *http://localhost/ds-license/v1*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**checkAccessForIds**](DsLicenseApi.md#checkAccessForIds) | **POST** /checkAccessForIds | Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user.
-[**extractStatistics**](DsLicenseApi.md#extractStatistics) | **POST** /monitor | TODO
+[**extractStatistics**](DsLicenseApi.md#extractStatistics) | **POST** /monitor | Still TODO, Some statistics for monitoring the application
 [**getGreeting**](DsLicenseApi.md#getGreeting) | **GET** /hello | Request a Hello World message, for testing purposes
-[**getUserGroups**](DsLicenseApi.md#getUserGroups) | **POST** /getUserGroups | TODO
-[**getUserGroupsAndLicenses**](DsLicenseApi.md#getUserGroupsAndLicenses) | **POST** /getUserGroupsAndLicenses | TODO
-[**getUserLicenseQuery**](DsLicenseApi.md#getUserLicenseQuery) | **POST** /getUserLicenseQuery | TODO
-[**getUserLicenses**](DsLicenseApi.md#getUserLicenses) | **POST** /getUserLicenses | TODO
+[**getUserGroups**](DsLicenseApi.md#getUserGroups) | **POST** /getUserGroups | Get the groups that the user has access to
+[**getUserGroupsAndLicenses**](DsLicenseApi.md#getUserGroupsAndLicenses) | **POST** /getUserGroupsAndLicenses | Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes
+[**getUserLicenseQuery**](DsLicenseApi.md#getUserLicenseQuery) | **POST** /getUserLicenseQuery | Shows the filter query for Solr generated from the user attributes. This query is used to filter IDs
+[**getUserLicenses**](DsLicenseApi.md#getUserLicenses) | **POST** /getUserLicenses | Get a list of all licences that validates from user attributes.
 [**ping**](DsLicenseApi.md#ping) | **GET** /ping | Ping the server to check if the server is reachable.
 [**validateAccess**](DsLicenseApi.md#validateAccess) | **POST** /validateAccess | Validate if user has access to all groups in input. If just 1 of the group is a must group, then all must group much match
 
@@ -73,13 +73,13 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | TODO |  -  |
+**200** | Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. |  -  |
 
 <a name="extractStatistics"></a>
 # **extractStatistics**
 > String extractStatistics()
 
-TODO
+Still TODO, Some statistics for monitoring the application
 
 ### Example
 ```java
@@ -195,7 +195,7 @@ No authorization required
 # **getUserGroups**
 > GetUserGroupsOutputDto getUserGroups(getUserGroupsInputDto)
 
-TODO
+Get the groups that the user has access to
 
 ### Example
 ```java
@@ -249,13 +249,13 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | TODO |  -  |
+**200** | Names of the groups and presentationtype that the user has access to |  -  |
 
 <a name="getUserGroupsAndLicenses"></a>
 # **getUserGroupsAndLicenses**
 > GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses(getUserGroupsAndLicensesInputDto)
 
-TODO
+Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes
 
 ### Example
 ```java
@@ -309,13 +309,13 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | TODO |  -  |
+**200** | List all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes |  -  |
 
 <a name="getUserLicenseQuery"></a>
 # **getUserLicenseQuery**
 > String getUserLicenseQuery(getUserQueryInputDto)
 
-TODO
+Shows the filter query for Solr generated from the user attributes. This query is used to filter IDs
 
 ### Example
 ```java
@@ -369,13 +369,13 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | TODO |  -  |
+**200** | The Solr filter query |  -  |
 
 <a name="getUserLicenses"></a>
 # **getUserLicenses**
 > GetUsersLicensesOutputDto getUserLicenses(getUsersLicensesInputDto)
 
-TODO
+Get a list of all licences that validates from user attributes.
 
 ### Example
 ```java
@@ -429,7 +429,7 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | TODO |  -  |
+**200** | Returns the names of all the licences that validates for the user. |  -  |
 
 <a name="ping"></a>
 # **ping**
@@ -547,5 +547,5 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | TODO |  -  |
+**200** | True or false |  -  |
 
