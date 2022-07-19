@@ -59,8 +59,6 @@
     <li><a href="#list_configured_presentationtypes">Præsentationstyper</a></li>
     <li><a href="#list_configured_grouptypes">Pakker</a></li>
     <li><a href="#list_configured_attributetypes">Attributgrupper</a></li>       
-    <li><a href="#monitoring">Monitoring</a></li>
-
 </ul>
 
 <%@ include file="message.jsp" %>
