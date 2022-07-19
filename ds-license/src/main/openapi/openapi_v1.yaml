@@ -71,7 +71,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'TODO'
+      summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user.'
       operationId: checkAccessForIds  
       requestBody:
         content:
@@ -286,11 +286,13 @@ components:
     UserObjAttribute:
       type: object
       properties:
-        attribute:     
+        attribute:               
           type: string
-          description: 'TODO'  
-        values:     
+          description: 'Key/Values attributes describing the user'
+          example: 'wayf.mail'  
+        values:                    
            type: array
+           example: ['teg@kb.dk']
            items:
              type: string     
 
