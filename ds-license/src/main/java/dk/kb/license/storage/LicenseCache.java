@@ -17,10 +17,10 @@ public class LicenseCache {
 
 	// Cached instances
 	private static ArrayList<License> cachedLicenses;
-	private static ArrayList<ConfiguredLicenseGroupType> cachedDomLicenseGroupTypes;
-	private static ArrayList<ConfiguredLicenseGroupType> cachedDomLicenseMustGroupTypes;
-	private static ArrayList<ConfiguredAttributeType> cachedDomAttributeTypes;
-	private static ArrayList<ConfiguredLicensePresentationType> cachedDomLicensePresentationTypes;
+	private static ArrayList<ConfiguredLicenseGroupType> cachedLicenseGroupTypes;
+	private static ArrayList<ConfiguredLicenseGroupType> cachedLicenseMustGroupTypes;
+	private static ArrayList<ConfiguredAttributeType> cachedAttributeTypes;
+	private static ArrayList<ConfiguredLicensePresentationType> cachedLicensePresentationTypes;
     private static HashMap<String, ConfiguredLicenseGroupType> groupIdMap;
     private static HashMap<String, ConfiguredLicensePresentationType> presentationTypeIdMap;
     
@@ -33,25 +33,25 @@ public class LicenseCache {
 		return cachedLicenses;
 	}
 
-	public static ArrayList<ConfiguredLicenseGroupType> getConfiguredDomLicenseGroupTypes() {
+	public static ArrayList<ConfiguredLicenseGroupType> getConfiguredLicenseGroupTypes() {
 		checkReload();
-		return cachedDomLicenseGroupTypes;
+		return cachedLicenseGroupTypes;
 	}
 
-	public static ArrayList<ConfiguredLicenseGroupType> getConfiguredMUSTDomLicenseGroupTypes() {
+	public static ArrayList<ConfiguredLicenseGroupType> getConfiguredMUSTLicenseGroupTypes() {
 		checkReload();
-		return cachedDomLicenseMustGroupTypes;
+		return cachedLicenseMustGroupTypes;
 	}
 
-	public static ArrayList<ConfiguredAttributeType> getConfiguredDomAttributeTypes() {
+	public static ArrayList<ConfiguredAttributeType> getConfiguredAttributeTypes() {
 		checkReload();
-		return cachedDomAttributeTypes;
+		return cachedAttributeTypes;
 
 	}
 
-	public static ArrayList<ConfiguredLicensePresentationType> getConfiguredDomLicenseTypes() {
+	public static ArrayList<ConfiguredLicensePresentationType> getConfiguredLicenseTypes() {
 		checkReload();
-		return cachedDomLicensePresentationTypes;
+		return cachedLicensePresentationTypes;
 	}
 
 	private static synchronized void checkReload() {
@@ -79,29 +79,29 @@ public class LicenseCache {
 			cachedLicenses = licenseList;
 			log.debug("#licenses reload=" + cachedLicenses.size());
 
-			// Load DomLicenseGroupTypes
-			cachedDomLicenseGroupTypes = storage.getDomLicenseGroupTypes();
+			// Load LicenseGroupTypes
+			cachedLicenseGroupTypes = storage.getLicenseGroupTypes();
 
-			// Load DomLicenseMustGroupTypes
-			ArrayList<ConfiguredLicenseGroupType> allList = storage.getDomLicenseGroupTypes();
-			cachedDomLicenseMustGroupTypes = LicenseValidator.filterMustGroups(allList);
+			// Load LicenseMustGroupTypes
+			ArrayList<ConfiguredLicenseGroupType> allList = storage.getLicenseGroupTypes();
+			cachedLicenseMustGroupTypes = LicenseValidator.filterMustGroups(allList);
 
-			// Load DomAttributeTypes
-			cachedDomAttributeTypes = storage.getDomAttributeTypes();
+			// Load AttributeTypes
+			cachedAttributeTypes = storage.getAttributeTypes();
 			
 			
-			// Load DomLicensePresentationTypes
-			cachedDomLicensePresentationTypes = storage.getDomLicensePresentationTypes();
+			// Load LicensePresentationTypes
+			cachedLicensePresentationTypes = storage.getLicensePresentationTypes();
 		
 		    //create Dk2En name map
 			groupIdMap = new HashMap<String,ConfiguredLicenseGroupType>();
 			
-            for (ConfiguredLicenseGroupType current : cachedDomLicenseGroupTypes){
+            for (ConfiguredLicenseGroupType current : cachedLicenseGroupTypes){
             	groupIdMap.put(current.getKey(), current);            	
             }
             
             presentationTypeIdMap = new HashMap<String, ConfiguredLicensePresentationType>();
-            for (ConfiguredLicensePresentationType current : cachedDomLicensePresentationTypes){
+            for (ConfiguredLicensePresentationType current : cachedLicensePresentationTypes){
             	presentationTypeIdMap.put(current.getKey(), current);            	
             }
 			

@@ -1,4 +1,4 @@
-<%ArrayList<ConfiguredLicenseGroupType> configuredGroupTypes = LicenseCache.getConfiguredDomLicenseGroupTypes();%>
+<%ArrayList<ConfiguredLicenseGroupType> configuredGroupTypes = LicenseCache.getConfiguredLicenseGroupTypes();%>
 <table class="table table-condensed table-hover">
    <thead>
    <tr>

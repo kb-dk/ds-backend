@@ -42,9 +42,9 @@ public class LicenseModuleStorage implements AutoCloseable {
     public static Date INITDATE = null;
 
     // Table and column names
-    private static final String DOMLICENSEPRESENTATIONTYPES_TABLE = "PRESENTATIONTYPES";
-    private static final String DOMLICENSEGROUPTYPES_TABLE = "GROUPTYPES";
-    private static final String DOMATTRIBUTETYPES_TABLE = "ATTRIBUTETYPES";
+    private static final String LICENSEPRESENTATIONTYPES_TABLE = "PRESENTATIONTYPES";
+    private static final String LICENSEGROUPTYPES_TABLE = "GROUPTYPES";
+    private static final String ATTRIBUTETYPES_TABLE = "ATTRIBUTETYPES";
     private static final String LICENSE_TABLE = "LICENSE";
     private static final String ATTRIBUTEGROUP_TABLE = "ATTRIBUTEGROUP";
     private static final String ATTRIBUTE_TABLE = "ATTRIBUTE";
@@ -72,15 +72,15 @@ public class LicenseModuleStorage implements AutoCloseable {
     private static final String VALUE_EN_COLUMN = "VALUE_EN";
     private static final String MUSTGROUP_COLUMN = "MUSTGROUP";
 
-    private final static String selectDomLicensePresentationTypesQuery = " SELECT * FROM "
-            + DOMLICENSEPRESENTATIONTYPES_TABLE;
+    private final static String selectLicensePresentationTypesQuery = " SELECT * FROM "
+            + LICENSEPRESENTATIONTYPES_TABLE;
 
     private final static String selectAllLicensesQuery = " SELECT * FROM " + LICENSE_TABLE;
 
     private final static String selectLicenseQuery = " SELECT * FROM " + LICENSE_TABLE + " WHERE ID = ? ";
 
-    private final static String persistDomLicensePresentationTypeQuery = "INSERT INTO "
-            + DOMLICENSEPRESENTATIONTYPES_TABLE + " (" + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + ","
+    private final static String persistLicensePresentationTypeQuery = "INSERT INTO "
+            + LICENSEPRESENTATIONTYPES_TABLE + " (" + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + ","
             + VALUE_EN_COLUMN +  ") VALUES (?,?,?,?)"; // #|?|=4
 
     private final static String persistAttributeGroupForLicenseQuery = "INSERT INTO " + ATTRIBUTEGROUP_TABLE + " ("
@@ -101,39 +101,39 @@ public class LicenseModuleStorage implements AutoCloseable {
     private final static String selectValuesForAttributeQuery = " SELECT * FROM " + VALUE_TABLE + " WHERE "
             + ATTRIBUTEID_COLUMN + " = ?";
 
-    private final static String selectDomLicenseGroupTypesQuery = " SELECT * FROM " + DOMLICENSEGROUPTYPES_TABLE
+    private final static String selectLicenseGroupTypesQuery = " SELECT * FROM " + LICENSEGROUPTYPES_TABLE
             + " ORDER BY " + KEY_COLUMN;
 
-    private final static String persistDomLicenseGroupTypeQuery = "INSERT INTO " + DOMLICENSEGROUPTYPES_TABLE + " ("
+    private final static String persistLicenseGroupTypeQuery = "INSERT INTO " + LICENSEGROUPTYPES_TABLE + " ("
             + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + " ," + VALUE_EN_COLUMN + " ,"
             + DESCRIPTION_DK_COLUMN + " ," + DESCRIPTION_EN_COLUMN + " ," + QUERY_COLUMN + " ," + MUSTGROUP_COLUMN
             + ") VALUES (?,?,?,?,?,?,?,?)"; // #|?|=8
 
-    private final static String updateDomLicenseGroupTypeQuery = "UPDATE " + DOMLICENSEGROUPTYPES_TABLE + " SET "
+    private final static String updateLicenseGroupTypeQuery = "UPDATE " + LICENSEGROUPTYPES_TABLE + " SET "
             + VALUE_DK_COLUMN + " = ? , " + VALUE_EN_COLUMN + " = ? ," + DESCRIPTION_DK_COLUMN + " = ? ,"
             + DESCRIPTION_EN_COLUMN + " = ? ," + QUERY_COLUMN + " = ? ," + MUSTGROUP_COLUMN + " = ? " + "WHERE "
             + ID_COLUMN + " = ? ";
 
-    private final static String updateDomsLicensePresentationTypeQuery = "UPDATE " + DOMLICENSEPRESENTATIONTYPES_TABLE
+    private final static String updateLicensePresentationTypeQuery = "UPDATE " + LICENSEPRESENTATIONTYPES_TABLE
             + " SET " + VALUE_DK_COLUMN + " = ? , " + VALUE_EN_COLUMN + " = ? " + "WHERE " + ID_COLUMN + " = ? ";
 
     private final static String persistLicenseQuery = "INSERT INTO " + LICENSE_TABLE + " (" + ID_COLUMN + ","
             + NAME_COLUMN + "," + NAME_EN_COLUMN + "," + DESCRIPTION_DK_COLUMN + "," + DESCRIPTION_EN_COLUMN + ","
             + VALIDFROM_COLUMN + "," + VALIDTO_COLUMN + ") VALUES (?,?,?,?,?,?,?)"; // #|?|=7
 
-    private final static String selectDomAttributeTypesQuery = " SELECT * FROM " + DOMATTRIBUTETYPES_TABLE
+    private final static String selectAttributeTypesQuery = " SELECT * FROM " + ATTRIBUTETYPES_TABLE
             + " ORDER BY " + VALUE_COLUMN;;
 
-    private final static String deleteDomAttributeTypeByNameQuery = " DELETE FROM " + DOMATTRIBUTETYPES_TABLE
+    private final static String deleteAttributeTypeByNameQuery = " DELETE FROM " + ATTRIBUTETYPES_TABLE
             + " WHERE " + VALUE_COLUMN + " = ?";
 
-    private final static String deleteDomGroupTypeByKeyQuery = " DELETE FROM " + DOMLICENSEGROUPTYPES_TABLE + " WHERE "
+    private final static String deleteGroupTypeByKeyQuery = " DELETE FROM " + LICENSEGROUPTYPES_TABLE + " WHERE "
             + KEY_COLUMN + " = ?";
 
-    private final static String deleteDomPresentationTypeByKeyQuery = " DELETE FROM "
-            + DOMLICENSEPRESENTATIONTYPES_TABLE + " WHERE " + KEY_COLUMN + " = ?";
+    private final static String deletePresentationTypeByKeyQuery = " DELETE FROM "
+            + LICENSEPRESENTATIONTYPES_TABLE + " WHERE " + KEY_COLUMN + " = ?";
 
-    private final static String persistDomAttributeTypeQuery = "INSERT INTO " + DOMATTRIBUTETYPES_TABLE + " ("
+    private final static String persistAttributeTypeQuery = "INSERT INTO " + ATTRIBUTETYPES_TABLE + " ("
             + ID_COLUMN + "," + VALUE_COLUMN + ") VALUES (?,?)"; // #|?|=2
 
     private final static String selectLicenseContentForLicenseQuery = " SELECT * FROM " + LICENSECONTENT_TABLE
@@ -211,8 +211,8 @@ public class LicenseModuleStorage implements AutoCloseable {
         connection = dataSource.getConnection();
     }
 
-    public void persistDomLicensePresentationType(String key, String value_dk, String value_en) throws Exception {
-        log.info("Persisting new dom license presentationtype: " + key);
+    public void persistLicensePresentationType(String key, String value_dk, String value_en) throws Exception {
+        log.info("Persisting new license presentationtype: " + key);
 
         validateValue(key);
         validateValue(value_dk);
@@ -221,7 +221,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         validateValue(value_en);
         value_en = value_en.trim();
 
-        try (PreparedStatement stmt = connection.prepareStatement(persistDomLicensePresentationTypeQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(persistLicensePresentationTypeQuery);) {
             stmt.setLong(1, generateUniqueID());
             stmt.setString(2, key);
             stmt.setString(3, value_dk);
@@ -234,11 +234,11 @@ public class LicenseModuleStorage implements AutoCloseable {
        
     }
 
-    public ArrayList<ConfiguredLicensePresentationType> getDomLicensePresentationTypes() throws SQLException {
+    public ArrayList<ConfiguredLicensePresentationType> getLicensePresentationTypes() throws SQLException {
 
         ArrayList<ConfiguredLicensePresentationType> list = new ArrayList<ConfiguredLicensePresentationType>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(selectDomLicensePresentationTypesQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(selectLicensePresentationTypesQuery);) {
 
             ResultSet rs = stmt.executeQuery();
 
@@ -291,7 +291,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     }
 
     // query can be null or empty
-    public void persistDomLicenseGroupType(String key, String value, String value_en, String description,
+    public void persistLicenseGroupType(String key, String value, String value_en, String description,
             String description_en, String query, boolean mustGroup) throws Exception {
 
         if (!StringUtils.isNotEmpty(key)) {
@@ -310,12 +310,12 @@ public class LicenseModuleStorage implements AutoCloseable {
             throw new IllegalArgumentException("Query must not be null when creating new Group");
         }
 
-        log.info("Persisting new dom license group type: " + key);
+        log.info("Persisting new  license group type: " + key);
 
         validateValue(value);
         value = value.trim();
 
-        try (PreparedStatement stmt = connection.prepareStatement(persistDomLicenseGroupTypeQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(persistLicenseGroupTypeQuery);) {
             stmt.setLong(1, generateUniqueID());
             stmt.setString(2, key);
             stmt.setString(3, value);
@@ -327,16 +327,16 @@ public class LicenseModuleStorage implements AutoCloseable {
             stmt.execute();
             connection.commit();
         } catch (SQLException e) {
-            log.error("SQL Exception in persistDomLicenseGroupType:" + e.getMessage());
+            log.error("SQL Exception in persistLicenseGroupType:" + e.getMessage());
             throw e;
         }
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void updateDomLicenseGroupType(long id, String value_dk, String value_en, String description,
+    public void updateLicenseGroupType(long id, String value_dk, String value_en, String description,
             String description_en, String query, boolean mustGroup) throws Exception {
 
-        try (PreparedStatement stmt = connection.prepareStatement(updateDomLicenseGroupTypeQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(updateLicenseGroupTypeQuery);) {
             log.info("Updating Group type with id:" + id);
 
             // if it exists already, we do not add it.
@@ -357,15 +357,15 @@ public class LicenseModuleStorage implements AutoCloseable {
             connection.commit();
 
         } catch (Exception e) {
-            log.error("Exception in updateDomLicenseGroupType:" + e.getMessage());
+            log.error("Exception in updateLicenseGroupType:" + e.getMessage());
             throw e;
         }
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void updateDomPresentationType(long id, String value_dk, String value_en) throws Exception {
+    public void updatePresentationType(long id, String value_dk, String value_en) throws Exception {
 
-        try (PreparedStatement stmt = connection.prepareStatement(updateDomsLicensePresentationTypeQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(updateLicensePresentationTypeQuery);) {
             log.info("Updating Presentation type with id:" + id);
 
             // if it exists already, we do not add it.
@@ -381,13 +381,13 @@ public class LicenseModuleStorage implements AutoCloseable {
             connection.commit();
 
         } catch (Exception e) {
-            log.error("Exception in updateDomPresentationType:" + e.getMessage());
+            log.error("Exception in updatePresentationType:" + e.getMessage());
             throw e;
         }
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void deleteDomLicenseGroupType(String groupName) throws Exception {
+    public void deleteLicenseGroupType(String groupName) throws Exception {
 
         log.info("Deleting grouptype: " + groupName);
         // First check it is not used in any license, in that case throw exception.
@@ -405,22 +405,22 @@ public class LicenseModuleStorage implements AutoCloseable {
             }
 
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteDomLicenseGroupType:" + e.getMessage());
+            log.error("SQL Exception in deleteLicenseGroupType:" + e.getMessage());
             throw e;
         }
 
-        try (PreparedStatement stmt = connection.prepareStatement(deleteDomGroupTypeByKeyQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(deleteGroupTypeByKeyQuery);) {
             stmt.setString(1, groupName);
             int updated = stmt.executeUpdate();
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteDomLicenseGroupType:" + e.getMessage());
+            log.error("SQL Exception in deleteLicenseGroupType:" + e.getMessage());
             throw e;
         }
 
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void deleteDomPresentationType(String presentationName) throws Exception {
+    public void deletePresentationType(String presentationName) throws Exception {
 
         log.info("Deleting presentation type: " + presentationName);
         // First check it is not used in any license, in that case throw exception.
@@ -439,17 +439,17 @@ public class LicenseModuleStorage implements AutoCloseable {
             }
 
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteDomPresentationType:" + e.getMessage());
+            log.error("SQL Exception in deletePresentationType:" + e.getMessage());
             throw e;
         }
 
-        try (PreparedStatement stmt = connection.prepareStatement(deleteDomPresentationTypeByKeyQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(deletePresentationTypeByKeyQuery);) {
             stmt.setString(1, presentationName);
             int updated = stmt.executeUpdate();
             log.info("deleted " + updated + " presentationtype with name:" + presentationName);
 
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteDomPresentationType:" + e.getMessage());
+            log.error("SQL Exception in deletePresentationType:" + e.getMessage());
             throw e;
         }
 
@@ -506,10 +506,10 @@ public class LicenseModuleStorage implements AutoCloseable {
         //LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public ArrayList<ConfiguredLicenseGroupType> getDomLicenseGroupTypes() throws SQLException {
+    public ArrayList<ConfiguredLicenseGroupType> getLicenseGroupTypes() throws SQLException {
 
         ArrayList<ConfiguredLicenseGroupType> list = new ArrayList<ConfiguredLicenseGroupType>();
-        try (PreparedStatement stmt = connection.prepareStatement(selectDomLicenseGroupTypesQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(selectLicenseGroupTypesQuery);) {
 
             ResultSet rs = stmt.executeQuery();
 
@@ -528,31 +528,31 @@ public class LicenseModuleStorage implements AutoCloseable {
             }
             return list;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDomLicenseGroupTypes():" + e.getMessage());
+            log.error("SQL Exception in getLicenseGroupTypes():" + e.getMessage());
             throw e;
         }
     }
 
-    public void persistDomAttributeType(String value) throws Exception {
+    public void persistAttributeType(String value) throws Exception {
 
-        log.info("Persisting new DOM attribute type: " + value);
+        log.info("Persisting new  attribute type: " + value);
 
         validateValue(value);
         value = value.trim();
 
-        try (PreparedStatement stmt = connection.prepareStatement(persistDomAttributeTypeQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(persistAttributeTypeQuery);) {
             stmt.setLong(1, generateUniqueID());
             stmt.setString(2, value);
             stmt.execute();
 
         } catch (SQLException e) {
-            log.error("SQL Exception in persistDomAttributeType:" + e.getMessage());
+            log.error("SQL Exception in persistAttributeType:" + e.getMessage());
             throw e;
         }
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void deleteDomAttributeType(String attributeTypeName) throws Exception {
+    public void deleteAttributeType(String attributeTypeName) throws Exception {
 
         log.info("Deleting attributetype: " + attributeTypeName);
         // First check it is not used in any license, in that case throw exception.
@@ -570,27 +570,27 @@ public class LicenseModuleStorage implements AutoCloseable {
             }
 
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteDomAttributeType:" + e.getMessage());
+            log.error("SQL Exception in deleteAttributeType:" + e.getMessage());
             throw e;
         }
 
-        try (PreparedStatement stmt = connection.prepareStatement(deleteDomAttributeTypeByNameQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(deleteAttributeTypeByNameQuery);) {
             stmt.setString(1, attributeTypeName);
             int updated = stmt.executeUpdate();
             log.info("deleted " + updated + " attributetypes with name:" + attributeTypeName);
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteDomAttributeType:" + e.getMessage());
+            log.error("SQL Exception in deleteAttributeType:" + e.getMessage());
             throw e;
         }
 
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public ArrayList<ConfiguredAttributeType> getDomAttributeTypes() throws SQLException {
+    public ArrayList<ConfiguredAttributeType> getAttributeTypes() throws SQLException {
 
         ArrayList<ConfiguredAttributeType> list = new ArrayList<ConfiguredAttributeType>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(selectDomAttributeTypesQuery);) {
+        try (PreparedStatement stmt = connection.prepareStatement(selectAttributeTypesQuery);) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Long id = rs.getLong(ID_COLUMN);
@@ -600,7 +600,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             }
             return list;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDomAttributes:" + e.getMessage());
+            log.error("SQL Exception in getAttributes:" + e.getMessage());
             throw e;
         }
     }

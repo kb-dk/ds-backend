@@ -1,4 +1,4 @@
-<%ArrayList<ConfiguredLicensePresentationType> configuredLicenseTypes = LicenseCache.getConfiguredDomLicenseTypes();%>
+<%ArrayList<ConfiguredLicensePresentationType> configuredLicenseTypes = LicenseCache.getConfiguredLicenseTypes();%>
 <table class="table table-condensed table-hover">
    <thead>
    <tr>

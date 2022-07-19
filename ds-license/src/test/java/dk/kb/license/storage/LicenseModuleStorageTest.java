@@ -30,6 +30,7 @@ import dk.kb.license.model.v1.UserGroupDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.solr.AbstractSolrJClient;
 import dk.kb.license.validation.LicenseValidator;
+import dk.kb.license.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.license.storage.DsLicenseUnitTestUtil;
 
 /*
@@ -57,10 +58,10 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         String type1 = "unit_test_type1";
         String type1_en = "unit_test_type1_en";
         String type2 = "unit_test_type2";
-        storage.persistDomLicensePresentationType("key1",type1,type1_en);
-        storage.persistDomLicensePresentationType("key2",type2, "unit_test_type2_en");
+        storage.persistLicensePresentationType("key1",type1,type1_en);
+        storage.persistLicensePresentationType("key2",type2, "unit_test_type2_en");
 
-        ArrayList<ConfiguredLicensePresentationType> list = storage.getDomLicensePresentationTypes();
+        ArrayList<ConfiguredLicensePresentationType> list = storage.getLicensePresentationTypes();
         assertEquals(2, list.size());
         assertEquals("key1", list.get(0).getKey()); // They are returned in same order they saved (H2 db)
         assertEquals(type1_en, list.get(0).getValue_en()); // They are returned in same order they saved (H2 db)
@@ -77,10 +78,10 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         String type1_description_en = "type1_description:en";
         String type1_query = "type1_query";
         String type2 = "unit_test_type2";
-        storage.persistDomLicenseGroupType( type1Key,type1, type1_en,type1_description, type1_description_en,type1_query, false);
-        storage.persistDomLicenseGroupType(type2Key,type2, "type_en","type2_description", "description_en","type2_query", false);
+        storage.persistLicenseGroupType( type1Key,type1, type1_en,type1_description, type1_description_en,type1_query, false);
+        storage.persistLicenseGroupType(type2Key,type2, "type_en","type2_description", "description_en","type2_query", false);
 
-        ArrayList<ConfiguredLicenseGroupType> list = storage.getDomLicenseGroupTypes();
+        ArrayList<ConfiguredLicenseGroupType> list = storage.getLicenseGroupTypes();
         assertEquals(2, list.size());
         assertEquals(type1Key, list.get(0).getKey()); // The are return in same order they saved (H2 db)
 
@@ -93,8 +94,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         String newDescription = "new Description";
         String value_dk = "value_dk";
         String value_en = "value_en";
-        storage.updateDomLicenseGroupType(toUpdate.getId(),value_dk, value_en, newDescription, "new description (en)", "new query", true);
-        list = storage.getDomLicenseGroupTypes();
+        storage.updateLicenseGroupType(toUpdate.getId(),value_dk, value_en, newDescription, "new description (en)", "new query", true);
+        list = storage.getLicenseGroupTypes();
         assertEquals(value_en, list.get(0).getValue_en());
         assertEquals(newDescription, list.get(0).getDescription_dk());
     }
@@ -103,10 +104,10 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     public void testInsertDomAttributeType() throws Exception {
         String type1 = "unit_test_type1";
         String type2 = "unit_test_type2";
-        storage.persistDomAttributeType(type1);
-        storage.persistDomAttributeType(type2);
+        storage.persistAttributeType(type1);
+        storage.persistAttributeType(type2);
 
-        ArrayList<ConfiguredAttributeType> list = storage.getDomAttributeTypes();
+        ArrayList<ConfiguredAttributeType> list = storage.getAttributeTypes();
         assertEquals(2, list.size());
         assertEquals(type1, list.get(0).getValue()); // The are return in same order they saved (H2 db)
         assertEquals(type2, list.get(1).getValue());
@@ -126,15 +127,15 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         License license = createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);
 
-        ArrayList<ConfiguredAttributeType> list = storage.getDomAttributeTypes();
+        ArrayList<ConfiguredAttributeType> list = storage.getAttributeTypes();
         assertEquals(11, list.size());
-        storage.deleteDomAttributeType("wayf.mail");
-        list = storage.getDomAttributeTypes();
+        storage.deleteAttributeType("wayf.mail");
+        list = storage.getAttributeTypes();
         assertEquals(10, list.size()); // only 10 now
 
         // must not delete since it is used in a license
         try {
-            storage.deleteDomAttributeType("wayf.schacHomeOrganization");
+            storage.deleteAttributeType("wayf.schacHomeOrganization");
             fail();
         } catch (IllegalArgumentException e) {
             // expected
@@ -142,8 +143,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         //storage.deleteLicense(1L, true);
         storage.deleteLicense(1L);
-        storage.deleteDomAttributeType("wayf.schacHomeOrganization"); // now we can delete
-        list = storage.getDomAttributeTypes();
+        storage.deleteAttributeType("wayf.schacHomeOrganization"); // now we can delete
+        list = storage.getAttributeTypes();
         assertEquals(9, list.size()); // only 9 now
     }
 
@@ -154,15 +155,15 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         License license = createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);
 
-        ArrayList<ConfiguredLicenseGroupType> list = storage.getDomLicenseGroupTypes();
+        ArrayList<ConfiguredLicenseGroupType> list = storage.getLicenseGroupTypes();
         assertEquals(9, list.size());
-        storage.deleteDomLicenseGroupType("Pligtafleveret170Aar");//dom_licensemodule_default_configuration.ddl
-        list = storage.getDomLicenseGroupTypes();
+        storage.deleteLicenseGroupType("Pligtafleveret170Aar");//dom_licensemodule_default_configuration.ddl
+        list = storage.getLicenseGroupTypes();
         assertEquals(8, list.size()); // only 8 now
 
         // must not delete since it is used in a license
         try {
-            storage.deleteDomLicenseGroupType("TV2");
+            storage.deleteLicenseGroupType("TV2");
             fail();
         } catch (IllegalArgumentException e) {
             // expected
@@ -170,8 +171,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         //storage.deleteLicense(1L, true);
         storage.deleteLicense(1L);
-        storage.deleteDomLicenseGroupType("TV2");
-        list = storage.getDomLicenseGroupTypes();
+        storage.deleteLicenseGroupType("TV2");
+        list = storage.getLicenseGroupTypes();
         assertEquals(7, list.size()); // only 7 now
     }
 
@@ -184,15 +185,15 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         
         
-        ArrayList<ConfiguredLicensePresentationType> list = storage.getDomLicensePresentationTypes();
+        ArrayList<ConfiguredLicensePresentationType> list = storage.getLicensePresentationTypes();
         assertEquals(5, list.size());
-        storage.deleteDomPresentationType("10_sec_stream");
-        list = storage.getDomLicensePresentationTypes();
+        storage.deletePresentationType("10_sec_stream");
+        list = storage.getLicensePresentationTypes();
         assertEquals(4, list.size()); // only 4 now
 
         // must not delete since it is used in a license      
         try {
-            storage.deleteDomPresentationType("Thumbnails");
+            storage.deletePresentationType("Thumbnails");
             
             fail();
         } catch (IllegalArgumentException e) {
@@ -201,8 +202,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
 //        storage.deleteLicense(1L, true);
         storage.deleteLicense(1L);
-        storage.deleteDomPresentationType("Thumbnails");
-        list = storage.getDomLicensePresentationTypes();
+        storage.deletePresentationType("Thumbnails");
+        list = storage.getLicensePresentationTypes();
         assertEquals(3, list.size()); // only
     }
 
@@ -820,7 +821,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
             LicenseValidator.buildGroups(groups);
             fail();
         }   
-        catch (IllegalArgumentException e){
+        catch (InvalidArgumentServiceException e){
             //expected
         }
 
@@ -919,9 +920,9 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     @Test
     public void testMatchPresentationtype() throws Exception {
 
-        try{
-            LicenseValidator.matchPresentationtype("does not exist");
-            fail();
+        try{            
+            LicenseValidator.matchPresentationtype("does not exist");            
+            fail();            
         }
         catch (IllegalArgumentException e){
             //Expected

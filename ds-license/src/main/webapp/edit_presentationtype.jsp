@@ -18,8 +18,8 @@
 </head>
 <body>
 <%
-String id = request.getParameter("presentationtypeId");
-ArrayList<ConfiguredLicensePresentationType> allTypes  = LicenseCache.getConfiguredDomLicenseTypes();      
+    String id = request.getParameter("presentationtypeId");
+ArrayList<ConfiguredLicensePresentationType> allTypes  = LicenseCache.getConfiguredLicenseTypes();      
 ConfiguredLicensePresentationType edit = null;
 for ( ConfiguredLicensePresentationType current : allTypes){
    if (( current.getId() + "").equals(id)){

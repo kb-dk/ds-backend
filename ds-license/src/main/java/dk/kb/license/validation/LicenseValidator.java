@@ -156,13 +156,13 @@ public class LicenseValidator {
 		ArrayList<String> filterGroups = filterGroups(accessLicenses,  types);
 
 		//Now we have to find all MUST-groups the user is missing 
-		ArrayList<ConfiguredLicenseGroupType> configuredMUSTDomLicenseGroupTypes = LicenseCache.getConfiguredMUSTDomLicenseGroupTypes();
+		ArrayList<ConfiguredLicenseGroupType> configuredMUSTLicenseGroupTypes = LicenseCache.getConfiguredMUSTLicenseGroupTypes();
 		GetUserQueryOutputDto output = new GetUserQueryOutputDto();
 		output.setUserLicenseGroups(filterGroups);
 
 		ArrayList<String> missingMustGroups = new ArrayList<String>();
 		//First add all must groups then remove those that user has access too
-		for (ConfiguredLicenseGroupType current : configuredMUSTDomLicenseGroupTypes){
+		for (ConfiguredLicenseGroupType current : configuredMUSTLicenseGroupTypes){
 			missingMustGroups.add(current.getKey());
 		}
 
@@ -446,7 +446,7 @@ public class LicenseValidator {
 	//Maps the groups(String names) to the configured objects. 
 	public static ArrayList<ConfiguredLicenseGroupType> buildGroups(List<String> groups){
 		ArrayList<ConfiguredLicenseGroupType> filteredGroups = new ArrayList<ConfiguredLicenseGroupType>();
-		ArrayList<ConfiguredLicenseGroupType> configuredGroups = LicenseCache.getConfiguredDomLicenseGroupTypes();
+		ArrayList<ConfiguredLicenseGroupType> configuredGroups = LicenseCache.getConfiguredLicenseGroupTypes();
 
 		HashMap<String,ConfiguredLicenseGroupType> configuredGroupsNamesMap = new HashMap<String, ConfiguredLicenseGroupType>();
 		for (ConfiguredLicenseGroupType current : configuredGroups){
@@ -469,7 +469,7 @@ public class LicenseValidator {
 
 	public static ConfiguredLicensePresentationType matchPresentationtype(String presentationTypeName){
 
-		ArrayList<ConfiguredLicensePresentationType> configuredTypes = LicenseCache.getConfiguredDomLicenseTypes();
+		ArrayList<ConfiguredLicensePresentationType> configuredTypes = LicenseCache.getConfiguredLicenseTypes();
 		for (ConfiguredLicensePresentationType currentType : configuredTypes){
 			if (currentType.getKey().equals(presentationTypeName)){
 				return currentType;
@@ -548,7 +548,7 @@ public class LicenseValidator {
 	public static ArrayList<String> getAllPresentationtypeNames(String locale){
 		ArrayList<String> allTypes = new ArrayList<String>(); 
 	
-		ArrayList<ConfiguredLicensePresentationType> configuredTypes = LicenseCache.getConfiguredDomLicenseTypes();
+		ArrayList<ConfiguredLicensePresentationType> configuredTypes = LicenseCache.getConfiguredLicenseTypes();
 		
 		for (ConfiguredLicensePresentationType current : configuredTypes){
 			if (LOCALE_EN.equals(locale)){
@@ -565,7 +565,7 @@ public class LicenseValidator {
 	public static ArrayList<String> getAllGroupeNames(String locale){
 		ArrayList<String> allGroups = new ArrayList<String>(); 
 	
-		ArrayList<ConfiguredLicenseGroupType> configuredGroups = LicenseCache.getConfiguredDomLicenseGroupTypes();
+		ArrayList<ConfiguredLicenseGroupType> configuredGroups = LicenseCache.getConfiguredLicenseGroupTypes();
 		
 		for (ConfiguredLicenseGroupType current : configuredGroups){
 			if (LOCALE_EN.equals(locale)){

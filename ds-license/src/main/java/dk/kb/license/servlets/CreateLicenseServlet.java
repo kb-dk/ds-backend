@@ -189,7 +189,7 @@ public class CreateLicenseServlet extends HttpServlet {
 		//Licenses
 		ArrayList<LicenseContent> licenseContents = new ArrayList<LicenseContent>(); 
 		license.setLicenseContents(licenseContents);
-		 ArrayList<ConfiguredLicenseGroupType> configuredDomLicenseGroupTypes = LicenseCache.getConfiguredDomLicenseGroupTypes();
+		 ArrayList<ConfiguredLicenseGroupType> configuredDomLicenseGroupTypes = LicenseCache.getConfiguredLicenseGroupTypes();
 		for (int i = 0;i<configuredDomLicenseGroupTypes.size();i++){
 			String domGroupCheck= request.getParameter("domsGruppe_"+i);
 			if (domGroupCheck != null){ //Checkbox is checked
@@ -202,10 +202,10 @@ public class CreateLicenseServlet extends HttpServlet {
 
 				ArrayList<Presentation> presentationTypes = new ArrayList<Presentation>();                 
 				licenseContent.setPresentations(presentationTypes);
-				for (int j = 0;j<LicenseCache.getConfiguredDomLicenseTypes().size();j++){
+				for (int j = 0;j<LicenseCache.getConfiguredLicenseTypes().size();j++){
 					String licenseTypeCheck= request.getParameter("domsGruppe_"+i+"_license_"+j);
 					if (licenseTypeCheck != null){
-						String licenseTypeKey= LicenseCache.getConfiguredDomLicenseTypes().get(j).getKey();						
+						String licenseTypeKey= LicenseCache.getConfiguredLicenseTypes().get(j).getKey();						
 						Presentation presentationType = new Presentation();
 						presentationType.setKey(licenseTypeKey);
 						presentationTypes.add(presentationType);            		            	

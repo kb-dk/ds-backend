@@ -1,4 +1,4 @@
-<%ArrayList<ConfiguredAttributeType> configuredAttributeTypes = LicenseCache.getConfiguredDomAttributeTypes();%>
+<%ArrayList<ConfiguredAttributeType> configuredAttributeTypes = LicenseCache.getConfiguredAttributeTypes();%>
 <table class="table table-condensed table-hover">
    <thead>
    <tr>

@@ -19,8 +19,8 @@
 </head>
 <body>
 <%
-String id = request.getParameter("grouptypeId");
-ArrayList<ConfiguredLicenseGroupType> allTypes  = LicenseCache.getConfiguredDomLicenseGroupTypes();      
+    String id = request.getParameter("grouptypeId");
+ArrayList<ConfiguredLicenseGroupType> allTypes  = LicenseCache.getConfiguredLicenseGroupTypes();      
 ConfiguredLicenseGroupType edit = null;
 for ( ConfiguredLicenseGroupType current : allTypes){
    if (( current.getId() + "").equals(id)){
