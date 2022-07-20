@@ -11,7 +11,25 @@
     <artifactId>ds-license</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <description>ds-license by the Royal Danish Library</description>
+        <description>
+    # Ds-license(Digitale Samlinger) by the Royal Danish Library. 
+    
+      
+    ## Ds-license restricts access to items in collections based on the user credential information.
+    The primary method in Ds-license is to filther a list of IDs (recordIds) and only return the ID's that the user has
+    access to based in the user information. The filtering is done against a Solr server with all information about the
+    records. The application has a GUI interface to define all access rules based on user attributes.
+    
+    ## User attributes
+    The User attributes is key-value pairs, where the values can be a list and a user can have multiple key-value pairs.
+    All values and keys are strings. The key-values pairs can be WAYF attributes (https://www.wayf.dk/) which is a 
+    standard for describing users at educational institutions and will have some guarateed values always. But the GUI administration
+    can define arbitarity key-value rules and not just WAYF attributes.
+    
+    
+     
+     </description>
+    
 
     <repositories>
         <repository>
