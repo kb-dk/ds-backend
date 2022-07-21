@@ -15,126 +15,125 @@ import dk.kb.license.validation.LicenseValidator;
 //However when the DB changes, the H2Storage class will fire a reload to this cache.
 public class LicenseCache {
 
-	// Cached instances
-	private static ArrayList<License> cachedLicenses;
-	private static ArrayList<ConfiguredLicenseGroupType> cachedLicenseGroupTypes;
-	private static ArrayList<ConfiguredLicenseGroupType> cachedLicenseMustGroupTypes;
-	private static ArrayList<ConfiguredAttributeType> cachedAttributeTypes;
-	private static ArrayList<ConfiguredLicensePresentationType> cachedLicensePresentationTypes;
+    // Cached instances
+    private static ArrayList<License> cachedLicenses;
+    private static ArrayList<ConfiguredLicenseGroupType> cachedLicenseGroupTypes;
+    private static ArrayList<ConfiguredLicenseGroupType> cachedLicenseMustGroupTypes;
+    private static ArrayList<ConfiguredAttributeType> cachedAttributeTypes;
+    private static ArrayList<ConfiguredLicensePresentationType> cachedLicensePresentationTypes;
     private static HashMap<String, ConfiguredLicenseGroupType> groupIdMap;
     private static HashMap<String, ConfiguredLicensePresentationType> presentationTypeIdMap;
-    
-	private static final Logger log = LoggerFactory.getLogger(LicenseCache.class);
-	private static final long reloadIntervalInSec = 15 * 1000 * 60L; // 15 minutes
-	private static long lastReloadTime = 0;
 
-	public static ArrayList<License> getAllLicense() {
-		checkReload();
-		return cachedLicenses;
-	}
+    private static final Logger log = LoggerFactory.getLogger(LicenseCache.class);
+    private static final long reloadIntervalInSec = 15 * 1000 * 60L; // 15 minutes
+    private static long lastReloadTime = 0;
 
-	public static ArrayList<ConfiguredLicenseGroupType> getConfiguredLicenseGroupTypes() {
-		checkReload();
-		return cachedLicenseGroupTypes;
-	}
+    public static ArrayList<License> getAllLicense() {
+        checkReload();
+        return cachedLicenses;
+    }
 
-	public static ArrayList<ConfiguredLicenseGroupType> getConfiguredMUSTLicenseGroupTypes() {
-		checkReload();
-		return cachedLicenseMustGroupTypes;
-	}
+    public static ArrayList<ConfiguredLicenseGroupType> getConfiguredLicenseGroupTypes() {
+        checkReload();
+        return cachedLicenseGroupTypes;
+    }
 
-	public static ArrayList<ConfiguredAttributeType> getConfiguredAttributeTypes() {
-		checkReload();
-		return cachedAttributeTypes;
+    public static ArrayList<ConfiguredLicenseGroupType> getConfiguredMUSTLicenseGroupTypes() {
+        checkReload();
+        return cachedLicenseMustGroupTypes;
+    }
 
-	}
+    public static ArrayList<ConfiguredAttributeType> getConfiguredAttributeTypes() {
+        checkReload();
+        return cachedAttributeTypes;
 
-	public static ArrayList<ConfiguredLicensePresentationType> getConfiguredLicenseTypes() {
-		checkReload();
-		return cachedLicensePresentationTypes;
-	}
+    }
 
-	private static synchronized void checkReload() {
+    public static ArrayList<ConfiguredLicensePresentationType> getConfiguredLicenseTypes() {
+        checkReload();
+        return cachedLicensePresentationTypes;
+    }
 
-		if (System.currentTimeMillis() - lastReloadTime > reloadIntervalInSec) {
-			reloadCache();
-		}
-	}
+    private static synchronized void checkReload() {
 
-	public static void reloadCache() {
-	    LicenseModuleStorage storage =  null;
-	    try {
-			storage = new LicenseModuleStorage();
-			log.info("Reloading cache from DB");
-			lastReloadTime = System.currentTimeMillis();
+        if (System.currentTimeMillis() - lastReloadTime > reloadIntervalInSec) {
+            reloadCache();
+        }
+    }
 
-			// Load all Licenses
-			ArrayList<License> licenseList = new ArrayList<License>();
-			ArrayList<License> names = storage.getAllLicenseNames();
+    public static void reloadCache() {
+        LicenseModuleStorage storage =  null;
+        try {
+            storage = new LicenseModuleStorage();
+            log.info("Reloading cache from DB");
+            lastReloadTime = System.currentTimeMillis();
 
-			for (License current : names) {
-				License license = storage.getLicense(current.getId());
-				licenseList.add(license);
-			}
-			cachedLicenses = licenseList;
-			log.debug("#licenses reload=" + cachedLicenses.size());
+            // Load all Licenses
+            ArrayList<License> licenseList = new ArrayList<License>();
+            ArrayList<License> names = storage.getAllLicenseNames();
 
-			// Load LicenseGroupTypes
-			cachedLicenseGroupTypes = storage.getLicenseGroupTypes();
-
-			// Load LicenseMustGroupTypes
-			ArrayList<ConfiguredLicenseGroupType> allList = storage.getLicenseGroupTypes();
-			cachedLicenseMustGroupTypes = LicenseValidator.filterMustGroups(allList);
-
-			// Load AttributeTypes
-			cachedAttributeTypes = storage.getAttributeTypes();
-			
-			
-			// Load LicensePresentationTypes
-			cachedLicensePresentationTypes = storage.getLicensePresentationTypes();
-		
-		    //create Dk2En name map
-			groupIdMap = new HashMap<String,ConfiguredLicenseGroupType>();
-			
-            for (ConfiguredLicenseGroupType current : cachedLicenseGroupTypes){
-            	groupIdMap.put(current.getKey(), current);            	
+            for (License current : names) {
+                License license = storage.getLicense(current.getId());
+                licenseList.add(license);
             }
-            
+            cachedLicenses = licenseList;
+            log.debug("#licenses reload=" + cachedLicenses.size());
+
+            // Load LicenseGroupTypes
+            cachedLicenseGroupTypes = storage.getLicenseGroupTypes();
+
+            // Load LicenseMustGroupTypes
+            ArrayList<ConfiguredLicenseGroupType> allList = storage.getLicenseGroupTypes();
+            cachedLicenseMustGroupTypes = LicenseValidator.filterMustGroups(allList);
+
+            // Load AttributeTypes
+            cachedAttributeTypes = storage.getAttributeTypes();
+
+
+            // Load LicensePresentationTypes
+            cachedLicensePresentationTypes = storage.getLicensePresentationTypes();
+            //create Dk2En name map
+            groupIdMap = new HashMap<String,ConfiguredLicenseGroupType>();
+
+            for (ConfiguredLicenseGroupType current : cachedLicenseGroupTypes){
+                groupIdMap.put(current.getKey(), current);            	
+            }
+
             presentationTypeIdMap = new HashMap<String, ConfiguredLicensePresentationType>();
             for (ConfiguredLicensePresentationType current : cachedLicensePresentationTypes){
-            	presentationTypeIdMap.put(current.getKey(), current);            	
+                presentationTypeIdMap.put(current.getKey(), current);            	
             }
-			
-		
-		} catch (Exception e) {
-			log.error("Error in reload cache", e);
-			throw new RuntimeException(e);
-		}
-		finally{
+
+
+        } catch (Exception e) {
+            log.error("Error in reload cache", e);
+            throw new RuntimeException(e);
+        }
+        finally{
             storage.close();            
         }				
-	}
+    }
 
-	public static String getPresentationtypeName(String id, String locale){
-		
-		if (LicenseValidator.LOCALE_DA.equals(locale)){
-			return presentationTypeIdMap.get(id).getValue_dk();
-		}
-		else if (LicenseValidator.LOCALE_EN.equals(locale)){
-			return presentationTypeIdMap.get(id).getValue_en();
-		}		
-		return null; 	
-	}
-	
-	public static String getGroupName(String id, String locale){
+    public static String getPresentationtypeName(String id, String locale){
 
-		if (LicenseValidator.LOCALE_DA.equals(locale)){
-			return groupIdMap.get(id).getValue_dk();
-		}
-		else if (LicenseValidator.LOCALE_EN.equals(locale)){
-			return groupIdMap.get(id).getValue_en();
-		}			   
-		return null; 	
-	}
-	
+        if (LicenseValidator.LOCALE_DA.equals(locale)){
+            return presentationTypeIdMap.get(id).getValue_dk();
+        }
+        else if (LicenseValidator.LOCALE_EN.equals(locale)){
+            return presentationTypeIdMap.get(id).getValue_en();
+        }		
+        return null; 	
+    }
+
+    public static String getGroupName(String id, String locale){
+
+        if (LicenseValidator.LOCALE_DA.equals(locale)){
+            return groupIdMap.get(id).getValue_dk();
+        }
+        else if (LicenseValidator.LOCALE_EN.equals(locale)){
+            return groupIdMap.get(id).getValue_en();
+        }			   
+        return null; 	
+    }
+
 }

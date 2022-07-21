@@ -57,7 +57,7 @@ public abstract class DsLicenseUnitTestUtil {
     public static void beforeClass() throws Exception {
 
         ServiceConfig.initialize("conf/ds-license*.yaml"); 	    
-        ServiceConfig.setSOLR_FILTER_FIELD("authID");
+
         H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD);        
         LicenseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         storage = new LicenseModuleStorage();

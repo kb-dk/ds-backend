@@ -431,7 +431,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
             if (rs.next()) {
                 int number = rs.getInt(1);
-               System.out.println("presentation used times:"+number + " with name:"+presentationName);
+//               System.out.println("presentation used times:"+number + " with name:"+presentationName);
                 if (number > 0) {
                     throw new IllegalArgumentException("Can not delete presentationtype with name:" + presentationName
                             + " because it is used in at least 1 license");
@@ -1016,7 +1016,6 @@ public class LicenseModuleStorage implements AutoCloseable {
    
 
     public void commit() throws SQLException {
-        System.out.println("commit");
         connection.commit();
     }
 
@@ -1055,14 +1054,15 @@ public class LicenseModuleStorage implements AutoCloseable {
       tables.add("LICENSECONTENT");    
       tables.add("PRESENTATION");
       
+      
       for (String table : tables) {
           String deleteSQL="DELETE FROM " +table; 
         try (PreparedStatement stmt = connection.prepareStatement(deleteSQL);) {
-         System.out.println(deleteSQL);
             stmt.execute();
         }   
         
       }
+      log.info("All tables cleared for unittest");
     }
     
     

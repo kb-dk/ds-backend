@@ -70,7 +70,6 @@ public class AbstractSolrJClient {
             //Remove all \ and " from the string
             id= id.replaceAll("\\\\", "");
             id= id.replaceAll("\\\"", "");
-
             queryIdPart.append(filterField+":\""+id +"\"");
             if (i<ids.size()-1){
                 queryIdPart.append(" OR ");

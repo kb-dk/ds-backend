@@ -920,29 +920,39 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     @Test
     public void testMatchPresentationtype() throws Exception {
 
+        //Create a persentation type and reload cache
+        storage.persistLicensePresentationType("Download","value_dk","value_en");
+        storage.commit();
+        LicenseCache.reloadCache();
+
         try{            
             LicenseValidator.matchPresentationtype("does not exist");            
             fail();            
         }
-        catch (IllegalArgumentException e){
+        catch (InvalidArgumentServiceException e){
             //Expected
         }
 
+
+        
         ConfiguredLicensePresentationType downloadType = LicenseValidator.matchPresentationtype("Download");
         assertEquals("Download", downloadType.getKey());            
     }
 
     @Test
     public void testGenerateQueryString() throws Exception {
+
+        DsLicenseUnitTestUtil.insertDefaultConfigurationTypes();
+        LicenseCache.reloadCache();
         ArrayList<String> groups = new ArrayList<String>();
         ArrayList<String> missingMustGroups = new ArrayList<String>();
-
         //2 in each group
         groups.add("Reklamefilm");
         groups.add("DRRadio");
         missingMustGroups.add("IndividueltForbud");
         missingMustGroups.add("Klausuleret");
 
+        
         String query = LicenseValidator.generateQueryString(groups, missingMustGroups);
         assertEquals("(((group:\"reklamefilm\") OR (group:\"DRRadio\")) -(group:\"individuelt\") -(group:\"klausuleret\"))", query);        
 
@@ -1008,11 +1018,12 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     @Test
     public void testMakeAuthIdPart() throws Exception {
 
+        String filterField=ServiceConfig.SOLR_FILTER_FIELD;
         ArrayList<String> ids = new ArrayList<String>(); 
         ids.add("testId1");
         ids.add("testId2");
         String solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids);
-        assertEquals("(authID:\"testId1\" OR authID:\"testId2\")", solrIdsQuery); 
+        assertEquals("(" +filterField+":\"testId1\" OR "+filterField+":\"testId2\")", solrIdsQuery); 
 
         //prevent Lucene query injection. Remove all " and / from the string
         ids = new ArrayList<String>(); 
@@ -1020,7 +1031,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids); 
 
-        assertEquals("(authID:\"testId3\")", solrIdsQuery);                 
+        assertEquals("("+filterField+":\"testId3\")", solrIdsQuery);                 
     }
 
 
