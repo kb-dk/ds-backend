@@ -24,7 +24,58 @@
     The User attributes is key-value pairs, where the values can be a list and a user can have multiple key-value pairs.
     All values and keys are strings. The key-values pairs can be WAYF attributes (https://www.wayf.dk/) which is a 
     standard for describing users at educational institutions and will have some guarateed values always. But the GUI administration
-    can define arbitarity key-value rules and not just WAYF attributes.
+    can define arbitarity key-value rules and not just WAYF attributes. All user atttribute keys must be define in 
+    the GUI and they will be available for use when defining a license attribute-group.
+    
+    ### Examples of UserAttributes (WAYF)
+          
+    | key                         | values                     | Remark                                          | 
+    | ----------------------------| ---------------------------|-------------------------------------------------|
+    | SBIPRolemapper              | inhouse,kb                 | inhouse(local computer), kb (organisation)      |
+    | mail                        | teg@kb.dk                  | Can be used to give individual access           |
+    | shachHomeOrganisation       | ku.dk                      | Educational institution                         |
+    | eduPersonPrimaryAffiliation | stud                       | Student. (staff, employee,faculty also values)  |
+    
+    
+    
+    ## Groups/Packages
+    The groups (also called pakker in Danish) are the building blocks that gives access to materials. There are two 
+    types of groups, normal groups and must-groups. Normal groups gives access to materials (positive Solr filter) while must-groups
+    restricts access (negative Solr filter).  The more normal groups a user has access will be more materials and more must-groups will
+    also give more materials since this will remove the negative filter. The must-groups negative filters are always applied unless
+    the user validates access to them and that restriction will be removed. Some materials can be locked under several different must-groups
+    restrictions and all must-groups must validate before the user can access it.
+    
+    ### Example of access two groups
+    Group 1 (normal group): lma_long:"radio"
+    
+    Group 2 (must group):  klausuleret:"ja"
+    
+    If the user has acesss to both groups, the final filter query will be:   **lma_long:"radio"**
+    
+    If the user has only access to the first group, the final filter query will be:  **lma_long:"radio" -klausuleret:"ja"**
+    
+    ## Licences
+    Licenses are the mapping from UserAttributes to groups/packages. One license can give access to several groups. 
+    For each group a license gives access to, the license must also specify a presentation type (or several) for that group.
+    Presentation types are also defined in the GUI and examples of presentation types are:Stream,Search.Download,Thumbnails,Headlines.
+    
+    ### Licenses structure
+    A license must define a valid from and valid to date and is only valid in the date interval. The format is dd-mm-yyyy.
+    A license has to defines one or more attribute-groups. An attribute-group is mapping from UserAttributes key and values.
+    An attribute-group can define several mappings every single mapping in the attribute group must validate for the license to validate.
+    The reason you can define several attribute-groups in one license is to avoid defining many identical licences that gives 
+    access to same material but by different conditions.
+    
+    ### License validation algoritm
+    First the validation check will limit to licenses that are valid for the date of the requests. Then for each license every 
+    attributed group will be checked. If just one of the attribute groups validates then the license validates. 
+    The license will give access to the groups (packages) define for the license, but restricted to the presentationtype (Download etc.)
+    For all license that validates this will define a set of all groups (union of all groups) that will determine access.
+    All the normal groups will each expand the positive filter query used for filtering Ids. All each must-group valided will remove
+    the negative filter blocked by that must-group.
+    
+    ## Configuration of the Ds-license
     
     
      
