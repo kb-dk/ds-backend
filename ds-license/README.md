@@ -3,7 +3,7 @@
  # Ds-license(Digitale Samlinger) by the Royal Danish Library. 
     
       
-  ## Ds-license restricts access to items in collections based on the user credential information.
+    ## Ds-license restricts access to items in collections based on the user credential information.
     The primary method in Ds-license is to filther a list of IDs (recordIds) and only return the ID's that the user has
     access to based in the user information. The filtering is done against a Solr server with all information about the
     records. The application has a GUI interface to define all access rules based on user attributes.
