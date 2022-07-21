@@ -90,6 +90,18 @@
     A PostGreSql database is recommended when not running locally. The database tables must be created before use with
     DDL file: test/resources/ddl/licensemodule_create_db.ddl
     
+    
+    ## API   
+    While there are many methods exposed through the API only the following two are necessary for integrating License module into the software stack.
+
+    #### checkAccessForIds
+    This is the method that takes the UserAttributes and a list of IDs. The return value will be the IDs that was not removed in the filthering
+    and those that the user has access to. The method is called every time a user tries to access or search materials.
+    
+    #### getUserLicenses
+    Method only takes the userattributes and returns a list of licences that the userattributes give access to. For each license
+    the name, validFrom,ValidTo and a description will be returned. This information can be shown to the user.
+        
     </description>
     
 
