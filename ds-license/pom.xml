@@ -77,16 +77,16 @@
     
     ### Licenses structure
     A license must define a valid from and valid to date and is only valid in the date interval. The format is dd-mm-yyyy.
-    A license has to defines one or more attribute-groups. An attribute-group is mapping from UserAttributes key and values.
-    An attribute-group can define several mappings every single mapping in the attribute group must validate for the license to validate.
+    A license has to defines one or more attribute-groups. An attribute-group is mapping from UserAttributes keys to values.
+    An attribute-group can define several mappings and every single mapping in the attribute group must validate for the license to validate.
     The reason you can define several attribute-groups in one license is to avoid defining many identical licences that gives 
     access to same material but by different conditions.
     
     ### License validation algoritm
     First the validation check will limit to licenses that are valid for the date of the requests. Then for each license every 
     attributed group will be checked. If just one of the attribute groups validates then the license validates. 
-    The license will give access to the groups (packages) define for the license, but restricted to the presentationtype (Download etc.)
-    For all license that validates this will define a set of all groups (union of all groups) that will determine access.
+    The license will give access to the groups (pakker) define for the license, but restricted to the presentationtype (Download etc.)
+    For all the license that validates this will define a set of all groups (union of all groups) that will determine access.
     All the normal groups will each expand the positive filter query used for filtering Ids. All each must-group valided will remove
     the negative filter blocked by that must-group.
     
