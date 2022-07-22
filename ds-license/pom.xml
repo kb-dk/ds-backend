@@ -46,7 +46,7 @@
     the user validates access to them and that restriction will be removed. Some materials can be locked under several different must-groups
     restrictions and all must-groups must validate before the user can access it.
     
-    ### Example of access two groups
+    ### Example of access with two groups
     Group 1 (normal group): lma_long:"radio"
     
     Group 2 (must group):  klausuleret:"ja"
@@ -54,6 +54,21 @@
     If the user has acesss to both groups, the final filter query will be:   **lma_long:"radio"**
     
     If the user has only access to the first group, the final filter query will be:  **lma_long:"radio" -klausuleret:"ja"**
+    
+    ### Example of access with four groups
+    The normal groups filter queries will be OR'ed.
+    
+    Group 1 (normal group): lma_long:"tv"
+    
+    Group 2 (normal group): lma_long:"radio"
+       
+    Group 3 (must group):  klausuleret:"ja"
+    
+    Group 4 (must group):  individuelt_forbud:"ja"
+    
+    If the user has access to group 1,2 and 3 the filter query will be: **(lma_long:"radio" OR lma_long"tv") -individuelt_forbud:"ja"**
+       
+
     
     ## Licences
     Licenses are the mapping from UserAttributes to groups/packages. One license can give access to several groups. 
