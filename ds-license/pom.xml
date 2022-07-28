@@ -90,6 +90,12 @@
     All the normal groups will each expand the positive filter query used for filtering Ids. All each must-group valided will remove
     the negative filter blocked by that must-group.
     
+    
+    ## UML 
+    The UML diagram can be found in the /uml/licensemodule_uml.png folder. The database persistence model and object layer is a 
+    direct implementation of the UML model. The UML model is created using DIA and the project file is also in the folder.
+    
+    
     ## Configuration of the Ds-license
      
     ### Property: license_solr_servers
