@@ -1,8 +1,9 @@
 # ds-license
 
- # Ds-license(Digitale Samlinger) by the Royal Danish Library. 
+
     
-      
+    # Ds-license(Digitale Samlinger) by the Royal Danish Library. 
+          
     ## Ds-license restricts access to items in collections based on the user credential information.
     The primary method in Ds-license is to filther a list of IDs (recordIds) and only return the ID's that the user has
     access to based in the user information. The filtering is done against a Solr server with all information about the
@@ -34,7 +35,7 @@
     the user validates access to them and that restriction will be removed. Some materials can be locked under several different must-groups
     restrictions and all must-groups must validate before the user can access it.
     
-    ### Example of access two groups
+    ### Example of access with two groups
     Group 1 (normal group): lma_long:"radio"
     
     Group 2 (must group):  klausuleret:"ja"
@@ -43,6 +44,21 @@
     
     If the user has only access to the first group, the final filter query will be:  **lma_long:"radio" -klausuleret:"ja"**
     
+    ### Example of access with four groups
+    The normal groups filter queries will be OR'ed.
+    
+    Group 1 (normal group): lma_long:"tv"
+    
+    Group 2 (normal group): lma_long:"radio"
+       
+    Group 3 (must group):  klausuleret:"ja"
+    
+    Group 4 (must group):  individuelt_forbud:"ja"
+    
+    If the user has access to group 1,2 and 3 the filter query will be: **(lma_long:"radio" OR lma_long"tv") -individuelt_forbud:"ja"**
+       
+
+    
     ## Licences
     Licenses are the mapping from UserAttributes to groups/packages. One license can give access to several groups. 
     For each group a license gives access to, the license must also specify a presentation type (or several) for that group.
@@ -50,25 +66,35 @@
     
     ### Licenses structure
     A license must define a valid from and valid to date and is only valid in the date interval. The format is dd-mm-yyyy.
-    A license has to defines one or more attribute-groups. An attribute-group is mapping from UserAttributes key and values.
-    An attribute-group can define several mappings every single mapping in the attribute group must validate for the license to validate.
+    A license has to defines one or more attribute-groups. An attribute-group is mapping from UserAttributes keys to values.
+    An attribute-group can define several mappings and every single mapping in the attribute group must validate for the license to validate.
     The reason you can define several attribute-groups in one license is to avoid defining many identical licences that gives 
     access to same material but by different conditions.
     
     ### License validation algoritm
     First the validation check will limit to licenses that are valid for the date of the requests. Then for each license every 
     attributed group will be checked. If just one of the attribute groups validates then the license validates. 
-    The license will give access to the groups (packages) define for the license, but restricted to the presentationtype (Download etc.)
-    For all license that validates this will define a set of all groups (union of all groups) that will determine access.
+    The license will give access to the groups (pakker) define for the license, but restricted to the presentationtype (Download etc.)
+    For all the license that validates this will define a set of all groups (union of all groups) that will determine access.
     All the normal groups will each expand the positive filter query used for filtering Ids. All each must-group valided will remove
     the negative filter blocked by that must-group.
+    
+    
+    ## UML model 
+    The UML diagram can be found in the /uml/licensemodule_uml.png folder. The database persistence model and object layer is a 
+    direct implementation of the UML model, except for some naming. The UML model is created using DIA and the project file is also in the folder.
+    
+    ### UML model explained
+    There are 3 general type classes that can be maintained and the values are configured are used when defining a license.
+    It is not possible to delete a configuration value if it is used in a license.
+      
     
     ## Configuration of the Ds-license
      
     ### Property: license_solr_servers
     The configuration requires at least one Solr server for the property 'license_solr_servers'. Several Solr servers must be 
     seperated by commas. When filtering IDs all Solr servers will be called for filtering and each will be called with all IDs.
-           
+            
     ### Property: license_solr_filter_field
     The Solr field used for filtering. Multivalued fields allowed. All defined Solr servers must have this field defined for all documents.
     
