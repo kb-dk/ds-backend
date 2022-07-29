@@ -1,6 +1,6 @@
 
 <%
-ArrayList<GroupType> configuredDomGroups = LicenseCache.getGroupTypes();
+ArrayList<GroupType> configuredDomGroups = LicenseCache.getConfiguredLicenseGroupTypes();
  ArrayList<PresentationType> configuredDomsLicenseTypes = LicenseCache.getConfiguredLicenseTypes();
 
  //variable 'license' is already known here, from the page that included this page
