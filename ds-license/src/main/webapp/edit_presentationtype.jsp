@@ -19,9 +19,9 @@
 <body>
 <%
     String id = request.getParameter("presentationtypeId");
-ArrayList<ConfiguredLicensePresentationType> allTypes  = LicenseCache.getConfiguredLicenseTypes();      
-ConfiguredLicensePresentationType edit = null;
-for ( ConfiguredLicensePresentationType current : allTypes){
+ArrayList<PresentationType> allTypes  = LicenseCache.getConfiguredLicenseTypes();      
+PresentationType edit = null;
+for ( PresentationType current : allTypes){
    if (( current.getId() + "").equals(id)){
     edit=current;
     break;

@@ -234,9 +234,9 @@ public class LicenseModuleStorage implements AutoCloseable {
        
     }
 
-    public ArrayList<ConfiguredLicensePresentationType> getLicensePresentationTypes() throws SQLException {
+    public ArrayList<PresentationType> getLicensePresentationTypes() throws SQLException {
 
-        ArrayList<ConfiguredLicensePresentationType> list = new ArrayList<ConfiguredLicensePresentationType>();
+        ArrayList<PresentationType> list = new ArrayList<PresentationType>();
 
         try (PreparedStatement stmt = connection.prepareStatement(selectLicensePresentationTypesQuery);) {
 
@@ -247,7 +247,7 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String key = rs.getString(KEY_COLUMN);
                 String value = rs.getString(VALUE_DK_COLUMN);
                 String value_en = rs.getString(VALUE_EN_COLUMN);
-                ConfiguredLicensePresentationType item = new ConfiguredLicensePresentationType(id, key, value,
+                PresentationType item = new PresentationType(id, key, value,
                         value_en);
                 list.add(item);
             }
@@ -506,9 +506,9 @@ public class LicenseModuleStorage implements AutoCloseable {
         //LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public ArrayList<ConfiguredLicenseGroupType> getLicenseGroupTypes() throws SQLException {
+    public ArrayList<GroupType> getLicenseGroupTypes() throws SQLException {
 
-        ArrayList<ConfiguredLicenseGroupType> list = new ArrayList<ConfiguredLicenseGroupType>();
+        ArrayList<GroupType> list = new ArrayList<GroupType>();
         try (PreparedStatement stmt = connection.prepareStatement(selectLicenseGroupTypesQuery);) {
 
             ResultSet rs = stmt.executeQuery();
@@ -522,8 +522,7 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
                 boolean mustGroup = rs.getBoolean(MUSTGROUP_COLUMN);
-                ConfiguredLicenseGroupType item = new ConfiguredLicenseGroupType(id, key, value_dk, value_en,
-                        description, description_en, query, mustGroup);
+                GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, mustGroup);
                 list.add(item);
             }
             return list;
@@ -586,16 +585,16 @@ public class LicenseModuleStorage implements AutoCloseable {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public ArrayList<ConfiguredAttributeType> getAttributeTypes() throws SQLException {
+    public ArrayList<AttributeType> getAttributeTypes() throws SQLException {
 
-        ArrayList<ConfiguredAttributeType> list = new ArrayList<ConfiguredAttributeType>();
+        ArrayList<AttributeType> list = new ArrayList<AttributeType>();
 
         try (PreparedStatement stmt = connection.prepareStatement(selectAttributeTypesQuery);) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Long id = rs.getLong(ID_COLUMN);
                 String value = rs.getString(VALUE_COLUMN);
-                ConfiguredAttributeType item = new ConfiguredAttributeType(id, value);
+                AttributeType item = new AttributeType(id, value);
                 list.add(item);
             }
             return list;

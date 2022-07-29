@@ -1,8 +1,8 @@
 
 <%
-    String selectName = (String) request.getAttribute("selectName");
+String selectName = (String) request.getAttribute("selectName");
     String selectValue = (String) request.getAttribute("selectValue");
-    ArrayList<ConfiguredAttributeType> options= LicenseCache.getConfiguredAttributeTypes();
+    ArrayList<AttributeType> options= LicenseCache.getConfiguredAttributeTypes();
 %>
 
 <select name="<%=selectName%>" class="span4">  

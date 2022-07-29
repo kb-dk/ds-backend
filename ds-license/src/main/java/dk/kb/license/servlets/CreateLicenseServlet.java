@@ -16,7 +16,7 @@ import dk.kb.license.facade.LicenseModuleFacade;
 import dk.kb.license.storage.Attribute;
 import dk.kb.license.storage.AttributeGroup;
 import dk.kb.license.storage.AttributeValue;
-import dk.kb.license.storage.ConfiguredLicenseGroupType;
+import dk.kb.license.storage.GroupType;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.storage.LicenseContent;
@@ -189,7 +189,7 @@ public class CreateLicenseServlet extends HttpServlet {
 		//Licenses
 		ArrayList<LicenseContent> licenseContents = new ArrayList<LicenseContent>(); 
 		license.setLicenseContents(licenseContents);
-		 ArrayList<ConfiguredLicenseGroupType> configuredDomLicenseGroupTypes = LicenseCache.getConfiguredLicenseGroupTypes();
+		 ArrayList<GroupType> configuredDomLicenseGroupTypes = LicenseCache.getConfiguredLicenseGroupTypes();
 		for (int i = 0;i<configuredDomLicenseGroupTypes.size();i++){
 			String domGroupCheck= request.getParameter("domsGruppe_"+i);
 			if (domGroupCheck != null){ //Checkbox is checked

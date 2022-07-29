@@ -48,8 +48,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
 
-    private static ConfiguredLicensePresentationType DOWNLOAD = new  ConfiguredLicensePresentationType(1, "Download","Download_dk", "Download_en");
-    private static ConfiguredLicensePresentationType THUMBNAILS = new  ConfiguredLicensePresentationType(1, "Thumbnails" ,"Thumbnails_dk", "Thumbnails_en");
+    private static PresentationType DOWNLOAD = new  PresentationType(1, "Download","Download_dk", "Download_en");
+    private static PresentationType THUMBNAILS = new  PresentationType(1, "Thumbnails" ,"Thumbnails_dk", "Thumbnails_en");
 
 
 
@@ -61,7 +61,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         storage.persistLicensePresentationType("key1",type1,type1_en);
         storage.persistLicensePresentationType("key2",type2, "unit_test_type2_en");
 
-        ArrayList<ConfiguredLicensePresentationType> list = storage.getLicensePresentationTypes();
+        ArrayList<PresentationType> list = storage.getLicensePresentationTypes();
         assertEquals(2, list.size());
         assertEquals("key1", list.get(0).getKey()); // They are returned in same order they saved (H2 db)
         assertEquals(type1_en, list.get(0).getValue_en()); // They are returned in same order they saved (H2 db)
@@ -81,7 +81,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         storage.persistLicenseGroupType( type1Key,type1, type1_en,type1_description, type1_description_en,type1_query, false);
         storage.persistLicenseGroupType(type2Key,type2, "type_en","type2_description", "description_en","type2_query", false);
 
-        ArrayList<ConfiguredLicenseGroupType> list = storage.getLicenseGroupTypes();
+        ArrayList<GroupType> list = storage.getLicenseGroupTypes();
         assertEquals(2, list.size());
         assertEquals(type1Key, list.get(0).getKey()); // The are return in same order they saved (H2 db)
 
@@ -90,7 +90,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         assertEquals(type2Key, list.get(1).getKey());
 
         // update and check it is updated
-        ConfiguredLicenseGroupType toUpdate = list.get(0);
+        GroupType toUpdate = list.get(0);
         String newDescription = "new Description";
         String value_dk = "value_dk";
         String value_en = "value_en";
@@ -107,7 +107,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         storage.persistAttributeType(type1);
         storage.persistAttributeType(type2);
 
-        ArrayList<ConfiguredAttributeType> list = storage.getAttributeTypes();
+        ArrayList<AttributeType> list = storage.getAttributeTypes();
         assertEquals(2, list.size());
         assertEquals(type1, list.get(0).getValue()); // The are return in same order they saved (H2 db)
         assertEquals(type2, list.get(1).getValue());
@@ -127,7 +127,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         License license = createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);
 
-        ArrayList<ConfiguredAttributeType> list = storage.getAttributeTypes();
+        ArrayList<AttributeType> list = storage.getAttributeTypes();
         assertEquals(11, list.size());
         storage.deleteAttributeType("wayf.mail");
         list = storage.getAttributeTypes();
@@ -155,7 +155,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         License license = createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);
 
-        ArrayList<ConfiguredLicenseGroupType> list = storage.getLicenseGroupTypes();
+        ArrayList<GroupType> list = storage.getLicenseGroupTypes();
         assertEquals(9, list.size());
         storage.deleteLicenseGroupType("Pligtafleveret170Aar");//dom_licensemodule_default_configuration.ddl
         list = storage.getLicenseGroupTypes();
@@ -185,7 +185,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         
         
-        ArrayList<ConfiguredLicensePresentationType> list = storage.getLicensePresentationTypes();
+        ArrayList<PresentationType> list = storage.getLicensePresentationTypes();
         assertEquals(5, list.size());
         storage.deletePresentationType("10_sec_stream");
         list = storage.getLicensePresentationTypes();
@@ -786,9 +786,9 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         groups = new ArrayList<String>(); 
         groups.add("Pligtafleveret170Aar");
         groups.add("DRRadio");      
-        ArrayList<ConfiguredLicenseGroupType> buildGroups = LicenseValidator.buildGroups(groups);
+        ArrayList<GroupType> buildGroups = LicenseValidator.buildGroups(groups);
         assertEquals(2,buildGroups.size());
-        ArrayList<ConfiguredLicenseGroupType> filtered = LicenseValidator.filterMustGroups(buildGroups);
+        ArrayList<GroupType> filtered = LicenseValidator.filterMustGroups(buildGroups);
         assertEquals(0, filtered.size());
 
 
@@ -834,23 +834,23 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         licenses.add(LicenseModuleStorageTest.createTestLicenseWithAssociations(1L));
 
         //'Reklamefilm' not marked for this license
-        ConfiguredLicenseGroupType group1 = new ConfiguredLicenseGroupType(1L,"Reklamefilm","Reklamefilm","Reklamefilm_en","","","",false);
-        ArrayList<ConfiguredLicenseGroupType> groups = new ArrayList<ConfiguredLicenseGroupType>();
+        GroupType group1 = new GroupType(1L,"Reklamefilm","Reklamefilm","Reklamefilm_en","","","",false);
+        ArrayList<GroupType> groups = new ArrayList<GroupType>();
         groups.add(group1);     
         ArrayList<License> filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(licenses, groups, DOWNLOAD);
         assertEquals(0,filtered.size());
 
         //'TV2 TV' is marked, but not for presentationtype images
-        group1 = new ConfiguredLicenseGroupType(1L,"TV2","TV2 TV","TV2 TV_EN","","","",false);
-        groups = new ArrayList<ConfiguredLicenseGroupType>();
+        group1 = new GroupType(1L,"TV2","TV2 TV","TV2 TV_EN","","","",false);
+        groups = new ArrayList<GroupType>();
         groups.add(group1);     
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(licenses, groups, THUMBNAILS);
         assertEquals(0,filtered.size());
 
 
         //'TV2 TV' is marked with Download allowed
-        group1 = new ConfiguredLicenseGroupType(1L,"TV2","TV2 TV","TV2 TV_en","","","",false);
-        groups = new ArrayList<ConfiguredLicenseGroupType>();
+        group1 = new GroupType(1L,"TV2","TV2 TV","TV2 TV_en","","","",false);
+        groups = new ArrayList<GroupType>();
         groups.add(group1);     
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(licenses, groups, DOWNLOAD);
         assertEquals(1,filtered.size()); //license validated.
@@ -885,32 +885,32 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
 
         //access, 1 must group which
-        ConfiguredLicenseGroupType group1 = new ConfiguredLicenseGroupType(1L,"IndividueltForbud","Individuelt forbud", "Individuelt forbud_en","","","",true);               
-        ArrayList<ConfiguredLicenseGroupType> groups = new ArrayList<ConfiguredLicenseGroupType>();
+        GroupType group1 = new GroupType(1L,"IndividueltForbud","Individuelt forbud", "Individuelt forbud_en","","","",true);               
+        ArrayList<GroupType> groups = new ArrayList<GroupType>();
         groups.add(group1);     
         ArrayList<License> filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeMustGroup(licenses, groups, DOWNLOAD);
         assertEquals(1,filtered.size());
 
         //NOT access, 1 must group that it found, but not with presentationtype Download
-        group1 = new ConfiguredLicenseGroupType(1L,"Klausuleret","Klausuleret_dk","Klausleret_en","","","",true);                
-        groups = new ArrayList<ConfiguredLicenseGroupType>();
+        group1 = new GroupType(1L,"Klausuleret","Klausuleret_dk","Klausleret_en","","","",true);                
+        groups = new ArrayList<GroupType>();
         groups.add(group1);     
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeMustGroup(licenses, groups, DOWNLOAD);
         assertEquals(0,filtered.size());
 
         //access, 2 must groups which both have presentation type images
-        group1 = new ConfiguredLicenseGroupType(1L,"IndividueltForbud","Individuelt forbud_dk","Individuelt forbud_en","","","",true);               
-        ConfiguredLicenseGroupType group2 = new ConfiguredLicenseGroupType(2L,"Klausuleret","Klausuleret_dk","Klausuleret_en","","","",true);
-        groups = new ArrayList<ConfiguredLicenseGroupType>();
+        group1 = new GroupType(1L,"IndividueltForbud","Individuelt forbud_dk","Individuelt forbud_en","","","",true);               
+        GroupType group2 = new GroupType(2L,"Klausuleret","Klausuleret_dk","Klausuleret_en","","","",true);
+        groups = new ArrayList<GroupType>();
         groups.add(group1);     
         groups.add(group2);
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeMustGroup(licenses, groups, THUMBNAILS);
         assertEquals(1,filtered.size());
 
         //NOT access, 2 must groups but one of the missing presentationtype Download
-        group1 = new ConfiguredLicenseGroupType(1L,"Individuelt forbud","Individuelt forbud_dk","Klausuleret forbud_en","","","",true);              
-        group2 = new ConfiguredLicenseGroupType(2L,"Klausuleret","Klausuleret_dk","Klausuleret_en","","","",true);
-        groups = new ArrayList<ConfiguredLicenseGroupType>();
+        group1 = new GroupType(1L,"Individuelt forbud","Individuelt forbud_dk","Klausuleret forbud_en","","","",true);              
+        group2 = new GroupType(2L,"Klausuleret","Klausuleret_dk","Klausuleret_en","","","",true);
+        groups = new ArrayList<GroupType>();
         groups.add(group1);     
         groups.add(group2);
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeMustGroup(licenses, groups, DOWNLOAD);
@@ -935,7 +935,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
 
         
-        ConfiguredLicensePresentationType downloadType = LicenseValidator.matchPresentationtype("Download");
+        PresentationType downloadType = LicenseValidator.matchPresentationtype("Download");
         assertEquals("Download", downloadType.getKey());            
     }
 

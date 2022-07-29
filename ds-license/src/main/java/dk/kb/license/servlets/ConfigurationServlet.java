@@ -23,8 +23,8 @@ import dk.kb.license.model.v1.GetUserQueryOutputDto;
 import dk.kb.license.model.v1.GetUsersLicensesInputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.model.v1.ValidateAccessInputDto;
-import dk.kb.license.storage.ConfiguredLicenseGroupType;
-import dk.kb.license.storage.ConfiguredLicensePresentationType;
+import dk.kb.license.storage.GroupType;
+import dk.kb.license.storage.PresentationType;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.validation.LicenseValidator;
@@ -192,7 +192,7 @@ public class ConfigurationServlet extends HttpServlet {
 		StringBuilder infoMessage = new StringBuilder();   
 		//parse input first.
 		ValidateAccessInputDto input = new ValidateAccessInputDto();
-		ConfiguredLicensePresentationType presentationType = null;
+		PresentationType presentationType = null;
 		ArrayList<UserObjAttributeDto> attributes;
 		try{
 
@@ -218,8 +218,8 @@ public class ConfigurationServlet extends HttpServlet {
 		//The following logic is taken from LicenseValidator.validateAccess().
 		//I see no other way that to repeat it when I want to the decomposition.
 
-		ArrayList<ConfiguredLicenseGroupType> groupsType = null;
-		ArrayList<ConfiguredLicenseGroupType> mustGroups = null; 
+		ArrayList<GroupType> groupsType = null;
+		ArrayList<GroupType> mustGroups = null; 
 		try{
 			boolean validated = LicenseValidator.validateAccess(input);
 			infoMessage.append("Resultat af validateAccess() kald:"+validated +" \n");

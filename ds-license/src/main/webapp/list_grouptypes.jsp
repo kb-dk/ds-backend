@@ -1,4 +1,4 @@
-<%ArrayList<ConfiguredLicenseGroupType> configuredGroupTypes = LicenseCache.getConfiguredLicenseGroupTypes();%>
+<%ArrayList<GroupType> configuredGroupTypes = LicenseCache.getConfiguredLicenseGroupTypes();%>
 <table class="table table-condensed table-hover">
    <thead>
    <tr>
@@ -14,7 +14,7 @@
    <tbody>
 <%
 for (int i = 0;i< configuredGroupTypes.size();i++ ){
-  ConfiguredLicenseGroupType current = configuredGroupTypes.get(i);
+  GroupType current = configuredGroupTypes.get(i);
 %>
    <tr class="<%=Util.getStyle(i)%>">
       <td class="id"><%=current.getId()%></td>

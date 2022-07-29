@@ -1,4 +1,4 @@
-<%ArrayList<ConfiguredAttributeType> configuredAttributeTypes = LicenseCache.getConfiguredAttributeTypes();%>
+<%ArrayList<AttributeType> configuredAttributeTypes = LicenseCache.getConfiguredAttributeTypes();%>
 <table class="table table-condensed table-hover">
    <thead>
    <tr>
@@ -10,7 +10,7 @@
    <tbody>
 <%
 for (int i = 0;i< configuredAttributeTypes.size();i++ ){
-  ConfiguredAttributeType current = configuredAttributeTypes.get(i);
+  AttributeType current = configuredAttributeTypes.get(i);
 %>
    <tr class="<%=Util.getStyle(i)%>">
       <td><%=current.getId()%></td>

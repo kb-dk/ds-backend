@@ -105,7 +105,7 @@
     ### Property: license_solr_servers
     The configuration requires at least one Solr server for the property 'license_solr_servers'. Several Solr servers must be 
     seperated by commas. When filtering IDs all Solr servers will be called for filtering and each will be called with all IDs.
-           
+            
     ### Property: license_solr_filter_field
     The Solr field used for filtering. Multivalued fields allowed. All defined Solr servers must have this field defined for all documents.
     

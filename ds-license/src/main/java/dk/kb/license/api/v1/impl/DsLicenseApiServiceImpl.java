@@ -11,7 +11,7 @@ import dk.kb.license.model.v1.*;
 import dk.kb.license.api.v1.DsLicenseApi;
 import dk.kb.license.facade.LicenseModuleFacade;
 
-import dk.kb.license.storage.ConfiguredLicensePresentationType;
+import dk.kb.license.storage.PresentationType;
 import dk.kb.license.storage.License;
 import dk.kb.license.validation.LicenseValidator;
 
@@ -162,7 +162,7 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
         //MonitorCache.registerNewRestMethodCall("checkAccessForIds");
         try{
 
-            ConfiguredLicensePresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
+            PresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
         }
         catch(IllegalArgumentException e){
             log.error("Unknown presentationtype:"+input.getPresentationType());

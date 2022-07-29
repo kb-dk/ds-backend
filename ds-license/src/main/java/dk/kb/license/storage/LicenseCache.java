@@ -17,12 +17,12 @@ public class LicenseCache {
 
     // Cached instances
     private static ArrayList<License> cachedLicenses;
-    private static ArrayList<ConfiguredLicenseGroupType> cachedLicenseGroupTypes;
-    private static ArrayList<ConfiguredLicenseGroupType> cachedLicenseMustGroupTypes;
-    private static ArrayList<ConfiguredAttributeType> cachedAttributeTypes;
-    private static ArrayList<ConfiguredLicensePresentationType> cachedLicensePresentationTypes;
-    private static HashMap<String, ConfiguredLicenseGroupType> groupIdMap;
-    private static HashMap<String, ConfiguredLicensePresentationType> presentationTypeIdMap;
+    private static ArrayList<GroupType> cachedLicenseGroupTypes;
+    private static ArrayList<GroupType> cachedLicenseMustGroupTypes;
+    private static ArrayList<AttributeType> cachedAttributeTypes;
+    private static ArrayList<PresentationType> cachedLicensePresentationTypes;
+    private static HashMap<String, GroupType> groupIdMap;
+    private static HashMap<String, PresentationType> presentationTypeIdMap;
 
     private static final Logger log = LoggerFactory.getLogger(LicenseCache.class);
     private static final long reloadIntervalInSec = 15 * 1000 * 60L; // 15 minutes
@@ -33,23 +33,23 @@ public class LicenseCache {
         return cachedLicenses;
     }
 
-    public static ArrayList<ConfiguredLicenseGroupType> getConfiguredLicenseGroupTypes() {
+    public static ArrayList<GroupType> getConfiguredLicenseGroupTypes() {
         checkReload();
         return cachedLicenseGroupTypes;
     }
 
-    public static ArrayList<ConfiguredLicenseGroupType> getConfiguredMUSTLicenseGroupTypes() {
+    public static ArrayList<GroupType> getConfiguredMUSTLicenseGroupTypes() {
         checkReload();
         return cachedLicenseMustGroupTypes;
     }
 
-    public static ArrayList<ConfiguredAttributeType> getConfiguredAttributeTypes() {
+    public static ArrayList<AttributeType> getConfiguredAttributeTypes() {
         checkReload();
         return cachedAttributeTypes;
 
     }
 
-    public static ArrayList<ConfiguredLicensePresentationType> getConfiguredLicenseTypes() {
+    public static ArrayList<PresentationType> getConfiguredLicenseTypes() {
         checkReload();
         return cachedLicensePresentationTypes;
     }
@@ -83,7 +83,7 @@ public class LicenseCache {
             cachedLicenseGroupTypes = storage.getLicenseGroupTypes();
 
             // Load LicenseMustGroupTypes
-            ArrayList<ConfiguredLicenseGroupType> allList = storage.getLicenseGroupTypes();
+            ArrayList<GroupType> allList = storage.getLicenseGroupTypes();
             cachedLicenseMustGroupTypes = LicenseValidator.filterMustGroups(allList);
 
             // Load AttributeTypes
@@ -93,14 +93,14 @@ public class LicenseCache {
             // Load LicensePresentationTypes
             cachedLicensePresentationTypes = storage.getLicensePresentationTypes();
             //create Dk2En name map
-            groupIdMap = new HashMap<String,ConfiguredLicenseGroupType>();
+            groupIdMap = new HashMap<String,GroupType>();
 
-            for (ConfiguredLicenseGroupType current : cachedLicenseGroupTypes){
+            for (GroupType current : cachedLicenseGroupTypes){
                 groupIdMap.put(current.getKey(), current);            	
             }
 
-            presentationTypeIdMap = new HashMap<String, ConfiguredLicensePresentationType>();
-            for (ConfiguredLicensePresentationType current : cachedLicensePresentationTypes){
+            presentationTypeIdMap = new HashMap<String, PresentationType>();
+            for (PresentationType current : cachedLicensePresentationTypes){
                 presentationTypeIdMap.put(current.getKey(), current);            	
             }
 

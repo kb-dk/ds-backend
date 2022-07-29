@@ -1,4 +1,4 @@
-<%ArrayList<ConfiguredLicensePresentationType> configuredLicenseTypes = LicenseCache.getConfiguredLicenseTypes();%>
+<%ArrayList<PresentationType> configuredLicenseTypes = LicenseCache.getConfiguredLicenseTypes();%>
 <table class="table table-condensed table-hover">
    <thead>
    <tr>
@@ -11,7 +11,7 @@
    <tbody>
 <%
 for (int i = 0;i< configuredLicenseTypes.size();i++ ){
-  ConfiguredLicensePresentationType current = configuredLicenseTypes.get(i);
+  PresentationType current = configuredLicenseTypes.get(i);
 %>
    <tr class="<%=Util.getStyle(i)%>">
       <td><%=current.getId()%></td>

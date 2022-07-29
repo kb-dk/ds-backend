@@ -1,10 +1,10 @@
 package dk.kb.license.storage;
 
-public class ConfiguredAttributeType extends Persistent{
+public class AttributeType extends Persistent{
 
 	private String value;
 				
-	public ConfiguredAttributeType(Long id, String value) {
+	public AttributeType(Long id, String value) {
 		super();
 		this.id = id;
 		this.value = value;
