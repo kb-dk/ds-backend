@@ -1,11 +1,13 @@
 target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-# https://github.com/takari/maven-wrapper#usage-without-binary-jar
-.mvn/wrapper/maven-wrapper.jar
+.classpath
+.project
+.settings/
+
+# We use pom.xml as the source of truth and don't rely on a specific IDE
+.idea
+*.iml
+
+README_OLD.md
+.openapi-generator/
+conf/ds-image-environment.yaml
+conf/ds-image-local.yaml

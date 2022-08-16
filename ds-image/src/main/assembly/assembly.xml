@@ -1,0 +1,49 @@
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*:war</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+
+  <files>
+    <file>
+      <source>conf/ocp/ds-image.xml</source>
+      <outputDirectory>conf/</outputDirectory>
+      <fileMode>0644</fileMode>
+      <destName>ds-image.xml.sample</destName>
+    </file>
+  </files>
+
+  <fileSets>
+    <fileSet>
+      <outputDirectory>conf</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <directory>conf</directory>
+      <excludes>
+        <exclude>ocp/</exclude>
+        <exclude>ds-image-local.yaml</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>README.md</include>
+        <include>CHANGELOG.md</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>
+
