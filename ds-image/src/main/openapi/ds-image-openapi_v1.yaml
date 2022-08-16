@@ -1,9 +1,15 @@
 openapi: 3.0.2
 info:
   version: 'v1'
-  title: '${project.name}'
-  description: |
-    ${project.description}
+  title: 'ds-image'
+  description: |-
+    This API implements the functionality of the IIPImage API into the OpenAPI framework used at KB.
+    
+    The goal is to implement all four of the APIs from [IIPImage](https://iipimage.sourceforge.io/documentation/protocol/). These are as follows:
+    - Internet Imaging Protocol
+    - IIIF API
+    - Deepzoom
+    - Zoomify
   contact:
     email: '${user.name}@kb.dk'
   license:
@@ -16,36 +22,255 @@ servers:
 
 paths:
 
-  # TODO: Sample endpoint. Remove when building a concrete application
-  # This definition uses parameters: http://example.com/myservice/v1/hello?alternateHello=Boston
-  /hello:
+  /IIP:
     get:
       tags:
-        - '${project.name}'
-      summary: 'Request a Hello World message, for testing purposes'
-      operationId: getGreeting
+        - 'ds-image'
+      summary: 'Internet Imaging Protocol available through OpenAPI specification'
+      operationId: getImage
       parameters:
-        - name: alternateHello
+        - name: FIF
           in: query
-          description: 'Optional alternative to using the word ''Hello'' in the reply'
-          required: false
+          description: |- 
+            Full image path. If the FILESYSTEM_PREFIX server parameter has been set, the path is relative to that path.
+            
+            Note that all IIP protocol requests must start with the FIF parameter
+          required: true
           schema:
             type: string
-            default: 'World'
+            example: 'image.tif'
+        
+        - name: JTL
+          in: query
+          description: |- 
+            Return a tile in JPEG format with index n at resolution level r
+            
+            Note that the JTL parameter must be set after all other parameters
+            
+            **JTL has to be specified as r,n** 
+              
+          schema: 
+            type: array
+            items:
+              type: integer
+            example: 
+              - "r=2"
+              - "n=5"
+            minItems: 2
+            maxItems: 2
+          style: form
+          explode: false
+        
+        - name: PTL
+          in: query
+          description: |- 
+            Return a tile in PNG format at resolution level r with index n
+            
+            Note that the PTL parameter must be set after all other parameters
+              
+            **PTL has to be specified as r,n**
+          schema: 
+            type: array
+            items:
+              type: integer
+            example:
+              - "r=2"
+              - "n=5" 
+            minItems: 2
+            maxItems: 2
+          style: form
+          explode: false
+          
+        - name: CVT
+          in: query
+          description: |- 
+            Export the full image or a region in the specified format (JPEG and PNG currently supported)
+              
+            Note that the CVT parameter must be set after all other parameters
+          schema:
+            type: string
+            enum: ["jpeg", "png"]
+        
+        - name: WID
+          in: query
+          description: |- 
+            Specify width in pixels, w, for exports with CVT request.
+            
+            **WID requires CVT**
+          schema:
+            type: integer
+            example: 800
+            
+        - name: HEI
+          in: query
+          description: |-
+            Specify height in pixels, h, for exports with CVT requests
+            
+            **HEI requires CVT**
+          schema:
+            type: integer
+            example: 300
+            
+        - name: RGN
+          in: query
+          description: |- 
+            Define a region of interest starting at relative coordinates x,y with width w and height h.
+            
+            For use with CVT requests. All values should be ratios in the range 0 – 1.0
+              
+            **RGN has to be defined as x,y and requires CVT, WID & HEI** 
+          schema: 
+            type: array
+            items:
+              type: integer
+            example:
+              - "x=20"
+              - "y=80" 
+            minItems: 2
+            maxItems: 2
+          style: form
+          explode: false
+          
+        - name: QLT
+          in: query
+          description: |- 
+            Set the output compression level, q.
+              
+            Valid ranges are JPEG: 0-100 and for PNG: 0-9 where a higher value means more compression
+            
+            JPEG is always lossy even with a value of 100, while PNG is lossles.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 100
+            example: 50
+        
+        ### SPØRGSMÅL: Her kan man eventuelt tilføje EQ og ST. Skal den derfor laves om til string med dem som muligheder?
+        - name: CNT
+          in: query
+          description: |-
+              Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float > 0.
+              
+              Histogram equalization and contrast stretching can additionally be requested by specifying EQ (or EQUALIZATION) for histogram equalization and ST (or STRETCH) for contrast stretching
+          required: false
+          schema:
+            type: number
+            minimum: 0
+            exclusiveMinimum: true
+            
+        - name: SHD
+          in: query
+          description: |-
+            Simulated hill-shading for image normal data. The argument is the angle of incidence of the light source in the horizontal plane (from 12 o’clock), h and the vertical angle of incidence, v, with 0 representing a horizontal direction and -1 vertically downwards
+            
+            **SHD has to be defined as h,v**
+          schema: 
+            type: array
+            items:
+              type: integer
+            example:
+              - "h=45"
+              - "v=80" 
+            minItems: 2
+            maxItems: 2
+          style: form
+          explode: false
+            
+        - name: LYR
+          in: query
+          description: |- 
+            The number of quality layers, l, in an image to decode. This is for file types that can contain multiple quality layers, such as JPEG2000.
+            
+            For example, a request for LYR=3 will decode only the first 3 quality layers present in the image.
+            
+            The number of layers decoded will be limited to a maximum given by the MAX_LAYERS environment variable if this has been set in the server configuration. This can be useful to either limit the quality of the images users may see or to speed up decoding by only decoding the faster lower quality layers.
+          schema:
+            type: integer
+            example: 2
+        
+        - name: ROT
+          in: query
+          description: |-
+            Rotate (and flip) image by given number of degrees, r. Only 90, 180 and 270 supported.
+            
+            If angle is prefixed by an exclamation mark !, the image is flipped horizontally before rotation (ex: ROT=!90). Vertical flipping can be achieved by combining horizontal flipping and 180° rotation
+          schema:
+            type: string
+          examples:
+            Rotate 180 degrees:
+              value: "180"
+            Flip horizontal and rotate 90 degrees:
+              value: "!90"
+        
+        - name: GAM
+          in: query
+          description: |- 
+            Apply gamma correction, g: each pixel value to the power of g.
+            
+            If g=log or g=logarithm, the logarithm is applied
+          schema:
+            type: number 
+        
+        ### SPRG: How to define colormap schema?    
+        - name: CMP
+          in: query
+          description: "Generate colormap using one of the standard colormap schemes, s: GREY, JET, COLD, HOT, RED, GREEN and BLUE. <br><br> **COL has to be defined as** "
+          schema: 
+            type: string
+            example: 
+        
+        ### SPRG: How to define coordinate sets    
+        - name: PFL
+          in: query
+          description: |- 
+            Export profile in JSON format at resolution r from position x1,y1 to x2, y2.
+            
+            Only horizontal or vertical profiles are currently supported.
+            
+            **PFL has to be defined as r:x1,y1-x2,y2**
+          schema:
+            type: string
+            example: "800:20,20-440,440"
+        
+        ### SPRG: What to do here?    
+        - name: CTW
+          in: query
+          description: |- 
+            Color twist / channel recombination. Recombine the available image channels into a new color image by multiplication through a matrix. Columns are separated by commas and rows are separated by semi-colons. Values can also be negative.
+            
+            Thus, for the 3×3 matrix example provided below, the RGB output image will have bands R = R*r1 + G*g1 + B*b1, G = R*r2 + G*g2 + B*b2, B = R*r3 + G*g3 + B*b3.
+            
+            For multi-band images, the row length should correspond to the number of available bands within the image. The number of output bands depends on the number of rows in the matrix. Thus, to output a 1 band greyscale image, specify just a single row.
+
+            Examples:
+            To perform naive conversion from 3 channel color to 1 channel grayscale: CTW=[0.33,0.33,0.33]
+            
+            To flip the R and B channels and map an RGB image to BGR: CTW=[0,0,1;0,1,0;1,0,0]
+            
+            For a 5-band multispectral image, to show the difference between the 5th and 2nd band (i.e. 5th-2nd) and outputting the result as grayscale: CTW=[0,-1,0,0,1]
+            
+            To create a false-color image from a 4-band RGB-IR image by mapping the G,R,IR channels to the output RGB: CTW=[0,1,0,0;0,0,1,0;0,0,0,1]
+          schema: 
+            type: string
+            example: "[r1,g1,b1;r2,g2,b2;r3,g3,b3]"
+          
+        - name: INV
+          in: query
+          description: "Invert image (no argument)"
+          schema: 
+            
+              
       responses:
-        '200':
-          description: 'A JSON structure containing a Hello World message'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HelloReply'
+        # TODO: Update description to explain errors from CVT, WID, HEI and RNG 
+        '400':
+          description: Either `rdate` or `start_date`+`end_date` are required.
 
   # TODO: Sample endpoint. Remove when building a concrete application
   # This definition uses path: http://example.com/api/article/article-123A-v2
   /article/{id}:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-image'
       summary: 'Sample OpenAPI definition for a service that constructs a PDF and delivers it'
       operationId: getArticle
       # We assume a very large response here: Too large for showing directly in the Swagger UI.
@@ -82,7 +307,7 @@ paths:
   /book/{id}:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-image'
       summary: 'Retrieves metadata for a single book'
       operationId: getBook
       parameters:
@@ -114,7 +339,7 @@ paths:
                 example: "HTTP 404: Not Found"
     delete:
       tags:
-        - '${project.name}'
+        - 'ds-image'
       summary: 'Deletes metadata for a single book'
       operationId: deleteBook
       parameters:
@@ -147,7 +372,7 @@ paths:
   /book:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-image'
       summary: 'Add or update a single book'
       operationId: addBook
       responses:
@@ -177,7 +402,7 @@ paths:
   /books:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-image'
       summary: 'Delivers metadata on books'
       operationId: getBooks
       # We assume a very large response here: Too large for showing directly in the Swagger UI.
@@ -260,7 +485,7 @@ paths:
   /colorizer:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-image'
       summary: 'Perform some image processing and return the result as an image'
       operationId: colorize
       # In this case we would probably want to tweak the generated code for Content-Disposition so that the
