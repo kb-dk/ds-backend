@@ -121,11 +121,32 @@ paths:
       # TODO: Add descriptions to 400 for region and size parameters      
       responses:
         '200':
-          description: 'A JSON structure containing a Hello World message'
+          description: 'Succes!'
           content:
-            application/json:
+            image/*:
               schema:
-                $ref: '#/components/schemas/HelloReply'
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+              
+        '400':
+          description: |-
+            Bad Request. Please check the formating of the parameters: region, size and rotation.
+            
+            Check if the requested region’s height or width is zero, or if the region is entirely outside the bounds of the reported dimensions
+            
+            Requests for sizes not prefixed with ^ that result in a scaled region with pixel dimensions greater than the pixel dimensions of the extracted region are errors that should result in a 400 (Bad Request) status code.
+            
+            Check for syntax errors in size parameter
+            
+            A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.
+            
+            
+        
+
 
   # TODO: Sample endpoint. Remove when building a concrete application
   # This definition uses path: http://example.com/api/article/article-123A-v2
