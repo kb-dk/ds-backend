@@ -85,8 +85,7 @@ paths:
             **WID requires CVT**
           schema:
             type: integer
-            example: 800
-            
+
         - name: HEI
           in: query
           description: |-
@@ -95,8 +94,7 @@ paths:
             **HEI requires CVT**
           schema:
             type: integer
-            example: 300
-            
+
         - name: RGN
           in: query
           description: |- 
@@ -111,9 +109,6 @@ paths:
               type: number
               minimum: 0
               maximum: 1.0
-            example:
-              - "0.5"
-              - "1" 
             minItems: 2
             maxItems: 2
           style: form
@@ -131,7 +126,6 @@ paths:
             type: integer
             minimum: 0
             maximum: 100
-            example: 50
         
         # Equlization and Stretch are mentioned in the short documentation at https://iipimage.sourceforge.io/documentation/protocol/. However it is not clear how it is used. Furthermore these parameters are not described in the thorough descriiption at https://iipimage.sourceforge.io/IIPv105.pd
         
@@ -157,9 +151,6 @@ paths:
             type: array
             items:
               type: integer
-            example:
-              - "h=45"
-              - "v=80" 
             minItems: 2
             maxItems: 2
           style: form
@@ -175,8 +166,7 @@ paths:
             The number of layers decoded will be limited to a maximum given by the MAX_LAYERS environment variable if this has been set in the server configuration. This can be useful to either limit the quality of the images users may see or to speed up decoding by only decoding the faster lower quality layers.
           schema:
             type: integer
-            example: 2
-        
+
         - name: ROT
           in: query
           description: |-
@@ -215,9 +205,11 @@ paths:
             Only horizontal or vertical profiles are currently supported.
             
             **PFL has to be defined specifically as r:x1,y1-x2,y2**
+            
+            **An example: 800:20,20-440,440**
           schema:
             type: string
-            example: "800:20,20-440,440"
+            #example: "800:20,20-440,440"
         
         - name: CTW
           in: query
@@ -242,6 +234,7 @@ paths:
             type: string
         
         # TODO: How do we handle empty arguments in the tooling?
+        # OpenAPI does not like empty arguments.
         - name: INV
           in: query
           description: "Invert image (no argument)"
@@ -279,44 +272,11 @@ components:
       type: array
       items:
         type: integer
-      example: 
-        - "r=2"
-        - "n=5"
+      #example: 
+      #  - "2"
+      #  - "5"
       minItems: 2
       maxItems: 2
-    # TODO: Sample component. Remove when building a concrete application
-    HelloReply:
-      type: object
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          description: 'Greeting from the API'
-
-    # TODO: Sample component. Remove when building a concrete application
-    Book:
-      type: object
-      required:
-        - id
-        - title
-      properties:
-        id:
-          type: string
-          description: 'Book ID'
-          example: 'book_bookid87'
-          xml:
-            attribute: true
-        title:
-          type: string
-          description: 'Book title'
-          example: 'Disappeared by the Storm'
-        pages:
-          type: integer
-          format: int32
-          example: 43
-      xml:
-        name: book
 
     # Basic status response component.
     # TODO: Extend this to provide application specific status, such as a list of running jobs or free disk space
@@ -333,11 +293,11 @@ components:
         version:
           type: string
           description: 'The version of the application'
-          example: '1.2.3'
+          example: '1.0'
         build:
           type: string
           description: 'When the application was build'
-          example: '2022-04-21T13:37:16Z'
+          example: '2022-08-T13:37:16Z'
         java:
           type: string
           description: 'The Java version that runs the container'
