@@ -104,6 +104,14 @@ paths:
             enum: ["color","gray","bitonal","default"]
             default: "default"
         
+        - name: format
+          in: query
+          description: |-
+            The format of the returned image is expressed as a suffix, mirroring common filename extensions.
+          required: true
+          schema:
+            type: string
+            enum: ["jpg","tif","png","gif","jp2","pdf","webp"]
               
             
       # TODO: Add descriptions to 400 for region and size parameters      
