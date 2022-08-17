@@ -22,6 +22,10 @@ paths:
         - '${project.name}'
       summary: 'OpenAPI definition for IIIF Image Request API '
       operationId: getImage
+      
+      # All parameters are required in the original IIIF Image Requests and has to be specified in the implementation in a specific order.
+      # The order in the original IIIF Image Requests is as follows: 
+      # Region THEN Size THEN Rotation THEN Quality THEN Format
       parameters:
         - name: region
           in: query
