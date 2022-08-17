@@ -27,6 +27,12 @@ paths:
       # The order in the original IIIF Image Requests is as follows: 
       # Region THEN Size THEN Rotation THEN Quality THEN Format
       parameters:
+        - name: identifier
+          in: query
+          description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
+          required: true
+          schema:
+            type: string
         - name: region
           in: query
           description: |- 
@@ -117,8 +123,6 @@ paths:
             type: string
             enum: ["jpg","tif","png","gif","jp2","pdf","webp"]
               
-            
-      # TODO: Add descriptions to 400 for region and size parameters      
       responses:
         '200':
           description: 'Succes!'
@@ -131,7 +135,6 @@ paths:
               schema:
                 type: string
                 format: binary
-              
         '400':
           description: |-
             Bad Request. Please check the formating of the parameters: region, size and rotation.
