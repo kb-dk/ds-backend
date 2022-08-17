@@ -226,7 +226,7 @@ paths:
             
             To create a false-color image from a 4-band RGB-IR image by mapping the G,R,IR channels to the output RGB: CTW=[0,1,0,0;0,0,1,0;0,0,0,1]
             
-            **CTW has to be defined as [array;array;array] using ; as delimter**
+            **CTW has to be defined as [array;array;array] using ; as delimter between arrays and , between integers**
           schema: 
             type: string
         
