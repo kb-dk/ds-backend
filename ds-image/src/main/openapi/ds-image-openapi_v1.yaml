@@ -39,6 +39,41 @@ paths:
           required: true
           schema:
             type: string
+            
+        - name: size
+          in: query
+          description: |- 
+            The size parameter specifies the dimensions to which the extracted region, which might be the full image, is to be scaled. With the exception of the w,h and ^w,h forms, the returned image maintains the aspect ratio of the extracted region as closely as possible. 
+            
+            Sizes prefixed with ^ allow upscaling of the extracted region when its pixel dimensions are less than the pixel dimensions of the scaled region.
+            
+            | Form | Description |
+            |------|-------------|
+            |**max** |	The extracted region is returned at the maximum size available, but will not be upscaled. The resulting image will have the pixel dimensions of the extracted region, unless it is constrained to a smaller size by maxWidth, maxHeight, or maxArea as defined in the Technical Properties section.|
+            |**^max**|	The extracted region is scaled to the maximum size permitted by maxWidth, maxHeight, or maxArea as defined in the Technical Properties section. If the resulting dimensions are greater than the pixel width and height of the extracted region, the extracted region is upscaled.|
+            |**w,**|	The extracted region should be scaled so that the width of the returned image is exactly equal to w. The value of w must not be greater than the width of the extracted region.|
+            |**^w,**|	The extracted region should be scaled so that the width of the returned image is exactly equal to w. If w is greater than the pixel width of the extracted region, the extracted region is upscaled.|
+            |**,h**|	The extracted region should be scaled so that the height of the returned image is exactly equal to h. The value of h must not be greater than the height of the extracted region.|
+            |**^,h**|	The extracted region should be scaled so that the height of the returned image is exactly equal to h. If h is greater than the pixel height of the extracted region, the extracted region is upscaled.|
+            |**pct:n**|	The width and height of the returned image is scaled to n percent of the width and height of the extracted region. The value of n must not be greater than 100.|
+            |**^pct:n**|	The width and height of the returned image is scaled to n percent of the width and height of the extracted region. For values of n greater than 100, the extracted region is upscaled.|
+            |**w,h**|	The width and height of the returned image are exactly w and h. The aspect ratio of the returned image may be significantly different than the extracted region, resulting in a distorted image. The values of w and h must not be greater than the corresponding pixel dimensions of the extracted region.|
+            |**^w,h**|	The width and height of the returned image are exactly w and h. The aspect ratio of the returned image may be significantly different than the extracted region, resulting in a distorted image. If w and/or h are greater than the corresponding pixel dimensions of the extracted region, the extracted region is upscaled.|
+            |**!w,h**|	The extracted region is scaled so that the width and height of the returned image are not greater than w and h, while maintaining the aspect ratio. The returned image must be as large as possible but not larger than the extracted region, w or h, or server-imposed limits.|
+            |**^!w,h**|	The extracted region is scaled so that the width and height of the returned image are not greater than w and h, while maintaining the aspect ratio. The returned image must be as large as possible but not larger than w, h, or server-imposed limits.|
+          required: true
+          schema:
+            type: string
+              
+            
+      # TODO: Add descriptions to 400 for region and size parameters      
+      responses:
+        '200':
+          description: 'A JSON structure containing a Hello World message'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloReply'
 
   # TODO: Sample endpoint. Remove when building a concrete application
   # This definition uses path: http://example.com/api/article/article-123A-v2
