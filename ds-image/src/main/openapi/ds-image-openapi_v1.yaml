@@ -26,7 +26,7 @@ paths:
     get:
       tags:
         - 'ds-image'
-      summary: 'Internet Imaging Protocol available through OpenAPI specification'
+      summary: 'Internet Imaging Protocol available through OpenAPI specification. The specification can be found at: https://iipimage.sourceforge.io/documentation/protocol/'
       operationId: getImage
       parameters:
         - name: FIF
@@ -39,49 +39,6 @@ paths:
           schema:
             type: string
             example: 'image.tif'
-        
-        # JTL, PTL and CVT has to be set after all other parameters in the implementation
-        - name: JTL
-          in: query
-          description: |- 
-            Return a tile in JPEG format with index n at resolution level r
-            
-            **JTL has to be specified as r,n** 
-          
-          schema:
-            $ref: '#/components/schemas/JTL_PTL'
-          style: form
-          explode: false
-        
-        # JTL, PTL and CVT has to be set after all other parameters in the implementation
-        - name: PTL
-          in: query
-          description: |- 
-            Return a tile in PNG format at resolution level r with index n
-              
-            **PTL has to be specified as r,n**
-          schema: 
-            $ref: '#/components/schemas/JTL_PTL'
-          style: form
-          explode: false
-        
-        # JTL, PTL and CVT has to be set after all other parameters in the implementation  
-        - name: CVT
-          in: query
-          description: |- 
-            Export the full image or a region in the specified format (JPEG and PNG currently supported)
-          schema:
-            type: string
-            enum: ["jpeg", "png"]
-        
-        - name: WID
-          in: query
-          description: |- 
-            Specify width in pixels, w, for exports with CVT request.
-            
-            **WID requires CVT**
-          schema:
-            type: integer
 
         - name: HEI
           in: query
@@ -131,8 +88,6 @@ paths:
           in: query
           description: |-
               Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float > 0. A value of 1.0 indicates no contrast change
-              
-              Histogram equalization and contrast stretching can additionally be requested by specifying EQ (or EQUALIZATION) for histogram equalization and ST (or STRETCH) for contrast stretching
           schema:
             type: number
             minimum: 0
@@ -249,7 +204,50 @@ paths:
             Convert to binary: COL=binary
           schema: 
               type: string
-              enum: ["gray", "binary"]
+              enum: ["gray", "grey", "binary"]
+        
+         # JTL, PTL and CVT has to be set after all other parameters in the implementation
+        - name: JTL
+          in: query
+          description: |- 
+            Return a tile in JPEG format with index n at resolution level r
+            
+            **JTL has to be specified as r,n** 
+          
+          schema:
+            $ref: '#/components/schemas/JTL_PTL'
+          style: form
+          explode: false
+        
+        # JTL, PTL and CVT has to be set after all other parameters in the implementation
+        - name: PTL
+          in: query
+          description: |- 
+            Return a tile in PNG format at resolution level r with index n
+              
+            **PTL has to be specified as r,n**
+          schema: 
+            $ref: '#/components/schemas/JTL_PTL'
+          style: form
+          explode: false
+        
+        # JTL, PTL and CVT has to be set after all other parameters in the implementation  
+        - name: CVT
+          in: query
+          description: |- 
+            Export the full image or a region in the specified format (JPEG and PNG currently supported)
+          schema:
+            type: string
+            enum: ["jpeg", "png"]
+        
+        - name: WID
+          in: query
+          description: |- 
+            Specify width in pixels, w, for exports with CVT request.
+            
+            **WID requires CVT**
+          schema:
+            type: integer
               
               
             
