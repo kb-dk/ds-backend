@@ -40,12 +40,11 @@ paths:
             type: string
             example: 'image.tif'
         
+        # JTL, PTL and CVT has to be set after all other parameters in the implementation
         - name: JTL
           in: query
           description: |- 
             Return a tile in JPEG format with index n at resolution level r
-            
-            Note that the JTL parameter must be set after all other parameters
             
             **JTL has to be specified as r,n** 
           
@@ -54,25 +53,23 @@ paths:
           style: form
           explode: false
         
+        # JTL, PTL and CVT has to be set after all other parameters in the implementation
         - name: PTL
           in: query
           description: |- 
             Return a tile in PNG format at resolution level r with index n
-            
-            Note that the PTL parameter must be set after all other parameters
               
             **PTL has to be specified as r,n**
           schema: 
             $ref: '#/components/schemas/JTL_PTL'
           style: form
           explode: false
-          
+        
+        # JTL, PTL and CVT has to be set after all other parameters in the implementation  
         - name: CVT
           in: query
           description: |- 
             Export the full image or a region in the specified format (JPEG and PNG currently supported)
-              
-            Note that the CVT parameter must be set after all other parameters
           schema:
             type: string
             enum: ["jpeg", "png"]
