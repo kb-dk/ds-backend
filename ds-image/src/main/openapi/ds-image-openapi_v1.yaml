@@ -42,6 +42,15 @@ paths:
             type: string
             example: 'image.tif'
 
+        - name: WID
+          in: query
+          description: |- 
+            Specify width in pixels, w, for exports with CVT request.
+            
+            **WID requires CVT**
+          schema:
+            type: integer
+            
         - name: HEI
           in: query
           description: |-
@@ -249,18 +258,7 @@ paths:
           schema:
             type: string
             enum: ["jpeg", "png"]
-        
-        - name: WID
-          in: query
-          description: |- 
-            Specify width in pixels, w, for exports with CVT request.
-            
-            **WID requires CVT**
-          schema:
-            type: integer
               
-              
-            
       responses:
         # TODO: Update description to explain errors from CVT, WID, HEI, RNG and where ever needed. PFL! CTW!
         '200':
