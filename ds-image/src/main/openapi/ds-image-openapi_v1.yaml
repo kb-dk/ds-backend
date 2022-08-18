@@ -22,7 +22,7 @@ servers:
 
 paths:
 
-  /IIP:
+  /:
     get:
       tags:
         - 'ds-image'
