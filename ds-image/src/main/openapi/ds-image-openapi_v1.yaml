@@ -150,7 +150,70 @@ paths:
             
         
 
+ # The ping service should be in all projects, should not do any advanced processing
+  # and should respond quickly with a simple message, e.g. "pong".
+  #
+  # Note that it is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  #
+  # Note that the more detailed /monitor/status is defined below.
+  /monitor/ping:
+    get:
+      tags:
+        - Service
+      summary: 'Ping the server to check if the server is reachable.'
+      operationId: ping
+      x-useGenericResponse: false # If enabled the method will return Response
+      x-streamingOutput: false # If enabled the method will return StreamingOutput.
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            text/plain:
+              schema:
+                type: string
+        '406':
+          description: 'Not Acceptable'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 'Internal Error'
+          content:
+            text/plain:
+              schema:
+                type: string
 
+  # The status service should be in all projects and should provide a list of running jobs,
+  # the overall health of the service and similar. While the endpoint should be kept at
+  # /monitor/status, the response should be adjusted to fit the application.
+  #
+  # Note that it is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  #
+  # Note that the simple /monitor/ping is defined above.
+  /monitor/status:
+    get:
+      tags:
+        - Service
+      summary: 'Detailed status / health check for the service'
+      operationId: status
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: 'Internal Error'
+          content:
+            text/plain:
+              schema:
+                type: string
 
 components:
   schemas:
