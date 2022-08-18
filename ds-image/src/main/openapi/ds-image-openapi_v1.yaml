@@ -1,9 +1,17 @@
 openapi: 3.0.2
 info:
   version: 'v1'
-  title: '${project.name}'
-  description: |
-    ${project.description}
+  title: 'ds-image'
+  description: |-
+    This API implements the functionality of the IIPImage API into the OpenAPI framework used at KB.
+    
+    The goal is to implement all four of the APIs from [IIPImage](https://iipimage.sourceforge.io/documentation/protocol/). These are as follows:
+    - [Internet Imaging Protocol](https://iipimage.sourceforge.io/IIPv105.pdf)
+    - [IIIF API](https://iiif.io/api/image/3.0/)
+    - Deepzoom
+    - Zoomify
+    
+    Specification for OpenAPI can be found [here](https://swagger.io/docs/specification/about/).
   contact:
     email: '${user.name}@kb.dk'
   license:
@@ -16,10 +24,10 @@ servers:
 
 paths:
 
-  /IIIF_image_request:
+  /{identifier}/:
     get:
       tags:
-        - '${project.name}'
+        - 'IIF Image request'
       summary: 'OpenAPI definition for IIIF Image Request API '
       operationId: getImage
       
@@ -28,11 +36,12 @@ paths:
       # Region THEN Size THEN Rotation THEN Quality THEN Format
       parameters:
         - name: identifier
-          in: query
+          in: path
           description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
           required: true
           schema:
             type: string
+            
         - name: region
           in: query
           description: |- 
@@ -122,7 +131,8 @@ paths:
           schema:
             type: string
             enum: ["jpg","tif","png","gif","jp2","pdf","webp"]
-              
+            
+      x-streamingOutput: true        
       responses:
         '200':
           description: 'Succes!'
@@ -148,7 +158,205 @@ paths:
             A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.
             
             
-        
+  /{identifier}/info.json:
+    get:
+      tags:
+        - 'IIIF Image information'
+      summary: 'OpenAPI definition for IIIF Image Information Request API '
+      operationId: getImageInformation
+      parameters:
+      - name: identifier
+        in: path
+        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
+        required: true
+        schema:
+          type: string
+      
+      x-streamingOutput: true
+      responses:
+        '200':
+            description: 'Succes!'
+            content: 
+              application/ld+json:
+                schema:
+                  type: object
+                  properties:
+                    # IIIF uses @context. How do we implement the @ in the OpenAPI YAML
+                    context:
+                      type: string
+                      description: URI of image
+                    id:
+                      type: string
+                      description: 	The base URI of the image as defined in URI Syntax, including scheme, server, prefix and identifier without a trailing slash.
+                    type:
+                      type: string
+                      description: The type for the Image API. The value must be the string ImageService3.
+                    protocol:
+                      type: string
+                      description: The URI http://iiif.io/api/image which can be used to determine that the document describes an image service which is a version of the IIIF Image API.
+                    profile:
+                      type: string
+                      description: A string indicating the highest compliance level which is fully supported by the service. The value must be one of level0, level1, or level2.
+                    width:
+                      type: integer
+                      description: The width in pixels of the full image, given as an integer.
+                    height:
+                      type: integer
+                      description: The height in pixels of the full image, given as an integer.
+                    maxWidth:
+                      type: integer
+                      description: The maximum width in pixels supported for this image. Clients must not expect requests with a width greater than this value to be supported. maxWidth must be specified if maxHeight is specified.
+                    maxHeight:
+                      type: integer
+                      description: The maximum height in pixels supported for this image. Clients must not expect requests with a height greater than this value to be supported. If maxWidth is specified and maxHeight is not, then clients should infer that maxHeight = maxWidth.
+                    maxArea:
+                      type: integer
+                      description: The maximum area in pixels supported for this image. Clients must not expect requests with a width*height greater than this value to be supported.
+                    sizes:
+                      type: array
+                      description: An array of JSON objects with the height and width properties. These sizes specify preferred values to be provided in the w,h syntax of the size request parameter for scaled versions of the full image
+                      items:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            description: The type of the object. If present, the value must be the string Size.
+                          width:
+                            type: integer
+                            description: The width in pixels of the image to be requested, given as an integer.
+                          height:
+                            type: integer
+                            description: The height in pixels of the image to be requested, given as an integer.
+                        required:
+                        - width
+                        - height
+                    tiles:
+                      type: array
+                      description: TODO ADD
+                      items:
+                        type: object
+                        properties: 
+                          type:
+                            type: string
+                            description: The type of the object. If present, the value must be the string Tile.
+                          scaleFactors:
+                            type: integer
+                            description: The set of resolution scaling factors for the image’s predefined tiles, expressed as positive integers by which to divide the full size of the image. For example, a scale factor of 4 indicates that the service can efficiently deliver images at 1/4 or 25% of the height and width of the full image. A particular scale factor value should appear only once in the tiles array.
+                            minimum: 1
+                          width:
+                            type: integer
+                            description: The width in pixels of the predefined tiles to be requested, given as an integer.
+                          height:
+                            type: integer
+                            description: The height in pixels of the predefined tiles to be requested, given as an integer. If it is not specified in the JSON, then it defaults to the same as width, resulting in square tiles.
+                        required:
+                        - scaleFactor
+                        - width
+                    preferredFormats:
+                      description: An array of strings that are the preferred format parameter values, arranged in order of preference. The format parameter values listed must be among those specified in the referenced profile or listed in the extraFormats property
+                      type: array
+                      items:
+                        type: string
+                    rights:
+                      type: string
+                      description: A string that identifies a license or rights statement that applies to the content of this image. The value of this property must be a string drawn from the set of Creative Commons license URIs, the RightsStatements.org rights statement URIs, or those added via the Registry of Known Extensions mechanism. The inclusion of this property is informative, and for example could be used to display an icon representing the rights assertions.
+                    extraQualities:
+                      type: array
+                      description: An array of strings that can be used as the quality parameter, in addition to default.
+                      items:
+                        type: string
+                    extraFormats:
+                      type: array
+                      description: An array of strings that can be used as the format parameter, in addition to the ones specified in the referenced profile.
+                      items:
+                        type: string
+                    # QUESTION: extraFeatures takes a specific list of strings. Is that to be defined in this YAML file or is that done elsewhere?
+                    extraFeatures:
+                      type: array
+                      description: An array of strings identifying features supported by the service, in addition to the ones specified in the referenced profile. These strings are defined either in the table below or by registering an extension.
+                      items:
+                        type: string
+                    partOf: 
+                      type: array
+                      description: 	A link to another resource that references this image service, for example a link to a Canvas or Manifest. The value must be an array of JSON objects. Each item must have the id and type properties, and should have the label property.
+                      items: 
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            description: The URI of the external resource. (The @id property may be used in service objects for backwards compatibility as described above.)
+                          type:
+                            type: string
+                            description: The type or class of this resource. Recommendations for basic types such as image, text or audio are given in the Presentation API. (The @type property may be used in service objects for backwards compatibility as described above.)
+                          label:
+                            type: string
+                            description: A human-readable label for this resource. The label property can be fully internationalized, and each language can have multiple values. This pattern is described in more detail in the languages section of the Presentation API.
+                        required:
+                        - id
+                        - type
+                    seeAlso:
+                      type: array
+                      description: A link to an external, machine-readable resource that is related to this resource, such as an XML or RDF description. Properties of the external resource should be given to help the client select between multiple descriptions (if provided), and to make appropriate use of the document. The URI of the document must identify a single representation of the data in a particular format. The value must be an array of JSON objects. Each item must have the id and type properties, and should have the label, format and profile properties
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            description: The URI of the external resource. (The @id property may be used in service objects for backwards compatibility as described above.)
+                          type:
+                            type: string
+                            description: The type or class of this resource. Recommendations for basic types such as image, text or audio are given in the Presentation API. (The @type property may be used in service objects for backwards compatibility as described above.)
+                          label:
+                            type: string
+                            description: A human-readable label for this resource. The label property can be fully internationalized, and each language can have multiple values. This pattern is described in more detail in the languages section of the Presentation API.
+                          format: 
+                            type: string
+                            description: The specific media type (often called a MIME type) for this content resource, for example “image/jpeg”. This is important for distinguishing different formats of the same overall type of resource, such as distinguishing text in XML from plain text. The value must be a string, and it should be the value of the Content-Type header returned when this resource is dereferenced.
+                          profile:
+                            type: string
+                            description: A schema or named set of functionality available from this resource. The profile can further clarify the type and/or format of an external resource. The value must be a string, either taken from the Registry of Profiles or a URI.
+                        required:
+                        - id
+                        - type
+                    service:
+                      type: array
+                      description: A reference to an external service that the client might interact with directly to gain additional information or functionality, for example a link to an authentication service. The value must be an array of JSON objects. Each object will have properties depending on the service’s definition, but must have either the id and type properties, or the @id and @type properties for backwards compatibility with other IIIF APIs. Each object should have a profile property. See the Service Registry for known service types
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            description: The URI of the external resource. (The @id property may be used in service objects for backwards compatibility as described above.)
+                          type:
+                            type: string
+                            description: The type or class of this resource. Recommendations for basic types such as image, text or audio are given in the Presentation API. (The @type property may be used in service objects for backwards compatibility as described above.)
+                          profile:
+                            type: string
+                            description: A schema or named set of functionality available from this resource. The profile can further clarify the type and/or format of an external resource. The value must be a string, either taken from the Registry of Profiles or a URI.
+                        required: 
+                        - id
+                        - type
+                        
+                      
+                
+                      
+                      
+                  required:
+                  - context
+                  - id
+                  - type
+                  - protocol
+                  - profile
+                  - width
+                  - height
+                      
+                    
+
+
+                    
+                      
+                      
+      
 
  # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
