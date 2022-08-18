@@ -61,6 +61,7 @@ paths:
             type: array
             items:
               type: number
+              format: float
               minimum: 0
               maximum: 1.0
             minItems: 2
@@ -90,6 +91,7 @@ paths:
               Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float > 0. A value of 1.0 indicates no contrast change
           schema:
             type: number
+            format: float
             minimum: 0
             exclusiveMinimum: true
             
@@ -142,7 +144,8 @@ paths:
             
             If g=log or g=logarithm, the logarithm is applied
           schema:
-            type: number 
+            type: number
+            format: float
         
         - name: CMP
           in: query
