@@ -6,10 +6,12 @@ info:
     This API implements the functionality of the IIPImage API into the OpenAPI framework used at KB.
     
     The goal is to implement all four of the APIs from [IIPImage](https://iipimage.sourceforge.io/documentation/protocol/). These are as follows:
-    - Internet Imaging Protocol
-    - IIIF API
+    - [Internet Imaging Protocol](https://iipimage.sourceforge.io/IIPv105.pdf)
+    - [IIIF API](https://iiif.io/api/image/3.0/)
     - Deepzoom
     - Zoomify
+    
+    Specification for OpenAPI can be found [here](https://swagger.io/docs/specification/about/).
   contact:
     email: '${user.name}@kb.dk'
   license:
