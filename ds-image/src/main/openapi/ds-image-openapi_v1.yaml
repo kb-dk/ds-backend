@@ -56,7 +56,7 @@ paths:
             
             For use with CVT requests. All values should be ratios in the range 0 – 1.0
               
-            **RGN has to be defined as x,y and requires CVT, WID & HEI** 
+            **RGN has to be defined as x,y,w,h and requires CVT, WID & HEI** 
           schema: 
             type: array
             items:
@@ -64,8 +64,8 @@ paths:
               format: float
               minimum: 0
               maximum: 1.0
-            minItems: 2
-            maxItems: 2
+            minItems: 4
+            maxItems: 4
           style: form
           explode: false
           
