@@ -13,7 +13,7 @@
 config:
 
   # Production machine setup
-  backend:
-    db: 'http://realmachine:8090/foobar/'
-    user: 'real_dbuser'
-    password: 'real_dbpassword'
+  imageservers:
+    iip: 'http://example.com:1234/iipsrv/iipsrv.fcgi'
+
+    iiif: 'http://example.com:1234/'
