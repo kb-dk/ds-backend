@@ -128,10 +128,12 @@ paths:
           schema:
             type: string
           examples:
-            Rotate 180 degrees:
+            rotate:
               value: "180"
-            Flip horizontal and rotate 90 degrees:
+              summary: "Rotates image 180 degress"
+            flip_and_rotate:
               value: "!90"
+              summary: "Flips image and rotates 90 degrees"
         
         - name: GAM
           in: query
