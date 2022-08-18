@@ -259,7 +259,8 @@ paths:
             type: string
             enum: ["jpeg", "png"]
             default: "jpeg"
-              
+
+      x-streamingOutput: true
       responses:
         # TODO: Update description to explain errors from CVT, WID, HEI, RNG and where ever needed. PFL! CTW!
         '200':
