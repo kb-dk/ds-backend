@@ -130,6 +130,9 @@ paths:
           schema:
             type: string
           examples:
+            no_rotation:
+              value: "0"
+              summary: "Return image with no rotation"
             rotate:
               value: "180"
               summary: "Rotates image 180 degress"
