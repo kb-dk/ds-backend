@@ -23,13 +23,269 @@ servers:
     description: 'Version 1'
 
 paths:
-# IIF Image request
+  # Internet Imageing Protocol
+  /:
+    get:
+      tags:
+        - 'ds-image'
+      summary: 'Internet Imaging Protocol available through OpenAPI specification. The specification can be found at: https://iipimage.sourceforge.io/documentation/protocol/'
+      operationId: IIPImageRequest
+      parameters:
+        - name: FIF
+          in: query
+          description: |- 
+            Full image path. If the FILESYSTEM_PREFIX server parameter has been set, the path is relative to that path.
+            
+            Note that all IIP protocol requests must start with the FIF parameter
+          required: true
+          schema:
+            type: string
+            example: 'image.tif'
+
+        - name: WID
+          in: query
+          description: |- 
+            Specify width in pixels, w, for exports with CVT request.
+            
+            **WID requires CVT**
+          schema:
+            type: integer
+            
+        - name: HEI
+          in: query
+          description: |-
+            Specify height in pixels, h, for exports with CVT requests
+            
+            **HEI requires CVT**
+          schema:
+            type: integer
+
+        - name: RGN
+          in: query
+          description: |- 
+            Define a region of interest starting at relative coordinates x,y with width w and height h.
+            
+            For use with CVT requests. All values should be ratios in the range 0 – 1.0
+              
+            **RGN has to be defined as x,y,w,h and requires CVT, WID & HEI** 
+          schema: 
+            type: array
+            items:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 1.0
+            minItems: 4
+            maxItems: 4
+          style: form
+          explode: false
+          
+        - name: QLT
+          in: query
+          description: |- 
+            Set the output compression level, q.
+              
+            Valid ranges are JPEG: 0-100 and for PNG: 0-9 where a higher value means more compression
+            
+            JPEG is always lossy even with a value of 100, while PNG is lossles.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 100
+        
+        # Equlization and Stretch are mentioned in the short documentation at https://iipimage.sourceforge.io/documentation/protocol/. However it is not clear how it is used. Furthermore these parameters are not described in the thorough descriiption at https://iipimage.sourceforge.io/IIPv105.pd
+        
+        # As of now, EQ and ST are not implemented in the OpenAPI version
+        - name: CNT
+          in: query
+          description: |-
+              Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float > 0. A value of 1.0 indicates no contrast change
+          schema:
+            type: number
+            format: float
+            minimum: 0
+            exclusiveMinimum: true
+            
+        - name: SHD
+          in: query
+          description: |-
+            Simulated hill-shading for image normal data. The argument is the angle of incidence of the light source in the horizontal plane (from 12 o’clock), h and the vertical angle of incidence, v, with 0 representing a horizontal direction and -1 vertically downwards
+            
+            **SHD has to be defined as h,v**
+          schema: 
+            type: array
+            items:
+              type: integer
+            minItems: 2
+            maxItems: 2
+          style: form
+          explode: false
+            
+        - name: LYR
+          in: query
+          description: |- 
+            The number of quality layers, l, in an image to decode. This is for file types that can contain multiple quality layers, such as JPEG2000.
+            
+            For example, a request for LYR=3 will decode only the first 3 quality layers present in the image.
+            
+            The number of layers decoded will be limited to a maximum given by the MAX_LAYERS environment variable if this has been set in the server configuration. This can be useful to either limit the quality of the images users may see or to speed up decoding by only decoding the faster lower quality layers.
+          schema:
+            type: integer
+
+        - name: ROT
+          in: query
+          description: |-
+            Rotate (and flip) image by given number of degrees, r. Only 90, 180 and 270 supported.
+            
+            If angle is prefixed by an exclamation mark !, the image is flipped horizontally before rotation (ex: ROT=!90). Vertical flipping can be achieved by combining horizontal flipping and 180° rotation
+          schema:
+            type: string
+          examples:
+            no_rotation:
+              value: "0"
+              summary: "Return image with no rotation"
+            rotate:
+              value: "180"
+              summary: "Rotates image 180 degress"
+            flip_and_rotate:
+              value: "!90"
+              summary: "Flips image and rotates 90 degrees"
+        
+        - name: GAM
+          in: query
+          description: |- 
+            Apply gamma correction, g: each pixel value to the power of g.
+            
+            If g=log or g=logarithm, the logarithm is applied
+          schema:
+            type: number
+            format: float
+        
+        - name: CMP
+          in: query
+          description: "Generate colormap using one of the standard colormap schemes, s: GREY, JET, COLD, HOT, RED, GREEN and BLUE."
+          schema: 
+            type: string
+            enum: ["GREY", "JET", "COLD", "HOT", "RED", "GREEN", "BLUE"]
+            
+        - name: PFL
+          in: query
+          description: |- 
+            Export profile in JSON format at resolution r from position x1,y1 to x2, y2.
+            
+            Only horizontal or vertical profiles are currently supported.
+            
+            **PFL has to be defined specifically as r:x1,y1-x2,y2**
+            
+            **An example: 800:20,20-440,440**
+          schema:
+            type: string
+            #example: "800:20,20-440,440"
+        
+        - name: CTW
+          in: query
+          description: |- 
+            Color twist / channel recombination. Recombine the available image channels into a new color image by multiplication through a matrix. Columns are separated by commas and rows are separated by semi-colons. Values can also be negative.
+            
+            Thus, for the 3×3 matrix example provided below, the RGB output image will have bands R = R*r1 + G*g1 + B*b1, G = R*r2 + G*g2 + B*b2, B = R*r3 + G*g3 + B*b3.
+            
+            For multi-band images, the row length should correspond to the number of available bands within the image. The number of output bands depends on the number of rows in the matrix. Thus, to output a 1 band greyscale image, specify just a single row.
+
+            Examples:
+            To perform naive conversion from 3 channel color to 1 channel grayscale: CTW=[0.33,0.33,0.33]
+            
+            To flip the R and B channels and map an RGB image to BGR: CTW=[0,0,1;0,1,0;1,0,0]
+            
+            For a 5-band multispectral image, to show the difference between the 5th and 2nd band (i.e. 5th-2nd) and outputting the result as grayscale: CTW=[0,-1,0,0,1]
+            
+            To create a false-color image from a 4-band RGB-IR image by mapping the G,R,IR channels to the output RGB: CTW=[0,1,0,0;0,0,1,0;0,0,0,1]
+            
+            **CTW has to be defined as [array;array;array] using ; as delimter between arrays and , between integers**
+          schema: 
+            type: string
+        
+        # TODO: How do we handle empty arguments in the tooling?
+        # OpenAPI does not like empty arguments.
+        - name: INV
+          in: query
+          description: "Invert image (no argument)"
+          schema: 
+            type: boolean
+        
+        - name: COL
+          in: query
+          description: |- 
+            Color transformation to output space, c. Valid values are greyscale (GREY or GRAY) or to binary (BINARY). 
+            
+            Examples:
+            Convert to greyscale: COL=gray
+            
+            Convert to binary: COL=binary
+          schema: 
+              type: string
+              enum: ["gray", "grey", "binary"]
+        
+         # JTL, PTL and CVT has to be set after all other parameters in the implementation
+        - name: JTL
+          in: query
+          description: |- 
+            Return a tile in JPEG format with index n at resolution level r
+            
+            **JTL has to be specified as r,n** 
+          
+          schema:
+            $ref: '#/components/schemas/JTL_PTL'
+          style: form
+          explode: false
+        
+        # JTL, PTL and CVT has to be set after all other parameters in the implementation
+        - name: PTL
+          in: query
+          description: |- 
+            Return a tile in PNG format at resolution level r with index n
+              
+            **PTL has to be specified as r,n**
+          schema: 
+            $ref: '#/components/schemas/JTL_PTL'
+          style: form
+          explode: false
+        
+        # JTL, PTL and CVT has to be set after all other parameters in the implementation  
+        - name: CVT
+          in: query
+          description: |- 
+            Export the full image or a region in the specified format (JPEG and PNG currently supported)
+          schema:
+            type: string
+            enum: ["jpeg", "png"]
+            default: "jpeg"
+
+      x-streamingOutput: true
+      responses:
+        # TODO: Update description to explain errors from CVT, WID, HEI, RNG and where ever needed. PFL! CTW!
+        '200':
+          description: OK
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary      
+        '400':
+          description: Bad Request. PFL or CTW has been defined incorrectly.
+        '404':
+          description: An image with the provided FIF was not found.
+
+# IIIF Image request
   /{identifier}/:
     get:
       tags:
         - 'IIF Image request'
       summary: 'OpenAPI definition for IIIF Image Request API '
-      operationId: getImage
+      operationId: IIIFImageRequest
       
       # All parameters are required in the original IIIF Image Requests and has to be specified in the implementation in a specific order.
       # The order in the original IIIF Image Requests is as follows: 
@@ -171,9 +427,10 @@ paths:
         required: true
         schema:
           type: string
-      
+
       x-streamingOutput: true
       responses:
+        # TODO: Update description to explain errors from CVT, WID, HEI, RNG and where ever needed. PFL! CTW!
         '200':
             description: 'Succes!'
             content: 
@@ -408,9 +665,19 @@ paths:
             text/plain:
               schema:
                 type: string
-
 components:
   schemas:
+    
+    JTL_PTL:
+      type: array
+      items:
+        type: integer
+      #example: 
+      #  - "2"
+      #  - "5"
+      minItems: 2
+      maxItems: 2
+
     # Basic status response component.
     Status:
       type: object
@@ -425,11 +692,11 @@ components:
         version:
           type: string
           description: 'The version of the application'
-          example: '1.2.3'
+          example: '1.0'
         build:
           type: string
           description: 'When the application was build'
-          example: '2022-04-21T13:37:16Z'
+          example: '2022-08-T13:37:16Z'
         java:
           type: string
           description: 'The Java version that runs the container'
