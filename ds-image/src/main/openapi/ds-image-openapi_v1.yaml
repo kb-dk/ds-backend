@@ -27,7 +27,7 @@ paths:
   /:
     get:
       tags:
-        - 'ds-image'
+        - 'Access'
       summary: 'Internet Imaging Protocol available through OpenAPI specification. The specification can be found at: https://iipimage.sourceforge.io/documentation/protocol/'
       operationId: IIPImageRequest
       parameters:
@@ -283,7 +283,7 @@ paths:
   /{identifier}/:
     get:
       tags:
-        - 'IIF Image request'
+        - 'Access'
       summary: 'OpenAPI definition for IIIF Image Request API '
       operationId: IIIFImageRequest
       
@@ -417,7 +417,7 @@ paths:
   /{identifier}/info.json:
     get:
       tags:
-        - 'IIIF Image information'
+        - 'Access'
       summary: 'OpenAPI definition for IIIF Image Information Request API '
       operationId: getImageInformation
       parameters:
