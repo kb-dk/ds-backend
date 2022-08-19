@@ -293,7 +293,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
+          description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded, such as / and ?. When using the OpenAPI GUI this encoding is done automatically"
           required: true
           schema:
             type: string
