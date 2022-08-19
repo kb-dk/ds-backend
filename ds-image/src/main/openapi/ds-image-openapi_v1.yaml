@@ -28,7 +28,7 @@ paths:
     get:
       tags:
         - 'Access'
-      summary: 'Internet Imaging Protocol available through OpenAPI specification. The specification can be found at: https://iipimage.sourceforge.io/documentation/protocol/'
+      summary: 'Internet Imaging Protocol '
       operationId: IIPImageRequest
       parameters:
         - name: FIF
