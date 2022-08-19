@@ -280,7 +280,7 @@ paths:
           description: An image with the provided FIF was not found.
 
 # IIIF Image request
-  /{identifier}/:
+  /{identifier}/{region}/{size}/{rotation}/{quality}.{format}:
     get:
       tags:
         - 'Access'
@@ -299,7 +299,7 @@ paths:
             type: string
             
         - name: region
-          in: query
+          in: path
           description: |- 
             The region parameter defines the rectangular portion of the underlying image content to be returned
             
@@ -316,7 +316,7 @@ paths:
             type: string
             
         - name: size
-          in: query
+          in: path
           description: |- 
             The size parameter specifies the dimensions to which the extracted region, which might be the full image, is to be scaled. With the exception of the w,h and ^w,h forms, the returned image maintains the aspect ratio of the extracted region as closely as possible. 
             
@@ -341,7 +341,7 @@ paths:
             type: string
             
         - name: rotation
-          in: query
+          in: path
           description: |-
             The rotation parameter specifies mirroring and rotation. A leading exclamation mark (“!”) indicates that the image should be mirrored by reflection on the vertical axis before any rotation is applied.
             
@@ -360,7 +360,7 @@ paths:
             type: string
             
         - name: quality
-          in: query
+          in: path
           description: |-
             The quality parameter determines whether the image is delivered in color, grayscale or black and white.
             
@@ -380,7 +380,7 @@ paths:
             default: "default"
         
         - name: format
-          in: query
+          in: path
           description: |-
             The format of the returned image is expressed as a suffix, mirroring common filename extensions.
           required: true
