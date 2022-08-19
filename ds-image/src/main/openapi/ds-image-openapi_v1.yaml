@@ -68,18 +68,18 @@ paths:
             
             | Form | Description |
             |------|-------------|
-            |**max** |	The extracted region is returned at the maximum size available, but will not be upscaled. The resulting image will have the pixel dimensions of the extracted region, unless it is constrained to a smaller size by maxWidth, maxHeight, or maxArea as defined in the Technical Properties section.|
-            |**^max**|	The extracted region is scaled to the maximum size permitted by maxWidth, maxHeight, or maxArea as defined in the Technical Properties section. If the resulting dimensions are greater than the pixel width and height of the extracted region, the extracted region is upscaled.|
-            |**w,**|	The extracted region should be scaled so that the width of the returned image is exactly equal to w. The value of w must not be greater than the width of the extracted region.|
-            |**^w,**|	The extracted region should be scaled so that the width of the returned image is exactly equal to w. If w is greater than the pixel width of the extracted region, the extracted region is upscaled.|
-            |**,h**|	The extracted region should be scaled so that the height of the returned image is exactly equal to h. The value of h must not be greater than the height of the extracted region.|
-            |**^,h**|	The extracted region should be scaled so that the height of the returned image is exactly equal to h. If h is greater than the pixel height of the extracted region, the extracted region is upscaled.|
-            |**pct:n**|	The width and height of the returned image is scaled to n percent of the width and height of the extracted region. The value of n must not be greater than 100.|
-            |**^pct:n**|	The width and height of the returned image is scaled to n percent of the width and height of the extracted region. For values of n greater than 100, the extracted region is upscaled.|
-            |**w,h**|	The width and height of the returned image are exactly w and h. The aspect ratio of the returned image may be significantly different than the extracted region, resulting in a distorted image. The values of w and h must not be greater than the corresponding pixel dimensions of the extracted region.|
-            |**^w,h**|	The width and height of the returned image are exactly w and h. The aspect ratio of the returned image may be significantly different than the extracted region, resulting in a distorted image. If w and/or h are greater than the corresponding pixel dimensions of the extracted region, the extracted region is upscaled.|
-            |**!w,h**|	The extracted region is scaled so that the width and height of the returned image are not greater than w and h, while maintaining the aspect ratio. The returned image must be as large as possible but not larger than the extracted region, w or h, or server-imposed limits.|
-            |**^!w,h**|	The extracted region is scaled so that the width and height of the returned image are not greater than w and h, while maintaining the aspect ratio. The returned image must be as large as possible but not larger than w, h, or server-imposed limits.|
+            |**max** |  The extracted region is returned at the maximum size available, but will not be upscaled. The resulting image will have the pixel dimensions of the extracted region, unless it is constrained to a smaller size by maxWidth, maxHeight, or maxArea as defined in the Technical Properties section.|
+            |**^max**|  The extracted region is scaled to the maximum size permitted by maxWidth, maxHeight, or maxArea as defined in the Technical Properties section. If the resulting dimensions are greater than the pixel width and height of the extracted region, the extracted region is upscaled.|
+            |**w,**|  The extracted region should be scaled so that the width of the returned image is exactly equal to w. The value of w must not be greater than the width of the extracted region.|
+            |**^w,**|  The extracted region should be scaled so that the width of the returned image is exactly equal to w. If w is greater than the pixel width of the extracted region, the extracted region is upscaled.|
+            |**,h**|  The extracted region should be scaled so that the height of the returned image is exactly equal to h. The value of h must not be greater than the height of the extracted region.|
+            |**^,h**|  The extracted region should be scaled so that the height of the returned image is exactly equal to h. If h is greater than the pixel height of the extracted region, the extracted region is upscaled.|
+            |**pct:n**|  The width and height of the returned image is scaled to n percent of the width and height of the extracted region. The value of n must not be greater than 100.|
+            |**^pct:n**|  The width and height of the returned image is scaled to n percent of the width and height of the extracted region. For values of n greater than 100, the extracted region is upscaled.|
+            |**w,h**|  The width and height of the returned image are exactly w and h. The aspect ratio of the returned image may be significantly different than the extracted region, resulting in a distorted image. The values of w and h must not be greater than the corresponding pixel dimensions of the extracted region.|
+            |**^w,h**|  The width and height of the returned image are exactly w and h. The aspect ratio of the returned image may be significantly different than the extracted region, resulting in a distorted image. If w and/or h are greater than the corresponding pixel dimensions of the extracted region, the extracted region is upscaled.|
+            |**!w,h**|  The extracted region is scaled so that the width and height of the returned image are not greater than w and h, while maintaining the aspect ratio. The returned image must be as large as possible but not larger than the extracted region, w or h, or server-imposed limits.|
+            |**^!w,h**|  The extracted region is scaled so that the width and height of the returned image are not greater than w and h, while maintaining the aspect ratio. The returned image must be as large as possible but not larger than w, h, or server-imposed limits.|
           required: true
           schema:
             type: string
@@ -110,10 +110,10 @@ paths:
             
             | Form | Description |
             |------|-------------|
-            |**color**|	The image is returned with all of its color information.|
-            |**gray**|	The image is returned in grayscale, where each pixel is black, white or any shade of gray in between.|
-            |**bitonal**|	The image returned is bitonal, where each pixel is either black or white.|
-            |**default**|	The image is returned using the server’s default quality (e.g. color, gray or bitonal) for the image.|
+            |**color**|  The image is returned with all of its color information.|
+            |**gray**|  The image is returned in grayscale, where each pixel is black, white or any shade of gray in between.|
+            |**bitonal**|  The image returned is bitonal, where each pixel is either black or white.|
+            |**default**|  The image is returned using the server’s default quality (e.g. color, gray or bitonal) for the image.|
             
             The default quality exists to support [level 0 compliant implementations](https://iiif.io/api/image/3.0/compliance/#quality) that may not know the qualities of individual images in their collections. It also provides a convenience for clients that know the values for all other parameters of a request except the quality (e.g. .../full/120,80/90/{quality}.png to request a thumbnail) in that a preliminary image information request that would only serve to find out which qualities are available can be avoided.
 
@@ -187,7 +187,7 @@ paths:
                       description: URI of image
                     id:
                       type: string
-                      description: 	The base URI of the image as defined in URI Syntax, including scheme, server, prefix and identifier without a trailing slash.
+                      description:   The base URI of the image as defined in URI Syntax, including scheme, server, prefix and identifier without a trailing slash.
                     type:
                       type: string
                       description: The type for the Image API. The value must be the string ImageService3.
@@ -278,7 +278,7 @@ paths:
                         type: string
                     partOf: 
                       type: array
-                      description: 	A link to another resource that references this image service, for example a link to a Canvas or Manifest. The value must be an array of JSON objects. Each item must have the id and type properties, and should have the label property.
+                      description:   A link to another resource that references this image service, for example a link to a Canvas or Manifest. The value must be an array of JSON objects. Each item must have the id and type properties, and should have the label property.
                       items: 
                         type: object
                         properties:
@@ -320,7 +320,7 @@ paths:
                         - type
                     service:
                       type: array
-                      description: A reference to an external service that the client might interact with directly to gain additional information or functionality, for example a link to an authentication service. The value must be an array of JSON objects. Each object will have properties depending on the service’s definition, but must have either the id and type properties, or the @id and @type properties for backwards compatibility with other IIIF APIs. Each object should have a profile property. See the Service Registry for known service types
+                      description: A reference to an external service that the client might interact with directly to gain additional information or functionality, for example a link to an authentication service. The value must be an array of JSON objects. Each object will have properties depending on the service’s definition, but must have either the id and type properties, or the @id and @type properties for backwards compatibility with other IIIF APIs. Each object should have a profile property. See the Service Registry for known service type
                       items:
                         type: object
                         properties:
@@ -336,11 +336,6 @@ paths:
                         required: 
                         - id
                         - type
-                        
-                      
-                
-                      
-                      
                   required:
                   - context
                   - id
@@ -349,15 +344,6 @@ paths:
                   - profile
                   - width
                   - height
-                      
-                    
-
-
-                    
-                      
-                      
-      
-
  # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
   #
