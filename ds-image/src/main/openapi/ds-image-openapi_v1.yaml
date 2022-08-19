@@ -519,33 +519,43 @@ components:
         context:
           type: string
           description: URI of image
+          example: "http://iiif.io/api/image/3/context.json"
         id:
           type: string
           description:   The base URI of the image as defined in URI Syntax, including scheme, server, prefix and identifier without a trailing slash.
+          example: "{scheme}://{server}{/prefix}/{identifier}"
         type:
           type: string
           description: The type for the Image API. The value must be the string ImageService3.
+          example: "ImageService3"
         protocol:
           type: string
           description: The URI http://iiif.io/api/image which can be used to determine that the document describes an image service which is a version of the IIIF Image API.
+          example: "http://iiif.io/api/image"
         profile:
           type: string
           description: A string indicating the highest compliance level which is fully supported by the service. The value must be one of level0, level1, or level2.
+          example: "level1"
         width:
           type: integer
           description: The width in pixels of the full image, given as an integer.
+          example: 6000
         height:
           type: integer
           description: The height in pixels of the full image, given as an integer.
+          example: 4000
         maxWidth:
           type: integer
           description: The maximum width in pixels supported for this image. Clients must not expect requests with a width greater than this value to be supported. maxWidth must be specified if maxHeight is specified.
+          example: 3000
         maxHeight:
           type: integer
           description: The maximum height in pixels supported for this image. Clients must not expect requests with a height greater than this value to be supported. If maxWidth is specified and maxHeight is not, then clients should infer that maxHeight = maxWidth.
+          example: 2000
         maxArea:
           type: integer
           description: The maximum area in pixels supported for this image. Clients must not expect requests with a width*height greater than this value to be supported.
+          example: 4000000
         sizes:
           type: array
           description: An array of JSON objects with the height and width properties. These sizes specify preferred values to be provided in the w,h syntax of the size request parameter for scaled versions of the full image
@@ -555,34 +565,41 @@ components:
               type:
                 type: string
                 description: The type of the object. If present, the value must be the string Size.
+                example: "Size"
               width:
                 type: integer
                 description: The width in pixels of the image to be requested, given as an integer.
+                example: 150
               height:
                 type: integer
                 description: The height in pixels of the image to be requested, given as an integer.
+                example: 100 
             required:
             - width
             - height
         tiles:
           type: array
-          description: TODO ADD
+          description: An array of JSON objects describing the parameters to use to request regions of the image (tiles) that are efficient for the server to deliver. Each description gives a width, optionally a height for non-square tiles, and a set of scale factors at which tiles of those dimensions are available
           items:
             type: object
             properties: 
               type:
                 type: string
                 description: The type of the object. If present, the value must be the string Tile.
+                example: "Tile"
               scaleFactors:
                 type: integer
                 description: The set of resolution scaling factors for the image’s predefined tiles, expressed as positive integers by which to divide the full size of the image. For example, a scale factor of 4 indicates that the service can efficiently deliver images at 1/4 or 25% of the height and width of the full image. A particular scale factor value should appear only once in the tiles array.
+                example: 2
                 minimum: 1
               width:
                 type: integer
                 description: The width in pixels of the predefined tiles to be requested, given as an integer.
+                example: 512
               height:
                 type: integer
                 description: The height in pixels of the predefined tiles to be requested, given as an integer. If it is not specified in the JSON, then it defaults to the same as width, resulting in square tiles.
+                example: 512
             required:
             - scaleFactor
             - width
@@ -591,25 +608,30 @@ components:
           type: array
           items:
             type: string
+            example: "webp"
         rights:
           type: string
           description: A string that identifies a license or rights statement that applies to the content of this image. The value of this property must be a string drawn from the set of Creative Commons license URIs, the RightsStatements.org rights statement URIs, or those added via the Registry of Known Extensions mechanism. The inclusion of this property is informative, and for example could be used to display an icon representing the rights assertions.
+          example: "http://rightsstatements.org/vocab/InC-EDU/1.0/"
         extraQualities:
           type: array
           description: An array of strings that can be used as the quality parameter, in addition to default.
           items:
             type: string
+            example: "color"
         extraFormats:
           type: array
           description: An array of strings that can be used as the format parameter, in addition to the ones specified in the referenced profile.
           items:
             type: string
-        # QUESTION: extraFeatures takes a specific list of strings. Is that to be defined in this YAML file or is that done elsewhere?
+            example: "pdf"
+        # extraFeatures takes a specific list of strings. Is that to be defined in this YAML file or is that done elsewhere?
         extraFeatures:
           type: array
           description: An array of strings identifying features supported by the service, in addition to the ones specified in the referenced profile. These strings are defined either in the table below or by registering an extension.
           items:
             type: string
+            example: "rotationArbitrary"
         partOf: 
           type: array
           description:   A link to another resource that references this image service, for example a link to a Canvas or Manifest. The value must be an array of JSON objects. Each item must have the id and type properties, and should have the label property.
@@ -619,12 +641,15 @@ components:
               id:
                 type: string
                 description: The URI of the external resource. (The @id property may be used in service objects for backwards compatibility as described above.)
+                example: "https://example.org/manifest/1"
               type:
                 type: string
                 description: The type or class of this resource. Recommendations for basic types such as image, text or audio are given in the Presentation API. (The @type property may be used in service objects for backwards compatibility as described above.)
+                example: "Manifest"
               label:
                 type: string
                 description: A human-readable label for this resource. The label property can be fully internationalized, and each language can have multiple values. This pattern is described in more detail in the languages section of the Presentation API.
+                example: "A Book"
             required:
             - id
             - type
@@ -637,18 +662,23 @@ components:
               id:
                 type: string
                 description: The URI of the external resource. (The @id property may be used in service objects for backwards compatibility as described above.)
+                example: "https://example.org/image1.xml"
               type:
                 type: string
                 description: The type or class of this resource. Recommendations for basic types such as image, text or audio are given in the Presentation API. (The @type property may be used in service objects for backwards compatibility as described above.)
+                example: "Dataset"
               label:
                 type: string
                 description: A human-readable label for this resource. The label property can be fully internationalized, and each language can have multiple values. This pattern is described in more detail in the languages section of the Presentation API.
+                example: "Technical image metadata"
               format: 
                 type: string
                 description: The specific media type (often called a MIME type) for this content resource, for example “image/jpeg”. This is important for distinguishing different formats of the same overall type of resource, such as distinguishing text in XML from plain text. The value must be a string, and it should be the value of the Content-Type header returned when this resource is dereferenced.
+                example: "text/xml"
               profile:
                 type: string
                 description: A schema or named set of functionality available from this resource. The profile can further clarify the type and/or format of an external resource. The value must be a string, either taken from the Registry of Profiles or a URI.
+                example: "https://example.org/profiles/imagedata"
             required:
             - id
             - type
@@ -661,12 +691,15 @@ components:
               id:
                 type: string
                 description: The URI of the external resource. (The @id property may be used in service objects for backwards compatibility as described above.)
+                example: "https://example.org/auth/login"
               type:
                 type: string
                 description: The type or class of this resource. Recommendations for basic types such as image, text or audio are given in the Presentation API. (The @type property may be used in service objects for backwards compatibility as described above.)
+                example: "AuthCookieService1"
               profile:
                 type: string
                 description: A schema or named set of functionality available from this resource. The profile can further clarify the type and/or format of an external resource. The value must be a string, either taken from the Registry of Profiles or a URI.
+                example: "http://iiif.io/api/auth/1/login"
             required: 
             - id
             - type
