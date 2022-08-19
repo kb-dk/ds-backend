@@ -436,7 +436,7 @@ paths:
             content: 
               application/ld+json:
                 schema:
-                  $ref: '#/components/schemas/ldjson'
+                  $ref: '#/components/schemas/jsonld'
                   
  # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -512,7 +512,7 @@ components:
       maxItems: 2
     
     # jsonld response for IIIF image information
-    ldjson:
+    jsonld:
       type: object
       properties:
         # IIIF uses @context. How do we implement the @ in the OpenAPI YAML
