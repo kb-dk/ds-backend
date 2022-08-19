@@ -364,6 +364,9 @@ paths:
             type: string
             default: "0"
           examples:
+            no_rotation:
+              value: "0"
+              summary: "No rotation"
             rotate:
               value: "84"
               summary: Rotate 84 degrees
