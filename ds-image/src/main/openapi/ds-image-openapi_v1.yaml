@@ -311,6 +311,8 @@ paths:
             |**square**|The region is defined as an area where the width and height are both equal to the length of the shorter dimension of the full image. The region may be positioned anywhere in the longer dimension of the full image at the server’s discretion, and centered is often a reasonable default.|
             |**x,y,w,h**|The region of the full image to be returned is specified in terms of absolute pixel values. The value of x represents the number of pixels from the 0 position on the horizontal axis. The value of y represents the number of pixels from the 0 position on the vertical axis. Thus the x,y position 0,0 is the upper left-most pixel of the image. w represents the width of the region and h represents the height of the region in pixels.|
             |**pct:x,y,w,h**|The region to be returned is specified as a sequence of percentages of the full image’s dimensions, as reported in the image information document. Thus, x represents the number of pixels from the 0 position on the horizontal axis, calculated as a percentage of the reported width. w represents the width of the region, also calculated as a percentage of the reported width. The same applies to y and h respectively.|
+            
+            **EXAMPLE: square**
           required: true
           schema:
             type: string
@@ -336,6 +338,8 @@ paths:
             |**^w,h**|  The width and height of the returned image are exactly w and h. The aspect ratio of the returned image may be significantly different than the extracted region, resulting in a distorted image. If w and/or h are greater than the corresponding pixel dimensions of the extracted region, the extracted region is upscaled.|
             |**!w,h**|  The extracted region is scaled so that the width and height of the returned image are not greater than w and h, while maintaining the aspect ratio. The returned image must be as large as possible but not larger than the extracted region, w or h, or server-imposed limits.|
             |**^!w,h**|  The extracted region is scaled so that the width and height of the returned image are not greater than w and h, while maintaining the aspect ratio. The returned image must be as large as possible but not larger than w, h, or server-imposed limits.|
+            
+            **EXAMPLE: ^200,180**
           required: true
           schema:
             type: string
@@ -358,6 +362,15 @@ paths:
           required: true
           schema:
             type: string
+            default: "0"
+          examples:
+            rotate:
+              value: "84"
+              summary: Rotate 84 degrees
+            rotate_and_flip:
+              value: "!165"
+              summary: Mirror and rotate 165 degrees
+                
             
         - name: quality
           in: path
@@ -372,7 +385,6 @@ paths:
             |**default**|  The image is returned using the server’s default quality (e.g. color, gray or bitonal) for the image.|
             
             The default quality exists to support [level 0 compliant implementations](https://iiif.io/api/image/3.0/compliance/#quality) that may not know the qualities of individual images in their collections. It also provides a convenience for clients that know the values for all other parameters of a request except the quality (e.g. .../full/120,80/90/{quality}.png to request a thumbnail) in that a preliminary image information request that would only serve to find out which qualities are available can be avoided.
-
           required: true
           schema:
             type: string
