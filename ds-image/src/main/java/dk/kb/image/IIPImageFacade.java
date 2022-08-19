@@ -15,16 +15,21 @@
 package dk.kb.image;
 
 import dk.kb.image.config.ServiceConfig;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
-import joptsimple.internal.Strings;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.List;
 
@@ -56,6 +61,8 @@ public class IIPImageFacade {
 
     /**
      * Internet Imaging Protocol available through OpenAPI specification. The specification can be found at: https://iipimage.sourceforge.io/documentation/protocol/
+     *
+     * @param requestURI full request URI, used for logging af debugging.
      *
      * @param FIF: Full image path. If the FILESYSTEM_PREFIX server parameter has been set, the path is relative to that path.  Note that all IIP protocol requests must start with the FIF parameter
      *
@@ -97,6 +104,7 @@ public class IIPImageFacade {
      * @throws ServiceException when other http codes should be returned
      */
     public javax.ws.rs.core.StreamingOutput getIIPImage(
+            URI requestURI,
             String FIF, Integer WID, Integer HEI, List<Float> RGN, Integer QLT, Float CNT, List<Integer> SHD,
             Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
@@ -133,16 +141,75 @@ public class IIPImageFacade {
 
         final URI uri = builder.build();
 
+        return proxy(FIF, uri, requestURI);
+    }
+
+    private StreamingOutput proxy(String FIF, URI uri, URI clientRequestURI) {
         return output -> {
-            // TODO: Make this a HTTP-aware proxy so that HTTP codes are passed through
-            try (InputStream remoteStream = uri.toURL().openStream()) {
-                long copiedBytes = IOUtils.copyLarge(remoteStream, output);
-                log.debug("Proxied " + copiedBytes + " for request '" + uri + "'");
+            HttpURLConnection connection;
+
+            try  {
+                connection = (HttpURLConnection)uri.toURL().openConnection();
             } catch (Exception e) {
-                log.warn("Unable to proxy request to '" + uri + "'");
-                // TODO: Throw proper exception
-                throw new InternalServerErrorException("Unable to serve request for image '" + FIF + "'");
+                log.warn("Unable to create passive proxy connection with URI '{}' from client request '{}'",
+                         uri, clientRequestURI, e);
+                throw new InternalServiceException("Unable to create passive proxy for '" + FIF + "'");
             }
+
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "ds-image");
+            // TODO: Add timeouts, but make them configurable
+            //con.setConnectTimeout(1000);
+            //con.setReadTimeout(1000);
+
+            try {
+                connection.connect();
+            } catch (SocketTimeoutException e) {
+                log.warn("Timeout establishing connection to '{}' for from client request '{}'",
+                         uri, clientRequestURI, e);
+                throw new ServiceException("Timeout establishing proxy connection for '" + FIF + "'",
+                                           Response.Status.GATEWAY_TIMEOUT);
+            } catch (IOException e) {
+                log.warn("Unable to establish connection to '{}' for from client request '{}'",
+                         uri, clientRequestURI, e);
+                throw new ServiceException("Unable to establish proxy connection for '" + FIF + "'",
+                                           Response.Status.BAD_GATEWAY);
+            }
+
+            int statusCode = connection.getResponseCode();
+
+            if (statusCode >= 200 && statusCode <= 299) { // All OK
+                try (InputStream remoteStream = uri.toURL().openStream()) {
+                    long copiedBytes = IOUtils.copyLarge(remoteStream, output);
+                    log.debug("Proxied {} bytes for remote request '{}' for client request '{}'",
+                              copiedBytes, uri, clientRequestURI);
+                } catch (Exception e) {
+                    log.warn("Unable to proxy remote request '{}' for client request '{}'", uri, clientRequestURI);
+                    throw new InternalServerErrorException("Unable to serve request for image '" + FIF + "'");
+                }
+                return;
+            }
+
+            if (statusCode >= 400 && statusCode <= 499) { // Request problems
+                log.warn("Client error {} for connection to '{}' for client request '{}'",
+                         statusCode, uri, clientRequestURI);
+                throw new ServiceException("Unable to proxy request for '" + FIF + "'",
+                                           Response.Status.fromStatusCode(statusCode));
+            }
+
+            if (statusCode >= 500 && statusCode <= 599) { // Server problems
+                log.warn("Remote server error {} for connection to '{}' for client request '{}'",
+                         statusCode, uri, clientRequestURI);
+                throw new ServiceException("Unable to proxy request for '" + FIF + "'",
+                                           Response.Status.fromStatusCode(statusCode));
+            }
+
+            log.warn("Unhandled status code {} for connection to '{}' for client request '{}'",
+                     statusCode, uri, clientRequestURI);
+            throw new ServiceException("Unhandled status code " + statusCode + " for proxy connection for '" +
+                                       FIF + "'",
+                                       Response.Status.INTERNAL_SERVER_ERROR);
         };
     }
 

@@ -34,6 +34,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
@@ -115,12 +116,12 @@ public class DsImageApiServiceImpl extends ImplBase implements DsImageApi {
             // Show download link in Swagger UI, inline when opened directly in browser
             setFilename(filename, false, false);
             return IIPImageFacade.getInstance().getIIPImage(
+                    uriInfo.getRequestUri(),
                     FIF, WID, HEI, RGN, QLT, CNT, SHD, LYR, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
         } catch (Exception e){
             throw handleException(e);
         }
     
     }
-
 
 }
