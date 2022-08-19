@@ -23,7 +23,7 @@ servers:
     description: 'Version 1'
 
 paths:
-
+# IIF Image request
   /{identifier}/:
     get:
       tags:
@@ -157,7 +157,7 @@ paths:
             
             A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.
             
-            
+  # IIIF Image Information          
   /{identifier}/info.json:
     get:
       tags:
