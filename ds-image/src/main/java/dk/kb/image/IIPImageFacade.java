@@ -15,21 +15,12 @@
 package dk.kb.image;
 
 import dk.kb.image.config.ServiceConfig;
-import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.List;
 
@@ -119,124 +110,29 @@ public class IIPImageFacade {
         UriBuilder builder = UriBuilder.
                 fromUri(ServiceConfig.getConfig().getString(KEY_IIP_SERVER)).
                 queryParam("FIF", FIF); // Mandatory
-        addIfPresent(builder, "WID", WID);
-        addIfPresent(builder, "HEI", HEI);
-        addIfPresent(builder, "RGN", RGN);
-        addIfPresent(builder, "QLT", QLT);
-        addIfPresent(builder, "CNT", CNT);
-        addIfPresent(builder, "SHD", SHD);
+        ProxyHelper.addIfPresent(builder, "WID", WID);
+        ProxyHelper.addIfPresent(builder, "HEI", HEI);
+        ProxyHelper.addIfPresent(builder, "RGN", RGN);
+        ProxyHelper.addIfPresent(builder, "QLT", QLT);
+        ProxyHelper.addIfPresent(builder, "CNT", CNT);
+        ProxyHelper.addIfPresent(builder, "SHD", SHD);
 
-        addIfPresent(builder, "LYR", LYR);
-        addIfPresent(builder, "ROT", ROT);
-        addIfPresent(builder, "GAM", GAM);
-        addIfPresent(builder, "CMP", CMP);
-        addIfPresent(builder, "PFL", PFL);
-        addIfPresent(builder, "CTW", CTW);
-        addIfPresent(builder, "INV", INV); // TODO: Figure out how to add INV as a value-less param
-        addIfPresent(builder, "COL", COL);
+        ProxyHelper.addIfPresent(builder, "LYR", LYR);
+        ProxyHelper.addIfPresent(builder, "ROT", ROT);
+        ProxyHelper.addIfPresent(builder, "GAM", GAM);
+        ProxyHelper.addIfPresent(builder, "CMP", CMP);
+        ProxyHelper.addIfPresent(builder, "PFL", PFL);
+        ProxyHelper.addIfPresent(builder, "CTW", CTW);
+        ProxyHelper.addIfPresent(builder, "INV", INV); // TODO: Figure out how to add INV as a value-less param
+        ProxyHelper.addIfPresent(builder, "COL", COL);
 
-        addIfPresent(builder, "JTL", JTL);
-        addIfPresent(builder, "PTL", PTL);
-        addIfPresent(builder, "CVT", CVT);
+        ProxyHelper.addIfPresent(builder, "JTL", JTL);
+        ProxyHelper.addIfPresent(builder, "PTL", PTL);
+        ProxyHelper.addIfPresent(builder, "CVT", CVT);
 
         final URI uri = builder.build();
 
-        return proxy(FIF, uri, requestURI);
-    }
-
-    private StreamingOutput proxy(String FIF, URI uri, URI clientRequestURI) {
-        return output -> {
-            HttpURLConnection connection;
-
-            try  {
-                connection = (HttpURLConnection)uri.toURL().openConnection();
-            } catch (Exception e) {
-                log.warn("Unable to create passive proxy connection with URI '{}' from client request '{}'",
-                         uri, clientRequestURI, e);
-                throw new InternalServiceException("Unable to create passive proxy for '" + FIF + "'");
-            }
-
-            connection.setInstanceFollowRedirects(true);
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("User-Agent", "ds-image");
-            // TODO: Add timeouts, but make them configurable
-            //con.setConnectTimeout(1000);
-            //con.setReadTimeout(1000);
-
-            try {
-                connection.connect();
-            } catch (SocketTimeoutException e) {
-                log.warn("Timeout establishing connection to '{}' for from client request '{}'",
-                         uri, clientRequestURI, e);
-                throw new ServiceException("Timeout establishing proxy connection for '" + FIF + "'",
-                                           Response.Status.GATEWAY_TIMEOUT);
-            } catch (IOException e) {
-                log.warn("Unable to establish connection to '{}' for from client request '{}'",
-                         uri, clientRequestURI, e);
-                throw new ServiceException("Unable to establish proxy connection for '" + FIF + "'",
-                                           Response.Status.BAD_GATEWAY);
-            }
-
-            int statusCode = connection.getResponseCode();
-
-            if (statusCode >= 200 && statusCode <= 299) { // All OK
-                try (InputStream remoteStream = uri.toURL().openStream()) {
-                    long copiedBytes = IOUtils.copyLarge(remoteStream, output);
-                    log.debug("Proxied {} bytes for remote request '{}' for client request '{}'",
-                              copiedBytes, uri, clientRequestURI);
-                } catch (Exception e) {
-                    log.warn("Unable to proxy remote request '{}' for client request '{}'", uri, clientRequestURI);
-                    throw new InternalServerErrorException("Unable to serve request for image '" + FIF + "'");
-                }
-                return;
-            }
-
-            if (statusCode >= 400 && statusCode <= 499) { // Request problems
-                log.warn("Client error {} for connection to '{}' for client request '{}'",
-                         statusCode, uri, clientRequestURI);
-                throw new ServiceException("Unable to proxy request for '" + FIF + "'",
-                                           Response.Status.fromStatusCode(statusCode));
-            }
-
-            if (statusCode >= 500 && statusCode <= 599) { // Server problems
-                log.warn("Remote server error {} for connection to '{}' for client request '{}'",
-                         statusCode, uri, clientRequestURI);
-                throw new ServiceException("Unable to proxy request for '" + FIF + "'",
-                                           Response.Status.fromStatusCode(statusCode));
-            }
-
-            log.warn("Unhandled status code {} for connection to '{}' for client request '{}'",
-                     statusCode, uri, clientRequestURI);
-            throw new ServiceException("Unhandled status code " + statusCode + " for proxy connection for '" +
-                                       FIF + "'",
-                                       Response.Status.INTERNAL_SERVER_ERROR);
-        };
-    }
-
-    /**
-     * Add a query param to the URIBuilder if a value is present.
-     */
-    private void addIfPresent(UriBuilder builder, String key, Object value) {
-        if (value != null) {
-            builder.queryParam(key, value);
-        }
-    }
-
-    /**
-     * Add a query param to the URIBuilder if a value is present.
-     * The value will be serialized as comma-deparated values.
-     */
-    private void addIfPresent(UriBuilder builder, String key, List<? extends Object> values) {
-        if (values != null && !values.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (Object value: values) {
-                if (sb.length() != 0) {
-                    sb.append(",");
-                }
-                sb.append(value.toString());
-            }
-            builder.queryParam(key, sb.toString());
-        }
+        return ProxyHelper.proxy(FIF, uri, requestURI);
     }
 
     /**
