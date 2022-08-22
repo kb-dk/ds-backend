@@ -34,17 +34,18 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      */
     @Override
     public javax.ws.rs.core.StreamingOutput getImageInformation(String identifier) throws ServiceException {
-        // TODO: Implement...
-    
-        
-        try { 
+        try {
+            String[] elements = identifier.split("[/\\\\]");
+            String filename = "info_" + elements[elements.length - 1] + ".json";
             // Show download link in Swagger UI, inline when opened directly in browser
-            setFilename("somefile", true, false);
-            return output -> output.write("Magic".getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        } catch (Exception e){
+            setFilename(filename, false, false);
+            httpServletResponse.setContentType("application/json");
+
+            // TODO: Add support for XML when the OpenAPI specification has been corrected
+            return IIIFFacade.getInstance().getIIIFInfo(uriInfo.getRequestUri(), identifier, "json");
+        } catch (Exception e) {
             throw handleException(e);
         }
-    
     }
 
     /**

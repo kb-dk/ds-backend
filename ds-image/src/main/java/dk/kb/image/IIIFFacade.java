@@ -39,6 +39,7 @@ public class IIIFFacade {
 
     // https://iiif.io/api/image/3.0/
     public static final String IIIF_IMAGE3_TEMPLATE = "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}";
+    public static final String IIIF_INFO3_TEMPLATE = "/{identifier}/info.{ext}";
 
     public static synchronized IIIFFacade getInstance() {
         if (instance == null) {
@@ -92,6 +93,33 @@ public class IIIFFacade {
                 .set("format", format)
                 .expand();
 
+        UriBuilder builder = UriBuilder.
+                fromUri(ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)).
+                path(path);
+
+        final URI uri = builder.build();
+        return ProxyHelper.proxy(identifier, uri, requestURI);
+    }
+
+
+    /**
+     * IIIF Image Information
+     *
+     * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.
+     *
+     * @return <ul>
+      *   <li>code = 200, message = "Succes!", response = JsonldDto.class</li>
+      *   </ul>
+      * @throws ServiceException when other http codes should be returned
+      *
+      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
+     */
+    public StreamingOutput getIIIFInfo(URI requestURI, String identifier, String extension) {
+        // TODO: Verify extension
+        String path = UriTemplate.fromTemplate(IIIF_INFO3_TEMPLATE)
+                .set("identifier", identifier)
+                .set("ext", extension)
+                .expand();
         UriBuilder builder = UriBuilder.
                 fromUri(ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)).
                 path(path);

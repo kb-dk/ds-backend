@@ -20,6 +20,7 @@ import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.List;
@@ -104,6 +105,7 @@ public class IIPFacade {
             CVT = "jpeg";
         }
 
+        // TODO: Use the UriTemplate system like IIIFFacade
         // http://example.com/iipsrv.fcgi?FIF=/mymount/85/c1/85c1df89-bffe-48e0-8813-111f6f0fba50.jp2&CVT=jpeg
         UriBuilder builder = UriBuilder.
                 fromUri(ServiceConfig.getConfig().getString(KEY_IIP_SERVER)).
