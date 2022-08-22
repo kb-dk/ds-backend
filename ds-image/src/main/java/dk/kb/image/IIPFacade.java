@@ -25,27 +25,25 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * Proxy for an image server that supports the same APIs as <a href="https://iipimage.sourceforge.io/">IIPImage</a>.
- *
- * Supported APIs are IIP, IIIF image, Deepzoom and Zoomify.
+ * Proxy for an image server that supports the
+ * <a href="https://iipimage.sourceforge.io/documentation/protocol/">IIP Protocol</a>.
  *
  */
-public class IIPImageFacade {
-    private static final Logger log = LoggerFactory.getLogger(IIPImageFacade.class);
+public class IIPFacade {
+    private static final Logger log = LoggerFactory.getLogger(IIPFacade.class);
 
-    private static IIPImageFacade instance;
+    private static IIPFacade instance;
 
     public static final String KEY_IIP_SERVER = "config.imageservers.iip";
-    public static final String KEY_IIIF_SERVER = "config.imageservers.iiif";
 
-    public static synchronized IIPImageFacade getInstance() {
+    public static synchronized IIPFacade getInstance() {
         if (instance == null) {
-            instance = new IIPImageFacade();
+            instance = new IIPFacade();
         }
         return instance;
     }
 
-    private IIPImageFacade() {
+    private IIPFacade() {
         log.info("Created " + this);
     }
 

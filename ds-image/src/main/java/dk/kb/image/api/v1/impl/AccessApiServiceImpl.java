@@ -1,55 +1,15 @@
 package dk.kb.image.api.v1.impl;
 
-import dk.kb.image.IIPImageFacade;
-import dk.kb.image.api.v1.*;
-import java.util.ArrayList;
-import java.io.File;
-import dk.kb.image.model.v1.JsonldDto;
-import dk.kb.image.model.v1.JsonldPartOfDto;
-import dk.kb.image.model.v1.JsonldSeeAlsoDto;
-import dk.kb.image.model.v1.JsonldServiceDto;
-import dk.kb.image.model.v1.JsonldSizesDto;
-import dk.kb.image.model.v1.JsonldTilesDto;
-import java.util.List;
-import java.util.Map;
-
-import dk.kb.util.webservice.exception.ServiceException;
+import dk.kb.image.IIIFFacade;
+import dk.kb.image.IIPFacade;
+import dk.kb.image.api.v1.AccessApi;
+import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
-
+import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
-import java.util.Map;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.io.File;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import dk.kb.util.webservice.ImplBase;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.core.MediaType;
-import org.apache.cxf.jaxrs.model.wadl.Description;
-import org.apache.cxf.jaxrs.model.wadl.DocTarget;
-import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.apache.cxf.jaxrs.ext.multipart.*;
-
-import io.swagger.annotations.Api;
 
 /**
  * ds-image
@@ -59,8 +19,6 @@ import io.swagger.annotations.Api;
  */
 public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
-
-
 
     /**
      * IIIF Image Information
@@ -113,18 +71,22 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public javax.ws.rs.core.StreamingOutput iIIFImageRequest(String identifier, String region, String size, String rotation, String quality, String format) throws ServiceException {
-        // TODO: Implement...
-    
-        
-        try { 
+    public javax.ws.rs.core.StreamingOutput iIIFImageRequest(
+            String identifier, String region, String size, String rotation, String quality, String format)
+            throws ServiceException {
+        try {
+            String[] elements = identifier.split("[/\\\\]");
+            String filename = elements[elements.length - 1] + "." + format;
             // Show download link in Swagger UI, inline when opened directly in browser
-            setFilename("somefile", true, false);
-            return output -> output.write("Magic".getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        } catch (Exception e){
+            setFilename(filename, false, false);
+            httpServletResponse.setContentType(getMIME(format));
+
+            return IIIFFacade.getInstance().getIIIFImage(
+                    uriInfo.getRequestUri(),
+                    identifier, region, size, rotation, quality, format);
+        } catch (Exception e) {
             throw handleException(e);
         }
-    
     }
 
     /**
@@ -185,11 +147,47 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String filename = elements[elements.length - 1] + "." + CVT;
             // Show download link in Swagger UI, inline when opened directly in browser
             setFilename(filename, false, false);
-            return IIPImageFacade.getInstance().getIIPImage(
+            httpServletResponse.setContentType(getMIME(CVT));
+
+            return IIPFacade.getInstance().getIIPImage(
                     uriInfo.getRequestUri(),
                     FIF, WID, HEI, RGN, QLT, CNT, SHD, LYR, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
+
+    /**
+     * Derives the MIME type for replies. Only supports formats from IIIF Image and IIP protocols.
+     * @param format simple form, e.g. {@code jpeg}, {@code pdf}...
+     */
+    private String getMIME(String format) {
+        switch (format) {
+            // IIIF
+            case "jpg":
+            case "jpeg":
+                return "image/jpeg";
+            case "gif":
+                return "image/gif";
+            case "tif":
+            case "tiff":
+                return "image/tiff";
+            case "png":
+                return "image/png";
+            case "jp2k":
+            case "jpeg2k":
+            case "jpeg2000":
+            case "jp2":
+                return "image/jp2";
+            case "webp":
+                return "image/webp";
+            case "pdf":
+                return "application/pdf";
+            case "json":
+                return "application/json";
+            default:
+                throw new InternalServiceException("Unknown format, unable to determine mime type: '" + format + "'");
+        }
+    }
+
 }
