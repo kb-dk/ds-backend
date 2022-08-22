@@ -14,6 +14,8 @@ config:
 
   # Production machine setup
   imageservers:
+    # Full request URL sample: http://example.com:1234/iipsrv/iipsrv.fcgi?FIF=/my_images/hello.tif&CVT=jpg
     iip: 'http://example.com:1234/iipsrv/iipsrv.fcgi'
 
+    # Full request URL sample: http://example.com:1234/non-archival/Images/noerrealle_portraetter/nap_2654/full/!166,/0/native.jpg
     iiif: 'http://example.com:1234/'
