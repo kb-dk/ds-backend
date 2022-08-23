@@ -429,7 +429,7 @@ paths:
             A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.
             
   # IIIF Image Information          
-  /{identifier}/info.json:
+  /{identifier}/info.{format}:
     get:
       tags:
         - 'Access'
@@ -442,6 +442,14 @@ paths:
         required: true
         schema:
           type: string
+      
+      - name: format
+        in: path
+        description: "The service returns technical information about the requested image in JSON format. XML is also supported as it was used in version one of the IIIF API"
+        required: true
+        schema:
+          type: string
+          enum: ["json", "xml"]
 
       x-streamingOutput: true
       responses:
@@ -451,7 +459,10 @@ paths:
             content: 
               application/ld+json:
                 schema:
-                  $ref: '#/components/schemas/jsonld'
+                  $ref: '#/components/schemas/IIIF_info'
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/IIIF_info'
                   
  # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -527,11 +538,11 @@ components:
       maxItems: 2
     
     # jsonld response for IIIF image information
-    jsonld:
+    IIIF_info:
       type: object
       properties:
         # IIIF uses @context. How do we implement the @ in the OpenAPI YAML
-        context:
+        '@context':
           type: string
           description: URI of image
           example: "http://iiif.io/api/image/3/context.json"
