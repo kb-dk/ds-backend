@@ -452,7 +452,22 @@ paths:
               application/ld+json:
                 schema:
                   $ref: '#/components/schemas/jsonld'
-                  
+  
+  # DeepZoom
+  /deepzoom:
+    get:
+      tags:
+        - 'Access'
+      summary: 'DeepZoom'
+      operationId: getDeepzoomImage
+      parameters:
+      - name: 
+      
+      
+      x-streamingOutput: true     
+      responses:
+        '200':
+            description: 'Succes!'
  # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
   #
