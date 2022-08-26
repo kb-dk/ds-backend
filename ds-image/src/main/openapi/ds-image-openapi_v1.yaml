@@ -451,7 +451,6 @@ paths:
           type: string
           enum: ["json", "xml"]
 
-      x-streamingOutput: true
       responses:
         # TODO: Update description to explain errors from CVT, WID, HEI, RNG and where ever needed. PFL! CTW!
         '200':
