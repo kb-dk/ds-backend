@@ -384,25 +384,24 @@ paths:
                   $ref: '#/components/schemas/jsonld'
   
   # DeepZoom
-  /deepzoom:
+  /deepzoom/{imageid}.dzi:
     get:
       tags:
         - 'Access'
-      summary: 'DeepZoom'
+      summary: 'DeepZoom Image'
       description: |- 
         Deep Zoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
         
         DeepZoom can bee used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below. 
       operationId: getDeepzoomImage
       parameters:
-      - name: DeepZoom
-        in: query
+      - name: imageid
+        in: path
         description: "Identifier for image. You must add a .dzi suffix to the end of your TIFF or JPEG2000 file path – do not change the name of the TIFF file itself)"
         required: true
         schema:
           type: string
-          default: "/"
-        example: "image/path.tif.dzi"
+        example: "image/path.tif"
       - $ref: '#/components/parameters/CNT'
       - $ref: '#/components/parameters/SHD'
       - $ref: '#/components/parameters/GAM'
@@ -416,6 +415,46 @@ paths:
       responses:
         '200':
             description: 'Succes!'
+
+  /deepzoom/{imageid}_files/{layer}/{tiles}.{format}:
+    get:
+      tags:
+        - 'Access'
+      summary: 'DeepZoom Tile'
+      operationId: getDeepzoomTile
+      parameters:
+      - name: imageid
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+        example: "image/path.tif"
+      - name: layer
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: integer
+      - name: tiles
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+        example: "0_0"
+      - name: format
+        in: path
+        description: ''
+        required: true
+        schema:
+          type: string
+          enum: ["jpeg", "json", "xml"]
+        
+      x-streamingOutput: true
+      responses:
+        '200':
+          description: 'Succes!'
  # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
   #
