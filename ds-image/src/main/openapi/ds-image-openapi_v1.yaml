@@ -391,8 +391,6 @@ paths:
       summary: 'DeepZoom Image'
       description: |- 
         Deep Zoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
-        
-        DeepZoom can bee used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below. 
       operationId: getDeepzoomImage
       parameters:
       - name: imageid
@@ -475,6 +473,8 @@ paths:
       tags:
         - 'Access'
       summary: 'DeepZoom Tile'
+      description: |- 
+        DeepZoom can bee used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below. 
       operationId: getDeepzoomTile
       parameters:
       - name: imageid
