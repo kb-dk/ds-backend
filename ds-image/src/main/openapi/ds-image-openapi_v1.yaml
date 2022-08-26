@@ -359,7 +359,7 @@ paths:
             A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.
             
   # IIIF Image Information          
-  /{identifier}/info.json:
+  /{identifier}/info.{format}:
     get:
       tags:
         - 'Access'
@@ -368,12 +368,19 @@ paths:
       parameters:
       - name: identifier
         in: path
-        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
+        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded. The OpenAPI grafical user interface takes care of the encoding when experimenting"
         required: true
         schema:
           type: string
+      
+      - name: format
+        in: path
+        description: "The service returns technical information about the requested image in JSON format. XML is also supported as it was used in version one of the IIIF API"
+        required: true
+        schema:
+          type: string
+          enum: ["json", "xml"]
 
-      x-streamingOutput: true
       responses:
         # TODO: Update description to explain errors from CVT, WID, HEI, RNG and where ever needed. PFL! CTW!
         '200':
@@ -381,7 +388,11 @@ paths:
             content: 
               application/ld+json:
                 schema:
-                  $ref: '#/components/schemas/jsonld'
+                  $ref: '#/components/schemas/IIIF_info'
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/IIIF_info'
+
   
   # DeepZoom
   /deepzoom/{imageid}.dzi:
@@ -465,9 +476,7 @@ paths:
                           xml:
                             attribute: true
                           example: 4752
-              
                   
-
   /deepzoom/{imageid}_files/{layer}/{tiles}.{format}:
     get:
       tags:
@@ -600,11 +609,14 @@ components:
       maxItems: 2
     
     # jsonld response for IIIF image information
-    jsonld:
+    IIIF_info:
+      xml:
+        name: info
+        namespace: 'http://library.stanford.edu/iiif/image-api/ns/'
       type: object
       properties:
         # IIIF uses @context. How do we implement the @ in the OpenAPI YAML
-        context:
+        '@context':
           type: string
           description: URI of image
           example: "http://iiif.io/api/image/3/context.json"
