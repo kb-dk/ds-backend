@@ -96,30 +96,9 @@ paths:
         # Equlization and Stretch are mentioned in the short documentation at https://iipimage.sourceforge.io/documentation/protocol/. However it is not clear how it is used. Furthermore these parameters are not described in the thorough descriiption at https://iipimage.sourceforge.io/IIPv105.pd
         
         # As of now, EQ and ST are not implemented in the OpenAPI version
-        - name: CNT
-          in: query
-          description: |-
-              Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float > 0. A value of 1.0 indicates no contrast change
-          schema:
-            type: number
-            format: float
-            minimum: 0
-            exclusiveMinimum: true
+        - $ref: '#/components/parameters/CNT'
             
-        - name: SHD
-          in: query
-          description: |-
-            Simulated hill-shading for image normal data. The argument is the angle of incidence of the light source in the horizontal plane (from 12 o’clock), h and the vertical angle of incidence, v, with 0 representing a horizontal direction and -1 vertically downwards
-            
-            **SHD has to be defined as h,v**
-          schema: 
-            type: array
-            items:
-              type: integer
-            minItems: 2
-            maxItems: 2
-          style: form
-          explode: false
+        - $ref: '#/components/parameters/SHD'
             
         - name: LYR
           in: query
@@ -151,22 +130,9 @@ paths:
               value: "!90"
               summary: "Flips image and rotates 90 degrees"
         
-        - name: GAM
-          in: query
-          description: |- 
-            Apply gamma correction, g: each pixel value to the power of g.
-            
-            If g=log or g=logarithm, the logarithm is applied
-          schema:
-            type: number
-            format: float
+        - $ref: '#/components/parameters/GAM'
         
-        - name: CMP
-          in: query
-          description: "Generate colormap using one of the standard colormap schemes, s: GREY, JET, COLD, HOT, RED, GREEN and BLUE."
-          schema: 
-            type: string
-            enum: ["GREY", "JET", "COLD", "HOT", "RED", "GREEN", "BLUE"]
+        - $ref: '#/components/parameters/CMP'
             
         - name: PFL
           in: query
@@ -182,48 +148,13 @@ paths:
             type: string
             #example: "800:20,20-440,440"
         
-        - name: CTW
-          in: query
-          description: |- 
-            Color twist / channel recombination. Recombine the available image channels into a new color image by multiplication through a matrix. Columns are separated by commas and rows are separated by semi-colons. Values can also be negative.
-            
-            Thus, for the 3×3 matrix example provided below, the RGB output image will have bands R = R*r1 + G*g1 + B*b1, G = R*r2 + G*g2 + B*b2, B = R*r3 + G*g3 + B*b3.
-            
-            For multi-band images, the row length should correspond to the number of available bands within the image. The number of output bands depends on the number of rows in the matrix. Thus, to output a 1 band greyscale image, specify just a single row.
-
-            Examples:
-            To perform naive conversion from 3 channel color to 1 channel grayscale: CTW=[0.33,0.33,0.33]
-            
-            To flip the R and B channels and map an RGB image to BGR: CTW=[0,0,1;0,1,0;1,0,0]
-            
-            For a 5-band multispectral image, to show the difference between the 5th and 2nd band (i.e. 5th-2nd) and outputting the result as grayscale: CTW=[0,-1,0,0,1]
-            
-            To create a false-color image from a 4-band RGB-IR image by mapping the G,R,IR channels to the output RGB: CTW=[0,1,0,0;0,0,1,0;0,0,0,1]
-            
-            **CTW has to be defined as [array;array;array] using ; as delimter between arrays and , between integers**
-          schema: 
-            type: string
+        - $ref: '#/components/parameters/CTW'
         
         # TODO: How do we handle empty arguments in the tooling?
         # OpenAPI does not like empty arguments.
-        - name: INV
-          in: query
-          description: "Invert image (no argument)"
-          schema: 
-            type: boolean
+        - $ref: '#/components/parameters/INV'
         
-        - name: COL
-          in: query
-          description: |- 
-            Color transformation to output space, c. Valid values are greyscale (GREY or GRAY) or to binary (BINARY). 
-            
-            Examples:
-            Convert to greyscale: COL=gray
-            
-            Convert to binary: COL=binary
-          schema: 
-              type: string
-              enum: ["gray", "grey", "binary"]
+        - $ref: '#/components/parameters/COL'
         
          # JTL, PTL and CVT has to be set after all other parameters in the implementation
         - name: JTL
@@ -262,7 +193,6 @@ paths:
 
       x-streamingOutput: true
       responses:
-        # TODO: Update description to explain errors from CVT, WID, HEI, RNG and where ever needed. PFL! CTW!
         '200':
           description: OK
           content:
@@ -459,9 +389,27 @@ paths:
       tags:
         - 'Access'
       summary: 'DeepZoom'
+      description: |- 
+        Deep Zoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
+        
+        DeepZoom can bee used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below. 
       operationId: getDeepzoomImage
       parameters:
-      - name: 
+      - name: DeepZoom
+        in: query
+        description: "Identifier for image. You must add a .dzi suffix to the end of your TIFF or JPEG2000 file path – do not change the name of the TIFF file itself)"
+        required: true
+        schema:
+          type: string
+          default: "/"
+        example: "image/path.tif.dzi"
+      - $ref: '#/components/parameters/CNT'
+      - $ref: '#/components/parameters/SHD'
+      - $ref: '#/components/parameters/GAM'
+      - $ref: '#/components/parameters/CMP'
+      - $ref: '#/components/parameters/CTW'
+      - $ref: '#/components/parameters/INV'
+      - $ref: '#/components/parameters/COL'
       
       
       x-streamingOutput: true     
@@ -790,3 +738,108 @@ components:
           format: int32
         message:
           type: string
+  
+  parameters:
+    # CNT for IIP and DeepZoom
+    CNT:
+      name: CNT
+      in: query
+      description: |-
+          Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float > 0. A value of 1.0 indicates no contrast change
+      schema:
+        type: number
+        format: float
+        minimum: 0
+        exclusiveMinimum: true
+    # SHD for IIP and DeepZoom
+    SHD:
+      name: SHD
+      in: query
+      description: |-
+        Simulated hill-shading for image normal data. The argument is the angle of incidence of the light source in the horizontal plane (from 12 o’clock), h and the vertical angle of incidence, v, with 0 representing a horizontal direction and -1 vertically downwards
+        
+        **SHD has to be defined as h,v**
+      schema: 
+        type: array
+        items:
+          type: integer
+        minItems: 2
+        maxItems: 2
+      style: form
+      explode: false
+    # GAM for IIP and DeepZoom
+    GAM:
+      name: GAM
+      in: query
+      description: |- 
+        Apply gamma correction, g: each pixel value to the power of g.
+        
+        If g=log or g=logarithm, the logarithm is applied
+      schema:
+        type: number
+        format: float
+    # CMP for IIP and DeepZoom
+    CMP:
+      name: CMP
+      in: query
+      description: "Generate colormap using one of the standard colormap schemes, s: GREY, JET, COLD, HOT, RED, GREEN and BLUE."
+      schema: 
+        type: string
+        enum: ["GREY", "JET", "COLD", "HOT", "RED", "GREEN", "BLUE"]
+    # CTW for IIP and DeepZoom
+    CTW:
+      name: CTW
+      in: query
+      description: |- 
+        Color twist / channel recombination. Recombine the available image channels into a new color image by multiplication through a matrix. Columns are separated by commas and rows are separated by semi-colons. Values can also be negative.
+        
+        Thus, for the 3×3 matrix example provided below, the RGB output image will have bands R = R*r1 + G*g1 + B*b1, G = R*r2 + G*g2 + B*b2, B = R*r3 + G*g3 + B*b3.
+        
+        For multi-band images, the row length should correspond to the number of available bands within the image. The number of output bands depends on the number of rows in the matrix. Thus, to output a 1 band greyscale image, specify just a single row.
+
+        Examples:
+        To perform naive conversion from 3 channel color to 1 channel grayscale: CTW=[0.33,0.33,0.33]
+        
+        To flip the R and B channels and map an RGB image to BGR: CTW=[0,0,1;0,1,0;1,0,0]
+        
+        For a 5-band multispectral image, to show the difference between the 5th and 2nd band (i.e. 5th-2nd) and outputting the result as grayscale: CTW=[0,-1,0,0,1]
+        
+        To create a false-color image from a 4-band RGB-IR image by mapping the G,R,IR channels to the output RGB: CTW=[0,1,0,0;0,0,1,0;0,0,0,1]
+        
+        **CTW has to be defined as [array;array;array] using ; as delimter between arrays and , between integers**
+      schema: 
+        type: string
+    # INV for IIP and DeepZoom
+    # OpenAPI does not like empty arguments. Here we are defining it as a boolean and handling it in the implementation
+    INV:
+      name: INV
+      in: query
+      description: "Invert image (no argument)"
+      schema: 
+        type: boolean
+    # COL for IIP and DeepZoom
+    COL:
+      name: COL
+      in: query
+      description: |- 
+        Color transformation to output space, c. Valid values are greyscale (GREY or GRAY) or to binary (BINARY). 
+        
+        Examples:
+        Convert to greyscale: COL=gray
+        
+        Convert to binary: COL=binary
+      schema: 
+          type: string
+          enum: ["gray", "grey", "binary"]
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
