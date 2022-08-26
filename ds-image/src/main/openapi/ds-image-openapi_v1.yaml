@@ -397,29 +397,77 @@ paths:
       parameters:
       - name: imageid
         in: path
-        description: "Identifier for image. You must add a .dzi suffix to the end of your TIFF or JPEG2000 file path – do not change the name of the TIFF file itself)"
+        description: "Identifier/path for image."
         required: true
         schema:
           type: string
         example: "image/path.tif"
-      - $ref: '#/components/parameters/CNT'
-      - $ref: '#/components/parameters/SHD'
-      - $ref: '#/components/parameters/GAM'
-      - $ref: '#/components/parameters/CMP'
-      - $ref: '#/components/parameters/CTW'
-      - $ref: '#/components/parameters/INV'
-      - $ref: '#/components/parameters/COL'
-      
       
       x-streamingOutput: true     
       responses:
         '200':
             description: 'Succes!'
             content:
-              image/*:
+              application/json:
                 schema:
-                  type: string
-                  format: binary
+                  type: object
+                  properties:
+                    TileSize:
+                      type: integer
+                    Overlap:
+                      type: integer
+                    Format:
+                      type: integer
+                    Size:
+                      type: object
+                      properties:
+                        Width:
+                          type: integer
+                        Height:
+                          type: integer
+                example:
+                - TileSize: 256
+                  Overlap: 0
+                  Format: "jpg"
+                  Size:
+                    Width: 3505
+                    Height: 4752
+              application/xml:
+                schema:
+                  xml: 
+                    name: 'Image'
+                    namespace: 'http://schemas.microsoft.com/deepzoom/2008'
+                  type: object
+                  properties:
+                    TileSize:
+                      type: integer
+                      xml:
+                        attribute: true
+                      example: 256
+                    Overlap:
+                      type: integer
+                      xml:
+                        attribute: true
+                      example: 0
+                    Format:
+                      type: integer
+                      xml:
+                        attribute: true
+                      example: 'jpg'
+                    Size:
+                      type: object
+                      properties:
+                        Width:
+                          type: integer
+                          xml:
+                            attribute: true
+                          example: 3505
+                        Height:
+                          type: integer
+                          xml:
+                            attribute: true
+                          example: 4752
+              
                   
 
   /deepzoom/{imageid}_files/{layer}/{tiles}.{format}:
@@ -431,37 +479,54 @@ paths:
       parameters:
       - name: imageid
         in: path
-        description: ''
+        description: 'Identifier/path for image.'
         required: true
         schema:
           type: string
         example: "image/path.tif"
       - name: layer
         in: path
-        description: ''
+        description: 'Zoom layer for the tile'
         required: true
         schema:
           type: integer
       - name: tiles
         in: path
-        description: ''
+        description: 'Tile number'
         required: true
         schema:
           type: string
         example: "0_0"
       - name: format
         in: path
-        description: ''
+        description: 'Output format'
         required: true
         schema:
           type: string
-          enum: ["jpeg", "json", "xml"]
+          enum: ["jpg", "png"]
+          
+      # IIP parameters 
+      - $ref: '#/components/parameters/CNT'
+      - $ref: '#/components/parameters/SHD'
+      - $ref: '#/components/parameters/GAM'
+      - $ref: '#/components/parameters/CMP'
+      - $ref: '#/components/parameters/CTW'
+      - $ref: '#/components/parameters/INV'
+      - $ref: '#/components/parameters/COL'
         
       x-streamingOutput: true
       responses:
         '200':
           description: 'Succes!'
- # The ping service should be in all projects, should not do any advanced processing
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+          
+                  
+              
+  # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
   #
   # Note that it is placed under /monitor. The top namespace /monitor is intended for
