@@ -538,6 +538,9 @@ components:
     
     # jsonld response for IIIF image information
     IIIF_info:
+      xml:
+        name: info
+        namespace: 'http://library.stanford.edu/iiif/image-api/ns/'
       type: object
       properties:
         # IIIF uses @context. How do we implement the @ in the OpenAPI YAML
