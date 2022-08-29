@@ -417,64 +417,9 @@ paths:
             description: 'Succes!'
             content:
               application/json:
-                schema:
-                  type: object
-                  properties:
-                    TileSize:
-                      type: integer
-                    Overlap:
-                      type: integer
-                    Format:
-                      type: integer
-                    Size:
-                      type: object
-                      properties:
-                        Width:
-                          type: integer
-                        Height:
-                          type: integer
-                example:
-                  TileSize: 256
-                  Overlap: 0
-                  Format: "jpg"
-                  Size:
-                    Width: 3505
-                    Height: 4752
+                $ref: '#/components/schemas/DeepzoomJSON'
               application/xml:
-                schema:
-                  xml: 
-                    name: 'Image'
-                    namespace: 'http://schemas.microsoft.com/deepzoom/2008'
-                  type: object
-                  properties:
-                    TileSize:
-                      type: integer
-                      xml:
-                        attribute: true
-                      example: 256
-                    Overlap:
-                      type: integer
-                      xml:
-                        attribute: true
-                      example: 0
-                    Format:
-                      type: integer
-                      xml:
-                        attribute: true
-                      example: 'jpg'
-                    Size:
-                      type: object
-                      properties:
-                        Width:
-                          type: integer
-                          xml:
-                            attribute: true
-                          example: 3505
-                        Height:
-                          type: integer
-                          xml:
-                            attribute: true
-                          example: 4752
+                $ref: '#/components/schemas/DeepzoomXML'
                   
   /deepzoom/{imageid}_files/{layer}/{tiles}.{format}:
     get:
@@ -811,6 +756,68 @@ components:
       - width
       - height
 
+    # JSON response for Deepzoom
+    DeepzoomJSON:
+      schema:
+        type: object
+        properties:
+          TileSize:
+            type: integer
+          Overlap:
+            type: integer
+          Format:
+            type: integer
+          Size:
+            type: object
+            properties:
+              Width:
+                type: integer
+              Height:
+                type: integer
+      example:
+        TileSize: 256
+        Overlap: 0
+        Format: "jpg"
+        Size:
+          Width: 3505
+          Height: 4752
+    
+    # XML response for Deepzoom
+    DeepzoomXML:
+      schema:
+        xml: 
+          name: 'Image'
+          namespace: 'http://schemas.microsoft.com/deepzoom/2008'
+        type: object
+        properties:
+          TileSize:
+            type: integer
+            xml:
+              attribute: true
+            example: 256
+          Overlap:
+            type: integer
+            xml:
+              attribute: true
+            example: 0
+          Format:
+            type: integer
+            xml:
+              attribute: true
+            example: 'jpg'
+          Size:
+            type: object
+            properties:
+              Width:
+                type: integer
+                xml:
+                  attribute: true
+                example: 3505
+              Height:
+                type: integer
+                xml:
+                  attribute: true
+                example: 4752
     # Basic status response component.
     Status:
       type: object
