@@ -202,10 +202,7 @@ public class IIPFacade {
         if (imageid == null || imageid.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter imageid must be defined");
         }
-        if (!("jpeg".equals(format) | "png".equals(format))) {
-            throw new InvalidArgumentServiceException(
-                    "The parameter format must be defined and must be either 'jpeg' or 'png'. It was '" + format + "'");
-        }
+        
         // TODO: Perform validation of all parameters
     }
 
