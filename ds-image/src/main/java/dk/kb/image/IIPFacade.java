@@ -137,6 +137,24 @@ public class IIPFacade {
         return ProxyHelper.proxy(FIF, uri, requestURI);
     }
 
+    public javax.ws.rs.core.StreamingOutput getDeepzoomDZI(
+            URI requestURI,
+            String imageid) throws ServiceException {
+        validateDeepzoomDZIRequest(imageid);
+
+        // Defaults
+
+        // TODO: Use the UriTemplate system like IIIFFacade
+        // http://example.com//fcgi-bin/iipsrv.fcgi?DeepZoom=/your/image/path.tif.dzi
+        UriBuilder builder = UriBuilder.
+                fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER)).
+                path(imageid + ".dzi"); // Mandatory
+
+        final URI uri = builder.build();
+
+        return ProxyHelper.proxy(imageid, uri, requestURI);
+    }
+
     public javax.ws.rs.core.StreamingOutput getDeepzoomTile(
             URI requestURI,
             String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD,
@@ -188,6 +206,19 @@ public class IIPFacade {
         }
         // TODO: Perform validation of all parameters
     }
+
+    /**
+     * Validates Deepzoom DZI parameters and throws appropriate exceptions if any are invalid.
+     * See https://iipimage.sourceforge.io/documentation/protocol/
+     * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon documentation
+     * https://openseadragon.github.io/docs/
+     * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
+     */
+    private void validateDeepzoomDZIRequest(
+            String imageid) {
+        if (imageid == null || imageid.isEmpty()) {
+            throw new InvalidArgumentServiceException("The parameter imageid must be defined");
+        }
 
     /**
      * Validates Deepzoom parameters and throws appropriate exceptions if any are invalid.

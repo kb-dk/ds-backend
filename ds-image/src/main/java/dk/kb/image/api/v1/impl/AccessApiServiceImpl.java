@@ -47,6 +47,10 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             setFilename(new File(imageid).getName() + ".dzi", false, false);
 
             return output -> output.write("Magic".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return IIPFacade.getInstance().getDeepzoomDZI(
+                    uriInfo.getRequestUri(),
+                    imageid);
+
         } catch (Exception e){
             throw handleException(e);
         }
