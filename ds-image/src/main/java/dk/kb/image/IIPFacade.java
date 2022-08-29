@@ -95,7 +95,7 @@ public class IIPFacade {
      */
     public javax.ws.rs.core.StreamingOutput getIIPImage(
             URI requestURI,
-            String FIF, Integer WID, Integer HEI, List<Float> RGN, Integer QLT, Float CNT, List<Integer> SHD,
+            String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, List<Integer> SHD,
             Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
         validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, SHD, LYR, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
@@ -141,7 +141,7 @@ public class IIPFacade {
      * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
      */
     private void validateIIPRequest(
-            String fif, Integer wid, Integer hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
+            String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
             Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
             List<Integer> jtl, List<Integer> ptl, String cvt) {
         if (fif == null || fif.isEmpty()) {

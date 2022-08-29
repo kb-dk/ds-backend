@@ -2,13 +2,17 @@ package dk.kb.image.api.v1.impl;
 
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
+import dk.kb.image.ProxyHelper;
 import dk.kb.image.api.v1.AccessApi;
+import dk.kb.image.model.v1.DeepzoomDZIDto;
+import dk.kb.image.model.v1.DeepzoomDZISizeDto;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.StreamingOutput;
 import java.util.List;
 
 /**
@@ -19,6 +23,91 @@ import java.util.List;
  */
 public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
+
+    /**
+     * DeepZoom Image information
+     *
+     * @param imageid: Identifier/path for image.
+     *
+     * @return <ul>
+      *   <li>code = 200, message = "Succes!", response = DeepzoomDZIDto.class</li>
+      *   </ul>
+      * @throws ServiceException when other http codes should be returned
+      *
+      * Deep Zoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
+      *
+      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
+     */
+    @Override
+    public DeepzoomDZIDto getDeepzoomDZI(String imageid) throws ServiceException {
+        // TODO: Implement...
+    
+
+        try {
+            DeepzoomDZIDto response = new DeepzoomDZIDto();
+        response.setTileSize(17467352);
+        response.setOverlap(-1859027536);
+        response.setFormat("k35O02");
+        DeepzoomDZISizeDto size = new DeepzoomDZISizeDto();
+        size.setWidth(-5436086360946841600L);
+        size.setHeight(3285390032067405824L);
+        response.setSize(size);
+        return response;
+        } catch (Exception e){
+            throw handleException(e);
+        }
+
+    }
+
+    /**
+     * DeepZoom Tile
+     *
+     * @param imageid: Identifier/path for image.
+     *
+     * @param layer: Zoom layer for the tile
+     *
+     * @param tiles: Tile specified as x_y at the given layer
+     *
+     * @param format: Output format
+     *
+     * @param CNT: Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float &gt; 0. A value of 1.0 indicates no contrast change
+     *
+     * @param SHD: Simulated hill-shading for image normal data. The argument is the angle of incidence of the light source in the horizontal plane (from 12 o’clock), h and the vertical angle of incidence, v, with 0 representing a horizontal direction and -1 vertically downwards  **SHD has to be defined as h,v**
+     *
+     * @param GAM: Apply gamma correction, g: each pixel value to the power of g.  If g&#x3D;log or g&#x3D;logarithm, the logarithm is applied
+     *
+     * @param CMP: Generate colormap using one of the standard colormap schemes, s: GREY, JET, COLD, HOT, RED, GREEN and BLUE.
+     *
+     * @param CTW: Color twist / channel recombination. Recombine the available image channels into a new color image by multiplication through a matrix. Columns are separated by commas and rows are separated by semi-colons. Values can also be negative.  Thus, for the 3×3 matrix example provided below, the RGB output image will have bands R &#x3D; R*r1 + G*g1 + B*b1, G &#x3D; R*r2 + G*g2 + B*b2, B &#x3D; R*r3 + G*g3 + B*b3.  For multi-band images, the row length should correspond to the number of available bands within the image. The number of output bands depends on the number of rows in the matrix. Thus, to output a 1 band greyscale image, specify just a single row.  Examples: To perform naive conversion from 3 channel color to 1 channel grayscale: CTW&#x3D;[0.33,0.33,0.33]  To flip the R and B channels and map an RGB image to BGR: CTW&#x3D;[0,0,1;0,1,0;1,0,0]  For a 5-band multispectral image, to show the difference between the 5th and 2nd band (i.e. 5th-2nd) and outputting the result as grayscale: CTW&#x3D;[0,-1,0,0,1]  To create a false-color image from a 4-band RGB-IR image by mapping the G,R,IR channels to the output RGB: CTW&#x3D;[0,1,0,0;0,0,1,0;0,0,0,1]  **CTW has to be defined as [array;array;array] using ; as delimter between arrays and , between integers**
+     *
+     * @param INV: Invert image (no argument)
+     *
+     * @param COL: Color transformation to output space, c. Valid values are greyscale (GREY or GRAY) or to binary (BINARY).   Examples: Convert to greyscale: COL&#x3D;gray  Convert to binary: COL&#x3D;binary
+     *
+     * @return <ul>
+      *   <li>code = 200, message = "Succes!", response = File.class</li>
+      *   </ul>
+      * @throws ServiceException when other http codes should be returned
+      *
+      * DeepZoom can bee used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below.
+      *
+      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
+     */
+    @Override
+    public javax.ws.rs.core.StreamingOutput getDeepzoomTile(String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
+        // TODO: Implement...
+
+
+        try {
+            // Show download link in Swagger UI, inline when opened directly in browser
+            setFilename("somefile", true, false);
+            return output -> output.write("Magic".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        } catch (Exception e){
+            throw handleException(e);
+        }
+
+    }
+
 
     /**
      * IIIF Image Information
@@ -33,13 +122,13 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public javax.ws.rs.core.StreamingOutput getImageInformation(String identifier) throws ServiceException {
+    public javax.ws.rs.core.StreamingOutput getImageInformation(String identifier, String format) throws ServiceException {
         try {
             String[] elements = identifier.split("[/\\\\]");
-            String filename = "info_" + elements[elements.length - 1] + ".json";
+            String filename = "info_" + elements[elements.length - 1] + "." + format;
             // Show download link in Swagger UI, inline when opened directly in browser
             setFilename(filename, false, false);
-            httpServletResponse.setContentType("application/json");
+            httpServletResponse.setContentType(getMIME(format));
 
             // TODO: Add support for XML when the OpenAPI specification has been corrected
             return IIIFFacade.getInstance().getIIIFInfo(uriInfo.getRequestUri(), identifier, "json");
@@ -139,10 +228,10 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public javax.ws.rs.core.StreamingOutput iIPImageRequest(
-        String FIF, Integer WID, Integer HEI, List<Float> RGN, Integer QLT, Float CNT, List<Integer> SHD,
-        Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
-        List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
+    public StreamingOutput iIPImageRequest(
+            String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, List<Integer> SHD,
+            Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
+            List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
         try {
             String[] elements = FIF.split("[/\\\\]");
             String filename = elements[elements.length - 1] + "." + CVT;
@@ -186,6 +275,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
                 return "application/pdf";
             case "json":
                 return "application/json";
+            case "xml":
+                return "application/xml";
             default:
                 throw new InternalServiceException("Unknown format, unable to determine mime type: '" + format + "'");
         }
