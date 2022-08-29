@@ -417,11 +417,11 @@ paths:
       parameters:
       - name: imageid
         in: path
-        description: "Identifier/path for image."
+        description: "Identifier for image."
         required: true
         schema:
           type: string
-        example: "image/path.tif"
+        example: "image_identifier"
 
       # Stream to avoid "retrieving, deserializing JSON, constructing POJOs, serializing JSON, sending JSON"-chain
       x-streamingOutput: true

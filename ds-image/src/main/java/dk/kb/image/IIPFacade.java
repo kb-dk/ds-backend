@@ -219,6 +219,7 @@ public class IIPFacade {
         if (imageid == null || imageid.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter imageid must be defined");
         }
+    }
 
     /**
      * Validates Deepzoom parameters and throws appropriate exceptions if any are invalid.
