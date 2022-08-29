@@ -434,7 +434,7 @@ paths:
                         Height:
                           type: integer
                 example:
-                - TileSize: 256
+                  TileSize: 256
                   Overlap: 0
                   Format: "jpg"
                   Size:
