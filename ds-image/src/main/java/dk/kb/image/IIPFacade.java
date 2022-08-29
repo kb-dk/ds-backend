@@ -37,6 +37,8 @@ public class IIPFacade {
 
     public static final String KEY_IIP_SERVER = "config.imageservers.iip";
 
+    public static final String KEY_DEEPZOOM_SERVER = "config.imageservers.deepzoom";
+
     public static synchronized IIPFacade getInstance() {
         if (instance == null) {
             instance = new IIPFacade();
@@ -149,8 +151,8 @@ public class IIPFacade {
         // TODO: Use the UriTemplate system like IIIFFacade
         // http://example.com//fcgi-bin/iipsrv.fcgi?DeepZoom=/your/image/path.tif.dzi
         UriBuilder builder = UriBuilder.
-                fromUri(ServiceConfig.getConfig().getString(KEY_IIP_SERVER)).
-                queryParam("imageid", imageid); // Mandatory
+                fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER)).
+                path(imageid + "_files").path("" + layer).path(tiles + "." + format); // Mandatory
         ProxyHelper.addIfPresent(builder, "layer", layer);
         ProxyHelper.addIfPresent(builder, "tiles", tiles);
         ProxyHelper.addIfPresent(builder, "format", format);
