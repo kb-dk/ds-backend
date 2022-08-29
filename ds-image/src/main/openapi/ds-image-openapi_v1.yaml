@@ -250,6 +250,7 @@ paths:
           required: true
           schema:
             type: string
+            default: "full"
             
         - name: size
           in: path
@@ -277,6 +278,7 @@ paths:
           required: true
           schema:
             type: string
+            default: "400,"
             
         - name: rotation
           in: path
