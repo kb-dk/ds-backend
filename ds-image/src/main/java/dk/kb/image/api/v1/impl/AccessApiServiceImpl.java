@@ -107,9 +107,11 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
 
 
         try {
-            // Show download link in Swagger UI, inline when opened directly in browser
-            setFilename("somefile", true, false);
-            return output -> output.write("Magic".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            httpServletResponse.setContentType(getMIME(format));
+            return IIPFacade.getInstance().getDeepzoomTile(
+                    uriInfo.getRequestUri(),
+                    imageid, layer, tiles, format, CNT, SHD, GAM, CMP, CTW, INV, COL);
+
         } catch (Exception e){
             throw handleException(e);
         }
