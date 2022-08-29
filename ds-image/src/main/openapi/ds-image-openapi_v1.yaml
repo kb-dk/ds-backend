@@ -412,7 +412,6 @@ paths:
           type: string
         example: "image/path.tif"
       
-      x-streamingOutput: true     
       responses:
         '200':
             description: 'Succes!'
