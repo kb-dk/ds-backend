@@ -50,6 +50,7 @@ paths:
             **WID requires CVT**
           schema:
             type: integer
+            format: int64
             
         - name: HEI
           in: query
@@ -59,6 +60,7 @@ paths:
             **HEI requires CVT**
           schema:
             type: integer
+            format: int64
 
         - name: RGN
           in: query
@@ -90,6 +92,7 @@ paths:
             JPEG is always lossy even with a value of 100, while PNG is lossles.
           schema:
             type: integer
+            format: int32
             minimum: 0
             maximum: 100
         
@@ -110,6 +113,7 @@ paths:
             The number of layers decoded will be limited to a maximum given by the MAX_LAYERS environment variable if this has been set in the server configuration. This can be useful to either limit the quality of the images users may see or to speed up decoding by only decoding the faster lower quality layers.
           schema:
             type: integer
+            format: int32
 
         - name: ROT
           in: query
@@ -417,9 +421,11 @@ paths:
             description: 'Succes!'
             content:
               application/json:
-                $ref: '#/components/schemas/DeepzoomJSON'
+                schema:
+                  $ref: '#/components/schemas/DeepzoomDZI'
               application/xml:
-                $ref: '#/components/schemas/DeepzoomXML'
+                schema:
+                  $ref: '#/components/schemas/DeepzoomDZI'
                   
   /deepzoom/{imageid}_files/{layer}/{tiles}.{format}:
     get:
@@ -443,6 +449,7 @@ paths:
         required: true
         schema:
           type: integer
+          format: int32
       - name: tiles
         in: path
         description: 'Tile specified as x_y at the given layer'
@@ -549,6 +556,7 @@ components:
       type: array
       items:
         type: integer
+        format: int32
       minItems: 2
       maxItems: 2
     
@@ -582,22 +590,27 @@ components:
           example: "level1"
         width:
           type: integer
+          format: int64
           description: The width in pixels of the full image, given as an integer.
           example: 6000
         height:
           type: integer
+          format: int64
           description: The height in pixels of the full image, given as an integer.
           example: 4000
         maxWidth:
           type: integer
+          format: int64
           description: The maximum width in pixels supported for this image. Clients must not expect requests with a width greater than this value to be supported. maxWidth must be specified if maxHeight is specified.
           example: 3000
         maxHeight:
           type: integer
+          format: int64
           description: The maximum height in pixels supported for this image. Clients must not expect requests with a height greater than this value to be supported. If maxWidth is specified and maxHeight is not, then clients should infer that maxHeight = maxWidth.
           example: 2000
         maxArea:
           type: integer
+          format: int64
           description: The maximum area in pixels supported for this image. Clients must not expect requests with a width*height greater than this value to be supported.
           example: 4000000
         sizes:
@@ -612,10 +625,12 @@ components:
                 example: "Size"
               width:
                 type: integer
+                format: int64
                 description: The width in pixels of the image to be requested, given as an integer.
                 example: 150
               height:
                 type: integer
+                format: int64
                 description: The height in pixels of the image to be requested, given as an integer.
                 example: 100 
             required:
@@ -633,15 +648,18 @@ components:
                 example: "Tile"
               scaleFactors:
                 type: integer
+                format: int32
                 description: The set of resolution scaling factors for the image’s predefined tiles, expressed as positive integers by which to divide the full size of the image. For example, a scale factor of 4 indicates that the service can efficiently deliver images at 1/4 or 25% of the height and width of the full image. A particular scale factor value should appear only once in the tiles array.
                 example: 2
                 minimum: 1
               width:
                 type: integer
+                format: int32
                 description: The width in pixels of the predefined tiles to be requested, given as an integer.
                 example: 512
               height:
                 type: integer
+                format: int32
                 description: The height in pixels of the predefined tiles to be requested, given as an integer. If it is not specified in the JSON, then it defaults to the same as width, resulting in square tiles.
                 example: 512
             required:
@@ -755,69 +773,46 @@ components:
       - profile
       - width
       - height
-
-    # JSON response for Deepzoom
-    DeepzoomJSON:
-      schema:
-        type: object
-        properties:
-          TileSize:
-            type: integer
-          Overlap:
-            type: integer
-          Format:
-            type: integer
-          Size:
-            type: object
-            properties:
-              Width:
-                type: integer
-              Height:
-                type: integer
-      example:
-        TileSize: 256
-        Overlap: 0
-        Format: "jpg"
-        Size:
-          Width: 3505
-          Height: 4752
     
-    # XML response for Deepzoom
-    DeepzoomXML:
-      schema:
-        xml: 
-          name: 'Image'
-          namespace: 'http://schemas.microsoft.com/deepzoom/2008'
-        type: object
-        properties:
-          TileSize:
-            type: integer
-            xml:
-              attribute: true
-            example: 256
-          Overlap:
-            type: integer
-            xml:
-              attribute: true
-            example: 0
-          Format:
-            type: integer
-            xml:
-              attribute: true
-            example: 'jpg'
-          Size:
-            type: object
-            properties:
-              Width:
-                type: integer
-                xml:
-                  attribute: true
-                example: 3505
-              Height:
-                type: integer
-                xml:
-                  attribute: true
-                example: 4752
+    # Response for Deepzoom DZI
+    DeepzoomDZI:
+      xml: 
+        name: 'Image'
+        namespace: 'http://schemas.microsoft.com/deepzoom/2008'
+      type: object
+      properties:
+        TileSize:
+          type: integer
+          format: int32
+          xml:
+            attribute: true
+          example: 256
+        Overlap:
+          type: integer
+          format: int32
+          xml:
+            attribute: true
+          example: 0
+        Format:
+          type: string
+          xml:
+            attribute: true
+          example: 'jpg'
+        Size:
+          type: object
+          properties:
+            Width:
+              type: integer
+              format: int64
+              xml:
+                attribute: true
+              example: 3505
+            Height:
+              type: integer
+              format: int64
+              xml:
+                attribute: true
+              example: 4752
     # Basic status response component.
     Status:
       type: object
@@ -891,6 +886,7 @@ components:
         type: array
         items:
           type: integer
+          format: int32
         minItems: 2
         maxItems: 2
       style: form
