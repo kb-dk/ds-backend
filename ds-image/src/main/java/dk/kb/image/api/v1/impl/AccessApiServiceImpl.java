@@ -44,7 +44,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         // TODO: Implement...
 
         try {
-            httpServletResponse.setContentType(getMIME("json"));
+            // MIME-TYPE has to be set in proxy helper
+            httpServletResponse.setContentType(getMIME("xml"));
             setFilename(new File(imageid).getName() + ".dzi", false, false);
             return IIPFacade.getInstance().getDeepzoomDZI(
                     uriInfo.getRequestUri(),
