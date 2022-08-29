@@ -250,7 +250,7 @@ paths:
           required: true
           schema:
             type: string
-          default: "full"
+            default: "full"
             
         - name: size
           in: path
