@@ -135,6 +135,39 @@ public class IIPFacade {
         return ProxyHelper.proxy(FIF, uri, requestURI);
     }
 
+    public javax.ws.rs.core.StreamingOutput getDeepzoomTile(
+            URI requestURI,
+            String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD,
+            Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
+        validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, SHD, GAM, CMP, CTW, INV, COL);
+
+        // Defaults
+        if (format == null || "jpg".equals(format)) {
+            format = "jpeg";
+        }
+
+        // TODO: Use the UriTemplate system like IIIFFacade
+        // http://example.com//fcgi-bin/iipsrv.fcgi?DeepZoom=/your/image/path.tif.dzi
+        UriBuilder builder = UriBuilder.
+                fromUri(ServiceConfig.getConfig().getString(KEY_IIP_SERVER)).
+                queryParam("imageid", imageid); // Mandatory
+        ProxyHelper.addIfPresent(builder, "layer", layer);
+        ProxyHelper.addIfPresent(builder, "tiles", tiles);
+        ProxyHelper.addIfPresent(builder, "format", format);
+        ProxyHelper.addIfPresent(builder, "CNT", CNT);
+        ProxyHelper.addIfPresent(builder, "SHD", SHD);
+
+        ProxyHelper.addIfPresent(builder, "GAM", GAM);
+        ProxyHelper.addIfPresent(builder, "CMP", CMP);
+        ProxyHelper.addIfPresent(builder, "CTW", CTW);
+        ProxyHelper.addIfPresent(builder, "INV", INV); // TODO: Figure out how to add INV as a value-less param
+        ProxyHelper.addIfPresent(builder, "COL", COL);
+
+        final URI uri = builder.build();
+
+        return ProxyHelper.proxy(imageid, uri, requestURI);
+    }
+
     /**
      * Validates IIP parameters and throws appropriate exceptions if any are invalid.
      * See https://iipimage.sourceforge.io/documentation/protocol/
@@ -150,6 +183,26 @@ public class IIPFacade {
         if (!("jpeg".equals(cvt) | "png".equals(cvt))) {
             throw new InvalidArgumentServiceException(
                     "The parameter CVT must be defined and must be either 'jpeg' or 'png'. It was '" + cvt + "'");
+        }
+        // TODO: Perform validation of all parameters
+    }
+
+    /**
+     * Validates Deepzoom parameters and throws appropriate exceptions if any are invalid.
+     * See https://iipimage.sourceforge.io/documentation/protocol/
+     * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon documentation
+     * https://openseadragon.github.io/docs/
+     * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
+     */
+    private void validateDeepzoomTileRequest(
+            String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD,
+            Float GAM, String CMP, String CTW, Boolean INV, String COL) {
+        if (imageid == null || imageid.isEmpty()) {
+            throw new InvalidArgumentServiceException("The parameter imageid must be defined");
+        }
+        if (!("jpeg".equals(format) | "png".equals(format))) {
+            throw new InvalidArgumentServiceException(
+                    "The parameter format must be defined and must be either 'jpeg' or 'png'. It was '" + format + "'");
         }
         // TODO: Perform validation of all parameters
     }
