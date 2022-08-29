@@ -450,6 +450,7 @@ paths:
         schema:
           type: integer
           format: int32
+        default: 8
       - name: tiles
         in: path
         description: 'Tile specified as x_y at the given layer'
