@@ -445,7 +445,7 @@ paths:
           type: integer
       - name: tiles
         in: path
-        description: 'Tile number'
+        description: 'Tile specified as x_y at the given layer'
         required: true
         schema:
           type: string
