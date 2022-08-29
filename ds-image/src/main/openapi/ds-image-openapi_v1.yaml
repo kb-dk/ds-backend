@@ -422,7 +422,9 @@ paths:
         schema:
           type: string
         example: "image/path.tif"
-      
+
+      # Stream to avoid "retrieving, deserializing JSON, constructing POJOs, serializing JSON, sending JSON"-chain
+      x-streamingOutput: true
       responses:
         '200':
             description: 'Succes!'

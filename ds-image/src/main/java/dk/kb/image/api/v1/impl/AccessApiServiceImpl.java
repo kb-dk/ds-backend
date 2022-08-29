@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.StreamingOutput;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -39,11 +40,18 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public DeepzoomDZIDto getDeepzoomDZI(String imageid) throws ServiceException {
+    public StreamingOutput getDeepzoomDZI(String imageid) throws ServiceException {
         // TODO: Implement...
-    
 
         try {
+            setFilename(new File(imageid).getName() + ".dzi", false, false);
+
+            return output -> output.write("Magic".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        } catch (Exception e){
+            throw handleException(e);
+        }
+
+        /*try {
             DeepzoomDZIDto response = new DeepzoomDZIDto();
         response.setTileSize(17467352);
         response.setOverlap(-1859027536);
@@ -55,7 +63,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         return response;
         } catch (Exception e){
             throw handleException(e);
-        }
+        } */
 
     }
 
