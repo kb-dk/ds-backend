@@ -24,7 +24,7 @@ servers:
 
 paths:
   # Internet Imageing Protocol
-  /:
+  /IIP/:
     get:
       tags:
         - 'Access'
@@ -214,7 +214,7 @@ paths:
           description: An image with the provided FIF was not found.
 
 # IIIF Image request
-  /{identifier}/{region}/{size}/{rotation}/{quality}.{format}:
+  /IIIF/{identifier}/{region}/{size}/{rotation}/{quality}.{format}:
     get:
       tags:
         - 'Access'
@@ -365,7 +365,7 @@ paths:
             A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.
             
   # IIIF Image Information          
-  /{identifier}/info.{format}:
+  /IIIF/{identifier}/info.{format}:
     get:
       tags:
         - 'Access'
