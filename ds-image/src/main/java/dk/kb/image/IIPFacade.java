@@ -155,7 +155,7 @@ public class IIPFacade {
         else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
             builder = UriBuilder.
             fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM)).
-            queryParam("Deepzoom", imageid + ".dzi"); // Mandatory
+            queryParam("DeepZoom", imageid + ".dzi"); // Mandatory
         }
         else {
             log.error("No Deepzoom server defined");
@@ -189,8 +189,9 @@ public class IIPFacade {
             path(imageid + "_files").path("" + layer).path(tiles + "." + format);
         } 
         else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
+            builder = UriBuilder.
             fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM)).
-            queryParam(imageid + "_files/" + layer + "/" + tiles + "." + format);
+            queryParam("DeepZoom", imageid + "_files/" + layer + "/" + tiles + "." + format);
         }
         else {
             log.error("No Deepzoom server defined");
