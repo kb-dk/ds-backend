@@ -176,7 +176,7 @@ public class IIPFacade {
         validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, SHD, GAM, CMP, CTW, INV, COL);
 
         // Defaults
-        if (format == null || "jpg".equals(format)) {
+        if (format == null) {
             format = "jpeg";
         }
 
