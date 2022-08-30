@@ -15,6 +15,7 @@
 package dk.kb.image;
 
 import dk.kb.image.config.ServiceConfig;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
@@ -35,9 +36,11 @@ public class IIPFacade {
 
     private static IIPFacade instance;
 
-    public static final String KEY_IIP_SERVER = "config.imageservers.iip";
+    public static final String KEY_IIP_SERVER = "config.imageservers.iip.server";
 
-    public static final String KEY_DEEPZOOM_SERVER = "config.imageservers.deepzoom";
+    public static final String KEY_DEEPZOOM_SERVER_PATH = "config.imageservers.deepzoom.path";
+
+    public static final String KEY_DEEPZOOM_SERVER_PARAM = "config.imageservers.deepzoom.param";
 
     public static synchronized IIPFacade getInstance() {
         if (instance == null) {
@@ -143,12 +146,23 @@ public class IIPFacade {
         validateDeepzoomDZIRequest(imageid);
 
         // Defaults
-
+        UriBuilder builder;
+        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
+            builder = UriBuilder.
+            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PATH)).
+            path(imageid + ".dzi"); // Mandatory
+        } 
+        else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
+            builder = UriBuilder.
+            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM)).
+            queryParam("Deepzoom", imageid + ".dzi"); // Mandatory
+        }
+        else {
+            log.error("No Deepzoom server defined");
+            throw new InternalServiceException("No Deepzoom server defined");
+        }
         // TODO: Use the UriTemplate system like IIIFFacade
         // http://example.com//fcgi-bin/iipsrv.fcgi?DeepZoom=/your/image/path.tif.dzi
-        UriBuilder builder = UriBuilder.
-                fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER)).
-                path(imageid + ".dzi"); // Mandatory
 
         final URI uri = builder.build();
 
@@ -168,9 +182,21 @@ public class IIPFacade {
 
         // TODO: Use the UriTemplate system like IIIFFacade
         // http://example.com//fcgi-bin/iipsrv.fcgi?DeepZoom=/your/image/path.tif.dzi
-        UriBuilder builder = UriBuilder.
-                fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER)).
-                path(imageid + "_files").path("" + layer).path(tiles + "." + format); // Mandatory
+        UriBuilder builder;
+        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
+            builder = UriBuilder.
+            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PATH)).
+            path(imageid + "_files").path("" + layer).path(tiles + "." + format);
+        } 
+        else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
+            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM)).
+            queryParam(imageid + "_files/" + layer + "/" + tiles + "." + format);
+        }
+        else {
+            log.error("No Deepzoom server defined");
+            throw new InternalServiceException("No Deepzoom server defined");
+        }
+
         ProxyHelper.addIfPresent(builder, "layer", layer);
         ProxyHelper.addIfPresent(builder, "tiles", tiles);
         ProxyHelper.addIfPresent(builder, "format", format);
