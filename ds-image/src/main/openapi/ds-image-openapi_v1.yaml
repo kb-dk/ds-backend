@@ -5,12 +5,14 @@ info:
   description: |-
     This API implements the functionality of the IIPImage API into the OpenAPI framework used at KB.
     
-    The goal is to implement all four of the APIs from [IIPImage](https://iipimage.sourceforge.io/documentation/protocol/). These are as follows:
-    - [Internet Imaging Protocol](https://iipimage.sourceforge.io/IIPv105.pdf)
+    The goal is to implement key functionalities from [IIPImage](https://iipimage.sourceforge.io/documentation/protocol/). The following API's are implemented here:
     - [IIIF API](https://iiif.io/api/image/3.0/)
+    - [Internet Imaging Protocol](https://iipimage.sourceforge.io/IIPv105.pdf)
     - Deepzoom
-    - Zoomify
-    
+
+    The IIIF Framework is the cornerstone of the services used at The Royal Danish Library.
+    Internally IIP and Deepzoom are only used in specific cases. We recommend using IIIF when possible.    
+
     Specification for OpenAPI can be found [here](https://swagger.io/docs/specification/about/).
   contact:
     email: '${user.name}@kb.dk'
@@ -28,7 +30,10 @@ paths:
     get:
       tags:
         - 'Access'
-      summary: 'Internet Imaging Protocol '
+      summary: 'Internet Imaging Protocol'
+      description: |-
+        Most of our services at the Royal Library makes use of the IIIF standard.
+        However some of our services require the IIP protocol. This service (IIP) is in use but support may be dropped in the future.
       operationId: IIPImageRequest
       parameters:
         - name: FIF
@@ -150,7 +155,6 @@ paths:
             **An example: 800:20,20-440,440**
           schema:
             type: string
-            #example: "800:20,20-440,440"
         
         - $ref: '#/components/parameters/CTW'
         
@@ -388,7 +392,6 @@ paths:
           enum: ["json", "xml"]
 
       responses:
-        # TODO: Update description to explain errors from CVT, WID, HEI, RNG and where ever needed. PFL! CTW!
         '200':
             description: 'Succes!'
             content: 
@@ -407,8 +410,11 @@ paths:
         - 'Access'
       summary: 'DeepZoom Image'
       description: |- 
-        Deep Zoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
+        DeepZoom is depricated. Internally it is used for one specific service, which is to be handled differently in the future.  
+
+        DeepZoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
       operationId: getDeepzoomImage
+      deprecated: true
       parameters:
       - name: imageid
         in: path
@@ -435,6 +441,8 @@ paths:
         - 'Access'
       summary: 'DeepZoom Tile'
       description: |- 
+        DeepZoom is depricated. Internally it is used for one specific service, which is to be handled differently in the future.
+
         DeepZoom can bee used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below. 
       operationId: getDeepzoomTile
       parameters:
