@@ -25,7 +25,7 @@ servers:
     description: 'Version 1'
 
 paths:
-  # Internet Imageing Protocol
+  # Internet Imaging Protocol
   /IIP/:
     get:
       tags:
@@ -33,7 +33,9 @@ paths:
       summary: 'Internet Imaging Protocol'
       description: |-
         Most of our services at the Royal Library makes use of the IIIF standard.
-        However some of our services require the IIP protocol. This service (IIP) is in use but support may be dropped in the future.
+        However some of our services require the IIP protocol. 
+        This service (IIP) is in use but support may be dropped in the future.
+        There is no support or updates scheduled for this endpoint.
       operationId: IIPImageRequest
       parameters:
         - name: FIF
@@ -410,7 +412,7 @@ paths:
         - 'Access'
       summary: 'DeepZoom Image'
       description: |- 
-        DeepZoom is depricated. Internally it is used for one specific service, which is to be handled differently in the future.  
+        DeepZoom is deprecated. Internally it is used for one specific service, which is to be handled differently in the future.  
 
         DeepZoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
       operationId: getDeepzoomImage
@@ -441,10 +443,11 @@ paths:
         - 'Access'
       summary: 'DeepZoom Tile'
       description: |- 
-        DeepZoom is depricated. Internally it is used for one specific service, which is to be handled differently in the future.
+        DeepZoom is deprecated. Internally it is used for one specific service, which is to be handled differently in the future.
 
         DeepZoom can bee used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below. 
       operationId: getDeepzoomTile
+      deprecated: true
       parameters:
       - name: imageid
         in: path
