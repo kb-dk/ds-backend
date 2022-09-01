@@ -131,6 +131,8 @@ and those that the user has access to. The method is called every time a user tr
 #### getUserLicenses
 Method only takes the userattributes and returns a list of licences that the userattributes give access to. For each license
 the name, validFrom,ValidTo and a description will be returned. This information can be shown to the user.
+
+Developed and maintained by the Royal Danish Library.
 </description>
     
 
