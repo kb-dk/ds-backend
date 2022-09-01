@@ -3,8 +3,9 @@
 # Ds-license(Digitale Samlinger) by the Royal Danish Library.    
       
 ## Ds-license restricts access to items in collections based on the user credential information.
-The primary method in Ds-license is to filther a list of IDs (recordIds) and only return the ID's that the user has
-access to based in the user information. The filtering is done against a Solr server with all information about the
+The primary method in Ds-license is to filter a list of IDs (recordIds) and only return the subset 
+ID's that the user has access to based in the user information. Access can be restricted 
+to a presentationtype value. (Download,Search etc.) The filtering is done against a Solr server with all information about the
 records. The application has a GUI interface to define all access rules based on user attributes.
     
 ## User attributes
@@ -12,7 +13,10 @@ The User attributes is key-value pairs, where the values can be a list and a use
 All values and keys are strings. The key-values pairs can be WAYF attributes (https://www.wayf.dk/) which is a 
 standard for describing users at educational institutions and will have some guarateed values always. But the GUI administration
 can define arbitarity key-value rules and not just WAYF attributes. All user atttribute keys must be define in 
-the GUI and they will be available for use when defining a license attribute-group.
+the GUI and they will be available for use when defining a license attribute-group. The map 
+of key-value pairs is part of the API and must be set by the caller of the service. The ds-license 
+service has no information about the key/values or where they come from, they are just 
+defined as string in the configuration.
     
 ### Examples of UserAttributes (WAYF)
           
@@ -68,6 +72,12 @@ A license has to defines one or more attribute-groups. An attribute-group is map
 An attribute-group can define several mappings and every single mapping in the attribute group must validate for the license to validate.
 The reason you can define several attribute-groups in one license is to avoid defining many identical licences that gives 
 access to same material but by different conditions.
+
+## Attribute groups
+A license must have a least 1 attribute defined. If just one attribute validates then the  
+whole license will validate. Think of this as 'OR' between the attibute groups. Within an 
+attributegroup there can be defined several restrictions and all must match to validate 
+the attrivbute group. Think of this as 'AND' between the conditions in an attribute group.
     
 ### License validation algoritm
 First the validation check will limit to licenses that are valid for the date of the requests. Then for each license every 
@@ -133,11 +143,9 @@ mvn package
 ```
 
 ## Setup required to run the project local 
-Create local yaml-file: Take a copy of 'ds-license-behaviour.yaml'  and name it'ds-license-environment.yaml'
-
-Update the dbURL for the h2-database file to your environment. Ie. replace XXX with your user.
-
-The H2 will be created if does not exists and data will be persistent between sessions. Delete the h2-file if you want to reset the database.
+* Create local yaml-file: Take a copy of 'ds-license-behaviour.yaml'  and name it'ds-license-environment.yaml'
+* Update the dbURL for the h2-database file to your environment. Ie. replace XXX with your user.
+* The H2 will be created if does not exists and data will be persistent between sessions. Delete the h2-file if you want to reset the database.
 
 
 ## Test the webservice with
@@ -150,19 +158,13 @@ The Swagger UI is available at <http://localhost:8080/ds-license/api/>, providin
 
 
 ## Deployment to a server (development/stage/production).
-Install Tomcat9 server 
-
-Install PostgreSql (or any JDBC database).
-
-Create a database tablespace and define the tables using the file: resources/ddl/licensemodule_create_db.ddl
-
-Configure tomcat with the context enviroment file conf/ocp/ds-license.xml. Notice it points to the location on the file system where the yaml and logback file are located.
-
-Edit  conf/ds-license.logback.xml
-
-Make a ds-license.yaml file. (Make a copy of /conf/ds-license-environment.yaml rename it, and edit the properties). 
-
-Configure conf/ds-license.yaml with the JDCB properties for the database. 
+* Install Tomcat9 server 
+* Install PostgreSql (or any JDBC database).
+* Create a database tablespace and define the tables using the file: resources/ddl/licensemodule_create_db.ddl
+* Configure tomcat with the context enviroment file conf/ocp/ds-license.xml. Notice it points to the location on the file system where the yaml and logback file are located.
+* Edit  conf/ds-license.logback.xml
+* Make a ds-license.yaml file. (Make a copy of /conf/ds-license-environment.yaml rename it, and edit the properties). 
+* Configure conf/ds-license.yaml with the JDCB properties for the database. 
 
 
 See the file [DEVELOPER.md](DEVELOPER.md) for developer specific details and how to deploy to tomcat.
