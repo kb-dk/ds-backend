@@ -15,9 +15,11 @@
 # Ds-license(Digitale Samlinger) by the Royal Danish Library.    
       
 ## Ds-license restricts access to items in collections based on the user credential information.
-The primary method in Ds-license is to filther a list of IDs (recordIds) and only return the ID's that the user has
-access to based in the user information. The filtering is done against a Solr server with all information about the
+The primary method in Ds-license is to filter a list of IDs (recordIds) and only return the subset 
+ID's that the user has access to based in the user information. Access can be restricted 
+to a presentationtype value. (Download,Search etc.) The filtering is done against a Solr server with all information about the
 records. The application has a GUI interface to define all access rules based on user attributes.
+
     
 ## User attributes
 The User attributes is key-value pairs, where the values can be a list and a user can have multiple key-value pairs.
@@ -125,7 +127,7 @@ DDL file: test/resources/ddl/licensemodule_create_db.ddl
 While there are many methods exposed through the API only the following two are necessary for integrating License module into the software stack.
 
 #### checkAccessForIds
-This is the method that takes the UserAttributes and a list of IDs. The return value will be the IDs that was not removed in the filthering
+This is the method that takes the UserAttributes and a list of IDs. The return value will be the IDs that was not removed in the filtering
 and those that the user has access to. The method is called every time a user tries to access or search materials.
     
 #### getUserLicenses
