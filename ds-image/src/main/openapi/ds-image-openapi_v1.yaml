@@ -413,7 +413,7 @@ paths:
       description: |- 
         DeepZoom is deprecated. Internally it is used for one specific service, which is to be handled differently in the future.  
 
-        DeepZoom is always used with the OpenSeadragon software. OpenSeadragon is capable of using IIIF directly through IIIF's *myimage/info.json*. 
+        DeepZoom is almost always used with the OpenSeadragon software. OpenSeadragon is capable of using IIIF directly through IIIF's *myimage/info.json*. 
 
         DeepZoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
       operationId: getDeepzoomImage
@@ -446,7 +446,7 @@ paths:
       description: |- 
         DeepZoom is deprecated. Internally it is used for one specific service, which is to be handled differently in the future.
 
-        DeepZoom is always used with the OpenSeadragon software. OpenSeadragon is capable of using IIIF directly through IIIF's *myimage/info.json*. 
+        DeepZoom is almost always used with the OpenSeadragon software. OpenSeadragon is capable of using IIIF directly through IIIF's *myimage/info.json*. 
 
         DeepZoom can bee used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below. 
       operationId: getDeepzoomTile
