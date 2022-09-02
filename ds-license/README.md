@@ -76,7 +76,8 @@ attributed group will be checked. If just one of the attribute groups validates 
 The license will give access to the groups (pakker) define for the license, but restricted to the presentationtype (Download etc.)
 For all the license that validates this will define a set of all groups (union of all groups) that will determine access.
 All the normal groups will each expand the positive filter query used for filtering Ids. All each must-group valided will remove
-the negative filter blocked by that must-group.
+the negative filter blocked by that must-group. See 'uml/License_validation_logic.png' for a visualisation 
+of the validation logic for a license.
     
     
 ## UML model 
