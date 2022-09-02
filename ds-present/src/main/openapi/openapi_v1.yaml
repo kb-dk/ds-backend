@@ -248,7 +248,7 @@ paths:
         required: true
         schema:
           type: string
-          example: "normal"
+          default: "normal"
       
       responses:
         '200':
