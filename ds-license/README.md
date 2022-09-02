@@ -73,9 +73,9 @@ access to same material but by different conditions.
 ### License validation algoritm
 First the validation check will limit to licenses that are valid for the date of the requests. Then for each license every 
 attributed group will be checked. If just one of the attribute groups validates then the license validates. 
-The license will give access to the groups (pakker) define for the license, but restricted to the presentationtype (Download etc.)
-For all the license that validates this will define a set of all groups (union of all groups) that will determine access.
-All the normal groups will each expand the positive filter query used for filtering Ids. All each must-group valided will remove
+The license will give access to the groups (pakker) defined for the license, but restricted to the presentationtype (Download etc.)
+Every license that validate will give access to more material.
+All the non-must groups will each expand the positive filter query used for filtering Ids. All each must-group valided will remove
 the negative filter blocked by that must-group. See 'uml/License_validation_logic.png' for a visualisation 
 of the validation logic for a license.
     
