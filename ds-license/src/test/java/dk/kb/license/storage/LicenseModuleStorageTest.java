@@ -51,8 +51,6 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     private static PresentationType DOWNLOAD = new  PresentationType(1, "Download","Download_dk", "Download_en");
     private static PresentationType THUMBNAILS = new  PresentationType(1, "Thumbnails" ,"Thumbnails_dk", "Thumbnails_en");
 
-
-
     @Test
     public void testInsertDomLicensePresentationType() throws Exception {
         String type1 = "unit_test_type1";

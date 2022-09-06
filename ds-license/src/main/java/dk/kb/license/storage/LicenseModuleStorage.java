@@ -70,7 +70,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     private static final String VALUE_COLUMN = "VALUE_ORG";
     private static final String VALUE_DK_COLUMN = "VALUE_DK";
     private static final String VALUE_EN_COLUMN = "VALUE_EN";
-    private static final String MUSTGROUP_COLUMN = "MUSTGROUP";
+    private static final String DENYGROUP_COLUMN = "DENYGROUP";
 
     private final static String selectLicensePresentationTypesQuery = " SELECT * FROM "
             + LICENSEPRESENTATIONTYPES_TABLE;
@@ -106,12 +106,12 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     private final static String persistLicenseGroupTypeQuery = "INSERT INTO " + LICENSEGROUPTYPES_TABLE + " ("
             + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + " ," + VALUE_EN_COLUMN + " ,"
-            + DESCRIPTION_DK_COLUMN + " ," + DESCRIPTION_EN_COLUMN + " ," + QUERY_COLUMN + " ," + MUSTGROUP_COLUMN
+            + DESCRIPTION_DK_COLUMN + " ," + DESCRIPTION_EN_COLUMN + " ," + QUERY_COLUMN + " ," + DENYGROUP_COLUMN
             + ") VALUES (?,?,?,?,?,?,?,?)"; // #|?|=8
 
     private final static String updateLicenseGroupTypeQuery = "UPDATE " + LICENSEGROUPTYPES_TABLE + " SET "
             + VALUE_DK_COLUMN + " = ? , " + VALUE_EN_COLUMN + " = ? ," + DESCRIPTION_DK_COLUMN + " = ? ,"
-            + DESCRIPTION_EN_COLUMN + " = ? ," + QUERY_COLUMN + " = ? ," + MUSTGROUP_COLUMN + " = ? " + "WHERE "
+            + DESCRIPTION_EN_COLUMN + " = ? ," + QUERY_COLUMN + " = ? ," + DENYGROUP_COLUMN + " = ? " + "WHERE "
             + ID_COLUMN + " = ? ";
 
     private final static String updateLicensePresentationTypeQuery = "UPDATE " + LICENSEPRESENTATIONTYPES_TABLE
@@ -292,22 +292,22 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     // query can be null or empty
     public void persistLicenseGroupType(String key, String value, String value_en, String description,
-            String description_en, String query, boolean mustGroup) throws Exception {
+            String description_en, String query, boolean denyGroup) throws Exception {
 
         if (!StringUtils.isNotEmpty(key)) {
-            throw new IllegalArgumentException("Key must not be null when creating new Group");
+            throw new IllegalArgumentException("Key can not be null when creating new Group");
         }
 
         if (!StringUtils.isNotEmpty(value)) {
-            throw new IllegalArgumentException("Value must not be null when creating new Group");
+            throw new IllegalArgumentException("Value can not be null when creating new Group");
         }
 
         if (!StringUtils.isNotEmpty(value_en)) {
-            throw new IllegalArgumentException("Value(EN) must not be null when creating new Group");
+            throw new IllegalArgumentException("Value(EN) can not be null when creating new Group");
         }
 
         if (!StringUtils.isNotEmpty(query)) {
-            throw new IllegalArgumentException("Query must not be null when creating new Group");
+            throw new IllegalArgumentException("Query can not be null when creating new Group");
         }
 
         log.info("Persisting new  license group type: " + key);
@@ -323,7 +323,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             stmt.setString(5, description);
             stmt.setString(6, description_en);
             stmt.setString(7, query);
-            stmt.setBoolean(8, mustGroup);
+            stmt.setBoolean(8, denyGroup);
             stmt.execute();
             connection.commit();
         } catch (SQLException e) {
@@ -334,7 +334,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     }
 
     public void updateLicenseGroupType(long id, String value_dk, String value_en, String description,
-            String description_en, String query, boolean mustGroup) throws Exception {
+            String description_en, String query, boolean denyGroup) throws Exception {
 
         try (PreparedStatement stmt = connection.prepareStatement(updateLicenseGroupTypeQuery);) {
             log.info("Updating Group type with id:" + id);
@@ -346,7 +346,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             stmt.setString(3, description);
             stmt.setString(4, description_en);
             stmt.setString(5, query);
-            stmt.setBoolean(6, mustGroup);
+            stmt.setBoolean(6, denyGroup);
             stmt.setLong(7, id);
 
             int updated = stmt.executeUpdate();
@@ -468,7 +468,7 @@ public class LicenseModuleStorage implements AutoCloseable {
                     "Validation error. Name/description too short or validTo/validFrom not legal dates");
         }
         if (!validateAttributesValues) {
-            throw new IllegalArgumentException("Validation error. Attributes or values must not be empty");
+            throw new IllegalArgumentException("Validation error. Attributes or values can not be empty");
         }
 
         Long licenseId;
@@ -521,8 +521,8 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description = rs.getString(DESCRIPTION_DK_COLUMN);
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
-                boolean mustGroup = rs.getBoolean(MUSTGROUP_COLUMN);
-                GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, mustGroup);
+                boolean denyGroup = rs.getBoolean(DENYGROUP_COLUMN);
+                GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
                 list.add(item);
             }
             return list;
