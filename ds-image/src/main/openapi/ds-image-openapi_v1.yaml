@@ -321,18 +321,21 @@ paths:
           description: |-
             The quality parameter determines whether the image is delivered in color, grayscale or black and white.
             
+            `default` (IIIF 3.0) and `native` (IIIF 1.0) has the same effect.
+            
             | Form | Description |
             |------|-------------|
             |**color**|  The image is returned with all of its color information.|
             |**gray**|  The image is returned in grayscale, where each pixel is black, white or any shade of gray in between.|
             |**bitonal**|  The image returned is bitonal, where each pixel is either black or white.|
             |**default**|  The image is returned using the server’s default quality (e.g. color, gray or bitonal) for the image.|
+            |**native**|  The image is returned using the server’s default quality (e.g. color, gray or bitonal) for the image.|
             
             The default quality exists to support [level 0 compliant implementations](https://iiif.io/api/image/3.0/compliance/#quality) that may not know the qualities of individual images in their collections. It also provides a convenience for clients that know the values for all other parameters of a request except the quality (e.g. .../full/120,80/90/{quality}.png to request a thumbnail) in that a preliminary image information request that would only serve to find out which qualities are available can be avoided.
           required: true
           schema:
             type: string
-            enum: ["color","gray","bitonal","default"]
+            enum: ["color","gray","bitonal","default", "native"]
             default: "default"
         
         - name: format
@@ -392,6 +395,8 @@ paths:
           type: string
           enum: ["json", "xml"]
 
+      # TODO: This is not very clean, but the alternative seems to be to copy JSONs. Find a third way
+      x-streamingOutput: true
       responses:
         '200':
             description: 'Succes!'
@@ -409,24 +414,26 @@ paths:
     get:
       tags:
         - 'Access'
-      summary: 'DeepZoom Image'
+      summary: 'DeepZoom Image information'
       description: |- 
         DeepZoom is deprecated. Internally it is used for one specific service, which is to be handled differently in the future.  
 
         DeepZoom is almost always used with the OpenSeadragon software. OpenSeadragon is capable of using IIIF directly through IIIF's *myimage/info.json*. 
 
         DeepZoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
-      operationId: getDeepzoomImage
+      operationId: getDeepzoomDZI
       deprecated: true
       parameters:
       - name: imageid
         in: path
-        description: "Identifier/path for image."
+        description: "Identifier for image."
         required: true
         schema:
           type: string
-        example: "image/path.tif"
-      
+        example: "image_identifier"
+
+      # Stream to avoid "retrieving, deserializing JSON, constructing POJOs, serializing JSON, sending JSON"-chain
+      x-streamingOutput: true
       responses:
         '200':
             description: 'Succes!'
@@ -480,7 +487,7 @@ paths:
         required: true
         schema:
           type: string
-          enum: ["jpg", "png"]
+          enum: ["jpg", "png", "jpeg"]
           
       # IIP parameters 
       - $ref: '#/components/parameters/CNT'

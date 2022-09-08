@@ -17,8 +17,8 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
                     // If the project uses Java 11 instead of Java 17, remove the lines with
                     //   USE_JAVA_VERSION and MAVEN_SKIP_RC
                     // and update inheritsFrom a few lines above
-                    envVar(key: 'USE_JAVA_VERSION', value: 'java-17'),
-                    envVar(key: 'MAVEN_SKIP_RC', value: 'true'),
+                    //envVar(key: 'USE_JAVA_VERSION', value: 'java-17'),
+                    //envVar(key: 'MAVEN_SKIP_RC', value: 'true'),
 
                     //This fixes the error with en_US.utf8 not being found
                     envVar(key:"LC_ALL", value:"C.utf8")
@@ -56,19 +56,19 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
                                 taskScanner(highTags:'FIXME', normalTags:'TODO', includePattern: '**/*.java', excludePattern: 'target/**/*')]
                 }
 
-                stage('Create test project') {
-                    recreateProject(projectName)
+//                stage('Create test project') {
+//                    recreateProject(projectName)
 
-                    openshift.withProject(projectName) {
+//                    openshift.withProject(projectName) {
 
-                        stage("Create build and deploy application") {
-                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-image")
-                            openshift.startBuild("ds-image", "--from-dir=.", "--follow")
-                            openshift.newApp("ds-image:latest")
-                            openshift.create("route", "edge", "--service=ds-image")
-                        }
-                    }
-                }
+//                        stage("Create build and deploy application") {
+//                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-image")
+//                            openshift.startBuild("ds-image", "--from-dir=.", "--follow")
+//                            openshift.newApp("ds-image:latest")
+//                            openshift.create("route", "edge", "--service=ds-image")
+//                        }
+//                    }
+//                }
 
                 stage('Push to Nexus (if Master)') {
                     sh 'env'
