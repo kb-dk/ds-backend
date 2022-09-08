@@ -56,19 +56,19 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
                                 taskScanner(highTags:'FIXME', normalTags:'TODO', includePattern: '**/*.java', excludePattern: 'target/**/*')]
                 }
 
-                stage('Create test project') {
-                    recreateProject(projectName)
+//                stage('Create test project') {
+//                    recreateProject(projectName)
 
-                    openshift.withProject(projectName) {
+//                    openshift.withProject(projectName) {
 
-                        stage("Create build and deploy application") {
-                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-image")
-                            openshift.startBuild("ds-image", "--from-dir=.", "--follow")
-                            openshift.newApp("ds-image:latest")
-                            openshift.create("route", "edge", "--service=ds-image")
-                        }
-                    }
-                }
+//                        stage("Create build and deploy application") {
+//                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-image")
+//                            openshift.startBuild("ds-image", "--from-dir=.", "--follow")
+//                            openshift.newApp("ds-image:latest")
+//                            openshift.create("route", "edge", "--service=ds-image")
+//                        }
+//                    }
+//                }
 
                 stage('Push to Nexus (if Master)') {
                     sh 'env'
