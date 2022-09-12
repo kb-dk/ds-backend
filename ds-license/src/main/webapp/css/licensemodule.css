@@ -123,7 +123,7 @@ select, textarea, input[type="text"]{
     margin-right: 2em;
 }
 
-#list_configured_grouptypes .mustGroup{
+#list_configured_grouptypes .denyGroup{
     width: 8em;
 }
 

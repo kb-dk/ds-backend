@@ -12,7 +12,7 @@ Method | HTTP request | Description
 [**getUserLicenseQuery**](DsLicenseApi.md#getUserLicenseQuery) | **POST** /getUserLicenseQuery | Shows the filter query for Solr generated from the user attributes. This query is used to filter IDs
 [**getUserLicenses**](DsLicenseApi.md#getUserLicenses) | **POST** /getUserLicenses | Get a list of all licences that validates from user attributes.
 [**ping**](DsLicenseApi.md#ping) | **GET** /ping | Ping the server to check if the server is reachable.
-[**validateAccess**](DsLicenseApi.md#validateAccess) | **POST** /validateAccess | Validate if user has access to all groups in input. If just 1 of the group is a must group, then all must group much match
+[**validateAccess**](DsLicenseApi.md#validateAccess) | **POST** /validateAccess | Validate if user has access to all groups in input. If just 1 of the group is a deny group, then all deny group much match
 
 
 <a name="checkAccessForIds"></a>
@@ -493,7 +493,7 @@ No authorization required
 # **validateAccess**
 > ValidateAccessOutputDto validateAccess(validateAccessInputDto)
 
-Validate if user has access to all groups in input. If just 1 of the group is a must group, then all must group much match
+Validate if user has access to all groups in input. If just 1 of the group is a deny group, then all deny group much match
 
 ### Example
 ```java

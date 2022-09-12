@@ -48,10 +48,10 @@ public class LicenseModuleFacade {
      
     }
 
-    public static void persistDomLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean mustGroup) throws Exception {
+    public static void persistDomLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
  
-        performStorageAction("persistDomLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+mustGroup+")", storage -> {
-            storage.persistLicenseGroupType(key, value, value_en, description, description_en, query, mustGroup);
+        performStorageAction("persistDomLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {
+            storage.persistLicenseGroupType(key, value, value_en, description, description_en, query, denyGroup);
             return null;
         
         });

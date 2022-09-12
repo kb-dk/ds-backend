@@ -18,7 +18,7 @@ public class LicenseCache {
     // Cached instances
     private static ArrayList<License> cachedLicenses;
     private static ArrayList<GroupType> cachedLicenseGroupTypes;
-    private static ArrayList<GroupType> cachedLicenseMustGroupTypes;
+    private static ArrayList<GroupType> cachedLicenseDenyGroupTypes;
     private static ArrayList<AttributeType> cachedAttributeTypes;
     private static ArrayList<PresentationType> cachedLicensePresentationTypes;
     private static HashMap<String, GroupType> groupIdMap;
@@ -38,9 +38,9 @@ public class LicenseCache {
         return cachedLicenseGroupTypes;
     }
 
-    public static ArrayList<GroupType> getConfiguredMUSTLicenseGroupTypes() {
+    public static ArrayList<GroupType> getConfiguredDenyLicenseGroupTypes() {
         checkReload();
-        return cachedLicenseMustGroupTypes;
+        return cachedLicenseDenyGroupTypes;
     }
 
     public static ArrayList<AttributeType> getConfiguredAttributeTypes() {
@@ -82,9 +82,9 @@ public class LicenseCache {
             // Load LicenseGroupTypes
             cachedLicenseGroupTypes = storage.getLicenseGroupTypes();
 
-            // Load LicenseMustGroupTypes
+            // Load LicenseDenyGroupTypes
             ArrayList<GroupType> allList = storage.getLicenseGroupTypes();
-            cachedLicenseMustGroupTypes = LicenseValidator.filterDenyGroups(allList);
+            cachedLicenseDenyGroupTypes = LicenseValidator.filterDenyGroups(allList);
 
             // Load AttributeTypes
             cachedAttributeTypes = storage.getAttributeTypes();

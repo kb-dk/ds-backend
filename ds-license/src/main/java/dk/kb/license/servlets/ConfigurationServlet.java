@@ -62,13 +62,13 @@ public class ConfigurationServlet extends HttpServlet {
 				String description = request.getParameter("value_groupdescription");
 				String description_en = request.getParameter("value_en_groupdescription");
 				String query = request.getParameter("value_groupquery");
-				String isMustGroupStr = request.getParameter("mustGroupCheck");
-				boolean isMustGroup = false;
+				String isDenyGroupStr = request.getParameter("denyGroupCheck");
+				boolean isDenyGroup = false;
 				log.debug("Saving new grouptype:" + key);
-				if (isMustGroupStr != null) { // Checkbox is checked
-					isMustGroup = true;
+				if (isDenyGroupStr != null) { // Checkbox is checked
+					isDenyGroup = true;
 				}
-				LicenseModuleFacade.persistDomLicenseGroupType(key,value_dk,value_en,description,description_en,query, isMustGroup);
+				LicenseModuleFacade.persistDomLicenseGroupType(key,value_dk,value_en,description,description_en,query, isDenyGroup);
 
 			} else if ("save_attributetype".equals(event)) {
 
@@ -147,14 +147,14 @@ public class ConfigurationServlet extends HttpServlet {
 				String description = request.getParameter("value_groupdescription");
 				String description_en = request.getParameter("value_en_groupdescription");
 				String query = request.getParameter("value_groupquery");
-				String isMustGroupStr = request.getParameter("mustGroupCheck");
-				boolean isMustGroup = false;
+				String isDenyGroupStr = request.getParameter("denyGroupCheck");
+				boolean isDenyGroup = false;
 
-				if (isMustGroupStr != null) { // Checkbox is checked
-					isMustGroup = true;
+				if (isDenyGroupStr != null) { // Checkbox is checked
+					isDenyGroup = true;
 				}
 				log.debug("Updating license group with id:" + id);
-				LicenseModuleFacade.updateDomLicenseGroupType(Long.parseLong(id),value, value_en,description,description_en, query, isMustGroup);
+				LicenseModuleFacade.updateDomLicenseGroupType(Long.parseLong(id),value, value_en,description,description_en, query, isDenyGroup);
 			}						
 			else if ("updatePresentationType".equals(event)) {
 				log.debug("updatePresentationType called");
@@ -219,18 +219,18 @@ public class ConfigurationServlet extends HttpServlet {
 		//I see no other way that to repeat it when I want to the decomposition.
 
 		ArrayList<GroupType> groupsType = null;
-		ArrayList<GroupType> mustGroups = null; 
+		ArrayList<GroupType> denyGroups = null; 
 		try{
 			boolean validated = LicenseValidator.validateAccess(input);
 			infoMessage.append("Resultat af validateAccess() kald:"+validated +" \n");
 			infoMessage.append("Detaljer: \n");
 			groupsType = LicenseValidator.buildGroups(input.getGroups());
-			mustGroups = LicenseValidator.filterDenyGroups(groupsType);
-			if (mustGroups.size() > 0){
-				infoMessage.append("MUST-grupper i input:"+mustGroups +"\n");	
+			denyGroups = LicenseValidator.filterDenyGroups(groupsType);
+			if (denyGroups.size() > 0){
+				infoMessage.append("Deny-grupper i input:"+denyGroups +"\n");	
 			}
 			else{
-				infoMessage.append("Der blev ikke fundet MUST-grupper i input.\n");				
+				infoMessage.append("Der blev ikke fundet Deny-grupper i input.\n");				
 			}
 
 			ArrayList<License> allLicenses = LicenseCache.getAllLicense();
@@ -251,7 +251,7 @@ public class ConfigurationServlet extends HttpServlet {
 			GetUsersLicensesInputDto inputGroups = new GetUsersLicensesInputDto();
 			inputGroups.setAttributes(attributes);						
 
-			if (mustGroups.size() == 0){
+			if (denyGroups.size() == 0){
 				log.error("presentationtype:"+presentationType);
 				ArrayList<License> validatedLicenses = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(accessLicenses, groupsType, presentationType);
 
@@ -263,12 +263,12 @@ public class ConfigurationServlet extends HttpServlet {
 				}								        	          
 			}
 			else{
-				ArrayList<License> validatedLicenses = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(accessLicenses, mustGroups , presentationType);
+				ArrayList<License> validatedLicenses = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(accessLicenses, denyGroups , presentationType);
 				if (validatedLicenses.size() == 0){
-					infoMessage.append("Access-krav licenserne opfylder ikke alle MUST-gruppe betingelser.\n");		
+					infoMessage.append("Access-krav licenserne opfylder ikke alle Deny-gruppe betingelser.\n");		
 				}
 				else{
-					infoMessage.append("Følgende licenser opfylder tilsammen MUST-gruppe betingelser:"+validatedLicenses +"\n");				
+					infoMessage.append("Følgende licenser opfylder tilsammen Deny-gruppe betingelser:"+validatedLicenses +"\n");				
 				}
 			}		
 			//infoMessage.append("Generated Query:"+userGroupsDTO.getQueryString());
@@ -313,7 +313,7 @@ public class ConfigurationServlet extends HttpServlet {
 			GetUserQueryOutputDto output = LicenseValidator.getUserQuery(input);
 			infoMessage.append("Detaljer: \n");
 			infoMessage.append("Brugeren opfylder følgende grupper:"+output.getUserLicenseGroups() +"\n");
-			infoMessage.append("Brugeren mangler følgende MUST grupper:"+output.getUserNotInMustGroups() +"\n");	
+			infoMessage.append("Brugeren mangler følgende Deny grupper:"+output.getUserNotInDenyGroups() +"\n");	
 			infoMessage.append("Query:"+output.getQuery() +"\n");
 		}
 		catch(Exception e){

@@ -10,9 +10,9 @@ public class GroupType extends Persistent {
 	private String description_dk;
 	private String description_en;
 	private String query;
-	private boolean mustGroup;
+	private boolean denyGroup;
 	
-	public GroupType(Long id, String key,  String value_dk ,String value_en, String description_dk,String description_en, String query, boolean mustGroup) {
+	public GroupType(Long id, String key,  String value_dk ,String value_en, String description_dk,String description_en, String query, boolean denyGroup) {
 		super();
 		this.id = id;
 		this.key=key;
@@ -21,7 +21,7 @@ public class GroupType extends Persistent {
 		this.description_dk= description_dk;
 		this.description_en= description_en;
 	    this.query = query;
-		this.mustGroup=mustGroup;
+		this.denyGroup=denyGroup;
 	}
 	
 	public String getDescription_dk() {
@@ -49,16 +49,16 @@ public class GroupType extends Persistent {
 		this.value_dk = value_dk;
 	}
 
-	public void setMustGroup(boolean mustGroup) {
-		this.mustGroup = mustGroup;
+	public void setDenytGroup(boolean denyGroup) {
+		this.denyGroup =denyGroup;
 	}
 
 	public String getValue_dk() {
 		return value_dk;
 	}
 
-	public boolean isMustGroup() {
-		return mustGroup;
+	public boolean isDenyGroup() {
+		return denyGroup;
 	}
 		
 	public String getValue_en() {

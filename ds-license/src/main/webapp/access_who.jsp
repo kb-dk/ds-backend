@@ -23,7 +23,7 @@ for (int i=0;i<configuredDomGroups.size();i++){
 <tr class="<%=Util.getStyle(i)%>">
   <td  class="domsGroups">
     <label class="checkbox">
-      <input type="checkbox" <%if(Util.groupsContainGroupName(domGroups, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>"> <%=currentGroupName%> <%if (configuredDomGroups.get(i).isMustGroup()){out.println(" (MUST) ");} %>
+      <input type="checkbox" <%if(Util.groupsContainGroupName(domGroups, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>"> <%=currentGroupName%> <%if (configuredDomGroups.get(i).isDenyGroup()){out.println(" (DENY) ");} %>
     </label>
   </td>
   <td class="allowedGroups">
