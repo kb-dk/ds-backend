@@ -59,10 +59,10 @@ public class LicenseModuleFacade {
         
     }
 
-    public static void updateDomLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean mustGroup) throws Exception {
+    public static void updateDomLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
       
-        performStorageAction("updateDomLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+mustGroup+")", storage -> {
-            storage.updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, mustGroup);
+        performStorageAction("updateDomLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {
+            storage.updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, denyGroup);
             return null;
         
         });

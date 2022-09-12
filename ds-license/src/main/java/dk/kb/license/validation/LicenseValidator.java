@@ -204,7 +204,7 @@ public class LicenseValidator {
 
 		ArrayList<GroupType> denyGroups = filterDenyGroups(groups);
 		if (denyGroups.size() > 0){
-			log.debug("At least 1 deny groups found in input, number of MUST-groups:"+denyGroups.size());			
+			log.debug("At least 1 deny groups found in input, number of Deny-groups:"+denyGroups.size());			
 		}
 
 		// First filter by valid date
@@ -219,7 +219,7 @@ public class LicenseValidator {
 			return false;
 		}
 
-		//two situations. At least one MUST group involved, or no MUST groups.
+		//two situations. At least one DENY group involved, or no DENY groups.
 		if (denyGroups.size() == 0){
 			log.debug("Case: no DENY group");		
 			//Simple situation. Just need to find 1 license having one of the groups with allowed presentationtype
@@ -228,9 +228,9 @@ public class LicenseValidator {
 		}
 		else{
 			// ALL groups+presentationtype must be in at least 1 license
-			//Only MUST groups are checked
+			//Only Deny groups are checked
 			log.debug("Case: at least 1 DENY group");
-			//notice only the mustGroups are used
+			//notice only the denyGroups are used
 			ArrayList<License> validatedLicenses = filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(accessLicenses, denyGroups , presentationType);
 			return (validatedLicenses.size() >0); //OK since at least 1 license found
 		}
@@ -409,7 +409,7 @@ public class LicenseValidator {
 	}
 
 
-	//For the no must group situation. Just one of the groups has to be matched
+	//For the no deny group situation. Just one of the groups has to be matched
 	//return when first license validate
 	public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(ArrayList<License> licenses,
 			ArrayList<GroupType> groups, PresentationType presentationType){
