@@ -84,7 +84,7 @@ public class LicenseCache {
 
             // Load LicenseMustGroupTypes
             ArrayList<GroupType> allList = storage.getLicenseGroupTypes();
-            cachedLicenseMustGroupTypes = LicenseValidator.filterMustGroups(allList);
+            cachedLicenseMustGroupTypes = LicenseValidator.filterDenyGroups(allList);
 
             // Load AttributeTypes
             cachedAttributeTypes = storage.getAttributeTypes();

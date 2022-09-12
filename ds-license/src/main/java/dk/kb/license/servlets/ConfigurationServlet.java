@@ -225,7 +225,7 @@ public class ConfigurationServlet extends HttpServlet {
 			infoMessage.append("Resultat af validateAccess() kald:"+validated +" \n");
 			infoMessage.append("Detaljer: \n");
 			groupsType = LicenseValidator.buildGroups(input.getGroups());
-			mustGroups = LicenseValidator.filterMustGroups(groupsType);
+			mustGroups = LicenseValidator.filterDenyGroups(groupsType);
 			if (mustGroups.size() > 0){
 				infoMessage.append("MUST-grupper i input:"+mustGroups +"\n");	
 			}
@@ -253,7 +253,7 @@ public class ConfigurationServlet extends HttpServlet {
 
 			if (mustGroups.size() == 0){
 				log.error("presentationtype:"+presentationType);
-				ArrayList<License> validatedLicenses = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(accessLicenses, groupsType, presentationType);
+				ArrayList<License> validatedLicenses = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(accessLicenses, groupsType, presentationType);
 
 				if (validatedLicenses.size() == 0){				
 					infoMessage.append("Ingen licenser opfylder gruppe betingelsen. \n");		
@@ -263,7 +263,7 @@ public class ConfigurationServlet extends HttpServlet {
 				}								        	          
 			}
 			else{
-				ArrayList<License> validatedLicenses = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeMustGroup(accessLicenses, mustGroups , presentationType);
+				ArrayList<License> validatedLicenses = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(accessLicenses, mustGroups , presentationType);
 				if (validatedLicenses.size() == 0){
 					infoMessage.append("Access-krav licenserne opfylder ikke alle MUST-gruppe betingelser.\n");		
 				}

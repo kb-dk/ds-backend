@@ -202,7 +202,7 @@ public class LicenseValidator {
 			throw new InvalidArgumentServiceException("At least 1 unknown group  in validateAccess:"+input.getGroups());
 		}		
 
-		ArrayList<GroupType> mustGroups = filterMustGroups(groups);
+		ArrayList<GroupType> mustGroups = filterDenyGroups(groups);
 		if (mustGroups.size() > 0){
 			log.debug("At least 1 MUST groups found in input, number of MUST-groups:"+mustGroups.size());			
 		}
@@ -223,7 +223,7 @@ public class LicenseValidator {
 		if (mustGroups.size() == 0){
 			log.debug("Case: no MUST group");		
 			//Simple situation. Just need to find 1 license having one of the groups with allowed presentationtype
-			ArrayList<License> validatedLicenses = filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(accessLicenses, groups, presentationType);
+			ArrayList<License> validatedLicenses = filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(accessLicenses, groups, presentationType);
 			return (validatedLicenses.size() >0); //OK since at least 1 license found        	           
 		}
 		else{
@@ -231,7 +231,7 @@ public class LicenseValidator {
 			//Only MUST groups are checked
 			log.debug("Case: at least 1 MUST group");
 			//notice only the mustGroups are used
-			ArrayList<License> validatedLicenses = filterLicensesWithGroupNamesAndPresentationTypeMustGroup(accessLicenses, mustGroups , presentationType);
+			ArrayList<License> validatedLicenses = filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(accessLicenses, mustGroups , presentationType);
 			return (validatedLicenses.size() >0); //OK since at least 1 license found
 		}
 	}
@@ -382,7 +382,7 @@ public class LicenseValidator {
 
 
 	//For the MUST group situation. All groups must be matched (not necessary by same license, all groups having the given presentationtype)  	
-	public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeMustGroup(ArrayList<License> licenses,
+	public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(ArrayList<License> licenses,
 			ArrayList<GroupType> groups, PresentationType presentationType){
 
 		//Iterator over groups first, since each must be found
@@ -411,7 +411,7 @@ public class LicenseValidator {
 
 	//For the no must group situation. Just one of the groups has to be matched
 	//return when first license validate
-	public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(ArrayList<License> licenses,
+	public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(ArrayList<License> licenses,
 			ArrayList<GroupType> groups, PresentationType presentationType){
 		ArrayList<License> filtered= new  ArrayList<License>();
 		for (License currentLicense : licenses){		
@@ -430,8 +430,8 @@ public class LicenseValidator {
 
 
 
-	//Will remove all non MUST-groups. 
-	public static ArrayList<GroupType> filterMustGroups(ArrayList<GroupType> groups){
+	//Will remove all non deny-groups. 
+	public static ArrayList<GroupType> filterDenyGroups(ArrayList<GroupType> groups){
 		ArrayList<GroupType> filteredGroups = new ArrayList<GroupType>();
 
 		for (GroupType currentGroup : groups){
