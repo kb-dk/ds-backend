@@ -7,9 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.license.storage.AttributeType;
-
+import dk.kb.license.storage.AuditLog;
 import dk.kb.license.storage.GroupType;
 import dk.kb.license.storage.PresentationType;
+import dk.kb.license.util.ChangeDifferenceText;
+import dk.kb.license.util.LicenseChangelogGenerator;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.storage.LicenseModuleStorage;
@@ -102,11 +104,30 @@ public class LicenseModuleFacade {
         
       
 
-    
+    /**
+     * If license id=0 a new will be created. Else it will update the license with the id
+     * 
+     * @param license
+     * @throws Exception
+     */
     
     public static void persistLicense(License license)  throws Exception {
-      
+        
         performStorageAction("persistLicense(description_dk=" + license.getDescription_dk() +")", storage -> {
+            AuditLog auditLog = null;
+            //audit log
+            if (license.getId() == 0 ) {
+               ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(license);              
+               auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create New License", license.getLicenseName(), changes.getBefore(), changes.getAfter());               
+
+            }
+            else {
+               License oldLicense = storage.getLicense(license.getId());
+               ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(oldLicense, license);
+               auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Update License", license.getLicenseName(), changes.getBefore(), changes.getAfter());                                               
+            }
+            
+            storage.persistAuditLog(auditLog);            
             storage.persistLicense(license);
             return null;        
         });

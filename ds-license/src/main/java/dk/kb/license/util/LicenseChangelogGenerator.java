@@ -134,6 +134,7 @@ public class LicenseChangelogGenerator {
        StringBuilder b = new StringBuilder();
        b.append("Attributes:"+NEWLINE);
        for (AttributeGroup g: groups) {
+           b.append("Attribute Group:"+NEWLINE);
            b.append(getAttributeGroupText(g));           
        }
         
