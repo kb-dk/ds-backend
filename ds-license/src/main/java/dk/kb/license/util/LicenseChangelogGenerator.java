@@ -45,7 +45,7 @@ public class LicenseChangelogGenerator {
      * The lines are name, valid dates, description, attributegroup(multiline) and licensecontent(multiline)
      * 
      */
-    public static ChangeDifferenceText getChanges(License licenseOld, License licenseNew) {
+    public static ChangeDifferenceText getLicenseChanges(License licenseOld, License licenseNew) {
     
 
         StringBuilder oldBuilder = new StringBuilder();
@@ -78,6 +78,32 @@ public class LicenseChangelogGenerator {
         return changes;
     }
     
+    
+    /**
+     * Full changetext of a license. Used when creating a new license
+     * 
+     */
+    public static ChangeDifferenceText getLicenseChanges(License license) {   
+        StringBuilder builder = new StringBuilder();
+        
+        String name = getNameText(license);
+        builder.append(name);
+               
+        String date = getValidDateText(license);
+        builder.append(date);
+
+        String description = getDescriptionText(license);
+        builder.append(description);
+        
+        String attributeGroups = getAttributeGroupsText(license.getAttributeGroups());
+        builder.append(attributeGroups);
+
+        String licenseContents = getLicenseContentsText(license.getLicenseContents());
+        builder.append(licenseContents);
+
+        ChangeDifferenceText changes = new ChangeDifferenceText("",builder.toString());
+        return changes;
+    }
     
     
     private static void addToBuildersIfDifferent(String oldText,String newText, StringBuilder oldBuilder,  StringBuilder newBuilder ) {
