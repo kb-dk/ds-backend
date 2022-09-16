@@ -1034,6 +1034,29 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
 
 
+    @Test
+    public void testPersistAndLoadAuditLogEntry() throws Exception {
+         long millis=System.currentTimeMillis();
+         String userName="teg";
+         String changeType="test";
+         String objectType="license";
+         String textBefore="before";
+         String textAfter="after";
+         
+        AuditLog auditLog1 = new AuditLog(millis,userName,changeType,objectType,textBefore,textAfter);
+        storage.persistAuditLog(auditLog1);
+        
+        //Load and validate entries
+        AuditLog auditLog2 = storage.getAuditLog(millis);        
+        assertEquals(auditLog1.getMillis(),auditLog2.getMillis());
+        assertEquals(auditLog1.getUsername(),auditLog2.getUsername());
+        assertEquals(auditLog1.getChangeType(),auditLog2.getChangeType());
+        assertEquals(auditLog1.getObjectName(),auditLog2.getObjectName());
+        assertEquals(auditLog1.getTextBefore(),auditLog2.getTextBefore());
+        assertEquals(auditLog1.getTextAfter(), auditLog2.getTextAfter());
+                
+    }
+    
 
 
 
