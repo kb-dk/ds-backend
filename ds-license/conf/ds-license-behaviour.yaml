@@ -9,6 +9,7 @@
 #
 #
 config:         
+  license_solr_servers: http://XXXX:50001/solr/doms.1.devel , http://XXXX:50001/solr/aviser.2.devel
   license_solr_filter_field: id
     
   #change URL path to local h2 storage for unittest   
