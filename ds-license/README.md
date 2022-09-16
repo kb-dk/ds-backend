@@ -1,5 +1,3 @@
-    
-      
 # Ds-license(Digitale Samlinger) by the Royal Danish Library.    
       
 ## Ds-license restricts access to items in collections based on the user credential information.
