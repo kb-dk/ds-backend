@@ -87,6 +87,8 @@ public class LicenseModuleStorage implements AutoCloseable {
     private final static String selectAllLicensesQuery = " SELECT * FROM " + LICENSE_TABLE;
     private final static String selectAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE millis = ? ";   
     private final static String selectLicenseQuery = " SELECT * FROM " + LICENSE_TABLE + " WHERE ID = ? ";
+    private final static String selectPresentationTypeQueryById = " SELECT * FROM " + LICENSEPRESENTATIONTYPES_TABLE + " WHERE ID = ? ";
+    private final static String selectPresentationTypeQueryByKey = " SELECT * FROM " + LICENSEPRESENTATIONTYPES_TABLE + " WHERE KEY_ID = ? ";
 
     private final static String persistLicensePresentationTypeQuery = "INSERT INTO "
             + LICENSEPRESENTATIONTYPES_TABLE + " (" + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + ","
@@ -733,10 +735,57 @@ public class LicenseModuleStorage implements AutoCloseable {
             throw new IllegalArgumentException("AuditId not found for millis:" + millis);
 
         } catch (SQLException e) {
-            log.error("SQL Exception in getLicense:" + e.getMessage());
+            log.error("SQL Exception in getAuditLog:" + e.getMessage());
             throw e;
         }
     }
+    
+    
+    
+    public PresentationType getPresentationTypeById(long id) throws Exception {
+
+
+
+        try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryById);) {
+            stmt.setLong(1, id);
+            
+            ResultSet rs = stmt.executeQuery();            
+            while (rs.next()) { // maximum one due to unique/primary key constraint                
+                String key = rs.getString( KEY_COLUMN);
+                String dk = rs.getString( VALUE_DK_COLUMN);
+                String en = rs.getString( VALUE_EN_COLUMN);                
+                PresentationType type = new PresentationType(id, key, dk, en);
+                return type;                                
+            }
+            throw new IllegalArgumentException("Presentationtype not found for id:" + id);
+
+        } catch (SQLException e) {
+            log.error("SQL Exception in getPresentationTypeById:" + e.getMessage());
+            throw e;
+        }
+    }
+    
+
+    public PresentationType getPresentationTypeByKey(String key) throws Exception {
+        try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryByKey);) {
+            stmt.setString(1, key);
+            
+            ResultSet rs = stmt.executeQuery();            
+            while (rs.next()) { // maximum one due to unique/primary key constraint                
+                Long id = rs.getLong( ID_COLUMN);
+                String dk = rs.getString( VALUE_DK_COLUMN);
+                String en = rs.getString( VALUE_EN_COLUMN);                
+                PresentationType type = new PresentationType(id, key, dk, en);
+                return type;                                
+            }
+            throw new IllegalArgumentException("Presentationtype not found for key:" + key);
+
+        } catch (SQLException e) {
+            log.error("SQL Exception in getPresentationType:" + e.getMessage());
+            throw e;
+        }
+    }
+
     
     
     protected void validateValue(String value) {

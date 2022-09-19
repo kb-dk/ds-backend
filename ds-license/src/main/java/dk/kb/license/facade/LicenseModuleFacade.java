@@ -25,8 +25,15 @@ public class LicenseModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacade.class);
 
     public static void persistDomLicensePresentationType(String key, String value_dk, String value_en) throws Exception {    
-         performStorageAction("persistDomLicensePresentationType(" + key + ","+value_dk +","+value_en+")", storage -> {
+        
+        performStorageAction("persistDomLicensePresentationType(" + key + ","+value_dk +","+value_en+")", storage -> {
+        
+            PresentationType newType = new PresentationType(0, key, value_dk, value_en);
             storage.persistLicensePresentationType(key, value_dk, value_en);
+            ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(null, newType);
+            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create presentationtype", key, changes.getBefore(), changes.getAfter());
+            storage.persistAuditLog(auditLog);
+            
             return null;
         
         });
@@ -52,8 +59,8 @@ public class LicenseModuleFacade {
 
     public static void persistDomLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
  
-        performStorageAction("persistDomLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {
-            storage.persistLicenseGroupType(key, value, value_en, description, description_en, query, denyGroup);
+        performStorageAction("persistDomLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {                    
+            storage.persistLicenseGroupType(key, value, value_en, description, description_en, query, denyGroup);        
             return null;
         
         });
@@ -64,7 +71,8 @@ public class LicenseModuleFacade {
     public static void updateDomLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
       
         performStorageAction("updateDomLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {
-            storage.updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, denyGroup);
+        storage.updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, denyGroup);
+            
             return null;
         
         });
@@ -77,8 +85,15 @@ public class LicenseModuleFacade {
     public static void updateDomPresentationType(long id, String value_dk, String value_en) throws Exception {
        
         performStorageAction("updateDomLicenseGroupType(" + id+","+value_dk+","+value_en +")", storage -> {
-            storage.updatePresentationType(id, value_dk, value_en);
-            return null;        
+
+           PresentationType oldType = storage.getPresentationTypeById(id);
+           PresentationType newType = new PresentationType(id,oldType.getKey(),value_dk,value_en);
+           storage.updatePresentationType(id, value_dk, value_en);
+
+           ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(oldType, newType);
+           AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Update presentationtype", oldType.getKey(), changes.getBefore(), changes.getAfter());
+           storage.persistAuditLog(auditLog);
+           return null;        
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
 
@@ -96,7 +111,12 @@ public class LicenseModuleFacade {
     
     public static void deleteDomPresentationType(String presentationName) throws Exception {
         performStorageAction("deleteDomPresentationType(" + presentationName +")", storage -> {
+            PresentationType oldType = storage.getPresentationTypeByKey(presentationName);
             storage.deletePresentationType(presentationName);
+
+           ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(oldType, null);
+           AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete presentationtype", oldType.getKey(), changes.getBefore(), changes.getAfter());                   
+           storage.persistAuditLog(auditLog);            
             return null;        
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache  
@@ -117,7 +137,7 @@ public class LicenseModuleFacade {
             AuditLog auditLog = null;
             //audit log
             if (license.getId() == 0 ) {
-               ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(license);              
+               ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null,license);              
                auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create New License", license.getLicenseName(), changes.getBefore(), changes.getAfter());               
 
             }
