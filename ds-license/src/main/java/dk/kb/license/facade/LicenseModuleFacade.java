@@ -165,23 +165,24 @@ public class LicenseModuleFacade {
        
     }
     
-    public static void persistDomAttributeType(String value) throws Exception {
-        performStorageAction("persistDomAttributeType("+value+")", storage -> {
-            storage.persistAttributeType(value);
+    public static void persistDomAttributeType(String attributeTypeName) throws Exception {
+        performStorageAction("persistDomAttributeType("+attributeTypeName+")", storage -> {
+            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create attribute", attributeTypeName,"",attributeTypeName);
+            storage.persistAttributeType(attributeTypeName);
+            storage.persistAuditLog(auditLog);
             return null;        
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
     
-    public static void deleteDomAttributeType(String attributeTypeName) throws Exception {
-     
+    public static void deleteDomAttributeType(String attributeTypeName) throws Exception {     
         performStorageAction(" deleteDomAttributeType("+attributeTypeName+")", storage -> {
+            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete attribute", attributeTypeName,attributeTypeName,"");
             storage.deleteAttributeType(attributeTypeName);
+            storage.persistAuditLog(auditLog);
             return null;        
         });
-        LicenseCache.reloadCache(); // Database changed, so reload cache        
-       
-
+        LicenseCache.reloadCache(); // Database changed, so reload cache              
     }
      
     
