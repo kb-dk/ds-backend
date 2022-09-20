@@ -53,7 +53,7 @@ public class ConfigurationServlet extends HttpServlet {
 				String value = request.getParameter("value_presentationtype");
 				String value_en = request.getParameter("value_en_presentationtype");
 				log.debug("Saving new presentationtype:" + key);
-				LicenseModuleFacade.persistDomLicensePresentationType(key,value,value_en);
+				LicenseModuleFacade.persistLicensePresentationType(key,value,value_en);
 			} else if ("save_grouptype".equals(event)) {
 				request.setAttribute("tab", "2");
 				String key = request.getParameter("key_grouptype");
@@ -68,14 +68,14 @@ public class ConfigurationServlet extends HttpServlet {
 				if (isDenyGroupStr != null) { // Checkbox is checked
 					isDenyGroup = true;
 				}
-				LicenseModuleFacade.persistDomLicenseGroupType(key,value_dk,value_en,description,description_en,query, isDenyGroup);
+				LicenseModuleFacade.persistLicenseGroupType(key,value_dk,value_en,description,description_en,query, isDenyGroup);
 
 			} else if ("save_attributetype".equals(event)) {
 
 				request.setAttribute("tab", "3");
 				String value = request.getParameter("value_attributetype");
 				log.debug("Saving new attributetype:" + value);
-				LicenseModuleFacade.persistDomAttributeType(value);
+				LicenseModuleFacade.persistAttributeType(value);
 
 			} else if ("validate".equals(event)) {
 				log.debug("validate called");
@@ -122,19 +122,19 @@ public class ConfigurationServlet extends HttpServlet {
 				log.debug("deletePresentationType called");
 				request.setAttribute("tab", "1");
 				String typeName = request.getParameter("typeName");				                                                           				
-				LicenseModuleFacade.deleteDomPresentationType(typeName);
+				LicenseModuleFacade.deletePresentationType(typeName);
 			}
 			else if ("deleteGroupType".equals(event)) {
 				log.debug("deleteGroup called");
 				request.setAttribute("tab", "2");
 				String typeName = request.getParameter("typeName");				                                                           				
-				LicenseModuleFacade.deleteDomLicenseGroupType(typeName);
+				LicenseModuleFacade.deleteLicenseGroupType(typeName);
 			}
 			else if ("deleteAttributeType".equals(event)) {
 				log.debug("deleteAttributeType called");
 				request.setAttribute("tab", "3");
 				String typeName = request.getParameter("typeName");				                                                           				
-				LicenseModuleFacade.deleteDomAttributeType(typeName);
+				LicenseModuleFacade.deleteAttributeType(typeName);
 			}
 			else if ("updateGroup".equals(event)) {
 				log.debug("updateGroup called");
@@ -154,7 +154,7 @@ public class ConfigurationServlet extends HttpServlet {
 					isDenyGroup = true;
 				}
 				log.debug("Updating license group with id:" + id);
-				LicenseModuleFacade.updateDomLicenseGroupType(Long.parseLong(id),value, value_en,description,description_en, query, isDenyGroup);
+				LicenseModuleFacade.updateLicenseGroupType(Long.parseLong(id),value, value_en,description,description_en, query, isDenyGroup);
 			}						
 			else if ("updatePresentationType".equals(event)) {
 				log.debug("updatePresentationType called");
@@ -164,7 +164,7 @@ public class ConfigurationServlet extends HttpServlet {
 				String value = request.getParameter("value_presentationtype");
 				String value_en = request.getParameter("value_en_presentationtype");							
 				log.debug("Updating presentatintype with id:" + id);
-				LicenseModuleFacade.updateDomPresentationType(Long.parseLong(id),value, value_en);
+				LicenseModuleFacade.updatePresentationType(Long.parseLong(id),value, value_en);
 			}						
 			else {								
 				log.error("Unknown event:" + event);

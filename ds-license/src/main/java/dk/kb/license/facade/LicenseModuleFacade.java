@@ -24,9 +24,9 @@ public class LicenseModuleFacade {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacade.class);
 
-    public static void persistDomLicensePresentationType(String key, String value_dk, String value_en) throws Exception {    
+    public static void persistLicensePresentationType(String key, String value_dk, String value_en) throws Exception {    
         
-        performStorageAction("persistDomLicensePresentationType(" + key + ","+value_dk +","+value_en+")", storage -> {
+        performStorageAction("persistLicensePresentationType(" + key + ","+value_dk +","+value_en+")", storage -> {
         
             PresentationType newType = new PresentationType(0, key, value_dk, value_en);
             storage.persistLicensePresentationType(key, value_dk, value_en);
@@ -40,8 +40,8 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache
     }
 
-    public static ArrayList<PresentationType> getDomLicensePresentationTypes() throws Exception {
-       return performStorageAction("persistDomLicensePresentationType()", storage -> {
+    public static ArrayList<PresentationType> getLicensePresentationTypes() throws Exception {
+       return performStorageAction("persistLicensePresentationType()", storage -> {
             return storage.getLicensePresentationTypes();                   
         });
                 
@@ -77,9 +77,9 @@ public class LicenseModuleFacade {
      
     }
 
-    public static void persistDomLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
+    public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
  
-        performStorageAction("persistDomLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {                    
+        performStorageAction("persistLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {                    
         GroupType g = new GroupType(0L,key,value,value_en,description,description_en,query,denyGroup);
 
         ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(null, g);
@@ -92,9 +92,9 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
 
-    public static void updateDomLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
+    public static void updateLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
       
-        performStorageAction("updateDomLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {
+        performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {
            GroupType oldGroupType = storage.getGroupTypeById(id);
             
             GroupType updateGroupType = new GroupType(0L,oldGroupType.getKey(),value_dk,value_en,description,description_en,query,denyGroup);
@@ -112,9 +112,9 @@ public class LicenseModuleFacade {
 
     }
 
-    public static void updateDomPresentationType(long id, String value_dk, String value_en) throws Exception {
+    public static void updatePresentationType(long id, String value_dk, String value_en) throws Exception {
        
-        performStorageAction("updateDomLicenseGroupType(" + id+","+value_dk+","+value_en +")", storage -> {
+        performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +")", storage -> {
 
            PresentationType oldType = storage.getPresentationTypeById(id);
            PresentationType newType = new PresentationType(id,oldType.getKey(),value_dk,value_en);
@@ -129,9 +129,9 @@ public class LicenseModuleFacade {
 
     }
     
-    public static void deleteDomLicenseGroupType(String groupName) throws Exception {
+    public static void deleteLicenseGroupType(String groupName) throws Exception {
    
-        performStorageAction("deleteDomLicenseGroupType(" + groupName +")", storage -> {
+        performStorageAction("deleteLicenseGroupType(" + groupName +")", storage -> {
            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete grouptype",groupName,groupName,"");
            storage.persistAuditLog(auditLog);
             storage.deleteLicenseGroupType(groupName);
@@ -141,8 +141,8 @@ public class LicenseModuleFacade {
     }
     
     
-    public static void deleteDomPresentationType(String presentationName) throws Exception {
-        performStorageAction("deleteDomPresentationType(" + presentationName +")", storage -> {
+    public static void deletePresentationType(String presentationName) throws Exception {
+        performStorageAction("deletePresentationType(" + presentationName +")", storage -> {
             PresentationType oldType = storage.getPresentationTypeByKey(presentationName);
             storage.deletePresentationType(presentationName);
 
@@ -188,17 +188,17 @@ public class LicenseModuleFacade {
     
 
     
-    public static ArrayList<GroupType> getDomLicenseGroupTypes() throws Exception {
+    public static ArrayList<GroupType> getLicenseGroupTypes() throws Exception {
    
-        return performStorageAction("getDomLicenseGroupTypes()", storage -> {
+        return performStorageAction("getLicenseGroupTypes()", storage -> {
             return storage.getLicenseGroupTypes();
                     
         });                        
        
     }
     
-    public static void persistDomAttributeType(String attributeTypeName) throws Exception {
-        performStorageAction("persistDomAttributeType("+attributeTypeName+")", storage -> {
+    public static void persistAttributeType(String attributeTypeName) throws Exception {
+        performStorageAction("persistAttributeType("+attributeTypeName+")", storage -> {
             AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create attribute", attributeTypeName,"",attributeTypeName);
             storage.persistAttributeType(attributeTypeName);
             storage.persistAuditLog(auditLog);
@@ -207,8 +207,8 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
     
-    public static void deleteDomAttributeType(String attributeTypeName) throws Exception {     
-        performStorageAction(" deleteDomAttributeType("+attributeTypeName+")", storage -> {
+    public static void deleteAttributeType(String attributeTypeName) throws Exception {     
+        performStorageAction("deleteAttributeType("+attributeTypeName+")", storage -> {
             AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete attribute", attributeTypeName,attributeTypeName,"");
             storage.deleteAttributeType(attributeTypeName);
             storage.persistAuditLog(auditLog);
@@ -218,8 +218,8 @@ public class LicenseModuleFacade {
     }
      
     
-    public static ArrayList<AttributeType> getDomAttributeTypes() throws Exception {
-        return performStorageAction("getDomAttributeTypes()", storage -> {
+    public static ArrayList<AttributeType> getAttributeTypes() throws Exception {
+        return performStorageAction("getAttributeTypes()", storage -> {
             return storage.getAttributeTypes();                    
         });                                       
     }
