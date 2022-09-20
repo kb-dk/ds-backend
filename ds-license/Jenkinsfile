@@ -72,10 +72,11 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
                     }
                 }
 
-                stage('Cleanup') {
-                    openshift.selector("project/${projectName}").delete()
-                }
-            }
+// Nothing to clean as long as stage('Create test project') is not enabled
+//                stage('Cleanup') {
+//                   openshift.selector("project/${projectName}").delete()
+//              }
+//            }
         } catch (e) {
             currentBuild.result = 'FAILURE'
             throw e
