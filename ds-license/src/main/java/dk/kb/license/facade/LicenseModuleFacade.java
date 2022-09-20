@@ -49,7 +49,14 @@ public class LicenseModuleFacade {
 
     public static void deleteLicense(long licenseId) throws Exception { 
         performStorageAction("deleteLicense(" + licenseId + ")", storage -> {
+
+            License license = storage.getLicense(licenseId);
+            ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(license,null);              
+
+            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete License", license.getLicenseName(), changes.getBefore(), changes.getAfter());               
+            
             storage.deleteLicense(licenseId);
+            storage.persistAuditLog(auditLog);
             return null;
         
         });
@@ -60,8 +67,13 @@ public class LicenseModuleFacade {
     public static void persistDomLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
  
         performStorageAction("persistDomLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {                    
-            storage.persistLicenseGroupType(key, value, value_en, description, description_en, query, denyGroup);        
-            return null;
+        GroupType g = new GroupType(0L,key,value,value_en,description,description_en,query,denyGroup);
+
+        ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(null, g);
+        AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create grouptype", key, changes.getBefore(), changes.getAfter());        
+        storage.persistLicenseGroupType(key, value, value_en, description, description_en, query, denyGroup);        
+        storage.persistAuditLog(auditLog);
+        return null;
         
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
@@ -71,8 +83,14 @@ public class LicenseModuleFacade {
     public static void updateDomLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
       
         performStorageAction("updateDomLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {
-        storage.updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, denyGroup);
+           GroupType oldGroupType = storage.getGroupTypeById(id);
             
+            GroupType updateGroupType = new GroupType(0L,oldGroupType.getKey(),value_dk,value_en,description,description_en,query,denyGroup);
+            ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(oldGroupType, updateGroupType);
+            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Update grouptype", value_dk, changes.getBefore(), changes.getAfter());        
+                      
+            storage.updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, denyGroup);
+            storage.persistAuditLog(auditLog);
             return null;
         
         });
@@ -102,6 +120,8 @@ public class LicenseModuleFacade {
     public static void deleteDomLicenseGroupType(String groupName) throws Exception {
    
         performStorageAction("deleteDomLicenseGroupType(" + groupName +")", storage -> {
+           AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete grouptype",groupName,groupName,"");
+           storage.persistAuditLog(auditLog);
             storage.deleteLicenseGroupType(groupName);
             return null;        
         });

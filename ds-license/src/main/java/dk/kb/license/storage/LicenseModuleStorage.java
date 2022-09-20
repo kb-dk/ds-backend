@@ -87,6 +87,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     private final static String selectAllLicensesQuery = " SELECT * FROM " + LICENSE_TABLE;
     private final static String selectAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE millis = ? ";   
     private final static String selectLicenseQuery = " SELECT * FROM " + LICENSE_TABLE + " WHERE ID = ? ";
+    private final static String selectGroupTypeQueryById = " SELECT * FROM " + LICENSEGROUPTYPES_TABLE + " WHERE ID = ? ";
     private final static String selectPresentationTypeQueryById = " SELECT * FROM " + LICENSEPRESENTATIONTYPES_TABLE + " WHERE ID = ? ";
     private final static String selectPresentationTypeQueryByKey = " SELECT * FROM " + LICENSEPRESENTATIONTYPES_TABLE + " WHERE KEY_ID = ? ";
 
@@ -743,9 +744,6 @@ public class LicenseModuleStorage implements AutoCloseable {
     
     
     public PresentationType getPresentationTypeById(long id) throws Exception {
-
-
-
         try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryById);) {
             stmt.setLong(1, id);
             
@@ -765,7 +763,32 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
     }
     
+    public GroupType getGroupTypeById(long id) throws Exception {
+        try (PreparedStatement stmt = connection.prepareStatement(selectGroupTypeQueryById);) {
+            stmt.setLong(1, id);
+            
+            ResultSet rs = stmt.executeQuery();            
+            while (rs.next()) { // maximum one due to unique/primary key constraint                
+                String key = rs.getString(KEY_COLUMN);
+                String value_dk = rs.getString(VALUE_DK_COLUMN);
+                String value_en = rs.getString(VALUE_EN_COLUMN);
+                String description = rs.getString(DESCRIPTION_DK_COLUMN);
+                String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
+                String query = rs.getString(QUERY_COLUMN);
+                boolean denyGroup = rs.getBoolean(DENYGROUP_COLUMN);
+                GroupType group = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
+            return group;
+            }
+            throw new IllegalArgumentException("Presentationtype not found for id:" + id);
 
+        } catch (SQLException e) {
+            log.error("SQL Exception in getPresentationTypeById:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    
+    
     public PresentationType getPresentationTypeByKey(String key) throws Exception {
         try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryByKey);) {
             stmt.setString(1, key);

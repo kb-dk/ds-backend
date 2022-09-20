@@ -8,11 +8,19 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.license.storage.Attribute;
 import dk.kb.license.storage.AttributeGroup;
+import dk.kb.license.storage.GroupType;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseContent;
 import dk.kb.license.storage.PresentationType;
 
-
+/**
+ * This class will generate changetext when a persistent object i updated
+ * 
+ * 
+ * 
+ * @author teg
+ *
+ */
 public class LicenseChangelogGenerator {
 
     private static String NEWLINE = "\n";
@@ -54,7 +62,7 @@ public class LicenseChangelogGenerator {
             return getNewLicenseChanges(licenseNew);
         }
         if (licenseNew == null) {
-            return getDeleteLicenseChanges(licenseNew);
+            return getDeleteLicenseChanges(licenseOld);
         }
 
         StringBuilder oldBuilder = new StringBuilder();
@@ -116,6 +124,38 @@ public class LicenseChangelogGenerator {
 
     
     /**
+     * Will generate a changeText.  
+     * For a new created  groupType   before must be null
+     * When deleting a grouptype set after to null
+     */
+    public static ChangeDifferenceText getGroupTypeChanges(GroupType before,GroupType after) {   
+
+        if (before== null) {
+            return getNewGroupTypeChanges(after);
+        }
+        if (after == null) {
+            return getDeleteGroupTypeChanges(before);
+        }        
+        
+        StringBuilder oldBuilder = new StringBuilder();
+        StringBuilder newBuilder = new StringBuilder();
+
+        addToBuildersIfDifferent(before.toPresentationtString(),after.toPresentationtString(), oldBuilder, newBuilder);
+        ChangeDifferenceText changes = new ChangeDifferenceText(oldBuilder.toString(),newBuilder.toString());
+        return changes;
+    }
+    
+    public static String getGroupTypeText(GroupType g) {
+        StringBuilder b = new StringBuilder();
+        b.append("value DK/En:"+g.getValue_dk() +" / "+ g.getValue_en()+NEWLINE);
+        b.append("Description dk:"+g.getDescription_dk() +NEWLINE);
+        b.append("Description en:"+g.getDescription_en() +NEWLINE);
+        b.append("Deny group:"+g.isDenyGroup() +NEWLINE);
+        b.append("Query:"+g.getQuery() +NEWLINE);          
+        return b.toString();
+    }
+        
+    /**
      * Full changetext of a license. Used when creating a new license
      * 
      */
@@ -158,6 +198,22 @@ public class LicenseChangelogGenerator {
         
     }
         
+    private static ChangeDifferenceText getNewGroupTypeChanges(GroupType type) {   
+        StringBuilder builder = new StringBuilder();
+        builder.append(type.toPresentationtString());
+        ChangeDifferenceText changes = new ChangeDifferenceText("",builder.toString());
+        return changes;        
+    }
+
+    private static ChangeDifferenceText getDeleteGroupTypeChanges(GroupType type) {   
+        //Just switch change text from nrew
+        ChangeDifferenceText change = getNewGroupTypeChanges(type);
+        String after    =change.getAfter();
+        String before = change.getBefore();       
+        return new ChangeDifferenceText(after, before);        
+    }
+    
+    
   
     private static ChangeDifferenceText getDeleteLicenseChanges(License license) {   
 
@@ -222,7 +278,7 @@ public class LicenseChangelogGenerator {
         return b.toString();
     }
 
-
+    
     private static String  getLicenseContentsText(ArrayList<LicenseContent> lcs) {
         StringBuilder b = new StringBuilder();
         b.append("LicenseContents:"+NEWLINE);
