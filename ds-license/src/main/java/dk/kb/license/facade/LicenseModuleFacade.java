@@ -47,6 +47,19 @@ public class LicenseModuleFacade {
                 
     }
 
+    public static AuditLog getAuditLog(Long millis) throws Exception {
+        return performStorageAction("getAuditLog()", storage -> {
+             return storage.getAuditLog(millis);
+         });                
+     }
+     
+    
+    public static ArrayList<AuditLog> getAllAuditLogs() throws Exception {
+       return performStorageAction("getAllAuditLogs()", storage -> {
+            return storage.getAllAudit();                   
+        });                
+    }
+    
     public static void deleteLicense(long licenseId) throws Exception { 
         performStorageAction("deleteLicense(" + licenseId + ")", storage -> {
 
@@ -76,8 +89,7 @@ public class LicenseModuleFacade {
         return null;
         
         });
-        LicenseCache.reloadCache(); // Database changed, so reload cache
-        
+        LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
 
     public static void updateDomLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {

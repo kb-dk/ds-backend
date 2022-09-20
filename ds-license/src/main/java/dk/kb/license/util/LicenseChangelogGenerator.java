@@ -215,8 +215,7 @@ public class LicenseChangelogGenerator {
     
     
   
-    private static ChangeDifferenceText getDeleteLicenseChanges(License license) {   
-
+    private static ChangeDifferenceText getDeleteLicenseChanges(License license) {    
         //Just switch change text from nrew
         ChangeDifferenceText change = getNewLicenseChanges(license);
         String after    =change.getAfter();

@@ -85,7 +85,8 @@ public class LicenseModuleStorage implements AutoCloseable {
             + LICENSEPRESENTATIONTYPES_TABLE;
 
     private final static String selectAllLicensesQuery = " SELECT * FROM " + LICENSE_TABLE;
-    private final static String selectAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE millis = ? ";   
+    private final static String selectAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE MILLIS= ? ";
+    private final static String selectAllAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE +" ORDER BY MILLIS DESC";   
     private final static String selectLicenseQuery = " SELECT * FROM " + LICENSE_TABLE + " WHERE ID = ? ";
     private final static String selectGroupTypeQueryById = " SELECT * FROM " + LICENSEGROUPTYPES_TABLE + " WHERE ID = ? ";
     private final static String selectPresentationTypeQueryById = " SELECT * FROM " + LICENSEPRESENTATIONTYPES_TABLE + " WHERE ID = ? ";
@@ -718,7 +719,6 @@ public class LicenseModuleStorage implements AutoCloseable {
     
     public AuditLog getAuditLog(long millis) throws Exception {
 
-        License license = new License();
 
         try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQuery);) {
             stmt.setLong(1, millis);
@@ -740,6 +740,32 @@ public class LicenseModuleStorage implements AutoCloseable {
             throw e;
         }
     }
+    
+    public ArrayList<AuditLog> getAllAudit() throws Exception {
+
+        ArrayList<AuditLog> logs = new ArrayList<AuditLog>();
+
+        try (PreparedStatement stmt = connection.prepareStatement(selectAllAuditLogQuery);) {
+            
+            ResultSet rs = stmt.executeQuery();            
+            while (rs.next()) { // maximum one due to unique/primary key constraint
+                Long  millis = rs.getLong(MILLIS_COLUMN);
+                String username = rs.getString(USERNAME_COLUMN);
+                String changetype = rs.getString(CHANGETYPE_COLUMN);
+                String objectName = rs.getString(OBJECTNAME_COLUMN);
+                String textBefore = rs.getString(TEXTBEFORE_COLUMN);
+                String textAfter = rs.getString(TEXTAFTER_COLUMN);
+                AuditLog audit=new AuditLog(millis,username, changetype,objectName,textBefore,textAfter);
+                logs.add(audit);
+            }            
+            return logs;
+        } catch (SQLException e) {
+            log.error("SQL Exception in getAllAudit:" + e.getMessage());
+            throw e;
+        }
+    }
+    
+    
     
     
     
