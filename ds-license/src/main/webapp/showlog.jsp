@@ -31,30 +31,30 @@
     
 <h1>Audit log entry </h1>
     
-   <table class="table table-condensed table-hover">
+   <table border="1">
      <tbody>
-      <tr class="<%=Util.getStyle(i++)%>">
+      <tr>
        <td>Time</td>
        <td><%=dateFormat.format(new Date(log.getMillis()))%></td>      
       </tr>
-    <tr class="<%=Util.getStyle(i++)%>">
+      <tr>
        <td>User</td>
        <td><%=log.getUsername()%></td>      
     </tr>
-   <tr class="<%=Util.getStyle(i++)%>">
+      <tr>
        <td>Change type</td>
        <td><%=log.getChangeType()%></td>      
     </tr>
-   <tr class="<%=Util.getStyle(i++)%>">
+      <tr>
        <td>Object name</td>
        <td><%=log.getObjectName()%></td>      
     </tr>
 
   </tbody>
 </table>
-
+<br><br>
 Changes:
-  <table class="table table-condensed table-hover">
+  <table border="1">
    <thead>
    <tr>
     <td width="50%">Before</td>
