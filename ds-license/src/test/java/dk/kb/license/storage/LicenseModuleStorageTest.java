@@ -51,8 +51,6 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     private static PresentationType DOWNLOAD = new  PresentationType(1, "Download","Download_dk", "Download_en");
     private static PresentationType THUMBNAILS = new  PresentationType(1, "Thumbnails" ,"Thumbnails_dk", "Thumbnails_en");
 
-
-
     @Test
     public void testInsertDomLicensePresentationType() throws Exception {
         String type1 = "unit_test_type1";
@@ -515,7 +513,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     // Individuelt forbud:Stream, Thumbnails , 10_sec_stream , Download
     // Klausuleret: Stream, Thumbnails , 10_sec_stream (BEMÆRK denne ikke har Download)
     // TV2 TV: Stream, Thumbnails , 10_sec_stream , Download
-    public static License createTestSimpleMustGroupsLicenseWithAssociations() {
+    public static License createTestSimpleDenyGroupsLicenseWithAssociations() {
         License license = new License();
         license.setId(2);
         license.setLicenseName("Dighumlab adgang");
@@ -542,9 +540,9 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         LicenseContent licenseContent1 = new LicenseContent();
         LicenseContent licenseContent2 = new LicenseContent();
         LicenseContent licenseContent3 = new LicenseContent();
-        licenseContent1.setName("IndividueltForbud"); // Must
-        licenseContent2.setName("Klausuleret"); // Must
-        licenseContent3.setName("TV2"); // ikke must
+        licenseContent1.setName("IndividueltForbud"); // deny group
+        licenseContent2.setName("Klausuleret"); //deny group
+        licenseContent3.setName("TV2"); // not deny group 
 
         licenseContents.add(licenseContent1);
         licenseContents.add(licenseContent2);
@@ -776,34 +774,34 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testFilterMustGroups() throws Exception {     
+    public void testFilterDenyGroups() throws Exception {     
         insertDefaultConfigurationTypes();
-        LicenseCache.reloadCache(); //The buildGroup and FilterMustGroup uses cache for performance
+        LicenseCache.reloadCache(); //The buildGroup and FilterDenyGroup uses cache for performance
 
         ArrayList<String> groups = new ArrayList<String>(); 
 
-        //2 groups that does exist, but are not must groups
+        //2 groups that does exist, but are not deny groups
         groups = new ArrayList<String>(); 
         groups.add("Pligtafleveret170Aar");
         groups.add("DRRadio");      
         ArrayList<GroupType> buildGroups = LicenseValidator.buildGroups(groups);
         assertEquals(2,buildGroups.size());
-        ArrayList<GroupType> filtered = LicenseValidator.filterMustGroups(buildGroups);
+        ArrayList<GroupType> filtered = LicenseValidator.filterDenyGroups(buildGroups);
         assertEquals(0, filtered.size());
 
 
-        //2 groups that does exist,one is a MUST group
+        //2 groups that does exist,one is a deny group
         groups = new ArrayList<String>(); 
         groups.add("Pligtafleveret170Aar");
         groups.add("IndividueltForbud");        
         buildGroups = LicenseValidator.buildGroups(groups);
         assertEquals(2,buildGroups.size());
-        filtered = LicenseValidator.filterMustGroups(buildGroups);
+        filtered = LicenseValidator.filterDenyGroups(buildGroups);
 
         assertEquals(1, filtered.size());
         assertEquals("IndividueltForbud", filtered.get(0).getKey());        
 
-        //3 groups that does exist,two are a MUST groups
+        //3 groups that does exist,two are deny group
         groups = new ArrayList<String>(); 
         groups.add("Pligtafleveret170Aar");
         groups.add("IndividueltForbud");        
@@ -811,7 +809,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         buildGroups = LicenseValidator.buildGroups(groups);
         assertEquals(3,buildGroups.size());
-        filtered = LicenseValidator.filterMustGroups(buildGroups);      
+        filtered = LicenseValidator.filterDenyGroups(buildGroups);      
         assertEquals(2, filtered.size());
 
         //1 group that does not exist in DB
@@ -828,7 +826,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testFilterLicensesWithGroupNamesAndPresentationTypeNoMustGroup() throws Exception {
+    public void testFilterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup() throws Exception {
 
         ArrayList<License> licenses = new ArrayList<License>(); 
         licenses.add(LicenseModuleStorageTest.createTestLicenseWithAssociations(1L));
@@ -837,14 +835,14 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         GroupType group1 = new GroupType(1L,"Reklamefilm","Reklamefilm","Reklamefilm_en","","","",false);
         ArrayList<GroupType> groups = new ArrayList<GroupType>();
         groups.add(group1);     
-        ArrayList<License> filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(licenses, groups, DOWNLOAD);
+        ArrayList<License> filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(licenses, groups, DOWNLOAD);
         assertEquals(0,filtered.size());
 
         //'TV2 TV' is marked, but not for presentationtype images
         group1 = new GroupType(1L,"TV2","TV2 TV","TV2 TV_EN","","","",false);
         groups = new ArrayList<GroupType>();
         groups.add(group1);     
-        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(licenses, groups, THUMBNAILS);
+        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(licenses, groups, THUMBNAILS);
         assertEquals(0,filtered.size());
 
 
@@ -852,7 +850,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         group1 = new GroupType(1L,"TV2","TV2 TV","TV2 TV_en","","","",false);
         groups = new ArrayList<GroupType>();
         groups.add(group1);     
-        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(licenses, groups, DOWNLOAD);
+        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(licenses, groups, DOWNLOAD);
         assertEquals(1,filtered.size()); //license validated.
     }   
 
@@ -862,7 +860,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     public void testGetUserGroupsWithPresentationTypes() throws Exception {
         //For this test notice the presentationtypes are loaded from the DB, only the names from input is used
         ArrayList<License> licenses = new ArrayList<License>(); 
-        licenses.add(LicenseModuleStorageTest.createTestSimpleMustGroupsLicenseWithAssociations());
+        licenses.add(LicenseModuleStorageTest.createTestSimpleDenyGroupsLicenseWithAssociations());
         ArrayList<String> presentationTypes = new ArrayList<String>();
         presentationTypes.add("Download");
 
@@ -878,42 +876,42 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testFilterLicensesWithGroupNamesAndPresentationTypeMustGroup() throws Exception {
+    public void testFilterLicensesWithGroupNamesAndPresentationTypeDenyGroup() throws Exception {
         //For this test notice the presentationtypes are loaded from the DB, only the names from input is used
         ArrayList<License> licenses = new ArrayList<License>(); 
-        licenses.add(LicenseModuleStorageTest.createTestSimpleMustGroupsLicenseWithAssociations());
+        licenses.add(LicenseModuleStorageTest.createTestSimpleDenyGroupsLicenseWithAssociations());
 
 
-        //access, 1 must group which
+        //access, 1 deny group 
         GroupType group1 = new GroupType(1L,"IndividueltForbud","Individuelt forbud", "Individuelt forbud_en","","","",true);               
         ArrayList<GroupType> groups = new ArrayList<GroupType>();
         groups.add(group1);     
-        ArrayList<License> filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeMustGroup(licenses, groups, DOWNLOAD);
+        ArrayList<License> filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(licenses, groups, DOWNLOAD);
         assertEquals(1,filtered.size());
 
-        //NOT access, 1 must group that it found, but not with presentationtype Download
+        //NOT access, 1 deny group that it found, but not with presentationtype Download
         group1 = new GroupType(1L,"Klausuleret","Klausuleret_dk","Klausleret_en","","","",true);                
         groups = new ArrayList<GroupType>();
         groups.add(group1);     
-        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeMustGroup(licenses, groups, DOWNLOAD);
+        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(licenses, groups, DOWNLOAD);
         assertEquals(0,filtered.size());
 
-        //access, 2 must groups which both have presentation type images
+        //access, 2 deny groups which both have presentation type images
         group1 = new GroupType(1L,"IndividueltForbud","Individuelt forbud_dk","Individuelt forbud_en","","","",true);               
         GroupType group2 = new GroupType(2L,"Klausuleret","Klausuleret_dk","Klausuleret_en","","","",true);
         groups = new ArrayList<GroupType>();
         groups.add(group1);     
         groups.add(group2);
-        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeMustGroup(licenses, groups, THUMBNAILS);
+        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(licenses, groups, THUMBNAILS);
         assertEquals(1,filtered.size());
 
-        //NOT access, 2 must groups but one of the missing presentationtype Download
+        //NOT access, 2 deny groups but one of the missing presentationtype Download
         group1 = new GroupType(1L,"Individuelt forbud","Individuelt forbud_dk","Klausuleret forbud_en","","","",true);              
         group2 = new GroupType(2L,"Klausuleret","Klausuleret_dk","Klausuleret_en","","","",true);
         groups = new ArrayList<GroupType>();
         groups.add(group1);     
         groups.add(group2);
-        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeMustGroup(licenses, groups, DOWNLOAD);
+        filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(licenses, groups, DOWNLOAD);
         assertEquals(0,filtered.size());
     }   
 
@@ -945,25 +943,25 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         DsLicenseUnitTestUtil.insertDefaultConfigurationTypes();
         LicenseCache.reloadCache();
         ArrayList<String> groups = new ArrayList<String>();
-        ArrayList<String> missingMustGroups = new ArrayList<String>();
+        ArrayList<String> missingDenyGroups = new ArrayList<String>();
         //2 in each group
         groups.add("Reklamefilm");
         groups.add("DRRadio");
-        missingMustGroups.add("IndividueltForbud");
-        missingMustGroups.add("Klausuleret");
+        missingDenyGroups.add("IndividueltForbud");
+        missingDenyGroups.add("Klausuleret");
 
         
-        String query = LicenseValidator.generateQueryString(groups, missingMustGroups);
+        String query = LicenseValidator.generateQueryString(groups, missingDenyGroups);
         assertEquals("(((group:\"reklamefilm\") OR (group:\"DRRadio\")) -(group:\"individuelt\") -(group:\"klausuleret\"))", query);        
 
         //only 2 in accessgroups
-        missingMustGroups = new ArrayList<String>(); 
-        query = LicenseValidator.generateQueryString(groups, missingMustGroups);
+        missingDenyGroups = new ArrayList<String>(); 
+        query = LicenseValidator.generateQueryString(groups, missingDenyGroups);
         assertEquals("(((group:\"reklamefilm\") OR (group:\"DRRadio\")))", query);                      
 
 
         //Test noaccess
-        query = LicenseValidator.generateQueryString(new ArrayList<String>(), missingMustGroups);
+        query = LicenseValidator.generateQueryString(new ArrayList<String>(), missingDenyGroups);
         assertEquals(LicenseValidator.NO_ACCESS, query);
     }
 
@@ -1036,6 +1034,29 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
 
 
+    @Test
+    public void testPersistAndLoadAuditLogEntry() throws Exception {
+         long millis=System.currentTimeMillis();
+         String userName="teg";
+         String changeType="test";
+         String objectType="license";
+         String textBefore="before";
+         String textAfter="after";
+         
+        AuditLog auditLog1 = new AuditLog(millis,userName,changeType,objectType,textBefore,textAfter);
+        storage.persistAuditLog(auditLog1);
+        
+        //Load and validate entries
+        AuditLog auditLog2 = storage.getAuditLog(millis);        
+        assertEquals(auditLog1.getMillis(),auditLog2.getMillis());
+        assertEquals(auditLog1.getUsername(),auditLog2.getUsername());
+        assertEquals(auditLog1.getChangeType(),auditLog2.getChangeType());
+        assertEquals(auditLog1.getObjectName(),auditLog2.getObjectName());
+        assertEquals(auditLog1.getTextBefore(),auditLog2.getTextBefore());
+        assertEquals(auditLog1.getTextAfter(), auditLog2.getTextAfter());
+                
+    }
+    
 
 
 

@@ -155,23 +155,23 @@ public class LicenseValidator {
 		
 		ArrayList<String> filterGroups = filterGroups(accessLicenses,  types);
 
-		//Now we have to find all MUST-groups the user is missing 
-		ArrayList<GroupType> configuredMUSTLicenseGroupTypes = LicenseCache.getConfiguredMUSTLicenseGroupTypes();
+		//Now we have to find all Deny-groups the user is missing 
+		ArrayList<GroupType> configuredDenyLicenseGroupTypes = LicenseCache.getConfiguredDenyLicenseGroupTypes();
 		GetUserQueryOutputDto output = new GetUserQueryOutputDto();
 		output.setUserLicenseGroups(filterGroups);
 
-		ArrayList<String> missingMustGroups = new ArrayList<String>();
-		//First add all must groups then remove those that user has access too
-		for (GroupType current : configuredMUSTLicenseGroupTypes){
-			missingMustGroups.add(current.getKey());
+		ArrayList<String> missingDenyGroups = new ArrayList<String>();
+		//First add all deny groups then remove those that user has access too
+		for (GroupType current : configuredDenyLicenseGroupTypes){
+			missingDenyGroups.add(current.getKey());
 		}
 
 		for (String current : filterGroups){
-			missingMustGroups.remove(current); 
+			missingDenyGroups.remove(current); 
 		}
-		output.setUserNotInMustGroups(missingMustGroups);	
+ 		output.setUserNotInDenyGroups(missingDenyGroups);	
 
-		String query = generateQueryString(filterGroups, missingMustGroups);
+		String query = generateQueryString(filterGroups, missingDenyGroups);
 		output.setQuery(query);
 		return output;
 	}
@@ -202,9 +202,9 @@ public class LicenseValidator {
 			throw new InvalidArgumentServiceException("At least 1 unknown group  in validateAccess:"+input.getGroups());
 		}		
 
-		ArrayList<GroupType> mustGroups = filterMustGroups(groups);
-		if (mustGroups.size() > 0){
-			log.debug("At least 1 MUST groups found in input, number of MUST-groups:"+mustGroups.size());			
+		ArrayList<GroupType> denyGroups = filterDenyGroups(groups);
+		if (denyGroups.size() > 0){
+			log.debug("At least 1 deny groups found in input, number of Deny-groups:"+denyGroups.size());			
 		}
 
 		// First filter by valid date
@@ -219,19 +219,19 @@ public class LicenseValidator {
 			return false;
 		}
 
-		//two situations. At least one MUST group involved, or no MUST groups.
-		if (mustGroups.size() == 0){
-			log.debug("Case: no MUST group");		
+		//two situations. At least one DENY group involved, or no DENY groups.
+		if (denyGroups.size() == 0){
+			log.debug("Case: no DENY group");		
 			//Simple situation. Just need to find 1 license having one of the groups with allowed presentationtype
-			ArrayList<License> validatedLicenses = filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(accessLicenses, groups, presentationType);
+			ArrayList<License> validatedLicenses = filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(accessLicenses, groups, presentationType);
 			return (validatedLicenses.size() >0); //OK since at least 1 license found        	           
 		}
 		else{
 			// ALL groups+presentationtype must be in at least 1 license
-			//Only MUST groups are checked
-			log.debug("Case: at least 1 MUST group");
-			//notice only the mustGroups are used
-			ArrayList<License> validatedLicenses = filterLicensesWithGroupNamesAndPresentationTypeMustGroup(accessLicenses, mustGroups , presentationType);
+			//Only Deny groups are checked
+			log.debug("Case: at least 1 DENY group");
+			//notice only the denyGroups are used
+			ArrayList<License> validatedLicenses = filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(accessLicenses, denyGroups , presentationType);
 			return (validatedLicenses.size() >0); //OK since at least 1 license found
 		}
 	}
@@ -381,8 +381,8 @@ public class LicenseValidator {
 
 
 
-	//For the MUST group situation. All groups must be matched (not necessary by same license, all groups having the given presentationtype)  	
-	public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeMustGroup(ArrayList<License> licenses,
+	//For the Deny group situation. All groups must be matched (not necessary by same license, all groups having the given presentationtype)  	
+	public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeDenyGroup(ArrayList<License> licenses,
 			ArrayList<GroupType> groups, PresentationType presentationType){
 
 		//Iterator over groups first, since each must be found
@@ -409,9 +409,9 @@ public class LicenseValidator {
 	}
 
 
-	//For the no must group situation. Just one of the groups has to be matched
+	//For the no deny group situation. Just one of the groups has to be matched
 	//return when first license validate
-	public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeNoMustGroup(ArrayList<License> licenses,
+	public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeNoDenyGroup(ArrayList<License> licenses,
 			ArrayList<GroupType> groups, PresentationType presentationType){
 		ArrayList<License> filtered= new  ArrayList<License>();
 		for (License currentLicense : licenses){		
@@ -430,13 +430,13 @@ public class LicenseValidator {
 
 
 
-	//Will remove all non MUST-groups. 
-	public static ArrayList<GroupType> filterMustGroups(ArrayList<GroupType> groups){
+	//Will remove all non deny-groups. 
+	public static ArrayList<GroupType> filterDenyGroups(ArrayList<GroupType> groups){
 		ArrayList<GroupType> filteredGroups = new ArrayList<GroupType>();
 
 		for (GroupType currentGroup : groups){
 			//TODO performence tuning, use cachedMap of GroupTypes.		
-			if ( currentGroup.isMustGroup() ){
+			if ( currentGroup.isDenyGroup() ){
 				filteredGroups.add(currentGroup);
 			}				   
 		}			
@@ -491,14 +491,14 @@ public class LicenseValidator {
 		return false;
 	}
 
-	public static String generateQueryString(ArrayList<String> accessGroups, ArrayList<String> missingMustGroups){
+	public static String generateQueryString(ArrayList<String> accessGroups, ArrayList<String> missingDenyGroups){
 		if (accessGroups.size() == 0){
 			log.info("User does not have access to any group");
 			return NO_ACCESS;
 		}
 
 		ArrayList<GroupType> accessGroupsType = buildGroups(accessGroups);
-		ArrayList<GroupType> missingMustGroupsType = buildGroups(missingMustGroups);
+		ArrayList<GroupType> missingDenyGroupsType = buildGroups(missingDenyGroups);
 
 		StringBuilder query = new StringBuilder(); 
 
@@ -525,12 +525,12 @@ public class LicenseValidator {
 		query.append(")");
 
 
-		if (missingMustGroupsType.size() == 0){
+		if (missingDenyGroupsType.size() == 0){
 			return query.toString()+")"; //closing outer
 		}
 
-		for (int i = 0; i<missingMustGroupsType.size(); i++){
-		    String queryPart = missingMustGroupsType.get(i).getQuery();
+		for (int i = 0; i<missingDenyGroupsType.size(); i++){
+		    String queryPart = missingDenyGroupsType.get(i).getQuery();
 		    if (StringUtils.isBlank(queryPart)){ //Hack to allow empty queries.
 		       continue; //Skip
 		    }

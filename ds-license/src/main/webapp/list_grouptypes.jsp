@@ -3,7 +3,7 @@
    <thead>
    <tr>
     <th class="id">ID</th>
-    <th class="mustGroup">Must group</th>
+    <th class="denyGroup">Deny group</th>
     <th>Key</th>
     <th>Value</th>    
     <th>Description</th>
@@ -18,7 +18,7 @@ for (int i = 0;i< configuredGroupTypes.size();i++ ){
 %>
    <tr class="<%=Util.getStyle(i)%>">
       <td class="id"><%=current.getId()%></td>
-      <td class="mustGroup"><input disabled type="checkbox" <%if(current.isMustGroup()){out.println("checked");}%> ></td>
+      <td class="denyGroup"><input disabled type="checkbox" <%if(current.isDenyGroup()){out.println("checked");}%> ></td>
       <td><%=current.getKey()%></td>
       <td><%=current.getValue_dk()%><br><%=current.getValue_en()%></td>      
       <td><%=current.getDescription_dk()%><br><%=current.getDescription_en()%></td>
@@ -42,7 +42,7 @@ for (int i = 0;i< configuredGroupTypes.size();i++ ){
   <input type="text" name="value_groupdescription" class="span3" value="">
   <span class="help-inline">Query</span>
   <input type="text" name="value_groupquery" class="span3" value="">
-  <input type="checkbox" name="mustGroupCheck"> Must group
+  <input type="checkbox" name="denyGroupCheck"> Deny group
 </div>
 <br>
 <div class="infoGroup">

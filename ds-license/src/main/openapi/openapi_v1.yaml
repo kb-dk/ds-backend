@@ -93,7 +93,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'Validate if user has access to all groups in input. If just 1 of the group is a must group, then all must group much match' 
+      summary: 'Validate if user has access to all groups in input. If just 1 of the group is a deny group, then all deny group much match' 
       operationId: validateAccess 
       requestBody:
         content:
@@ -371,7 +371,7 @@ components:
           type: array
           items:
             type: string 
-        userNotInMustGroups:   
+        userNotInDenyGroups:   
           type: array
           items:
             type: string 

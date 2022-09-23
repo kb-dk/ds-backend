@@ -59,6 +59,7 @@
     <li><a href="#list_configured_presentationtypes">Præsentationstyper</a></li>
     <li><a href="#list_configured_grouptypes">Pakker</a></li>
     <li><a href="#list_configured_attributetypes">Attributgrupper</a></li>       
+        <li><a href="#auditlog">Auditlog</a></li>
 </ul>
 
 <%@ include file="message.jsp" %>
@@ -80,6 +81,11 @@
         <div class="tab-pane" id="list_configured_attributetypes">
             <%@ include file="list_attributetypes.jsp" %>
         </div>                                        
+        <div class="tab-pane" id="auditlog">
+            <%@ include file="auditlog.jsp" %>
+        </div>           
+        
+        
     </div>
 </form>
 

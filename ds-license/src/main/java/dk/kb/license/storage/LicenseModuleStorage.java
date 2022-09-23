@@ -51,7 +51,8 @@ public class LicenseModuleStorage implements AutoCloseable {
     private static final String VALUE_TABLE = "VALUE_ORG";
     private static final String LICENSECONTENT_TABLE = "LICENSECONTENT";
     private static final String PRESENTATION_TABLE = "PRESENTATION";
-
+    private static final String AUDITLOG_TABLE = "AUDITLOG";
+    
     private static final String VALIDTO_COLUMN = "VALIDTO";
     private static final String VALIDFROM_COLUMN = "VALIDFROM";
     private static final String NAME_COLUMN = "NAME";
@@ -64,20 +65,32 @@ public class LicenseModuleStorage implements AutoCloseable {
     private static final String LICENSECONTENTID_COLUMN = "LICENSECONTENTID";
     private static final String ATTRIBUTEGROUPID_COLUMN = "ATTRIBUTEGROUPID";
     private static final String ATTRIBUTEID_COLUMN = "ATTRIBUTEID";
-
+    
     private static final String ID_COLUMN = "ID"; // ID used for all tables
     private static final String KEY_COLUMN = "KEY_ID";
     private static final String VALUE_COLUMN = "VALUE_ORG";
     private static final String VALUE_DK_COLUMN = "VALUE_DK";
     private static final String VALUE_EN_COLUMN = "VALUE_EN";
-    private static final String MUSTGROUP_COLUMN = "MUSTGROUP";
+    private static final String DENYGROUP_COLUMN = "DENYGROUP";
 
+    //AUDITLOG
+    private static final String MILLIS_COLUMN = "MILLIS";
+    private static final String USERNAME_COLUMN = "USERNAME";
+    private static final String CHANGETYPE_COLUMN = "CHANGETYPE";
+    private static final String OBJECTNAME_COLUMN = "OBJECTNAME";
+    private static final String TEXTBEFORE_COLUMN = "TEXTBEFORE";
+    private static final String TEXTAFTER_COLUMN = "TEXTAFTER";
+    
     private final static String selectLicensePresentationTypesQuery = " SELECT * FROM "
             + LICENSEPRESENTATIONTYPES_TABLE;
 
     private final static String selectAllLicensesQuery = " SELECT * FROM " + LICENSE_TABLE;
-
+    private final static String selectAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE MILLIS= ? ";
+    private final static String selectAllAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE +" ORDER BY MILLIS DESC";   
     private final static String selectLicenseQuery = " SELECT * FROM " + LICENSE_TABLE + " WHERE ID = ? ";
+    private final static String selectGroupTypeQueryById = " SELECT * FROM " + LICENSEGROUPTYPES_TABLE + " WHERE ID = ? ";
+    private final static String selectPresentationTypeQueryById = " SELECT * FROM " + LICENSEPRESENTATIONTYPES_TABLE + " WHERE ID = ? ";
+    private final static String selectPresentationTypeQueryByKey = " SELECT * FROM " + LICENSEPRESENTATIONTYPES_TABLE + " WHERE KEY_ID = ? ";
 
     private final static String persistLicensePresentationTypeQuery = "INSERT INTO "
             + LICENSEPRESENTATIONTYPES_TABLE + " (" + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + ","
@@ -92,6 +105,11 @@ public class LicenseModuleStorage implements AutoCloseable {
     private final static String persistAttributeForAttributeGroupQuery = "INSERT INTO " + ATTRIBUTE_TABLE + " ("
             + ID_COLUMN + "," + NAME_COLUMN + "," + ATTRIBUTEGROUPID_COLUMN + ") VALUES (?,?,?)"; // #|?|=3
 
+    
+
+    private final static String persistAuditLog = "INSERT INTO " + AUDITLOG_TABLE + " ("
+            + MILLIS_COLUMN + "," + USERNAME_COLUMN + "," + CHANGETYPE_COLUMN + ","+OBJECTNAME_COLUMN +","+TEXTBEFORE_COLUMN +","+TEXTAFTER_COLUMN+") VALUES (?,?,?,?,?,?)"; // #|?|=6
+    
     private final static String selectAttributesForAttributeGroupQuery = " SELECT * FROM " + ATTRIBUTE_TABLE + " WHERE "
             + ATTRIBUTEGROUPID_COLUMN + " = ?";
 
@@ -106,12 +124,12 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     private final static String persistLicenseGroupTypeQuery = "INSERT INTO " + LICENSEGROUPTYPES_TABLE + " ("
             + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + " ," + VALUE_EN_COLUMN + " ,"
-            + DESCRIPTION_DK_COLUMN + " ," + DESCRIPTION_EN_COLUMN + " ," + QUERY_COLUMN + " ," + MUSTGROUP_COLUMN
+            + DESCRIPTION_DK_COLUMN + " ," + DESCRIPTION_EN_COLUMN + " ," + QUERY_COLUMN + " ," + DENYGROUP_COLUMN
             + ") VALUES (?,?,?,?,?,?,?,?)"; // #|?|=8
 
     private final static String updateLicenseGroupTypeQuery = "UPDATE " + LICENSEGROUPTYPES_TABLE + " SET "
             + VALUE_DK_COLUMN + " = ? , " + VALUE_EN_COLUMN + " = ? ," + DESCRIPTION_DK_COLUMN + " = ? ,"
-            + DESCRIPTION_EN_COLUMN + " = ? ," + QUERY_COLUMN + " = ? ," + MUSTGROUP_COLUMN + " = ? " + "WHERE "
+            + DESCRIPTION_EN_COLUMN + " = ? ," + QUERY_COLUMN + " = ? ," + DENYGROUP_COLUMN + " = ? " + "WHERE "
             + ID_COLUMN + " = ? ";
 
     private final static String updateLicensePresentationTypeQuery = "UPDATE " + LICENSEPRESENTATIONTYPES_TABLE
@@ -233,7 +251,24 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
        
     }
-
+    
+  
+    public void persistAuditLog(AuditLog auditlog) throws Exception {
+        log.info("Persisting  persistAuditLog " + auditlog.getChangeType() +" for username:"+auditlog.getUsername());
+        try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
+            stmt.setLong(1,  auditlog.getMillis());
+            stmt.setString(2,auditlog.getUsername());            
+            stmt.setString(3, auditlog.getChangeType());
+            stmt.setString(4, auditlog.getObjectName());
+            stmt.setString(5, auditlog.getTextBefore());
+            stmt.setString(6, auditlog.getTextAfter());
+            stmt.execute();
+        } catch (SQLException e) {
+            log.error("SQL Exception in persistAuditLog:" + e.getMessage());
+            throw e;
+        }       
+    }
+    
     public ArrayList<PresentationType> getLicensePresentationTypes() throws SQLException {
 
         ArrayList<PresentationType> list = new ArrayList<PresentationType>();
@@ -292,22 +327,22 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     // query can be null or empty
     public void persistLicenseGroupType(String key, String value, String value_en, String description,
-            String description_en, String query, boolean mustGroup) throws Exception {
+            String description_en, String query, boolean denyGroup) throws Exception {
 
         if (!StringUtils.isNotEmpty(key)) {
-            throw new IllegalArgumentException("Key must not be null when creating new Group");
+            throw new IllegalArgumentException("Key can not be null when creating new Group");
         }
 
         if (!StringUtils.isNotEmpty(value)) {
-            throw new IllegalArgumentException("Value must not be null when creating new Group");
+            throw new IllegalArgumentException("Value can not be null when creating new Group");
         }
 
         if (!StringUtils.isNotEmpty(value_en)) {
-            throw new IllegalArgumentException("Value(EN) must not be null when creating new Group");
+            throw new IllegalArgumentException("Value(EN) can not be null when creating new Group");
         }
 
         if (!StringUtils.isNotEmpty(query)) {
-            throw new IllegalArgumentException("Query must not be null when creating new Group");
+            throw new IllegalArgumentException("Query can not be null when creating new Group");
         }
 
         log.info("Persisting new  license group type: " + key);
@@ -323,7 +358,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             stmt.setString(5, description);
             stmt.setString(6, description_en);
             stmt.setString(7, query);
-            stmt.setBoolean(8, mustGroup);
+            stmt.setBoolean(8, denyGroup);
             stmt.execute();
             connection.commit();
         } catch (SQLException e) {
@@ -334,7 +369,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     }
 
     public void updateLicenseGroupType(long id, String value_dk, String value_en, String description,
-            String description_en, String query, boolean mustGroup) throws Exception {
+            String description_en, String query, boolean denyGroup) throws Exception {
 
         try (PreparedStatement stmt = connection.prepareStatement(updateLicenseGroupTypeQuery);) {
             log.info("Updating Group type with id:" + id);
@@ -346,7 +381,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             stmt.setString(3, description);
             stmt.setString(4, description_en);
             stmt.setString(5, query);
-            stmt.setBoolean(6, mustGroup);
+            stmt.setBoolean(6, denyGroup);
             stmt.setLong(7, id);
 
             int updated = stmt.executeUpdate();
@@ -468,7 +503,7 @@ public class LicenseModuleStorage implements AutoCloseable {
                     "Validation error. Name/description too short or validTo/validFrom not legal dates");
         }
         if (!validateAttributesValues) {
-            throw new IllegalArgumentException("Validation error. Attributes or values must not be empty");
+            throw new IllegalArgumentException("Validation error. Attributes or values can not be empty");
         }
 
         Long licenseId;
@@ -521,8 +556,8 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description = rs.getString(DESCRIPTION_DK_COLUMN);
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
-                boolean mustGroup = rs.getBoolean(MUSTGROUP_COLUMN);
-                GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, mustGroup);
+                boolean denyGroup = rs.getBoolean(DENYGROUP_COLUMN);
+                GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
                 list.add(item);
             }
             return list;
@@ -674,6 +709,134 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
     }
 
+   /**
+    *  
+    * @param millis ID is of the auditlog
+    * @return
+    * @throws Exception
+    */
+    
+    
+    public AuditLog getAuditLog(long millis) throws Exception {
+
+
+        try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQuery);) {
+            stmt.setLong(1, millis);
+            
+            ResultSet rs = stmt.executeQuery();            
+            while (rs.next()) { // maximum one due to unique/primary key constraint
+                String username = rs.getString(USERNAME_COLUMN);
+                String changetype = rs.getString(CHANGETYPE_COLUMN);
+                String objectName = rs.getString(OBJECTNAME_COLUMN);
+                String textBefore = rs.getString(TEXTBEFORE_COLUMN);
+                String textAfter = rs.getString(TEXTAFTER_COLUMN);
+                AuditLog audit=new AuditLog(millis,username, changetype,objectName,textBefore,textAfter);
+                return audit;
+            }
+            throw new IllegalArgumentException("AuditId not found for millis:" + millis);
+
+        } catch (SQLException e) {
+            log.error("SQL Exception in getAuditLog:" + e.getMessage());
+            throw e;
+        }
+    }
+    
+    public ArrayList<AuditLog> getAllAudit() throws Exception {
+
+        ArrayList<AuditLog> logs = new ArrayList<AuditLog>();
+
+        try (PreparedStatement stmt = connection.prepareStatement(selectAllAuditLogQuery);) {
+            
+            ResultSet rs = stmt.executeQuery();            
+            while (rs.next()) { // maximum one due to unique/primary key constraint
+                Long  millis = rs.getLong(MILLIS_COLUMN);
+                String username = rs.getString(USERNAME_COLUMN);
+                String changetype = rs.getString(CHANGETYPE_COLUMN);
+                String objectName = rs.getString(OBJECTNAME_COLUMN);
+                String textBefore = rs.getString(TEXTBEFORE_COLUMN);
+                String textAfter = rs.getString(TEXTAFTER_COLUMN);
+                AuditLog audit=new AuditLog(millis,username, changetype,objectName,textBefore,textAfter);
+                logs.add(audit);
+            }            
+            return logs;
+        } catch (SQLException e) {
+            log.error("SQL Exception in getAllAudit:" + e.getMessage());
+            throw e;
+        }
+    }
+    
+    
+    
+    
+    
+    public PresentationType getPresentationTypeById(long id) throws Exception {
+        try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryById);) {
+            stmt.setLong(1, id);
+            
+            ResultSet rs = stmt.executeQuery();            
+            while (rs.next()) { // maximum one due to unique/primary key constraint                
+                String key = rs.getString( KEY_COLUMN);
+                String dk = rs.getString( VALUE_DK_COLUMN);
+                String en = rs.getString( VALUE_EN_COLUMN);                
+                PresentationType type = new PresentationType(id, key, dk, en);
+                return type;                                
+            }
+            throw new IllegalArgumentException("Presentationtype not found for id:" + id);
+
+        } catch (SQLException e) {
+            log.error("SQL Exception in getPresentationTypeById:" + e.getMessage());
+            throw e;
+        }
+    }
+    
+    public GroupType getGroupTypeById(long id) throws Exception {
+        try (PreparedStatement stmt = connection.prepareStatement(selectGroupTypeQueryById);) {
+            stmt.setLong(1, id);
+            
+            ResultSet rs = stmt.executeQuery();            
+            while (rs.next()) { // maximum one due to unique/primary key constraint                
+                String key = rs.getString(KEY_COLUMN);
+                String value_dk = rs.getString(VALUE_DK_COLUMN);
+                String value_en = rs.getString(VALUE_EN_COLUMN);
+                String description = rs.getString(DESCRIPTION_DK_COLUMN);
+                String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
+                String query = rs.getString(QUERY_COLUMN);
+                boolean denyGroup = rs.getBoolean(DENYGROUP_COLUMN);
+                GroupType group = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
+            return group;
+            }
+            throw new IllegalArgumentException("Presentationtype not found for id:" + id);
+
+        } catch (SQLException e) {
+            log.error("SQL Exception in getPresentationTypeById:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    
+    
+    public PresentationType getPresentationTypeByKey(String key) throws Exception {
+        try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryByKey);) {
+            stmt.setString(1, key);
+            
+            ResultSet rs = stmt.executeQuery();            
+            while (rs.next()) { // maximum one due to unique/primary key constraint                
+                Long id = rs.getLong( ID_COLUMN);
+                String dk = rs.getString( VALUE_DK_COLUMN);
+                String en = rs.getString( VALUE_EN_COLUMN);                
+                PresentationType type = new PresentationType(id, key, dk, en);
+                return type;                                
+            }
+            throw new IllegalArgumentException("Presentationtype not found for key:" + key);
+
+        } catch (SQLException e) {
+            log.error("SQL Exception in getPresentationType:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    
+    
     protected void validateValue(String value) {
         // sanity, must have length at least 2
         if (value == null || value.trim().length() < 2) {

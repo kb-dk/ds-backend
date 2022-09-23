@@ -54,7 +54,7 @@ for ( GroupType current : allTypes){
   <input type="text" name="value_groupdescription" class="span3" value="<%=edit.getDescription_dk()%>">
   <span class="help-inline">Query</span>
   <input type="text" name="value_groupquery" class="span3" value="<%=StringEscapeUtils.escapeHtml3(edit.getQuery())%>">
-  <input type="checkbox"   name="mustGroupCheck"  <%if(edit.isMustGroup()){out.println("checked");}%> > Must group
+  <input type="checkbox"   name="denyGroupCheck"  <%if(edit.isDenyGroup()){out.println("checked");}%> > Deny group
 </div>
 <div class="infoGroup">
   <span class="help-inline">V&aelig;rdi(En)</span>  
