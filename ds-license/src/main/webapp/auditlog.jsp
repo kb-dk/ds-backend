@@ -22,7 +22,7 @@
 <% for (int i = 0;i<logs.size();i++ ){
       AuditLog current = logs.get(i);
 %>
-   <tr class="<%=Util.getStyle(i)%>" onclick="window.location = 'showlog.jsp?auditlogId=<%=current.getMillis()%>';">
+   <tr class="<%=Util.getStyle(i)%>" onclick="window.open( 'showlog.jsp?auditlogId=<%=current.getMillis()%>','_new');">
       <td><%=dateFormat.format(new Date(current.getMillis()))%></td>
       <td><%=current.getUsername()%></td>
       <td><%=current.getChangeType()%></td>
