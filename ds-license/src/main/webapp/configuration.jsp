@@ -57,7 +57,7 @@
 <ul class="nav nav-tabs" id="configTab">
     <li class="active"><a href="#list_licenses">Vis alle licenser</a></li>
     <li><a href="#list_configured_presentationtypes">Præsentationstyper</a></li>
-    <li><a href="#list_configured_grouptypes">Pakker</a></li>
+    <li><a href="#list_configured_grouptypes">Pakker/Klausuleringer</a></li>
     <li><a href="#list_configured_attributetypes">Attributgrupper</a></li>       
         <li><a href="#auditlog">Auditlog</a></li>
 </ul>
