@@ -21,6 +21,7 @@ import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -141,21 +142,21 @@ public class IIPFacade {
     }
 
     public javax.ws.rs.core.StreamingOutput getDeepzoomDZI(
-            URI requestURI,
-            String imageid) throws ServiceException {
+            URI requestURI, String imageid,
+            HttpServletResponse httpServletResponse) throws ServiceException {
         validateDeepzoomDZIRequest(imageid);
-
+        final String idDZI = imageid + (imageid.endsWith(".dzi") ? "" : ".dzi");
         // Defaults
         UriBuilder builder;
         if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
             builder = UriBuilder.
             fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PATH)).
-            path(imageid + ".dzi"); // Mandatory
+            path(idDZI); // Mandatory
         } 
         else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
             builder = UriBuilder.
             fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM)).
-            queryParam("DeepZoom", imageid + ".dzi"); // Mandatory
+            queryParam("DeepZoom", idDZI); // Mandatory
         }
         else {
             log.error("No Deepzoom server defined");
@@ -166,7 +167,7 @@ public class IIPFacade {
 
         final URI uri = builder.build();
 
-        return ProxyHelper.proxy(imageid, uri, requestURI);
+        return ProxyHelper.proxy(imageid, uri, requestURI, httpServletResponse);
     }
 
     public javax.ws.rs.core.StreamingOutput getDeepzoomTile(

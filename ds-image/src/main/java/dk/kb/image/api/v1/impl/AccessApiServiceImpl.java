@@ -48,8 +48,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             httpServletResponse.setContentType(getMIME("xml"));
             setFilename(new File(imageid).getName() + ".dzi", false, false);
             return IIPFacade.getInstance().getDeepzoomDZI(
-                    uriInfo.getRequestUri(),
-                    imageid);
+                    uriInfo.getRequestUri(), imageid,
+                    httpServletResponse);
 
         } catch (Exception e){
             throw handleException(e);
