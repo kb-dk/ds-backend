@@ -29,7 +29,7 @@ for (int i=0;i<configuredGroups.size();i++){
 <tr class="<%=Util.getStyle(countPakker++)%>">
   <td  class="domsGroups">
     <label class="checkbox">
-      <input type="checkbox" <%if(Util.groupsContainGroupName(groupsForLicense, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>">
+      <input type="checkbox" <%if(Util.groupsContainGroupName(groupsForLicense, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>"> <%=currentGroupName%>
     </label>
   </td>
   <td class="allowedGroups">
@@ -92,5 +92,5 @@ for (int i=0;i<configuredGroups.size();i++){
 <input class="btn btn-primary" type="button" value="Gem" onclick="javascript: save();"/>
 <a class="btn btn-small" href="configuration.jsp">Fortryd</a>
 <% if (license.getId() != 0){%>
-  <input class="btn btn-primary btn-delete" type="button" value="Slet" onclick="javascript: confirmDelete('Delete license:<%=license.getLicenseName()%>');"/>
+  <input class="btn btn-primary btn-delete" type="button" value="Slet hele licensen" onclick="javascript: confirmDelete('Delete license:<%=license.getLicenseName()%>');"/>
 <%}%>
