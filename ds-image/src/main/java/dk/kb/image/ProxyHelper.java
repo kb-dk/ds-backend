@@ -44,7 +44,8 @@ public class ProxyHelper {
     /**
      * Streams the content from the given uri. In the case of HTTP codes outside of the 200-299 range, a matching
      * {@link ServiceException} is thrown.
-     * @param request image ID or similar information used to construct error messages to the caller.
+     * @param request image ID or similar information used to construct exception messages to the caller.
+     *                The uri is NOT stated in any exception messages as that might be considered confidential.
      * @param uri the URI to proxy.
      * @param clientRequestURI the original request URI from the client. Used only for logging.
      * @return a lambda providing the data from the given uri.
@@ -56,7 +57,8 @@ public class ProxyHelper {
     /**
      * Streams the content from the given uri. In the case of HTTP codes outside of the 200-299 range, a matching
      * {@link ServiceException} is thrown.
-     * @param request image ID or similar information used to construct error messages to the caller.
+     * @param request image ID or similar information used to construct exception messages to the caller.
+     *                The uri is NOT stated in any exception messages as that might be considered confidential.
      * @param uri the URI to proxy.
      * @param clientRequestURI the original request URI from the client. Used only for logging.
      * @param httpServletResponse used for setting the {@code Content-Type} to match the one delivered form uri.
@@ -69,6 +71,8 @@ public class ProxyHelper {
         try {
             validateStatuscode(request, uri, clientRequestURI, connection.getResponseCode());
         } catch (IOException e) {
+            log.warn("Unable to establish connection for request '{}' to '{}' for client request '{}'",
+                     request, uri, clientRequestURI, e);
             throw new ServiceException("Unable to establish connection to '" + request + "'",
                                        Response.Status.BAD_GATEWAY);
         }
@@ -148,6 +152,8 @@ public class ProxyHelper {
         try {
             connection.setRequestMethod("GET");
         } catch (ProtocolException e) {
+            log.warn("Unable to set request method to 'GET' with URI '{}' from client request '{}'",
+                     uri, clientRequestURI, e);
             throw new InternalServiceException("Unable to set 'GET' as request method for '" + request + "'");
         }
         connection.setRequestProperty("User-Agent", "ds-image");
