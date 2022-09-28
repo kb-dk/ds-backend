@@ -29,7 +29,7 @@ for (int i=0;i<configuredGroups.size();i++){
 <tr class="<%=Util.getStyle(countPakker++)%>">
   <td  class="domsGroups">
     <label class="checkbox">
-      <input type="checkbox" <%if(Util.groupsContainGroupName(groupsForLicense, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>"> <%=currentGroupName%> <%if (configuredGroups.get(i).isDenyGroup()){out.println(" (DENY) ");} %>
+      <input type="checkbox" <%if(Util.groupsContainGroupName(groupsForLicense, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>">
     </label>
   </td>
   <td class="allowedGroups">
@@ -70,7 +70,7 @@ for (int i=0;i<configuredGroups.size();i++){
 <tr class="<%=Util.getStyle(countKlausulering++)%>">
   <td  class="domsGroups">
     <label class="checkbox">
-      <input type="checkbox" <%if(Util.groupsContainGroupName(groupsForLicense, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>"> <%=currentGroupName%> <%if (configuredGroups.get(i).isDenyGroup()){out.println(" (Klausulering) ");} %>
+      <input type="checkbox" <%if(Util.groupsContainGroupName(groupsForLicense, currentGroupKey)){out.println("checked");}%> name="domsGruppe_<%=i%>"> <%=currentGroupName%> 
     </label>
   </td>
   <td class="allowedGroups">
