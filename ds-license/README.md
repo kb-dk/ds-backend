@@ -32,7 +32,11 @@ Packages gives access to materials (positive Solr filter) while restrictions
 forbid access (negative Solr filter).  The more packages groups a user validates will give more materials and more validated restrictions will
 also give more materials since this will remove the negative filter. The restrictions negative filters are always applied unless
 the user validates access to them and that restriction will be removed. Some materials can be locked under several different
-restrictions and all must validate before the user can access it.
+restrictions and all must validate before the user can access it. Giving a user access  
+to a restriction will not mean the user can see all the restricted material. He can still only see what 
+the packages give access too and the restricted material within those packages. 
+Whenever a new restriction is added to the configuration it will take immediate effect and block all access for all users.
+To give access to the new restriction a licence needed to be edited and configure access to that restriction.
     
 ### Example of access with two groups
 Group 1 (package): lma_long:"radio"
