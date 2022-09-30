@@ -19,7 +19,7 @@ int rows1=0;
 for (int i = 0;i< configuredGroupTypes.size();i++ ){
   
    GroupType current = configuredGroupTypes.get(i);
-   if (current.isDenyGroup()){
+   if (current.isRestrictionGroup()){
        continue;
    }
 
@@ -60,7 +60,7 @@ for (int i = 0;i< configuredGroupTypes.size();i++ ){
 int rows2=0;
 for (int i = 0;i< configuredGroupTypes.size();i++ ){
   GroupType current = configuredGroupTypes.get(i);
-  if (!current.isDenyGroup()){
+  if (!current.isRestrictionGroup()){
       continue;
   }
 

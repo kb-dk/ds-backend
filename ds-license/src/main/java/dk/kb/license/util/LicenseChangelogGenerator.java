@@ -150,7 +150,7 @@ public class LicenseChangelogGenerator {
         b.append("value DK/En:"+g.getValue_dk() +" / "+ g.getValue_en()+NEWLINE);
         b.append("Description dk:"+g.getDescription_dk() +NEWLINE);
         b.append("Description en:"+g.getDescription_en() +NEWLINE);
-        b.append("Deny group:"+g.isDenyGroup() +NEWLINE);
+        b.append("Deny group:"+g.isRestrictionGroup() +NEWLINE);
         b.append("Query:"+g.getQuery() +NEWLINE);          
         return b.toString();
     }

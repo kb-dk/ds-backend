@@ -22,7 +22,7 @@ int countKlausulering=0;
 for (int i=0;i<configuredGroups.size();i++){
   String currentGroupKey = configuredGroups.get(i).getKey();
   String currentGroupName = configuredGroups.get(i).getValue_dk();
-  if (configuredGroups.get(i).isDenyGroup()){
+  if (configuredGroups.get(i).isRestrictionGroup()){
       continue;
   }
 %>
@@ -62,7 +62,7 @@ for (int i=0;i<configuredGroups.size();i++){
   String currentGroupKey = configuredGroups.get(i).getKey();
   String currentGroupName = configuredGroups.get(i).getValue_dk();
  
-  if (!configuredGroups.get(i).isDenyGroup()){
+  if (!configuredGroups.get(i).isRestrictionGroup()){
       continue;
   }
 

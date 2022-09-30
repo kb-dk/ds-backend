@@ -436,7 +436,7 @@ public class LicenseValidator {
 
 		for (GroupType currentGroup : groups){
 			//TODO performence tuning, use cachedMap of GroupTypes.		
-			if ( currentGroup.isDenyGroup() ){
+			if ( currentGroup.isRestrictionGroup() ){
 				filteredGroups.add(currentGroup);
 			}				   
 		}			
