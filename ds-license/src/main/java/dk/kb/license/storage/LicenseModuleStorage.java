@@ -15,7 +15,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * 
  * The DB consist of the following tables:
@@ -71,7 +70,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     private static final String VALUE_COLUMN = "VALUE_ORG";
     private static final String VALUE_DK_COLUMN = "VALUE_DK";
     private static final String VALUE_EN_COLUMN = "VALUE_EN";
-    private static final String DENYGROUP_COLUMN = "DENYGROUP";
+    private static final String RESTRICTION_COLUMN = "RESTRICTION";
 
     //AUDITLOG
     private static final String MILLIS_COLUMN = "MILLIS";
@@ -124,12 +123,12 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     private final static String persistLicenseGroupTypeQuery = "INSERT INTO " + LICENSEGROUPTYPES_TABLE + " ("
             + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + " ," + VALUE_EN_COLUMN + " ,"
-            + DESCRIPTION_DK_COLUMN + " ," + DESCRIPTION_EN_COLUMN + " ," + QUERY_COLUMN + " ," + DENYGROUP_COLUMN
+            + DESCRIPTION_DK_COLUMN + " ," + DESCRIPTION_EN_COLUMN + " ," + QUERY_COLUMN + " ," + RESTRICTION_COLUMN
             + ") VALUES (?,?,?,?,?,?,?,?)"; // #|?|=8
 
     private final static String updateLicenseGroupTypeQuery = "UPDATE " + LICENSEGROUPTYPES_TABLE + " SET "
             + VALUE_DK_COLUMN + " = ? , " + VALUE_EN_COLUMN + " = ? ," + DESCRIPTION_DK_COLUMN + " = ? ,"
-            + DESCRIPTION_EN_COLUMN + " = ? ," + QUERY_COLUMN + " = ? ," + DENYGROUP_COLUMN + " = ? " + "WHERE "
+            + DESCRIPTION_EN_COLUMN + " = ? ," + QUERY_COLUMN + " = ? ," + RESTRICTION_COLUMN + " = ? " + "WHERE "
             + ID_COLUMN + " = ? ";
 
     private final static String updateLicensePresentationTypeQuery = "UPDATE " + LICENSEPRESENTATIONTYPES_TABLE
@@ -556,7 +555,7 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description = rs.getString(DESCRIPTION_DK_COLUMN);
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
-                boolean denyGroup = rs.getBoolean(DENYGROUP_COLUMN);
+                boolean denyGroup = rs.getBoolean(RESTRICTION_COLUMN);
                 GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
                 list.add(item);
             }
@@ -801,7 +800,7 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description = rs.getString(DESCRIPTION_DK_COLUMN);
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
-                boolean denyGroup = rs.getBoolean(DENYGROUP_COLUMN);
+                boolean denyGroup = rs.getBoolean(RESTRICTION_COLUMN);
                 GroupType group = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
             return group;
             }
