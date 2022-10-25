@@ -326,7 +326,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     // query can be null or empty
     public void persistLicenseGroupType(String key, String value, String value_en, String description,
-            String description_en, String query, boolean denyGroup) throws Exception {
+            String description_en, String query, boolean restriction) throws Exception {
 
         if (!StringUtils.isNotEmpty(key)) {
             throw new IllegalArgumentException("Key can not be null when creating new Group");
@@ -357,7 +357,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             stmt.setString(5, description);
             stmt.setString(6, description_en);
             stmt.setString(7, query);
-            stmt.setBoolean(8, denyGroup);
+            stmt.setBoolean(8, restriction);
             stmt.execute();
             connection.commit();
         } catch (SQLException e) {
@@ -368,7 +368,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     }
 
     public void updateLicenseGroupType(long id, String value_dk, String value_en, String description,
-            String description_en, String query, boolean denyGroup) throws Exception {
+            String description_en, String query, boolean restriction) throws Exception {
 
         try (PreparedStatement stmt = connection.prepareStatement(updateLicenseGroupTypeQuery);) {
             log.info("Updating Group type with id:" + id);
@@ -380,7 +380,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             stmt.setString(3, description);
             stmt.setString(4, description_en);
             stmt.setString(5, query);
-            stmt.setBoolean(6, denyGroup);
+            stmt.setBoolean(6, restriction);
             stmt.setLong(7, id);
 
             int updated = stmt.executeUpdate();
@@ -555,8 +555,8 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description = rs.getString(DESCRIPTION_DK_COLUMN);
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
-                boolean denyGroup = rs.getBoolean(RESTRICTION_COLUMN);
-                GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
+                boolean restriction = rs.getBoolean(RESTRICTION_COLUMN);
+                GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, restriction);
                 list.add(item);
             }
             return list;
@@ -800,8 +800,8 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description = rs.getString(DESCRIPTION_DK_COLUMN);
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
-                boolean denyGroup = rs.getBoolean(RESTRICTION_COLUMN);
-                GroupType group = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
+                boolean restriction = rs.getBoolean(RESTRICTION_COLUMN);
+                GroupType group = new GroupType(id, key, value_dk, value_en,description, description_en, query, restriction);
             return group;
             }
             throw new IllegalArgumentException("Presentationtype not found for id:" + id);

@@ -94,8 +94,8 @@
     attributed group will be checked. If just one of the attribute groups validates then the license validates. 
     The license will give access to the groups (pakker) defined for the license, but restricted to the presentationtype (Download etc.)
     Every license that validate will give access to more material.
-    All the allow groups will each expand the positive filter query used for filtering Ids. All deny-group valideted will remove
-    the negative filter blocked by that deny-group. See 'uml/License_validation_logic.png' for a visualisation 
+    All the allow groups will each expand the positive filter query used for filtering Ids. All restriction-group validated will remove
+    the negative filter blocked by that restriction-group. See 'uml/License_validation_logic.png' for a visualisation 
     of the validation logic for a license.
     
     
