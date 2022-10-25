@@ -54,7 +54,8 @@ public class ConfigurationServlet extends HttpServlet {
 				String value_en = request.getParameter("value_en_presentationtype");
 				log.debug("Saving new presentationtype:" + key);
 				LicenseModuleFacade.persistLicensePresentationType(key,value,value_en);
-			} else if ("save_grouptype".equals(event)) {
+			}
+			else if ("save_grouptype".equals(event)) {
 				request.setAttribute("tab", "2");
 				String key = request.getParameter("key_grouptype");
 				String value_dk = request.getParameter("value_grouptype");
@@ -62,13 +63,15 @@ public class ConfigurationServlet extends HttpServlet {
 				String description = request.getParameter("value_groupdescription");
 				String description_en = request.getParameter("value_en_groupdescription");
 				String query = request.getParameter("value_groupquery");
-				String isDenyGroupStr = request.getParameter("denyGroupCheck");
-				boolean isDenyGroup = false;
-				log.debug("Saving new grouptype:" + key);
-				if (isDenyGroupStr != null) { // Checkbox is checked
-					isDenyGroup = true;
+				String typeStr = request.getParameter("type");
+					
+				boolean isKlausulering = false;
+				
+				if ("klausulering".equals(typeStr)) { 
+				    isKlausulering = true;
 				}
-				LicenseModuleFacade.persistLicenseGroupType(key,value_dk,value_en,description,description_en,query, isDenyGroup);
+				log.debug("Saving new grouptype:" + key +" klausulering:"+isKlausulering);
+				LicenseModuleFacade.persistLicenseGroupType(key,value_dk,value_en,description,description_en,query, isKlausulering);
 
 			} else if ("save_attributetype".equals(event)) {
 

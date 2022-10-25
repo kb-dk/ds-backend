@@ -1,3 +1,5 @@
+<%@page pageEncoding="UTF-8"%>
+<%@ page import="
      java.util.*,
      dk.kb.license.storage.*,
      dk.kb.license.Util,
