@@ -85,20 +85,19 @@ public class CopyrightAccessExtractor {
        if (creatorPerson != null) {
            
            for (int i =0;i<creatorPerson.getLength();i++) {
-           
+           CreatorPerson person=new CopyrightAccessDto().new CreatorPerson();
            Element creatorElement = (Element) creatorPerson.item(i);
            
            String personName= creatorElement.getElementsByTagName("cdl:name").item(0).getTextContent();
            String personYearBirth= creatorElement.getElementsByTagName("cdl:year.birth").item(0).getTextContent();
            String personYearDeath= creatorElement.getElementsByTagName("cdl:year.death").item(0).getTextContent();
-           
-           System.out.println(personYearBirth);
-           System.out.println(personName);
+           person.setName(personName);
+           person.setYearBirth(personYearBirth);           
+           person.setYearDeath(personYearDeath);
+           personList.add(person);
         }
        }
-       
-       
-       
+                     
        return personList;
        
    }
