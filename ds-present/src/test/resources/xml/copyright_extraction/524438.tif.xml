@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd" TYPE="File" OBJID="a4cbc9cb-ef7c-4d38-9cea-7696db62b22d" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2022-11-14T07:32:12.892+01:00">
+        <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
+            <mets:name>kbDk</mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+        <mets:agent ID="kbDkCumulusBevaringsService" ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="API">
+            <mets:name>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+    </mets:metsHdr>
+    <mets:dmdSec CREATED="2022-11-14T07:32:12.892+01:00" ID="Mods1">
+        <mets:mdWrap MDTYPE="MODS">
+            <mets:xmlData>
+                <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+                    <mods:genre type="Categories">Pressehusets billedarkiv, Diverse</mods:genre>
+                    <mods:identifier type="uri">urn:uuid:e3fcf020-85cb-11e8-8398-00505688346e</mods:identifier>
+                    <mods:identifier type="local">524438.tif</mods:identifier>
+                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Samlingsbilleder/0000/581/506/524438.tif</mods:identifier>
+                    <mods:identifier type="Original Asset Reference">Helle-Brunnich-Rasmussens-MacBook-Pro-2.local:/Volumes/Samlingsbilleder/524438.tif</mods:identifier>
+                    <mods:location>
+                        <mods:shelfLocator>Billedsamlingen. Pressehusets negativarkiv, R641</mods:shelfLocator>
+                    </mods:location>
+                    <mods:note type="content">Henning Andersen 09.09.1964</mods:note>
+                    <mods:note type="content">Overlæge</mods:note>
+                    <mods:note type="content">Pressehuset, Negativer R641, s 43</mods:note>
+                    <mods:note displayLabel="Catalog Name">Samlingsbilleder</mods:note>
+                    <mods:originInfo altRepGroup="original">
+                        <mods:dateCreated>1964</mods:dateCreated>
+                    </mods:originInfo>
+                    <mods:originInfo altRepGroup="surrogate">
+                        <mods:dateCaptured>2018-08-02T16:21:16.000+02:00</mods:dateCaptured>
+                    </mods:originInfo>
+                    <mods:recordInfo>
+                        <mods:languageOfCataloging>
+                            <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
+                        </mods:languageOfCataloging>
+                        <mods:recordInfoNote>LTR</mods:recordInfoNote>
+                    </mods:recordInfo>
+                    <mods:relatedItem type="otherFormat">
+                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/0000/581/506/524438.jpg</mods:identifier>
+                    </mods:relatedItem>
+                    <mods:relatedItem type="series" displayLabel="Samling">
+                        <mods:titleInfo>
+                            <mods:title>Billedsamlingen</mods:title>
+                        </mods:titleInfo>
+                    </mods:relatedItem>
+                    <mods:relatedItem type="host">
+                        <mods:identifier type="URL">https://www.kb.dk/find-materiale/samlinger/billedsamlingen/index.html</mods:identifier>
+                        <mods:note type="URL-tekst">Det Kgl. Biblioteks billedsamling</mods:note>
+                    </mods:relatedItem>
+                    <mods:subject>
+                        <mods:geographic>Danmark</mods:geographic>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Andersen</mods:namePart>
+                            <mods:namePart type="given">Henning</mods:namePart>
+                            <mods:namePart type="termsOfAddress">overlæge</mods:namePart>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:titleInfo>
+                        <mods:title>Henning Andersen</mods:title>
+                    </mods:titleInfo>
+                    <mods:typeOfResource displayLabel="Generel materialebetegnelse">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Materialebetegnelse">Fotografi</mods:typeOfResource>
+                </mods:mods>
+            </mets:xmlData>
+        </mets:mdWrap>
+    </mets:dmdSec>
+    <mets:amdSec>
+        <mets:techMD CREATED="2022-11-14T07:32:12.939+01:00" ID="PremisObject1">
+            <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:file">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>e3fcf020-85cb-11e8-8398-00505688346e</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:objectCharacteristics>
+                            <premis:compositionLevel>0</premis:compositionLevel>
+                            <premis:fixity>
+                                <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
+                                <premis:messageDigest>b9ec21f1e48e7f8718bd2e566eee4328</premis:messageDigest>
+                            </premis:fixity>
+                            <premis:size>51255516</premis:size>
+                            <premis:format>
+                                <premis:formatDesignation>
+                                    <premis:formatName>TIFF Image</premis:formatName>
+                                    <premis:formatVersion/>
+                                </premis:formatDesignation>
+                                <premis:formatNote>Validated by Cumulus version: 11.1.8</premis:formatNote>
+                            </premis:format>
+                            <premis:creatingApplication>
+                                <premis:creatingApplicationName>Adobe Photoshop CC 2017</premis:creatingApplicationName>
+                            </premis:creatingApplication>
+                            <premis:objectCharacteristicsExtension>
+                                <mix:mix xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="http://www.loc.gov/mix/v20 http://www.loc.gov/standards/mix/mix20/mix20.xsd">
+                                    <mix:BasicDigitalObjectInformation>
+                                        <mix:ObjectIdentifier>
+                                            <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
+                                            <mix:objectIdentifierValue>e3fcf020-85cb-11e8-8398-00505688346e</mix:objectIdentifierValue>
+                                        </mix:ObjectIdentifier>
+                                        <mix:fileSize>51255516</mix:fileSize>
+                                        <mix:FormatDesignation>
+                                            <mix:formatName>TIFF Image</mix:formatName>
+                                            <mix:formatVersion/>
+                                        </mix:FormatDesignation>
+                                        <mix:byteOrder>big endian</mix:byteOrder>
+                                        <mix:Compression>
+                                            <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                                        </mix:Compression>
+                                        <mix:Fixity>
+                                            <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
+                                            <mix:messageDigest>b9ec21f1e48e7f8718bd2e566eee4328</mix:messageDigest>
+                                        </mix:Fixity>
+                                    </mix:BasicDigitalObjectInformation>
+                                    <mix:BasicImageInformation>
+                                        <mix:BasicImageCharacteristics>
+                                            <mix:imageWidth>7171</mix:imageWidth>
+                                            <mix:imageHeight>7144</mix:imageHeight>
+                                            <mix:PhotometricInterpretation>
+                                                <mix:colorSpace>Grayscale</mix:colorSpace>
+                                                <mix:ColorProfile>
+                                                    <mix:IccProfile>
+                                                        <mix:iccProfileName>Gray Gamma 2.2</mix:iccProfileName>
+                                                    </mix:IccProfile>
+                                                </mix:ColorProfile>
+                                            </mix:PhotometricInterpretation>
+                                        </mix:BasicImageCharacteristics>
+                                    </mix:BasicImageInformation>
+                                    <mix:ImageCaptureMetadata>
+                                        <mix:GeneralCaptureInformation>
+                                            <mix:dateTimeCreated>2022-11-14T07:32:12.944+01:00</mix:dateTimeCreated>
+                                            <mix:imageProducer>Fotografisk Atelier. DKB.</mix:imageProducer>
+                                        </mix:GeneralCaptureInformation>
+                                        <mix:ScannerCapture>
+                                            <mix:ScannerModel>
+                                                <mix:scannerModelName>iQSmart 3</mix:scannerModelName>
+                                            </mix:ScannerModel>
+                                            <mix:MaximumOpticalResolution>
+                                                <mix:xOpticalResolution>300</mix:xOpticalResolution>
+                                                <mix:yOpticalResolution>300</mix:yOpticalResolution>
+                                            </mix:MaximumOpticalResolution>
+                                        </mix:ScannerCapture>
+                                        <mix:DigitalCameraCapture>
+                                            <mix:digitalCameraManufacturer>Creo</mix:digitalCameraManufacturer>
+                                            <mix:DigitalCameraModel>
+                                                <mix:digitalCameraModelName>iQSmart 3</mix:digitalCameraModelName>
+                                            </mix:DigitalCameraModel>
+                                            <mix:CameraCaptureSettings>
+                                                <mix:ImageData/>
+                                            </mix:CameraCaptureSettings>
+                                        </mix:DigitalCameraCapture>
+                                        <mix:orientation>normal*</mix:orientation>
+                                    </mix:ImageCaptureMetadata>
+                                    <mix:ImageAssessmentMetadata>
+                                        <mix:ImageColorEncoding>
+                                            <mix:BitsPerSample>
+                                                <mix:bitsPerSampleValue>8</mix:bitsPerSampleValue>
+                                                <mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
+                                            </mix:BitsPerSample>
+                                            <mix:samplesPerPixel>1</mix:samplesPerPixel>
+                                        </mix:ImageColorEncoding>
+                                    </mix:ImageAssessmentMetadata>
+                                    <mix:ChangeHistory>
+                                        <mix:ImageProcessing>
+                                            <mix:sourceData>initial capture</mix:sourceData>
+                                            <mix:ProcessingSoftware>
+                                                <mix:processingSoftwareName>Adobe Photoshop CC 2017</mix:processingSoftwareName>
+                                            </mix:ProcessingSoftware>
+                                        </mix:ImageProcessing>
+                                    </mix:ChangeHistory>
+                                </mix:mix>
+                            </premis:objectCharacteristicsExtension>
+                        </premis:objectCharacteristics>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:techMD>
+        <!--Inside mets:rightsMD-->
+        <mets:rightsMD CREATED="2022-11-14T07:32:12.952+01:00" ID="ModsRights1">
+            <mets:mdWrap MDTYPE="MODS">
+                <mets:xmlData>
+                    <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+                        <mods:accessCondition type="use and reproduction" displayLabel="Restricted ">Ejermærke</mods:accessCondition>
+                        <mods:accessCondition>
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD /usr/local/ginnungagap/current/script/xsd/copyright-md.xsd"/>
+                        </mods:accessCondition>
+                    </mods:mods>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:rightsMD>
+        <mets:digiprovMD CREATED="2022-11-14T07:32:12.953+01:00" ID="PremisEvent1">
+            <mets:mdWrap MDTYPE="PREMIS:EVENT">
+                <mets:xmlData>
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd">
+                        <premis:eventIdentifier>
+                            <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+                            <premis:eventIdentifierValue>728830f7-a722-4352-ae6a-484e4c0a6793</premis:eventIdentifierValue>
+                        </premis:eventIdentifier>
+                        <premis:eventType>ingestion</premis:eventType>
+                        <premis:eventDateTime>2022-11-14T07:32:12.957+01:00</premis:eventDateTime>
+                        <premis:eventDetailInformation>
+                            <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
+file.encoding: UTF-8
+file.encoding.pkg: sun.io
+file.separator: /
+java.awt.graphicsenv: sun.awt.X11GraphicsEnvironment
+java.class.version: 52.0
+java.runtime.version: 1.8.0_332-b09
+java.specification.version: 1.8
+java.vm.info: mixed mode
+java.vm.name: OpenJDK 64-Bit Server VM
+java.vm.specification.name: Java Virtual Machine Specification
+java.vm.version: 25.332-b09
+java.vm.vendor: Red Hat, Inc.
+line.separator: 
+
+os.arch: amd64
+os.name: Linux
+os.version: 4.18.0-372.9.1.el8.x86_64
+sun.arch.data.model: 64
+sun.boot.library.path: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.332.b09-2.el8_6.x86_64/jre/lib/amd64
+sun.cpu.endian: little
+sun.io.unicode.encoding: UnicodeLittle
+sun.java.launcher: SUN_STANDARD
+sun.jnu.encoding: UTF-8
+sun.management.compiler: HotSpot 64-Bit Tiered Compilers
+sun.os.patch.level: unknown
+user.country: DK
+user.home: /home/tomcat
+user.timezone: Europe/Copenhagen
+user.language: da
+
+</premis:eventDetail>
+                        </premis:eventDetailInformation>
+                        <premis:linkingAgentIdentifier>
+                            <premis:linkingAgentIdentifierType>kbDkInternal</premis:linkingAgentIdentifierType>
+                            <premis:linkingAgentIdentifierValue>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </premis:linkingAgentIdentifierValue>
+                        </premis:linkingAgentIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>e3fcf020-85cb-11e8-8398-00505688346e</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>a4cbc9cb-ef7c-4d38-9cea-7696db62b22d</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                    </premis:event>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+        <mets:digiprovMD CREATED="2022-11-14T07:32:12.958+01:00" ID="PremisRepresentation1">
+            <mets:mdWrap MDTYPE="PREMIS">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:representation">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>a4cbc9cb-ef7c-4d38-9cea-7696db62b22d</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2022-11-14T07:32:12.958+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>logical</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2022-11-14T07:32:12.958+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Low</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2022-11-14T07:32:12.959+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:relationship>
+                            <premis:relationshipType>structural</premis:relationshipType>
+                            <premis:relationshipSubType>represents</premis:relationshipSubType>
+                            <premis:relatedObjectIdentifier>
+                                <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+                                <premis:relatedObjectIdentifierValue>60caad36-7ef4-4b13-9b46-fb4602d711a6</premis:relatedObjectIdentifierValue>
+                            </premis:relatedObjectIdentifier>
+                        </premis:relationship>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+    </mets:amdSec>
+    <mets:fileSec>
+        <mets:fileGrp>
+            <mets:file ID="fileId1">
+                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:e3fcf020-85cb-11e8-8398-00505688346e"/>
+            </mets:file>
+        </mets:fileGrp>
+    </mets:fileSec>
+    <mets:structMap TYPE="logical">
+        <mets:div DMDID="Mods1" ADMID="ModsRights1 PremisEvent1 PremisObject1 PremisRepresentation1">
+            <mets:fptr FILEID="fileId1"/>
+        </mets:div>
+    </mets:structMap>
+</mets:mets>
