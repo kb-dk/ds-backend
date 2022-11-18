@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd" TYPE="Representation" OBJID="ab9e6d1f-1a3d-4e9f-9c18-72bd01176532" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2022-11-14T07:34:15.839+01:00">
+        <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
+            <mets:name>kbDk</mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+        <mets:agent ID="kbDkCumulusBevaringsService" ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="API">
+            <mets:name>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+    </mets:metsHdr>
+    <mets:dmdSec CREATED="2022-11-14T07:34:15.839+01:00" ID="Mods1">
+        <mets:mdWrap MDTYPE="MODS">
+            <mets:xmlData>
+                <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+                    <mods:genre type="Categories">Postkortsamlingen, Vestindien, Postkort, Vestindien, CAR- BLO katagori, Postkortsamlingen, 2022-09-01 15:06:39, 2022-09-01 15:11:09</mods:genre>
+                    <mods:identifier displayLabel="Accession number" type="accession number">1962-908/36</mods:identifier>
+                    <mods:location>
+                        <mods:shelfLocator>Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort/politistation</mods:shelfLocator>
+                    </mods:location>
+                    <mods:note displayLabel="Catalog Name">Samlingsbilleder</mods:note>
+                    <mods:originInfo altRepGroup="surrogate">
+                        <mods:dateCaptured>2016-05-20T14:51:59.000+02:00</mods:dateCaptured>
+                    </mods:originInfo>
+                    <mods:relatedItem type="series" displayLabel="Samling">
+                        <mods:titleInfo>
+                            <mods:title>Billedsamlingen</mods:title>
+                        </mods:titleInfo>
+                    </mods:relatedItem>
+                    <mods:relatedItem type="host">
+                        <mods:identifier type="URL">https://www.kb.dk/find-materiale/samlinger/billedsamlingen/index.html</mods:identifier>
+                        <mods:note type="URL-tekst">Det Kgl. Biblioteks billedsamling</mods:note>
+                    </mods:relatedItem>
+                    <mods:subject>
+                        <mods:topic>postkort</mods:topic>
+                        <mods:topic>forter</mods:topic>
+                        <mods:topic>Dannebrog</mods:topic>
+                        <mods:topic>børn</mods:topic>
+                        <mods:topic>arkitekturer</mods:topic>
+                        <mods:topic lang="en">postcards</mods:topic>
+                        <mods:topic lang="en">forts</mods:topic>
+                        <mods:topic lang="en">Dannebrog</mods:topic>
+                        <mods:topic lang="en">children</mods:topic>
+                        <mods:topic lang="en">architectures</mods:topic>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:geographic>Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian</mods:geographic>
+                    </mods:subject>
+                    <mods:titleInfo>
+                        <mods:title>Fortet i Charlotte Amalie</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </mets:xmlData>
+        </mets:mdWrap>
+    </mets:dmdSec>
+    <mets:amdSec>
+        <mets:digiprovMD CREATED="2022-11-14T07:34:15.863+01:00" ID="PremisEvent1">
+            <mets:mdWrap MDTYPE="PREMIS:EVENT">
+                <mets:xmlData>
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd">
+                        <premis:eventIdentifier>
+                            <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+                            <premis:eventIdentifierValue>fc89f69e-5c6c-43e8-8b0d-769e602e9c0a</premis:eventIdentifierValue>
+                        </premis:eventIdentifier>
+                        <premis:eventType>ingestion</premis:eventType>
+                        <premis:eventDateTime>2022-11-14T07:34:15.864+01:00</premis:eventDateTime>
+                        <premis:linkingAgentIdentifier>
+                            <premis:linkingAgentIdentifierType>kbDkInternal</premis:linkingAgentIdentifierType>
+                            <premis:linkingAgentIdentifierValue>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </premis:linkingAgentIdentifierValue>
+                        </premis:linkingAgentIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>ab9e6d1f-1a3d-4e9f-9c18-72bd01176532</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                    </premis:event>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+        <mets:digiprovMD CREATED="2022-11-14T07:34:15.864+01:00" ID="PremisRepresentation1">
+            <mets:mdWrap MDTYPE="PREMIS">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:representation">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>ab9e6d1f-1a3d-4e9f-9c18-72bd01176532</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2022-11-14T07:34:15.864+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>logical</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2022-11-14T07:34:15.865+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Low</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2022-11-14T07:34:15.865+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:relationship>
+                            <premis:relationshipType>structural</premis:relationshipType>
+                            <premis:relationshipSubType>represents</premis:relationshipSubType>
+                            <premis:relatedObjectIdentifier>
+                                <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+                                <premis:relatedObjectIdentifierValue>d06acdd4-7727-4122-9bdc-a394b7932160</premis:relatedObjectIdentifierValue>
+                            </premis:relatedObjectIdentifier>
+                        </premis:relationship>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+    </mets:amdSec>
+    <mets:structMap TYPE="representation">
+        <mets:div DMDID="Mods1" ADMID="PremisEvent1">
+            <mets:div ORDER="1" LABEL="DPK000107.tif">
+                <mets:mptr LOCTYPE="URN" xlink:href="urn:uuid:281b1495-92ee-44d1-b000-277f2dc2f27f"/>
+            </mets:div>
+            <mets:div ORDER="2" LABEL="DPK000108.tif">
+                <mets:mptr LOCTYPE="URN" xlink:href="urn:uuid:8e17c4c5-af59-4650-8a21-462121568a32"/>
+            </mets:div>
+        </mets:div>
+    </mets:structMap>
+</mets:mets>
