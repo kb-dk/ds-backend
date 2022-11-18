@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 
 public class CopyrightAccessDto {
-    private Copyright copyright;
-    private ArrayList<CreatorPerson> creatorPersonList;
+    private ArrayList<AccessCondition> accessConditionsList;
+
             
     public  CopyrightAccessDto() {                    
     }
@@ -20,60 +20,68 @@ public class CopyrightAccessDto {
 
 
 
-   // String publication_status = copyrightList.item(0).getAttributes().getNamedItem("publication.status").getNodeValue();
-    //String copyright_status = copyrightList.item(0).getAttributes().getNamedItem("copyright.status").getNodeValue();
-
-    public Copyright getCopyright() {
-        return copyright;
+    public ArrayList<AccessCondition> getAccessConditionsList() {
+        return accessConditionsList;
     }
 
 
 
-    public void setCopyright(Copyright copyright) {
-        this.copyright = copyright;
-    }
-
-
-
-   
-
-
-
-
-    public ArrayList<CreatorPerson> getCreatorPersonList() {
-        return creatorPersonList;
+    public void setAccessConditionsList(ArrayList<AccessCondition> accessConditionsList) {
+        this.accessConditionsList = accessConditionsList;
     }
 
 
 
 
-    public void setCreatorPersonList(ArrayList<CreatorPerson> creatorPersonList) {
-        this.creatorPersonList = creatorPersonList;
-    }
-
-
-
-
-
-
-
-
-    public class Copyright{
+    public class AccessCondition{
+              
+        private String type;
+        private String displayLabel;    
+        private String copyrightPublicationStatus;
+        private String copyrightStatus;
+        private String value;
         
+        public String getType() {
+            return type;
+        }
+        public void setType(String type) {
+            this.type = type;
+        }
+        public String getDisplayLabel() {
+            return displayLabel;
+        }
+        public void setDisplayLabel(String displayLabel) {
+            this.displayLabel = displayLabel;
+        }
+            
+        public String getValue() {
+            return value;
+        }
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+
+        private ArrayList<CreatorPerson> creatorPersonList;
         
-        String pulicationStatus;
-        String copyRightStatus;
-        public String getPulicationStatus() {
-            return pulicationStatus;
+        public ArrayList<CreatorPerson> getCreatorPersonList() {
+            return creatorPersonList;
         }
-        public void setPulicationStatus(String pulicationStatus) {
-            this.pulicationStatus = pulicationStatus;
+        public void setCreatorPersonList(ArrayList<CreatorPerson> creatorPersonList) {
+            this.creatorPersonList = creatorPersonList;
         }
-        public String getCopyRightStatus() {
-            return copyRightStatus;
+      
+        public String getCopyrightPublicationStatus() {
+            return copyrightPublicationStatus;
         }
-        public void setCopyRightStatus(String copyRightStatus) {
-            this.copyRightStatus = copyRightStatus;
+        public void setCopyrightPublicationStatus(String copyrightPublicationStatus) {
+            this.copyrightPublicationStatus = copyrightPublicationStatus;
+        }
+        public String getCopyrightStatus() {
+            return copyrightStatus;
+        }
+        public void setCopyrightStatus(String copyrightStatus) {
+            this.copyrightStatus = copyrightStatus;
         }
         
     }
@@ -81,9 +89,9 @@ public class CopyrightAccessDto {
 
 
     public class CreatorPerson {     
-        String name;
-        String yearBirth;
-        String yearDeath;
+        private String name;
+        private String yearBirth;
+        private String yearDeath;
         public String getName() {
             return name;
         }
