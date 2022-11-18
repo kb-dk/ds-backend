@@ -72,32 +72,14 @@ public class CopyrightAccessExtractorTest {
     
     
     @Test
-    void testTwoAccessConditionsWith1Person() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/524438.tif.xml");
+    void testThreeAccessConditionsWith1Person() throws Exception {
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/KHP0001-049.tif.xml");
         
-        //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
-        assertEquals(2,copyright.getAccessConditionsList().size());
+        assertEquals(3,copyright.getAccessConditionsList().size()); 
         
-        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
-        AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
-        
-        assertEquals("Ejermærke",accessCondition1.getValue());
-        assertEquals("use and reproduction",accessCondition1.getType());
-        assertEquals("Restricted ",accessCondition1.getDisplayLabel()); //white space
-        
-        /*  
-        assertEquals("copyrighted",accessCondition.getCopyrightStatus());        
-        assertEquals("unknown",accessCondition.getCopyrightPublicationStatus());
-        
-        //Persons
-        assertEquals(1,accessCondition.getCreatorPersonList().size());
-        CreatorPerson person= accessCondition.getCreatorPersonList().get(0);
-        assertEquals("Clemens, Johann Friderich",person.getName());
-        assertEquals("1748-11-29",person.getYearBirth());
-        assertEquals("1831-11-5",person.getYearDeath());
-        */
-    
+        AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2);//last one has the person
+        assertEquals(1,accessCondition3.getCreatorPersonList().size());                    
     }
     
 }
