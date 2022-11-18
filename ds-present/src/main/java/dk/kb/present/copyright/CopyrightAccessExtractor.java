@@ -17,6 +17,7 @@ import org.xml.sax.InputSource;
 
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
 
+import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
 import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.xml.XMLEscapeSanitiser;
@@ -28,7 +29,7 @@ public class CopyrightAccessExtractor {
     private static final Logger log = LoggerFactory.getLogger(CopyrightAccessExtractor.class);
 
 
-    public static CopyrightAccessDto extractCopyrightFields( String xml ) throws Exception {
+    public static CopyrightAccessDto extractCopyrightFields(String xml) throws Exception {
 
         CopyrightAccessDto copyrightDto= new CopyrightAccessDto();
 
@@ -102,6 +103,11 @@ public class CopyrightAccessExtractor {
             ArrayList<CreatorPerson> creatorPersons = buildPersons(accessConditionElement);
             accessCondition.setCreatorPersonList(creatorPersons);
 
+           //Can be empty list
+            ArrayList<CreatorCorporate> creatorCorporate = buildCooperate(accessConditionElement);
+            
+            accessCondition.setCreatorCorporateList(creatorCorporate);
+            
             accessConditionList.add(accessCondition);                     
         }
 
@@ -138,8 +144,39 @@ public class CopyrightAccessExtractor {
         }
 
         return personList;
-
     }
+    
+  /*
+  <cdl:creator>
+    <dk:creator.corporate>
+      <cdl:name>Em. Bærentzen &amp; Co. lith. Inst.</cdl:name>
+      <dk:year.started>1837</dk:year.started>
+      <dk:year.ended>1874</dk:year.ended>
+    </dk:creator.corporate>
+  </cdl:creator>
+  */     
+     public static ArrayList<CreatorCorporate> buildCooperate( Element accessConditionElement){       
+         ArrayList<CreatorCorporate> cooperateList = new  ArrayList<CreatorCorporate>();
+
+         NodeList creatorCorporate = accessConditionElement.getElementsByTagName("dk:creator.corporate");
+         
+         if (creatorCorporate != null) {
+
+             for (int i =0;i<creatorCorporate.getLength();i++) {
+                 CreatorCorporate coorporate=new CopyrightAccessDto().new CreatorCorporate();
+                 Element creatorElement = (Element) creatorCorporate.item(i);
+
+                 String name= creatorElement.getElementsByTagName("cdl:name").item(0).getTextContent();
+                 String yearStarted= creatorElement.getElementsByTagName("dk:year.started").item(0).getTextContent(); //Not sure it is always here
+                 String yearEnded= creatorElement.getElementsByTagName("dk:year.ended").item(0).getTextContent();//Not sure it is always here
+                 coorporate.setName(name);
+                 coorporate.setYearStarted(yearStarted);
+                 coorporate.setYearEnded(yearEnded);
+                 cooperateList.add(coorporate);
+             }
+         }
+         return cooperateList;
+     }
 
 
     private static   Document createDocFromXml(String xml) throws Exception{

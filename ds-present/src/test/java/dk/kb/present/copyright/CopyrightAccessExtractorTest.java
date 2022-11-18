@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
+import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
 import dk.kb.util.Resolver;
 
@@ -22,9 +23,7 @@ public class CopyrightAccessExtractorTest {
         assertEquals(1,copyright.getAccessConditionsList().size());
         
         AccessCondition accessCondition = copyright.getAccessConditionsList().get(0);
-        
-        
-        
+                        
         assertEquals("copyrighted",accessCondition.getCopyrightStatus());        
         assertEquals("unknown",accessCondition.getCopyrightPublicationStatus());
         
@@ -33,7 +32,11 @@ public class CopyrightAccessExtractorTest {
         CreatorPerson person= accessCondition.getCreatorPersonList().get(0);
         assertEquals("Clemens, Johann Friderich",person.getName());
         assertEquals("1748-11-29",person.getYearBirth());
-        assertEquals("1831-11-5",person.getYearDeath());       
+        assertEquals("1831-11-5",person.getYearDeath());
+        
+        //Corporate
+        assertEquals(0,accessCondition.getCreatorCorporateList().size());
+        
     }
     
     
@@ -81,6 +84,20 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2);//last one has the person
         assertEquals(1,accessCondition3.getCreatorPersonList().size());                    
     }
+    
+    @Test
+    void testAccessConditionwith3Persons1Corporate() throws Exception {
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/000332.tif.xml");
+        
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals(3,copyright.getAccessConditionsList().get(0).getCreatorPersonList().size());                                   
+        assertEquals(1,copyright.getAccessConditionsList().get(0).getCreatorCorporateList().size());
+        CreatorCorporate creatorCorporate = copyright.getAccessConditionsList().get(0).getCreatorCorporateList().get(0);
+        
+        
+        
+    }
+    
     
 }
 
