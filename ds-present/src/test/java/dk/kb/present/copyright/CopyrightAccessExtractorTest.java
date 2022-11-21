@@ -63,8 +63,7 @@ public class CopyrightAccessExtractorTest {
         assertEquals("use and reproduction",accessCondition1.getType());
         assertEquals("Restricted ",accessCondition1.getDisplayLabel()); //white space
         
-        System.out.println("'"+accessCondition2.getValue()+"'");
-        assertEquals("",accessCondition2.getValue().trim()); // XML can both have text or xml tag... 
+        assertEquals(null,accessCondition2.getValue());  
         
         assertEquals("unknown",accessCondition2.getCopyrightPublicationStatus());
         assertEquals("copyrighted",accessCondition2.getCopyrightStatus());

@@ -75,8 +75,7 @@ public class CopyrightAccessExtractor {
 
             AccessCondition accessCondition = new CopyrightAccessDto().new AccessCondition();
             Element accessConditionElement = (Element) accessCondititions.item(i);
-
-            accessCondition.setValue(accessConditionElement.getTextContent());
+           
             Node typeNode = accessConditionElement.getAttributes().getNamedItem("type");
             if (typeNode != null) {
                 accessCondition.setType(typeNode.getNodeValue());     
@@ -88,7 +87,16 @@ public class CopyrightAccessExtractor {
             }
 
             NodeList copyrightList = accessConditionElement.getElementsByTagName("cdl:copyright");  
-            if (copyrightList.getLength() ==1) {       
+           
+            
+            if (copyrightList.getLength()==0) { //Text!               
+                String accessContentText= accessConditionElement.getTextContent();
+                if (accessContentText != null) {
+                    accessContentText=accessContentText.trim();
+                }
+                accessCondition.setValue(accessContentText);                
+            }            
+            if (copyrightList.getLength() ==1) { //XML      
                 String publication_status = copyrightList.item(0).getAttributes().getNamedItem("publication.status").getNodeValue();
                 String copyright_status = copyrightList.item(0).getAttributes().getNamedItem("copyright.status").getNodeValue();
                 accessCondition.setCopyrightPublicationStatus(publication_status);
