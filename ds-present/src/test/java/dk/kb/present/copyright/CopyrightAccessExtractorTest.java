@@ -93,7 +93,10 @@ public class CopyrightAccessExtractorTest {
         assertEquals(3,copyright.getAccessConditionsList().get(0).getCreatorPersonList().size());                                   
         assertEquals(1,copyright.getAccessConditionsList().get(0).getCreatorCorporateList().size());
         CreatorCorporate creatorCorporate = copyright.getAccessConditionsList().get(0).getCreatorCorporateList().get(0);
-        
+        assertEquals("Em. Bærentzen & Co. lith. Inst.",creatorCorporate.getName()); //notice xml encoding : &amp
+        assertEquals("1837",creatorCorporate.getYearStarted());
+        assertEquals("1874",creatorCorporate.getYearEnded());
+      
         
         
     }
