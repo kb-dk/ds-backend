@@ -95,7 +95,7 @@ public class CreateLicenseServlet extends HttpServlet {
 		        boolean validateAttributesValues = license.validateAttributesAndValuesNotNull();
 		        
 		        if (!validateMainFields){
-		        	request.setAttribute("message","License name/description too short or validTo/validFrom is invalid");	 
+		        	request.setAttribute("message","Validation error. Name/description too short or validTo/validFrom not legal dates. Date format is  dd-MM-yyyy");	 
 		        	returnFormPage(request, response);
 		        	return;
 		        }
