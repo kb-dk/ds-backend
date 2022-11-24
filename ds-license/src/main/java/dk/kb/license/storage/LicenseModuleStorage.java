@@ -499,7 +499,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         boolean validateAttributesValues = license.validateAttributesAndValuesNotNull();
         if (!validateMainFields) {
             throw new IllegalArgumentException(
-                    "Validation error. Name/description too short or validTo/validFrom not legal dates");
+                    "Validation error. Name/description too short or validTo/validFrom not legal dates. Date format is  dd-MM-yyyy");
         }
         if (!validateAttributesValues) {
             throw new IllegalArgumentException("Validation error. Attributes or values can not be empty");
