@@ -175,11 +175,21 @@ public class CopyrightAccessExtractor {
                  Element creatorElement = (Element) creatorCorporate.item(i);
 
                  String name= creatorElement.getElementsByTagName("cdl:name").item(0).getTextContent();
-                 String yearStarted= creatorElement.getElementsByTagName("dk:year.started").item(0).getTextContent(); //Not sure it is always here
-                 String yearEnded= creatorElement.getElementsByTagName("dk:year.ended").item(0).getTextContent();//Not sure it is always here
                  coorporate.setName(name);
-                 coorporate.setYearStarted(yearStarted);
-                 coorporate.setYearEnded(yearEnded);
+                 
+                 //Not always there
+                 NodeList yearStartedNode = creatorElement.getElementsByTagName("dk:year.started");
+                 NodeList yearEndedNode = creatorElement.getElementsByTagName("dk:year.ended");
+
+                 if (yearStartedNode.getLength() >0  ){
+                     String yearStarted= yearStartedNode.item(0).getTextContent();                         
+                     coorporate.setYearStarted(yearStarted);
+                 }
+                 if (yearEndedNode.getLength() > 0){
+                     String yearEnded= yearEndedNode.item(0).getTextContent();                         
+                     coorporate.setYearEnded(yearEnded);
+                 }                                  
+                 
                  cooperateList.add(coorporate);
              }
          }

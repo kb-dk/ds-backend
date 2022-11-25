@@ -3,6 +3,8 @@ package dk.kb.present.copyright;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+
 import org.junit.jupiter.api.Test;
 
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
@@ -71,6 +73,37 @@ public class CopyrightAccessExtractorTest {
         
     
     }
+    
+    @Test
+    void testBlokkeret() throws Exception {
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/006940.tif.xml");
+        
+        //Copyright statuses
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals(3,copyright.getAccessConditionsList().size());
+        
+        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
+        AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
+        AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2);
+        
+        assertEquals("Blokeret",accessCondition1.getValue());
+        assertEquals("restriction on access",accessCondition1.getType());
+        assertEquals("Access Status",accessCondition1.getDisplayLabel()); 
+        
+        assertEquals("Kurators beslutning. Se journal nr. 897697",accessCondition2.getValue());
+        assertEquals("restriction on access note",accessCondition2.getType());
+        assertEquals(null,accessCondition2.getDisplayLabel()); 
+                
+        assertEquals(1,accessCondition3.getCreatorPersonList().size());
+        assertEquals(1,accessCondition3.getCreatorCorporateList().size());
+    
+        CreatorCorporate creatorCorporate = accessCondition3.getCreatorCorporateList().get(0);
+        
+        assertEquals("Georg E. Hansen & Co.",creatorCorporate.getName());
+        assertEquals(null,creatorCorporate.getYearStarted());
+        assertEquals(null,creatorCorporate.getYearEnded());
+    }
+    
     
     
     @Test
