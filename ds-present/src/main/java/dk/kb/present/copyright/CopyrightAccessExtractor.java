@@ -177,7 +177,6 @@ public class CopyrightAccessExtractor {
                  String name= creatorElement.getElementsByTagName("cdl:name").item(0).getTextContent();
                  coorporate.setName(name);
                  
-                 //Not always there
                  NodeList yearStartedNode = creatorElement.getElementsByTagName("dk:year.started");
                  NodeList yearEndedNode = creatorElement.getElementsByTagName("dk:year.ended");
 

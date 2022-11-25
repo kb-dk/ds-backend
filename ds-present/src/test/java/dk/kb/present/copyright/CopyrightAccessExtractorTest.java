@@ -104,6 +104,27 @@ public class CopyrightAccessExtractorTest {
         assertEquals(null,creatorCorporate.getYearEnded());
     }
     
+    @Test
+    void testVisningKunPaaStedet() throws Exception {
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DT005031.tif.xml");
+        
+        //Copyright statuses
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals(3,copyright.getAccessConditionsList().size());
+        
+        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
+        AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
+                       
+        assertEquals("Visning kun på stedet",accessCondition1.getValue());
+        assertEquals("restriction on access",accessCondition1.getType());
+        assertEquals("Access Status",accessCondition1.getDisplayLabel()); 
+                
+        assertEquals("Kurators beslutning",accessCondition2.getValue());
+        assertEquals("use and reproduction note",accessCondition2.getType());
+        assertEquals("Restricted",accessCondition2.getDisplayLabel());                 
+    }
+        
+    
     
     
     @Test
