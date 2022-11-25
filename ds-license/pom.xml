@@ -38,19 +38,26 @@
     | eduPersonPrimaryAffiliation | stud                       | Student. (staff, employee,faculty also values)  |
     
     
+   
     
-    ## Groups/Packages
-    The groups (also called pakker in Danish) are the building blocks that gives access to materials. There are two 
-    types of groups, allow groups and deny-groups. Allow groups gives access to materials (positive Solr filter) while deny-groups
-    restricts access (negative Solr filter).  The more access groups a user validates will give more materials and more validated deny-groups will
-    also give more materials since this will remove the negative filter. The deny-groups negative filters are always applied unless
-    the user validates access to them and that restriction will be removed. Some materials can be locked under several different deny-groups
-    restrictions and all deny-groups must validate before the user can access it.
+    ## Packages (pakker) and restrictions (klausulering)
+    The packages and restrictions are the building blocks that gives access to materials. In 
+    the UML they are both groups, but on the GUI they will be seen as two seperate entities. 
+    Packages gives access to materials (positive Solr filter) while restrictions
+    forbid access (negative Solr filter).  The more packages groups a user validates will give more materials and more validated restrictions will
+    also give more materials since this will remove the negative filter. The restrictions negative filters are always applied unless
+    the user validates access to them and that restriction will be removed. Some materials can be locked under several different
+    restrictions and all must validate before the user can access it.  Giving a user access  
+    to a restriction will not mean the user can see all the restricted material. He can still only see what 
+    the packages give access too and the restricted material within those packages.
+    Whenever a new restriction is added to the configuration it will take immediate effect and block all access for all users.
+    To give access to the new restriction a licence needed to be edited and configure access to that restriction.   
+ 
     
     ### Example of access with two groups
-    Group 1 (access group): lma_long:"radio"
+    Group 1 (package): lma_long:"radio"
     
-    Group 2 (deny group):  klausuleret:"ja"
+    Group 2 (restriction):  klausuleret:"ja"
     
     If the user has acesss to both groups, the final filter query will be:   **lma_long:"radio"**
     
@@ -59,18 +66,16 @@
     ### Example of access with four groups
     The normal groups filter queries will be OR'ed.
     
-    Group 1 (access group): lma_long:"tv"
+    Group 1 (package): lma_long:"tv"
     
-    Group 2 (access group): lma_long:"radio"
+    Group 2 (package): lma_long:"radio"
        
-    Group 3 (deny group):  klausuleret:"ja"
+    Group 3 (restriction):  klausuleret:"ja"
     
-    Group 4 (deny group):  individuelt_forbud:"ja"
+    Group 4 (restiction):  individuelt_forbud:"ja"
     
     If the user has access to group 1,2 and 3 the filter query will be: **(lma_long:"radio" OR lma_long"tv") -individuelt_forbud:"ja"**
-       
-
-    
+        
     ## Licences
     Licenses are the mapping from UserAttributes to groups/packages. One license can give access to several groups. 
     For each group a license gives access to, the license must also specify a presentation type (or several) for that group.
@@ -89,8 +94,8 @@
     attributed group will be checked. If just one of the attribute groups validates then the license validates. 
     The license will give access to the groups (pakker) defined for the license, but restricted to the presentationtype (Download etc.)
     Every license that validate will give access to more material.
-    All the allow groups will each expand the positive filter query used for filtering Ids. All deny-group valideted will remove
-    the negative filter blocked by that deny-group. See 'uml/License_validation_logic.png' for a visualisation 
+    All the allow groups will each expand the positive filter query used for filtering Ids. All restriction-group validated will remove
+    the negative filter blocked by that restriction-group. See 'uml/License_validation_logic.png' for a visualisation 
     of the validation logic for a license.
     
     
@@ -688,6 +693,9 @@
                         <descriptor>${project.build.finalName}/WEB-INF/web.xml</descriptor>
                         <jettyEnvXml>${project.basedir}/target/jetty-res/jetty-env.xml</jettyEnvXml>
                     </webApp>
+                     <httpConnector>
+                        <port>9076</port>
+                    </httpConnector>
                 </configuration>
             </plugin>
             <plugin>

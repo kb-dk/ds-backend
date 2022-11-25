@@ -7,7 +7,7 @@
 
 <%  
    ArrayList<AuditLog> logs = LicenseModuleFacade.getAllAuditLogs();
-   SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+   SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 %>
   <table class="table table-condensed table-hover">
    <thead>

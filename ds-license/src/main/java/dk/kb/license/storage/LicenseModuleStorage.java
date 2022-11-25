@@ -15,7 +15,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * 
  * The DB consist of the following tables:
@@ -71,7 +70,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     private static final String VALUE_COLUMN = "VALUE_ORG";
     private static final String VALUE_DK_COLUMN = "VALUE_DK";
     private static final String VALUE_EN_COLUMN = "VALUE_EN";
-    private static final String DENYGROUP_COLUMN = "DENYGROUP";
+    private static final String RESTRICTION_COLUMN = "RESTRICTION";
 
     //AUDITLOG
     private static final String MILLIS_COLUMN = "MILLIS";
@@ -124,12 +123,12 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     private final static String persistLicenseGroupTypeQuery = "INSERT INTO " + LICENSEGROUPTYPES_TABLE + " ("
             + ID_COLUMN + "," + KEY_COLUMN + "," + VALUE_DK_COLUMN + " ," + VALUE_EN_COLUMN + " ,"
-            + DESCRIPTION_DK_COLUMN + " ," + DESCRIPTION_EN_COLUMN + " ," + QUERY_COLUMN + " ," + DENYGROUP_COLUMN
+            + DESCRIPTION_DK_COLUMN + " ," + DESCRIPTION_EN_COLUMN + " ," + QUERY_COLUMN + " ," + RESTRICTION_COLUMN
             + ") VALUES (?,?,?,?,?,?,?,?)"; // #|?|=8
 
     private final static String updateLicenseGroupTypeQuery = "UPDATE " + LICENSEGROUPTYPES_TABLE + " SET "
             + VALUE_DK_COLUMN + " = ? , " + VALUE_EN_COLUMN + " = ? ," + DESCRIPTION_DK_COLUMN + " = ? ,"
-            + DESCRIPTION_EN_COLUMN + " = ? ," + QUERY_COLUMN + " = ? ," + DENYGROUP_COLUMN + " = ? " + "WHERE "
+            + DESCRIPTION_EN_COLUMN + " = ? ," + QUERY_COLUMN + " = ? ," + RESTRICTION_COLUMN + " = ? " + "WHERE "
             + ID_COLUMN + " = ? ";
 
     private final static String updateLicensePresentationTypeQuery = "UPDATE " + LICENSEPRESENTATIONTYPES_TABLE
@@ -327,7 +326,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     // query can be null or empty
     public void persistLicenseGroupType(String key, String value, String value_en, String description,
-            String description_en, String query, boolean denyGroup) throws Exception {
+            String description_en, String query, boolean restriction) throws Exception {
 
         if (!StringUtils.isNotEmpty(key)) {
             throw new IllegalArgumentException("Key can not be null when creating new Group");
@@ -358,7 +357,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             stmt.setString(5, description);
             stmt.setString(6, description_en);
             stmt.setString(7, query);
-            stmt.setBoolean(8, denyGroup);
+            stmt.setBoolean(8, restriction);
             stmt.execute();
             connection.commit();
         } catch (SQLException e) {
@@ -369,7 +368,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     }
 
     public void updateLicenseGroupType(long id, String value_dk, String value_en, String description,
-            String description_en, String query, boolean denyGroup) throws Exception {
+            String description_en, String query, boolean restriction) throws Exception {
 
         try (PreparedStatement stmt = connection.prepareStatement(updateLicenseGroupTypeQuery);) {
             log.info("Updating Group type with id:" + id);
@@ -381,7 +380,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             stmt.setString(3, description);
             stmt.setString(4, description_en);
             stmt.setString(5, query);
-            stmt.setBoolean(6, denyGroup);
+            stmt.setBoolean(6, restriction);
             stmt.setLong(7, id);
 
             int updated = stmt.executeUpdate();
@@ -500,7 +499,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         boolean validateAttributesValues = license.validateAttributesAndValuesNotNull();
         if (!validateMainFields) {
             throw new IllegalArgumentException(
-                    "Validation error. Name/description too short or validTo/validFrom not legal dates");
+                    "Validation error. Name/description too short or validTo/validFrom not legal dates. Date format is  dd-MM-yyyy");
         }
         if (!validateAttributesValues) {
             throw new IllegalArgumentException("Validation error. Attributes or values can not be empty");
@@ -556,8 +555,8 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description = rs.getString(DESCRIPTION_DK_COLUMN);
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
-                boolean denyGroup = rs.getBoolean(DENYGROUP_COLUMN);
-                GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
+                boolean restriction = rs.getBoolean(RESTRICTION_COLUMN);
+                GroupType item = new GroupType(id, key, value_dk, value_en,description, description_en, query, restriction);
                 list.add(item);
             }
             return list;
@@ -801,8 +800,8 @@ public class LicenseModuleStorage implements AutoCloseable {
                 String description = rs.getString(DESCRIPTION_DK_COLUMN);
                 String description_en = rs.getString(DESCRIPTION_EN_COLUMN);
                 String query = rs.getString(QUERY_COLUMN);
-                boolean denyGroup = rs.getBoolean(DENYGROUP_COLUMN);
-                GroupType group = new GroupType(id, key, value_dk, value_en,description, description_en, query, denyGroup);
+                boolean restriction = rs.getBoolean(RESTRICTION_COLUMN);
+                GroupType group = new GroupType(id, key, value_dk, value_en,description, description_en, query, restriction);
             return group;
             }
             throw new IllegalArgumentException("Presentationtype not found for id:" + id);

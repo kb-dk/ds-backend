@@ -77,14 +77,14 @@ public class LicenseModuleFacade {
      
     }
 
-    public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
+    public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean isRestriction) throws Exception {
  
-        performStorageAction("persistLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {                    
-        GroupType g = new GroupType(0L,key,value,value_en,description,description_en,query,denyGroup);
+        performStorageAction("persistLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+ isRestriction+")", storage -> {                    
+        GroupType g = new GroupType(0L,key,value,value_en,description,description_en,query, isRestriction);
 
         ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(null, g);
         AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create grouptype", key, changes.getBefore(), changes.getAfter());        
-        storage.persistLicenseGroupType(key, value, value_en, description, description_en, query, denyGroup);        
+        storage.persistLicenseGroupType(key, value, value_en, description, description_en, query,  isRestriction);        
         storage.persistAuditLog(auditLog);
         return null;
         
@@ -92,16 +92,16 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
 
-    public static void updateLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean denyGroup) throws Exception {
+    public static void updateLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean  isRestriction) throws Exception {
       
-        performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+denyGroup+")", storage -> {
+        performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+ isRestriction+")", storage -> {
            GroupType oldGroupType = storage.getGroupTypeById(id);
             
-            GroupType updateGroupType = new GroupType(0L,oldGroupType.getKey(),value_dk,value_en,description,description_en,query,denyGroup);
+            GroupType updateGroupType = new GroupType(0L,oldGroupType.getKey(),value_dk,value_en,description,description_en,query, isRestriction);
             ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(oldGroupType, updateGroupType);
             AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Update grouptype", value_dk, changes.getBefore(), changes.getAfter());        
                       
-            storage.updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, denyGroup);
+            storage.updateLicenseGroupType(id, value_dk, value_en, description, description_en, query,  isRestriction);
             storage.persistAuditLog(auditLog);
             return null;
         

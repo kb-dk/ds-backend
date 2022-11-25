@@ -10,9 +10,9 @@ public class GroupType extends Persistent {
 	private String description_dk;
 	private String description_en;
 	private String query;
-	private boolean denyGroup;
+	private boolean restriction;
 	
-	public GroupType(Long id, String key,  String value_dk ,String value_en, String description_dk,String description_en, String query, boolean denyGroup) {
+	public GroupType(Long id, String key,  String value_dk ,String value_en, String description_dk,String description_en, String query, boolean restriction) {
 		super();
 		this.id = id;
 		this.key=key;
@@ -21,7 +21,7 @@ public class GroupType extends Persistent {
 		this.description_dk= description_dk;
 		this.description_en= description_en;
 	    this.query = query;
-		this.denyGroup=denyGroup;
+		this.restriction=restriction;
 	}
 	
 	public String getDescription_dk() {
@@ -49,16 +49,13 @@ public class GroupType extends Persistent {
 		this.value_dk = value_dk;
 	}
 
-	public void setDenytGroup(boolean denyGroup) {
-		this.denyGroup =denyGroup;
-	}
 
 	public String getValue_dk() {
 		return value_dk;
 	}
 
-	public boolean isDenyGroup() {
-		return denyGroup;
+ public boolean isRestrictionGroup() {
+		return restriction;
 	}
 		
 	public String getValue_en() {
@@ -76,7 +73,7 @@ public class GroupType extends Persistent {
 
     public String toPresentationtString() {
         return "GroupType [key=" + key + ", value_dk=" + value_dk + ", value_en=" + value_en + ", description_dk="
-                + description_dk + ", description_en=" + description_en + ", query=" + query + ", denyGroup="
-                + denyGroup + "]";
+                + description_dk + ", description_en=" + description_en + ", query=" + query + ", restriction="
+                + restriction + "]";
     }
 }

@@ -14,11 +14,11 @@
     </div>
     <div class="inputGroup from">
         <span class="help-inline">Licens gyldig fra</span>
-        <input type="text"  name="validFrom" class="span2" value="<%=license.getValidFrom()%>">
+        <input type="text"  name="validFrom" class="span2" placeholder="24-11-2022" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" value="<%=license.getValidFrom()%>">
     </div>
     <div class="inputGroup">
         <span class="help-inline">og til</span>
-        <input type="text"  name="validTo" class="span2" value="<%=license.getValidTo()%>">
+        <input type="text"  name="validTo" class="span2" placeholder="31-12-2030" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" value="<%=license.getValidTo()%>">
     </div>
 </div>
 <div class="infoGroup">

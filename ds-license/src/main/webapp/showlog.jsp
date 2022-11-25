@@ -9,7 +9,7 @@
     <%
      String auditId = request.getParameter("auditlogId");   
      AuditLog log = LicenseModuleFacade.getAuditLog(Long.parseLong(auditId));
-     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
      int i =0;
      %>
    
