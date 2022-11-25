@@ -123,9 +123,38 @@ public class CopyrightAccessExtractorTest {
         assertEquals("use and reproduction note",accessCondition2.getType());
         assertEquals("Restricted",accessCondition2.getDisplayLabel());                 
     }
+    
+    
+    
+    /*     
+         hvorfor har den først ikke type og displaylabel?
+         <mods:accessCondition>Visning kun af metadata</mods:accessCondition>
+         <mods:accessCondition type="use and reproduction note" displayLabel="Restricted">Materialet må kun vises efter aftale</mods:accessCondition>
+         <mods:accessCondition>
+           <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD /usr/local/ginnungagap/current/script/xsd/copyright-md.xsd"/>
+         </mods:accessCondition>
+     */   
+ 
+    @Test
+    void testVisningKunAfMetaData() throws Exception {
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DT013769.tif.xml");
         
-    
-    
+        //Copyright statuses
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals(3,copyright.getAccessConditionsList().size());
+        
+        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
+        AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
+                       
+        assertEquals("Visning kun af metadata",accessCondition1.getValue());
+        assertEquals(null,accessCondition1.getType());
+        assertEquals(null,accessCondition1.getDisplayLabel()); 
+                
+        assertEquals("Materialet må kun vises efter aftale",accessCondition2.getValue());
+        assertEquals("use and reproduction note",accessCondition2.getType());
+        assertEquals("Restricted",accessCondition2.getDisplayLabel());                 
+    }
+        
     
     @Test
     void testThreeAccessConditionsWith1Person() throws Exception {
