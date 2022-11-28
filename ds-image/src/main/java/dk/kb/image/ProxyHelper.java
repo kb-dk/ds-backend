@@ -67,6 +67,8 @@ public class ProxyHelper {
      */
     public static StreamingOutput proxy(
             String request, URI uri, URI clientRequestURI, HttpServletResponse httpServletResponse) {
+        log.debug("proxy(request='{}', uri='{}', clientRequestURI='{}', httpServletResponse={}) called",
+                  request, uri, clientRequestURI, httpServletResponse == null ? "not present" : "present");
         final HttpURLConnection connection = establishConnection(request, uri, clientRequestURI);
         try {
             validateStatuscode(request, uri, clientRequestURI, connection.getResponseCode());
