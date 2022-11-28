@@ -41,8 +41,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      */
     @Override
     public StreamingOutput getDeepzoomDZI(String imageid) throws ServiceException {
-        // TODO: Implement...
-
         try {
             // MIME-TYPE has to be set in proxy helper
             httpServletResponse.setContentType(getMIME("xml"));
@@ -107,9 +105,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      */
     @Override
     public javax.ws.rs.core.StreamingOutput getDeepzoomTile(String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
-        // TODO: Implement...
-
-
         try {
             httpServletResponse.setContentType(getMIME(format));
             return IIPFacade.getInstance().getDeepzoomTile(
