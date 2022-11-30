@@ -61,9 +61,9 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
         
-        assertEquals("Ejermærke",accessCondition1.getValue());
+        assertEquals(CopyrightAccessDto.VALUE_EJERMAERKE,accessCondition1.getValue());
         assertEquals("use and reproduction",accessCondition1.getType());
-        assertEquals("Restricted ",accessCondition1.getDisplayLabel()); //white space
+        assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
         
         assertEquals(null,accessCondition2.getValue());  
         
@@ -86,12 +86,12 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
         AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2);
         
-        assertEquals("Blokeret",accessCondition1.getValue());
-        assertEquals("restriction on access",accessCondition1.getType());
-        assertEquals("Access Status",accessCondition1.getDisplayLabel()); 
+        assertEquals(CopyrightAccessDto.VALUE_BLOKKERET,accessCondition1.getValue());
+        assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS,accessCondition1.getType());
+        assertEquals(CopyrightAccessDto.DISPLAY_LABEL_ACCESS_STATUS,accessCondition1.getDisplayLabel()); 
         
         assertEquals("Kurators beslutning. Se journal nr. 897697",accessCondition2.getValue());
-        assertEquals("restriction on access note",accessCondition2.getType());
+        assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS_NOTE,accessCondition2.getType());
         assertEquals(null,accessCondition2.getDisplayLabel()); 
                 
         assertEquals(1,accessCondition3.getCreatorPersonList().size());
@@ -116,8 +116,8 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
                        
         assertEquals("Visning kun på stedet",accessCondition1.getValue());
-        assertEquals("restriction on access",accessCondition1.getType());
-        assertEquals("Access Status",accessCondition1.getDisplayLabel()); 
+        assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS,accessCondition1.getType());
+        assertEquals(CopyrightAccessDto.DISPLAY_LABEL_ACCESS_STATUS,accessCondition1.getDisplayLabel()); 
                 
         assertEquals("Kurators beslutning",accessCondition2.getValue());
         assertEquals("use and reproduction note",accessCondition2.getType());
@@ -146,13 +146,13 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
                        
-        assertEquals("Visning kun af metadata",accessCondition1.getValue());
+        assertEquals(CopyrightAccessDto.VALUE_VISNING_KUN_AF_METADATA,accessCondition1.getValue());
         assertEquals(null,accessCondition1.getType());
         assertEquals(null,accessCondition1.getDisplayLabel()); 
                 
         assertEquals("Materialet må kun vises efter aftale",accessCondition2.getValue());
         assertEquals("use and reproduction note",accessCondition2.getType());
-        assertEquals("Restricted",accessCondition2.getDisplayLabel());                  
+        assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED.trim(),accessCondition2.getDisplayLabel()); //no error whitespace error here                  
     }
         
     
@@ -196,12 +196,12 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2);
         
         assertEquals("use and reproduction",accessCondition1.getType());
-        assertEquals("Restricted ",accessCondition1.getDisplayLabel()); //white space
-        assertEquals("Ejermærke",accessCondition1.getValue()); 
+        assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
+        assertEquals(CopyrightAccessDto.VALUE_EJERMAERKE,accessCondition1.getValue()); 
                        
 
         assertEquals("pligtaflevering",accessCondition3.getType());
-        assertEquals("Pligtafleveret",accessCondition3.getValue()); 
+        assertEquals(CopyrightAccessDto.VALUE_PLIGTAFLEVERET,accessCondition3.getValue()); 
                          
     }
         

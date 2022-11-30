@@ -11,6 +11,19 @@ import java.util.ArrayList;
 
 
 public class CopyrightAccessDto {
+    
+    public static final String TYPE_RESTRICTION_ON_ACCESS= "restriction on access";
+    public static final String TYPE_RESTRICTION_ON_ACCESS_NOTE="restriction on access note";
+
+    public static final String DISPLAY_LABEL_ACCESS_STATUS= "Access Status";
+    public static final String DISPLAY_LABEL_RESTRICTED="Restricted "; //notice white space error 
+    
+    
+    public static final String VALUE_BLOKKERET= "Blokeret";
+    public static final String VALUE_EJERMAERKE= "Ejermærke";
+    public static final String VALUE_VISNING_KUN_AF_METADATA ="Visning kun af metadata";
+    public static final String VALUE_PLIGTAFLEVERET ="Pligtafleveret";
+    
     private ArrayList<AccessCondition> accessConditionsList;
 
             
