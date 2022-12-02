@@ -139,14 +139,27 @@ public class CopyrightAccessExtractor {
 
             for (int i =0;i<creatorPerson.getLength();i++) {
                 CreatorPerson person=new CopyrightAccessDto().new CreatorPerson();
+                
                 Element creatorElement = (Element) creatorPerson.item(i);
+                
+                if (creatorElement.getElementsByTagName("cdl:name").getLength() >0) {
+                  String personName= creatorElement.getElementsByTagName("cdl:name").item(0).getTextContent();                    
+                  person.setName(personName);                    
+                }
 
-                String personName= creatorElement.getElementsByTagName("cdl:name").item(0).getTextContent();
-                String personYearBirth= creatorElement.getElementsByTagName("cdl:year.birth").item(0).getTextContent();
-                String personYearDeath= creatorElement.getElementsByTagName("cdl:year.death").item(0).getTextContent();
-                person.setName(personName);
-                person.setYearBirth(personYearBirth);           
-                person.setYearDeath(personYearDeath);
+                
+                if (creatorElement.getElementsByTagName("cdl:year.birth").getLength() >0) {
+                    String personYearBirth= creatorElement.getElementsByTagName("cdl:year.birth").item(0).getTextContent();
+                    person.setYearBirth(personYearBirth);                    
+                    
+                }
+
+                
+                if (creatorElement.getElementsByTagName("cdl:year.death").getLength() >0) {
+                    String personYearDeath= creatorElement.getElementsByTagName("cdl:year.death").item(0).getTextContent();                    
+                    person.setYearDeath(personYearDeath);
+                }
+
                 personList.add(person);
             }
         }
@@ -196,7 +209,8 @@ public class CopyrightAccessExtractor {
      }
 
 
-    private static   Document createDocFromXml(String xml) throws Exception{
+   
+    public static   Document createDocFromXml(String xml) throws Exception{
 
         //System.out.println(response);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -218,6 +232,8 @@ public class CopyrightAccessExtractor {
 
         return document;
     }
+
+    
 
 
 }
