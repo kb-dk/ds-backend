@@ -1,10 +1,7 @@
 package dk.kb.present.copyright;
 
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-
 import org.junit.jupiter.api.Test;
 
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
@@ -38,6 +35,17 @@ public class CopyrightAccessExtractorTest {
         
         //Corporate
         assertEquals(0,accessCondition.getCreatorCorporateList().size());
+        
+        
+        //Test field mapping
+        
+        CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+        
+        //has familiy name and year
+        assertEquals(1831, mapper.getLastDeathYearForPersonWithFamiliyName());
+        
+        
+        
         
     }
     
@@ -78,6 +86,9 @@ public class CopyrightAccessExtractorTest {
     void testBlokkeret() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/006940.tif.xml");
         
+        
+        String access_note="Kurators beslutning. Se journal nr. 897697";
+        
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
         assertEquals(3,copyright.getAccessConditionsList().size());
@@ -90,7 +101,7 @@ public class CopyrightAccessExtractorTest {
         assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS,accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_ACCESS_STATUS,accessCondition1.getDisplayLabel()); 
         
-        assertEquals("Kurators beslutning. Se journal nr. 897697",accessCondition2.getValue());
+        assertEquals(access_note,accessCondition2.getValue());
         assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS_NOTE,accessCondition2.getType());
         assertEquals(null,accessCondition2.getDisplayLabel()); 
                 
@@ -102,6 +113,14 @@ public class CopyrightAccessExtractorTest {
         assertEquals("Georg E. Hansen & Co.",creatorCorporate.getName());
         assertEquals(null,creatorCorporate.getYearStarted());
         assertEquals(null,creatorCorporate.getYearEnded());
+        
+        //Test field mapping
+        
+        CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+        assertEquals(true,mapper.isBlokkeret());
+        assertEquals(access_note,mapper.getAccessNote());
+        
+        
     }
     
     @Test
@@ -153,6 +172,15 @@ public class CopyrightAccessExtractorTest {
         assertEquals("Materialet må kun vises efter aftale",accessCondition2.getValue());
         assertEquals("use and reproduction note",accessCondition2.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED.trim(),accessCondition2.getDisplayLabel()); //no error whitespace error here                  
+    
+    
+       //Test field mapping       
+        CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+        
+        //No person data at all
+        assertEquals(null, mapper.getLastDeathYearForPersonWithFamiliyName());
+        
+        
     }
         
     
@@ -230,6 +258,14 @@ public class CopyrightAccessExtractorTest {
         assertEquals("1837",creatorCorporate.getYearStarted());
         assertEquals("1874",creatorCorporate.getYearEnded());
       
+        
+        
+
+        //Test field mapping       
+         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+         
+         //3 persons, find last death with family name
+         assertEquals(1895, mapper.getLastDeathYearForPersonWithFamiliyName());
         
         
     }

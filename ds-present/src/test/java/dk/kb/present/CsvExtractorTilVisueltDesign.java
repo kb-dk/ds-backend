@@ -48,7 +48,7 @@ public class CsvExtractorTilVisueltDesign {
             
             
             try {            
-             String xml = new String(Files.readAllBytes(Paths.get(testDataDir+file)));
+             String xml = new String(Files.readAllBytes(Paths.get(testDataDir+file)),"UTF-8");
              CsvExtract csvLine = getCvsExtractromDoc(xml);
             
              csvFileBuffer.append(file);
