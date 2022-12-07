@@ -43,6 +43,7 @@ paths:
           required: true
           schema:
             type: string
+            example: 'online_master_arkiv_5/non-archival/Manus/JUDSAM/2008/csh0004/csh0004_00528/'
             
         - name: region
           in: path
@@ -429,7 +430,7 @@ paths:
         required: true
         schema:
           type: string
-        example: "image_identifier"
+        example: "/avis-show/symlinks/0/0/0/0/00001afe-9d6b-46e7-b7f3-5fb70d832d4e"
 
       # Stream to avoid "retrieving, deserializing JSON, constructing POJOs, serializing JSON, sending JSON"-chain
       x-streamingOutput: true
