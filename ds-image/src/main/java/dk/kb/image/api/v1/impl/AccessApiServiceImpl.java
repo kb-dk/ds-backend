@@ -2,10 +2,7 @@ package dk.kb.image.api.v1.impl;
 
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
-import dk.kb.image.ProxyHelper;
 import dk.kb.image.api.v1.AccessApi;
-import dk.kb.image.model.v1.DeepzoomDZIDto;
-import dk.kb.image.model.v1.DeepzoomDZISizeDto;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -251,7 +248,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
         try {
-            log.debug("iIPImageRequest(FIF='{}', WID={}, HEI={}, RGN={}, QLT={}, CNT={}, SHD={}, " +
+            log.debug("IIPImageRequest(FIF='{}', WID={}, HEI={}, RGN={}, QLT={}, CNT={}, SHD={}, " +
                       "LYR={}, ROT={}, GAM={}, CMP='{}', PFL='{}', CTW='{}', INV={}, COL='{}', " +
                       "JTL={}, PTL={}, CVT='{}') called",
                       FIF, WID, HEI, RGN, QLT, CNT, SHD,
