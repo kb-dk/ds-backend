@@ -2,10 +2,7 @@ package dk.kb.image.api.v1.impl;
 
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
-import dk.kb.image.ProxyHelper;
 import dk.kb.image.api.v1.AccessApi;
-import dk.kb.image.model.v1.DeepzoomDZIDto;
-import dk.kb.image.model.v1.DeepzoomDZISizeDto;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -23,7 +20,7 @@ import java.util.List;
  *
  */
 public class AccessApiServiceImpl extends ImplBase implements AccessApi {
-    private Logger log = LoggerFactory.getLogger(this.toString());
+    private static final Logger log = LoggerFactory.getLogger(AccessApiServiceImpl.class);
 
     /**
      * DeepZoom Image information
@@ -41,9 +38,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      */
     @Override
     public StreamingOutput getDeepzoomDZI(String imageid) throws ServiceException {
-        // TODO: Implement...
-
         try {
+            log.debug("getDeepzoomDZI(imageid='{}') called", imageid);
             // MIME-TYPE has to be set in proxy helper
             httpServletResponse.setContentType(getMIME("xml"));
             setFilename(new File(imageid).getName() + ".dzi", false, false);
@@ -107,10 +103,11 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      */
     @Override
     public javax.ws.rs.core.StreamingOutput getDeepzoomTile(String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
-        // TODO: Implement...
-
-
         try {
+            log.debug("getDeepzoomTile(imageid='{}', layer={}, tiles='{}', format='{}', " +
+                      "CNT={}, SHD={}, GAM={}, CMP='{}', CTW='{}', INV={}, COL='{}') called",
+                      imageid, layer, tiles, format,
+                      CNT, SHD, GAM, CMP, CTW, INV, COL);
             httpServletResponse.setContentType(getMIME(format));
             return IIPFacade.getInstance().getDeepzoomTile(
                     uriInfo.getRequestUri(),
@@ -138,6 +135,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     @Override
     public javax.ws.rs.core.StreamingOutput getImageInformation(String identifier, String format) throws ServiceException {
         try {
+            log.debug("getImageInformation(identifier='{}'m format='{}') called", identifier, format);
             String[] elements = identifier.split("[/\\\\]");
             String filename = "info_" + elements[elements.length - 1] + "." + format;
             // Show download link in Swagger UI, inline when opened directly in browser
@@ -179,6 +177,9 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String identifier, String region, String size, String rotation, String quality, String format)
             throws ServiceException {
         try {
+            log.debug("iIIFImageRequest(" +
+                      "identifier='{}', region='{}', size='{}', rotation='{}', quality='{}', format='{}') called",
+                      identifier, region, size, rotation, quality, format);
             String[] elements = identifier.split("[/\\\\]");
             String filename = elements[elements.length - 1] + "." + format;
             // Show download link in Swagger UI, inline when opened directly in browser
@@ -247,6 +248,12 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
         try {
+            log.debug("IIPImageRequest(FIF='{}', WID={}, HEI={}, RGN={}, QLT={}, CNT={}, SHD={}, " +
+                      "LYR={}, ROT={}, GAM={}, CMP='{}', PFL='{}', CTW='{}', INV={}, COL='{}', " +
+                      "JTL={}, PTL={}, CVT='{}') called",
+                      FIF, WID, HEI, RGN, QLT, CNT, SHD,
+                      LYR, ROT, GAM, CMP, PFL, CTW, INV, COL,
+                      JTL, PTL, CVT);
             String[] elements = FIF.split("[/\\\\]");
             String filename = elements[elements.length - 1] + "." + CVT;
             // Show download link in Swagger UI, inline when opened directly in browser
