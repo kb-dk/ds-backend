@@ -14,7 +14,7 @@ public class XsltCopyrightMapper {
         
         //Above has all as a DTO with setter and getter. But the XSLT wants a map
         solrFieldsMap.put("blocked",""+mapper.isBlokkeret());
-        solrFieldsMap.put("accessNote",""+mapper.getAccessNote());        
+        solrFieldsMap.put("accessNote",mapper.getAccessNote());        
         
         return solrFieldsMap;
     }
