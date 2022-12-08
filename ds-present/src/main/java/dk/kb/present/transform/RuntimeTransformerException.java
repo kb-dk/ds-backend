@@ -14,11 +14,6 @@
  */
 package dk.kb.present.transform;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.transform.TransformerException;
-
 /**
  * As the transformers use the functional interfaces, they cannot throw checked exceptions.
  * This is an unchecked wrapper for {@link javax.xml.transform.TransformerException}.

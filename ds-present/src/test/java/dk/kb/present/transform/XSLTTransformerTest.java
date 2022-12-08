@@ -52,6 +52,6 @@ class XSLTTransformerTest {
     private String getTransformed(String xsltResource, String xmlResource) throws IOException {
         XSLTTransformer transformer = new XSLTTransformer(xsltResource);
         String mods = Resolver.resolveUTF8String(xmlResource);
-        return transformer.apply(mods);
+        return transformer.apply(mods, Map.of("recordID", xmlResource));
     }
 }

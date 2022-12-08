@@ -14,11 +14,10 @@
  */
 package dk.kb.present.transform;
 
-import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.ServiceUnavailableException;
+import java.util.Map;
 
 /**
  * The fail transformer always fails. Used to signal unavailable views.
@@ -31,7 +30,7 @@ public class FailTransformer extends DSTransformer {
 
     /**
      * Construct a transformer that always fails with the given message.
-     * @param message the message to throw in a {@link RuntimeException} when {@link #apply(String)} is called.
+     * @param message the message to throw in a {@link RuntimeException} when {@link #apply(String, Map)} is called.
      */
     public FailTransformer(String message) {
         this.message = message;
@@ -44,7 +43,7 @@ public class FailTransformer extends DSTransformer {
     }
 
     @Override
-    public String apply(String s) {
+    public String apply(String s, Map<String, String> metadata) {
         throw new RuntimeException(message);
     }
 
