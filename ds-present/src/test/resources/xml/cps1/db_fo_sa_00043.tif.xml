@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd" TYPE="File" OBJID="0ec012b0-f05f-4eed-aea2-03e3a89fbc9a" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2022-11-14T07:33:32.092+01:00">
+        <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
+            <mets:name>kbDk</mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+        <mets:agent ID="kbDkCumulusBevaringsService" ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="API">
+            <mets:name>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+    </mets:metsHdr>
+    <mets:dmdSec CREATED="2022-11-14T07:33:32.092+01:00" ID="Mods1">
+        <mets:mdWrap MDTYPE="MODS">
+            <mets:xmlData>
+                <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+                    <mods:genre>Satire</mods:genre>
+                    <mods:genre type="Categories">Bladtegninger - uden vandmærke, Folketingets samling, Bidstrup, Herluf, PUBLICERES MED VANDMÆRKE , CAR- BLO katagori, Metadata udtræk, Bladtegner, 2022-09-01 15:06:39, 2022-09-01 15:11:09</mods:genre>
+                    <mods:identifier type="uri">urn:uuid:a9505ca0-74df-11e0-8f4e-0016357f605f</mods:identifier>
+                    <mods:identifier type="local">db_fo_sa_00043.tif</mods:identifier>
+                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/images/BLADTE/folketingets_samling/db_fo_sa_00043.tif</mods:identifier>
+                    <mods:identifier displayLabel="Accession number" type="accession number">2008-52; 2010-40/43</mods:identifier>
+                    <mods:location>
+                        <mods:shelfLocator>Museet for Dansk Bladtegning. Folketingets samling. Mellem æske, 1</mods:shelfLocator>
+                    </mods:location>
+                    <mods:name type="personal">
+                        <mods:role>
+                            <mods:roleTerm type="code">cre</mods:roleTerm>
+                        </mods:role>
+                        <mods:namePart type="family">Bidstrup</mods:namePart>
+                        <mods:namePart type="given">Herluf</mods:namePart>
+                        <mods:namePart type="date">1912-9-10/1988-12-26</mods:namePart>
+                        <mods:namePart type="termsOfAddress">bladtegner</mods:namePart>
+                    </mods:name>
+                    <mods:note type="content">Tusch</mods:note>
+                    <mods:note type="content">Dagens Tegning</mods:note>
+                    <mods:note type="content">Ved folketingsvalget i 1947 opstillede partiet Venstre i opstillingskredsene i Københavnsområdet på en særskilt liste under betegnelsen Hovedstadens Venstre. Dette bevirkede, at Venstre som helhed gik tre mandater frem.</mods:note>
+                    <mods:note type="Dialog">- Saa skal den lille Fidus endelig døbes, men hvem vil mon staa Faddere.</mods:note>
+                    <mods:note type="Undertekst">I Dag skal Knud Kristensens Fidusparti, "Hovedstadens Venstre", anerkendes af Folketinget.</mods:note>
+                    <mods:note type="Situation">Knud Kristensen bærer sit barn frem til døbefonden.</mods:note>
+                    <mods:note type="Situation">Knud Kristensens barn skal døbes, men der er tvivl om hvorvidt der er nogen der ønsker at stå fadder. Folketingets formand Bomholt agerer præst.</mods:note>
+                    <mods:note displayLabel="Catalog Name">Samlingsbilleder</mods:note>
+                    <mods:originInfo altRepGroup="original">
+                        <mods:dateCreated>1947.11.26</mods:dateCreated>
+                    </mods:originInfo>
+                    <mods:originInfo altRepGroup="surrogate">
+                        <mods:dateCaptured>2019-06-28T01:25:43.000+02:00</mods:dateCaptured>
+                    </mods:originInfo>
+                    <mods:recordInfo>
+                        <mods:languageOfCataloging>
+                            <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
+                        </mods:languageOfCataloging>
+                        <mods:recordInfoNote>LTR</mods:recordInfoNote>
+                    </mods:recordInfo>
+                    <mods:relatedItem type="otherFormat">
+                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/images/BLADTE/folketingets_samling/db_fo_sa_00043.jpg</mods:identifier>
+                    </mods:relatedItem>
+                    <mods:relatedItem type="series" displayLabel="Samling">
+                        <mods:titleInfo>
+                            <mods:title>Bladtegnersamlingen</mods:title>
+                        </mods:titleInfo>
+                    </mods:relatedItem>
+                    <mods:relatedItem type="host" displayLabel="Publication">
+                        <mods:titleInfo>
+                            <mods:title>Land og Folk</mods:title>
+                        </mods:titleInfo>
+                    </mods:relatedItem>
+                    <mods:relatedItem type="host">
+                        <mods:identifier type="URL">https://www.kb.dk/find-materiale/samlinger/billedsamlingen/Museet_for_Dansk_Bladtegnings_samling/</mods:identifier>
+                        <mods:note type="URL-tekst">Museet for Dansk Bladtegnings samling</mods:note>
+                    </mods:relatedItem>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Bomholt</mods:namePart>
+                            <mods:namePart type="given">Julius</mods:namePart>
+                            <mods:namePart type="date">1896-0-0/1969-0-0</mods:namePart>
+                            <mods:namePart type="termsOfAddress">politiker, socialdemokratiet, folketingets formand</mods:namePart>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Hedtoft</mods:namePart>
+                            <mods:namePart type="given">Hans</mods:namePart>
+                            <mods:namePart type="date">1903-0-0/1955-0-0</mods:namePart>
+                            <mods:namePart type="termsOfAddress">politiker, socialdemokratiet</mods:namePart>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Jørgensen</mods:namePart>
+                            <mods:namePart type="given">Jørgen</mods:namePart>
+                            <mods:namePart type="date">1888-0-0/1974-0-0</mods:namePart>
+                            <mods:namePart type="termsOfAddress">politiker, radikale venstre</mods:namePart>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Kraft</mods:namePart>
+                            <mods:namePart type="given">Ole Bjørn</mods:namePart>
+                            <mods:namePart type="date">1893-0-0/1980-0-0</mods:namePart>
+                            <mods:namePart type="termsOfAddress">politiker, konservative folkeparti</mods:namePart>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Kristensen</mods:namePart>
+                            <mods:namePart type="given">Knud</mods:namePart>
+                            <mods:namePart type="date">1880-0-0/1962-0-0</mods:namePart>
+                            <mods:namePart type="termsOfAddress">politiker, venstre</mods:namePart>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:titleInfo>
+                        <mods:title>Daaben</mods:title>
+                    </mods:titleInfo>
+                    <mods:typeOfResource displayLabel="Generel materialebetegnelse">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Materialebetegnelse">Bladtegning</mods:typeOfResource>
+                </mods:mods>
+            </mets:xmlData>
+        </mets:mdWrap>
+    </mets:dmdSec>
+    <mets:amdSec>
+        <mets:techMD CREATED="2022-11-14T07:33:32.112+01:00" ID="PremisObject1">
+            <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:file">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>a9505ca0-74df-11e0-8f4e-0016357f605f</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:objectCharacteristics>
+                            <premis:compositionLevel>0</premis:compositionLevel>
+                            <premis:fixity>
+                                <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
+                                <premis:messageDigest>27e4e602e8160aeccaffded56c392dad</premis:messageDigest>
+                            </premis:fixity>
+                            <premis:size>89333696</premis:size>
+                            <premis:format>
+                                <premis:formatDesignation>
+                                    <premis:formatName>TIFF Image</premis:formatName>
+                                    <premis:formatVersion/>
+                                </premis:formatDesignation>
+                                <premis:formatNote>Validated by Cumulus version: 11.1.8</premis:formatNote>
+                            </premis:format>
+                            <premis:creatingApplication>
+                                <premis:creatingApplicationName>Adobe Photoshop CC 2019</premis:creatingApplicationName>
+                            </premis:creatingApplication>
+                            <premis:objectCharacteristicsExtension>
+                                <mix:mix xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="http://www.loc.gov/mix/v20 http://www.loc.gov/standards/mix/mix20/mix20.xsd">
+                                    <mix:BasicDigitalObjectInformation>
+                                        <mix:ObjectIdentifier>
+                                            <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
+                                            <mix:objectIdentifierValue>a9505ca0-74df-11e0-8f4e-0016357f605f</mix:objectIdentifierValue>
+                                        </mix:ObjectIdentifier>
+                                        <mix:fileSize>89333696</mix:fileSize>
+                                        <mix:FormatDesignation>
+                                            <mix:formatName>TIFF Image</mix:formatName>
+                                            <mix:formatVersion/>
+                                        </mix:FormatDesignation>
+                                        <mix:byteOrder>big endian</mix:byteOrder>
+                                        <mix:Compression>
+                                            <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                                        </mix:Compression>
+                                        <mix:Fixity>
+                                            <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
+                                            <mix:messageDigest>27e4e602e8160aeccaffded56c392dad</mix:messageDigest>
+                                        </mix:Fixity>
+                                    </mix:BasicDigitalObjectInformation>
+                                    <mix:BasicImageInformation>
+                                        <mix:BasicImageCharacteristics>
+                                            <mix:imageWidth>6119</mix:imageWidth>
+                                            <mix:imageHeight>4853</mix:imageHeight>
+                                            <mix:PhotometricInterpretation>
+                                                <mix:colorSpace>RGB</mix:colorSpace>
+                                                <mix:ColorProfile>
+                                                    <mix:IccProfile>
+                                                        <mix:iccProfileName>OS14000_A1_B8_mG</mix:iccProfileName>
+                                                    </mix:IccProfile>
+                                                </mix:ColorProfile>
+                                            </mix:PhotometricInterpretation>
+                                        </mix:BasicImageCharacteristics>
+                                    </mix:BasicImageInformation>
+                                    <mix:ImageCaptureMetadata>
+                                        <mix:GeneralCaptureInformation>
+                                            <mix:dateTimeCreated>2022-11-14T07:33:32.115+01:00</mix:dateTimeCreated>
+                                        </mix:GeneralCaptureInformation>
+                                        <mix:ScannerCapture>
+                                            <mix:MaximumOpticalResolution>
+                                                <mix:xOpticalResolution>400</mix:xOpticalResolution>
+                                                <mix:yOpticalResolution>400</mix:yOpticalResolution>
+                                            </mix:MaximumOpticalResolution>
+                                        </mix:ScannerCapture>
+                                        <mix:orientation>normal*</mix:orientation>
+                                    </mix:ImageCaptureMetadata>
+                                    <mix:ImageAssessmentMetadata>
+                                        <mix:ImageColorEncoding>
+                                            <mix:BitsPerSample>
+                                                <mix:bitsPerSampleValue>8</mix:bitsPerSampleValue>
+                                                <mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
+                                            </mix:BitsPerSample>
+                                            <mix:samplesPerPixel>3</mix:samplesPerPixel>
+                                        </mix:ImageColorEncoding>
+                                    </mix:ImageAssessmentMetadata>
+                                    <mix:ChangeHistory>
+                                        <mix:ImageProcessing>
+                                            <mix:sourceData>initial capture</mix:sourceData>
+                                            <mix:ProcessingSoftware>
+                                                <mix:processingSoftwareName>Adobe Photoshop CC 2019</mix:processingSoftwareName>
+                                            </mix:ProcessingSoftware>
+                                        </mix:ImageProcessing>
+                                    </mix:ChangeHistory>
+                                </mix:mix>
+                            </premis:objectCharacteristicsExtension>
+                        </premis:objectCharacteristics>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:techMD>
+        <!--Inside mets:rightsMD-->
+        <mets:rightsMD CREATED="2022-11-14T07:33:32.116+01:00" ID="ModsRights1">
+            <mets:mdWrap MDTYPE="MODS">
+                <mets:xmlData>
+                    <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+                        <mods:accessCondition type="use and reproduction" displayLabel="Restricted ">Vandmærke</mods:accessCondition>
+                        <mods:accessCondition>
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD /usr/local/ginnungagap/current/script/xsd/copyright-md.xsd">
+                                <cdl:creator>
+                                    <cdl:creator.person>
+                                        <cdl:name>Bidstrup, Herluf</cdl:name>
+                                        <cdl:year.birth>1912-9-10</cdl:year.birth>
+                                        <cdl:year.death>1988-12-26</cdl:year.death>
+                                    </cdl:creator.person>
+                                </cdl:creator>
+                            </cdl:copyright>
+                        </mods:accessCondition>
+                    </mods:mods>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:rightsMD>
+        <mets:digiprovMD CREATED="2022-11-14T07:33:32.118+01:00" ID="PremisEvent1">
+            <mets:mdWrap MDTYPE="PREMIS:EVENT">
+                <mets:xmlData>
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd">
+                        <premis:eventIdentifier>
+                            <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+                            <premis:eventIdentifierValue>2467a76d-bac8-4ddb-b48d-df4563c96d19</premis:eventIdentifierValue>
+                        </premis:eventIdentifier>
+                        <premis:eventType>ingestion</premis:eventType>
+                        <premis:eventDateTime>2022-11-14T07:33:32.118+01:00</premis:eventDateTime>
+                        <premis:eventDetailInformation>
+                            <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
+file.encoding: UTF-8
+file.encoding.pkg: sun.io
+file.separator: /
+java.awt.graphicsenv: sun.awt.X11GraphicsEnvironment
+java.class.version: 52.0
+java.runtime.version: 1.8.0_332-b09
+java.specification.version: 1.8
+java.vm.info: mixed mode
+java.vm.name: OpenJDK 64-Bit Server VM
+java.vm.specification.name: Java Virtual Machine Specification
+java.vm.version: 25.332-b09
+java.vm.vendor: Red Hat, Inc.
+line.separator: 
+
+os.arch: amd64
+os.name: Linux
+os.version: 4.18.0-372.9.1.el8.x86_64
+sun.arch.data.model: 64
+sun.boot.library.path: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.332.b09-2.el8_6.x86_64/jre/lib/amd64
+sun.cpu.endian: little
+sun.io.unicode.encoding: UnicodeLittle
+sun.java.launcher: SUN_STANDARD
+sun.jnu.encoding: UTF-8
+sun.management.compiler: HotSpot 64-Bit Tiered Compilers
+sun.os.patch.level: unknown
+user.country: DK
+user.home: /home/tomcat
+user.timezone: Europe/Copenhagen
+user.language: da
+
+</premis:eventDetail>
+                        </premis:eventDetailInformation>
+                        <premis:linkingAgentIdentifier>
+                            <premis:linkingAgentIdentifierType>kbDkInternal</premis:linkingAgentIdentifierType>
+                            <premis:linkingAgentIdentifierValue>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </premis:linkingAgentIdentifierValue>
+                        </premis:linkingAgentIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>a9505ca0-74df-11e0-8f4e-0016357f605f</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>0ec012b0-f05f-4eed-aea2-03e3a89fbc9a</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                    </premis:event>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+        <mets:digiprovMD CREATED="2022-11-14T07:33:32.118+01:00" ID="PremisRepresentation1">
+            <mets:mdWrap MDTYPE="PREMIS">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:representation">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>0ec012b0-f05f-4eed-aea2-03e3a89fbc9a</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2022-11-14T07:33:32.119+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>logical</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2022-11-14T07:33:32.119+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Low</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2022-11-14T07:33:32.120+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:relationship>
+                            <premis:relationshipType>structural</premis:relationshipType>
+                            <premis:relationshipSubType>represents</premis:relationshipSubType>
+                            <premis:relatedObjectIdentifier>
+                                <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+                                <premis:relatedObjectIdentifierValue>7d30c8e9-43b3-4058-a824-a0e9901ed426</premis:relatedObjectIdentifierValue>
+                            </premis:relatedObjectIdentifier>
+                        </premis:relationship>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+    </mets:amdSec>
+    <mets:fileSec>
+        <mets:fileGrp>
+            <mets:file ID="fileId1">
+                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:a9505ca0-74df-11e0-8f4e-0016357f605f"/>
+            </mets:file>
+        </mets:fileGrp>
+    </mets:fileSec>
+    <mets:structMap TYPE="logical">
+        <mets:div DMDID="Mods1" ADMID="ModsRights1 PremisEvent1 PremisObject1 PremisRepresentation1">
+            <mets:fptr FILEID="fileId1"/>
+        </mets:div>
+    </mets:structMap>
+</mets:mets>
