@@ -32,9 +32,9 @@ public class CsvExtractorTilVisueltDesign {
     private static String TAB="\t";
     private static String NEWLINE="\n";
     private static String SEPERATOR=";";
-    //private static String testDataDir="/home/teg/testdata/";
+    private static String testDataDir="/home/teg/testdata/";
     
-    private static String testDataDir="/home/teg/workspace/ds-present/src/test/resources/xml/copyright_extraction/";
+    //private static String testDataDir="/home/teg/workspace/ds-present/src/test/resources/xml/copyright_extraction/";
     public static void main(String[] args) {
         
         Set<String> files = getFilesNamesInDir(testDataDir);

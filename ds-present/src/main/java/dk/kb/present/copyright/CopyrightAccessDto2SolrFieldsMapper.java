@@ -16,7 +16,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
 
 
-    public  CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
+    public CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
 
         //Trin 1
         handleBlokkeret( accessDto);
