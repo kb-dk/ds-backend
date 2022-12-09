@@ -14,9 +14,10 @@
  */
 package dk.kb.present.transform;
 
-import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * The identity transformer returns the given input unchanged.
@@ -39,7 +40,7 @@ public class IdentityTransformer extends DSTransformer {
 
     // A "real" transformer would do something here
     @Override
-    public String apply(String s) {
+    public String apply(String s, Map<String, String> metadata) {
         return s;
     }
 

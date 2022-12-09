@@ -33,6 +33,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * XSLT transformer using Saxon HE 3.
@@ -79,14 +80,17 @@ public class XSLTTransformer extends DSTransformer {
     }
 
     @Override
-    public synchronized String apply(String s) {
+    public synchronized String apply(String s, Map<String, String> metadata) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             try (Reader in = new StringReader(s)) {
+                transformer.clearParameters();
+                metadata.forEach(transformer::setParameter);
                 transformer.transform(new StreamSource(in), new StreamResult(out));
             }
             return out.toString(StandardCharsets.UTF_8);
         } catch (IOException | TransformerException e) {
-            throw new RuntimeTransformerException("Exception transforming with stylesheet '" + stylesheet + "'", e);
+            throw new RuntimeTransformerException(
+                    "Exception transforming with stylesheet '" + stylesheet + "' and metadata '" + metadata + "'", e);
         }
     }
 
