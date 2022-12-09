@@ -46,33 +46,33 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
                                 taskScanner(highTags:'FIXME', normalTags:'TODO', includePattern: '**/*.java', excludePattern: 'target/**/*')]
                 }
 
-                stage('Create test project') {
-                    recreateProject(projectName)
-
-                    openshift.withProject(projectName) {
-
-                        stage("Create build and deploy application") {
-                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-present")
-                            openshift.startBuild("ds-present", "--from-dir=.", "--follow")
-                            openshift.newApp("ds-present:latest")
-                            openshift.create("route", "edge", "--service=ds-present")
-                        }
-                    }
-                }
+//                stage('Create test project') {
+//                    recreateProject(projectName)
+//
+//                    openshift.withProject(projectName) {
+//
+//                        stage("Create build and deploy application") {
+//                            openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-present")
+//                            openshift.startBuild("ds-present", "--from-dir=.", "--follow")
+//                            openshift.newApp("ds-present:latest")
+//                            openshift.create("route", "edge", "--service=ds-present")
+//                        }
+//                    }
+//                }
 
                 stage('Push to Nexus (if Master)') {
                     sh 'env'
                     echo "Branch name ${env.BRANCH_NAME}"
                     if (env.BRANCH_NAME == 'master') {
-	                sh "${mvnCmd} clean deploy -DskipTests=true"
+	                //sh "${mvnCmd} clean deploy -DskipTests=true"
                     } else {
 	                echo "Branch ${env.BRANCH_NAME} is not master, so no mvn deploy"
                     }
                 }
 
-                stage('Cleanup') {
-                    openshift.selector("project/${projectName}").delete()
-                }
+//                stage('Cleanup') {
+//                    openshift.selector("project/${projectName}").delete()
+//                }
             }
         } catch (e) {
             currentBuild.result = 'FAILURE'
