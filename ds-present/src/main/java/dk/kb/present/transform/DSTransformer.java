@@ -14,14 +14,18 @@
  */
 package dk.kb.present.transform;
 
-import dk.kb.util.yaml.YAML;
-
-import java.util.function.Function;
+import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
- * Takes a textual input and transforms it to another textual input.
+ * Takes a textual input and a map of metadata and transforms it to another textual input.
+ * The metadata map will initially contain the pair {@code recordID:<recordID>}.
+ * Changes to metadata will be passed through the chain of {@code DSTransformer}s.
+ * One example of chaining it to have one transformer resolve copyright rules, store them as key-values in the
+ * metadata and pass the input unchanged, then having another transformer responsible for transforming to Solr-JSON
+ * with extra fields added from the metadata delivered by the copyright extractor.
  */
-public abstract class DSTransformer implements Function<String, String> {
+public abstract class DSTransformer implements BiFunction<String, Map<String, String>, String> {
 
     /**
      * @return the ID for the transformer, e.g. {@code mods2solr}.

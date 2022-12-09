@@ -27,7 +27,7 @@ class ViewTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View view = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(0));
-        assertEquals("SameAsInput", view.apply("SameAsInput")); // Identity view
+        assertEquals("SameAsInput", view.apply("someID", "SameAsInput")); // Identity view
     }
 
     @Test
@@ -36,7 +36,7 @@ class ViewTest {
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1));
         String mods = Resolver.resolveUTF8String("xml/corpus/albert-einstein.xml");
-        String jsonld = jsonldView.apply(mods);
+        String jsonld = jsonldView.apply("albert-einstein", mods);
         assertTrue(jsonld.contains("\"name\":{\"@language\":\"en\",\"@value\":\"Einstein, Albert"));
     }
 
@@ -46,7 +46,7 @@ class ViewTest {
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2));
         String mods = Resolver.resolveUTF8String("xml/corpus/albert-einstein.xml");
-        String solrjson = jsonldView.apply(mods);
+        String solrjson = jsonldView.apply("albert-einstein", mods);
         assertTrue(solrjson.contains("\"subject_name_da\":\"Einstein, Albert\","));
     }
 }

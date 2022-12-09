@@ -23,13 +23,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
-import java.util.function.Function;
+import java.util.Map;
+import java.util.function.BiFunction;
+
 
 /**
  * A view is at the core a list of {@link dk.kb.present.transform.DSTransformer}s.
+ * It takes a pair of {@code recordID, recordContent} and return transformed recordContent.
  */
-public class View extends ArrayList<DSTransformer> implements Function<String, String> {
+public class View extends ArrayList<DSTransformer> implements BiFunction<String, String, String> {
     private static final Logger log = LoggerFactory.getLogger(View.class);
 
     private static final String MIME_KEY = "mime";
@@ -76,18 +80,21 @@ public class View extends ArrayList<DSTransformer> implements Function<String, S
     }
 
     @Override
-    public String apply(String s) {
+    public String apply(String recordID, String content) {
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("recordID", recordID);
         for (DSTransformer transformer: this) {
             try {
-                s = transformer.apply(s);
+                content = transformer.apply(content, metadata);
             } catch (Exception e) {
                 String message = String.format(
-                        Locale.ROOT, "Exception in View '%s' while calling %s", getId(), transformer);
+                        Locale.ROOT, "Exception in View '%s' while calling %s with recordID '%s' and metadata %s",
+                        getId(), transformer, recordID, metadata);
                 log.warn(message, e);
                 throw new InternalServiceException(message);
             }
         }
-        return s;
+        return content;
     }
 
     @Override

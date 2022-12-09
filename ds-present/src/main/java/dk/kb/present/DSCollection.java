@@ -109,7 +109,7 @@ public class DSCollection {
     public String getRecord(String recordID, String format) throws ServiceException {
         View view = getView(format);
         String record = storage.getRecord(recordID);
-        return view.apply(record);
+        return view.apply(recordID, record);
     }
 
     /**
@@ -140,7 +140,7 @@ public class DSCollection {
             return storage.getDSRecords(recordBase, mTime, maxRecords)
                     .peek(record -> {
                         try {
-                            record.data(view.apply(record.getData()));
+                            record.data(view.apply(record.getId(), record.getData()));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(
                                     "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
