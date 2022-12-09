@@ -70,7 +70,7 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
         
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE,accessCondition1.getValue());
-        assertEquals("use and reproduction",accessCondition1.getType());
+        assertEquals(CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION,accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
         
         assertEquals(null,accessCondition2.getValue());  
@@ -158,6 +158,35 @@ public class CopyrightAccessExtractorTest {
     }
     
     
+    @Test
+    void testVandmaerke() throws Exception {
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml");
+                
+        //Copyright statuses
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals(2,copyright.getAccessConditionsList().size());
+        
+        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
+                       
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VANDMAERKE,accessCondition1.getValue());
+        assertEquals(CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION,accessCondition1.getType());
+        assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
+                          
+    
+    
+        //Test field mapping       
+        CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+                      
+        assertEquals(1993, mapper.getLastDeathYearForPersonWithFamiliyName());
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VANDMAERKE, mapper.getSpecialPresentationRestriction());
+        
+        
+        
+        
+    
+    }
+    
+    
     
     /*     
          hvorfor har den først ikke type og displaylabel?
@@ -237,7 +266,7 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);                
         AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2);
         
-        assertEquals("use and reproduction",accessCondition1.getType());
+        assertEquals(CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION,accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE,accessCondition1.getValue()); 
                        
