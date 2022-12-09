@@ -4,16 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
+import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
 
 public class CopyrightAccessDto2SolrFieldsMapper {
 
     private static final Logger log = LoggerFactory.getLogger(CopyrightAccessDto2SolrFieldsMapper.class);
-    
+
     private boolean blokkeret = false;
     private String accessNote= "";
     private Integer lastDeathYearForPersonWithFamiliyName= null;
-
+    private Integer lastEndedYearForCorporate= null;
 
 
     public CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
@@ -24,7 +25,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         //maybe return if blokkeret
         handleStep1(accessDto);
         //maybe return
-        
+
     }
 
 
@@ -46,13 +47,11 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         }
 
     }
-    
+
     private  void handleStep1(CopyrightAccessDto accessDto) {
         lastDeathYearForPersonWithFamiliyName =  getLastDeathYearForPersonWithFamilyName(accessDto);
+        lastEndedYearForCorporate = getLastEndedYearForCorporate(accessDto);
     }
-
-    
-    
 
     private void setAccessNote(CopyrightAccessDto accessDto) {
         for (AccessCondition ac : accessDto.getAccessConditionsList()) {
@@ -75,43 +74,77 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
 
 
-    
-     public Integer getLastDeathYearForPersonWithFamiliyName() {
+
+    public Integer getLastDeathYearForPersonWithFamiliyName() {
         return lastDeathYearForPersonWithFamiliyName;
     }
 
-
+    public Integer getLastEndedYearForCorporate() {
+        return lastEndedYearForCorporate;
+    }
 
 
 
     /* Lastname can not be read in accesscondition. Assume a comma (,) in name means he has a familyname (last name)
-      * Will read all creator.persons and find last death year for person without familyname
-      *  
-      *  
-      * Will return null if there is no year. (ie. person not death etc.)
-      */       
+     * Will read all creator.persons and find last death year for person without familyname
+     *  
+     *  
+     * Will return null if there is no year. (ie. person not death etc.)
+     */       
     private  Integer getLastDeathYearForPersonWithFamilyName(CopyrightAccessDto accessDto) {
-        
+
         Integer highestYear = null;
         for (AccessCondition ac: accessDto.getAccessConditionsList()) {
-        
+
             for (CreatorPerson p : ac.getCreatorPersonList()) {
                 boolean hasLastName = p.getName().indexOf(",")>0;
                 if (hasLastName) {
-                Integer year= extractYear(p.getYearDeath());
-          System.out.println("parsed year:"+year);
-                if (highestYear == null || year > highestYear) {
-                    highestYear=year;
+                    Integer year= extractYear(p.getYearDeath());
+                    System.out.println("parsed year:"+year);
+                    if (year == null) {
+                        return null;//one person not dead yet. TODO! Check if this is correct logic
+                    }
+
+                    if  (highestYear==null || year > highestYear) {
+                        highestYear=year;
+                    }
                 }
-                }
-                
+
             }
-            
+
         }                
         return highestYear;
     }
-    
-    
+
+
+
+    //If empty, it has not ended
+    private  Integer getLastEndedYearForCorporate(CopyrightAccessDto accessDto) {
+
+        Integer highestYear = null;
+        for (AccessCondition ac: accessDto.getAccessConditionsList()) {
+
+            for (CreatorCorporate cor : ac.getCreatorCorporateList()) {
+
+
+                Integer year= extractYear(cor.getYearEnded());
+
+                if (year == null) { //one coorporate not 'dead' yet. TODO check logic
+                    return null;
+                }                   
+                if( highestYear==null || year > highestYear) {
+                }
+                highestYear=year;
+            }
+
+        }
+
+        return highestYear;
+    }
+
+
+    /*
+
     /*
      * Always assume first 4 letters are year.
      *       
@@ -123,15 +156,15 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         if (yearString==null || yearString.length() <4) {            
             return null;
         }
-        
+
         try {
-          int year = Integer.parseInt(yearString.substring(0,4));
-          return year;
+            int year = Integer.parseInt(yearString.substring(0,4));
+            return year;
         }
         catch(Exception e) {
             log.warn("Could not parse year from:"+yearString);
             return 9999;
         }                        
     }
-    
+
 }

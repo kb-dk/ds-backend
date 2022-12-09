@@ -119,7 +119,7 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
         assertEquals(true,mapper.isBlokkeret());
         assertEquals(access_note,mapper.getAccessNote());
-        
+        assertEquals(null,mapper.getLastEndedYearForCorporate()); //Important. It is there, but no ended year
         
     }
     
@@ -266,7 +266,7 @@ public class CopyrightAccessExtractorTest {
          
          //3 persons, find last death with family name
          assertEquals(1895, mapper.getLastDeathYearForPersonWithFamiliyName());
-        
+         assertEquals(1874, mapper.getLastEndedYearForCorporate());
         
     }
     
