@@ -69,7 +69,7 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
         
-        assertEquals(CopyrightAccessDto.VALUE_EJERMAERKE,accessCondition1.getValue());
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE,accessCondition1.getValue());
         assertEquals("use and reproduction",accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
         
@@ -77,6 +77,12 @@ public class CopyrightAccessExtractorTest {
         
         assertEquals("unknown",accessCondition2.getCopyrightPublicationStatus());
         assertEquals("copyrighted",accessCondition2.getCopyrightStatus());
+
+        
+        //Test field mapping       
+        CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+                       
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE, mapper.getSpecialPresentationRestriction());
 
         
     
@@ -97,7 +103,7 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
         AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2);
         
-        assertEquals(CopyrightAccessDto.VALUE_BLOKKERET,accessCondition1.getValue());
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_BLOKKERET,accessCondition1.getValue());
         assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS,accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_ACCESS_STATUS,accessCondition1.getDisplayLabel()); 
         
@@ -134,13 +140,21 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
                        
-        assertEquals("Visning kun på stedet",accessCondition1.getValue());
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET,accessCondition1.getValue());
         assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS,accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_ACCESS_STATUS,accessCondition1.getDisplayLabel()); 
                 
         assertEquals("Kurators beslutning",accessCondition2.getValue());
         assertEquals("use and reproduction note",accessCondition2.getType());
         assertEquals("Restricted",accessCondition2.getDisplayLabel());                  
+    
+    
+        //Test field mapping       
+        CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+                       
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET, mapper.getSpecialPresentationRestriction());
+        
+    
     }
     
     
@@ -165,7 +179,7 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
                        
-        assertEquals(CopyrightAccessDto.VALUE_VISNING_KUN_AF_METADATA,accessCondition1.getValue());
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA,accessCondition1.getValue());
         assertEquals(null,accessCondition1.getType());
         assertEquals(null,accessCondition1.getDisplayLabel()); 
                 
@@ -179,8 +193,8 @@ public class CopyrightAccessExtractorTest {
         
         //No person data at all
         assertEquals(null, mapper.getLastDeathYearForPersonWithFamiliyName());
-        
-        
+                
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA, mapper.getSpecialPresentationRestriction());
     }
         
     
@@ -225,12 +239,18 @@ public class CopyrightAccessExtractorTest {
         
         assertEquals("use and reproduction",accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
-        assertEquals(CopyrightAccessDto.VALUE_EJERMAERKE,accessCondition1.getValue()); 
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE,accessCondition1.getValue()); 
                        
 
         assertEquals("pligtaflevering",accessCondition3.getType());
-        assertEquals(CopyrightAccessDto.VALUE_PLIGTAFLEVERET,accessCondition3.getValue()); 
-                         
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_PLIGTAFLEVERET,accessCondition3.getValue()); 
+                 
+               
+        //Test field mapping       
+         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE, mapper.getSpecialPresentationRestriction());
+        
+        
     }
         
     

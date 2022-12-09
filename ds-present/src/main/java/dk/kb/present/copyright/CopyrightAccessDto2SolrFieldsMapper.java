@@ -15,7 +15,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     private String accessNote= "";
     private Integer lastDeathYearForPersonWithFamiliyName= null;
     private Integer lastEndedYearForCorporate= null;
-
+    private String specialPresentationRestriction=null; //Fra 'rullelisten'
 
     public CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
 
@@ -28,6 +28,35 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
     }
 
+    
+
+    public boolean isBlokkeret() {
+        return blokkeret;
+    }
+
+
+    public String getAccessNote() {
+        return accessNote;
+    }
+
+    public String getSpecialPresentationRestriction() {
+        return specialPresentationRestriction;
+    }
+
+
+    public void setAccessNote(String accessNote) {
+        this.accessNote = accessNote;
+    }
+
+
+    public Integer getLastDeathYearForPersonWithFamiliyName() {
+        return lastDeathYearForPersonWithFamiliyName;
+    }
+
+    public Integer getLastEndedYearForCorporate() {
+        return lastEndedYearForCorporate;
+    }
+    
 
 
 
@@ -36,7 +65,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         for (AccessCondition ac : accessDto.getAccessConditionsList()) {
             if ( ac.getType() != null && ac.getType().equals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS) 
                     && ac.getDisplayLabel().equals(CopyrightAccessDto.DISPLAY_LABEL_ACCESS_STATUS)
-                    && ac.getValue().equals(CopyrightAccessDto.VALUE_BLOKKERET)
+                    && ac.getValue().equals(CopyrightAccessDto.SPECIAL_RESTRICTION_BLOKKERET)
                     ){
                 this.blokkeret=true;                                 
                 return;
@@ -51,6 +80,8 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     private  void handleStep1(CopyrightAccessDto accessDto) {
         lastDeathYearForPersonWithFamiliyName =  getLastDeathYearForPersonWithFamilyName(accessDto);
         lastEndedYearForCorporate = getLastEndedYearForCorporate(accessDto);
+        specialPresentationRestriction= extractSpecialPresentationRestriction(accessDto);
+      
     }
 
     private void setAccessNote(CopyrightAccessDto accessDto) {
@@ -63,25 +94,6 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     }
 
 
-    public boolean isBlokkeret() {
-        return blokkeret;
-    }
-
-
-    public String getAccessNote() {
-        return accessNote;
-    }
-
-
-
-
-    public Integer getLastDeathYearForPersonWithFamiliyName() {
-        return lastDeathYearForPersonWithFamiliyName;
-    }
-
-    public Integer getLastEndedYearForCorporate() {
-        return lastEndedYearForCorporate;
-    }
 
 
 
@@ -142,6 +154,20 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         return highestYear;
     }
 
+    
+
+    private  String extractSpecialPresentationRestriction(CopyrightAccessDto accessDto) {
+
+
+        for (AccessCondition ac: accessDto.getAccessConditionsList()) {
+               String value =ac.getValue();
+               if (value != null) { //TODO. If there are more it will not be detected, but it is a meta data error according to model
+                 return value;                    
+               }
+        }
+        return null;
+    }
+    
 
     /*
 

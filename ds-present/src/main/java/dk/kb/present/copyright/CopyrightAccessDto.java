@@ -19,10 +19,13 @@ public class CopyrightAccessDto {
     public static final String DISPLAY_LABEL_RESTRICTED="Restricted "; //notice white space error 
     
     
-    public static final String VALUE_BLOKKERET= "Blokeret";
-    public static final String VALUE_EJERMAERKE= "Ejermærke";
-    public static final String VALUE_VISNING_KUN_AF_METADATA ="Visning kun af metadata";
-    public static final String VALUE_PLIGTAFLEVERET ="Pligtafleveret";
+    public static final String SPECIAL_RESTRICTION_BLOKKERET= "Blokeret";
+    public static final String SPECIAL_RESTRICTION_EJERMAERKE= "Ejermærke";
+    public static final String SPECIAL_RESTRICTION_VANDMAERKE=   "Vandmærke"; 
+    public static final String SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA ="Visning kun af metadata";
+    public static final String SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET ="Visning kun på stedet";
+    public static final String SPECIAL_RESTRICTION_PLIGTAFLEVERET ="Pligtafleveret";
+    public static final String SPECIAL_RESTRICTION_CCBY="CC-BY";
     
     private ArrayList<AccessCondition> accessConditionsList;
 
