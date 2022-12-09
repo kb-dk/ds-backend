@@ -41,7 +41,6 @@ public class ImageRightsExtractor extends DSTransformer {
         return ID;
     }
 
-    // A "real" transformer would do something here
     @Override
     public String apply(String modsInMetsXml, Map<String, String> metadata) {
         try {
