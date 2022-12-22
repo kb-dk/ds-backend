@@ -148,13 +148,19 @@ public class CopyrightAccessExtractorTest {
         assertEquals("use and reproduction note",accessCondition2.getType());
         assertEquals("Restricted",accessCondition2.getDisplayLabel());                  
     
-    
+        
+         //TEMPORARY TEST, FIELD WILL BE REMOVED
+          assertEquals("http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031",copyright.getImageUrl());
+        
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
                        
-        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET, mapper.getSpecialPresentationRestriction());
-        
+                        
+        //TEMPORARY TEST, FIELD WILL BE REMOVED
+        assertEquals("http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031",mapper.getImageUrl());
     
+        //TEMPORARY TEST, FIELD WILL BE REMOVED
+        
     }
     
     
@@ -172,7 +178,8 @@ public class CopyrightAccessExtractorTest {
         assertEquals(CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION,accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
                           
-    
+   
+
     
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
@@ -272,13 +279,13 @@ public class CopyrightAccessExtractorTest {
                        
 
         assertEquals("pligtaflevering",accessCondition3.getType());
-        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_PLIGTAFLEVERET,accessCondition3.getValue()); 
-                 
-               
-        //Test field mapping       
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_PLIGTAFLEVERET,accessCondition3.getValue());         
+
+            //Test field mapping       
          CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
          assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE, mapper.getSpecialPresentationRestriction());
         
+         
         
     }
         

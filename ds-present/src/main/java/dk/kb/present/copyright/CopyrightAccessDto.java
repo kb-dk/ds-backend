@@ -32,7 +32,8 @@ public class CopyrightAccessDto {
     public static final String SPECIAL_RESTRICTION_CCBY="CC-BY";
     
     private ArrayList<AccessCondition> accessConditionsList;
-
+    
+    private String imageUrl=null;
             
     public  CopyrightAccessDto() {                    
     }
@@ -44,6 +45,18 @@ public class CopyrightAccessDto {
     public void setAccessConditionsList(ArrayList<AccessCondition> accessConditionsList) {
         this.accessConditionsList = accessConditionsList;
     }
+
+    
+    
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+
 
     public class AccessCondition{
               
@@ -127,8 +140,9 @@ public class CopyrightAccessDto {
         public void setYearDeath(String yearDeath) {
             this.yearDeath = yearDeath;
         }
-
     }
+    
+    
     
 
     public class CreatorCorporate {     
@@ -157,6 +171,10 @@ public class CopyrightAccessDto {
       
 
     }
+
+
+
+
 
     
 

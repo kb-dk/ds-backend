@@ -16,6 +16,10 @@ public class XsltCopyrightMapper {
         solrFieldsMap.put("blocked",""+mapper.isBlokkeret());
         solrFieldsMap.put("accessNote",mapper.getAccessNote());        
         
+        if (copyrightAccessDto.getImageUrl() != null) {
+        solrFieldsMap.put("imageUrl",mapper.getImageUrl());
+        }
+        
         return solrFieldsMap;
     }
 

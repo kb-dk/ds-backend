@@ -17,8 +17,11 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     private Integer lastEndedYearForCorporate= null;
     private String specialPresentationRestriction=null; //Fra 'rullelisten'
 
+    
+    private String imageUrl=null; 
     public CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
 
+        imageUrl=accessDto.getImageUrl();
         //Trin 1
         handleBlokkeret( accessDto);
         setAccessNote(accessDto);   
@@ -33,6 +36,18 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     public boolean isBlokkeret() {
         return blokkeret;
     }
+
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 
 
     public String getAccessNote() {
