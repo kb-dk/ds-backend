@@ -53,6 +53,9 @@ public class CopyrightAccessExtractor {
 
         NodeList accessConditions = rightsMD.getElementsByTagName("mods:accessCondition");        
         copyrightDto.setAccessConditionsList(buildAccessCondition(accessConditions));
+        
+        //TEMORARY SOLUTION TO SET IMAGE LINK!
+        copyrightDto.setImageUrl(getImageLink(document));
         return  copyrightDto;
     }
 
@@ -232,8 +235,54 @@ public class CopyrightAccessExtractor {
 
         return document;
     }
-
     
+    
+    private static String getImageLink(Document doc) {
+
+        NodeList identifiers = doc.getElementsByTagName("mods:identifier");
+        for (int i =0;i<identifiers.getLength();i++) {
+          
+            Element e = (Element) identifiers.item(i);        
+            String type= e.getAttribute("type");
+             
+            if ("Asset Reference".equals(type)) {
+            String ref = e.getTextContent();
+
+                ref = ref.replaceAll("cumulus-core-01:/Depot", "");
+                ref = ref.replaceAll(".tif", "");
+                                                
+                
+                //http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031
+                //Add last parameters such as size and format: 
+                //http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031&CVT=jpeg
+                String link = "http://kb-images.kb.dk/?FIF=/DAMJP2"+ref;            
+                return link;
+                
+         }
+        }
+         return null;
+     }
+     
+
+    private static String getId(NodeList identifiers) {
+
+       for (int i =0;i<identifiers.getLength();i++) {
+         
+           Element e = (Element) identifiers.item(i);        
+           String type= e.getAttribute("type");
+            
+           if ("local".equals(type)) {
+           String ref = e.getTextContent();
+               
+             return ref;  
+               
+          }
+       }
+       return null;
+        
+    }
+
+
 
 
 }
