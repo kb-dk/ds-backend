@@ -137,7 +137,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
                 boolean hasLastName = p.getName().indexOf(",")>0;
                 if (hasLastName) {
                     Integer year= extractYear(p.getYearDeath());
-                    System.out.println("parsed year:"+year);
+                    //System.out.println("parsed year:"+year);
                     if (year == null) {
                         return null;//one person not dead yet. TODO! Check if this is correct logic
                     }

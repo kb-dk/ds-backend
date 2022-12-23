@@ -32,7 +32,8 @@ public class CopyrightAccessDto {
     private ArrayList<AccessCondition> accessConditionsList;
     
     private String imageUrl=null;
-            
+    private int createdYear;
+    
     public  CopyrightAccessDto() {                    
     }
 
@@ -43,9 +44,16 @@ public class CopyrightAccessDto {
     public void setAccessConditionsList(ArrayList<AccessCondition> accessConditionsList) {
         this.accessConditionsList = accessConditionsList;
     }
+    
+    
+    public int getCreatedYear() {
+        return createdYear;
+    }
 
-    
-    
+    public void setCreatedYear(int createdYear) {
+        this.createdYear = createdYear;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }

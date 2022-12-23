@@ -34,9 +34,10 @@ public class CopyrightAccessExtractor {
         CopyrightAccessDto copyrightDto= new CopyrightAccessDto();
 
         Document document = createDocFromXml(xml);
-
         
-
+        int createdYear= getCreatedYear(document);
+        copyrightDto.setCreatedYear(createdYear);
+        
         NodeList nList = document.getElementsByTagName("mets:rightsMD");
         if (nList.getLength()==0) {
             log.info("No rightsMD found");
@@ -53,6 +54,11 @@ public class CopyrightAccessExtractor {
 
         NodeList accessConditions = rightsMD.getElementsByTagName("mods:accessCondition");        
         copyrightDto.setAccessConditionsList(buildAccessCondition(accessConditions));
+        
+        
+       
+        
+        
         
         //TEMORARY SOLUTION TO SET IMAGE LINK!
         copyrightDto.setImageUrl(getImageLink(document));
@@ -213,7 +219,7 @@ public class CopyrightAccessExtractor {
 
 
    
-    public static   Document createDocFromXml(String xml) throws Exception{
+    public static  Document createDocFromXml(String xml) throws Exception{
 
         //System.out.println(response);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -282,7 +288,67 @@ public class CopyrightAccessExtractor {
         
     }
 
+    
+    
+
+    // See documentation. Can be 3 different fields, one MUST always be there.
+    //<mods:dateCreated>1868</mods:dateCreated>  (notice no point attibute)
+    //<mods:dateCreated point="end">1900</mods:dateCreated> 
+    //<mods:dateCaptured>2014-04-04T11:52:16.000+02:00</mods:dateCaptured> 
+        
+    private static int getCreatedYear(Document doc) {
+
+        NodeList dateCreated= doc.getElementsByTagName("mods:dateCreated");
+        System.out.println("c1");
+                        
+        for (int i =0;i<dateCreated.getLength();i++) {
+          
+            Element e = (Element) dateCreated.item(i);        
+            String point= e.getAttribute("point");
+            if (point == null || "".equals(point)){
+                System.out.println("c2");
+                ///format is YYYY or YYYY-YYYY. Always take last 4 digits
+                return Integer.parseInt(e.getTextContent().substring(e.getTextContent().length()-4));
+            }
+            else if ("end".equals(point)) {
+                System.out.println("c3");
+                return Integer.parseInt(e.getTextContent());
+            }                                        
+        }
 
 
+        NodeList dateCaptured = doc.getElementsByTagName("mods:dateCaptured");                                
+        
+       Element e = (Element)  dateCaptured .item(0);               
+       return Integer.parseInt(e.getTextContent().substring(0,4));                                        
+        
+     }
+
+
+    
+    //TODO
+    private static String getMaterialType(Document doc) {
+
+        NodeList identifiers = doc.getElementsByTagName("mods:typeOfResource ");
+        
+        for (int i =0;i<identifiers.getLength();i++) {
+          
+            Element e = (Element) identifiers.item(i);        
+            String type= e.getAttribute("displayLabel");
+             
+            if ("Ressource Description".equals(type)) { //TODO den findes ikke selv om det står i beskrivelsen
+            String ref = e.getTextContent();
+                
+              return ref;  
+                
+           }
+        }
+        return null;
+         
+     }
+
+    
+    
+    
 
 }
