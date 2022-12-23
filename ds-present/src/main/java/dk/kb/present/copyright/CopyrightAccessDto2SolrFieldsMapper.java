@@ -11,6 +11,16 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
     private static final Logger log = LoggerFactory.getLogger(CopyrightAccessDto2SolrFieldsMapper.class);
 
+
+    public static final String SPECIAL_RESTRICTION_BLOKKERET_TEXT= "Blokeret";
+    public static final String SPECIAL_RESTRICTION_EJERMAERKE_TEXT= "Ejermærke";
+    public static final String SPECIAL_RESTRICTION_VANDMAERKE_TEXT=   "Vandmærke"; 
+    public static final String SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA_TEXT ="Visning kun af metadata";
+    public static final String SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET_TEXT ="Visning kun på stedet";
+    public static final String SPECIAL_RESTRICTION_PLIGTAFLEVERET_TEXT ="Pligtafleveret";
+    public static final String SPECIAL_RESTRICTION_CCBY_TEXT="CC-BY";
+
+    
     private boolean blokkeret = false;
     private String accessNote= "";
     private Integer lastDeathYearForPersonWithFamiliyName= null;
@@ -170,6 +180,40 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     
 
     /*
+     * Every special restriction type has a custom danish text for presentation layer 
+     * TODO? What is text
+     * 
+     * 
+     */
+    /*
+    private String generateJuridiskTekst(CopyrightAccessDto acDto) {
+        
+        for (AccessCondition ac :acDto.getAccessConditionsList()) {
+            
+            switch (ac.getValue()) {
+            
+             case SPECIAL_RESTRICTION_BLOKKERET_TEXT:
+                
+                break;
+            case SPECIAL_RESTRICTION_CCBY_TEXT:
+                break;
+            case SPECIAL_RESTRICTION_EJERMAERKE_TEXT:
+                break;
+            case SPECIAL_RESTRICTION_PLIGTAFLEVERET_TEXT:
+                break;
+            case SPECIAL_RESTRICTION_VANDMAERKE_TEXT:
+                break;
+            case SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA_TEXT:
+                break;
+            case SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET_TEXT:
+                break;
+                
+            }            
+            
+        }        
+    }
+    */
+    
 
     /*
      * Always assume first 4 letters are year.

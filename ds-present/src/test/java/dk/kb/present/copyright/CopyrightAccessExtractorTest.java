@@ -146,7 +146,7 @@ public class CopyrightAccessExtractorTest {
                 
         assertEquals("Kurators beslutning",accessCondition2.getValue());
         assertEquals("use and reproduction note",accessCondition2.getType());
-        assertEquals("Restricted",accessCondition2.getDisplayLabel());                  
+        assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition2.getDisplayLabel());                  
     
     
         //Test field mapping       
@@ -271,7 +271,7 @@ public class CopyrightAccessExtractorTest {
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE,accessCondition1.getValue()); 
                        
 
-        assertEquals("pligtaflevering",accessCondition3.getType());
+        assertEquals(CopyrightAccessDto.TYPE_PLIGTAFLEVERING,accessCondition3.getType());
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_PLIGTAFLEVERET,accessCondition3.getValue()); 
                  
                
