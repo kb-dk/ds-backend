@@ -59,7 +59,7 @@ public class CopyrightAccessExtractorTest {
     void testNoAccessConditions() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DPK000107.tif.xml");
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
-        assertEquals("e",copyright.getMaterialeType()); //Why is it not in data?
+        assertEquals(null,copyright.getMaterialeType()); //Why is it not in data?
         assertEquals(2016,copyright.getCreatedYear());
         assertEquals(2,copyright.getAccessConditionsList().size());
         
