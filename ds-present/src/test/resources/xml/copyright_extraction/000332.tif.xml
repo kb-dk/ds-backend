@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd" TYPE="File" OBJID="557d2e6b-fec9-4601-bcad-ca3f1d88fec4" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
-    <mets:metsHdr CREATEDATE="2022-11-14T07:29:11.631+01:00">
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="557d2e6b-fec9-4601-bcad-ca3f1d88fec4" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2023-01-02T09:25:04.086+01:00">
         <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
             <mets:name>kbDk</mets:name>
             <mets:note>kbDkInternal</mets:note>
@@ -9,10 +9,10 @@
             <mets:note>kbDkInternal</mets:note>
         </mets:agent>
     </mets:metsHdr>
-    <mets:dmdSec CREATED="2022-11-14T07:29:11.632+01:00" ID="Mods1">
+    <mets:dmdSec CREATED="2023-01-02T09:25:04.086+01:00" ID="Mods1">
         <mets:mdWrap MDTYPE="MODS">
             <mets:xmlData>
-                <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+                <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
                     <mods:genre type="Categories">Danske portrætter, X-langtidsbevaring test - BLO, Diverse, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-01 15:17:18, 2022-09-02 09:01:13</mods:genre>
                     <mods:identifier type="uri">urn:uuid:05fea810-7181-11e0-82d7-002185371280</mods:identifier>
                     <mods:identifier type="local">000332.tif</mods:identifier>
@@ -66,7 +66,7 @@
                     <mods:relatedItem type="otherFormat">
                         <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/samlingsbilleder/4075/000332.jpg</mods:identifier>
                     </mods:relatedItem>
-                    <mods:relatedItem type="series" displayLabel="Samling">
+                    <mods:relatedItem type="host" displayLabel="Samling">
                         <mods:titleInfo>
                             <mods:title>Billedsamlingen</mods:title>
                         </mods:titleInfo>
@@ -75,6 +75,14 @@
                         <mods:identifier type="URL">https://www.kb.dk/find-materiale/samlinger/billedsamlingen</mods:identifier>
                         <mods:note type="URL-tekst">Det Kgl. Biblioteks billedsamling</mods:note>
                     </mods:relatedItem>
+                    <mods:subject lang="da">
+                        <mods:topic lang="da">O.J.Moltke  1770-1853</mods:topic>
+                        <mods:topic lang="da">Statsmand,Greve</mods:topic>
+                        <mods:topic lang="da">Fotograf:.</mods:topic>
+                        <mods:topic lang="da">Acc. Nr:. x 2048,1964    fol.</mods:topic>
+                        <mods:topic lang="da">kort- og Billedafdelingen.</mods:topic>
+                        <mods:topic lang="da">Det kongelige Biblotek.</mods:topic>
+                    </mods:subject>
                     <mods:subject>
                         <mods:topic>sh85105182</mods:topic>
                     </mods:subject>
@@ -86,20 +94,17 @@
                             <mods:namePart type="termsOfAddress">greve</mods:namePart>
                         </mods:name>
                     </mods:subject>
-                    <mods:titleInfo>
-                        <mods:title>O. J. Moltke</mods:title>
-                    </mods:titleInfo>
-                    <mods:typeOfResource displayLabel="Generel materialebetegnelse">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
-                    <mods:typeOfResource displayLabel="Materialebetegnelse">Grafik</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Generel Resource Description">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Resource Description">Grafik</mods:typeOfResource>
                 </mods:mods>
             </mets:xmlData>
         </mets:mdWrap>
     </mets:dmdSec>
     <mets:amdSec>
-        <mets:techMD CREATED="2022-11-14T07:29:11.685+01:00" ID="PremisObject1">
+        <mets:techMD CREATED="2023-01-02T09:25:04.106+01:00" ID="PremisObject1">
             <mets:mdWrap MDTYPE="PREMIS:OBJECT">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:file">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
                             <premis:objectIdentifierValue>05fea810-7181-11e0-82d7-002185371280</premis:objectIdentifierValue>
@@ -122,7 +127,7 @@
                                 <premis:creatingApplicationName>Adobe Photoshop CC 2019</premis:creatingApplicationName>
                             </premis:creatingApplication>
                             <premis:objectCharacteristicsExtension>
-                                <mix:mix xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="http://www.loc.gov/mix/v20 http://www.loc.gov/standards/mix/mix20/mix20.xsd">
+                                <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://id.kb.dk/standards/mix/version_2_0/mix.xsd">
                                     <mix:BasicDigitalObjectInformation>
                                         <mix:ObjectIdentifier>
                                             <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
@@ -159,7 +164,6 @@
                                     <mix:ImageCaptureMetadata>
                                         <mix:GeneralCaptureInformation>
                                             <mix:dateTimeCreated>2007-03-23T10:39:15.000+01:00</mix:dateTimeCreated>
-                                            <mix:imageProducer>Fotografisk Atelier. DKB.</mix:imageProducer>
                                         </mix:GeneralCaptureInformation>
                                         <mix:ScannerCapture>
                                             <mix:ScannerModel>
@@ -224,13 +228,12 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:techMD>
-        <!--Inside mets:rightsMD-->
-        <mets:rightsMD CREATED="2022-11-14T07:29:11.717+01:00" ID="ModsRights1">
+        <mets:rightsMD CREATED="2023-01-02T09:25:04.115+01:00" ID="ModsRights1">
             <mets:mdWrap MDTYPE="MODS">
                 <mets:xmlData>
-                    <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+                    <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
                         <mods:accessCondition>
-                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD /usr/local/ginnungagap/current/script/xsd/copyright-md.xsd">
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD http://id.kb.dk/schemas/dk-corporate-creator/copyright-md.xsd">
                                 <cdl:creator>
                                     <cdl:creator.person>
                                         <cdl:name>Bærentzen, Emil</cdl:name>
@@ -265,16 +268,16 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:rightsMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:29:11.723+01:00" ID="PremisEvent1">
+        <mets:digiprovMD CREATED="2023-01-02T09:25:04.116+01:00" ID="PremisEvent1">
             <mets:mdWrap MDTYPE="PREMIS:EVENT">
                 <mets:xmlData>
-                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd">
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
                         <premis:eventIdentifier>
                             <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
-                            <premis:eventIdentifierValue>7250f9ab-0232-4167-a3e6-5955334ec240</premis:eventIdentifierValue>
+                            <premis:eventIdentifierValue>88cd3710-d434-4d27-ab95-36e468b0f1bc</premis:eventIdentifierValue>
                         </premis:eventIdentifier>
                         <premis:eventType>ingestion</premis:eventType>
-                        <premis:eventDateTime>2022-11-14T07:29:11.723+01:00</premis:eventDateTime>
+                        <premis:eventDateTime>2023-01-02T09:25:04.116+01:00</premis:eventDateTime>
                         <premis:eventDetailInformation>
                             <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
 file.encoding: UTF-8
@@ -325,10 +328,10 @@ user.language: da
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:digiprovMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:29:11.724+01:00" ID="PremisRepresentation1">
+        <mets:digiprovMD CREATED="2023-01-02T09:25:04.117+01:00" ID="PremisRepresentation1">
             <mets:mdWrap MDTYPE="PREMIS">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:representation">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
                             <premis:objectIdentifierValue>557d2e6b-fec9-4601-bcad-ca3f1d88fec4</premis:objectIdentifierValue>
@@ -336,17 +339,17 @@ user.language: da
                         <premis:preservationLevel>
                             <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
                             <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:29:11.730+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-01-02T09:25:04.118+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>logical</premis:preservationLevelType>
                             <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:29:11.731+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-01-02T09:25:04.118+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
                             <premis:preservationLevelValue>Low</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:29:11.733+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-01-02T09:25:04.119+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:relationship>
                             <premis:relationshipType>structural</premis:relationshipType>

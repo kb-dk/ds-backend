@@ -18,7 +18,7 @@ public class CopyrightAccessDto {
     public static final String TYPE_PLIGTAFLEVERING = "pligtaflevering";
         
     public static final String DISPLAY_LABEL_ACCESS_STATUS= "Access Status";
-    public static final String DISPLAY_LABEL_RESTRICTED="Restricted "; //notice white space error 
+    public static final String DISPLAY_LABEL_RESTRICTED="Restricted";  
     
     
     public static final String SPECIAL_RESTRICTION_BLOKKERET= "Blokeret";

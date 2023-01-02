@@ -306,9 +306,13 @@ public class CopyrightAccessExtractor {
             Element e = (Element) dateCreated.item(i);        
             String point= e.getAttribute("point");
             if (point == null || "".equals(point)){
+                String unknownDateFormat=e.getTextContent();
                 System.out.println("c2");
-                ///format is YYYY or YYYY-YYYY. Always take last 4 digits
-                return Integer.parseInt(e.getTextContent().substring(e.getTextContent().length()-4));
+                ///format is YYYY or YYYY-YYYY or '1977.1.14'
+                if (unknownDateFormat.indexOf(".")>1) {
+                  return Integer.parseInt(unknownDateFormat.substring(0,4));
+                }                
+                return Integer.parseInt(unknownDateFormat.substring(unknownDateFormat.length()-4));
             }
             else if ("end".equals(point)) {
                 System.out.println("c3");

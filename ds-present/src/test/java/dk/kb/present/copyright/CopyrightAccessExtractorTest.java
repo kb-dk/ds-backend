@@ -58,7 +58,10 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DPK000107.tif.xml");
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
         assertEquals(2016,copyright.getCreatedYear());
-        assertEquals(0,copyright.getAccessConditionsList().size());
+        assertEquals(2,copyright.getAccessConditionsList().size());
+        
+        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE,accessCondition1.getValue());
     
     }
     
@@ -104,7 +107,7 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
         assertEquals(3,copyright.getAccessConditionsList().size());
       
-        assertEquals(2019,copyright.getCreatedYear());
+        assertEquals(1865,copyright.getCreatedYear());
         
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
@@ -177,7 +180,7 @@ public class CopyrightAccessExtractorTest {
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
         assertEquals(2,copyright.getAccessConditionsList().size());
-        assertEquals(1987,copyright.getCreatedYear());
+        assertEquals(1977,copyright.getCreatedYear());
         
         
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
@@ -194,6 +197,7 @@ public class CopyrightAccessExtractorTest {
                       
         assertEquals(1993, mapper.getLastDeathYearForPersonWithFamiliyName());
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VANDMAERKE, mapper.getSpecialPresentationRestriction());        
+        
     }
     
     
@@ -214,7 +218,7 @@ public class CopyrightAccessExtractorTest {
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
         assertEquals(3,copyright.getAccessConditionsList().size());
-        assertEquals(1831,copyright.getCreatedYear());
+        assertEquals(1971,copyright.getCreatedYear());
         
         
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
@@ -234,7 +238,7 @@ public class CopyrightAccessExtractorTest {
         
         //No person data at all
         assertEquals(null, mapper.getLastDeathYearForPersonWithFamiliyName());
-                
+        
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA, mapper.getSpecialPresentationRestriction());
     }
         

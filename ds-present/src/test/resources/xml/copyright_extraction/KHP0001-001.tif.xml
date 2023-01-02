@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd" TYPE="File" OBJID="596f9f0d-edee-442b-b556-45aef9aab8e0" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
-    <mets:metsHdr CREATEDATE="2022-11-14T07:42:19.892+01:00">
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="596f9f0d-edee-442b-b556-45aef9aab8e0" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2023-01-02T09:35:05.077+01:00">
         <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
             <mets:name>kbDk</mets:name>
             <mets:note>kbDkInternal</mets:note>
@@ -9,10 +9,10 @@
             <mets:note>kbDkInternal</mets:note>
         </mets:agent>
     </mets:metsHdr>
-    <mets:dmdSec CREATED="2022-11-14T07:42:19.893+01:00" ID="Mods1">
+    <mets:dmdSec CREATED="2023-01-02T09:35:05.078+01:00" ID="Mods1">
         <mets:mdWrap MDTYPE="MODS">
             <mets:xmlData>
-                <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+                <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
                     <mods:genre type="Categories">KHP, Keld Helmer-Petersen, 1940-1950, Helmer-Petersen, Keld, CAR- BLO katagori, ikke UA, Keld Helmer-Petersen, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-06 17:01:18</mods:genre>
                     <mods:identifier type="uri">urn:uuid:e5a0e980-d6cb-11e3-8d2e-0016357f605f</mods:identifier>
                     <mods:identifier type="local">KHP0001-001.tif</mods:identifier>
@@ -36,16 +36,18 @@
                     <mods:originInfo altRepGroup="surrogate">
                         <mods:dateCaptured>2014-04-02T07:57:51.000+02:00</mods:dateCaptured>
                     </mods:originInfo>
+                    <mods:physicalDescription>
+                        <mods:note displayLabel="Pageorientation">LTR</mods:note>
+                    </mods:physicalDescription>
                     <mods:recordInfo>
                         <mods:languageOfCataloging>
                             <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
                         </mods:languageOfCataloging>
-                        <mods:recordInfoNote>LTR</mods:recordInfoNote>
                     </mods:recordInfo>
                     <mods:relatedItem type="otherFormat">
                         <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/samlingsbilleder/KOB/KHP/0001/KHP0001-001.jpg</mods:identifier>
                     </mods:relatedItem>
-                    <mods:relatedItem type="series" displayLabel="Samling">
+                    <mods:relatedItem type="host" displayLabel="Samling">
                         <mods:titleInfo>
                             <mods:title>Billedsamlingen</mods:title>
                         </mods:titleInfo>
@@ -54,32 +56,31 @@
                         <mods:identifier type="URL">https://www.kb.dk/find-materiale/samlinger/billedsamlingen/index.html</mods:identifier>
                         <mods:note type="URL-tekst">Det Kgl. Biblioteks billedsamling</mods:note>
                     </mods:relatedItem>
-                    <mods:subject>
-                        <mods:topic>Træ</mods:topic>
-                        <mods:topic>Sne</mods:topic>
-                        <mods:topic>Vinter</mods:topic>
-                        <mods:topic>Vej</mods:topic>
+                    <mods:subject lang="da">
+                        <mods:hierarchicalGeographic>
+                            <mods:area areaType="area">Danmark, Sjælland</mods:area>
+                        </mods:hierarchicalGeographic>
                     </mods:subject>
-                    <mods:subject>
-                        <mods:geographic>Danmark, Sjælland</mods:geographic>
+                    <mods:subject lang="da">
+                        <mods:topic lang="da">Træ</mods:topic>
+                        <mods:topic lang="da">Sne</mods:topic>
+                        <mods:topic lang="da">Vinter</mods:topic>
+                        <mods:topic lang="da">Vej</mods:topic>
                     </mods:subject>
                     <mods:subject>
                         <mods:topic>KBpublicering</mods:topic>
                     </mods:subject>
-                    <mods:titleInfo>
-                        <mods:title>Landskaber</mods:title>
-                    </mods:titleInfo>
-                    <mods:typeOfResource displayLabel="Generel materialebetegnelse">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
-                    <mods:typeOfResource displayLabel="Materialebetegnelse">Dia</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Generel Resource Description">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Resource Description">Dia</mods:typeOfResource>
                 </mods:mods>
             </mets:xmlData>
         </mets:mdWrap>
     </mets:dmdSec>
     <mets:amdSec>
-        <mets:techMD CREATED="2022-11-14T07:42:19.910+01:00" ID="PremisObject1">
+        <mets:techMD CREATED="2023-01-02T09:35:05.115+01:00" ID="PremisObject1">
             <mets:mdWrap MDTYPE="PREMIS:OBJECT">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:file">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
                             <premis:objectIdentifierValue>e5a0e980-d6cb-11e3-8d2e-0016357f605f</premis:objectIdentifierValue>
@@ -102,7 +103,7 @@
                                 <premis:creatingApplicationName>Adobe Photoshop CS6</premis:creatingApplicationName>
                             </premis:creatingApplication>
                             <premis:objectCharacteristicsExtension>
-                                <mix:mix xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="http://www.loc.gov/mix/v20 http://www.loc.gov/standards/mix/mix20/mix20.xsd">
+                                <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://id.kb.dk/standards/mix/version_2_0/mix.xsd">
                                     <mix:BasicDigitalObjectInformation>
                                         <mix:ObjectIdentifier>
                                             <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
@@ -186,16 +187,15 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:techMD>
-        <!--Inside mets:rightsMD-->
-        <mets:rightsMD CREATED="2022-11-14T07:42:19.915+01:00" ID="ModsRights1">
+        <mets:rightsMD CREATED="2023-01-02T09:35:05.131+01:00" ID="ModsRights1">
             <mets:mdWrap MDTYPE="MODS">
                 <mets:xmlData>
-                    <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
-                        <mods:accessCondition type="use and reproduction" displayLabel="Restricted ">Ejermærke</mods:accessCondition>
+                    <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                        <mods:accessCondition type="use and reproduction" displayLabel="Restricted">Ejermærke</mods:accessCondition>
                         <mods:accessCondition type="use and reproduction note" displayLabel="Restricted">Se journalnr: 205068</mods:accessCondition>
                         <mods:accessCondition type="pligtaflevering">Pligtafleveret</mods:accessCondition>
                         <mods:accessCondition>
-                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD /usr/local/ginnungagap/current/script/xsd/copyright-md.xsd">
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD http://id.kb.dk/schemas/dk-corporate-creator/copyright-md.xsd">
                                 <cdl:creator>
                                     <cdl:creator.person>
                                         <cdl:name>Helmer-Petersen, Keld</cdl:name>
@@ -209,16 +209,16 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:rightsMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:42:19.917+01:00" ID="PremisEvent1">
+        <mets:digiprovMD CREATED="2023-01-02T09:35:05.133+01:00" ID="PremisEvent1">
             <mets:mdWrap MDTYPE="PREMIS:EVENT">
                 <mets:xmlData>
-                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd">
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
                         <premis:eventIdentifier>
                             <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
-                            <premis:eventIdentifierValue>dfe5a0e5-9525-4067-a07c-76c628e7e905</premis:eventIdentifierValue>
+                            <premis:eventIdentifierValue>b0b95879-c6c1-456c-a602-e30ffe771d4e</premis:eventIdentifierValue>
                         </premis:eventIdentifier>
                         <premis:eventType>ingestion</premis:eventType>
-                        <premis:eventDateTime>2022-11-14T07:42:19.917+01:00</premis:eventDateTime>
+                        <premis:eventDateTime>2023-01-02T09:35:05.137+01:00</premis:eventDateTime>
                         <premis:eventDetailInformation>
                             <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
 file.encoding: UTF-8
@@ -269,10 +269,10 @@ user.language: da
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:digiprovMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:42:19.917+01:00" ID="PremisRepresentation1">
+        <mets:digiprovMD CREATED="2023-01-02T09:35:05.138+01:00" ID="PremisRepresentation1">
             <mets:mdWrap MDTYPE="PREMIS">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:representation">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
                             <premis:objectIdentifierValue>596f9f0d-edee-442b-b556-45aef9aab8e0</premis:objectIdentifierValue>
