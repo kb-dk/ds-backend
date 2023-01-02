@@ -33,6 +33,7 @@ public class CopyrightAccessDto {
     
     private String imageUrl=null;
     private int createdYear;
+    private String materialeType=null;
     
     public  CopyrightAccessDto() {                    
     }
@@ -60,6 +61,14 @@ public class CopyrightAccessDto {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getMaterialeType() {
+        return materialeType;
+    }
+
+    public void setMaterialeType(String materialeType) {
+        this.materialeType = materialeType;
     }
 
 

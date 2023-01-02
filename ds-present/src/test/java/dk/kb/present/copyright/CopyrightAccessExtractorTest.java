@@ -19,6 +19,8 @@ public class CopyrightAccessExtractorTest {
         
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals("Grafik",copyright.getMaterialeType()); 
+        
         assertEquals(1,copyright.getAccessConditionsList().size());
         assertEquals(1831,copyright.getCreatedYear());
         
@@ -57,6 +59,7 @@ public class CopyrightAccessExtractorTest {
     void testNoAccessConditions() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DPK000107.tif.xml");
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals("e",copyright.getMaterialeType()); //Why is it not in data?
         assertEquals(2016,copyright.getCreatedYear());
         assertEquals(2,copyright.getAccessConditionsList().size());
         
@@ -71,6 +74,8 @@ public class CopyrightAccessExtractorTest {
         
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals("Fotografi",copyright.getMaterialeType()); 
+
         assertEquals(2,copyright.getAccessConditionsList().size());
         assertEquals(1964,copyright.getCreatedYear());
         
@@ -145,6 +150,7 @@ public class CopyrightAccessExtractorTest {
         
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals("Tegning",copyright.getMaterialeType()); 
         assertEquals(3,copyright.getAccessConditionsList().size());
         assertEquals(1987,copyright.getCreatedYear());
         
@@ -179,6 +185,7 @@ public class CopyrightAccessExtractorTest {
                 
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals("Bladtegning",copyright.getMaterialeType()); 
         assertEquals(2,copyright.getAccessConditionsList().size());
         assertEquals(1977,copyright.getCreatedYear());
         
@@ -217,6 +224,7 @@ public class CopyrightAccessExtractorTest {
         
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals("Tegning",copyright.getMaterialeType()); 
         assertEquals(3,copyright.getAccessConditionsList().size());
         assertEquals(1971,copyright.getCreatedYear());
         
@@ -277,6 +285,7 @@ public class CopyrightAccessExtractorTest {
         
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals("Dia",copyright.getMaterialeType()); 
         assertEquals(4,copyright.getAccessConditionsList().size());
         assertEquals(1942,copyright.getCreatedYear());
         
@@ -307,7 +316,8 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/KHP0001-049.tif.xml");
         
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
-        assertEquals(3,copyright.getAccessConditionsList().size()); 
+        assertEquals("Dia",copyright.getMaterialeType()); 
+        assertEquals(3,copyright.getAccessConditionsList().size());         
         assertEquals(1942,copyright.getCreatedYear());
         
         AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2);//last one has the person
@@ -319,6 +329,7 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/000332.tif.xml");
         
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals("Grafik",copyright.getMaterialeType()); 
         assertEquals(1899,copyright.getCreatedYear());
         
         assertEquals(3,copyright.getAccessConditionsList().get(0).getCreatorPersonList().size());                                   

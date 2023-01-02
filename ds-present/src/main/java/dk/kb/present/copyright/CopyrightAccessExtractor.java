@@ -35,8 +35,8 @@ public class CopyrightAccessExtractor {
 
         Document document = createDocFromXml(xml);
         
-        int createdYear= getCreatedYear(document);
-        copyrightDto.setCreatedYear(createdYear);
+        copyrightDto.setMaterialeType(getMaterialType(document));
+        copyrightDto.setCreatedYear(getCreatedYear(document));
         
         NodeList nList = document.getElementsByTagName("mets:rightsMD");
         if (nList.getLength()==0) {
@@ -299,7 +299,6 @@ public class CopyrightAccessExtractor {
     private static int getCreatedYear(Document doc) {
 
         NodeList dateCreated= doc.getElementsByTagName("mods:dateCreated");
-        System.out.println("c1");
                         
         for (int i =0;i<dateCreated.getLength();i++) {
           
@@ -307,7 +306,6 @@ public class CopyrightAccessExtractor {
             String point= e.getAttribute("point");
             if (point == null || "".equals(point)){
                 String unknownDateFormat=e.getTextContent();
-                System.out.println("c2");
                 ///format is YYYY or YYYY-YYYY or '1977.1.14'
                 if (unknownDateFormat.indexOf(".")>1) {
                   return Integer.parseInt(unknownDateFormat.substring(0,4));
@@ -315,7 +313,6 @@ public class CopyrightAccessExtractor {
                 return Integer.parseInt(unknownDateFormat.substring(unknownDateFormat.length()-4));
             }
             else if ("end".equals(point)) {
-                System.out.println("c3");
                 return Integer.parseInt(e.getTextContent());
             }                                        
         }
@@ -329,24 +326,20 @@ public class CopyrightAccessExtractor {
      }
 
 
-    
-    //TODO
+  
     private static String getMaterialType(Document doc) {
-
-        NodeList identifiers = doc.getElementsByTagName("mods:typeOfResource ");
-        
-        for (int i =0;i<identifiers.getLength();i++) {
+        NodeList types = doc.getElementsByTagName("mods:typeOfResource");        
+        for (int i =0;i<types.getLength();i++) {
           
-            Element e = (Element) identifiers.item(i);        
-            String type= e.getAttribute("displayLabel");
-             
-            if ("Ressource Description".equals(type)) { //TODO den findes ikke selv om det står i beskrivelsen
+            Element e = (Element) types.item(i);        
+            String type= e.getAttribute("displayLabel");    
+            if ("Resource Description".equals(type)) { 
             String ref = e.getTextContent();
-                
+                System.out.println(ref);
               return ref;  
                 
            }
-        }
+        }        
         return null;
          
      }
