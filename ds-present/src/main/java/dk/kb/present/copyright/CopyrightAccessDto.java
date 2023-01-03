@@ -32,11 +32,27 @@ public class CopyrightAccessDto {
     private ArrayList<AccessCondition> accessConditionsList;
     
     private String imageUrl=null;
-    private int createdYear;
+    private int createdYear=9999;
+    private int creatorPersonDeathYear=9999;
+    
+    
     private String materialeType=null;
     
     public  CopyrightAccessDto() {                    
     }
+
+        
+    public int getCreatorPersonDeathYear() {
+        return creatorPersonDeathYear;
+    }
+
+
+
+    public void setCreatorPersonDeathYear(int creatorPersonDeathYear) {
+        this.creatorPersonDeathYear = creatorPersonDeathYear;
+    }
+
+
 
     public ArrayList<AccessCondition> getAccessConditionsList() {
         return accessConditionsList;

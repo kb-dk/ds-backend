@@ -11,20 +11,11 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
     private static final Logger log = LoggerFactory.getLogger(CopyrightAccessDto2SolrFieldsMapper.class);
 
-
-    public static final String SPECIAL_RESTRICTION_BLOKKERET_TEXT= "Blokeret";
-    public static final String SPECIAL_RESTRICTION_EJERMAERKE_TEXT= "Ejermærke";
-    public static final String SPECIAL_RESTRICTION_VANDMAERKE_TEXT=   "Vandmærke"; 
-    public static final String SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA_TEXT ="Visning kun af metadata";
-    public static final String SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET_TEXT ="Visning kun på stedet";
-    public static final String SPECIAL_RESTRICTION_PLIGTAFLEVERET_TEXT ="Pligtafleveret";
-    public static final String SPECIAL_RESTRICTION_CCBY_TEXT="CC-BY";
-
     
     private boolean blokkeret = false;
     private String accessNote= "";
-    private Integer lastDeathYearForPersonWithFamiliyName= null;
-    private Integer lastEndedYearForCorporate= null;
+    private Integer lastDeathYearForPerson= null;
+    //private Integer lastEndedYearForCorporate= null;
     private String specialPresentationRestriction=null; //Fra 'rullelisten'
 
     
@@ -34,10 +25,14 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         imageUrl=accessDto.getImageUrl();
         //Trin 1
         handleBlokkeret( accessDto);
+        
+        specialPresentationRestriction= extractSpecialPresentationRestriction(accessDto);
+        lastDeathYearForPerson = accessDto.getCreatorPersonDeathYear();
+                
         setAccessNote(accessDto);   
         //maybe return if blokkeret
-        handleStep1(accessDto);
-        //maybe return
+
+
 
     }
 
@@ -53,11 +48,11 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     }
 
 
+   
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public Integer getLastDeathYearForPerson() {
+        return lastDeathYearForPerson;
     }
-
 
 
     public String getAccessNote() {
@@ -73,15 +68,6 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         this.accessNote = accessNote;
     }
 
-
-    public Integer getLastDeathYearForPersonWithFamiliyName() {
-        return lastDeathYearForPersonWithFamiliyName;
-    }
-
-    public Integer getLastEndedYearForCorporate() {
-        return lastEndedYearForCorporate;
-    }
-    
 
 
 
@@ -102,12 +88,6 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
     }
 
-    private  void handleStep1(CopyrightAccessDto accessDto) {
-        lastDeathYearForPersonWithFamiliyName =  getLastDeathYearForPersonWithFamilyName(accessDto);
-        lastEndedYearForCorporate = getLastEndedYearForCorporate(accessDto);
-        specialPresentationRestriction= extractSpecialPresentationRestriction(accessDto);
-      
-    }
 
     private void setAccessNote(CopyrightAccessDto accessDto) {
         for (AccessCondition ac : accessDto.getAccessConditionsList()) {
@@ -122,40 +102,13 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
 
 
-    /* Lastname can not be read in accesscondition. Assume a comma (,) in name means he has a familyname (last name)
-     * Will read all creator.persons and find last death year for person without familyname
-     *  
-     *  
-     * Will return null if there is no year. (ie. person not death etc.)
-     */       
-    private  Integer getLastDeathYearForPersonWithFamilyName(CopyrightAccessDto accessDto) {
-
-        Integer highestYear = null;
-        for (AccessCondition ac: accessDto.getAccessConditionsList()) {
-
-            for (CreatorPerson p : ac.getCreatorPersonList()) {
-                boolean hasLastName = p.getName().indexOf(",")>0;
-                if (hasLastName) {
-                    Integer year= extractYear(p.getYearDeath());
-                    //System.out.println("parsed year:"+year);
-                    if (year == null) {
-                        return null;//one person not dead yet. TODO! Check if this is correct logic
-                    }
-
-                    if  (highestYear==null || year > highestYear) {
-                        highestYear=year;
-                    }
-                }
-
-            }
-
-        }                
-        return highestYear;
-    }
 
 
 
-    //If empty, it has not ended
+   
+  
+    //Has been decided not to use anyway....
+    /*
     private  Integer getLastEndedYearForCorporate(CopyrightAccessDto accessDto) {
 
         Integer highestYear = null;
@@ -178,7 +131,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
         return highestYear;
     }
-
+*/
     
 
     private  String extractSpecialPresentationRestriction(CopyrightAccessDto accessDto) {
@@ -230,26 +183,5 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     */
     
 
-    /*
-     * Always assume first 4 letters are year.
-     *       
-     * Format can me 
-     * YYYY or YYYY-M-DD or  YYYY-MM-DD or...
-     * 
-     */
-    private Integer extractYear(String yearString) {
-        if (yearString==null || yearString.length() <4) {            
-            return null;
-        }
-
-        try {
-            int year = Integer.parseInt(yearString.substring(0,4));
-            return year;
-        }
-        catch(Exception e) {
-            log.warn("Could not parse year from:"+yearString);
-            return 9999;
-        }                        
-    }
-
+   
 }

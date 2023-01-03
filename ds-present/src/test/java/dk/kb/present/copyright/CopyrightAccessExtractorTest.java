@@ -47,7 +47,7 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
         
         //has familiy name and year
-        assertEquals(1831, mapper.getLastDeathYearForPersonWithFamiliyName());
+        assertEquals(1831, mapper.getLastDeathYearForPerson());
         
         
         
@@ -140,7 +140,7 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
         assertEquals(true,mapper.isBlokkeret());
         assertEquals(access_note,mapper.getAccessNote());
-        assertEquals(null,mapper.getLastEndedYearForCorporate()); //Important. It is there, but no ended year
+        //assertEquals(null,mapper.getLastEndedYearForCorporate()); //Important. It is there, but no ended year
         
     }
     
@@ -202,7 +202,7 @@ public class CopyrightAccessExtractorTest {
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
                       
-        assertEquals(1993, mapper.getLastDeathYearForPersonWithFamiliyName());
+        assertEquals(1993, mapper.getLastDeathYearForPerson());
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VANDMAERKE, mapper.getSpecialPresentationRestriction());        
         
     }
@@ -244,8 +244,8 @@ public class CopyrightAccessExtractorTest {
        //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
         
-        //No person data at all
-        assertEquals(null, mapper.getLastDeathYearForPersonWithFamiliyName());
+        //Person not dead. Set 9999
+        assertEquals(9999, mapper.getLastDeathYearForPerson());
         
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA, mapper.getSpecialPresentationRestriction());
     }
@@ -347,8 +347,8 @@ public class CopyrightAccessExtractorTest {
          CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
          
          //3 persons, find last death with family name
-         assertEquals(1895, mapper.getLastDeathYearForPersonWithFamiliyName());
-         assertEquals(1874, mapper.getLastEndedYearForCorporate());
+         assertEquals(1895, mapper.getLastDeathYearForPerson());
+         //assertEquals(1874, mapper.getLastEndedYearForCorporate());
      
          
          

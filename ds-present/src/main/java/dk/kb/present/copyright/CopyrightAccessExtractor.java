@@ -37,6 +37,13 @@ public class CopyrightAccessExtractor {
         
         copyrightDto.setMaterialeType(getMaterialType(document));
         copyrightDto.setCreatedYear(getCreatedYear(document));
+
+        
+
+        
+        
+        //TEMORARY SOLUTION TO SET IMAGE LINK!
+        copyrightDto.setImageUrl(getImageLink(document));
         
         NodeList nList = document.getElementsByTagName("mets:rightsMD");
         if (nList.getLength()==0) {
@@ -53,15 +60,14 @@ public class CopyrightAccessExtractor {
         Element rightsMD = (Element) nList.item(0);
 
         NodeList accessConditions = rightsMD.getElementsByTagName("mods:accessCondition");        
-        copyrightDto.setAccessConditionsList(buildAccessCondition(accessConditions));
+        ArrayList<AccessCondition> accessConditionList = buildAccessCondition(accessConditions);
+        copyrightDto.setAccessConditionsList(accessConditionList);        
         
+        Integer lastDeathYearForPerson = getLastDeathYearForPerson(accessConditionList);
+        if (lastDeathYearForPerson !=  null) {
+          copyrightDto.setCreatorPersonDeathYear(lastDeathYearForPerson);
+        }
         
-       
-        
-        
-        
-        //TEMORARY SOLUTION TO SET IMAGE LINK!
-        copyrightDto.setImageUrl(getImageLink(document));
         return  copyrightDto;
     }
 
@@ -326,9 +332,60 @@ public class CopyrightAccessExtractor {
      }
 
 
-  
+    
+
+    /* Find person with most recent death year. Return null if a person has no death year.   
+     *  Notice last name logic is no longer in use
+     */       
+    private static Integer getLastDeathYearForPerson(ArrayList<AccessCondition> accessConditionList) {
+
+        Integer highestYear = null;
+        for (AccessCondition ac: accessConditionList) {
+
+            for (CreatorPerson p : ac.getCreatorPersonList()) {
+                    Integer year= extractYear(p.getYearDeath());
+                    //System.out.println("parsed year:"+year);
+                    if (year == null) {
+                        return null;//one person not dead yet. TODO! Check if this is correct logic
+                    }
+
+                    if  (highestYear==null || year > highestYear) {
+                        highestYear=year;
+                    }
+                }
+
+
+        }                
+        return highestYear;
+    }
+
+
+    /*
+     * Always assume first 4 letters are year.
+     *       
+     * Format can me 
+     * YYYY or YYYY-M-DD or  YYYY-MM-DD or...
+     * 
+     */
+    private static  Integer extractYear(String yearString) {
+        if (yearString==null || yearString.length() <4) {            
+            return null;
+        }
+
+        try {
+            int year = Integer.parseInt(yearString.substring(0,4));
+            return year;
+        }
+        catch(Exception e) {
+            log.warn("Could not parse year from:"+yearString);
+            return 9999;
+        }                        
+    }
+
+    
+
     private static String getMaterialType(Document doc) {
-        NodeList types = doc.getElementsByTagName("mods:typeOfResource");        
+        NodeList types = doc.getElementsByTagName("mods:typeOfResource");
         for (int i =0;i<types.getLength();i++) {
           
             Element e = (Element) types.item(i);        
@@ -339,7 +396,8 @@ public class CopyrightAccessExtractor {
               return ref;  
                 
            }
-        }        
+        }
+        log.warn("No material type found");
         return null;
          
      }
