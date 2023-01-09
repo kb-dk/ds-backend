@@ -21,25 +21,28 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
         assertEquals("Grafik",copyright.getMaterialeType()); 
         
-        assertEquals(1,copyright.getAccessConditionsList().size());
+        assertEquals(2,copyright.getAccessConditionsList().size());
         assertEquals(1831,copyright.getCreatedYear());
         
         
         
-        AccessCondition accessCondition = copyright.getAccessConditionsList().get(0);
-                        
-        assertEquals("copyrighted",accessCondition.getCopyrightStatus());        
-        assertEquals("unknown",accessCondition.getCopyrightPublicationStatus());
+        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
+        AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);                
+        
+        //TODO test ejermærke
+        
+        assertEquals("copyrighted",accessCondition2.getCopyrightStatus());        
+        assertEquals("unknown",accessCondition2.getCopyrightPublicationStatus());
         
         //Persons
-        assertEquals(1,accessCondition.getCreatorPersonList().size());
-        CreatorPerson person= accessCondition.getCreatorPersonList().get(0);
+        assertEquals(1,accessCondition2.getCreatorPersonList().size());
+        CreatorPerson person= accessCondition2.getCreatorPersonList().get(0);
         assertEquals("Clemens, Johann Friderich",person.getName());
         assertEquals("1748-11-29",person.getYearBirth());
         assertEquals("1831-11-5",person.getYearDeath());
         
         //Corporate
-        assertEquals(0,accessCondition.getCreatorCorporateList().size());
+        assertEquals(0,accessCondition2.getCreatorCorporateList().size());
         
         
         //Test field mapping
@@ -49,7 +52,7 @@ public class CopyrightAccessExtractorTest {
         //has familiy name and year
         assertEquals(1831, mapper.getLastDeathYearForPerson());
         
-        
+        //TODO ejermærke test
         
         
     }
@@ -59,7 +62,7 @@ public class CopyrightAccessExtractorTest {
     void testNoAccessConditions() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DPK000107.tif.xml");
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
-        assertEquals(null,copyright.getMaterialeType()); //Why is it not in data?
+        assertEquals("Postkort",copyright.getMaterialeType());  
         assertEquals(2016,copyright.getCreatedYear());
         assertEquals(2,copyright.getAccessConditionsList().size());
         
@@ -69,34 +72,31 @@ public class CopyrightAccessExtractorTest {
     }
     
     @Test
-    void testTwoAccessConditions() throws Exception {
+    void testOneAccessConditions() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/524438.tif.xml");
         
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
         assertEquals("Fotografi",copyright.getMaterialeType()); 
 
-        assertEquals(2,copyright.getAccessConditionsList().size());
+        assertEquals(1,copyright.getAccessConditionsList().size());
         assertEquals(1964,copyright.getCreatedYear());
         
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
-        AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
         
+        
+        /* Ejermærke was removed from this post.
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE,accessCondition1.getValue());
         assertEquals(CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION,accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
         
-        assertEquals(null,accessCondition2.getValue());  
         
-        assertEquals("unknown",accessCondition2.getCopyrightPublicationStatus());
-        assertEquals("copyrighted",accessCondition2.getCopyrightStatus());
-
         
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
                        
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE, mapper.getSpecialPresentationRestriction());
-
+*/
         
     
     }
@@ -110,13 +110,14 @@ public class CopyrightAccessExtractorTest {
         
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
-        assertEquals(3,copyright.getAccessConditionsList().size());
+        assertEquals(4,copyright.getAccessConditionsList().size());
       
         assertEquals(1865,copyright.getCreatedYear());
         
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
-        AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2);
+        AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2); //TODO test ejermærke
+        AccessCondition accessCondition4 = copyright.getAccessConditionsList().get(3);
         
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_BLOKKERET,accessCondition1.getValue());
         assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS,accessCondition1.getType());
@@ -126,10 +127,10 @@ public class CopyrightAccessExtractorTest {
         assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS_NOTE,accessCondition2.getType());
         assertEquals(null,accessCondition2.getDisplayLabel()); 
                 
-        assertEquals(1,accessCondition3.getCreatorPersonList().size());
-        assertEquals(1,accessCondition3.getCreatorCorporateList().size());
+        assertEquals(1,accessCondition4.getCreatorPersonList().size());
+        assertEquals(1,accessCondition4.getCreatorCorporateList().size());
     
-        CreatorCorporate creatorCorporate = accessCondition3.getCreatorCorporateList().get(0);
+        CreatorCorporate creatorCorporate = accessCondition4.getCreatorCorporateList().get(0);
         
         assertEquals("Georg E. Hansen & Co.",creatorCorporate.getName());
         assertEquals(null,creatorCorporate.getYearStarted());
@@ -192,7 +193,7 @@ public class CopyrightAccessExtractorTest {
         
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
                        
-        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VANDMAERKE,accessCondition1.getValue());
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE,accessCondition1.getValue());
         assertEquals(CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION,accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
                           
@@ -203,7 +204,7 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
                       
         assertEquals(1993, mapper.getLastDeathYearForPerson());
-        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VANDMAERKE, mapper.getSpecialPresentationRestriction());        
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_EJERMAERKE, mapper.getSpecialPresentationRestriction());        
         
     }
     
@@ -219,7 +220,7 @@ public class CopyrightAccessExtractorTest {
      */   
  
     @Test
-    void testVisningKunAfMetaData() throws Exception {
+    void testVisningKunAfMetaDataOgPersonIkkeDoed() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DT013769.tif.xml");
         
         //Copyright statuses
@@ -233,8 +234,8 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
                        
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA,accessCondition1.getValue());
-        assertEquals(null,accessCondition1.getType());
-        assertEquals(null,accessCondition1.getDisplayLabel()); 
+        assertEquals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS,accessCondition1.getType());
+        assertEquals(CopyrightAccessDto.DISPLAY_LABEL_ACCESS_STATUS,accessCondition1.getDisplayLabel()); 
                 
         assertEquals("Materialet må kun vises efter aftale",accessCondition2.getValue());
         assertEquals("use and reproduction note",accessCondition2.getType());
@@ -332,11 +333,11 @@ public class CopyrightAccessExtractorTest {
         assertEquals("Grafik",copyright.getMaterialeType()); 
         assertEquals(1899,copyright.getCreatedYear());
         
-        assertEquals(3,copyright.getAccessConditionsList().get(0).getCreatorPersonList().size());                                   
-        assertEquals(1,copyright.getAccessConditionsList().get(0).getCreatorCorporateList().size());
+        assertEquals(3,copyright.getAccessConditionsList().get(1).getCreatorPersonList().size());                                   
+        assertEquals(1,copyright.getAccessConditionsList().get(1).getCreatorCorporateList().size());
         
         
-        CreatorCorporate creatorCorporate = copyright.getAccessConditionsList().get(0).getCreatorCorporateList().get(0);
+        CreatorCorporate creatorCorporate = copyright.getAccessConditionsList().get(1).getCreatorCorporateList().get(0);
         assertEquals("Em. Bærentzen & Co. lith. Inst.",creatorCorporate.getName()); //notice xml encoding : &amp
         assertEquals("1837",creatorCorporate.getYearStarted());
         assertEquals("1874",creatorCorporate.getYearEnded());              

@@ -312,11 +312,11 @@ public class CopyrightAccessExtractor {
             String point= e.getAttribute("point");
             if (point == null || "".equals(point)){
                 String unknownDateFormat=e.getTextContent();
-                ///format is YYYY or YYYY-YYYY or '1977.1.14'
-                if (unknownDateFormat.indexOf(".")>1) {
+                //Skabelsesår (dataformat: YYYY, YYYY-MM eller YYYY-MM-DD (til nøds YYYY.MM.DD)), men læser kun de YYYY. 
+                if (unknownDateFormat.indexOf(".")>1) { //Dvs følgende if kan slettes. afvent om det ændres igen
                   return Integer.parseInt(unknownDateFormat.substring(0,4));
                 }                
-                return Integer.parseInt(unknownDateFormat.substring(unknownDateFormat.length()-4));
+                return Integer.parseInt(unknownDateFormat.substring(0,4));
             }
             else if ("end".equals(point)) {
                 return Integer.parseInt(e.getTextContent());
