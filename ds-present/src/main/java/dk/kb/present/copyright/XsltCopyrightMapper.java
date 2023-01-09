@@ -13,11 +13,14 @@ public class XsltCopyrightMapper {
         CopyrightAccessDto2SolrFieldsMapper mapper= new CopyrightAccessDto2SolrFieldsMapper(copyrightAccessDto);
         
         //Above has all as a DTO with setter and getter. But the XSLT wants a map
-        solrFieldsMap.put("blocked",""+mapper.isBlokkeret());
-        solrFieldsMap.put("accessNote",mapper.getAccessNote());        
-        
+        solrFieldsMap.put("access_blokkeret",""+mapper.isBlokkeret());
+        solrFieldsMap.put("access_note",mapper.getAccessNote());                               
+        solrFieldsMap.put("access_skabelsesaar","");        
+        solrFieldsMap.put("access_ophavsperson_doedsaar","");
+        solrFieldsMap.put("access_searlige_visningsvilkaar","");
+                                
         if (copyrightAccessDto.getImageUrl() != null) {
-        solrFieldsMap.put("imageUrl",mapper.getImageUrl());
+          solrFieldsMap.put("imageUrl",mapper.getImageUrl());
         }
         
         return solrFieldsMap;
