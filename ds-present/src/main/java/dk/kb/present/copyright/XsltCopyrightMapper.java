@@ -24,7 +24,7 @@ public class XsltCopyrightMapper {
         solrFieldsMap.put(ACCESS_NOTE_FIELD,mapper.getAccessNote());                               
         
         if (copyrightAccessDto.getOphavsPersonDoedsAar() != null) {
-            solrFieldsMap.put(ACCESS_OPHAVSPERSON_DOEDSAAR_FIELD,copyrightAccessDto.getOphavsPersonDoedsAar());    
+            solrFieldsMap.put(ACCESS_OPHAVSPERSON_DOEDSAAR_FIELD,""+copyrightAccessDto.getOphavsPersonDoedsAar());    
         }
         
         solrFieldsMap.put(ACCESS_SKABELSESAAR_FIELD,""+copyrightAccessDto.getSkabelsesAar());        
