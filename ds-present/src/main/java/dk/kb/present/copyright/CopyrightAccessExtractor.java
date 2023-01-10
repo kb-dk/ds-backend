@@ -36,10 +36,7 @@ public class CopyrightAccessExtractor {
         Document document = createDocFromXml(xml);
         
         copyrightDto.setMaterialeType(getMaterialType(document));
-        copyrightDto.setCreatedYear(getCreatedYear(document));
-
-        
-
+        copyrightDto.setSkabelsesAar(getSkabelsesAar(document));
         
         
         //TEMORARY SOLUTION TO SET IMAGE LINK!
@@ -65,7 +62,7 @@ public class CopyrightAccessExtractor {
         
         Integer lastDeathYearForPerson = getLastDeathYearForPerson(accessConditionList);
         if (lastDeathYearForPerson !=  null) {
-          copyrightDto.setCreatorPersonDeathYear(lastDeathYearForPerson);
+          copyrightDto.setOphavsPersonDoedsAar(lastDeathYearForPerson);;
         }
         
         return  copyrightDto;
@@ -302,7 +299,7 @@ public class CopyrightAccessExtractor {
     //<mods:dateCreated point="end">1900</mods:dateCreated> 
     //<mods:dateCaptured>2014-04-04T11:52:16.000+02:00</mods:dateCaptured> 
         
-    private static int getCreatedYear(Document doc) {
+    private static Integer getSkabelsesAar(Document doc) {
 
         NodeList dateCreated= doc.getElementsByTagName("mods:dateCreated");
                         
@@ -312,19 +309,17 @@ public class CopyrightAccessExtractor {
             String point= e.getAttribute("point");
             if (point == null || "".equals(point)){
                 String unknownDateFormat=e.getTextContent();
-                //Skabelsesår (dataformat: YYYY, YYYY-MM eller YYYY-MM-DD (til nøds YYYY.MM.DD)), men læser kun de YYYY. 
-                if (unknownDateFormat.indexOf(".")>1) { //Dvs følgende if kan slettes. afvent om det ændres igen
-                  return Integer.parseInt(unknownDateFormat.substring(0,4));
-                }                
+                //Skabelsesår (dataformat: YYYY, YYYY-MM eller YYYY-MM-DD (til nøds YYYY.MM.DD)), men læser kun de YYYY.                
+                //bemærk der altid tages de 4 første
                 return Integer.parseInt(unknownDateFormat.substring(0,4));
+                
             }
             else if ("end".equals(point)) {
                 return Integer.parseInt(e.getTextContent());
             }                                        
         }
 
-
-        NodeList dateCaptured = doc.getElementsByTagName("mods:dateCaptured");                                
+       NodeList dateCaptured = doc.getElementsByTagName("mods:dateCaptured");                                
         
        Element e = (Element)  dateCaptured .item(0);               
        return Integer.parseInt(e.getTextContent().substring(0,4));                                        
@@ -334,8 +329,8 @@ public class CopyrightAccessExtractor {
 
     
 
-    /* Find person with most recent death year. Return null if a person has no death year.   
-     *  Notice last name logic is no longer in use
+    /* Find person with most recent death year. Return null if just one person  is not dead.   
+     * Notice last name logic is no longer in use!
      */       
     private static Integer getLastDeathYearForPerson(ArrayList<AccessCondition> accessConditionList) {
 
@@ -346,7 +341,7 @@ public class CopyrightAccessExtractor {
                     Integer year= extractYear(p.getYearDeath());
                     //System.out.println("parsed year:"+year);
                     if (year == null) {
-                        return null;//one person not dead yet. TODO! Check if this is correct logic
+                        return null;// I am not quite dead yet!
                     }
 
                     if  (highestYear==null || year > highestYear) {
@@ -391,8 +386,7 @@ public class CopyrightAccessExtractor {
             Element e = (Element) types.item(i);        
             String type= e.getAttribute("displayLabel");    
             if ("Resource Description".equals(type)) { 
-            String ref = e.getTextContent();
-                System.out.println(ref);
+            String ref = e.getTextContent();                
               return ref;  
                 
            }

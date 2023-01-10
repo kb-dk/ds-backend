@@ -4,42 +4,52 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
-import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
-import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
 
 public class CopyrightAccessDto2SolrFieldsMapper {
 
     private static final Logger log = LoggerFactory.getLogger(CopyrightAccessDto2SolrFieldsMapper.class);
 
     
-    private boolean blokkeret = false;
+    private boolean blokeret = false;
     private String accessNote= "";
-    private Integer lastDeathYearForPerson= null;
-    //private Integer lastEndedYearForCorporate= null;
-    private String specialPresentationRestriction=null; //Fra 'rullelisten'
-
+    private Integer ophavsPersonDoedsAar= null;
+    private Integer skabelsesAar= null;
+    private String searligeVisningsVilkaar=null; //Fra 'rullelisten'
+    private boolean ejerMaerke;
+    private boolean vandMaerke;
     
     private String imageUrl=null; 
     public CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
-
-        imageUrl=accessDto.getImageUrl();
-        //Trin 1
-        handleBlokkeret( accessDto);
         
-        specialPresentationRestriction= extractSpecialPresentationRestriction(accessDto);
-        lastDeathYearForPerson = accessDto.getCreatorPersonDeathYear();
-                
-        setAccessNote(accessDto);   
+        blokeret = handleBlokeret(accessDto);        
+        searligeVisningsVilkaar= getSearligeVisningsVilkaar(accessDto);
+        ophavsPersonDoedsAar = accessDto.getOphavsPersonDoedsAar();                
+        skabelsesAar=accessDto.getSkabelsesAar();
+        
+        accessNote=getAccessNote(accessDto);   
         //maybe return if blokkeret
 
-
+        //Ejermærke, vandmærke
+        ejerMaerke=getEjermaerke(accessDto);
+        vandMaerke=getVandmaerke(accessDto);
+        
+        imageUrl=accessDto.getImageUrl();
+        
 
     }
 
     
+    public void setVandMaerke(boolean vandMaerke) {
+        this.vandMaerke = vandMaerke;
+    }
 
-    public boolean isBlokkeret() {
-        return blokkeret;
+
+    public boolean isEjerMaerke() {
+        return ejerMaerke;
+    }
+
+    public boolean isBlokeret() {
+        return blokeret;
     }
 
 
@@ -48,10 +58,15 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     }
 
 
-   
+
+    public Integer getSkabelsesAar() {
+        return skabelsesAar;
+    }
+
+
 
     public Integer getLastDeathYearForPerson() {
-        return lastDeathYearForPerson;
+        return ophavsPersonDoedsAar;
     }
 
 
@@ -59,8 +74,8 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         return accessNote;
     }
 
-    public String getSpecialPresentationRestriction() {
-        return specialPresentationRestriction;
+    public String getSearligevisningsVilkaar() {
+        return searligeVisningsVilkaar;
     }
 
 
@@ -71,31 +86,30 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
 
 
-    private  void handleBlokkeret(CopyrightAccessDto accessDto) {
+    private  boolean handleBlokeret(CopyrightAccessDto accessDto) {
 
         for (AccessCondition ac : accessDto.getAccessConditionsList()) {
             if ( ac.getType() != null && ac.getType().equals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS) 
                     && ac.getDisplayLabel().equals(CopyrightAccessDto.DISPLAY_LABEL_ACCESS_STATUS)
-                    && ac.getValue().equals(CopyrightAccessDto.SPECIAL_RESTRICTION_BLOKKERET)
+                    && ac.getValue().equals(CopyrightAccessDto.SPECIAL_RESTRICTION_BLOKERET)
                     ){
-                this.blokkeret=true;                                 
-                return;
-
+                return true;
             }
 
-
         }
+        return false;
 
     }
 
 
-    private void setAccessNote(CopyrightAccessDto accessDto) {
+    private String getAccessNote(CopyrightAccessDto accessDto) {
         for (AccessCondition ac : accessDto.getAccessConditionsList()) {
-            if ( ac.getType() != null && ac.getType().equals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS_NOTE)) 
+            if (CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS_NOTE.equals(ac.getType()))
             {
-                this.accessNote=ac.getValue();
+                return ac.getValue();
             }
         }
+        return null;
     }
 
 
@@ -133,20 +147,51 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     }
 */
     
-
-    private  String extractSpecialPresentationRestriction(CopyrightAccessDto accessDto) {
-
+    
+    
+    //<mods:accessCondition type="restriction on access" displayLabel="Access Status">Visning kun på stedet</mods:accessCondition>    
+    //Type and DisplayLabel must match above
+    //A record can only have one of these.
+    private  String getSearligeVisningsVilkaar(CopyrightAccessDto accessDto) {
 
         for (AccessCondition ac: accessDto.getAccessConditionsList()) {
-               String value =ac.getValue();
-               if (value != null) { //TODO. If there are more it will not be detected, but it is a meta data error according to model
-                 return value;                    
-               }
+            if (CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS.equals(ac.getType()) && 
+                CopyrightAccessDto.DISPLAY_LABEL_ACCESS_STATUS.equals(ac.getDisplayLabel())){           
+                String value =ac.getValue();              
+                return value;                                                   
+            }            
         }
         return null;
     }
     
 
+
+    // <mods:accessCondition type="use and reproduction" displayLabel="Restricted">Ejermærke</mods:accessCondition>    
+    private  boolean getEjermaerke(CopyrightAccessDto accessDto) {
+        for (AccessCondition ac: accessDto.getAccessConditionsList()) {
+            if (CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION.equals(ac.getType()) && 
+                CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED.equals(ac.getDisplayLabel()) &&
+                "Ejermærke".equals(ac.getValue())){                                         
+                return true;                                                   
+            }            
+        }
+        return false;
+    }
+    
+ // <mods:accessCondition type="use and reproduction" displayLabel="Restricted">Ejermærke</mods:accessCondition>    
+    private  boolean getVandmaerke(CopyrightAccessDto accessDto) {
+        for (AccessCondition ac: accessDto.getAccessConditionsList()) {
+            if (CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION.equals(ac.getType()) && 
+                CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED.equals(ac.getDisplayLabel()) &&
+                CopyrightAccessDto.USE_AND_REPRODUCTION_EJERMAERKE.equals(ac.getValue())){                                         
+                return true;                                                   
+            }            
+        }
+        return false;
+    }
+    
+    
+    
     /*
      * Every special restriction type has a custom danish text for presentation layer 
      * TODO? What is text

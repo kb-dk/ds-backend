@@ -21,9 +21,9 @@ public class CopyrightAccessDto {
     public static final String DISPLAY_LABEL_RESTRICTED="Restricted";  
     
     
-    public static final String SPECIAL_RESTRICTION_BLOKKERET= "Blokeret";
-    public static final String SPECIAL_RESTRICTION_EJERMAERKE= "Ejermærke";
-    public static final String SPECIAL_RESTRICTION_VANDMAERKE=   "Vandmærke"; 
+    public static final String SPECIAL_RESTRICTION_BLOKERET= "Blokeret";
+    public static final String USE_AND_REPRODUCTION_EJERMAERKE= "Ejermærke";
+    public static final String USE_AND_REPRODUCTION_VANDMAERKE=   "Vandmærke"; 
     public static final String SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA ="Visning kun af metadata";
     public static final String SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET ="Visning kun på stedet";
     public static final String SPECIAL_RESTRICTION_PLIGTAFLEVERET ="Pligtafleveret";
@@ -32,25 +32,40 @@ public class CopyrightAccessDto {
     private ArrayList<AccessCondition> accessConditionsList;
     
     private String imageUrl=null;
-    private int createdYear=9999;
-    private int creatorPersonDeathYear=9999;
-    
-    
+    private Integer skabelsesAar=null;
+    private Integer ophavsPersonDoedsAar=null;
+      
     private String materialeType=null;
-    
+
     public  CopyrightAccessDto() {                    
     }
 
-        
-    public int getCreatorPersonDeathYear() {
-        return creatorPersonDeathYear;
+
+    public Integer getSkabelsesAar() {
+        return skabelsesAar;
+    }
+
+    public void setSkabelsesAar(Integer skabelsesAar) {
+        this.skabelsesAar = skabelsesAar;
     }
 
 
 
-    public void setCreatorPersonDeathYear(int creatorPersonDeathYear) {
-        this.creatorPersonDeathYear = creatorPersonDeathYear;
+
+
+    public Integer getOphavsPersonDoedsAar() {
+        return ophavsPersonDoedsAar;
     }
+
+
+
+
+
+    public void setOphavsPersonDoedsAar(Integer ophavsPersonDoedsAar) {
+        this.ophavsPersonDoedsAar = ophavsPersonDoedsAar;
+    }
+
+
 
 
 
@@ -63,13 +78,7 @@ public class CopyrightAccessDto {
     }
     
     
-    public int getCreatedYear() {
-        return createdYear;
-    }
-
-    public void setCreatedYear(int createdYear) {
-        this.createdYear = createdYear;
-    }
+   
 
     public String getImageUrl() {
         return imageUrl;
