@@ -23,7 +23,7 @@ public class CopyrightAccessDto {
     
     public static final String SPECIAL_RESTRICTION_BLOKERET= "Blokeret";
     public static final String USE_AND_REPRODUCTION_EJERMAERKE= "Ejermærke";
-    public static final String USE_AND_REPRODUCTION_VANDMAERKE=   "Vandmærke"; 
+    //public static final String USE_AND_REPRODUCTION_VANDMAERKE=   "Vandmærke"; //Not used anyway 
     public static final String SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA ="Visning kun af metadata";
     public static final String SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET ="Visning kun på stedet";
     public static final String SPECIAL_RESTRICTION_PLIGTAFLEVERET ="Pligtafleveret";

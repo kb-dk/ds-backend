@@ -45,15 +45,13 @@ public class CopyrightAccessExtractorTest {
         assertEquals(0,accessCondition2.getCreatorCorporateList().size());
         
         
-        //Test field mapping
-        
+        //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
         
         //has familiy name and year
-        assertEquals(1831, mapper.getLastDeathYearForPerson());
-        
-        //TODO ejermærke test
-        
+        assertEquals(1831, mapper.getLastDeathYearForPerson());        
+        assertEquals(true, mapper.isEjerMaerke());
+        assertEquals(1831, mapper.getSkabelsesAar());
         
     }
     
@@ -69,6 +67,16 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         assertEquals(CopyrightAccessDto.USE_AND_REPRODUCTION_EJERMAERKE,accessCondition1.getValue());
     
+        
+        //Test field mapping       
+        CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+        
+        //TODO test this for all unittest methods
+        assertEquals(1831, mapper.getLastDeathYearForPerson());        
+        assertEquals(true, mapper.isEjerMaerke());
+        assertEquals(1831, mapper.getSkabelsesAar());
+
+        
     }
     
     @Test

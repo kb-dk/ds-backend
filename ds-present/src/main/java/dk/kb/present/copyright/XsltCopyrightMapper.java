@@ -29,7 +29,9 @@ public class XsltCopyrightMapper {
         
         solrFieldsMap.put(ACCESS_SKABELSESAAR_FIELD,""+copyrightAccessDto.getSkabelsesAar());        
         
-        solrFieldsMap.put(ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD,""); //TODO boooleans
+        if (mapper.getSearligevisningsVilkaar() != null) {
+           solrFieldsMap.put(ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD,mapper.getSearligevisningsVilkaar());
+        }
         solrFieldsMap.put(ACCESS_MATERIALE_TYPE,mapper.getMaterialeType());
         
         if (copyrightAccessDto.getImageUrl() != null) {
