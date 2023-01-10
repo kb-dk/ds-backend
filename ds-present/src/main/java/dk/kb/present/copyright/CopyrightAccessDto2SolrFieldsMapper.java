@@ -11,10 +11,11 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
     
     private boolean blokeret = false;
-    private String accessNote= "";
-    private Integer ophavsPersonDoedsAar= null;
-    private Integer skabelsesAar= null;
-    private String searligeVisningsVilkaar=null; //Fra 'rullelisten'
+    private String accessNote;
+    private Integer ophavsPersonDoedsAar;
+    private Integer skabelsesAar;
+    private String searligeVisningsVilkaar; //Fra 'rullelisten'
+    private String materialeType;
     private boolean ejerMaerke;
     private boolean vandMaerke;
     
@@ -32,7 +33,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         //Ejermærke, vandmærke
         ejerMaerke=getEjermaerke(accessDto);
         vandMaerke=getVandmaerke(accessDto);
-        
+        materialeType=accessDto.getMaterialeType();
         imageUrl=accessDto.getImageUrl();
         
 
@@ -64,6 +65,9 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     }
 
 
+    public String getMaterialeType() {
+        return materialeType;
+    }
 
     public Integer getLastDeathYearForPerson() {
         return ophavsPersonDoedsAar;
