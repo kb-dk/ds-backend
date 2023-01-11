@@ -57,7 +57,9 @@ public class CopyrightAccessExtractorTest {
 
 
     @Test
-    void testNoAccessConditions() throws Exception {
+    void testDateCaptured() throws Exception {
+
+        // Rare situation where dateCaptured field is used. This is only used if there is no createdDate field         
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DPK000107.tif.xml");
         CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
         assertEquals("Postkort",copyright.getMaterialeType());  
@@ -74,13 +76,13 @@ public class CopyrightAccessExtractorTest {
         //TODO test this for all unittest methods
         assertEquals(null, mapper.getLastDeathYearForPerson());        
         assertEquals(true, mapper.isEjerMaerke());
-        assertEquals(1831, mapper.getSkabelsesAar());  //DATAFEJL! Den mangler i record
+        assertEquals(2016, mapper.getSkabelsesAar());  
 
 
     }
 
     @Test
-    void testOneAccessConditions() throws Exception {
+    void testNoDeathYearForPerson() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/524438.tif.xml");
 
         //Copyright statuses
@@ -102,7 +104,7 @@ public class CopyrightAccessExtractorTest {
 
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
-        assertEquals(1964, mapper.getLastDeathYearForPerson()); //Person not defined in accessconditin. Looks like a data error
+        assertEquals(null, mapper.getLastDeathYearForPerson());//The record is a person, not art by a person.
         assertEquals(1964, mapper.getSkabelsesAar()); 
 
 
@@ -371,6 +373,30 @@ public class CopyrightAccessExtractorTest {
 
     }
 
+
+    @Test
+    void testInvalidRecord() throws Exception {
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/SKF_f_0137.tif.xml");
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        assertEquals("Postkort",copyright.getMaterialeType());  
+        assertEquals(2016,copyright.getSkabelsesAar());
+        assertEquals(2,copyright.getAccessConditionsList().size());
+
+        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
+        assertEquals(CopyrightAccessDto.USE_AND_REPRODUCTION_EJERMAERKE,accessCondition1.getValue());
+
+
+        //Test field mapping       
+        CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
+
+        //TODO test this for all unittest methods
+        assertEquals(null, mapper.getLastDeathYearForPerson());        
+        assertEquals(true, mapper.isEjerMaerke());
+        assertEquals(1831, mapper.getSkabelsesAar());  //DATAFEJL! Den mangler i record
+
+
+    }
+    
 
 }
 

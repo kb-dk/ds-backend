@@ -299,7 +299,7 @@ public class CopyrightAccessExtractor {
     //<mods:dateCreated point="end">1900</mods:dateCreated> 
     //<mods:dateCaptured>2014-04-04T11:52:16.000+02:00</mods:dateCaptured> 
         
-    private static Integer getSkabelsesAar(Document doc) {
+    private static Integer getSkabelsesAar(Document doc) throws Exception{
 
         NodeList dateCreated= doc.getElementsByTagName("mods:dateCreated");
                         
@@ -322,6 +322,10 @@ public class CopyrightAccessExtractor {
        NodeList dateCaptured = doc.getElementsByTagName("mods:dateCaptured");                                
         
        Element e = (Element)  dateCaptured .item(0);               
+       if (e == null) {           
+           log.error("no createDate/dateCaptured defined for record"); //data error. 'should' not happen according to specification
+           throw new Exception("no createDate/dateCaptured defined for record");
+       }
        return Integer.parseInt(e.getTextContent().substring(0,4));                                        
         
      }
