@@ -33,7 +33,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         //Ejermærke, vandmærke
         ejerMaerke=getEjermaerke(accessDto);
         vandMaerke=getVandmaerke(accessDto);
-        materialeType=accessDto.getMaterialeType();
+        materialeType=accessDto.getMaterialeType();  
         imageUrl=accessDto.getImageUrl();
         
 
