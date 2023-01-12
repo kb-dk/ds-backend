@@ -153,7 +153,9 @@ public class CopyrightAccessExtractorTest {
         assertEquals(1865, mapper.getSkabelsesAar());
         assertEquals(1891, mapper.getLastDeathYearForPerson()); 
         assertEquals(true, mapper.isEjerMaerke());
-
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_BLOKERET,mapper.getSearligevisningsVilkaar());
+        
+        
 
     }
 
@@ -186,7 +188,8 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
 
         assertEquals(1987, mapper.getSkabelsesAar());               
-        assertEquals(1998, mapper.getLastDeathYearForPerson()); 
+        assertEquals(1998, mapper.getLastDeathYearForPerson());
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET,mapper.getSearligevisningsVilkaar());
     }
 
 
@@ -213,7 +216,10 @@ public class CopyrightAccessExtractorTest {
         assertEquals(1993, mapper.getLastDeathYearForPerson());
         assertEquals(true,mapper.isEjerMaerke());        
         assertEquals(1977, mapper.getSkabelsesAar());
+        assertEquals(null, mapper.getSearligevisningsVilkaar()); //There is none
+    
     }
+    
 
 
 
@@ -303,10 +309,9 @@ public class CopyrightAccessExtractorTest {
 
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
         assertEquals(true, mapper.isEjerMaerke());
-
         assertEquals(2013, mapper.getLastDeathYearForPerson());
-        assertEquals(1942, mapper.getSkabelsesAar());
-
+        assertEquals(1942, mapper.getSkabelsesAar());        
+        assertEquals(true, mapper.isPligtAfleveret()); 
 
     }
 
@@ -327,6 +332,7 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
         assertEquals(2013, mapper.getLastDeathYearForPerson());
         assertEquals(1942, mapper.getSkabelsesAar());
+        assertEquals(false, mapper.isPligtAfleveret());
 
     }
 
@@ -354,7 +360,7 @@ public class CopyrightAccessExtractorTest {
         //3 persons, find last death with family name
         assertEquals(1895, mapper.getLastDeathYearForPerson());   
         assertEquals(1899, mapper.getSkabelsesAar());
-
+        assertEquals(true, mapper.isEjerMaerke());
 
     }
 

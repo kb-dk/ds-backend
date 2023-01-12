@@ -18,6 +18,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     private String materialeType;
     private boolean ejerMaerke;
     private boolean vandMaerke;
+    private boolean pligtAfleveret;
     
     private String imageUrl=null; 
     public CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
@@ -33,6 +34,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         //Ejermærke, vandmærke
         ejerMaerke=getEjermaerke(accessDto);
         vandMaerke=getVandmaerke(accessDto);
+        pligtAfleveret=getPligtAfleveret(accessDto);
         materialeType=accessDto.getMaterialeType();  
         imageUrl=accessDto.getImageUrl();
         
@@ -40,8 +42,8 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     }
 
     
-    public void setVandMaerke(boolean vandMaerke) {
-        this.vandMaerke = vandMaerke;
+    public boolean isPligtAfleveret() {
+        return pligtAfleveret;
     }
 
 
@@ -82,13 +84,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         return searligeVisningsVilkaar;
     }
 
-
-    public void setAccessNote(String accessNote) {
-        this.accessNote = accessNote;
-    }
-
-
-
+    
 
     private  boolean handleBlokeret(CopyrightAccessDto accessDto) {
 
@@ -195,6 +191,17 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     }
     
     
+    
+    //<mods:accessCondition type="pligtaflevering">Pligtafleveret</mods:accessCondition>    
+    private  boolean getPligtAfleveret(CopyrightAccessDto accessDto) {
+        for (AccessCondition ac: accessDto.getAccessConditionsList()) {
+            if (CopyrightAccessDto.TYPE_PLIGTAFLEVERING.equals(ac.getType()) &&                
+                "Pligtafleveret".equals(ac.getValue())){                                         
+                return true;                                                   
+            }            
+        }
+        return false;
+    }
     
     /*
      * Every special restriction type has a custom danish text for presentation layer 
