@@ -23,7 +23,12 @@ import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.xml.XMLEscapeSanitiser;
 
 
-
+/*
+ * This document is the bible for what is going on:
+ * https://kbintern.sharepoint.com/:w:/r/sites/Proj-KULA-186-Digitale-samlinger-Amanda-Britta/_layouts/15/Doc.aspx?action=edit&sourcedoc=%7B915b7ba6-eeae-4636-b04c-472b83aa81f6%7D&wdOrigin=TEAMS-ELECTRON.teamsSdk.openFilePreview&wdExp=TEAMS-CONTROL&web=1&cid=5b8502b8-d6cc-4d97-8191-7f3abe6e3c5b
+ * 
+ * 
+ */
 public class CopyrightAccessExtractor {
 
     private static final Logger log = LoggerFactory.getLogger(CopyrightAccessExtractor.class);
