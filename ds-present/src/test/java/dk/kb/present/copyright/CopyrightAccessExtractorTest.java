@@ -29,8 +29,6 @@ public class CopyrightAccessExtractorTest {
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);                
 
-        //TODO test ejermærke
-
         assertEquals("copyrighted",accessCondition2.getCopyrightStatus());        
         assertEquals("unknown",accessCondition2.getCopyrightPublicationStatus());
 
@@ -73,7 +71,6 @@ public class CopyrightAccessExtractorTest {
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
 
-        //TODO test this for all unittest methods
         assertEquals(null, mapper.getLastDeathYearForPerson());        
         assertEquals(true, mapper.isEjerMaerke());
         assertEquals(2016, mapper.getSkabelsesAar());  
@@ -104,9 +101,9 @@ public class CopyrightAccessExtractorTest {
 
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
-        assertEquals(null, mapper.getLastDeathYearForPerson());//The record is a person, not art by a person.
+        assertEquals(null, mapper.getLastDeathYearForPerson());//The record is a person profile photo, not art by a person.
         assertEquals(1964, mapper.getSkabelsesAar()); 
-
+        assertEquals(false, mapper.isEjerMaerke());
 
 
 
@@ -129,7 +126,6 @@ public class CopyrightAccessExtractorTest {
 
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);
-        AccessCondition accessCondition3 = copyright.getAccessConditionsList().get(2); //TODO test ejermærke
         AccessCondition accessCondition4 = copyright.getAccessConditionsList().get(3);
 
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_BLOKERET,accessCondition1.getValue());
@@ -155,8 +151,8 @@ public class CopyrightAccessExtractorTest {
         assertEquals(true,mapper.isBlokeret());
         assertEquals(access_note,mapper.getAccessNote());
         assertEquals(1865, mapper.getSkabelsesAar());
-        assertEquals(1891, mapper.getLastDeathYearForPerson()); //Person not defined in accessconditin. Looks like a data error
-
+        assertEquals(1891, mapper.getLastDeathYearForPerson()); 
+        assertEquals(true, mapper.isEjerMaerke());
 
 
     }
@@ -191,10 +187,6 @@ public class CopyrightAccessExtractorTest {
 
         assertEquals(1987, mapper.getSkabelsesAar());               
         assertEquals(1998, mapper.getLastDeathYearForPerson()); 
-
-        //TEMPORARY TEST, FIELD WILL BE REMOVED
-        assertEquals("http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031",mapper.getImageUrl());
-
     }
 
 
@@ -214,9 +206,6 @@ public class CopyrightAccessExtractorTest {
         assertEquals(CopyrightAccessDto.USE_AND_REPRODUCTION_EJERMAERKE,accessCondition1.getValue());
         assertEquals(CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION,accessCondition1.getType());
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED,accessCondition1.getDisplayLabel()); 
-
-
-
 
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
@@ -289,9 +278,6 @@ public class CopyrightAccessExtractorTest {
      */
 
 
-    /*     
-     * So this has two different access modifiers
-     */
     @Test
     void testPligtAfleveret_Ejermærke_Restricted() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/KHP0001-001.tif.xml");
@@ -360,7 +346,6 @@ public class CopyrightAccessExtractorTest {
         assertEquals("Em. Bærentzen & Co. lith. Inst.",creatorCorporate.getName()); //notice xml encoding : &amp
         assertEquals("1837",creatorCorporate.getYearStarted());
         assertEquals("1874",creatorCorporate.getYearEnded());              
-
 
 
         //Test field mapping       
