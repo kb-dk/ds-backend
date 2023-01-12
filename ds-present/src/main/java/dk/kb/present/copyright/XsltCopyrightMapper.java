@@ -9,6 +9,19 @@ import java.util.HashMap;
  *
  * As a temporary fix, this will also add the imageUrl to solr document. This logic must later be moved into the XSLT mapping.
  *
+ * The following fields must be defined in the solr schema.xml
+ * 
+ * field                          | type
+ * ----------------------------------------------
+ * access_blokeret                | boolean
+ * access_pligtafleveret          | boolean
+ * access_ejermaerke              | boolean
+ * access_note                    | String (only if value)
+ * access_skabelsesaar            | int (only if value)
+ * access_ophavsperson_doedsaar   | int (always)
+ * access_searlige_visningsvilkaar| String (only if value)
+ * access_materiale_type          | String (always)   
+ * imageurl                       | String (temporary hack)
  */
 public class XsltCopyrightMapper {
         
