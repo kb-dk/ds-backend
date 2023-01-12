@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * This class is a Dto version of the XML extracted from the 'mets:rightsMD' tag.
+ * Only fields required for "rettighedsoversætteren" is extracted.
  *  
  * @author teg@kb.dk 
  *

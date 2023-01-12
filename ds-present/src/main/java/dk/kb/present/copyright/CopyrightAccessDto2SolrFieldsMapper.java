@@ -14,38 +14,33 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     private String accessNote;
     private Integer ophavsPersonDoedsAar;
     private Integer skabelsesAar;
-    private String searligeVisningsVilkaar; //Fra 'rullelisten'
+    private String searligeVisningsVilkaar; //Fra 'rullelisten'. (Blokeret er på rullelisten med håndteres specielt)
     private String materialeType;
     private boolean ejerMaerke;
-    private boolean vandMaerke;
+    private boolean vandMaerke; //PT. ikke i brug
     private boolean pligtAfleveret;
     
     private String imageUrl=null; 
     public CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
         
-        blokeret = handleBlokeret(accessDto);        
+        blokeret = getBlokeret(accessDto);        
         searligeVisningsVilkaar= getSearligeVisningsVilkaar(accessDto);
         ophavsPersonDoedsAar = accessDto.getOphavsPersonDoedsAar();                
         skabelsesAar=accessDto.getSkabelsesAar();
         
         accessNote=getAccessNote(accessDto);   
-        //maybe return if blokkeret
 
         //Ejermærke, vandmærke
         ejerMaerke=getEjermaerke(accessDto);
         vandMaerke=getVandmaerke(accessDto);
         pligtAfleveret=getPligtAfleveret(accessDto);
         materialeType=accessDto.getMaterialeType();  
-        imageUrl=accessDto.getImageUrl();
-        
-
+        imageUrl=accessDto.getImageUrl();        
     }
-
-    
+   
     public boolean isPligtAfleveret() {
         return pligtAfleveret;
     }
-
 
     public boolean isEjerMaerke() {
         return ejerMaerke;
@@ -59,7 +54,6 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     public String getImageUrl() {
         return imageUrl;
     }
-
 
 
     public Integer getSkabelsesAar() {
@@ -86,7 +80,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
 
     
 
-    private  boolean handleBlokeret(CopyrightAccessDto accessDto) {
+    private boolean getBlokeret(CopyrightAccessDto accessDto) {
 
         for (AccessCondition ac : accessDto.getAccessConditionsList()) {
             if ( ac.getType() != null && ac.getType().equals(CopyrightAccessDto.TYPE_RESTRICTION_ON_ACCESS) 
@@ -95,7 +89,6 @@ public class CopyrightAccessDto2SolrFieldsMapper {
                     ){
                 return true;
             }
-
         }
         return false;
 
@@ -202,42 +195,6 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         }
         return false;
     }
-    
-    /*
-     * Every special restriction type has a custom danish text for presentation layer 
-     * TODO? What is text
-     * 
-     * 
-     */
-    /*
-    private String generateJuridiskTekst(CopyrightAccessDto acDto) {
-        
-        for (AccessCondition ac :acDto.getAccessConditionsList()) {
-            
-            switch (ac.getValue()) {
-            
-             case SPECIAL_RESTRICTION_BLOKKERET_TEXT:
-                
-                break;
-            case SPECIAL_RESTRICTION_CCBY_TEXT:
-                break;
-            case SPECIAL_RESTRICTION_EJERMAERKE_TEXT:
-                break;
-            case SPECIAL_RESTRICTION_PLIGTAFLEVERET_TEXT:
-                break;
-            case SPECIAL_RESTRICTION_VANDMAERKE_TEXT:
-                break;
-            case SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA_TEXT:
-                break;
-            case SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET_TEXT:
-                break;
-                
-            }            
-            
-        }        
-    }
-    */
-    
-
+       
    
 }

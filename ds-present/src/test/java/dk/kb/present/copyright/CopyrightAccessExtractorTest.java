@@ -406,7 +406,7 @@ public class CopyrightAccessExtractorTest {
         assertEquals("Tegning",xsltMapper.get(XsltCopyrightMapper.ACCESS_MATERIALE_TYPE)); 
         assertEquals("1971",xsltMapper.get(XsltCopyrightMapper.ACCESS_SKABELSESAAR_FIELD));
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA,xsltMapper.get(XsltCopyrightMapper.ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD));
-        //No death ear
+        //No death year
         assertEquals(null,xsltMapper.get(XsltCopyrightMapper.ACCESS_OPHAVSPERSON_DOEDSAAR_FIELD));
 
     }
