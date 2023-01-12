@@ -2,6 +2,9 @@ package dk.kb.present.copyright;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.HashMap;
+
 import org.junit.jupiter.api.Test;
 
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
@@ -9,9 +12,21 @@ import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
 import dk.kb.util.Resolver;
 
+
+/**
+ * @author teg
+ *
+ * Each unittest will perform the following steps from selected records that covers all cases
+ * 
+ * 1) Load the XML from the file into a Document class.
+ * 2) Transform the XML Document  into Java DTO (CopyrightAccessExtractor.java)
+ * 3) Validate the Java DTO matches the XML fields
+ * 4) Call CopyrightAccessExtractor -> CopyrightAccessDto2SolrFieldsMapper. Will map the Java DTO into a HashMap with Solr fields.
+ * 5) Validate the HashMap fields are correct.
+ * 
+ */
+
 public class CopyrightAccessExtractorTest {
-
-
 
     @Test
     void testSinglePerson() throws Exception {
@@ -23,7 +38,6 @@ public class CopyrightAccessExtractorTest {
 
         assertEquals(2,copyright.getAccessConditionsList().size());
         assertEquals(1831,copyright.getSkabelsesAar());
-
 
 
         AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
@@ -219,11 +233,6 @@ public class CopyrightAccessExtractorTest {
         assertEquals(null, mapper.getSearligevisningsVilkaar()); //There is none
     
     }
-    
-
-
-
-
 
     @Test
     void testVisningKunAfMetaDataOgPersonIkkeDoed() throws Exception {
@@ -259,7 +268,6 @@ public class CopyrightAccessExtractorTest {
     }
 
 
-
     /*
      * <mets:rightsMD CREATED="2022-11-14T07:42:19.915+01:00" ID="ModsRights1">
             <mets:mdWrap MDTYPE="MODS">
@@ -282,7 +290,6 @@ public class CopyrightAccessExtractorTest {
                     </mods:mods>
      * 
      */
-
 
     @Test
     void testPligtAfleveret_Ejermærke_Restricted() throws Exception {
@@ -312,10 +319,7 @@ public class CopyrightAccessExtractorTest {
         assertEquals(2013, mapper.getLastDeathYearForPerson());
         assertEquals(1942, mapper.getSkabelsesAar());        
         assertEquals(true, mapper.isPligtAfleveret()); 
-
     }
-
-
 
     @Test
     void testThreeAccessConditionsWith1Person() throws Exception {
@@ -361,10 +365,13 @@ public class CopyrightAccessExtractorTest {
         assertEquals(1895, mapper.getLastDeathYearForPerson());   
         assertEquals(1899, mapper.getSkabelsesAar());
         assertEquals(true, mapper.isEjerMaerke());
-
     }
 
 
+    
+    /*
+     *  //DATAFEJL i Record. Afventer fix fra bevaring...
+     * 
     @Test
     void testInvalidRecord() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/SKF_f_0137.tif.xml");
@@ -383,11 +390,27 @@ public class CopyrightAccessExtractorTest {
         //TODO test this for all unittest methods
         assertEquals(null, mapper.getLastDeathYearForPerson());        
         assertEquals(true, mapper.isEjerMaerke());
-        assertEquals(1831, mapper.getSkabelsesAar());  //DATAFEJL! Den mangler i record
+        assertEquals(1831, mapper.getSkabelsesAar());  //DATAFEJL! DateCaptured mangler i record. Afventer fix fra bevaring
+    }
 
+    */
+    
+    /*
+     * Test of the XsltCopyrightMapper class which just copies the fields from CopyrightAccessDto2SolrFieldsMapper into a HashMap  
+     */
+    @Test
+    void testSolrFields2XsltMapper() throws Exception {
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DT013769.tif.xml");
+        
+        HashMap<String, String> xsltMapper = XsltCopyrightMapper.xsltCopyrightTransformer(mods);        
+        assertEquals("Tegning",xsltMapper.get(XsltCopyrightMapper.ACCESS_MATERIALE_TYPE)); 
+        assertEquals("1971",xsltMapper.get(XsltCopyrightMapper.ACCESS_SKABELSESAAR_FIELD));
+        assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA,xsltMapper.get(XsltCopyrightMapper.ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD));
+        //No death ear
+        assertEquals(null,xsltMapper.get(XsltCopyrightMapper.ACCESS_OPHAVSPERSON_DOEDSAAR_FIELD));
 
     }
     
-
+    
 }
 
