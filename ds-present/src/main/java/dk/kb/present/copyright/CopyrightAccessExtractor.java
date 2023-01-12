@@ -22,17 +22,16 @@ import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
 import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.xml.XMLEscapeSanitiser;
 
-
 /*
  * This document is the bible for what is going on:
  * https://kbintern.sharepoint.com/:w:/r/sites/Proj-KULA-186-Digitale-samlinger-Amanda-Britta/_layouts/15/Doc.aspx?action=edit&sourcedoc=%7B915b7ba6-eeae-4636-b04c-472b83aa81f6%7D&wdOrigin=TEAMS-ELECTRON.teamsSdk.openFilePreview&wdExp=TEAMS-CONTROL&web=1&cid=5b8502b8-d6cc-4d97-8191-7f3abe6e3c5b
- * 
+ * This should be the newest version and is stil not finished. (materiel type logic missing)
+ * The version used to implement this class can be found in the /doc folder in the project
  * 
  */
 public class CopyrightAccessExtractor {
 
     private static final Logger log = LoggerFactory.getLogger(CopyrightAccessExtractor.class);
-
 
     public static CopyrightAccessDto extractCopyrightFields(String xml) throws Exception {
 
@@ -137,9 +136,7 @@ public class CopyrightAccessExtractor {
         }
 
         return accessConditionList ;
-
     }
-
 
     /*
    <cdl:creator.person>
@@ -163,24 +160,20 @@ public class CopyrightAccessExtractor {
                   String personName= creatorElement.getElementsByTagName("cdl:name").item(0).getTextContent();                    
                   person.setName(personName);                    
                 }
-
-                
+               
                 if (creatorElement.getElementsByTagName("cdl:year.birth").getLength() >0) {
                     String personYearBirth= creatorElement.getElementsByTagName("cdl:year.birth").item(0).getTextContent();
                     person.setYearBirth(personYearBirth);                    
                     
                 }
-
                 
                 if (creatorElement.getElementsByTagName("cdl:year.death").getLength() >0) {
                     String personYearDeath= creatorElement.getElementsByTagName("cdl:year.death").item(0).getTextContent();                    
                     person.setYearDeath(personYearDeath);
                 }
-
                 personList.add(person);
             }
         }
-
         return personList;
     }
     
@@ -224,8 +217,6 @@ public class CopyrightAccessExtractor {
          }
          return cooperateList;
      }
-
-
    
     public static  Document createDocFromXml(String xml) throws Exception{
 
@@ -249,10 +240,8 @@ public class CopyrightAccessExtractor {
 
         return document;
     }
-    
-    
+        
     private static String getImageLink(Document doc) {
-
         NodeList identifiers = doc.getElementsByTagName("mods:identifier");
         for (int i =0;i<identifiers.getLength();i++) {
           
@@ -264,39 +253,16 @@ public class CopyrightAccessExtractor {
 
                 ref = ref.replaceAll("cumulus-core-01:/Depot", "");
                 ref = ref.replaceAll(".tif", "");
-                                                
-                
+                                                                
                 //http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031
                 //Add last parameters such as size and format: 
                 //http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031&CVT=jpeg
                 String link = "http://kb-images.kb.dk/?FIF=/DAMJP2"+ref;            
-                return link;
-                
+                return link;                
          }
         }
          return null;
      }
-     
-
-    private static String getId(NodeList identifiers) {
-
-       for (int i =0;i<identifiers.getLength();i++) {
-         
-           Element e = (Element) identifiers.item(i);        
-           String type= e.getAttribute("type");
-            
-           if ("local".equals(type)) {
-           String ref = e.getTextContent();
-               
-             return ref;  
-               
-          }
-       }
-       return null;
-        
-    }
-
-    
     
 
     // See documentation. Can be 3 different fields, one MUST always be there.
@@ -331,12 +297,8 @@ public class CopyrightAccessExtractor {
            log.error("no createDate/dateCaptured defined for record"); //data error. 'should' not happen according to specification
            throw new Exception("no createDate/dateCaptured defined for record");
        }
-       return Integer.parseInt(e.getTextContent().substring(0,4));                                        
-        
+       return Integer.parseInt(e.getTextContent().substring(0,4));                                               
      }
-
-
-    
 
     /* Find person with most recent death year. Return null if just one person  is not dead.   
      * Notice last name logic is no longer in use!
@@ -357,8 +319,6 @@ public class CopyrightAccessExtractor {
                         highestYear=year;
                     }
                 }
-
-
         }                
         return highestYear;
     }
@@ -386,8 +346,7 @@ public class CopyrightAccessExtractor {
         }                        
     }
 
-    
-
+   
     private static String getMaterialType(Document doc) {
         NodeList types = doc.getElementsByTagName("mods:typeOfResource");
         for (int i =0;i<types.getLength();i++) {
@@ -396,17 +355,10 @@ public class CopyrightAccessExtractor {
             String type= e.getAttribute("displayLabel");    
             if ("Resource Description".equals(type)) { 
             String ref = e.getTextContent();                
-              return ref;  
-                
+              return ref;                
            }
         }
         log.warn("No material type found");
-        return null;
-         
-     }
-
-    
-    
-    
-
+        return null;         
+     }    
 }
