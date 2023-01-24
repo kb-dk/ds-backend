@@ -33,7 +33,7 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml");
 
         //Copyright statuses
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Grafik",copyright.getMaterialeType()); 
 
         assertEquals(2,copyright.getAccessConditionsList().size());
@@ -73,7 +73,7 @@ public class CopyrightAccessExtractorTest {
 
         // Rare situation where dateCaptured field is used. This is only used if there is no createdDate field         
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DPK000107.tif.xml");
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Postkort",copyright.getMaterialeType());  
         assertEquals(2016,copyright.getSkabelsesAar());
         assertEquals(2,copyright.getAccessConditionsList().size());
@@ -97,7 +97,7 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/524438.tif.xml");
 
         //Copyright statuses
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Fotografi",copyright.getMaterialeType()); 
 
         assertEquals(1,copyright.getAccessConditionsList().size());
@@ -132,7 +132,7 @@ public class CopyrightAccessExtractorTest {
         String access_note="Kurators beslutning. Se journal nr. 897697";
 
         //Copyright statuses
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals(4,copyright.getAccessConditionsList().size());
 
         assertEquals(1865,copyright.getSkabelsesAar());
@@ -178,7 +178,7 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DT005031.tif.xml");
 
         //Copyright statuses
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Tegning",copyright.getMaterialeType()); 
         assertEquals(3,copyright.getAccessConditionsList().size());
         assertEquals(1987,copyright.getSkabelsesAar());
@@ -212,7 +212,7 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml");
 
         //Copyright statuses
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Bladtegning",copyright.getMaterialeType()); 
         assertEquals(2,copyright.getAccessConditionsList().size());
         assertEquals(1977,copyright.getSkabelsesAar());
@@ -239,7 +239,7 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DT013769.tif.xml");
 
         //Copyright statuses
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Tegning",copyright.getMaterialeType()); 
         assertEquals(3,copyright.getAccessConditionsList().size());
         assertEquals(1971,copyright.getSkabelsesAar());
@@ -296,7 +296,7 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/KHP0001-001.tif.xml");
 
         //Copyright statuses
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Dia",copyright.getMaterialeType()); 
         assertEquals(4,copyright.getAccessConditionsList().size());
         assertEquals(1942,copyright.getSkabelsesAar());
@@ -325,7 +325,7 @@ public class CopyrightAccessExtractorTest {
     void testThreeAccessConditionsWith1Person() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/KHP0001-049.tif.xml");
 
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Dia",copyright.getMaterialeType()); 
         assertEquals(3,copyright.getAccessConditionsList().size());         
         assertEquals(1942,copyright.getSkabelsesAar());
@@ -344,7 +344,7 @@ public class CopyrightAccessExtractorTest {
     void testAccessConditionwith3Persons1Corporate() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/000332.tif.xml");
 
-        CopyrightAccessDto copyright = CopyrightAccessExtractor.extractCopyrightFields(mods);
+        CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Grafik",copyright.getMaterialeType()); 
         assertEquals(1899,copyright.getSkabelsesAar());
 

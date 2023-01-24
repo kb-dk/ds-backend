@@ -21,10 +21,11 @@ import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
 
 
-
-/*
- * This is a manual started class to extract some data for "visuelt Design"
+/**
+ * Designteam har brug for eksemple på data/felter samt værdier til deres wireframes. 
+ * Dette job udtrækker de udvalgte felter i en csv-fil.
  * 
+ * Den kræver 500+ xml med nyeste records i en mappe, derfor ikke checket ind i repository da de også skal opdateres hver gang.
  * 
  */
 public class CsvExtractorTilVisueltDesign {
@@ -95,7 +96,7 @@ public class CsvExtractorTilVisueltDesign {
         
         CsvExtract extract = new CsvExtractorTilVisueltDesign().new CsvExtract();
 
-       CopyrightAccessDto copyDto = CopyrightAccessExtractor.extractCopyrightFields(xml);
+       CopyrightAccessDto copyDto = CopyrightAccessExtractor.buildCopyrightFields(xml);
        Document doc= CopyrightAccessExtractor.createDocFromXml(xml);
         /*
         <mods:typeOfResource displayLabel="Generel materialebetegnelse">Billede, Todimensionalt billedmateriale</mods:typeOfResource>

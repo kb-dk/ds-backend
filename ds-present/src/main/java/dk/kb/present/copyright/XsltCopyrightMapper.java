@@ -40,7 +40,7 @@ public class XsltCopyrightMapper {
                         
         HashMap<String,String> solrFieldsMap = new HashMap<String,String>(); 
         
-        CopyrightAccessDto copyrightAccessDto = CopyrightAccessExtractor.extractCopyrightFields(modMedsXML);
+        CopyrightAccessDto copyrightAccessDto = CopyrightAccessExtractor.buildCopyrightFields(modMedsXML);
         CopyrightAccessDto2SolrFieldsMapper mapper= new CopyrightAccessDto2SolrFieldsMapper(copyrightAccessDto);
         
         solrFieldsMap.put(ACCESS_MATERIALE_TYPE, mapper.getMaterialeType());

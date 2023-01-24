@@ -16,10 +16,10 @@ import dk.kb.present.copyright.CopyrightAccessExtractor;
 import dk.kb.present.copyright.XsltCopyrightMapper;
 import dk.kb.present.copyright.CopyrightAccessDto2SolrFieldsMapper;
 
-/*
- * Manuel kørt batch job for at udtrække "rettigheders" oversætter data til QA 
- * 
- * 
+/**
+ * Manuelt kørt batch job for at udtrække "rettigheders" oversætter data til jura QA
+ *  
+ * Den kræver enkelt XML record filer i den mappe der læses fra. (579 records og senere 40K records) 
  */
 public class AccessCondtionExtractorTilQA {
 
@@ -36,7 +36,7 @@ public class AccessCondtionExtractorTilQA {
 
             try {            
                 String xml = new String(Files.readAllBytes(Paths.get(testDataDir+file)),"UTF-8");
-                CopyrightAccessDto extractCopyrightFields = CopyrightAccessExtractor.extractCopyrightFields(xml);
+                CopyrightAccessDto extractCopyrightFields = CopyrightAccessExtractor.buildCopyrightFields(xml);
                 CopyrightAccessDto2SolrFieldsMapper mapper = new CopyrightAccessDto2SolrFieldsMapper(extractCopyrightFields); 
 
                 System.out.println("ID:"+getId(xml));
