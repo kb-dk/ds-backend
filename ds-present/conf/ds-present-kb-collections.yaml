@@ -20,11 +20,13 @@ config:
     - JSON-LD:
         mime: 'application/json'
         transformers:
+          - imagerights: # KB specific rules for image rights stated in MODS
           - xslt:
               stylesheet: 'xslt/mods2schemaorg.xsl'
     - SolrJSON:
         mime: 'application/json'
         transformers:
+          - imagerights: # KB specific rules for image rights stated in MODS
           - xslt:
               stylesheet: 'xslt/mods2solr.xsl'
 
@@ -54,6 +56,11 @@ config:
         description: 'Småtryk images from the collections at the Royal Danish Library'
         prefix: 'kb.pamphlets.dasmaa.smaatryk'
         base: 'kb.pamphlets.dasmaa.smaatryk'
+        views: *MODS_IMAGE_VIEWS
+    - samlingsbilleder:
+        description: 'Diverse images from image collections at the Royal Danish Library'
+        prefix: 'dk.samlingsbilleder'
+        base: 'dk.samlingsbilleder'
         views: *MODS_IMAGE_VIEWS
 
     # Straight forward collection with the core format being MODS
