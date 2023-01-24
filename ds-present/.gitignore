@@ -14,3 +14,5 @@ conf/ds-present-local.yaml
 setup_project.sh
 /579_test_billeder.zip
 /testdata/
+/deploy2Devel11.sh
+/.gitignore
