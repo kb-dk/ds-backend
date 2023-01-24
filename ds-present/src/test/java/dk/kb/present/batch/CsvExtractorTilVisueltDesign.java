@@ -35,9 +35,18 @@ public class CsvExtractorTilVisueltDesign {
     private static String SEPERATOR=";";
     private static String testDataDir="/home/teg/testdata/";
     
-    //private static String testDataDir="/home/teg/workspace/ds-present/src/test/resources/xml/copyright_extraction/";
+  
+    /**
+     * Call with argument to custom folder
+     * 
+     * @param path to folder with record XML files
+     */
     public static void main(String[] args) {
-        
+
+        if (args != null && args.length ==1) {
+          testDataDir = args[0];            
+        }
+    
         Set<String> files = getFilesNamesInDir(testDataDir);
         System.out.println(files.size());
         
