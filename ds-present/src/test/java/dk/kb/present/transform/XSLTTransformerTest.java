@@ -5,6 +5,8 @@ import dk.kb.util.yaml.YAML;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.*;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -44,9 +46,14 @@ class XSLTTransformerTest {
 
     @Test
     void testSolrAlbert() throws IOException {
-        String solr = getTransformed(MODS2SOLR, ALBERT);
+        String solrString = getTransformed(MODS2SOLR, ALBERT);
         // TODO: Add more detailed test
-        assertTrue(solr.contains("{\"id\":\""));
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(solrString);
+        String prettyJsonString = gson.toJson(je);
+        
+        System.out.println(prettyJsonString );
+        assertTrue(solrString.contains("{\"id\":\""));
     }
 
     private String getTransformed(String xsltResource, String xmlResource) throws IOException {
