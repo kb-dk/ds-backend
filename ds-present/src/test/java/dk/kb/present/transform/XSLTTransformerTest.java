@@ -29,9 +29,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class XSLTTransformerTest {
     public static final String MODS2JSONLD = "xslt/mods2schemaorg.xsl";
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-    public static final String ALBERT = "xml/corpus/albert-einstein.xml";
-    public static final String CHINESE = "xml/corpus/chinese-manuscripts.xml";
+    public static final String ALBERT = "xml/corpus/albert-einstein.xml"; //Need to be updated to newest version
+    public static final String CHINESE = "xml/corpus/chinese-manuscripts.xml"; //Need to be updated to newest version
 
+    public static final String NEW_000332 = "xml/copyright_extraction/000332.tif.xml"; //Updated version
+    
+    
     @Test
     void testJSONLDAlbert() throws IOException {
         JSONObject jsonld = new JSONObject(getTransformed(MODS2JSONLD, ALBERT));
@@ -49,6 +52,17 @@ class XSLTTransformerTest {
         String solrString = getTransformed(MODS2SOLR, ALBERT);
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(solrString);        
+        
+        assertTrue(solrString.contains("{\"id\":\""));
+    }
+
+    
+    @Test
+    void testNew000332() throws IOException {
+        String solrString = getTransformed(MODS2SOLR, NEW_000332);
+        // TODO: Add more detailed test
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
         String prettyJsonString = gson.toJson(je);
         
@@ -56,6 +70,8 @@ class XSLTTransformerTest {
         assertTrue(solrString.contains("{\"id\":\""));
     }
 
+
+    
     private String getTransformed(String xsltResource, String xmlResource) throws IOException {
         XSLTTransformer transformer = new XSLTTransformer(xsltResource);
         String mods = Resolver.resolveUTF8String(xmlResource);
