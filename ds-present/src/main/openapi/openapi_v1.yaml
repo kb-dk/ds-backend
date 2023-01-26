@@ -232,7 +232,7 @@ paths:
   /IIIF/{identifier}/collection/{name}:
     get:
       tags:
-        - 'IIIF Presentation'
+        - 'IIIFPresentation'
       summary: "IIIF Presentation Collection"
       operationId: getPresentationCollection
       parameters:
@@ -261,7 +261,7 @@ paths:
   /IIIF/{identifier}/manifest:
     get:
       tags:
-        - 'IIIF Presentation'
+        - 'IIIFPresentation'
       summary: "IIIF Presentation manifest"
       operationId: getPresentationManifest
       parameters:
@@ -283,7 +283,7 @@ paths:
   /IIIF/{identifier}/canvas/{name}:
     get:
       tags:
-        - 'IIIF Presentation'
+        - 'IIIFPresentation'
       summary: "IIIF Presentation canvas"
       operationId: getPresentationCanvas
       parameters:
@@ -312,7 +312,7 @@ paths:
   /IIIF/{identifier}/range/{name}:
     get:
       tags:
-        - 'IIIF Presentation'
+        - 'IIIFPresentation'
       summary: "IIIF Presentation Range"
       operationId: getPresentationRange
       parameters:
@@ -341,7 +341,7 @@ paths:
   /IIIF/{identifier}/annotation/{name}:
     get:
       tags:
-        - 'IIIF Presentation'
+        - 'IIIFPresentation'
       summary: "IIIF Presentation Image Resources"
       operationId: getPresentationAnnotation
       parameters:
@@ -370,7 +370,7 @@ paths:
   /IIIF/{identifier}/list/{name}:
     get:
       tags:
-        - 'IIIF Presentation'
+        - 'IIIFPresentation'
       summary: "IIIF Presentation Annotation List"
       operationId: getPresentationList
       parameters:
