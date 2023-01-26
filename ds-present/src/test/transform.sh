@@ -11,7 +11,7 @@
 : ${SAXON_JAR:="/home/$USER/saxon/saxon-he-11.4.jar"}
 SAXON="java -jar "$SAXON_JAR" --suppressXsltNamespaceCheck:on  "
 if [[ ! -s "$SAXON_JAR" ]]; then
-    >&2 echo "$SAXON_JAR not available. Please install it from https://sourceforge.net/projects/saxon/files/Saxon-HE/"
+    >&2 echo "$SAXON_JAR not available. Please install it from https://sourceforge.net/projects/saxon/files/Saxon-HE/11/Java/SaxonHE11-4J.zip/download"
     >&2 echo "The installation folder should be /home/$USER/saxon/"
     exit 2
 fi
