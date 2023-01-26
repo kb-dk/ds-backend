@@ -7,6 +7,7 @@ import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.webservice.exception.ServiceException;
 import dk.kb.present.webservice.exception.InternalServiceException;
 
+import dk.kb.util.webservice.ImplBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,47 +27,10 @@ import org.apache.cxf.jaxrs.ext.MessageContext;
  * <p>Metadata delivery for the Royal Danish Library 
  *
  */
-public class DsPresentApiServiceImpl implements DsPresentApi {
-    private Logger log = LoggerFactory.getLogger(this.toString());
-
-
+public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
+    private static final Logger log = LoggerFactory.getLogger(DsPresentApiServiceImpl.class);
 
     /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
-
-    @Context
-    private transient UriInfo uriInfo;
-
-    @Context
-    private transient SecurityContext securityContext;
-
-    @Context
-    private transient HttpHeaders httpHeaders;
-
-    @Context
-    private transient Providers providers;
-
-    @Context
-    private transient Request request;
-
-    // Disabled as it is always null? TODO: Investigate when it can be not-null, then re-enable with type
-    //@Context
-    //private transient ContextResolver contextResolver;
-
-    @Context
-    private transient HttpServletRequest httpServletRequest;
-
-    @Context
-    private transient HttpServletResponse httpServletResponse;
-
-    @Context
-    private transient ServletContext servletContext;
-
-    @Context
-    private transient ServletConfig servletConfig;
-
-    @Context
-    private transient MessageContext messageContext;
-
 
     /**
      * Retrieve a formal description of a single collection
@@ -164,22 +128,6 @@ public class DsPresentApiServiceImpl implements DsPresentApi {
             return "pong";
         } catch (Exception e){
             throw handleException(e);
-        }
-    }
-
-
-    /**
-    * This method simply converts any Exception into a Service exception
-    * @param e: Any kind of exception
-    * @return A ServiceException
-    * @see dk.kb.present.webservice.ServiceExceptionMapper
-    */
-    private ServiceException handleException(Exception e) {
-        if (e instanceof ServiceException) {
-            return (ServiceException) e; // Do nothing - this is a declared ServiceException from within module.
-        } else {// Unforseen exception (should not happen). Wrap in internal service exception
-            log.error("ServiceException(HTTP 500):", e); //You probably want to log this.
-            return new InternalServiceException(e.getMessage());
         }
     }
 

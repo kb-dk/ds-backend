@@ -27,6 +27,12 @@ where "ds-present" is your artifactID from above.
 
 The Swagger UI is available at <http://localhost:8080/ds-present/api/>, providing access to the `v1` version of the GUI. 
 
+## Debugging of XSLT's
+
+This service relies heavily on XSLTs for transformation. They are located in `src/main/resources/xslt/`.
+
+To test, navigate to `src/test` and use the script `transform.sh`. View the file `HOWTO.md` for details.
+
 ## java webapp template structure
 
 Configuration of the project is handled with [YAML](https://en.wikipedia.org/wiki/YAML). It is split into multiple parts:
