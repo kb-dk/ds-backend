@@ -6,5 +6,5 @@
 The script `transform.sh` is a simple wrapper for calling the Saxon-HE. Call it with
 
 ```shell
-XSLT="../main/resources/xslt/mods2solr.xsl" ./transform.sh resources/xml/cps1/SKG_20160704_12_16_05.tif.xml
+XSLT="../main/resources/xslt/mods2solr.xsl" ./transform.sh resources/xml/copyright_extraction/000332.tif.xml
 
