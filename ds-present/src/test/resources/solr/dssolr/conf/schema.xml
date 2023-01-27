@@ -1,89 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Solr managed schema - automatically generated - DO NOT EDIT -->
+
 <schema name="example" version="1.6">
   <uniqueKey>id</uniqueKey>
-  <fieldType name="alphaOnlySort" class="solr.TextField" omitNorms="true" sortMissingLast="true">
-    <analyzer>
-      <tokenizer name="keyword"/>
-      <filter name="lowercase"/>
-      <filter name="trim"/>
-      <filter name="patternReplace" replacement="" pattern="([^a-z])" replace="all"/>
-    </analyzer>
-  </fieldType>
-  <fieldType name="ancestor_path" class="solr.TextField">
-    <analyzer type="index">
-      <tokenizer name="keyword"/>
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer delimiter="/" name="pathHierarchy"/>
-    </analyzer>
-  </fieldType>
-  <fieldType name="bbox" class="solr.BBoxField" geo="true" numberType="pdouble" distanceUnits="kilometers"/>
-  <fieldType name="binary" class="solr.BinaryField"/>
-  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
-  <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
-  <fieldType name="currency" class="solr.CurrencyFieldType" currencyConfig="currency.xml" amountLongSuffix="_l_ns" codeStrSuffix="_s_ns" defaultCurrency="USD"/>
-  <fieldType name="descendent_path" class="solr.TextField">
-    <analyzer type="index">
-      <tokenizer delimiter="/" name="pathHierarchy"/>
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer name="keyword"/>
-    </analyzer>
-  </fieldType>
-  <fieldType name="ignored" class="solr.StrField" indexed="false" stored="false" multiValued="true"/>
-  <fieldType name="location" class="solr.LatLonPointSpatialField" docValues="true"/>
-  <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType" geo="true" maxDistErr="0.001" distErrPct="0.025" distanceUnits="kilometers"/>
-  <fieldType name="lowercase" class="solr.TextField" positionIncrementGap="100">
-    <analyzer>
-      <tokenizer name="keyword"/>
-      <filter name="lowercase"/>
-    </analyzer>
-  </fieldType>
-  <fieldType name="managed_en" class="solr.TextField" positionIncrementGap="100">
-    <analyzer type="index">
-      <tokenizer name="standard"/>
-      <filter name="managedStop" managed="english"/>
-      <filter name="managedSynonymGraph" managed="english"/>
-      <filter name="flattenGraph"/>
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer name="standard"/>
-      <filter name="managedStop" managed="english"/>
-      <filter name="managedSynonymGraph" managed="english"/>
-    </analyzer>
-  </fieldType>
-  <fieldType name="payloads" class="solr.TextField" indexed="true" stored="false">
-    <analyzer>
-      <tokenizer name="whitespace"/>
-      <filter name="delimitedPayload" encoder="float"/>
-    </analyzer>
-  </fieldType>
-  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
-  <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
-  <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
-  <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true"/>
-  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
-  <fieldType name="pfloats" class="solr.FloatPointField" docValues="true" multiValued="true"/>
-  <fieldType name="phonetic" class="solr.TextField" indexed="true" stored="false">
-    <analyzer>
-      <tokenizer name="standard"/>
-      <filter name="doubleMetaphone" inject="false"/>
-    </analyzer>
-  </fieldType>
+  
+  
+  
+   <!-- START FIELDS  -->
+   <!-- Default solr field -->
+  <field name="_version_" type="plong" indexed="false" stored="false"/> 
+  
+  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+   <!-- END FIELDS  -->
+  
+  
+  
+  <!-- START FIELDTYPES  -->
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>   
+  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>  
+  <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>  
+  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>  
   <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
-  <fieldType name="pints" class="solr.IntPointField" docValues="true" multiValued="true"/>
   <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
-  <fieldType name="plongs" class="solr.LongPointField" docValues="true" multiValued="true"/>
-  <fieldType name="point" class="solr.PointType" subFieldSuffix="_d" dimension="2"/>
-  <fieldType name="preanalyzed" class="solr.PreAnalyzedField">
-    <analyzer type="query">
-      <tokenizer name="whitespace"/>
-    </analyzer>
-  </fieldType>
-  <fieldType name="random" class="solr.RandomSortField" indexed="true"/>
   <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
-  <fieldType name="strings" class="solr.StrField" sortMissingLast="true" docValues="true" multiValued="true"/>
+  
+  
   <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
     <analyzer>
       <tokenizer name="standard"/>
@@ -111,49 +51,8 @@
       <filter name="porterStem"/>
     </analyzer>
   </fieldType>
-  <fieldType name="text_en_splitting" class="solr.TextField" autoGeneratePhraseQueries="true" positionIncrementGap="100">
-    <analyzer type="index">
-      <tokenizer name="whitespace"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_en.txt"/>
-      <filter name="wordDelimiterGraph" splitOnCaseChange="1" catenateNumbers="1" catenateWords="1" generateNumberParts="1" generateWordParts="1" catenateAll="0"/>
-      <filter name="lowercase"/>
-      <filter name="keywordMarker" protected="protwords.txt"/>
-      <filter name="porterStem"/>
-      <filter name="flattenGraph"/>
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer name="whitespace"/>
-      <filter name="synonymGraph" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_en.txt"/>
-      <filter name="wordDelimiterGraph" splitOnCaseChange="1" catenateNumbers="0" catenateWords="0" generateNumberParts="1" generateWordParts="1" catenateAll="0"/>
-      <filter name="lowercase"/>
-      <filter name="keywordMarker" protected="protwords.txt"/>
-      <filter name="porterStem"/>
-    </analyzer>
-  </fieldType>
-  <fieldType name="text_en_splitting_tight" class="solr.TextField" autoGeneratePhraseQueries="true" positionIncrementGap="100">
-    <analyzer type="index">
-      <tokenizer name="whitespace"/>
-      <filter name="synonymGraph" expand="false" ignoreCase="true" synonyms="synonyms.txt"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_en.txt"/>
-      <filter generateNumberParts="0" catenateAll="0" generateWordParts="0" catenateNumbers="1" catenateWords="1" name="wordDelimiterGraph"/>
-      <filter name="lowercase"/>
-      <filter name="keywordMarker" protected="protwords.txt"/>
-      <filter name="englishMinimalStem"/>
-      <filter name="removeDuplicates"/>
-      <filter name="flattenGraph"/>
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer name="whitespace"/>
-      <filter name="synonymGraph" expand="false" ignoreCase="true" synonyms="synonyms.txt"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_en.txt"/>
-      <filter generateNumberParts="0" catenateAll="0" generateWordParts="0" catenateNumbers="1" catenateWords="1" name="wordDelimiterGraph"/>
-      <filter name="lowercase"/>
-      <filter name="keywordMarker" protected="protwords.txt"/>
-      <filter name="englishMinimalStem"/>
-      <filter name="removeDuplicates"/>
-    </analyzer>
-  </fieldType>
+
+  
   <fieldType name="text_gen_sort" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
     <analyzer type="index">
       <tokenizer name="standard"/>
@@ -180,95 +79,11 @@
       <filter name="lowercase"/>
     </analyzer>
   </fieldType>
-  <fieldType name="text_general_rev" class="solr.TextField" positionIncrementGap="100">
-    <analyzer type="index">
-      <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="stopwords.txt"/>
-      <filter name="lowercase"/>
-      <filter name="reversedWildcard" maxPosQuestion="2" withOriginal="true" maxPosAsterisk="3" maxFractionAsterisk="0.33"/>
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer name="standard"/>
-      <filter name="synonymGraph" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
-      <filter name="stop" ignoreCase="true" words="stopwords.txt"/>
-      <filter name="lowercase"/>
-    </analyzer>
-  </fieldType>
-  <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
-    <analyzer>
-      <tokenizer name="whitespace"/>
-    </analyzer>
-  </fieldType>
-  <field name="_root_" type="string" docValues="false" indexed="true" stored="false"/>
-  <field name="_src_" type="string" indexed="false" stored="true"/>
-  <field name="_version_" type="plong" indexed="false" stored="false"/>
-  <field name="author" type="text_gen_sort" multiValued="false" indexed="true" stored="true"/>
-  <field name="cat" type="string" multiValued="true" indexed="true" stored="true"/>
-  <field name="category" type="text_general" indexed="true" stored="true"/>
-  <field name="comments" type="text_general" indexed="true" stored="true"/>
-  <field name="content" type="text_general" multiValued="true" indexed="false" stored="true"/>
-  <field name="content_type" type="string" multiValued="true" indexed="true" stored="true"/>
-  <field name="description" type="text_general" indexed="true" stored="true"/>
-  <field name="features" type="text_general" multiValued="true" indexed="true" stored="true"/>
-  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-  <field name="inStock" type="boolean" indexed="true" stored="true"/>
-  <field name="includes" type="text_general" termPositions="true" termVectors="true" indexed="true" termOffsets="true" stored="true"/>
-  <field name="keywords" type="text_general" indexed="true" stored="true"/>
-  <field name="last_modified" type="pdate" indexed="true" stored="true"/>
-  <field name="links" type="string" multiValued="true" indexed="true" stored="true"/>
-  <field name="manu" type="text_gen_sort" omitNorms="true" indexed="true" stored="true" useDocValuesAsStored="true" docValues="true" multiValued="false"/>
-  <field name="manu_exact" type="string" docValues="true" indexed="false" stored="false"/>
-  <field name="name" type="text_general" indexed="true" stored="true"/>
-  <field name="name_exact" type="string" docValues="true" indexed="false" stored="false"/>
-  <field name="payloads" type="payloads" indexed="true" stored="true"/>
-  <field name="popularity" type="pint" indexed="true" stored="true"/>
-  <field name="pre" type="preanalyzed" indexed="true" stored="true"/>
-  <field name="price" type="pfloat" indexed="true" stored="true"/>
-  <field name="resourcename" type="text_general" indexed="true" stored="true"/>
-  <field name="sku" type="text_en_splitting_tight" omitNorms="true" indexed="true" stored="true"/>
-  <field name="store" type="location" indexed="true" stored="true"/>
-  <field name="subject" type="text_gen_sort" multiValued="false" indexed="true" stored="true"/>
-  <field name="text" type="text_general" multiValued="true" indexed="true" stored="false"/>
-  <field name="text_rev" type="text_general_rev" multiValued="true" indexed="true" stored="false"/>
-  <field name="title" type="text_gen_sort" multiValued="true" indexed="true" stored="true"/>
-  <field name="url" type="text_general" indexed="true" stored="true"/>
-  <field name="weight" type="pfloat" indexed="true" stored="true"/>
-  <dynamicField name="ignored_*" type="ignored"/>
-  <dynamicField name="random_*" type="random"/>
-  <dynamicField name="*_s_ns" type="string" indexed="true" stored="false"/>
-  <dynamicField name="*_l_ns" type="plong" indexed="true" stored="false"/>
-  <dynamicField name="*_dts" type="pdates" indexed="true" stored="true"/>
-  <dynamicField name="*_txt" type="text_general" indexed="true" stored="true"/>
-  <dynamicField name="*_is" type="pints" indexed="true" stored="true"/>
-  <dynamicField name="*_ss" type="strings" indexed="true" stored="true"/>
-  <dynamicField name="*_ls" type="plongs" indexed="true" stored="true"/>
-  <dynamicField name="*_bs" type="booleans" indexed="true" stored="true"/>
-  <dynamicField name="*_fs" type="pfloats" indexed="true" stored="true"/>
-  <dynamicField name="*_ds" type="pdoubles" indexed="true" stored="true"/>
-  <dynamicField name="*_dt" type="pdate" indexed="true" stored="true"/>
-  <dynamicField name="*_i" type="pint" indexed="true" stored="true"/>
-  <dynamicField name="*_s" type="string" indexed="true" stored="true"/>
-  <dynamicField name="*_l" type="plong" indexed="true" stored="true"/>
-  <dynamicField name="*_b" type="boolean" indexed="true" stored="true"/>
-  <dynamicField name="*_f" type="pfloat" indexed="true" stored="true"/>
-  <dynamicField name="*_d" type="pdouble" indexed="true" stored="true"/>
-  <dynamicField name="*_t" type="text_general" multiValued="false" indexed="true" stored="true"/>
-  <dynamicField name="*_c" type="currency" indexed="true" stored="true"/>
-  <copyField source="author" dest="text"/>
-  <copyField source="cat" dest="text"/>
-  <copyField source="content" dest="text"/>
-  <copyField source="content_type" dest="text"/>
-  <copyField source="description" dest="text"/>
-  <copyField source="features" dest="text"/>
-  <copyField source="includes" dest="text"/>
-  <copyField source="keywords" dest="text"/>
-  <copyField source="manu" dest="manu_exact"/>
-  <copyField source="manu" dest="text"/>
-  <copyField source="name" dest="name_exact"/>
-  <copyField source="name" dest="text"/>
-  <copyField source="resourcename" dest="text"/>
-  <copyField source="title" dest="text"/>
-  <copyField source="url" dest="text"/>
-  <copyField source="price" dest="price_c"/>
-  <copyField source="author" dest="author_s"/>
-</schema>
+ <!-- END FIELDTYPES  -->
+ 
+  <!-- START COPYFIELD  -->
+    <!-- <copyField source="author" dest="text"/> -->
+  <!-- END COPYFIELD  -->    
+    
+    
+ </schema>
