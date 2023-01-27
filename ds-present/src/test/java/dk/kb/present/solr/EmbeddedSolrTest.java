@@ -1,6 +1,7 @@
 package dk.kb.present.solr;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -14,6 +15,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.AfterAll;
@@ -24,6 +26,13 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import dk.kb.present.TestUtil;
+
 public class EmbeddedSolrTest {
 
 	private static final Logger log = LoggerFactory.getLogger(EmbeddedSolrTest.class);
@@ -32,6 +41,9 @@ public class EmbeddedSolrTest {
 	private static CoreContainer coreContainer = null;
 	private static EmbeddedSolrServer embeddedServer = null;
 
+	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
+	public static final String NEW_000332 = "xml/copyright_extraction/000332.tif.xml"; //Updated version
+	
 	@BeforeAll
 	public static void startEmbeddedSolrServer() throws Exception {
 	
@@ -50,9 +62,7 @@ public class EmbeddedSolrTest {
 
 
 
-	/**
-	 * @throws java.lang.Exception
-	 */
+	
 	@AfterAll
 	public static void tearDown() throws Exception {
 		coreContainer.shutdown();
@@ -97,5 +107,20 @@ public class EmbeddedSolrTest {
 		}
 
 	}
+	
+	 
+    @Test
+    void testNew000332() throws IOException {
+        String solrString = TestUtil.getTransformed(MODS2SOLR, NEW_000332);
+        // TODO: Add more detailed test
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(solrString);
+        String prettyJsonString = gson.toJson(je);
+        
+        System.out.println(prettyJsonString );
+        assertTrue(solrString.contains("{\"id\":\""));
+    }
+	
+	
 
 }
