@@ -326,6 +326,25 @@
             <artifactId>jackson-databind-nullable</artifactId>
             <version>0.2.2</version>
         </dependency>
+
+
+
+
+    <!-- Enmbedded solr for unittest -->
+    <dependency>
+      <groupId>org.apache.solr</groupId>
+      <artifactId>solr-solrj</artifactId>
+      <version>9.1.1</version>
+      <scope>test</scope>  
+   </dependency>
+
+    <dependency>
+      <groupId>org.apache.solr</groupId>
+      <artifactId>solr-test-framework</artifactId>
+      <version>9.1.1</version>
+      <scope>test</scope>
+    </dependency>
+
     </dependencies>
 
     <build>
