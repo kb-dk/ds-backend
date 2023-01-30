@@ -4,6 +4,9 @@ info:
   title: '${project.name}'
   description: |
     Metadata delivery for the Royal Danish Library
+    
+    This API delivers metadata from collections at the Royal Danish Library. Metadata can be delivered as IIIF Presentation manifests. 
+    For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.0 and should be backwards compatible with version 2.1.1
   contact:
     email: '${user.name}@kb.dk'
   license:
@@ -229,19 +232,14 @@ paths:
                   $ref: '#/components/schemas/Collection'
   
 # IIIF Presentation endpoints
-  /IIIF/{identifier}/collection/{name}:
+  /IIIF/collection/{name}:
     get:
       tags:
         - 'IIIFPresentation'
       summary: "IIIF Presentation Collection"
       operationId: getPresentationCollection
+      description: "Collections are used to list the Manifests available for viewing. Collections may include both other Collections and Manifests, in order to form a tree-structured hierarchy."
       parameters:
-      - name: identifier
-        in: path
-        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
-        required: true
-        schema:
-          type: string
       - name: name
         in: path
         description: "The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”."
@@ -265,6 +263,7 @@ paths:
         - 'IIIFPresentation'
       summary: "IIIF Presentation manifest"
       operationId: getPresentationManifest
+      description: "The manifest resource represents a single object and any intellectual work or works embodied within that object. In particular it includes the descriptive, rights and linking information for the object."
       parameters:
       - name: identifier
         in: path
