@@ -3,9 +3,12 @@ info:
   version: 'v1'
   title: '${project.name}'
   description: |
-    Metadata delivery for the Royal Danish Library
+    Metadata delivery for the Royal Danish Library.
     
-    This API delivers metadata from collections at the Royal Danish Library. Metadata can be delivered as IIIF Presentation manifests. 
+    This API delivers metadata from collections at the Royal Danish Library.
+    These metadata can be delivered in different formats. The `/record/{id}`-endpoint can deliver metadata as [JSON-LD](https://json-ld.org/), [MODS](http://www.loc.gov/standards/mods/) and [SolrJSON](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates).
+    
+    Furthermore metadata can be delivered as IIIF Presentation manifests through the `/IIIF/{identifier}/manifest`-endpoint. 
     For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.0 and should be backwards compatible with version 2.1.1
   contact:
     email: '${user.name}@kb.dk'
