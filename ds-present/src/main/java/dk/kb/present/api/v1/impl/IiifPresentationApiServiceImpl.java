@@ -111,104 +111,6 @@ public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
 
 
     /**
-     * IIIF Presentation Image Resources
-     * 
-     * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.
-     * 
-     * @param name: The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”.
-     * 
-     * @return <ul>
-      *   <li>code = 200, message = "Succes!", response = AnnotationsDto.class</li>
-      *   </ul>
-      * @throws ServiceException when other http codes should be returned
-      *
-      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public AnnotationsDto getPresentationAnnotation(String identifier, String name) throws ServiceException {
-        // TODO: Implement...
-    
-        
-        try { 
-            AnnotationsDto response = new AnnotationsDto();
-        response.setId("r7877n7");
-        response.setType("yqyZDoUT31nRP");
-        List<AnnotationsItemsDto> items = new ArrayList<>();
-        AnnotationsItemsDto items2 = new AnnotationsItemsDto();
-        items2.setId("Lb97SV7t1A68w67b1");
-        items2.setType("Q62f7tAYF");
-        items2.setMotivation("oUIN3");
-        AnnotationsBodyDto body = new AnnotationsBodyDto();
-        body.setType("kw6CVOb1NUR427y");
-        body.setLanguage("Q140o");
-        body.setValue("s1k4p1");
-        items2.setBody(body);
-        items2.setTarget("SC7u3");
-        items.add(items2);
-        response.setItems(items);
-        return response;
-        } catch (Exception e){
-            throw handleException(e);
-        }
-    
-    }
-
-    /**
-     * IIIF Presentation canvas
-     * 
-     * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.
-     * 
-     * @param name: The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”.
-     * 
-     * @return <ul>
-      *   <li>code = 200, message = "Succes!", response = CanvasDto.class</li>
-      *   </ul>
-      * @throws ServiceException when other http codes should be returned
-      *
-      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public CanvasDto getPresentationCanvas(String identifier, String name) throws ServiceException {
-        // TODO: Implement...
-    
-        
-        try { 
-            CanvasDto response = new CanvasDto();
-        response.setId("R5wIQ");
-        response.setType("Kd2RZ");
-        CanvasLabelDto label = new CanvasLabelDto();
-        List<String> none = new ArrayList<>();
-        none.add("Ip9uS");
-        label.setNone(none);
-        response.setLabel(label);
-        response.setHeight(-803599505);
-        response.setWidth(146128940);
-        List<CanvasItemsDto> items = new ArrayList<>();
-        CanvasItemsDto items2 = new CanvasItemsDto();
-        items2.setId("lnxeh4");
-        items2.setType("t3L1w");
-        List<String> items3 = new ArrayList<>();
-        items3.add("grWVr");
-        items2.setItems(items3);
-        items.add(items2);
-        response.setItems(items);
-        List<CanvasItemsDto> annotations = new ArrayList<>();
-        CanvasItemsDto annotations2 = new CanvasItemsDto();
-        annotations2.setId("tKMtZ14");
-        annotations2.setType("mD2vB90RJ");
-        List<String> items4 = new ArrayList<>();
-        items4.add("B14JkD");
-        annotations2.setItems(items4);
-        annotations.add(annotations2);
-        response.setAnnotations(annotations);
-        return response;
-        } catch (Exception e){
-            throw handleException(e);
-        }
-    
-    }
-
-    /**
      * IIIF Presentation Collection
      * 
      * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.
@@ -229,13 +131,13 @@ public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
         
         try { 
             CollectionDto response = new CollectionDto();
-        response.setId("SS2oF");
-        response.setPrefix("ylbz4d3WL");
-        response.setDescription("UvPEpc9");
+        response.setId("kyLrGHb7b");
+        response.setPrefix("rGs1ZTpeuTR8xYo9");
+        response.setDescription("yahbUi0");
         List<ViewDto> views = new ArrayList<>();
         ViewDto views2 = new ViewDto();
-        views2.setId("Ps66E3iss");
-        views2.setMime("Ws0oPD");
+        views2.setId("y83vM");
+        views2.setMime("yDew9b");
         views.add(views2);
         response.setViews(views);
         return response;
@@ -243,27 +145,6 @@ public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
             throw handleException(e);
         }
     
-    }
-
-    /**
-     * IIIF Presentation Annotation List
-     * 
-     * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.
-     * 
-     * @param name: The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”.
-     * 
-     * @return <ul>
-      *   <li>code = 200, message = "Succes!"</li>
-      *   </ul>
-      * @throws ServiceException when other http codes should be returned
-      *
-      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public void getPresentationList(String identifier, String name) throws ServiceException {
-        // TODO: Implement...
-    
-        
     }
 
     /**
@@ -285,161 +166,161 @@ public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
         
         try { 
             ManifestDto response = new ManifestDto();
-        response.setAtContext("qR1DVW3z");
-        response.setAtId("s1DULc5gB1o");
-        response.setAtType("T4322Z1uq");
+        response.setAtContext("cnuael");
+        response.setAtId("csnzEkK2iV");
+        response.setAtType("fwRvZx");
         ManifestLabelDto label = new ManifestLabelDto();
         List<String> en = new ArrayList<>();
-        en.add("auA4f");
+        en.add("C85bOh7");
         label.setEn(en);
         response.setLabel(label);
         List<ManifestMetadataDto> metadata = new ArrayList<>();
         ManifestMetadataDto metadata2 = new ManifestMetadataDto();
-        metadata2.setLabel("e4R3gJn0ri");
-        metadata2.setValue("S0keg");
+        metadata2.setLabel("fLn26");
+        metadata2.setValue("Rnr1eSxS9");
         metadata.add(metadata2);
         response.setMetadata(metadata);
-        response.setSummary("YUvNU1");
+        response.setSummary("x7L2J");
         List<ManifestThumbnailDto> thumbnail = new ArrayList<>();
         ManifestThumbnailDto thumbnail2 = new ManifestThumbnailDto();
-        thumbnail2.setId("w36jJ6f7");
-        thumbnail2.setType("aP6M76");
-        thumbnail2.setFormat("x5rIw");
+        thumbnail2.setId("o1Mfzw");
+        thumbnail2.setType("d438x3");
+        thumbnail2.setFormat("JcvZ9nMFKE7H");
         List<ManifestServiceDto> service = new ArrayList<>();
         ManifestServiceDto service2 = new ManifestServiceDto();
-        service2.setId("d4A0FZ");
-        service2.setType("Txo0od");
-        service2.setProfile("i2wDEH");
+        service2.setId("jt9BP");
+        service2.setType("vJ335f4");
+        service2.setProfile("VUbsztS");
         service.add(service2);
         thumbnail2.setService(service);
         thumbnail.add(thumbnail2);
         response.setThumbnail(thumbnail);
-        response.setViewingDirection("I3c6i");
-        response.setViewingHint("ISmYEJA");
+        response.setViewingDirection("Tb0QY");
+        response.setViewingHint("T576oo");
         Date navDate = new Date(0);
         response.setNavDate(navDate);
-        response.setRights("q2nTon4O27");
+        response.setRights("Zv01vWR");
         ManifestRequiredStatementDto requiredStatement = new ManifestRequiredStatementDto();
-        requiredStatement.setLabel("R6028");
-        requiredStatement.setValue("CwJ5e");
+        requiredStatement.setLabel("XpuaXg");
+        requiredStatement.setValue("rQ4A5");
         response.setRequiredStatement(requiredStatement);
         List<ManifestProviderDto> provider = new ArrayList<>();
         ManifestProviderDto provider2 = new ManifestProviderDto();
-        provider2.setId("S54Wu");
-        provider2.setType("l2JwC");
-        provider2.setLabel("UEJJo1E");
+        provider2.setId("HMfHC");
+        provider2.setType("Wa9FGt86");
+        provider2.setLabel("bFwraMT");
         List<ManifestHomepageDto> homepage = new ArrayList<>();
         ManifestHomepageDto homepage2 = new ManifestHomepageDto();
-        homepage2.setId("R2z4P0");
-        homepage2.setType("jLuql");
-        homepage2.setLabel("Q33KU");
-        homepage2.setFormat("O42UI");
+        homepage2.setId("KW69X3V");
+        homepage2.setType("b6c7uj");
+        homepage2.setLabel("W4v6h");
+        homepage2.setFormat("P5GYn");
         homepage.add(homepage2);
         provider2.setHomepage(homepage);
         List<ManifestThumbnailDto> logo = new ArrayList<>();
         ManifestThumbnailDto logo2 = new ManifestThumbnailDto();
-        logo2.setId("Ia38A803");
-        logo2.setType("kMob2sdLf");
-        logo2.setFormat("sj05d");
+        logo2.setId("Gl9s134");
+        logo2.setType("eB51jd");
+        logo2.setFormat("JR8UJ");
         List<ManifestServiceDto> service3 = new ArrayList<>();
         ManifestServiceDto service4 = new ManifestServiceDto();
-        service4.setId("lX4I0T7b");
-        service4.setType("bO218");
-        service4.setProfile("q4wBvMh");
+        service4.setId("K3kD6n7Q2");
+        service4.setType("K6t78");
+        service4.setProfile("qH9hn7R605m");
         service3.add(service4);
         logo2.setService(service3);
         logo.add(logo2);
         provider2.setLogo(logo);
         List<ManifestSeeAlsoDto> seeAlso = new ArrayList<>();
         ManifestSeeAlsoDto seeAlso2 = new ManifestSeeAlsoDto();
-        seeAlso2.setId("g7j15");
-        seeAlso2.setType("Lg6rb70");
-        seeAlso2.setFormat("WSI49Wb");
-        seeAlso2.setProfile("K89X0t");
+        seeAlso2.setId("EWu5TYN");
+        seeAlso2.setType("QG29uq");
+        seeAlso2.setFormat("pVHU89A7KJz");
+        seeAlso2.setProfile("gF9Lv");
         seeAlso.add(seeAlso2);
         provider2.setSeeAlso(seeAlso);
         provider.add(provider2);
         response.setProvider(provider);
         List<ManifestHomepageDto> homepage3 = new ArrayList<>();
         ManifestHomepageDto homepage4 = new ManifestHomepageDto();
-        homepage4.setId("Zhj4Z21");
-        homepage4.setType("sr6Cr");
-        homepage4.setLabel("KmSpx");
-        homepage4.setFormat("tA518P4");
+        homepage4.setId("vKWW8pGar8C");
+        homepage4.setType("ne8c70");
+        homepage4.setLabel("EEi7zz0XiI");
+        homepage4.setFormat("Zyw17c");
         homepage3.add(homepage4);
         response.setHomepage(homepage3);
         List<ManifestServiceDto> service5 = new ArrayList<>();
         ManifestServiceDto service6 = new ManifestServiceDto();
-        service6.setId("kL5utv");
-        service6.setType("OFYoz");
-        service6.setProfile("zM6BsL");
+        service6.setId("FbJSVvw");
+        service6.setType("Q9Ljb");
+        service6.setProfile("K9Ur89xQe24");
         service5.add(service6);
         response.setService(service5);
         List<ManifestSeeAlsoDto> seeAlso3 = new ArrayList<>();
         ManifestSeeAlsoDto seeAlso4 = new ManifestSeeAlsoDto();
-        seeAlso4.setId("H99Lxt");
-        seeAlso4.setType("bU0bT");
-        seeAlso4.setFormat("Fg13ZB");
-        seeAlso4.setProfile("WU4i055");
+        seeAlso4.setId("f1ai6E31T0");
+        seeAlso4.setType("d0P3117");
+        seeAlso4.setFormat("YnOc5");
+        seeAlso4.setProfile("dFpt0Hq");
         seeAlso3.add(seeAlso4);
         response.setSeeAlso(seeAlso3);
         List<ManifestRenderingDto> rendering = new ArrayList<>();
         ManifestRenderingDto rendering2 = new ManifestRenderingDto();
-        rendering2.setId("T3Pfg9J3l");
-        rendering2.setType("Dzw0m8");
-        rendering2.setLabel("m27oLo6z5");
-        rendering2.setFormat("NSbZTYYI7f90");
+        rendering2.setId("z5ac75");
+        rendering2.setType("uXbTl");
+        rendering2.setLabel("bj0gLj9sO41a");
+        rendering2.setFormat("HaU1X");
         rendering.add(rendering2);
         response.setRendering(rendering);
         List<ManifestPartOfDto> partOf = new ArrayList<>();
         ManifestPartOfDto partOf2 = new ManifestPartOfDto();
-        partOf2.setId("xR9Ox");
-        partOf2.setType("jGvAT8");
+        partOf2.setId("SkF9Mf");
+        partOf2.setType("U7j4w");
         partOf.add(partOf2);
         response.setPartOf(partOf);
         ManifestStartDto start = new ManifestStartDto();
-        start.setId("p60M5Ctg78v5P");
-        start.setType("XDs7u86g");
+        start.setId("xCUrpl");
+        start.setType("kr3t3i");
         response.setStart(start);
         List<ManifestServicesDto> services = new ArrayList<>();
         ManifestServicesDto services2 = new ManifestServicesDto();
-        services2.setAtId("h15hgRo3");
-        services2.setAtType("fssaP1");
-        services2.setProfile("VD7SPeQ4Zf");
-        services2.setLabel("SwJrl");
+        services2.setAtId("eNqVkTW");
+        services2.setAtType("J8NjM");
+        services2.setProfile("nTIa6");
+        services2.setLabel("e7ZQ4");
         ManifestService1Dto service7 = new ManifestService1Dto();
-        service7.setAtId("Tzh625TC7");
-        service7.setAtType("x67C4");
-        service7.setProfile("XmrW7ROo");
+        service7.setAtId("boLR2h");
+        service7.setAtType("pI6VrqG562");
+        service7.setProfile("JeVF6");
         services2.setService(service7);
         services.add(services2);
         response.setServices(services);
         List<CanvasDto> items = new ArrayList<>();
         CanvasDto items2 = new CanvasDto();
-        items2.setId("q8uvnjZ");
-        items2.setType("q7WWE");
+        items2.setId("qUkkA");
+        items2.setType("Ag01t");
         CanvasLabelDto label2 = new CanvasLabelDto();
         List<String> none = new ArrayList<>();
-        none.add("a9RrMl");
+        none.add("S8xClW6QoCwXb");
         label2.setNone(none);
         items2.setLabel(label2);
-        items2.setHeight(-740510432);
-        items2.setWidth(785874991);
+        items2.setHeight(-2013198855);
+        items2.setWidth(-500300530);
         List<CanvasItemsDto> items3 = new ArrayList<>();
         CanvasItemsDto items4 = new CanvasItemsDto();
-        items4.setId("R5Q21");
-        items4.setType("N7oRl");
+        items4.setId("RMHSYHBX");
+        items4.setType("bdjKf");
         List<String> items5 = new ArrayList<>();
-        items5.add("xn22yG");
+        items5.add("Knn5L");
         items4.setItems(items5);
         items3.add(items4);
         items2.setItems(items3);
         List<CanvasItemsDto> annotations = new ArrayList<>();
         CanvasItemsDto annotations2 = new CanvasItemsDto();
-        annotations2.setId("Qqb53");
-        annotations2.setType("YERjAp");
+        annotations2.setId("N9H742wxfw10");
+        annotations2.setType("wSRdiy");
         List<String> items6 = new ArrayList<>();
-        items6.add("LVRwvD");
+        items6.add("Wh29rb85");
         annotations2.setItems(items6);
         annotations.add(annotations2);
         items2.setAnnotations(annotations);
@@ -452,52 +333,22 @@ public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
         structures.add(structures2);
         response.setStructures(structures);
         AnnotationsDto annotations3 = new AnnotationsDto();
-        annotations3.setId("wOZ7f");
-        annotations3.setType("o1le7N");
+        annotations3.setId("EEYU79");
+        annotations3.setType("x0vv0");
         List<AnnotationsItemsDto> items7 = new ArrayList<>();
         AnnotationsItemsDto items8 = new AnnotationsItemsDto();
-        items8.setId("paiM5");
-        items8.setType("G9QsN");
-        items8.setMotivation("Ciag1U");
+        items8.setId("kv289n");
+        items8.setType("nf27Q");
+        items8.setMotivation("ITW1Kb");
         AnnotationsBodyDto body = new AnnotationsBodyDto();
-        body.setType("nj4N4");
-        body.setLanguage("hDtzgZk5d");
-        body.setValue("T2TGf");
+        body.setType("YQho39");
+        body.setLanguage("Zz1jB");
+        body.setValue("j0E0G");
         items8.setBody(body);
-        items8.setTarget("lMjT8AR4");
+        items8.setTarget("jUq3VvdT");
         items7.add(items8);
         annotations3.setItems(items7);
         response.setAnnotations(annotations3);
-        return response;
-        } catch (Exception e){
-            throw handleException(e);
-        }
-    
-    }
-
-    /**
-     * IIIF Presentation Range
-     * 
-     * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.
-     * 
-     * @param name: The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”.
-     * 
-     * @return <ul>
-      *   <li>code = 200, message = "Succes!", response = Object.class, responseContainer = "List"</li>
-      *   </ul>
-      * @throws ServiceException when other http codes should be returned
-      *
-      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public List<Object> getPresentationRange(String identifier, String name) throws ServiceException {
-        // TODO: Implement...
-    
-        
-        try { 
-            List<Object> response = new ArrayList<>();
-        Object item = JsonNodeFactory.instance.objectNode();
-        response.add(item);
         return response;
         } catch (Exception e){
             throw handleException(e);

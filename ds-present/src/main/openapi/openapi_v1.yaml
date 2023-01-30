@@ -257,7 +257,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/collection'
-          
+
+  # TODO: Add option to choose parts of manifest to return.
   /IIIF/{identifier}/manifest:
     get:
       tags:
@@ -279,119 +280,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/manifest'
-  
-  /IIIF/{identifier}/canvas/{name}:
-    get:
-      tags:
-        - 'IIIFPresentation'
-      summary: "IIIF Presentation canvas"
-      operationId: getPresentationCanvas
-      parameters:
-      - name: identifier
-        in: path
-        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
-        required: true
-        schema:
-          type: string
-      - name: name
-        in: path
-        description: "The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”."
-        required: true
-        schema:
-          type: string
-          example: "normal"
-      
-      responses:
-        '200':
-          description: 'Succes!'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/canvas'
-          
-  /IIIF/{identifier}/range/{name}:
-    get:
-      tags:
-        - 'IIIFPresentation'
-      summary: "IIIF Presentation Range"
-      operationId: getPresentationRange
-      parameters:
-      - name: identifier
-        in: path
-        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
-        required: true
-        schema:
-          type: string
-      - name: name
-        in: path
-        description: "The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”."
-        required: true
-        schema:
-          type: string
-          example: "normal"
-      
-      responses:
-        '200':
-          description: 'Succes!'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/range'
-  
-  /IIIF/{identifier}/annotation/{name}:
-    get:
-      tags:
-        - 'IIIFPresentation'
-      summary: "IIIF Presentation Image Resources"
-      operationId: getPresentationAnnotation
-      parameters:
-      - name: identifier
-        in: path
-        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
-        required: true
-        schema:
-          type: string
-      - name: name
-        in: path
-        description: "The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”."
-        required: true
-        schema:
-          type: string
-          example: "normal"
-      
-      responses:
-        '200':
-          description: 'Succes!'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/annotations'
-  
-  /IIIF/{identifier}/list/{name}:
-    get:
-      tags:
-        - 'IIIFPresentation'
-      summary: "IIIF Presentation Annotation List"
-      operationId: getPresentationList
-      parameters:
-      - name: identifier
-        in: path
-        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
-        required: true
-        schema:
-          type: string
-      - name: name
-        in: path
-        description: "The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”."
-        required: true
-        schema:
-          type: string
-          example: "normal"
-      
-      responses:
-        '200':
-          description: 'Succes!'
-
 
 components:
   schemas:
