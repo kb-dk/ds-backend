@@ -9,7 +9,10 @@
    <!-- Default solr field -->
   <field name="_version_" type="plong" indexed="false" stored="false"/> 
   
-  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
+  <field name="identifier_local" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="cataloging_language" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  
    <!-- END FIELDS  -->
   
   

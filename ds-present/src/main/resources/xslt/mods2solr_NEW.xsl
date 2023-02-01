@@ -30,7 +30,7 @@
                 <xsl:value-of select="."/>              
               </f:string>
             </xsl:for-each>
-            <f:string key="identifier_uri">
+            <f:string key="id">
               <xsl:value-of select="m:identifier[@type='uri']"/>
             </f:string>
             <f:string key="identifier_local">
