@@ -19,35 +19,27 @@
     <xsl:variable name="json">           
          <!--This is the mets element with the bibliographic metadata.  -->
         <xsl:for-each select="//mets:dmdSec[@ID='Mods1']//m:mods">
-
-          <xsl:variable name="record-id-in"/>
-                     
           <xsl:variable name="record-id">
-            <xsl:value-of select="replace($record-id-in,'/',$sep_string,'s')"/>
+            dummy_identifier
           </xsl:variable>
-
           <xsl:variable name="output_data">
             <f:map>
-                   
-                   
              <!-- Here can be multiple values -->                   
             <xsl:for-each select="m:recordInfo/m:languageOfCataloging/m:languageTerm[1]">
               <f:string key="cataloging_language">
                 <xsl:value-of select="."/>              
               </f:string>
             </xsl:for-each>
-
             <f:string key="identifier_uri">
               <xsl:value-of select="m:identifier[@type='uri']"/>
             </f:string>
-
             <f:string key="identifier_local">
               <xsl:value-of select="m:identifier[@type='local']"/>
             </f:string>            
            </f:map>
           </xsl:variable>
-        
-        
+
+
           <xsl:apply-templates select="$output_data/f:map">
             <xsl:with-param name="record_identifier" select="$record-id"/>
           </xsl:apply-templates>
