@@ -7,6 +7,7 @@
                xmlns:xs="http://www.w3.org/2001/XMLSchema"
                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                xmlns:my="urn:my"
+               xmlns:premis="http://www.loc.gov/premis/v3"
                version="3.0">
 
     
@@ -113,16 +114,22 @@
                 </f:string>
               </xsl:for-each>
             </f:array>
+            <f:string key="file_size">
+              <!-- This is the METS element with image metadata. Path might be optimised -->
+              <!-- PATH: "../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object"-->
+              <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:size"/>
+            </f:string>
 
            </f:map>
           </xsl:variable>
           <!-- End XSLT logic -->
 
+
           <xsl:apply-templates select="$output_data/f:map">
             <xsl:with-param name="record_identifier" select="$record-id"/>
           </xsl:apply-templates>
 
-        </xsl:for-each>      
+        </xsl:for-each>
     </xsl:variable>
  
  
