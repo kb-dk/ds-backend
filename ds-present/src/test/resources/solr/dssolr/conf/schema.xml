@@ -47,7 +47,6 @@
   <!-- END FIELDS  -->
   
   
-  
   <!-- START FIELDTYPES  -->
   <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>   
   <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>  
