@@ -22,6 +22,9 @@
           <xsl:variable name="record-id">
             dummy_identifier
           </xsl:variable>
+         
+         
+         <!-- Start XSLT logic -->
           <xsl:variable name="output_data">
             <f:map>
              <!-- Here can be multiple values -->                   
@@ -38,7 +41,7 @@
             </f:string>            
            </f:map>
           </xsl:variable>
-
+          <!-- End XSLT logic -->
 
           <xsl:apply-templates select="$output_data/f:map">
             <xsl:with-param name="record_identifier" select="$record-id"/>
