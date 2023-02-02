@@ -83,34 +83,36 @@
                 </xsl:for-each>
               </xsl:for-each>
             </f:array>
-            <f:array key="subject_name">
-              <xsl:for-each select="m:subject/m:name">
+            <xsl:if test="m:subject/m:name">
+              <f:array key="subject_name">
+                <xsl:for-each select="m:subject/m:name">
+                    <f:string>
+                      <xsl:value-of select="concat(m:namePart[@type='family'],', ', m:namePart[@type='given'])"/>
+                    </f:string>
+                </xsl:for-each>
+              </f:array>
+              <f:array key="subject_date_of_birth">
+                <xsl:for-each select="m:subject/m:name">
                   <f:string>
-                    <xsl:value-of select="concat(m:namePart[@type='family'],', ', m:namePart[@type='given'])"/>
+                    <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
                   </f:string>
-              </xsl:for-each>
-            </f:array>
-            <f:array key="subject_date_of_birth">
-              <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                  <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
-                </f:string>
-              </xsl:for-each>
-            </f:array>
-            <f:array key="subject_date_of_death">
-              <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                  <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
-                </f:string>
-              </xsl:for-each>
-            </f:array>
-            <f:array key="subject_terms_of_address">
-              <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                  <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
-                </f:string>
-              </xsl:for-each>
-            </f:array>
+                </xsl:for-each>
+              </f:array>
+              <f:array key="subject_date_of_death">
+                <xsl:for-each select="m:subject/m:name">
+                  <f:string>
+                    <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
+                  </f:string>
+                </xsl:for-each>
+              </f:array>
+              <f:array key="subject_terms_of_address">
+                <xsl:for-each select="m:subject/m:name">
+                  <f:string>
+                    <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
+                  </f:string>
+                </xsl:for-each>
+              </f:array>
+            </xsl:if>
             <f:array key="type_of_resource">
               <xsl:for-each select="m:typeOfResource">
                 <f:string>
