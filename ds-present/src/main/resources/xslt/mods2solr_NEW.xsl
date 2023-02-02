@@ -42,37 +42,35 @@
               <xsl:value-of select="m:identifier[@type='local']"/>
             </f:string>
             <f:string key="genre">
-              <xsl:value-of select="m:genre"/>
+            <xsl:value-of select="m:genre"/>
             </f:string>
-            <f:array key="creator">
-              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
-                <xsl:for-each select="m:name">
-                  <xsl:if test="f:empty(.) != false()">
-                  <f:string>
-                  <xsl:value-of select="concat(m:namePart[@type='family'],', ',m:namePart[@type='given'])"/>
-                  </f:string>
-                  </xsl:if>
-                </xsl:for-each>
-              </xsl:if>
-            </f:array>
-            <f:array key="creator_family_name">
-              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
-                <xsl:for-each select="m:name">
-                  <f:string>
-                    <xsl:value-of select="m:namePart[@type='family']"/>
-                  </f:string>
-                </xsl:for-each>
-              </xsl:if>
-            </f:array>
-            <f:array key="creator_given_name">
-              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
-                <xsl:for-each select="m:name">
-                  <f:string>
-                    <xsl:value-of select="m:namePart[@type='given']"/>
-                  </f:string>
-                </xsl:for-each>
-              </xsl:if>
-            </f:array>
+            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+              <f:array key="creator">
+                  <xsl:for-each select="m:name">
+                    <f:string>
+                    <xsl:value-of select="concat(m:namePart[@type='family'],', ',m:namePart[@type='given'])"/>
+                    </f:string>
+                  </xsl:for-each>
+              </f:array>
+              <f:array key="creator_family_name">
+                <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+                  <xsl:for-each select="m:name">
+                    <f:string>
+                      <xsl:value-of select="m:namePart[@type='family']"/>
+                    </f:string>
+                  </xsl:for-each>
+                </xsl:if>
+              </f:array>
+              <f:array key="creator_given_name">
+                <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+                  <xsl:for-each select="m:name">
+                    <f:string>
+                      <xsl:value-of select="m:namePart[@type='given']"/>
+                    </f:string>
+                  </xsl:for-each>
+                </xsl:if>
+              </f:array>
+            </xsl:if>
             <f:string key="collection">
               <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
             </f:string>
