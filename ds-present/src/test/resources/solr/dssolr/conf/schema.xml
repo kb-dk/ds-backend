@@ -25,6 +25,8 @@
   <field name="file_size" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="image_height" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="image_width" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="genre" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
 
 
 

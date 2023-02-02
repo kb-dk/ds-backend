@@ -47,9 +47,11 @@
             <f:array key="creator">
               <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
                 <xsl:for-each select="m:name">
+                  <xsl:if test="f:empty(.) != false()">
                   <f:string>
                   <xsl:value-of select="concat(m:namePart[@type='family'],', ',m:namePart[@type='given'])"/>
                   </f:string>
+                  </xsl:if>
                 </xsl:for-each>
               </xsl:if>
             </f:array>
