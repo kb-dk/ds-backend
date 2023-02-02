@@ -7,6 +7,8 @@
                xmlns:xs="http://www.w3.org/2001/XMLSchema"
                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                xmlns:my="urn:my"
+               xmlns:premis="http://www.loc.gov/premis/v3"
+               xmlns:mix="http://www.loc.gov/mix/v20"
                version="3.0">
 
     
@@ -38,6 +40,9 @@
             </f:string>
             <f:string key="identifier_local">
               <xsl:value-of select="m:identifier[@type='local']"/>
+            </f:string>
+            <f:string key="genre">
+              <xsl:value-of select="m:genre"/>
             </f:string>
             <f:array key="creator">
               <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
@@ -113,16 +118,28 @@
                 </f:string>
               </xsl:for-each>
             </f:array>
+            <f:string key="file_size">
+              <!-- This is the METS element with image metadata. Path might be optimised -->
+              <!-- PATH: "../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object"-->
+              <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:size"/>
+            </f:string>
+            <f:string key="image_height">
+              <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight"/>
+            </f:string>
+            <f:string key="image_width">
+              <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth"/>
+            </f:string>
 
            </f:map>
           </xsl:variable>
           <!-- End XSLT logic -->
 
+
           <xsl:apply-templates select="$output_data/f:map">
             <xsl:with-param name="record_identifier" select="$record-id"/>
           </xsl:apply-templates>
 
-        </xsl:for-each>      
+        </xsl:for-each>
     </xsl:variable>
  
  

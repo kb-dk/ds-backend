@@ -35,6 +35,7 @@ class XSLTSolrTransformerTest{
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
     public static final String MODS2SOLR_NEW = "xslt/mods2solr_NEW.xsl";
     public static final String NEW_000332 = "xml/copyright_extraction/000332.tif.xml"; //Updated version
+    public static final String NEW_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
     
     
 
@@ -61,6 +62,19 @@ class XSLTSolrTransformerTest{
         System.out.println(prettyJsonString );
        
       //  assertTrue(solrString.contains("{\"id\":\""));
+    }
+
+    @Test
+    void testXsltNewDpkItem() throws IOException {
+        String solrString = getTransformed(MODS2SOLR_NEW, NEW_DPK);
+        // TODO: Add more detailed test
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(solrString);
+        String prettyJsonString = gson.toJson(je);
+        System.out.println(prettyJsonString );
+
+        //  assertTrue(solrString.contains("{\"id\":\""));
     }
 
 
