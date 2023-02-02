@@ -38,7 +38,55 @@
             </f:string>
             <f:string key="identifier_local">
               <xsl:value-of select="m:identifier[@type='local']"/>
-            </f:string>            
+            </f:string>
+            <f:array key="creator">
+              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+                <xsl:for-each select="m:name">
+                  <f:string>
+                  <xsl:value-of select="concat(m:namePart[@type='family'],', ',m:namePart[@type='given'])"/>
+                  </f:string>
+                </xsl:for-each>
+              </xsl:if>
+            </f:array>
+            <f:array key="creator_familyName">
+              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+                <xsl:for-each select="m:name">
+                  <f:string>
+                    <xsl:value-of select="m:namePart[@type='family']"/>
+                  </f:string>
+                </xsl:for-each>
+              </xsl:if>
+            </f:array>
+            <f:array key="creator_givenName">
+              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+                <xsl:for-each select="m:name">
+                  <f:string>
+                    <xsl:value-of select="m:namePart[@type='given']"/>
+                  </f:string>
+                </xsl:for-each>
+              </xsl:if>
+            </f:array>
+            <f:string key="collection">
+              <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
+            </f:string>
+            <f:array key="subject">
+              <xsl:for-each select="m:subject">
+                <xsl:for-each select="m:topic[@lang]">
+                  <f:string>
+                    <xsl:value-of select="."/>
+                  </f:string>
+                </xsl:for-each>
+              </xsl:for-each>
+            </f:array>
+            <f:array key="subject_name">
+              <xsl:for-each select="m:subject/m:name">
+                <xsl:for-each select="m:namePart">
+                  <f:string>
+                    <xsl:value-of select="."/>
+                  </f:string>
+                </xsl:for-each>
+              </xsl:for-each>
+            </f:array>
            </f:map>
           </xsl:variable>
           <!-- End XSLT logic -->

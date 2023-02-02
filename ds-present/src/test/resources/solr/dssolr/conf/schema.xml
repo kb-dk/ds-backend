@@ -12,8 +12,16 @@
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
   <field name="identifier_local" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="cataloging_language" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  
-   <!-- END FIELDS  -->
+  <field name="collection" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="creator" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="creator_familyName" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="creator_givenName" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="subject" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="subject_name" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
+
+
+  <!-- END FIELDS  -->
   
   
   
