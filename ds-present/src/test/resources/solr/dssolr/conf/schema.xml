@@ -26,6 +26,18 @@
 
 
 
+  <!--  Fields related to copyright and access conditions -->
+  <field name="access_blokkeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="access_note" type="string" multiValued="false" indexed="true" required="false" stored="true"/>  
+  <field name="access_skabelsesaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/> <!--  TODO is required -->
+  <field name="access_searlige_visningsvilkaar" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="access_materiale_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <!-- Temporary set by rettighedsudtreakkeren -->
+  <field name="imageurl" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
 
   <!-- END FIELDS  -->
   
