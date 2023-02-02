@@ -106,6 +106,14 @@
                 </f:string>
               </xsl:for-each>
             </f:array>
+            <f:array key="type_of_resource">
+              <xsl:for-each select="m:typeOfResource">
+                <f:string>
+                  <xsl:value-of select="."/>
+                </f:string>
+              </xsl:for-each>
+            </f:array>
+
            </f:map>
           </xsl:variable>
           <!-- End XSLT logic -->

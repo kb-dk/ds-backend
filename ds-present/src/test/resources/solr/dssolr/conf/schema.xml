@@ -21,6 +21,8 @@
   <field name="subject_date_of_birth" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="subject_date_of_death" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="subject_terms_of_address" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="type_of_resource" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
 
 
 
