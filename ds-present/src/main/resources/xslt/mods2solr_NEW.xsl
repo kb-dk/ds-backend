@@ -41,9 +41,9 @@
             <f:string key="identifier_local">
               <xsl:value-of select="m:identifier[@type='local']"/>
             </f:string>
-              <f:string key="genre">
-                <xsl:value-of select="m:genre"/>
-              </f:string>
+            <f:string key="genre">
+              <xsl:value-of select="m:genre"/>
+            </f:string>
             <f:array key="creator">
               <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
                 <xsl:for-each select="m:name">
