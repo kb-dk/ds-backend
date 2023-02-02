@@ -52,13 +52,27 @@ class XSLTTransformerTest {
         JsonElement je = JsonParser.parseString(solrString);
         String prettyJsonString = gson.toJson(je);
         
-        System.out.println(prettyJsonString );
-        assertTrue(solrString.contains("{\"id\":\""));
+//        System.out.println(prettyJsonString );
+        assertTrue(solrString.contains("{\"id\":\""),
+                   "Output should contain an 'id' field but was\n" + prettyJsonString);
+    }
+
+    @Test
+    void testIDInjection() throws IOException {
+        String solrString = getTransformed("id_inject.xsl", "id_inject.xml");
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(solrString);
+        String prettyJsonString = gson.toJson(je);
+
+//        System.out.println(prettyJsonString );
+        assertTrue(solrString.contains("{\"id\":\"id_inject.xml"),
+                   "The resulting JSON should contain the filename for the XML document as id but was\n" +
+                   prettyJsonString);
     }
 
     private String getTransformed(String xsltResource, String xmlResource) throws IOException {
         XSLTTransformer transformer = new XSLTTransformer(xsltResource);
         String mods = Resolver.resolveUTF8String(xmlResource);
-        return transformer.apply(mods, Map.of("recordID", xmlResource));
+        return transformer.apply(mods, Map.of("record_identifier", xmlResource));
     }
 }
