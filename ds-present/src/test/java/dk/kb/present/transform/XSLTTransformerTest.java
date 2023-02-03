@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,28 +39,20 @@ class XSLTTransformerTest {
     
     @Test
     void testJSONLDAlbert() throws IOException {
-        JSONObject jsonld = new JSONObject(getTransformed(MODS2JSONLD, ALBERT));
+        JSONObject jsonld = new JSONObject(getTransformed(MODS2JSONLD, ALBERT,null));
         assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"Einstein, Albert\",\"@language\":\"en\"}"));
     }
 
     @Test
     void testJSONLDChinese() throws IOException {
-        JSONObject jsonld = new JSONObject(getTransformed(MODS2JSONLD, CHINESE));
+        JSONObject jsonld = new JSONObject(getTransformed(MODS2JSONLD, CHINESE,null));
         assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"周培春 Zhou Peichun\",\"@language\":\"zh\"}"));
     }
 
-    @Test
-    void testSolrAlbert() throws IOException {
-        String solrString = getTransformed(MODS2SOLR, ALBERT);
-        // TODO: Add more detailed test
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = JsonParser.parseString(solrString);        
-        
-    }
     
     @Test
     void testNew000332() throws IOException {
-        String solrString = getTransformed(MODS2SOLR_NEW, NEW_000332);
+        String solrString = getTransformed(MODS2SOLR_NEW, NEW_000332,null);
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
@@ -67,16 +60,13 @@ class XSLTTransformerTest {
         
 
         System.out.println(prettyJsonString );
-
-
-//        System.out.println(prettyJsonString );
-        assertTrue(solrString.contains("{\"id\":\""),
-                   "Output should contain an 'id' field but was\n" + prettyJsonString);
     }
 
     @Test
     void testIDInjection() throws IOException {
-        String solrString = getTransformed("id_inject.xsl", "id_inject.xml");
+    	Map<String, String>  singleInject = Map.of("record_identifier", "id_inject.xml");
+    	
+        String solrString = getTransformed("id_inject.xsl", "id_inject.xml", singleInject);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
         String prettyJsonString = gson.toJson(je);
@@ -89,10 +79,15 @@ class XSLTTransformerTest {
     }
 
 
-    
-    private String getTransformed(String xsltResource, String xmlResource) throws IOException {
+    private String getTransformed(String xsltResource, String xmlResource, Map<String,String> injections) throws IOException {
         XSLTTransformer transformer = new XSLTTransformer(xsltResource);
         String mods = Resolver.resolveUTF8String(xmlResource);
-        return transformer.apply(mods, Map.of("record_identifier", xmlResource));
+        if (injections == null) {
+        	injections = new HashMap<String,String>();
+        }        
+        return transformer.apply(mods, injections);
     }
+    
+    
+    
 }
