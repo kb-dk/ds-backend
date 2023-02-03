@@ -35,7 +35,7 @@ public class TestUtil {
 		        String mods = Resolver.resolveUTF8String(xmlResource);
 		        HashMap<String, String> accessFields = XsltCopyrightMapper.xsltCopyrightTransformer(mods);
 		        
-		        System.out.println(accessFields);
+		        System.out.println("access fields:"+accessFields);
 		        return transformer.apply(mods, accessFields);
 		    }
 	 

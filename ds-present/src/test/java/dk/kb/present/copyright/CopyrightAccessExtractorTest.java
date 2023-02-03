@@ -340,13 +340,7 @@ public class CopyrightAccessExtractorTest {
         assertEquals(false, mapper.isPligtAfleveret());
 
     }
-
     
-    @Test
-    void testXstlAccessFieldsAdded() throws Exception {
-	   String solrString = TestUtil.getTransformedWithAccessFieldsAdded("xslt/mods2solr_NEW.xsl", "xml/copyright_extraction/000332.tif.xml");
-      System.out.println(solrString);
-    }
 	
     @Test
     void testAccessConditionwith3Persons1Corporate() throws Exception {

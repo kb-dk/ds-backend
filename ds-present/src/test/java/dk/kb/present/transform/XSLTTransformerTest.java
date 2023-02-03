@@ -30,8 +30,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class XSLTTransformerTest {
     public static final String MODS2JSONLD = "xslt/mods2schemaorg.xsl";
+    public static final String MODS2SOLR_OLD = "xslt/mods2solr_OLD.xsl";
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-    public static final String MODS2SOLR_NEW = "xslt/mods2solr_NEW.xsl";
     public static final String ALBERT = "xml/corpus/albert-einstein.xml"; //Need to be updated to newest version
     public static final String CHINESE = "xml/corpus/chinese-manuscripts.xml"; //Need to be updated to newest version
 
@@ -53,7 +53,7 @@ class XSLTTransformerTest {
     
     @Test
     void testNew000332() throws IOException {
-        String solrString =  TestUtil.getTransformed(MODS2SOLR_NEW, NEW_000332);
+        String solrString =  TestUtil.getTransformed(MODS2SOLR, NEW_000332);
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);

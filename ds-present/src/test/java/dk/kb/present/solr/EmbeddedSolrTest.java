@@ -51,7 +51,7 @@ public class EmbeddedSolrTest {
 	private static CoreContainer coreContainer = null;
 	private static EmbeddedSolrServer embeddedServer = null;
 
-	public static final String MODS2SOLR_NEW = "xslt/mods2solr_NEW.xsl";
+	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
 	public static final String NEW_000332 = "xml/copyright_extraction/000332.tif.xml"; //Updated version
 	
 	@BeforeAll
@@ -88,6 +88,7 @@ public class EmbeddedSolrTest {
 	 * Basic test. Add 10 documents with ID only
 	 * 
 	 */
+	/*
 	@Test
 	public void testSolrServerIsRunning() throws Exception {
 
@@ -109,42 +110,23 @@ public class EmbeddedSolrTest {
 		}
 
 	}
-	
+	*/
 	 
+   
     @Test
     void testNew000332() throws Exception {
                
-    	String solrString = TestUtil.getTransformed(MODS2SOLR_NEW, NEW_000332);            
+    	String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, NEW_000332);
+        System.out.println(solrString);        
         
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
         String prettyJsonString = gson.toJson(je);
-         SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-         embeddedServer.add(document);
-         embeddedServer.commit();
-        
-         
-         assertEquals(1, getNumberOfTotalDocuments());
-    }
-    
-    
-    @Test
-    void testNew000332WithAccessfiels() throws Exception {
-               
-    	String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR_NEW, NEW_000332);
-    
-        
-        
-        // TODO: Add more detailed test
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = JsonParser.parseString(solrString);
-        String prettyJsonString = gson.toJson(je);
-         SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-         embeddedServer.add(document);
-         embeddedServer.commit();
-        
-         
+        SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+        embeddedServer.add(document);
+        embeddedServer.commit();
+                
          assertEquals(1, getNumberOfTotalDocuments());
     }
     

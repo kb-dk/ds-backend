@@ -65,7 +65,7 @@ config:
               mime: 'application/json'
               transformers:
                 - xslt:
-                    stylesheet: 'xslt/mods2solr.xsl'
+                    stylesheet: 'xslt/mods2solr_OLD.xsl'
           - raw:
               mime: 'text/plain'
               transformers:
