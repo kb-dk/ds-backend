@@ -82,34 +82,6 @@ public class EmbeddedSolrTest {
 	public void deleteDocs() throws Exception {
 		embeddedServer.deleteByQuery("*:*");
 	}
-
-	/*
-	 * Basic test. Add 10 documents with ID only
-	 * 
-	 */
-	/*
-	@Test
-	public void testSolrServerIsRunning() throws Exception {
-
-		try {
-			for (int i = 0; i < 10; i++) {
-				SolrInputDocument document = new SolrInputDocument();
-				String id = "id" + i;
-				document.addField("id", id);
-				embeddedServer.add(document);
-
-			}
-			embeddedServer.commit();
-
-			assertEquals(10L, getNumberOfTotalDocuments());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Error indexing 10 test documents only with id field");
-		}
-
-	}
-	*/
 	 
    
     @Test
@@ -141,7 +113,16 @@ public class EmbeddedSolrTest {
          assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
          assertTrue(typeResources.contains("Grafik"));
          
+         //TODO more fields
+         
     }
+    
+    
+    
+    /*
+     * ------- Private helper methods below -------------- 
+     */
+    
     
     /*
      * Embedded solr does not have a http listener, so we can not add call and add documents as JSON.

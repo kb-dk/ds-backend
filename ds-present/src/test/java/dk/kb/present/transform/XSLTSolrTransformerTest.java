@@ -35,14 +35,14 @@ class XSLTSolrTransformerTest{
 
     public static final String MODS2SOLR_OLD = "xslt/mods2solr_OLD.xsl";
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-    public static final String NEW_000332 = "xml/copyright_extraction/000332.tif.xml"; //Updated version
-    public static final String NEW_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
+    public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; //Updated version
+    public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
     
     
 
     @Test
     void testSolOld() throws IOException {
-        String solrString = TestUtil.getTransformed(MODS2SOLR_OLD,  NEW_000332);
+        String solrString = TestUtil.getTransformed(MODS2SOLR_OLD,  RECORD_000332);
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);                
@@ -55,7 +55,7 @@ class XSLTSolrTransformerTest{
     @Test
     void testSolrNew() throws Exception {
     	
-    	String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, NEW_000332);
+    	String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_000332);
         // TODO: Add more detailed test
      
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -68,7 +68,7 @@ class XSLTSolrTransformerTest{
 
     @Test
     void testXsltNewDpkItem() throws Exception {
-        String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, NEW_DPK);
+        String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DPK);
         // TODO: Add more detailed test
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
