@@ -91,12 +91,12 @@
   <fieldType name="text_gen_sort" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
     <analyzer type="index">
       <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="stopwords.txt"/>
+      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
       <filter name="lowercase"/>
     </analyzer>
     <analyzer type="query">
       <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="stopwords.txt"/>
+      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
       <filter name="synonymGraph" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
       <filter name="lowercase"/>
     </analyzer>
@@ -104,12 +104,12 @@
   <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
     <analyzer type="index">
       <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="stopwords.txt"/>
+      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
       <filter name="lowercase"/>
     </analyzer>
     <analyzer type="query">
       <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="stopwords.txt"/>
+      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
       <filter name="synonymGraph" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
       <filter name="lowercase"/>
     </analyzer>
