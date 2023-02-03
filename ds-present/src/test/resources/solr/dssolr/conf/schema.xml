@@ -26,7 +26,9 @@
   <field name="image_height" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="image_width" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="genre" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-
+ 
+ 
+  <field name="text" type="text_da" multiValued="false" indexed="true" required="false" stored="false"/>
 
 
 
@@ -57,6 +59,8 @@
   <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
   <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
   <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+  
+  
   
   
   <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
