@@ -64,17 +64,20 @@ class XSLTTransformerTest {
 
     @Test
     void testIDInjection() throws IOException {
-    	Map<String, String>  singleInject = Map.of("record_identifier", "id_inject.xml");
+    	Map<String, String>  parameters = new HashMap<String,String>();
+    	parameters.put("external_parameter1" , "value1");
+    	parameters.put("external_parameter2" , "value2");
+    	    
     	
-        String solrString = getTransformed("id_inject.xsl", "id_inject.xml", singleInject);
+        String solrString = getTransformed("id_inject.xsl", "id_inject.xml", parameters);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
         String prettyJsonString = gson.toJson(je);
 
 //        System.out.println(prettyJsonString );
-        assertTrue(solrString.contains("{\"id\":\"id_inject.xml"),
-                   "The resulting JSON should contain the filename for the XML document as id but was\n" +
-                   prettyJsonString);
+        assertTrue(solrString.contains("{\"field_external1\":\"value1"), "External field_parameter1 was not 'value1':"+prettyJsonString); //First parameter
+        assertTrue(solrString.contains("\"field_external2\":\"value2"), "External field_parameter2 was not 'value2':"+prettyJsonString); 
+                   
 
     }
 

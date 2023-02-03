@@ -15,7 +15,7 @@
   <xsl:output method="text" />
 
   <xsl:param name="sep_string" select="'!'"/>
-  
+    
   <xsl:template match="/">
   
     <xsl:variable name="json">           

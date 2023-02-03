@@ -5,7 +5,10 @@
   <xsl:output method="text" />
 
   <!-- Declare all externally provided parameters here -->
-  <xsl:param name="record_identifier"/>      <!-- Provided by the Java code that calls the Transformer -->
+  <!-- Provided by the Java code that calls the Transformer -->
+  <xsl:param name="external_parameter1"/>      
+  <xsl:param name="external_parameter2"/>     
+  
   <xsl:param name="missing" select="'N/A'"/> <!-- Not provided, but there is a default value 'N/A' -->
 
   <xsl:template match="/">
@@ -16,7 +19,9 @@
     <xsl:variable name="json"><f:map>
 
       <!-- Use the externally provided parameter -->
-      <f:string key="id"><xsl:value-of select="$record_identifier"/></f:string>
+      <f:string key="field_external1"><xsl:value-of select="$external_parameter1"/></f:string>
+      <f:string key="field_external2"><xsl:value-of select="$external_parameter2"/></f:string>
+
 
       <!-- The caller does not define 'missing' so the default 'N/A' will be used instead -->
       <f:string key="optional"><xsl:value-of select="$missing"/></f:string>
