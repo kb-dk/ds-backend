@@ -177,13 +177,13 @@ public class EmbeddedSolrTest {
 			//Object can be String or String[]
 			Object  value = map.get(key);
 			if (value instanceof String) {
-				System.out.println("Adding:"+key +"="+map.get(key));
+			//	System.out.println("Adding:"+key +"="+map.get(key));
 				document.addField(key, map.get(key));
 
 			}
 			else if (value instanceof ArrayList) {
 				for (Object o : (ArrayList<Object>) value) {
-					System.out.println("Adding:"+key +"="+o.toString());
+			//		System.out.println("Adding:"+key +"="+o.toString());
 					document.addField(key, o.toString());
 				}            	
 			}            
