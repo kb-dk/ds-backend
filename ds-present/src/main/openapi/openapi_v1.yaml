@@ -3,7 +3,13 @@ info:
   version: 'v1'
   title: '${project.name}'
   description: |
-    Metadata delivery for the Royal Danish Library
+    Metadata delivery for the Royal Danish Library.
+    
+    This API delivers metadata from collections at the Royal Danish Library.
+    These metadata can be delivered in different formats. The `/record/{id}`-endpoint can deliver metadata as [JSON-LD](https://json-ld.org/), [MODS](http://www.loc.gov/standards/mods/) and [SolrJSON](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates).
+    
+    Furthermore metadata can be delivered as IIIF Presentation manifests through the `/IIIF/{identifier}/manifest`-endpoint. 
+    For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.0 and should be backwards compatible with version 2.1.1
   contact:
     email: '${user.name}@kb.dk'
   license:
@@ -227,10 +233,656 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Collection'
+  
+# IIIF Presentation endpoints
+  /IIIF/collection/{name}:
+    get:
+      tags:
+        - 'IIIFPresentation'
+      summary: "IIIF Presentation Collection"
+      operationId: getPresentationCollection
+      description: "Collections are used to list the Manifests available for viewing. Collections may include both other Collections and Manifests, in order to form a tree-structured hierarchy."
+      parameters:
+      - name: name
+        in: path
+        description: "The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”."
+        required: true
+        schema:
+          type: string
+          default: "normal"
+      
+      responses:
+        '200':
+          description: 'Succes!'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collection'
+
+  # TODO: Add option to choose parts of manifest to return.
+  /IIIF/{identifier}/manifest:
+    get:
+      tags:
+        - 'IIIFPresentation'
+      summary: "IIIF Presentation manifest"
+      operationId: getPresentationManifest
+      description: "The manifest resource represents a single object and any intellectual work or works embodied within that object. In particular it includes the descriptive, rights and linking information for the object."
+      parameters:
+      - name: identifier
+        in: path
+        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
+        required: true
+        schema:
+          type: string
+      
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manifest'
 
 components:
   schemas:
+    # IIIF Presentation collection response
+    collection: 
+      type: object
+      properties:
+        '@context': 
+          type: string
+          example: "http://iiif.io/api/presentation/3/context.json"
+        id:
+          type: string
+          example: "https://example.org/iiif/collection/top"
+        type:
+          type: string
+          example: "Collection"
+        label: 
+          type: object
+          properties:
+            en:
+              type: array
+              items:
+                type: string
+          example:
+           - en: "Collection for Example Organization"
+        summary: 
+          type: object
+          properties:
+            en:
+              type: array
+              items:
+                type: string
+              example: 
+              - "Short summary of the Collection"
+        requiredStatement:
+          type: object
+          properties:
+            label: 
+              type: object
+              properties:
+                en:
+                  type: array
+                  items:
+                    type: string
+            value: 
+              type: object
+              properties:
+                en:
+                  type: array
+                  items:
+                    type: string
+          example:
+            - label: "Attribution"
+            - value: "Provided by Example Organization"
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+              label: 
+                type: object
+                properties:
+                  en:
+                    type: array
+                    items:
+                      type: string
+              thumbnail:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+                    format:
+                      type: string
+            example:
+            - id: "https://example.org/iiif/1/manifest" 
+              type: "Manifest" 
+              label: 
+                en: "Example Manifest 1"
+              thumbnail:
+                id: "https://example.org/manifest1/thumbnail.jpg"
+                type: "Image"
+                format: "image/jpeg"
+    # IIIF Presentation manifest response
+    manifest:
+      type: object
+      properties:
+        # Metadata about the manifest file
+        '@context': 
+          type: string
+          example: "http://iiif.io/api/presentation/2/context.json"
+        '@id':
+          type: string
+          example: "http://example.org/iiif/book1/manifest"
+        '@type':
+          type: string
+          example: "sc:Manifest"
+        # Descriptive metadata about the object/work
+        label: 
+          type: object
+          properties:
+            en:
+              type: array
+              items:
+                type: string
+          example:
+          - en: "Book 1"
+        metadata:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              value:
+                type: string
+          example:
+          - label:
+              en: "Author"
+            value:
+              none: "Anne Author"
+          - label:
+              en: "Published"
+            value:
+              en: "Paris, circa 1400"
+              fr: "Paris, environ 1400"
+        summary:
+          type: string
+          example: "Book 1, written by Anne Author, published in Paris around 1400."
+        thumbnail:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+              format:
+                type: string
+              service:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+                    profile:
+                      type: string
+          example:
+          - id: "http://example.org/images/book1-page1/full/80,100/0/default.jpg"
+            type: "Image"
+            format: "image/jpeg"
+            service: 
+              id: "http://example.org/images/book1-page1"
+              type: "ImageService3"
+              example: "level1"
+        # Presentation information
+        viewingDirection:
+          type: string
+          example: "right-to-left"
+        viewingHint:
+          type: string
+          example: "paged"
+        navDate:
+          type: string
+          format: date-time
+          example: "1856-01-01T00:00:00Z"
+        # Rights information
+        rights:
+          type: string
+          example: "http://creativecommons.org/licenses/by/4.0/"
+        requiredStatement:
+          type: object
+          properties:
+            label:
+              type: string
+            value:
+              type: string
+          example:
+          - label: "Attribution"
+            value: "Provided by Example Organization"
+        provider:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+              label:
+                type: string
+              homepage:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: 
+                      type: string
+                    type:
+                      type: string
+                    label:
+                      type: string
+                    format: 
+                      type: string
+              logo:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+                    format:
+                      type: string
+                    service:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          type: 
+                            type: string
+                          profile:
+                            type: string
+              seeAlso:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: 
+                      type: string
+                    type:
+                      type: string
+                    format:
+                      type: string
+                    profile: 
+                      type: string
+            example:
+            - id: "https://example.org/about"
+              type: "Agent"
+              label: 
+                en: "Example organisation"
+              homepage: 
+                id: "https://example.org/"
+                text: "Text"
+                label:
+                  en: "Example Organization Homepage"
+                format: "text/html"
+              logo:
+                id: "https://example.org/service/inst1/full/max/0/default.png"
+                type: "Image"
+                format: "image/png"
+                service:
+                  id: "https://example.org/service/inst1"
+                  type: "ImageService3"
+                  profile: "level2"
+              seeAlso:
+                id: "https://data.example.org/about/us.jsonld"
+                type: "Dataset"
+                format: "application/ld+json"
+                profile: "https://schema.org/"    
+        # Links
+        homepage:
+          type: array
+          items:
+            type: object
+            properties:
+              id: 
+                type: string
+              type:
+                type: string
+              label:
+                type: string
+              format:
+                type: string
+          example:
+          - id: "https://example.org/info/book1/"
+            type: "Text"
+            label: "Home page for Book 1"
+            format: "text/html"
+        service:
+          type: array
+          items:
+            type: object
+            properties:
+              id: 
+                type: string
+              type:
+                type: string
+              profile:
+                type: string
+          example:
+          - id: "https://example.org/service/example"
+            type: "ExampleExtensionService"
+            profile: "https://example.org/docs/example-service.html"
+        seeAlso:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type: 
+                type: string
+              format: 
+                type: string
+              profile:
+                type: string
+          example:
+          - id: "https://example.org/library/catalog/book1.xml"
+            type: "Dataset"
+            format: "text/xml"
+            profile: "https://example.org/profiles/bibliographic"
+        rendering:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type: 
+                type: string
+              label:
+                type: string
+              format: 
+                type: string
+            example:
+            - id: "https://example.org/iiif/book1.pdf"
+              type: "Text"
+              label: "Download as PDF"
+              format: "application/pdf"
+        partOf:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                  type: string
+              type: 
+                type: string
+          example:
+          - id: "https://example.org/collections/books/"
+            type: "Collection"
+        start:
+          type: object
+          properties:
+            id:
+                type: string
+            type: 
+              type: string
+          example:
+          - id: "https://example.org/iiif/book1/canvas/p2"
+            type: "Canvas"
+        # List of Services, referenced from within items, structures or annotations
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              '@id':
+                type: string
+              '@type':
+                type: string
+              profile:
+                type: string
+              label:
+                type: string
+              service:
+                type: object
+                properties:
+                  '@id':
+                    type: string
+                  '@type':
+                    type: string
+                  profile:
+                    type: string
+          example:
+          - '@id': "https://example.org/iiif/auth/login"
+            '@type': "AuthCookieService1"
+            profile: "http://iiif.io/api/auth/1/login"
+            label: "Login to Example Institution"
+            service:
+              '@id': "https://example.org/iiif/auth/login"
+              '@type': "AuthCookieService1"
+              profile: "http://iiif.io/api/auth/1/login"
+        # List of Canvases
+        items: 
+          type: array
+          items:
+            $ref: '#/components/schemas/canvas'
+        # Structure of the resource, described with Ranges
+        structures:
+          type: array
+          items:
+            $ref: '#/components/schemas/range'
+            # Any additional top level Ranges can be included here
+        # Commentary Annotations on the Manifest
+        annotations:
+          $ref: '#/components/schemas/annotations'
+        # TODO: Figure out if all of presentation API can be contained in one schema
+        
+    # IIIF Presentation canvas response
+    canvas: 
+      type: object
+      properties:
+        #  Metadata about this canvas
+        id: 
+          type: string
+          example: "https://example.org/iiif/book1/canvas/p1"
+        type:
+          type: string
+          example: "Canvas"
+        label: 
+          type: object
+          properties:
+            none:
+              type: array
+              items:
+                type: string
+                example: "p. 1"
+        height:
+          type: integer
+          example: 1000
+        width:
+          type: integer
+          example: 750
+        items: 
+          type: array
+          items: 
+            type: object
+            properties:
+              id: 
+                type: string
+              type:
+                type: string
+              items:
+                type: array
+                items:
+                  type: string
+          example:
+          - id: "https://example.org/iiif/book1/content/p1/1"
+            type: "AnnotationPage"
+            items: 
+              - "Painting Annotations on the Canvas"
+        annotations: 
+          type: array
+          items: 
+            type: object
+            properties:
+              id: 
+                type: string
+              type:
+                type: string
+              items:
+                type: array
+                items:
+                  type: string
+          example: 
+          - id: "https://example.org/iiif/book1/comments/p1/1"
+            type: "AnnotationPage"
+            items: 
+              - "Non-Painting Annotations on the Canvas"
+    
+    # IIIF Presentation range response - used with structures in manifest
+    range:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: "https://example.org/iiif/book1/range/r0"
+          type:
+            type: string
+            example: "Range"
+          label:
+            type: object
+            properties:
+              en:
+                type: string
+                example: "Table of Contents"
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: 
+                      type: string
+                    type: 
+                      type: string
+                    label:
+                      type: object
+                      properties:
+                        en:
+                          type: string
+                    supplementary:
+                      type: object
+                      properties:
+                        id: 
+                          type: string
+                        type:
+                          type: string
+                    items: 
+                      type: array
+                      items: 
+                        type: object
+                        properties:
+                          id: 
+                            type: string
+                          type:
+                            type: string
+                          source:
+                            type: string
+                          selector: 
+                            type: object
+                            properties:
+                              type:
+                                type: string
+                              value:
+                                type: string
+                example:
+                - id: "https://example.org/iiif/book1/canvas/cover"
+                  type: "Canvas"
+                - id: "https://example.org/iiif/book1/range/r1"
+                  type: "Range"
+                  label:
+                    en: "Introduction"
+                  supplementary:
+                    id: "https://example.org/iiif/book1/annocoll/introTexts"
+                    type: "AnnotationCollection"
+                - items:
+                    id: "https://example.org/iiif/book1/canvas/p1"
+                    type: "Canvas"
+                - items:
+                    id: "https://example.org/iiif/book1/canvas/p2"
+                    type: "Canvas"
+                - items:
+                    type: "SpecificResource"
+                    source: "https://example.org/iiif/book1/canvas/p3"
+                    selector:
+                      type: "FragmentSelector"
+                      value: "xywh=0,0,750,300"
+                - items: 
+                    id: "https://example.org/iiif/book1/canvas/backCover"
+                    type: "Canvas"
 
+    # IIIF Presentation annotations response
+    annotations:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+              motivation: 
+                type: string
+              body: 
+                type: object
+                properties:
+                  type:
+                    type: string
+                  language:
+                    type: string
+                  value:
+                    type: string
+              target:
+                type: string
+      example:
+      - id: "https://example.org/iiif/book1/page/manifest/1"
+        type: "AnnotationPage"
+        items:
+          id: "https://example.org/iiif/book1/page/manifest/a1"
+          type: "Annotation"
+          motivation: "commenting"
+          body: 
+            type: "TextualBody"
+            language: "en"
+            value: "I love this manifest!"
+          target: "https://example.org/iiif/book1/manifest"
     Error:
       type: object
       required:

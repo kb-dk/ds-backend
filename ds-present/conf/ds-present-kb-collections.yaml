@@ -63,12 +63,6 @@ config:
         base: 'dk.samlingsbilleder'
         views: *MODS_IMAGE_VIEWS
 
-    - samlingsbilleder:
-        description: 'Diverse images from image collections at the Royal Danish Library'
-        prefix: 'dk.samlingsbilleder'
-        base: 'dk.samlingsbilleder'
-        views: *MODS_IMAGE_VIEWS
-
     # Straight forward collection with the core format being MODS
     # Uses the default storage, which connects to a running ds-storage instance
     - remote: # ds-present internal
