@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -39,6 +40,8 @@ import com.google.gson.JsonParser;
 
 
 import dk.kb.present.TestUtil;
+import dk.kb.present.copyright.XsltCopyrightMapper;
+import dk.kb.util.Resolver;
 
 public class EmbeddedSolrTest {
 
@@ -110,7 +113,9 @@ public class EmbeddedSolrTest {
 	 
     @Test
     void testNew000332() throws Exception {
-        String solrString = TestUtil.getTransformed(MODS2SOLR_NEW, NEW_000332);
+               
+    	String solrString = TestUtil.getTransformed(MODS2SOLR_NEW, NEW_000332);            
+        
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
@@ -123,6 +128,25 @@ public class EmbeddedSolrTest {
          assertEquals(1, getNumberOfTotalDocuments());
     }
     
+    
+    @Test
+    void testNew000332WithAccessfiels() throws Exception {
+               
+    	String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR_NEW, NEW_000332);
+    
+        
+        
+        // TODO: Add more detailed test
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(solrString);
+        String prettyJsonString = gson.toJson(je);
+         SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+         embeddedServer.add(document);
+         embeddedServer.commit();
+        
+         
+         assertEquals(1, getNumberOfTotalDocuments());
+    }
     
     /*
      * Embedded solr does not have a http listener, so we can not add call and add documents as JSON.

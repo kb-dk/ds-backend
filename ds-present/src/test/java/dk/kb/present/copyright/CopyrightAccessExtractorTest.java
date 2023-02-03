@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
+import dk.kb.present.TestUtil;
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
@@ -340,6 +341,13 @@ public class CopyrightAccessExtractorTest {
 
     }
 
+    
+    @Test
+    void testXstlAccessFieldsAdded() throws Exception {
+	   String solrString = TestUtil.getTransformedWithAccessFieldsAdded("xslt/mods2solr_NEW.xsl", "xml/copyright_extraction/000332.tif.xml");
+      System.out.println(solrString);
+    }
+	
     @Test
     void testAccessConditionwith3Persons1Corporate() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/000332.tif.xml");
@@ -365,6 +373,12 @@ public class CopyrightAccessExtractorTest {
         assertEquals(1895, mapper.getLastDeathYearForPerson());   
         assertEquals(1899, mapper.getSkabelsesAar());
         assertEquals(true, mapper.isEjerMaerke());
+
+    
+        //XSLT mapping
+         HashMap<String, String> xsltMap = XsltCopyrightMapper.xsltCopyrightTransformer(mods);
+        //System.out.println(xsltMap);
+         //TODO test fields
     }
 
 

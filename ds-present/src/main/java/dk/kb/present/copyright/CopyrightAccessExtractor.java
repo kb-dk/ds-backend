@@ -42,6 +42,11 @@ public class CopyrightAccessExtractor {
 
     public static CopyrightAccessDto buildCopyrightFields(String xml) throws Exception {
 
+    	if (xml == null) {
+    		throw new Exception("XML is null");
+    	}
+    	
+    	
         CopyrightAccessDto copyrightDto= new CopyrightAccessDto();
 
         Document document = createDocFromXml(xml);
