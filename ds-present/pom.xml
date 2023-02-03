@@ -366,6 +366,10 @@
       <version>9.1.1</version>
       <scope>test</scope>
       <exclusions>
+        <exclusion> <!-- Solves the "multiple slf bindings" warning -->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </exclusion>
         <exclusion>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
