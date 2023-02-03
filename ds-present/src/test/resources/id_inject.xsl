@@ -16,7 +16,8 @@
     <!-- Create a variable that holds the full output content in the form of a map where keys
          are Solr field-names and values are Solr field-values. Multi-value fields are represented
           using array (see "some_array" below) -->
-    <xsl:variable name="json"><f:map>
+    <xsl:variable name="json">
+    <f:map>
 
       <!-- Use the externally provided parameter -->
       <f:string key="field_external1"><xsl:value-of select="$external_parameter1"/></f:string>
@@ -37,7 +38,8 @@
         <f:string>content 2</f:string>
       </f:array>
 
-    </f:map></xsl:variable>
+    </f:map>
+    </xsl:variable>
 
     <!-- Output the variable with all the content using the build-in xml-to-json transformation -->
     <xsl:value-of select="f:xml-to-json($json)"/>

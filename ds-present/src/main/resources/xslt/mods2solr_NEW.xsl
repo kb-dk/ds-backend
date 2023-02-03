@@ -14,21 +14,18 @@
     
   <xsl:output method="text" />
 
-
+  <!-- Declare all externally provided parameters here -->
+  <!-- Provided by the Java code that calls the Transformer. (Key,Value) pairs are given in a map -->
+  <!-- <xsl:param name="external_parameter1"/> -->    
     
   <xsl:template match="/">
   
-    <xsl:variable name="json">           
+    <xsl:variable name="json">   
+    <f:map>        
          <!--This is the mets element with the bibliographic metadata.  -->
         <xsl:for-each select="//mets:dmdSec[@ID='Mods1']//m:mods">
-          <xsl:variable name="record-id">
-            dummy_identifier
-          </xsl:variable>
-         
-         
-         <!-- Start XSLT logic -->
-          <xsl:variable name="output_data">
-            <f:map>
+                                  
+         <!-- Start XSLT logic -->                      
              <!-- Here can be multiple values -->                   
             <xsl:for-each select="m:recordInfo/m:languageOfCataloging/m:languageTerm[1]">
               <f:string key="cataloging_language">
@@ -130,37 +127,14 @@
             </f:string>
             <f:string key="image_width">
               <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth"/>
-            </f:string>
-
-           </f:map>
-          </xsl:variable>
+            </f:string>         
           <!-- End XSLT logic -->
-
-
-          <xsl:apply-templates select="$output_data/f:map">
-            <xsl:with-param name="record_identifier" select="$record-id"/>
-          </xsl:apply-templates>
-
         </xsl:for-each>
-    </xsl:variable>
- 
+   </f:map>
+   </xsl:variable>
  
     <!-- Define output -->
     <xsl:value-of select="f:xml-to-json($json)"/>
- 
- 
   </xsl:template>
-  
-  
-  
-  <xsl:template match="*|@*">
-    <xsl:param name="record_identifier"/>
-    <xsl:copy>
-      <xsl:apply-templates select="*|@*|text()">
-        <xsl:with-param name="record_identifier" select="$record_identifier"/>
-      </xsl:apply-templates>
-    </xsl:copy>
-  </xsl:template>
-  
   
 </xsl:transform>
