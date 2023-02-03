@@ -33,53 +33,52 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class XSLTSolrTransformerTest{
 
-    public static final String MODS2SOLR_OLD = "xslt/mods2solr_OLD.xsl";
-    public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-    public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; //Updated version
-    public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
-    
-    
-
-    @Test
-    void testSolOld() throws IOException {
-        String solrString = TestUtil.getTransformed(MODS2SOLR_OLD,  RECORD_000332);
-        // TODO: Add more detailed test
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = JsonParser.parseString(solrString);                
-        String prettyJsonString = gson.toJson(je);        
-        System.out.println(prettyJsonString );
-        
-    }
-
-    
-    @Test
-    void testSolrNew() throws Exception {
-    	
-    	String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_000332);
-        // TODO: Add more detailed test
-     
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = JsonParser.parseString(solrString);
-        String prettyJsonString = gson.toJson(je);        
-        System.out.println(prettyJsonString );
-       
-      //  assertTrue(solrString.contains("{\"id\":\""));
-    }
-
-    @Test
-    void testXsltNewDpkItem() throws Exception {
-        String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DPK);
-        // TODO: Add more detailed test
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = JsonParser.parseString(solrString);
-        String prettyJsonString = gson.toJson(je);
-        System.out.println(prettyJsonString );
-
-        //  assertTrue(solrString.contains("{\"id\":\""));
-    }
+	public static final String MODS2SOLR_OLD = "xslt/mods2solr_OLD.xsl";
+	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
+	public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
+	public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
 
 
-    
-    
+
+	@Test
+	void testSolOld() throws IOException {
+		String solrString = TestUtil.getTransformed(MODS2SOLR_OLD,  RECORD_000332);
+		// TODO: Add more detailed test
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);                
+		String prettyJsonString = gson.toJson(je);        
+		System.out.println(prettyJsonString );
+
+	}
+
+	@Test
+	void testSolrNew() throws Exception {
+
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_000332);
+		// TODO: Add more detailed test
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);        
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testXsltNewDpkItem() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DPK);
+		// TODO: Add more detailed test
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+
+
+
 }

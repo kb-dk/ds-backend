@@ -35,11 +35,16 @@
        
        <!-- Some fields always here. Required in schema -->              
        <f:string key="access_blokeret"><xsl:value-of select="$access_blokeret"/></f:string>                          
-       <f:string key="access_skabelsesaar"><xsl:value-of select="$access_skabelsesaar"/></f:string>       
-       <f:string key="access_ophavsperson_doedsaar"><xsl:value-of select="$access_ophavsperson_doedsaar"/></f:string>       
+       <f:string key="access_skabelsesaar"><xsl:value-of select="$access_skabelsesaar"/></f:string>                     
        <f:string key="access_materiale_type"><xsl:value-of select="$access_materiale_type"/></f:string>  
-            
+       
+       
+       
        <!-- Only add fields if not empty -->
+       <xsl:if test="$access_ophavsperson_doedsaar!= ''">
+          <f:string key="access_ophavsperson_doedsaar"><xsl:value-of select="$access_ophavsperson_doedsaar"/></f:string>
+       </xsl:if>    
+                               
        <xsl:if test="$access_pligtafleveret!= ''">     
          <f:string key="access_pligtafleveret"><xsl:value-of select="$access_pligtafleveret"/></f:string>
        </xsl:if>
