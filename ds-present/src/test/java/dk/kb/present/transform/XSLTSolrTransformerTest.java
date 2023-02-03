@@ -1,5 +1,6 @@
 package dk.kb.present.transform;
 
+import dk.kb.present.TestUtil;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
 
@@ -41,7 +42,7 @@ class XSLTSolrTransformerTest{
 
     @Test
     void testSolOld() throws IOException {
-        String solrString = getTransformed(MODS2SOLR,  NEW_000332);
+        String solrString = TestUtil.getTransformed(MODS2SOLR,  NEW_000332);
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);                
@@ -53,7 +54,7 @@ class XSLTSolrTransformerTest{
     
     @Test
     void testSolrNew() throws IOException {
-        String solrString = getTransformed(MODS2SOLR_NEW, NEW_000332);
+        String solrString = TestUtil.getTransformed(MODS2SOLR_NEW, NEW_000332);
         // TODO: Add more detailed test
      
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -66,7 +67,7 @@ class XSLTSolrTransformerTest{
 
     @Test
     void testXsltNewDpkItem() throws IOException {
-        String solrString = getTransformed(MODS2SOLR_NEW, NEW_DPK);
+        String solrString = TestUtil.getTransformed(MODS2SOLR_NEW, NEW_DPK);
         // TODO: Add more detailed test
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -79,9 +80,5 @@ class XSLTSolrTransformerTest{
 
 
     
-    private String getTransformed(String xsltResource, String xmlResource) throws IOException {
-        XSLTTransformer transformer = new XSLTTransformer(xsltResource);
-        String mods = Resolver.resolveUTF8String(xmlResource);
-        return transformer.apply(mods, Map.of("recordID", xmlResource));
-    }
+    
 }

@@ -1,5 +1,6 @@
 package dk.kb.present.transform;
 
+import dk.kb.present.TestUtil;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
 import org.json.JSONObject;
@@ -39,20 +40,20 @@ class XSLTTransformerTest {
     
     @Test
     void testJSONLDAlbert() throws IOException {
-        JSONObject jsonld = new JSONObject(getTransformed(MODS2JSONLD, ALBERT,null));
+        JSONObject jsonld = new JSONObject( TestUtil.getTransformed(MODS2JSONLD, ALBERT));
         assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"Einstein, Albert\",\"@language\":\"en\"}"));
     }
 
     @Test
     void testJSONLDChinese() throws IOException {
-        JSONObject jsonld = new JSONObject(getTransformed(MODS2JSONLD, CHINESE,null));
+        JSONObject jsonld = new JSONObject(TestUtil.getTransformed(MODS2JSONLD, CHINESE));
         assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"周培春 Zhou Peichun\",\"@language\":\"zh\"}"));
     }
 
     
     @Test
     void testNew000332() throws IOException {
-        String solrString = getTransformed(MODS2SOLR_NEW, NEW_000332,null);
+        String solrString =  TestUtil.getTransformed(MODS2SOLR_NEW, NEW_000332);
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
@@ -69,7 +70,7 @@ class XSLTTransformerTest {
     	parameters.put("external_parameter2" , "value2");
     	    
     	
-        String solrString = getTransformed("id_inject.xsl", "id_inject.xml", parameters);
+        String solrString =  TestUtil.getTransformed("id_inject.xsl", "id_inject.xml", parameters);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
         String prettyJsonString = gson.toJson(je);
@@ -81,16 +82,6 @@ class XSLTTransformerTest {
 
     }
 
-
-    private String getTransformed(String xsltResource, String xmlResource, Map<String,String> injections) throws IOException {
-        XSLTTransformer transformer = new XSLTTransformer(xsltResource);
-        String mods = Resolver.resolveUTF8String(xmlResource);
-        if (injections == null) {
-        	injections = new HashMap<String,String>();
-        }        
-        return transformer.apply(mods, injections);
-    }
-    
     
     
 }

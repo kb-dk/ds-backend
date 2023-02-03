@@ -14,18 +14,29 @@ public class TestUtil {
 	 public static String getTransformed(String xsltResource, String xmlResource) throws IOException {
 	        XSLTTransformer transformer = new XSLTTransformer(xsltResource);
 	        String mods = Resolver.resolveUTF8String(xmlResource);
-	        return transformer.apply(mods, Map.of("recordID", xmlResource));
+	        return transformer.apply(mods, new HashMap<String,String>());
 	    }	
 	 
 	 
-	 
-	 public static String getTransformedWithAccessFieldsAdded(String xsltResource, String xmlResource) throws Exception {
-	        XSLTTransformer transformer = new XSLTTransformer(xsltResource);	       	        
-	   
+	  public static String getTransformed(String xsltResource, String xmlResource, Map<String,String> injections) throws IOException {
+	        XSLTTransformer transformer = new XSLTTransformer(xsltResource);
 	        String mods = Resolver.resolveUTF8String(xmlResource);
-	        HashMap<String, String> accessFields = XsltCopyrightMapper.xsltCopyrightTransformer(mods);
-	        
-	        System.out.println(accessFields);
-	        return transformer.apply(mods, accessFields);
+	        if (injections == null) {
+	        	injections = new HashMap<String,String>();
+	        }        
+	        return transformer.apply(mods, injections);
 	    }
+	    
+	  
+
+		 public static String getTransformedWithAccessFieldsAdded(String xsltResource, String xmlResource) throws Exception {
+		        XSLTTransformer transformer = new XSLTTransformer(xsltResource);	       	        
+		   
+		        String mods = Resolver.resolveUTF8String(xmlResource);
+		        HashMap<String, String> accessFields = XsltCopyrightMapper.xsltCopyrightTransformer(mods);
+		        
+		        System.out.println(accessFields);
+		        return transformer.apply(mods, accessFields);
+		    }
+	 
 }
