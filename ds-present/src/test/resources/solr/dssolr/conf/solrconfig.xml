@@ -739,6 +739,9 @@
      <lst name="defaults">
        <str name="echoParams">explicit</str>
        <int name="rows">10</int>
+       <str name="indent">true</str>
+       <str name="df">freetext</str>
+       <str name="q.op">AND</str>
      </lst>
          
     </requestHandler>
@@ -747,19 +750,15 @@
   <requestHandler name="/query" class="solr.SearchHandler">
      <lst name="defaults">
        <str name="echoParams">explicit</str>
+       <int name="rows">10</int>
        <str name="wt">json</str>
        <str name="indent">true</str>
-       <str name="df">text</str>
+       <str name="df">freetext</str>
        <str name="q.op">AND</str>
      </lst>
   </requestHandler>
 
-  <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell,update">
-    <lst name="defaults">
-      <str name="df">freetext</str>
-    </lst>
-  </initParams>
-
+  
   <!-- The following are some of the implicit Update Request Handlers
   <requestHandler name="/update/json" class="solr.UpdateRequestHandler">
         <lst name="invariants">
@@ -792,17 +791,7 @@
     </lst>
   </requestHandler>
 
-  <!-- XSLT Update Request Handler
-
-       https://solr.apache.org/guide/solr/latest/indexing-guide/indexing-with-update-handlers.html#using-xslt-to-transform-xml-index-updates
-
-    -->
-  <requestHandler name="/update/xslt"
-                  startup="lazy"
-                  class="solr.scripting.xslt.XSLTUpdateRequestHandler" >
-    <int name="xsltCacheLifetimeSeconds">5</int>
-  </requestHandler>
-
+ 
    <!-- Spell Check
 
         The spell check component can return a list of alternative spelling
