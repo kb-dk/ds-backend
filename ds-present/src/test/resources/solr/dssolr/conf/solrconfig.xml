@@ -756,7 +756,7 @@
 
   <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell,update">
     <lst name="defaults">
-      <str name="df">text</str>
+      <str name="df">freetext</str>
     </lst>
   </initParams>
 

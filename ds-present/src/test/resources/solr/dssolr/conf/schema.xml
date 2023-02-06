@@ -49,7 +49,7 @@
   <field name="image_height" type="pint"/>
   <field name="image_width" type="pint"/> 
   
-  <field name="text" type="text_general"/>
+  <field name="freetext" type="text_general" multiValued="true"/>
 
 
   <!--  Fields related to copyright and access conditions -->
@@ -138,8 +138,22 @@
   </fieldType>
  <!-- END FIELDTYPES  -->
  
+ 
+ 
   <!-- START COPYFIELD  -->
-    <!-- <copyField source="author" dest="text"/> -->
+    <copyField source="creator_name" dest="freetext"/> 
+    <copyField source="creator_full_name" dest="freetext"/>
+    <copyField source="creator_given_name" dest="freetext"/>
+    <copyField source="creator_terms_of_address" dest="freetext"/>
+    <copyField source="area" dest="freetext"/>
+    <copyField source="subject" dest="freetext"/>
+    <copyField source="subject_name" dest="freetext"/>
+    <copyField source="subject_full_name" dest="freetext"/>
+    <copyField source="subject_family_name" dest="freetext"/>
+    <copyField source="subject_given_name" dest="freetext"/>
+    
+        
+    
   <!-- END COPYFIELD  -->    
      
     
