@@ -130,12 +130,19 @@
             </f:array>
           </xsl:if>
           <xsl:if test="m:originInfo[@altRepGroup='original']">
-            <f:string key="production_date_start">
-              <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']"/>
-            </f:string>
-            <f:string key="production_date_end">
-              <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
-            </f:string>
+            <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
+              <f:string key="date_created">
+                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
+              </f:string>
+            </xsl:if>
+            <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']">
+              <f:string key="production_date_start">
+                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']"/>
+              </f:string>
+              <f:string key="production_date_end">
+                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
+              </f:string>
+            </xsl:if>
           </xsl:if>
           <xsl:if test="m:originInfo[@altRepGroup='surrogate']">
             <f:string key="digital_surrogate_production_date">
@@ -145,15 +152,17 @@
           <f:string key="collection">
             <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
           </f:string>
-          <f:array key="subject">
-            <xsl:for-each select="m:subject">
-              <xsl:for-each select="m:topic[@lang]">
-                <f:string>
-                  <xsl:value-of select="."/>
-                </f:string>
+          <xsl:if test="m:subject/m:topic[@lang]">
+            <f:array key="topic">
+              <xsl:for-each select="m:subject">
+                <xsl:for-each select="m:topic[@lang]">
+                  <f:string>
+                    <xsl:value-of select="."/>
+                  </f:string>
+                </xsl:for-each>
               </xsl:for-each>
-            </xsl:for-each>
-          </f:array>
+            </f:array>
+          </xsl:if>
           <xsl:if test="m:subject/m:hierarchicalGeographic">
             <xsl:for-each select="m:subject/m:hierarchicalGeographic">
                 <f:string key="area">

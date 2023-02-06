@@ -23,7 +23,7 @@
   <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
     
   <field name="area" type="text_general" multiValued="false"/>
-  <field name="subject" type="text_general" multiValued="true"/>
+  <field name="topic" type="text_general" multiValued="true"/>
   <field name="subject_name" type="text_general" multiValued="true"/>
   <field name="subject_full_name" type="text_general" multiValued="true"/>
   <field name="subject_family_name" type="text_general" multiValued="true"/>
@@ -34,6 +34,7 @@
 
   <!-- Fields on production of physical and digital object. -->
   <!-- TODO: Format as date -->
+  <field name="date_created" type="string"/>
   <field name="production_date_start" type="string"/>
   <field name="production_date_end" type="string"/>
   <field name="digital_surrogate_production_date" type="string"/>
@@ -161,7 +162,7 @@
     <copyField source="creator_given_name" dest="freetext"/>
     <copyField source="creator_terms_of_address" dest="freetext"/>
     <copyField source="area" dest="freetext"/>
-    <copyField source="subject" dest="freetext"/>
+    <copyField source="topic" dest="freetext"/>
     <copyField source="subject_name" dest="freetext"/>
     <copyField source="subject_full_name" dest="freetext"/>
     <copyField source="subject_family_name" dest="freetext"/>
