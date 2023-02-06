@@ -99,6 +99,7 @@ class XSLTSolrTransformerTest{
 	void testXsltDt005031() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DT005031);
 		// TODO: Add more detailed test
+		// Test that date_created is present and that subject is not
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
