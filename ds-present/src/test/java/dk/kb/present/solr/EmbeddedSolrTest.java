@@ -1,12 +1,11 @@
 package dk.kb.present.solr;
 
 import java.io.File;
-import java.io.IOException;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -21,7 +20,6 @@ import org.apache.solr.core.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -43,8 +40,6 @@ import com.google.gson.JsonParser;
 
 
 import dk.kb.present.TestUtil;
-import dk.kb.present.copyright.XsltCopyrightMapper;
-import dk.kb.util.Resolver;
 
 public class EmbeddedSolrTest {
 
@@ -182,10 +177,9 @@ public class EmbeddedSolrTest {
 		assertTrue(typeResources.contains("Grafik"));
 
 		//TODO more fields
-
 	}
 
-
+	
 
 	/*
 	 * ------- Private helper methods below -------------- 
