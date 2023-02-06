@@ -61,7 +61,7 @@ bin/cloud_start.sh
 
 If the Solr configuration is changed, force an update with
 ```
-FORCE_CONFIG=true bin/cloud_sync.sh nested-template/conf/ ds-conf ds
+FORCE_CONFIG=true bin/cloud_sync.sh src/test/resources/solr/dssolr/conf/ ds-conf ds
 ```
 
 Clear the collection with 
