@@ -132,6 +132,13 @@
               </xsl:for-each>
             </xsl:for-each>
           </f:array>
+          <xsl:if test="m:subject/m:hierarchicalGeographic">
+            <xsl:for-each select="m:subject/m:hierarchicalGeographic">
+                <f:string key="area">
+                  <xsl:value-of select="m:area"/>
+                </f:string>
+            </xsl:for-each>
+          </xsl:if>
           <xsl:if test="m:subject/m:name">
             <xsl:for-each select="m:subject/m:name">
               <f:array key="subject_name">
