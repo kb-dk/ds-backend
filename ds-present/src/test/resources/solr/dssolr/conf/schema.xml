@@ -127,6 +127,9 @@
   <!-- START COPYFIELD  -->
     <!-- <copyField source="author" dest="text"/> -->
   <!-- END COPYFIELD  -->    
-    
+     
+   
+   
+   <solrQueryParser defaultOperator="AND"/>
     
  </schema>
