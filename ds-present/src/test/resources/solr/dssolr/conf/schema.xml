@@ -15,6 +15,7 @@
   <field name="genre" type="string"/>
   <field name="collection" type="string"/>
 
+
   <!-- Fields on creator -->
   <field name="creator_name" type="text_general" multiValued="true"/>
   <field name="creator_full_name" type="text_general" multiValued="true"/>
@@ -24,6 +25,9 @@
     
   <field name="area" type="text_general" multiValued="false"/>
   <field name="topic" type="text_general" multiValued="true"/>
+  <field name="description" type="text_general" multiValued="false"/>
+  <field name="note" type="text_general" multiValued="true"/>
+
   <field name="subject_name" type="text_general" multiValued="true"/>
   <field name="subject_full_name" type="text_general" multiValued="true"/>
   <field name="subject_family_name" type="text_general" multiValued="true"/>
