@@ -1,21 +1,12 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
-import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
 
-import org.apache.solr.common.SolrInputDocument;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 
 import java.io.IOException;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +31,7 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
 	public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
 	public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
+	public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
 
 
 	@Test
@@ -113,6 +105,20 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXsltSkfF0137() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_SKF_f_0137);
+		// TODO: Add more detailed test
+		// Test that date_created is present and that subject is not
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testXsltKhp0001049() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_KHP0001_049);
 		// TODO: Add more detailed test
 		// Test that date_created is present and that subject is not
 
