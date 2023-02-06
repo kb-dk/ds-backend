@@ -37,6 +37,7 @@ class XSLTSolrTransformerTest{
 	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
 	public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
 	public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
+	public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
 
 
 
@@ -68,6 +69,19 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXsltNewDpkItem() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DPK);
+		// TODO: Add more detailed test
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testXslt096() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090);
 		// TODO: Add more detailed test
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
