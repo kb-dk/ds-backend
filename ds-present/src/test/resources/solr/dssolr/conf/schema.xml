@@ -49,7 +49,7 @@
   <field name="image_height" type="pint"/>
   <field name="image_width" type="pint"/> 
   
-  <field name="freetext" type="text_general" multiValued="true"/>
+  <field name="freetext" type="freetext" multiValued="true"/>
 
 
   <!--  Fields related to copyright and access conditions -->
@@ -132,10 +132,25 @@
     <analyzer type="query">
       <tokenizer name="standard"/>
       <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
-      <filter name="synonymGraph" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
       <filter name="lowercase"/>
     </analyzer>
   </fieldType>
+  
+   <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer name="standard"/>
+      <charFilter name="mapping" mapping="mapping-FoldToASCII.txt"/>    
+      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
+      <filter name="lowercase"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer name="standard"/>
+      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
+      <charFilter name="mapping" mapping="mapping-FoldToASCII.txt"/>
+      <filter name="lowercase"/>
+    </analyzer>
+  </fieldType>
+  
  <!-- END FIELDTYPES  -->
  
  
