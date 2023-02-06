@@ -119,6 +119,15 @@
                 </xsl:for-each>
               </xsl:if>
             </f:array>
+            <f:array key="creator_terms_of_address">
+              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+                <xsl:for-each select="m:name">
+                  <f:string>
+                    <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
+                  </f:string>
+                </xsl:for-each>
+              </xsl:if>
+            </f:array>
           </xsl:if>
           <f:string key="collection">
             <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
@@ -132,6 +141,13 @@
               </xsl:for-each>
             </xsl:for-each>
           </f:array>
+          <xsl:if test="m:subject/m:hierarchicalGeographic">
+            <xsl:for-each select="m:subject/m:hierarchicalGeographic">
+                <f:string key="area">
+                  <xsl:value-of select="m:area"/>
+                </f:string>
+            </xsl:for-each>
+          </xsl:if>
           <xsl:if test="m:subject/m:name">
             <xsl:for-each select="m:subject/m:name">
               <f:array key="subject_name">
