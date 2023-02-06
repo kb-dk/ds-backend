@@ -42,8 +42,8 @@ After this, a record for ID `doms.radio:albert-einstein.xml` should be delivered
 
 ### Setup Solr
 
-Checkout [ds-solr](https://github.com/kb-dk/ds-solr/), change to the `solr-nested-indexing` branch and follow
-the README, using the Solr setup from `nested-template/conf/`. This boils down to
+ds-present comes with convenience scripts for downloading, installing and starting Solr 9 in Cloud mode.
+
 ```shell
   bin/cloud_install.sh
   bin/cloud_start.sh
