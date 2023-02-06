@@ -38,7 +38,8 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
 	public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
 	public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
-
+	public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
+	public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
 
 
 	@Test
@@ -95,6 +96,33 @@ class XSLTSolrTransformerTest{
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
 
+	@Test
+	void testXsltDt005031() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DT005031);
+		// TODO: Add more detailed test
+		// Test that date_created is present and that subject is not
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testXsltSkfF0137() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_SKF_f_0137);
+		// TODO: Add more detailed test
+		// Test that date_created is present and that subject is not
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
 
 
 
