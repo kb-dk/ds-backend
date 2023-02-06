@@ -128,21 +128,18 @@
       <filter name="lowercase"/>
     </analyzer>
   </fieldType>
-  
-     <!-- Diacritics must match -->
+     
   <fieldType name="text_strict_name" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="100">
     <analyzer type="index">
-      <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
-      <filter name="lowercase"/>
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>                 
+  <!--         <filter name="lowercase"/> -->
+               
     </analyzer>
     <analyzer type="query">
-      <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
-      <filter name="lowercase"/>
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>      
+      <!--    <filter name="lowercase"/> -->
     </analyzer>
   </fieldType>
-  
      
      
   <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="100">
@@ -167,8 +164,8 @@
     </analyzer>
     <analyzer type="query">
       <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
       <charFilter name="mapping" mapping="mapping-FoldToASCII.txt"/>
+      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>      
       <filter name="lowercase"/>
     </analyzer>
   </fieldType>

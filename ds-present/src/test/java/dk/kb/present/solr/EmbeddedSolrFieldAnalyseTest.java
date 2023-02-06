@@ -94,8 +94,11 @@ public class EmbeddedSolrFieldAnalyseTest {
 		
 		//Test exact match in 'creator_name' field. Diacritics must match
 		assertEquals(1,getCreatorNameResultsForQuery("Thomas Egense"));
+		//assertEquals(1,getCreatorNameResultsForQuery("thomas egense"));
 		assertEquals(1,getCreatorNameResultsForQuery("Antoine de Saint-Exupéry"));
-		assertEquals(0,getCreatorNameResultsForQuery("Antoine de Saint Exupery")); //No match without diacritics
+		
+		//Maybe OR search??
+		assertEquals(0,getCreatorNameResultsForQuery("Antoine de Saint-Exupery")); //No match without diacritics
 		
 		// Test match with diacritic stripping in 'freetext' field
 		
