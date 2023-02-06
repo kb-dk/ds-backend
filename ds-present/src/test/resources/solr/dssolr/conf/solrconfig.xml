@@ -750,6 +750,7 @@
   <requestHandler name="/query" class="solr.SearchHandler">
      <lst name="defaults">
        <str name="echoParams">explicit</str>
+       <int name="rows">10</int>
        <str name="wt">json</str>
        <str name="indent">true</str>
        <str name="df">freetext</str>
@@ -790,17 +791,7 @@
     </lst>
   </requestHandler>
 
-  <!-- XSLT Update Request Handler
-
-       https://solr.apache.org/guide/solr/latest/indexing-guide/indexing-with-update-handlers.html#using-xslt-to-transform-xml-index-updates
-
-    -->
-  <requestHandler name="/update/xslt"
-                  startup="lazy"
-                  class="solr.scripting.xslt.XSLTUpdateRequestHandler" >
-    <int name="xsltCacheLifetimeSeconds">5</int>
-  </requestHandler>
-
+ 
    <!-- Spell Check
 
         The spell check component can return a list of alternative spelling
