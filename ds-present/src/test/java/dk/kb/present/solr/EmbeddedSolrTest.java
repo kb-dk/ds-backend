@@ -57,6 +57,7 @@ public class EmbeddedSolrTest {
 	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
 	public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
 	public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
+	public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
 
 	@BeforeAll
 	public static void startEmbeddedSolrServer() throws Exception {
@@ -105,7 +106,6 @@ public class EmbeddedSolrTest {
 
 
 		//Full life cycle test
-		//Hej Victor. Her kan du teste at felterne også er kommet korrekt ud af Solr. 
 		SolrDocument record = getRecordById("urn:uuid:05fea810-7181-11e0-82d7-002185371280");
 
 		//Single value field
@@ -138,7 +138,6 @@ public class EmbeddedSolrTest {
 
 
 		//Full life cycle test
-		//Hej Victor. Her kan du teste at felterne også er kommet korrekt ud af Solr. 
 		SolrDocument record = getRecordById("urn:uuid:3956d820-7b7d-11e6-b2b3-0016357f605f");
 
 		//Single value field
@@ -149,6 +148,38 @@ public class EmbeddedSolrTest {
 		assertEquals(2,typeResources.size());
 		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
 		assertTrue(typeResources.contains("Postkort"));
+
+		//TODO more fields
+
+	}
+
+	@Test
+	void testRecord096c9090() throws Exception {
+
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090);
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		//System.out.println(prettyJsonString);
+
+		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+		embeddedServer.add(document);
+		embeddedServer.commit();
+		assertEquals(1, getNumberOfTotalDocuments());
+
+
+		//Full life cycle test
+		SolrDocument record = getRecordById("urn:uuid:096c9090-717f-11e0-82d7-002185371280");
+
+		//Single value field
+		assertEquals("000225.tif",record.getFieldValue("identifier_local"));
+
+		//multivalue field
+		Collection<Object> typeResources = record.getFieldValues("type_of_resource");
+		assertEquals(2,typeResources.size());
+		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
+		assertTrue(typeResources.contains("Grafik"));
 
 		//TODO more fields
 
