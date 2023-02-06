@@ -90,8 +90,26 @@ public class EmbeddedSolrFieldAnalyseTest {
 	@Test
 	void testDiacriticsStripping() throws Exception {
 		
+		addTestDocuments();
+		assertEquals(1,getResultsForQuery("Thomas Egense"));
+		assertEquals(1,getResultsForQuery("thomas egense")); //lower case
+		assertEquals(1,getResultsForQuery("Antoine de Saint-Exupéry")); //with diacritics
+		assertEquals(1,getResultsForQuery("Saint-Exupery")); //without diacritics
+		assertEquals(1,getResultsForQuery("Saint Exupery")); //space
+		assertEquals(1,getResultsForQuery("Honoré de Balzac")); 
+		assertEquals(1,getResultsForQuery("Honore de Balzac"));		
+		assertEquals(1,getResultsForQuery("Søren Kierkegaard"));
+		assertEquals(1,getResultsForQuery("soren kierkegaard")); //Do we want OE match?		
+		assertEquals(1,getResultsForQuery("Juliusz Słowacki"));
+		assertEquals(1,getResultsForQuery("Juliusz Slowacki"));		
+		assertEquals(1,getResultsForQuery("Maria Dąbrowska"));
+		assertEquals(1,getResultsForQuery("Maria Dabrowska"));		
+		assertEquals(1,getResultsForQuery("Gabriel García Márquez"));
+		assertEquals(1,getResultsForQuery("Gabriel Garcia Marquez"));
+		assertEquals(1,getResultsForQuery("Günter Grass"));
+		assertEquals(1,getResultsForQuery("Gunter Grass"));
 		
-		
+		assertEquals(0,getResultsForQuery("Thomas Gunter Grass")); //No match, different multivalue fields.
 		
 	}
 	
@@ -100,15 +118,12 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	
 
-	private SolrDocument getRecordById(String id) throws Exception{	    
+	private long getResultsForQuery(String query) throws Exception{	    
 		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("id:\""+id +"\"");
+		solrQuery.setQuery("freetext:"+query);
 		solrQuery.setRows(10);           
-		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 
-		if (rsp.getResults().getNumFound() !=1) {
-			throw new Exception("No record found with id:"+id);
-		}
-		return rsp.getResults().get(0);           
+		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 		
+		return rsp.getResults().getNumFound();
 	}
 
 
@@ -119,12 +134,15 @@ public class EmbeddedSolrFieldAnalyseTest {
 	try {
 				SolrInputDocument document = new SolrInputDocument();
 				document.addField("id", 1);
-				document.addField("creator_name", "Thomas Egense"); //simple
+				document.addField("creator_name", "Thomas Egense");
 				document.addField("creator_name", "Antoine de Saint-Exupéry");
 				document.addField("creator_name", "Honoré de Balzac"); 
 				document.addField("creator_name", "Søren Kierkegaard");
-				
-				
+				document.addField("creator_name", "Juliusz Słowacki");
+				document.addField("creator_name", "Maria Dąbrowska");
+				document.addField("creator_name", "Gabriel García Márquez");
+				document.addField("creator_name", "Günter Grass");
+								
 				embeddedServer.add(document);
 				embeddedServer.commit();
 
