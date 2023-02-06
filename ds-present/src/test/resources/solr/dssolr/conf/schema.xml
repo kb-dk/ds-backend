@@ -12,7 +12,9 @@
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
   <field name="identifier_local" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="cataloging_language" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="genre" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="collection" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
   <field name="creator_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="creator_full_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="creator_family_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
@@ -24,16 +26,24 @@
   <field name="subject_full_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="subject_family_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="subject_given_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+
+  <field name="area" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <!-- Fields on creator -->
+
+  <!-- Fields on production of physical object -->
+  <field name="production_date_start" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="production_date_end" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <!-- Fields on subject -->
+  
   <field name="subject_date_of_birth" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="subject_date_of_death" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="subject_terms_of_address" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
   <field name="type_of_resource" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+
   <field name="file_size" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="image_height" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="image_width" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="genre" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
- 
- 
+  <field name="genre" type="string" multiValued="false" indexed="true" required="false" stored="true"/> 
   <field name="text" type="text_da" multiValued="false" indexed="true" required="false" stored="false"/>
 
 

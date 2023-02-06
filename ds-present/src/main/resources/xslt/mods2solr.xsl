@@ -129,6 +129,14 @@
               </xsl:if>
             </f:array>
           </xsl:if>
+          <xsl:if test="m:originInfo[@altRepGroup='original']">
+            <f:string key="production_date_start">
+              <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']"/>
+            </f:string>
+            <f:string key="production_date_end">
+              <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
+            </f:string>
+          </xsl:if>
           <f:string key="collection">
             <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
           </f:string>
