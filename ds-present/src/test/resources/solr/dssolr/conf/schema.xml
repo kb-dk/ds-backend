@@ -10,62 +10,59 @@
   <field name="_version_" type="plong" indexed="false" stored="false"/> 
   
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
-  <field name="identifier_local" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="cataloging_language" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="genre" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="collection" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="identifier_local" type="string"/>
+  <field name="cataloging_language" type="string"/>
+  <field name="genre" type="string"/>
+  <field name="collection" type="string"/>
 
   <!-- Fields on creator -->
-  <field name="creator_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="creator_full_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="creator_family_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="creator_given_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="creator_terms_of_address" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="creator_name" type="text_general" multiValued="true"/>
+  <field name="creator_full_name" type="text_general" multiValued="true"/>
+  <field name="creator_family_name" type="text_general" multiValued="true"/>
+  <field name="creator_given_name" type="text_general" multiValued="true"/>
+  <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
     
-  <field name="area" type="text_general" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="subject" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="subject_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="subject_full_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="subject_family_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="subject_given_name" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="area" type="text_general" multiValued="false"/>
+  <field name="subject" type="text_general" multiValued="true"/>
+  <field name="subject_name" type="text_general" multiValued="true"/>
+  <field name="subject_full_name" type="text_general" multiValued="true"/>
+  <field name="subject_family_name" type="text_general" multiValued="true"/>
+  <field name="subject_given_name" type="text_general" multiValued="true" />
 
 
   
 
   <!-- Fields on production of physical and digital object. -->
   <!-- TODO: Format as date -->
-  <field name="production_date_start" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="production_date_end" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="digital_surrogate_production_date" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="production_date_start" type="string"/>
+  <field name="production_date_end" type="string"/>
+  <field name="digital_surrogate_production_date" type="string"/>
 
   <!-- Fields on subject -->
   
-  <field name="subject_date_of_birth" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="subject_date_of_death" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="subject_terms_of_address" type="text_general" multiValued="true" indexed="true" required="false" stored="true"/>
-  <field name="type_of_resource" type="string" multiValued="true" indexed="true" required="false" stored="true"/>
+  <field name="subject_date_of_birth" type="string" multiValued="true"/>
+  <field name="subject_date_of_death" type="string" multiValued="true"/>
+  <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
+  <field name="type_of_resource" type="string" multiValued="true"/>
 
-  <field name="file_size" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="image_height" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="image_width" type="pint" multiValued="false" indexed="true" required="false" stored="true"/> 
-  <field name="text" type="text_da" multiValued="false" indexed="true" required="false" stored="false"/>
-
-
-
-
+  <field name="file_size" type="pint"/>
+  <field name="image_height" type="pint"/>
+  <field name="image_width" type="pint"/> 
+  
+  <field name="text" type="text_general"/>
 
 
   <!--  Fields related to copyright and access conditions -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_note" type="string" multiValued="false" indexed="true" required="false" stored="true"/>                 
+  <field name="access_note" type="string"/>                 
   <field name="access_skabelsesaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/> <!--  TODO is required -->
-  <field name="access_searlige_visningsvilkaar" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_materiale_type" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="access_searlige_visningsvilkaar" type="string"/>
+  <field name="access_materiale_type" type="string"/>
   <!-- Temporary set by rettighedsudtreakkeren -->
-  <field name="imageurl" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="imageurl" type="string"/>
 
 
   <!-- END FIELDS  -->
@@ -76,9 +73,9 @@
   <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>  
   <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>  
   <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>  
-  <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
+  <fieldType name="pint" class="solr.IntPointField" multiValued="false" indexed="true" required="false" stored="true" docValues="false"/>
   <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
-  <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true" indexed="true" required="false" stored="true" docValues="false"/>
   
   
   
@@ -125,10 +122,8 @@
     </analyzer>
   </fieldType>
   
-  
-  
-  
-  <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+     
+  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="100">
     <analyzer type="index">
       <tokenizer name="standard"/>
       <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
