@@ -40,6 +40,7 @@
 
   <!-- Fields on production of physical and digital object. -->
   <!-- TODO: Format as date -->
+  <field name="date_created" type="string"/>
   <field name="production_date_start" type="string"/>
   <field name="production_date_end" type="string"/>
   <field name="digital_surrogate_production_date" type="string"/>
