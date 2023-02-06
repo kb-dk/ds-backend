@@ -739,6 +739,9 @@
      <lst name="defaults">
        <str name="echoParams">explicit</str>
        <int name="rows">10</int>
+       <str name="indent">true</str>
+       <str name="df">freetext</str>
+       <str name="q.op">AND</str>
      </lst>
          
     </requestHandler>
@@ -749,17 +752,12 @@
        <str name="echoParams">explicit</str>
        <str name="wt">json</str>
        <str name="indent">true</str>
-       <str name="df">text</str>
+       <str name="df">freetext</str>
        <str name="q.op">AND</str>
      </lst>
   </requestHandler>
 
-  <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell,update">
-    <lst name="defaults">
-      <str name="df">freetext</str>
-    </lst>
-  </initParams>
-
+  
   <!-- The following are some of the implicit Update Request Handlers
   <requestHandler name="/update/json" class="solr.UpdateRequestHandler">
         <lst name="invariants">
