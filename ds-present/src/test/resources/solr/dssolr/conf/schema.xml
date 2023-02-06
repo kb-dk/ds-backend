@@ -32,9 +32,12 @@
 
   
 
-  <!-- Fields on production of physical object -->
+  <!-- Fields on production of physical and digital object. -->
+  <!-- TODO: Format as date -->
   <field name="production_date_start" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="production_date_end" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+  <field name="digital_surrogate_production_date" type="string" multiValued="false" indexed="true" required="false" stored="true"/>
+
   <!-- Fields on subject -->
   
   <field name="subject_date_of_birth" type="string" multiValued="true" indexed="true" required="false" stored="true"/>

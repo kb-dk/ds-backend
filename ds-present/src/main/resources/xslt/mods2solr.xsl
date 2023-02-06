@@ -137,6 +137,11 @@
               <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
             </f:string>
           </xsl:if>
+          <xsl:if test="m:originInfo[@altRepGroup='surrogate']">
+            <f:string key="digital_surrogate_production_date">
+              <xsl:value-of select="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured"/>
+            </f:string>
+          </xsl:if>
           <f:string key="collection">
             <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
           </f:string>
