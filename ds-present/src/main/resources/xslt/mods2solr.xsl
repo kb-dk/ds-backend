@@ -86,6 +86,22 @@
           <f:string key="genre">
           <xsl:value-of select="m:genre"/>
           </f:string>
+          <xsl:if test="m:note[@type='content']">
+            <f:array key="note">
+              <xsl:for-each select="m:note[@type='content']">
+                <xsl:if test=". != ''">
+                  <f:string>
+                    <xsl:value-of select="."/>
+                  </f:string>
+                </xsl:if>
+              </xsl:for-each>
+            </f:array>
+          </xsl:if>
+          <xsl:if test="m:note[@displayLabel='Description']">
+            <f:string key="description">
+              <xsl:value-of select="m:note[@displayLabel='Description']"/>
+            </f:string>
+          </xsl:if>
           <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
             <f:array key="creator_name">
                 <xsl:for-each select="m:name">
