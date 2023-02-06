@@ -16,14 +16,14 @@
   <field name="collection" type="string"/>
 
   <!-- Fields on creator -->
-  <field name="creator_name" type="text_general" multiValued="true"/>
-  <field name="creator_full_name" type="text_general" multiValued="true"/>
-  <field name="creator_family_name" type="text_general" multiValued="true"/>
-  <field name="creator_given_name" type="text_general" multiValued="true"/>
+  <field name="creator_name" type="text_strict_name" multiValued="true"/>
+  <field name="creator_full_name" type="text_strict_name" multiValued="true"/>
+  <field name="creator_family_name" type="text_strict_name" multiValued="true"/>
+  <field name="creator_given_name" type="text_strict_name" multiValued="true"/>
   <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
     
   <field name="area" type="text_general" multiValued="false"/>
-  <field name="topic" type="text_general" multiValued="true"/>
+  <field name="subject" type="text_general" multiValued="true"/>
   <field name="subject_name" type="text_general" multiValued="true"/>
   <field name="subject_full_name" type="text_general" multiValued="true"/>
   <field name="subject_family_name" type="text_general" multiValued="true"/>
@@ -34,7 +34,6 @@
 
   <!-- Fields on production of physical and digital object. -->
   <!-- TODO: Format as date -->
-  <field name="date_created" type="string"/>
   <field name="production_date_start" type="string"/>
   <field name="production_date_end" type="string"/>
   <field name="digital_surrogate_production_date" type="string"/>
@@ -123,6 +122,21 @@
     </analyzer>
   </fieldType>
   
+     <!-- Diacritics must match -->
+  <fieldType name="text_strict_name" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer name="standard"/>
+      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
+      <filter name="lowercase"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer name="standard"/>
+      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
+      <filter name="lowercase"/>
+    </analyzer>
+  </fieldType>
+  
+     
      
   <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="100">
     <analyzer type="index">
@@ -162,7 +176,7 @@
     <copyField source="creator_given_name" dest="freetext"/>
     <copyField source="creator_terms_of_address" dest="freetext"/>
     <copyField source="area" dest="freetext"/>
-    <copyField source="topic" dest="freetext"/>
+    <copyField source="subject" dest="freetext"/>
     <copyField source="subject_name" dest="freetext"/>
     <copyField source="subject_full_name" dest="freetext"/>
     <copyField source="subject_family_name" dest="freetext"/>

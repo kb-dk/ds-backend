@@ -91,34 +91,51 @@ public class EmbeddedSolrFieldAnalyseTest {
 	void testDiacriticsStripping() throws Exception {
 		
 		addTestDocuments();
-		assertEquals(1,getResultsForQuery("Thomas Egense"));
-		assertEquals(1,getResultsForQuery("thomas egense")); //lower case
-		assertEquals(1,getResultsForQuery("Antoine de Saint-Exupéry")); //with diacritics
-		assertEquals(1,getResultsForQuery("Saint-Exupery")); //without diacritics
-		assertEquals(1,getResultsForQuery("Saint Exupery")); //space
-		assertEquals(1,getResultsForQuery("Honoré de Balzac")); 
-		assertEquals(1,getResultsForQuery("Honore de Balzac"));		
-		assertEquals(1,getResultsForQuery("Søren Kierkegaard"));
-		assertEquals(1,getResultsForQuery("soren kierkegaard")); //Do we want OE match?		
-		assertEquals(1,getResultsForQuery("Juliusz Słowacki"));
-		assertEquals(1,getResultsForQuery("Juliusz Slowacki"));		
-		assertEquals(1,getResultsForQuery("Maria Dąbrowska"));
-		assertEquals(1,getResultsForQuery("Maria Dabrowska"));		
-		assertEquals(1,getResultsForQuery("Gabriel García Márquez"));
-		assertEquals(1,getResultsForQuery("Gabriel Garcia Marquez"));
-		assertEquals(1,getResultsForQuery("Günter Grass"));
-		assertEquals(1,getResultsForQuery("Gunter Grass"));
 		
-		assertEquals(0,getResultsForQuery("Thomas Gunter Grass")); //No match, different multivalue fields.
+		//Test exact match in 'creator_name' field. Diacritics must match
+		assertEquals(1,getCreatorNameResultsForQuery("Thomas Egense"));
+		assertEquals(1,getCreatorNameResultsForQuery("Antoine de Saint-Exupéry"));
+		assertEquals(0,getCreatorNameResultsForQuery("Antoine de Saint Exupery")); //No match without diacritics
+		
+		// Test match with diacritic stripping in 'freetext' field
+		
+		assertEquals(0,getFreeTextResultsForQuery("Thomas Gunter Grass")); //No match, different multivalue fields.
+		//Diacritics
+		assertEquals(1,getFreeTextResultsForQuery("Thomas Egense"));
+		assertEquals(1,getFreeTextResultsForQuery("thomas egense")); //lower case
+		assertEquals(1,getFreeTextResultsForQuery("Antoine de Saint-Exupéry")); //with diacritics
+		assertEquals(1,getFreeTextResultsForQuery("Saint-Exupery")); //without diacritics
+		assertEquals(1,getFreeTextResultsForQuery("Saint Exupery")); //space
+		assertEquals(1,getFreeTextResultsForQuery("Honoré de Balzac")); 
+		assertEquals(1,getFreeTextResultsForQuery("Honore de Balzac"));		
+		assertEquals(1,getFreeTextResultsForQuery("Søren Kierkegaard"));
+		assertEquals(1,getFreeTextResultsForQuery("soren kierkegaard")); //Do we want OE match?		
+		assertEquals(1,getFreeTextResultsForQuery("Juliusz Słowacki"));
+		assertEquals(1,getFreeTextResultsForQuery("Juliusz Slowacki"));		
+		assertEquals(1,getFreeTextResultsForQuery("Maria Dąbrowska"));
+		assertEquals(1,getFreeTextResultsForQuery("Maria Dabrowska"));		
+		assertEquals(1,getFreeTextResultsForQuery("Gabriel García Márquez"));
+		assertEquals(1,getFreeTextResultsForQuery("Gabriel Garcia Marquez"));
+		assertEquals(1,getFreeTextResultsForQuery("Günter Grass"));
+		assertEquals(1,getFreeTextResultsForQuery("Gunter Grass"));
+		
+		
 		
 	}
 	
 	
 
+	private long getCreatorNameResultsForQuery(String query) throws Exception{	    
+		SolrQuery solrQuery = new SolrQuery();
+		solrQuery.setQuery("creator_name:"+query);
+		solrQuery.setRows(10);           
+		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 		
+		return rsp.getResults().getNumFound();
+	}
 
 	
 
-	private long getResultsForQuery(String query) throws Exception{	    
+	private long getFreeTextResultsForQuery(String query) throws Exception{	    
 		SolrQuery solrQuery = new SolrQuery();
 		solrQuery.setQuery("freetext:"+query);
 		solrQuery.setRows(10);           
