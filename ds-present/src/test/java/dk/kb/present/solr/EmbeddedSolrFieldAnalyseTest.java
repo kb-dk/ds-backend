@@ -1,20 +1,16 @@
 package dk.kb.present.solr;
 
 import java.io.File;
-import java.io.IOException;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
+
 import org.apache.solr.common.SolrInputDocument;
 
 import org.apache.solr.core.*;
@@ -50,11 +46,6 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	private static CoreContainer coreContainer = null;
 	private static EmbeddedSolrServer embeddedServer = null;
-
-	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-	public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
-	public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
-	public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
 
 	/*
 	 * Start Solr server and index test documents with method addTestDocuments
