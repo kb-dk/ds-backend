@@ -25,10 +25,13 @@ import dk.kb.present.model.v1.ManifestServiceDto;
 import dk.kb.present.model.v1.ManifestServicesDto;
 import dk.kb.present.model.v1.ManifestStartDto;
 import dk.kb.present.model.v1.ManifestThumbnailDto;
+import dk.kb.present.model.v1.RangeDto;
+import dk.kb.present.model.v1.RangeLabelDto;
 import dk.kb.present.model.v1.ViewDto;
 
-import dk.kb.present.webservice.exception.ServiceException;
-import dk.kb.present.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.ImplBase;
+import dk.kb.util.webservice.exception.ServiceException;
+import dk.kb.util.webservice.exception.InternalServiceException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +71,7 @@ import io.swagger.annotations.Api;
  * <p>Metadata delivery for the Royal Danish Library  This API delivers metadata from collections at the Royal Danish Library. Metadata can be delivered as IIIF Presentation manifests.  For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.= and should be backwards compatible with version 2.1.1 
  *
  */
-public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
+public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPresentationApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
 
 
@@ -125,7 +128,8 @@ public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
     @Override
     public CollectionDto getPresentationCollection(String name) throws ServiceException {
         // TODO: Implement...
-    
+        log.debug("getPresentationCollection(name='{}') called with call details: {}", name, getCallDetails());
+
         
         try { 
             CollectionDto response = new CollectionDto();
@@ -162,8 +166,9 @@ public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
     @Override
     public ManifestDto getPresentationManifest(String identifier) throws ServiceException {
         // TODO: Implement...
-    
-        
+        log.debug("getPresentationManifest(identifier='{}') called with call details: {}",
+                  identifier, getCallDetails());
+
         try { 
             ManifestDto response = new ManifestDto();
         response.setAtContext("o011L6A5w");
@@ -326,10 +331,12 @@ public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
         items2.setAnnotations(annotations);
         items.add(items2);
         response.setItems(items);
-        List<List<Object>> structures = new ArrayList<>();
-        List<Object> structures2 = new ArrayList<>();
-        Object structures3 = JsonNodeFactory.instance.objectNode();
-        structures2.add(structures3);
+        List<RangeDto> structures = new ArrayList<>();
+        RangeDto structures2 = new RangeDto();
+        structures2.setId("enX96Aj");
+        structures2.setType("G3e01jm8");
+        RangeLabelDto label3 = new RangeLabelDto();
+        label3.setEn("Pzz3sC");
         structures.add(structures2);
         response.setStructures(structures);
         AnnotationsDto annotations3 = new AnnotationsDto();
@@ -355,21 +362,4 @@ public class IiifPresentationApiServiceImpl implements IiifPresentationApi {
         }
     
     }
-
-
-    /**
-    * This method simply converts any Exception into a Service exception
-    * @param e: Any kind of exception
-    * @return A ServiceException
-    * @see dk.kb.present.webservice.ServiceExceptionMapper
-    */
-    private ServiceException handleException(Exception e) {
-        if (e instanceof ServiceException) {
-            return (ServiceException) e; // Do nothing - this is a declared ServiceException from within module.
-        } else {// Unforseen exception (should not happen). Wrap in internal service exception
-            log.error("ServiceException(HTTP 500):", e); //You probably want to log this.
-            return new InternalServiceException(e.getMessage());
-        }
-    }
-
 }
