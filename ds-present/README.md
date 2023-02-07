@@ -59,12 +59,17 @@ bin/cloud_stop.sh
 bin/cloud_start.sh
 ```
 
-If the Solr configuration is changed, force an update with
+If the Solr configuration is changed, force an update of `ds` with
 ```
 FORCE_CONFIG=true bin/cloud_sync.sh src/test/resources/solr/dssolr/conf/ ds-conf ds
 ```
 
-Clear the collection with 
+Clear all records in the `ds` collection, but keep the collection with
+```
+bin/cloud_clear.sh ds
+```
+
+Fully delete the `ds` collection with
 ```
 bin/cloud_delete.sh ds
 ```
