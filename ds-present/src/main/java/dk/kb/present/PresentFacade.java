@@ -229,15 +229,12 @@ public class PresentFacade {
         if (Boolean.TRUE.equals(record.getDeleted())) {
             return "\"delete\": { \"id\": \"" + record.getId() + "\" }";
         }
-        List<String> solrJSONs = splitSolrJSON(record.getData());
+        
         StringBuilder sb = new StringBuilder();
-        for (int i = 0 ; i < solrJSONs.size() ; i++) {
-            sb.append("\"add\": { \"doc\" : ").append(solrJSONs.get(i)).append(" }");
-            if (i != solrJSONs.size()-1) {
-                sb.append(",\n");
-            }
-        }
+        sb.append("\"add\": { \"doc\" : ").append(record.getData()).append(" }");
+       
         return sb.toString();
+    
     }
 
     /**
