@@ -15,7 +15,7 @@
 package dk.kb.discover;
 
 import dk.kb.discover.config.ServiceConfig;
-import dk.kb.discover.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

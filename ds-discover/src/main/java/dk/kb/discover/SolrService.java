@@ -14,8 +14,8 @@
  */
 package dk.kb.discover;
 
-import dk.kb.discover.webservice.exception.InternalServiceException;
-import dk.kb.discover.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.other.StringListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
