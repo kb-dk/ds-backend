@@ -747,11 +747,11 @@
         
         <str name="qf">
         creator_full_name^5.0
-         freetext
+        freetext
        </str>
        
         <str name="pf">
-         text         
+         freetext         
        </str>     
        <str name="facet">true</str>
        <str name="facet.mincount">1</str>
@@ -759,7 +759,16 @@
        
        <str name="facet.field">creator_full_name</str>
         
+       <str name="hl">off</str>
+       <str name="hl.requireFieldMatch">false</str>
+       <str name="hl.encoder">html</str>
+       <str name="f.text.hl.preserveMulti">true</str>        
+       <str name="hl.fl">content</str>     
+        
      </lst>
+      <arr name="last-components">
+      <str>highlight</str>
+      </arr>
          
     </requestHandler>
 
