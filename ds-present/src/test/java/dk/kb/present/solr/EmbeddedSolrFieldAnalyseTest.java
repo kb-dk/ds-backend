@@ -56,6 +56,10 @@ public class EmbeddedSolrFieldAnalyseTest {
 	public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
 	public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
 
+	/*
+	 * Start Solr server and index test documents with method addTestDocuments
+	 * 
+	 */	
 	@BeforeAll
 	public static void startEmbeddedSolrServer() throws Exception {
 
@@ -69,6 +73,9 @@ public class EmbeddedSolrFieldAnalyseTest {
 		coreContainer = new CoreContainer(solrHome, props);
 		coreContainer.load();
 		embeddedServer = new EmbeddedSolrServer(coreContainer, "dssolr");
+		
+		addTestDocuments();
+		
 	}
 
 	@AfterAll
@@ -76,39 +83,40 @@ public class EmbeddedSolrFieldAnalyseTest {
 		coreContainer.shutdown();
 		embeddedServer.close();
 	}
-
-	/*
-	 * Delete all documents in solr between tests, so each unittest gets a clean solr.
-	 */
-	@BeforeEach
-	public void deleteDocs() throws Exception {
-		embeddedServer.deleteByQuery("*:*");
-	}
-
-
 	
+	
+	/*
+	 * Even diacritics must match for text_strict field 
+	 */
+	@Test
+    void testStrictTextField() throws Exception {
+        assertEquals(0,getCreatorNameResultsForQuery("Thomas XEgenseX")); //Make sure default operator is AND and not OR.
+        assertEquals(1,getCreatorNameResultsForQuery("Thomas Egense"));
+        assertEquals(1,getCreatorNameResultsForQuery("Thomas"));
+        assertEquals(1,getCreatorNameResultsForQuery("thomas egense")); //lower case        
+        assertEquals(0,getCreatorNameResultsForQuery("Thomas Gunter Grass")); //No match, different multivalue fields.      
+        assertEquals(1,getCreatorNameResultsForQuery("Antoine de Saint-Exupéry")); //Excact match
+        assertEquals(0,getCreatorNameResultsForQuery("Antoine de Saint Exupéry")); //Even a character '-' must match
+        assertEquals(0,getCreatorNameResultsForQuery("Antoine de Saint-Exupery")); //No match without diacritics
+    
+    }
+        
+        
+    
+	/*
+	 * Test normalized field match with and without diacriticts
+	 */
 	@Test
 	void testDiacriticsStripping() throws Exception {
 		
-		addTestDocuments();
-		
-		//Test exact match in 'creator_name' field. Diacritics must match
-		assertEquals(1,getCreatorNameResultsForQuery("Thomas Egense"));
-		//assertEquals(1,getCreatorNameResultsForQuery("thomas egense"));
-		assertEquals(1,getCreatorNameResultsForQuery("Antoine de Saint-Exupéry"));
-		
-		//Maybe OR search??
-		assertEquals(0,getCreatorNameResultsForQuery("Antoine de Saint-Exupery")); //No match without diacritics
-		
 		// Test match with diacritic stripping in 'freetext' field
-		
-		assertEquals(0,getFreeTextResultsForQuery("Thomas Gunter Grass")); //No match, different multivalue fields.
+		assertEquals(1,getFreeTextResultsForQuery("Thomas Grass")); // Combine names, should still match
 		//Diacritics
 		assertEquals(1,getFreeTextResultsForQuery("Thomas Egense"));
 		assertEquals(1,getFreeTextResultsForQuery("thomas egense")); //lower case
 		assertEquals(1,getFreeTextResultsForQuery("Antoine de Saint-Exupéry")); //with diacritics
 		assertEquals(1,getFreeTextResultsForQuery("Saint-Exupery")); //without diacritics
-		assertEquals(1,getFreeTextResultsForQuery("Saint Exupery")); //space
+		assertEquals(1,getFreeTextResultsForQuery("Saint Exupery")); // '-' removed
 		assertEquals(1,getFreeTextResultsForQuery("Honoré de Balzac")); 
 		assertEquals(1,getFreeTextResultsForQuery("Honore de Balzac"));		
 		assertEquals(1,getFreeTextResultsForQuery("Søren Kierkegaard"));
@@ -116,7 +124,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 		assertEquals(1,getFreeTextResultsForQuery("Juliusz Słowacki"));
 		assertEquals(1,getFreeTextResultsForQuery("Juliusz Slowacki"));		
 		assertEquals(1,getFreeTextResultsForQuery("Maria Dąbrowska"));
-		assertEquals(1,getFreeTextResultsForQuery("Maria Dabrowska"));		
+		assertEquals(1,getFreeTextResultsForQuery("maria dabrowska"));		
 		assertEquals(1,getFreeTextResultsForQuery("Gabriel García Márquez"));
 		assertEquals(1,getFreeTextResultsForQuery("Gabriel Garcia Marquez"));
 		assertEquals(1,getFreeTextResultsForQuery("Günter Grass"));
@@ -130,7 +138,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	private long getCreatorNameResultsForQuery(String query) throws Exception{	    
 		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("creator_name:"+query);
+		solrQuery.setQuery("creator_name:("+query +")");
 		solrQuery.setRows(10);           
 		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 		
 		return rsp.getResults().getNumFound();
@@ -140,7 +148,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	private long getFreeTextResultsForQuery(String query) throws Exception{	    
 		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("freetext:"+query);
+		solrQuery.setQuery("freetext:("+query +")");
 		solrQuery.setRows(10);           
 		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 		
 		return rsp.getResults().getNumFound();
@@ -149,7 +157,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	
 	
-	private void addTestDocuments() throws Exception {
+	private static void addTestDocuments() throws Exception {
 
 	try {
 				SolrInputDocument document = new SolrInputDocument();
@@ -170,7 +178,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			fail("Error indexing 10 test documents only with id field");
+			fail("Error indexing test documents");
 		}
 
 	}

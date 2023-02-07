@@ -17,10 +17,10 @@
 
 
   <!-- Fields on creator -->
-  <field name="creator_name" type="text_strict_name" multiValued="true"/>
-  <field name="creator_full_name" type="text_strict_name" multiValued="true"/>
-  <field name="creator_family_name" type="text_strict_name" multiValued="true"/>
-  <field name="creator_given_name" type="text_strict_name" multiValued="true"/>
+  <field name="creator_name" type="text_strict" multiValued="true"/>
+  <field name="creator_full_name" type="text_strict" multiValued="true"/>
+  <field name="creator_family_name" type="text_strict" multiValued="true"/>
+  <field name="creator_given_name" type="text_strict" multiValued="true"/>
   <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
     
   <field name="area" type="text_general" multiValued="false"/>
@@ -129,20 +129,22 @@
     </analyzer>
   </fieldType>
      
-  <fieldType name="text_strict_name" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="100">
+     
+   <!-- Very string field matching. Only lower case. diacritics  must match.  No matching cross multifields-->  
+  <fieldType name="text_strict" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="0">
     <analyzer type="index">
           <tokenizer class="solr.WhitespaceTokenizerFactory"/>                 
-  <!--         <filter name="lowercase"/> -->
+         <filter name="lowercase"/> 
                
     </analyzer>
     <analyzer type="query">
           <tokenizer class="solr.WhitespaceTokenizerFactory"/>      
-      <!--    <filter name="lowercase"/> -->
+          <filter name="lowercase"/> 
     </analyzer>
   </fieldType>
      
      
-  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="100">
+  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
     <analyzer type="index">
       <tokenizer name="standard"/>
       <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
@@ -155,7 +157,7 @@
     </analyzer>
   </fieldType>
   
-   <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="100">
+   <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
     <analyzer type="index">
       <tokenizer name="standard"/>
       <charFilter name="mapping" mapping="mapping-FoldToASCII.txt"/>    
