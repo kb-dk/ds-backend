@@ -138,7 +138,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	private long getCreatorNameResultsForQuery(String query) throws Exception{	    
 		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("creator_name:("+query +")");
+		solrQuery.setQuery("creator_full_name:("+query +")");
 		solrQuery.setRows(10);           
 		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 		
 		return rsp.getResults().getNumFound();
@@ -162,14 +162,14 @@ public class EmbeddedSolrFieldAnalyseTest {
 	try {
 				SolrInputDocument document = new SolrInputDocument();
 				document.addField("id", 1);
-				document.addField("creator_name", "Thomas Egense");
-				document.addField("creator_name", "Antoine de Saint-Exupéry");
-				document.addField("creator_name", "Honoré de Balzac"); 
-				document.addField("creator_name", "Søren Kierkegaard");
-				document.addField("creator_name", "Juliusz Słowacki");
-				document.addField("creator_name", "Maria Dąbrowska");
-				document.addField("creator_name", "Gabriel García Márquez");
-				document.addField("creator_name", "Günter Grass");
+				document.addField("creator_full_name", "Thomas Egense");
+				document.addField("creator_full_name", "Antoine de Saint-Exupéry");
+				document.addField("creator_full_name", "Honoré de Balzac"); 
+				document.addField("creator_full_name", "Søren Kierkegaard");
+				document.addField("creator_full_name", "Juliusz Słowacki");
+				document.addField("creator_full_name", "Maria Dąbrowska");
+				document.addField("creator_full_name", "Gabriel García Márquez");
+				document.addField("creator_full_name", "Günter Grass");
 								
 				embeddedServer.add(document);
 				embeddedServer.commit();
