@@ -1,5 +1,7 @@
 package dk.kb.present.webservice.exception;
 
+import dk.kb.util.webservice.exception.ServiceException;
+
 import javax.ws.rs.core.Response;
 
 /*

@@ -16,7 +16,7 @@ package dk.kb.present.storage;
 
 import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.util.Combiner;
-import dk.kb.present.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

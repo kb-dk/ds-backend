@@ -16,7 +16,7 @@ package dk.kb.present;
 
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
-import dk.kb.present.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
