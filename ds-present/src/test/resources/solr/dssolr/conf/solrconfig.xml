@@ -746,7 +746,7 @@
        <str name="defType">edismax</str>
         
         <str name="qf">
-        creator_full_name_strict^5.0
+        creator_full_name_strict^5.0        
         freetext
        </str>
        
@@ -758,6 +758,7 @@
        <str name="facet.limit">10</str>
        
        <str name="facet.field">creator_full_name</str>
+        <str name="facet.field">access_materiale_type</str>
         
        <str name="hl">off</str>
        <str name="hl.requireFieldMatch">false</str>
