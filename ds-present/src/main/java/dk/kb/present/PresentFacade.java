@@ -14,8 +14,6 @@
  */
 package dk.kb.present;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
@@ -28,21 +26,19 @@ import dk.kb.present.webservice.exception.InternalServiceException;
 import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.present.webservice.exception.ServiceException;
-import dk.kb.util.json.JSON;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.InternalServerErrorException;
+
 import javax.ws.rs.core.StreamingOutput;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 /**
  *
@@ -229,7 +225,7 @@ public class PresentFacade {
         if (Boolean.TRUE.equals(record.getDeleted())) {
             return "\"delete\": { \"id\": \"" + record.getId() + "\" }";
         }
-        
+        // When we had nested solr documentds, we had to split on documents. This has been removed. See outcommented method  splitSolrJSON if it becomes relevant
         StringBuilder sb = new StringBuilder();
         sb.append("\"add\": { \"doc\" : ").append(record.getData()).append(" }");
        
@@ -245,6 +241,8 @@ public class PresentFacade {
      */
     // Really hacking here to handle the case of the source containing multiple MODS-sections
     // TODO: Hopefully determine that 1 record = 1 mods always
+    
+    /* No used 
     private static List<String> splitSolrJSON(String solrJSONs) {
         ObjectMapper mapper = new ObjectMapper();
         List<?> jsonArray = JSON.fromJson(solrJSONs, List.class);
@@ -259,7 +257,7 @@ public class PresentFacade {
         }
         return strArray;
     }
-
+*/
     private static void setFilename(
             HttpServletResponse httpServletResponse,
             Long mTime, Long maxRecords, ExportWriterFactory.FORMAT deliveryFormat) {
