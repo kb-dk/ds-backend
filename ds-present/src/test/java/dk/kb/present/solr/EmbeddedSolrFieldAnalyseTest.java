@@ -28,16 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
-
-
-import dk.kb.present.TestUtil;
 
 public class EmbeddedSolrFieldAnalyseTest {
 
@@ -81,14 +71,14 @@ public class EmbeddedSolrFieldAnalyseTest {
 	 */
 	@Test
     void testStrictTextField() throws Exception {
-        assertEquals(0,getCreatorNameResultsForQuery("Thomas XEgenseX")); //Make sure default operator is AND and not OR.
-        assertEquals(1,getCreatorNameResultsForQuery("Thomas Egense"));
-        assertEquals(1,getCreatorNameResultsForQuery("Thomas"));
-        assertEquals(1,getCreatorNameResultsForQuery("thomas egense")); //lower case        
-        assertEquals(0,getCreatorNameResultsForQuery("Thomas Gunter Grass")); //No match, different multivalue fields.      
-        assertEquals(1,getCreatorNameResultsForQuery("Antoine de Saint-Exupéry")); //Excact match
-        assertEquals(0,getCreatorNameResultsForQuery("Antoine de Saint Exupéry")); //Even a character '-' must match
-        assertEquals(0,getCreatorNameResultsForQuery("Antoine de Saint-Exupery")); //No match without diacritics
+        assertEquals(0,getCreatorNameStrictResultsForQuery("Thomas XEgenseX")); //Make sure default operator is AND and not OR.
+        assertEquals(1,getCreatorNameStrictResultsForQuery("Thomas Egense"));
+        assertEquals(1,getCreatorNameStrictResultsForQuery("Thomas"));
+        assertEquals(1,getCreatorNameStrictResultsForQuery("thomas egense")); //lower case        
+        assertEquals(0,getCreatorNameStrictResultsForQuery("Thomas Gunter Grass")); //No match, different multivalue fields.      
+        assertEquals(1,getCreatorNameStrictResultsForQuery("Antoine de Saint-Exupéry")); //Excact match
+        assertEquals(0,getCreatorNameStrictResultsForQuery("Antoine de Saint Exupéry")); //Even a character '-' must match
+        assertEquals(0,getCreatorNameStrictResultsForQuery("Antoine de Saint-Exupery")); //No match without diacritics
     
     }
         
@@ -127,9 +117,9 @@ public class EmbeddedSolrFieldAnalyseTest {
 	
 	
 
-	private long getCreatorNameResultsForQuery(String query) throws Exception{	    
+	private long getCreatorNameStrictResultsForQuery(String query) throws Exception{	    
 		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("creator_full_name:("+query +")");
+		solrQuery.setQuery("creator_full_name_strict:("+query +")");
 		solrQuery.setRows(10);           
 		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 		
 		return rsp.getResults().getNumFound();
