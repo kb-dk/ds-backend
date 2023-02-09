@@ -30,7 +30,7 @@
 
   <field name="topic" type="text_general" multiValued="true"/>
   <field name="description" type="text_general" multiValued="false"/>
-  <field name="note" type="text_general" multiValued="true"/>
+  <field name="content" type="text_general" multiValued="true"/>
 
   <field name="subject_name" type="text_general" multiValued="true"/>
   <field name="subject_full_name" type="string" multiValued="true"  docValues="true"/>
