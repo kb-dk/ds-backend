@@ -77,17 +77,29 @@
               <xsl:value-of select="."/>
             </f:string>
           </xsl:for-each>
+          <xsl:if test="m:location/m:shelfLocator">
+            <f:string key="shelf_location">
+              <xsl:value-of select="m:location/m:shelfLocator"/>
+            </f:string>
+          </xsl:if>
           <f:string key="id">
             <xsl:value-of select="m:identifier[@type='uri']"/>
           </f:string>
           <f:string key="identifier_local">
             <xsl:value-of select="m:identifier[@type='local']"/>
           </f:string>
-          <f:string key="genre">
-          <xsl:value-of select="m:genre"/>
+          <!-- Categories seems to be a collection of other fields. -->
+          <f:string key="categories">
+          <xsl:value-of select="m:genre[@type='Categories']"/>
           </f:string>
+          <!-- Different things can be represented in note. -->
+          <xsl:if test="m:note[@displayLabel='Catalog Name']">
+            <f:string key="catalog_name">
+              <xsl:value-of select="m:note[@displayLabel='Catalog Name']"/>
+            </f:string>
+          </xsl:if>
           <xsl:if test="m:note[@type='content']">
-            <f:array key="note">
+            <f:array key="content">
               <xsl:for-each select="m:note[@type='content']">
                 <xsl:if test=". != ''">
                   <f:string>
@@ -145,25 +157,22 @@
               </xsl:if>
             </f:array>
           </xsl:if>
-          <xsl:if test="m:originInfo[@altRepGroup='original']">
-            <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
-              <f:string key="date_created">
-                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
-              </f:string>
-            </xsl:if>
-            <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']">
-              <f:string key="production_date_start">
-                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']"/>
-              </f:string>
-              <f:string key="production_date_end">
-                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
-              </f:string>
-            </xsl:if>
-          </xsl:if>
-          <xsl:if test="m:originInfo[@altRepGroup='surrogate']">
-            <f:string key="digital_surrogate_production_date">
-              <xsl:value-of select="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured"/>
-            </f:string>
+          <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
+            <xsl:choose>
+              <xsl:when test="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']">
+                <f:string key="production_date_start">
+                  <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']"/>
+                </f:string>
+                <f:string key="production_date_end">
+                  <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
+                </f:string>
+              </xsl:when>
+              <xsl:otherwise>
+                <f:string key="date_created">
+                  <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
+                </f:string>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:if>
           <f:string key="collection">
             <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
