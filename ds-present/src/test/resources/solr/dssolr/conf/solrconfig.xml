@@ -130,10 +130,13 @@
   <codecFactory class="solr.SchemaCodecFactory"/>
 
   
-  <!--
-  //TEG: We really want to use this, but it is broken: See https://issues.apache.org/jira/browse/SOLR-16203
-  <schemaFactory class="ClassicIndexSchemaFactory"/>
-  -->
+  <!--  Important. 
+   When using the schema.xml and not managed-schema.xml, all filters in schema.xml has to be loaded by class and not name.  
+   See https://issues.apache.org/jira/browse/SOLR-16203
+   We really want to use schema.xml since this is we way we upload configuration to solr-cloud
+   -->
+   <schemaFactory class="ClassicIndexSchemaFactory"/>  
+
 
 
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
