@@ -32,7 +32,11 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
 	public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
 	public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
-
+	public static final String RECORD_45dd4830 = "xml/copyright_extraction/45dd4830-717f-11e0-82d7-002185371280.xml";
+	
+	
+	
+	
 
 	@Test
 	void testSolOld() throws IOException {
@@ -45,6 +49,9 @@ class XSLTSolrTransformerTest{
 
 	}
 
+	
+	
+	
 	@Test
 	void testSolrNew() throws Exception {
 
@@ -74,6 +81,20 @@ class XSLTSolrTransformerTest{
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
 
+	@Test
+	void testXslt45dd() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_45dd4830 );
+		// TODO: Add more detailed test
+		// One test could be to check for production_date_start and production_date_end values
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+	
 	@Test
 	void testXslt096() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090);
