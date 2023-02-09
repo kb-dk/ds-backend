@@ -88,11 +88,16 @@
           <f:string key="identifier_local">
             <xsl:value-of select="m:identifier[@type='local']"/>
           </f:string>
-          <!-- Categories seems to be a collection of other fields -->
+          <!-- Categories seems to be a collection of other fields. -->
           <f:string key="categories">
           <xsl:value-of select="m:genre[@type='Categories']"/>
           </f:string>
-          <!-- Different things can be represented in note. Maybe this field should be named content -->
+          <!-- Different things can be represented in note. -->
+          <xsl:if test="m:note[@type='Catalog Name']">
+            <f:string key="catalog_name">
+              <xsl:value-of select="m:note[@type='Catalog Name']"/>
+            </f:string>
+          </xsl:if>
           <xsl:if test="m:note[@type='content']">
             <f:array key="content">
               <xsl:for-each select="m:note[@type='content']">
