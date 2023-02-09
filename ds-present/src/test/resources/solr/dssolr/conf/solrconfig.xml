@@ -129,6 +129,13 @@
   -->
   <codecFactory class="solr.SchemaCodecFactory"/>
 
+  
+  <!--
+  //TEG: We really want to use this, but it is broken: See https://issues.apache.org/jira/browse/SOLR-16203
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
+  -->
+
+
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        Index Config - These settings control low-level behavior of indexing
        Most example settings here show the default value, but are commented
@@ -254,6 +261,7 @@
          this is enabled here, and controlled through log4j2.xml
       -->
      <infoStream>true</infoStream>
+     
   </indexConfig>
 
   <!-- The default high-performance update handler -->
@@ -1144,6 +1152,8 @@ via parameters.  The below configuration supports hl.method=original and fastVec
                           class="solr.scripting.xslt.XSLTResponseWriter">
     <int name="xsltCacheLifetimeSeconds">5</int>
   </queryResponseWriter>
+
+
 
   <!-- Query Parsers
 
