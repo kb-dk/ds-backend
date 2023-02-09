@@ -145,25 +145,22 @@
               </xsl:if>
             </f:array>
           </xsl:if>
-          <xsl:if test="m:originInfo[@altRepGroup='original']">
-            <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
-              <f:string key="date_created">
-                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
-              </f:string>
-            </xsl:if>
-            <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']">
-              <f:string key="production_date_start">
-                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']"/>
-              </f:string>
-              <f:string key="production_date_end">
-                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
-              </f:string>
-            </xsl:if>
-          </xsl:if>
-          <xsl:if test="m:originInfo[@altRepGroup='surrogate']">
-            <f:string key="digital_surrogate_production_date">
-              <xsl:value-of select="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured"/>
-            </f:string>
+          <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
+            <xsl:choose>
+              <xsl:when test="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']">
+                <f:string key="production_date_start">
+                  <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']"/>
+                </f:string>
+                <f:string key="production_date_end">
+                  <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
+                </f:string>
+              </xsl:when>
+              <xsl:otherwise>
+                <f:string key="date_created">
+                  <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
+                </f:string>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:if>
           <f:string key="collection">
             <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
