@@ -89,6 +89,7 @@ curl -s 'http://localhost:9073/ds-present/v1/records?collection=remote&maxRecord
 Indekser dem i Solr:
 
 curl -X POST -H 'Content-Type: application/json' 'http://localhost:10007/solr/ds/update' --data-binary @solrdocs.json
+
 curl -X POST -H 'Content-Type: application/json' 'http://localhost:10007/solr/ds/update' --data-binary '{ "commit": {} }'
 ```
 
