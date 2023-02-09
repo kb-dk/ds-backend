@@ -86,7 +86,6 @@ public class EmbeddedSolrTest {
 		embeddedServer.deleteByQuery("*:*");
 	}
 
-
 	@Test
 	void testRecord000332() throws Exception {
 
@@ -119,6 +118,9 @@ public class EmbeddedSolrTest {
 
 	}
 
+	/**
+	 * Full test for one item.
+	 */
 	@Test
 	void testRecordDPK() throws Exception {
 
@@ -149,7 +151,6 @@ public class EmbeddedSolrTest {
 		assertEquals(9657172, record.getFieldValue("file_size"));
 		assertEquals(1429, record.getFieldValue("image_height"));
 		assertEquals(2247, record.getFieldValue("image_width"));
-
 
 		//Multivalue fields
 		// type_of_resource
@@ -186,13 +187,49 @@ public class EmbeddedSolrTest {
 		SolrDocument record = getRecordById("urn:uuid:096c9090-717f-11e0-82d7-002185371280");
 
 		//Single value field
+		assertEquals("Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",record.getFieldValue("shelf_location"));
 		assertEquals("000225.tif",record.getFieldValue("identifier_local"));
+		assertEquals("Danske portrætter, X-langtidsbevaring test - BLO, Diverse, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-02 09:01:13",record.getFieldValue("categories"));
+		assertEquals("Samlingsbilleder",record.getFieldValue("catalog_name"));
+		assertEquals("Billedsamlingen",record.getFieldValue("collection"));
+		assertEquals("1755",record.getFieldValue("production_date_start"));
+		assertEquals("1831",record.getFieldValue("production_date_end"));
+
 
 		//multivalue field
+		// creator_name
+		Collection<Object> creatorName = record.getFieldValues("creator_name");
+		assertEquals(1, creatorName.size());
+		assertTrue(creatorName.contains("Clemens, Johann Friderich"));
+
+		// creator_full_name
+		Collection<Object> creatorFullName = record.getFieldValues("creator_full_name");
+		assertEquals(1, creatorFullName.size());
+		assertTrue(creatorFullName.contains("Johann Friderich Clemens"));
+
+		// creator_family_name
+		Collection<Object> creatorFamilyName = record.getFieldValues("creator_family_name");
+		assertEquals(1, creatorFamilyName.size());
+		assertTrue(creatorFamilyName.contains("Clemens"));
+
+		// creator_given_name
+		Collection<Object> creatorGivenName = record.getFieldValues("creator_given_name");
+		assertEquals(1, creatorGivenName.size());
+		assertTrue(creatorGivenName.contains("Johann Friderich"));
+
+		// creator_terms_of_address
+		Collection<Object> creatorTermsOfAddress = record.getFieldValues("creator_terms_of_address");
+		assertEquals(1, creatorTermsOfAddress.size());
+		assertTrue(creatorTermsOfAddress.contains("kobberstikker"));
+
+		// type_of_resource
 		Collection<Object> typeResources = record.getFieldValues("type_of_resource");
 		assertEquals(2,typeResources.size());
 		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
 		assertTrue(typeResources.contains("Grafik"));
+
+		// topic
+		// Collection<Object> topic = record.getFieldValues()
 
 		//TODO more fields
 
