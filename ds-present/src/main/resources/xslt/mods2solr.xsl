@@ -174,11 +174,13 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:if>
+          <!-- TODO: Move collection to be after catalog name -->
           <f:string key="collection">
             <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
           </f:string>
           <xsl:if test="m:subject/m:topic[@lang]">
             <f:array key="topic">
+              <!-- TODO: Skip empty elements -->
               <xsl:for-each select="m:subject">
                 <xsl:for-each select="m:topic[@lang]">
                   <f:string>
@@ -196,28 +198,34 @@
             </xsl:for-each>
           </xsl:if>
           <xsl:if test="m:subject/m:name">
-            <xsl:for-each select="m:subject/m:name">
-              <f:array key="subject_name">
+            <f:array key="subject_name">
+              <xsl:for-each select="m:subject/m:name">
                 <f:string>
                   <xsl:value-of select="concat(m:namePart[@type='family'],', ', m:namePart[@type='given'])"/>
                 </f:string>
+              </xsl:for-each>
               </f:array>
               <f:array key="subject_full_name">
+                <xsl:for-each select="m:subject/m:name">
                 <f:string>
                   <xsl:value-of select="concat(m:namePart[@type='given'],' ',m:namePart[@type='family'])"/>
                 </f:string>
+                </xsl:for-each>
               </f:array>
               <f:array key="subject_family_name">
+                <xsl:for-each select="m:subject/m:name">
                 <f:string>
                     <xsl:value-of select="m:namePart[@type='family']"/>
                 </f:string>
+                </xsl:for-each>
               </f:array>
               <f:array key="subject_given_name">
+                <xsl:for-each select="m:subject/m:name">
                 <f:string>
                     <xsl:value-of select="m:namePart[@type='given']"/>
                 </f:string>
+                </xsl:for-each>
               </f:array>
-            </xsl:for-each>
 
             <f:array key="subject_date_of_birth">
               <xsl:for-each select="m:subject/m:name">
