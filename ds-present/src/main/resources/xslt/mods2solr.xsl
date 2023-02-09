@@ -93,9 +93,9 @@
           <xsl:value-of select="m:genre[@type='Categories']"/>
           </f:string>
           <!-- Different things can be represented in note. -->
-          <xsl:if test="m:note[@type='Catalog Name']">
+          <xsl:if test="m:note[@displayLabel='Catalog Name']">
             <f:string key="catalog_name">
-              <xsl:value-of select="m:note[@type='Catalog Name']"/>
+              <xsl:value-of select="m:note[@displayLabel='Catalog Name']"/>
             </f:string>
           </xsl:if>
           <xsl:if test="m:note[@type='content']">
