@@ -4,10 +4,7 @@ import java.io.File;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
@@ -141,17 +138,32 @@ public class EmbeddedSolrTest {
 		//Full life cycle test
 		SolrDocument record = getRecordById("urn:uuid:3956d820-7b7d-11e6-b2b3-0016357f605f");
 
-		//Single value field
+		//Single value fields
 		assertEquals("DPK000107.tif",record.getFieldValue("identifier_local"));
+		assertEquals("da",record.getFieldValue("cataloging_language"));
+		assertEquals("Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort/politistation",record.getFieldValue("shelf_location"));
+		assertEquals("Postkortsamlingen, Vestindien, Postkort, Vestindien, CAR- BLO katagori, Postkortsamlingen, 2022-09-01 15:06:39, 2022-09-01 15:11:09",record.getFieldValue("categories"));
+		assertEquals("Samlingsbilleder",record.getFieldValue("catalog_name"));
+		assertEquals("Billedsamlingen", record.getFieldValue("collection"));
+		assertEquals("Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian", record.getFieldValue("area"));
+		assertEquals(9657172, record.getFieldValue("file_size"));
+		assertEquals(1429, record.getFieldValue("image_height"));
+		assertEquals(2247, record.getFieldValue("image_width"));
 
-		//multivalue field
+
+		//Multivalue fields
+		// type_of_resource
 		Collection<Object> typeResources = record.getFieldValues("type_of_resource");
 		assertEquals(2,typeResources.size());
 		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
 		assertTrue(typeResources.contains("Postkort"));
 
-		//TODO more fields
-
+		// topic
+		Collection<Object> topic = record.getFieldValues("topic");
+		List<String> topicContent = Arrays.asList("postkort","forter","Dannebrog", "børn", "arkitekturer",
+													"postcards", "forts", "Dannebrog", "children", "architectures") ;
+		assertEquals(10,topic.size());
+		assertTrue(topic.containsAll(topicContent));
 	}
 
 	@Test
