@@ -66,13 +66,12 @@ class XSLTSolrTransformerTest{
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
 
+	/**
+	 * This record is tested thoroughly in EmbeddedSolrTest.testRecordDPK()
+	 */
 	@Test
 	void testXsltNewDpkItem() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DPK);
-		// TODO: Add more detailed test
-		// Some tests could be to check for area and genre fields.
-
-
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
@@ -94,13 +93,13 @@ class XSLTSolrTransformerTest{
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
-	
+
+	/**
+	 * This record is fully tested in EmbeddedSolrTest.testRecord096c9090()
+	 */
 	@Test
 	void testXslt096() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090);
-		// TODO: Add more detailed test
-		// One test could be to check for production_date_start and production_date_end values
-
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
