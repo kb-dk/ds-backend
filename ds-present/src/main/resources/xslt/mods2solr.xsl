@@ -88,8 +88,8 @@
           <f:string key="identifier_local">
             <xsl:value-of select="m:identifier[@type='local']"/>
           </f:string>
-          <f:string key="genre">
-          <xsl:value-of select="m:genre"/>
+          <f:string key="categories">
+          <xsl:value-of select="m:genre[@type='Categories']"/>
           </f:string>
           <xsl:if test="m:note[@type='content']">
             <f:array key="note">

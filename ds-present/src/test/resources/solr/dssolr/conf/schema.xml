@@ -13,7 +13,7 @@
   <field name="identifier_local" type="string"/>
   <field name="cataloging_language" type="string"/>
   <field name="shelf_location" type="string"/>
-  <field name="genre" type="string"/>
+  <field name="categories" type="string"/>
   <field name="collection" type="string"/>
 
 
