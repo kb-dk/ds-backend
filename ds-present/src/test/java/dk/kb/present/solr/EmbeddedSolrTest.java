@@ -167,6 +167,9 @@ public class EmbeddedSolrTest {
 		assertTrue(topic.containsAll(topicContent));
 	}
 
+	/**
+	 * Full test for item
+	 */
 	@Test
 	void testRecord096c9090() throws Exception {
 
@@ -194,7 +197,9 @@ public class EmbeddedSolrTest {
 		assertEquals("Billedsamlingen",record.getFieldValue("collection"));
 		assertEquals("1755",record.getFieldValue("production_date_start"));
 		assertEquals("1831",record.getFieldValue("production_date_end"));
-
+		assertEquals(6691996, record.getFieldValue("file_size"));
+		assertEquals(1812, record.getFieldValue("image_height"));
+		assertEquals(1227, record.getFieldValue("image_width"));
 
 		//multivalue field
 		// creator_name
@@ -229,8 +234,45 @@ public class EmbeddedSolrTest {
 		assertTrue(typeResources.contains("Grafik"));
 
 		// topic
-		// Collection<Object> topic = record.getFieldValues()
+		Collection<Object> topic = record.getFieldValues("topic");
+		assertEquals(3,topic.size());
+		assertTrue(topic.contains("Poul Egede. 1911,7507."));
+		assertTrue(topic.contains("Billedet befinder sig i Kort- og Billedafdelingen, Det Kongelige Bibliotek"));
 
+		// subject_name
+		Collection<Object> subjectName = record.getFieldValues("subject_name");
+		assertEquals(1,subjectName.size());
+		assertTrue(subjectName.contains("Egede, Poul Hansen"));
+
+		// subject_full_name
+		Collection<Object> subjectFullName = record.getFieldValues("subject_full_name");
+		assertEquals(1,subjectFullName.size());
+		assertTrue(subjectFullName.contains("Poul Hansen Egede"));
+
+		// subject_family_name
+		Collection<Object> subjectFamilyName = record.getFieldValues("subject_family_name");
+		assertEquals(1,subjectFamilyName.size());
+		assertTrue(subjectFamilyName.contains("Egede"));
+
+		// subject_given_name
+		Collection<Object> subjectGivenName = record.getFieldValues("subject_given_name");
+		assertEquals(1,subjectGivenName.size());
+		assertTrue(subjectGivenName.contains("Poul Hansen"));
+
+		// subject_date_of_birth
+		Collection<Object> subjectDateOfBirth = record.getFieldValues("subject_date_of_birth");
+		assertEquals(1,subjectDateOfBirth.size());
+		assertTrue(subjectDateOfBirth.contains("1708-0-0"));
+
+		// subject_date_of_death
+		Collection<Object> subjectDateOfDeath = record.getFieldValues("subject_date_of_death");
+		assertEquals(1,subjectDateOfDeath.size());
+		assertTrue(subjectDateOfDeath.contains("1789-0-0"));
+
+		// subject_terms_of_address
+		Collection<Object> subjectTermsOfAddress = record.getFieldValues("subject_terms_of_address");
+		assertEquals(1,subjectTermsOfAddress.size());
+		assertTrue(subjectTermsOfAddress.contains("teolog, missionær, grønlandsfarer og biskop"));
 		//TODO more fields
 
 	}
