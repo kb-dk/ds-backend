@@ -221,7 +221,7 @@ public class IIPFacade {
      * See https://iipimage.sourceforge.io/documentation/protocol/
      * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
      */
-    private void validateIIPRequest(
+    public void validateIIPRequest(
             String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
             Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
             List<Integer> jtl, List<Integer> ptl, String cvt) {
@@ -229,11 +229,45 @@ public class IIPFacade {
             throw new InvalidArgumentServiceException("The parameter FIF must be defined");
         }
         if (!("jpeg".equals(cvt) | "png".equals(cvt))) {
+            // Maybe add a fallback to either one of them here?
             throw new InvalidArgumentServiceException(
                     "The parameter CVT must be defined and must be either 'jpeg' or 'png'. It was '" + cvt + "'");
         }
-        // TODO: Perform validation of all parameters
-    }
+        // TODO: Perform validation of JTL
+        // TODO: Perform validation of PTL
+        // TODO: Perform validation of WID
+        // TODO: Perform validation of HEI
+        // Validation of RGN
+        if (rgn.size() != 4){
+            throw new InvalidArgumentServiceException("The parameter RGN has to contain four numbers. " +
+                    "The first number representing X. The second number representing Y. The third number representing W " +
+                    "The fourth number representing H between 0.0 and 1.0. All numbers should be between 0.0 and 1.0");
+        }
+        if (!(rgn.get(0) >= 0.0F && rgn.get(0) <= 1.0)){
+            throw new InvalidArgumentServiceException("The value of x in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
+        }
+        if (!(rgn.get(1) >= 0.0F && rgn.get(1) <= 1.0)){
+            throw new InvalidArgumentServiceException("The value of y in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
+        }
+        if (!(rgn.get(2) >= 0.0F && rgn.get(2) <= 1.0)){
+            throw new InvalidArgumentServiceException("The value of w in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
+        }
+        if (!(rgn.get(3) >= 0.0F && rgn.get(3) <= 1.0)){
+            throw new InvalidArgumentServiceException("The value of h in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
+        }
+        // TODO: Perform validation of QLT
+        // TODO: Perform validation of CNT
+        // TODO: Perform validation of SHD
+        // TODO: Perform validation of LYR
+        // TODO: Perform validation of ROT
+        // TODO: Perform validation of GAM
+        // TODO: Perform validation of CMP
+        // TODO: Perform validation of PFL
+        // TODO: Perform validation of MINMAX
+        // TODO: Perform validation of CTW
+        // TODO: Perform validation of INV
+        // TODO: Perform validation of COL
+        }
 
     /**
      * Validates Deepzoom DZI parameters and throws appropriate exceptions if any are invalid.
