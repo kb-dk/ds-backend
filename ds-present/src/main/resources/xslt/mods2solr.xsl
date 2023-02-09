@@ -77,6 +77,11 @@
               <xsl:value-of select="."/>
             </f:string>
           </xsl:for-each>
+          <xsl:if test="m:location/m:shelfLocator">
+            <f:string key="shelf_location">
+              <xsl:value-of select="m:location/m:shelfLocator"/>
+            </f:string>
+          </xsl:if>
           <f:string key="id">
             <xsl:value-of select="m:identifier[@type='uri']"/>
           </f:string>
