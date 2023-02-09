@@ -182,9 +182,11 @@
               <!-- TODO: Skip empty elements -->
               <xsl:for-each select="m:subject">
                 <xsl:for-each select="m:topic[@lang]">
-                  <f:string>
-                    <xsl:value-of select="."/>
-                  </f:string>
+                  <xsl:if test=". != ''">
+                    <f:string>
+                      <xsl:value-of select="."/>
+                    </f:string>
+                  </xsl:if>
                 </xsl:for-each>
               </xsl:for-each>
             </f:array>

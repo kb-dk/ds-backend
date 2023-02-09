@@ -235,7 +235,7 @@ public class EmbeddedSolrTest {
 
 		// topic
 		Collection<Object> topic = record.getFieldValues("topic");
-		assertEquals(3,topic.size());
+		assertEquals(2,topic.size());
 		assertTrue(topic.contains("Poul Egede. 1911,7507."));
 		assertTrue(topic.contains("Billedet befinder sig i Kort- og Billedafdelingen, Det Kongelige Bibliotek"));
 
