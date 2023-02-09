@@ -147,8 +147,8 @@ public class EmbeddedSolrTest {
 		assertEquals("Billedsamlingen", record.getFieldValue("collection"));
 		assertEquals("Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian", record.getFieldValue("area"));
 		assertEquals(9657172, record.getFieldValue("file_size"));
-		assertEquals(9657172, record.getFieldValue("image_height"));
-		assertEquals(9657172, record.getFieldValue("image_width"));
+		assertEquals(1429, record.getFieldValue("image_height"));
+		assertEquals(2247, record.getFieldValue("image_width"));
 
 
 		//Multivalue fields
@@ -164,9 +164,6 @@ public class EmbeddedSolrTest {
 													"postcards", "forts", "Dannebrog", "children", "architectures") ;
 		assertEquals(10,topic.size());
 		assertTrue(topic.containsAll(topicContent));
-
-		//TODO more fields
-
 	}
 
 	@Test
