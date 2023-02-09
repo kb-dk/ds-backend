@@ -98,6 +98,9 @@
               <xsl:value-of select="m:note[@displayLabel='Catalog Name']"/>
             </f:string>
           </xsl:if>
+          <f:string key="collection">
+            <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
+          </f:string>
           <xsl:if test="m:note[@type='content']">
             <f:array key="content">
               <xsl:for-each select="m:note[@type='content']">
@@ -174,10 +177,6 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:if>
-          <!-- TODO: Move collection to be after catalog name -->
-          <f:string key="collection">
-            <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
-          </f:string>
           <xsl:if test="m:subject/m:topic[@lang]">
             <f:array key="topic">
               <!-- TODO: Skip empty elements -->
@@ -226,7 +225,6 @@
                 </f:string>
                 </xsl:for-each>
               </f:array>
-
             <f:array key="subject_date_of_birth">
               <xsl:for-each select="m:subject/m:name">
                 <f:string>
