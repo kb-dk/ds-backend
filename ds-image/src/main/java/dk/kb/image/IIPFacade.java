@@ -14,6 +14,7 @@
  */
 package dk.kb.image;
 
+import com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -226,6 +228,8 @@ public class IIPFacade {
             String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
             Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
             List<Integer> jtl, List<Integer> ptl, String cvt) {
+        // TODO: Split method into smaller methods in a validation class, so that each method can be tested alone.
+        // HOW DO WE HANDLE VALUES THAT DONT NEED TO BE SET?
         if (fif == null || fif.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter FIF must be defined");
         }
@@ -256,7 +260,7 @@ public class IIPFacade {
         if (!(rgn.get(3) >= 0.0F && rgn.get(3) <= 1.0)){
             throw new InvalidArgumentServiceException("The value of h in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
         }
-        // TODO: Perform validation of QLT
+        // Validation of QLT
         // If CVT=JPEG this should be between 0-100 if CVT=PNG then 0-9
         if (qlt < 0){
             throw new InvalidArgumentServiceException("QLT has to be equal to or greater than 0.");
@@ -267,12 +271,20 @@ public class IIPFacade {
         if (cvt.equals("png") && qlt > 9){
             throw new InvalidArgumentServiceException("QLT has to be less than or equal to 9, when CVT is set to PNG");
         }
-        // TODO: Perform validation of CNT
+        // Validation of CNT
         // Integer or float > 0
+        if (cnt < 0.0){
+            throw new InvalidArgumentServiceException("CNT has to be equal to or greater than 0");
+        }
         // TODO: Perform validation of SHD
         // TODO: Perform validation of LYR
         // TODO: Perform validation of ROT
         // Only 90, 180 and 270 supported. ! can be used to flip horizontally.
+        String[] values = {"90","180","270","!90", "!180", "!270"};
+        boolean b = Arrays.asList(values).contains(rot);
+        if (!b){
+            throw new InvalidArgumentServiceException("ROT has to be specified as one of the following values when set: 90, 180, 270, !90, !180, !270");
+        }
         // TODO: Perform validation of GAM
         // TODO: Perform validation of CMP
         // TODO: Perform validation of PFL
