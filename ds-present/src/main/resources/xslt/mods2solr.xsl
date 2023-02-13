@@ -254,7 +254,6 @@
           </xsl:if>
           <xsl:if test="m:subject/m:topic[@lang]">
             <f:array key="topic">
-              <!-- TODO: Skip empty elements -->
               <xsl:for-each select="m:subject">
                 <xsl:for-each select="m:topic[@lang]">
                   <xsl:if test=". != ''">
@@ -268,9 +267,9 @@
           </xsl:if>
           <xsl:if test="m:subject/m:hierarchicalGeographic">
             <xsl:for-each select="m:subject/m:hierarchicalGeographic">
-                <f:string key="area">
-                  <xsl:value-of select="m:area"/>
-                </f:string>
+              <f:string key="area">
+                <xsl:value-of select="m:area"/>
+              </f:string>
             </xsl:for-each>
           </xsl:if>
           <xsl:if test="m:subject/m:name">
@@ -290,32 +289,32 @@
                   </xsl:choose>
                 </f:string>
               </xsl:for-each>
-              </f:array>
-              <f:array key="subject_full_name">
+            </f:array>
+            <f:array key="subject_full_name">
+              <xsl:for-each select="m:subject/m:name">
+              <f:string>
+                <xsl:value-of select="normalize-space(concat(m:namePart[@type='given'],' ',m:namePart[@type='family']))"/>
+              </f:string>
+              </xsl:for-each>
+            </f:array>
+            <xsl:if test="m:subject/m:name/m:namePart[@type='family'] and m:subject/m:name/m:namePart[@type='family'] != ''">
+              <f:array key="subject_family_name">
                 <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                  <xsl:value-of select="normalize-space(concat(m:namePart[@type='given'],' ',m:namePart[@type='family']))"/>
-                </f:string>
+                  <f:string>
+                      <xsl:value-of select="m:namePart[@type='family']"/>
+                  </f:string>
                 </xsl:for-each>
               </f:array>
-              <xsl:if test="m:subject/m:name/m:namePart[@type='family'] and m:subject/m:name/m:namePart[@type='family'] != ''">
-                <f:array key="subject_family_name">
-                  <xsl:for-each select="m:subject/m:name">
-                    <f:string>
-                        <xsl:value-of select="m:namePart[@type='family']"/>
-                    </f:string>
-                  </xsl:for-each>
-                </f:array>
-              </xsl:if>
-              <xsl:if test="m:subject/m:name/m:namePart[@type='given'] and m:subject/m:name/m:namePart[@type='given'] != ''">
-                <f:array key="subject_given_name">
-                  <xsl:for-each select="m:subject/m:name">
-                    <f:string>
-                      <xsl:value-of select="m:namePart[@type='given']"/>
-                    </f:string>
-                  </xsl:for-each>
-                </f:array>
-              </xsl:if>
+            </xsl:if>
+            <xsl:if test="m:subject/m:name/m:namePart[@type='given'] and m:subject/m:name/m:namePart[@type='given'] != ''">
+              <f:array key="subject_given_name">
+                <xsl:for-each select="m:subject/m:name">
+                  <f:string>
+                    <xsl:value-of select="m:namePart[@type='given']"/>
+                  </f:string>
+                </xsl:for-each>
+              </f:array>
+            </xsl:if>
             <xsl:if test="m:subject/m:name/m:namePart[@type='date'] and m:subject/m:name/m:namePart[@type='date'] != ''">
               <f:array key="subject_date_of_birth">
                 <xsl:for-each select="m:subject/m:name">
@@ -342,28 +341,38 @@
               </f:array>
             </xsl:if>
           </xsl:if>
-          <f:array key="type_of_resource">
-            <xsl:for-each select="m:typeOfResource">
-              <f:string>
-                <xsl:value-of select="."/>
-              </f:string>
-            </xsl:for-each>
-          </f:array>
+          <xsl:if test="m:typeOfResource">
+            <f:array key="type_of_resource">
+              <xsl:for-each select="m:typeOfResource">
+                <f:string>
+                  <xsl:value-of select="."/>
+                </f:string>
+              </xsl:for-each>
+            </f:array>
+          </xsl:if>
       </xsl:for-each>
       <!--- This is the METS element with image metadata from the PremisObject -->
       <xsl:for-each select="//mets:amdSec/mets:techMD[@ID='PremisObject1']//premis:objectCharacteristics">
-        <f:string key="file_size">
-          <xsl:value-of select="premis:size"/>
-        </f:string>
+        <xsl:if test="premis:size">
+          <f:string key="file_size">
+            <xsl:value-of select="premis:size"/>
+          </f:string>
+        </xsl:if>
+        <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight">
         <f:string key="image_height">
           <xsl:value-of select="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight"/>
         </f:string>
+        </xsl:if>
+        <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth">
         <f:string key="image_width">
           <xsl:value-of select="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth"/>
         </f:string>
+        </xsl:if>
+        <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth">
         <f:string key="image_size">
           <xsl:value-of select="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth"/>
         </f:string>
+        </xsl:if>
       </xsl:for-each>
       <!--- End XSLT logic -->
     </f:map>
