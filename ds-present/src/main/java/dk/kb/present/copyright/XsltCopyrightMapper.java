@@ -1,6 +1,9 @@
 package dk.kb.present.copyright;
 
 import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  *
  * @author teg
@@ -25,6 +28,8 @@ import java.util.HashMap;
  */
 public class XsltCopyrightMapper {
         
+    private static final Logger log = LoggerFactory.getLogger(XsltCopyrightMapper.class);
+	
     //These fields must be define in the Solr schema.xml (and temporary also 'imageurl')
     public static final String ACCESS_BLOKERET_FIELD="access_blokeret";
     public static final String ACCESS_PLIGTAFLEVERET_FIELD="access_pligtafleveret";
@@ -39,7 +44,7 @@ public class XsltCopyrightMapper {
     public static HashMap<String,String> xsltCopyrightTransformer(String modMedsXML) throws Exception{
                         
         HashMap<String,String> solrFieldsMap = new HashMap<String,String>(); 
-        
+        try {
         CopyrightAccessDto copyrightAccessDto = CopyrightAccessExtractor.buildCopyrightFields(modMedsXML);
         CopyrightAccessDto2SolrFieldsMapper mapper= new CopyrightAccessDto2SolrFieldsMapper(copyrightAccessDto);
         
@@ -66,6 +71,13 @@ public class XsltCopyrightMapper {
         
         if (copyrightAccessDto.getImageUrl() != null) {
           solrFieldsMap.put("imageurl",mapper.getImageUrl());
+        }
+        }
+        catch(Exception e) {
+        	//Data error! will be fixed
+            log.error("Error transforming... Probably data error");
+            solrFieldsMap.put(ACCESS_SKABELSESAAR_FIELD,"9999");       
+        	
         }
         
         return solrFieldsMap;
