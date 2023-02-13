@@ -37,6 +37,7 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
 	public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
 	public static final String RECORD_KE06 = "xml/copyright_extraction/KE066530.tif.xml";
+	public static final String RECORD_OA = "xml/copyright_extraction/OA_102-2007-pl_0004.tif.xml";
 	
 	
 
@@ -123,7 +124,7 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testNoNameMultipleNames() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_KE06);
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_OA);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);

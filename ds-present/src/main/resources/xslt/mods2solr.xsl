@@ -152,10 +152,10 @@
             <xsl:if test="m:name/m:namePart and m:name/m:namePart !=''">
               <f:array key="creator_name">
                 <xsl:for-each select="m:name">
-                  <xsl:if test="m:namePart">
+                  <xsl:if test="./m:namePart[@type='family'] or ./m:namePart[@type='given']">
                     <f:string>
                       <xsl:choose>
-                        <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given']">
+                        <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given'] and m:namePart[@type='family'] != '' and m:namePart[@type='given'] != ''">
                           <xsl:value-of select="normalize-space(concat(m:namePart[@type='family'],', ', m:namePart[@type='given']))"/>
                         </xsl:when>
                         <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
@@ -171,7 +171,7 @@
               </f:array>
               <f:array key="creator_full_name">
                 <xsl:for-each select="m:name">
-                  <xsl:if test="m:namePart">
+                  <xsl:if test="./m:namePart[@type='family'] or ./m:namePart[@type='given']">
                     <f:string>
                       <xsl:value-of select="normalize-space(concat(m:namePart[@type='given'], ' ',m:namePart[@type='family']))"/>
                     </f:string>
