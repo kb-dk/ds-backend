@@ -24,6 +24,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="categories" type="string"/>
   <field name="collection" type="string"/>
 
+  <!-- Fields on title -->
+  <field name="title" type="string"/>
+  <field name="subtitle" type="string"/>
+  <field name="alternative_title" type="string"/>
 
   <!-- Fields on creator -->
   <field name="creator_name" type="text_strict" multiValued="true"/>

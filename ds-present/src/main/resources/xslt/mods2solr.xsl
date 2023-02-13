@@ -128,6 +128,21 @@
               <xsl:value-of select="m:note[@displayLabel='Description']"/>
             </f:string>
           </xsl:if>
+          <xsl:if test="m:titleInfo/m:title">
+            <f:string key="title">
+              <xsl:value-of select="m:titleInfo/m:title"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="m:titleInfo/m:subTitle">
+            <f:string key="subtitle">
+              <xsl:value-of select="m:titleInfo/m:subTitle"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="m:titleInfo[@type='alternative']/m:title">
+            <f:string key="alternative_title">
+              <xsl:value-of select="m:titleInfo[@type='alternative']/m:title"/>
+            </f:string>
+          </xsl:if>
           <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
             <xsl:if test="m:name/m:namePart">
               <f:array key="creator_name">
