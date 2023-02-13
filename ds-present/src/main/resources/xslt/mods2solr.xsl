@@ -149,7 +149,17 @@
                 <xsl:for-each select="m:name">
                   <xsl:if test="m:namePart">
                     <f:string>
-                      <xsl:value-of select="normalize-space(concat(m:namePart[@type='family'],', ',m:namePart[@type='given']))"/>
+                      <xsl:choose>
+                        <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given']">
+                          <xsl:value-of select="normalize-space(concat(m:namePart[@type='family'],', ', m:namePart[@type='given']))"/>
+                        </xsl:when>
+                        <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
+                          <xsl:value-of select="m:namePart[@type='family']"/>
+                        </xsl:when>
+                        <xsl:when test="m:namePart[@type='given'] and not (m:namePart[@type='family'])">
+                          <xsl:value-of select="m:namePart[@type='given']"/>
+                        </xsl:when>
+                      </xsl:choose>
                     </f:string>
                   </xsl:if>
                 </xsl:for-each>
@@ -256,52 +266,70 @@
             <f:array key="subject_name">
               <xsl:for-each select="m:subject/m:name">
                 <f:string>
-                  <xsl:value-of select="concat(m:namePart[@type='family'],', ', m:namePart[@type='given'])"/>
+                  <xsl:choose>
+                    <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given']">
+                      <xsl:value-of select="normalize-space(concat(m:namePart[@type='family'],', ', m:namePart[@type='given']))"/>
+                    </xsl:when>
+                    <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
+                      <xsl:value-of select="m:namePart[@type='family']"/>
+                    </xsl:when>
+                    <xsl:when test="m:namePart[@type='given'] and not (m:namePart[@type='family'])">
+                      <xsl:value-of select="m:namePart[@type='given']"/>
+                    </xsl:when>
+                  </xsl:choose>
                 </f:string>
               </xsl:for-each>
               </f:array>
               <f:array key="subject_full_name">
                 <xsl:for-each select="m:subject/m:name">
                 <f:string>
-                  <xsl:value-of select="concat(m:namePart[@type='given'],' ',m:namePart[@type='family'])"/>
+                  <xsl:value-of select="normalize-space(concat(m:namePart[@type='given'],' ',m:namePart[@type='family']))"/>
                 </f:string>
                 </xsl:for-each>
               </f:array>
-              <f:array key="subject_family_name">
+              <xsl:if test="m:subject/m:name/m:namePart[@type='family'] and m:subject/m:name/m:namePart[@type='family'] != ''">
+                <f:array key="subject_family_name">
+                  <xsl:for-each select="m:subject/m:name">
+                    <f:string>
+                        <xsl:value-of select="m:namePart[@type='family']"/>
+                    </f:string>
+                  </xsl:for-each>
+                </f:array>
+              </xsl:if>
+              <xsl:if test="m:subject/m:name/m:namePart[@type='given'] and m:subject/m:name/m:namePart[@type='given'] != ''">
+                <f:array key="subject_given_name">
+                  <xsl:for-each select="m:subject/m:name">
+                    <f:string>
+                      <xsl:value-of select="m:namePart[@type='given']"/>
+                    </f:string>
+                  </xsl:for-each>
+                </f:array>
+              </xsl:if>
+            <xsl:if test="m:subject/m:name/m:namePart[@type='date'] and m:subject/m:name/m:namePart[@type='date'] != ''">
+              <f:array key="subject_date_of_birth">
                 <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                    <xsl:value-of select="m:namePart[@type='family']"/>
-                </f:string>
+                  <f:string>
+                    <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
+                  </f:string>
                 </xsl:for-each>
               </f:array>
-              <f:array key="subject_given_name">
+              <f:array key="subject_date_of_death">
                 <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                    <xsl:value-of select="m:namePart[@type='given']"/>
-                </f:string>
+                  <f:string>
+                    <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
+                  </f:string>
                 </xsl:for-each>
               </f:array>
-            <f:array key="subject_date_of_birth">
-              <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                  <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
-                </f:string>
-              </xsl:for-each>
-            </f:array>
-            <f:array key="subject_date_of_death">
-              <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                  <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
-                </f:string>
-              </xsl:for-each>
-            </f:array>
-            <f:array key="subject_terms_of_address">
-              <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                  <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
-                </f:string>
-              </xsl:for-each>
-            </f:array>
+            </xsl:if>
+            <xsl:if test="m:subject/m:name/m:namePart[@type='termsOfAddress'] and m:subject/m:name/m:namePart[@type='termsOfAddress'] != ''">
+              <f:array key="subject_terms_of_address">
+                <xsl:for-each select="m:subject/m:name">
+                  <f:string>
+                    <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
+                  </f:string>
+                </xsl:for-each>
+              </f:array>
+            </xsl:if>
           </xsl:if>
           <f:array key="type_of_resource">
             <xsl:for-each select="m:typeOfResource">
