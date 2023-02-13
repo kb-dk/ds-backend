@@ -20,14 +20,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
   <field name="identifier_local" type="string"/>
   <field name="cataloging_language" type="string"/>
-  <field name="shelf_location" type="string"/>
+  <field name="shelf_location" type="text_general"/>
   <field name="categories" type="string"/>
   <field name="collection" type="string" docValues="true"/>
 
   <!-- Fields on title -->
-  <field name="title" type="string"/>
-  <field name="subtitle" type="string"/>
-  <field name="alternative_title" type="string"/>
+  <field name="title" type="text_general"/>
+  <field name="subtitle" type="text_general"/>
+  <field name="alternative_title" type="text_general"/>
 
   <!-- Fields on creator -->
   <field name="creator_name" type="text_strict" multiValued="true"/>
