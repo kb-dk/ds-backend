@@ -18,8 +18,8 @@ public class IIPValidationTest {
     static Long wid;
     static Long hei;
     static List<Float> rgn = new ArrayList<>(Arrays.asList(0.5F,0.2F,0.7F,0.8F));
-    static Integer qlt;
-    static Float cnt;
+    static Integer qlt = 1;
+    static Float cnt = 0.0F;
     static List<Integer> shd;
     static Integer lyr;
     static String rot;
@@ -107,6 +107,32 @@ public class IIPValidationTest {
         assertTrue(actualMessageForHighPngValue.contains(expectedMessageForHighPngValue));
     }
 
+    @Test
+    public void IipCntTest(){
+        float lowCnt = -5;
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, rgn, qlt, lowCnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+        });
+
+        String expectedMessage = "CNT has to be equal to or greater than 0";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+
+    @Test
+    public void IipRotTest(){
+        String wrongRot = "!67";
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, rgn, qlt, cnt, shd, lyr, wrongRot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+        });
+
+        String expectedMessage = "ROT has to be specified as one of the following values when set: 90, 180, 270, !90, !180, !270";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
     @Test
     public void templateTest(){
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
