@@ -112,6 +112,17 @@
               </xsl:for-each>
             </f:array>
           </xsl:if>
+          <xsl:if test="m:note[@type='Intern note']">
+            <f:array key="internal_note">
+              <xsl:for-each select="m:note[@type='Intern note']">
+                <xsl:if test=". !='' and . !='Intern note:' and . !='Ekstern note:' and . !='Alt. navn:' and . != 'Kunstnernote:' and . !='Aktiv:'">
+                  <f:string>
+                    <xsl:value-of select="."/>
+                  </f:string>
+                </xsl:if>
+              </xsl:for-each>
+            </f:array>
+          </xsl:if>
           <xsl:if test="m:note[@displayLabel='Description']">
             <f:string key="description">
               <xsl:value-of select="m:note[@displayLabel='Description']"/>

@@ -43,6 +43,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="topic" type="text_general" multiValued="true"/>
   <field name="description" type="text_general" multiValued="false"/>
   <field name="content" type="text_general" multiValued="true"/>
+  <field name="internal_note" type="text_general" multiValued="true"/>
   <field name="catalog_name" type="string"/>
 
   <field name="subject_name" type="text_general" multiValued="true"/>
