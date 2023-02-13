@@ -70,8 +70,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <field name="file_size" type="pint"/>
   <field name="image_height" type="pint"/>
-  <field name="image_width" type="pint"/> 
-  
+  <field name="image_width" type="pint"/>
+  <field name="image_size" type="pfloat"/>
+
+
   <field name="freetext" type="freetext" multiValued="true" stored="false"/>
 
 

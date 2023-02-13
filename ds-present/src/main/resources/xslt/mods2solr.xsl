@@ -285,6 +285,7 @@
               </f:string>
             </xsl:for-each>
           </f:array>
+          <!-- TODO: We should target these nodes in a simpler way-->
           <f:string key="file_size">
              <!--- This is the METS element with image metadata. Path might be optimised -->
              <!--- PATH: "../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object"-->
@@ -295,6 +296,9 @@
           </f:string>
           <f:string key="image_width">
             <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth"/>
+          </f:string>
+          <f:string key="image_size">
+            <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth * ../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight"/>
           </f:string>
          <!--- End XSLT logic -->
       </xsl:for-each>
