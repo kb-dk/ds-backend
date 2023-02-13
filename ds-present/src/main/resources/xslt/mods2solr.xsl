@@ -103,9 +103,11 @@
               <xsl:value-of select="m:note[@displayLabel='Catalog Name']"/>
             </f:string>
           </xsl:if>
-          <f:string key="collection">
-            <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
-          </f:string>
+          <xsl:if test="m:relatedItem[@type='host']/m:titleInfo/m:title">
+            <f:string key="collection">
+              <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
+            </f:string>
+          </xsl:if>
           <xsl:if test="m:note[@type='content']">
             <f:array key="content">
               <xsl:for-each select="m:note[@type='content']">
