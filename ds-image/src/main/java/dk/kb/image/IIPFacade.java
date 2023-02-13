@@ -26,6 +26,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Proxy for an image server that supports the
@@ -256,10 +257,22 @@ public class IIPFacade {
             throw new InvalidArgumentServiceException("The value of h in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
         }
         // TODO: Perform validation of QLT
+        // If CVT=JPEG this should be between 0-100 if CVT=PNG then 0-9
+        if (qlt < 0){
+            throw new InvalidArgumentServiceException("QLT has to be equal to or greater than 0.");
+        }
+        if (cvt.equals("jpeg") && qlt > 100){
+            throw new InvalidArgumentServiceException("QLT has to be less than or equal to 100, when CVT is set to JPEG");
+        }
+        if (cvt.equals("png") && qlt > 9){
+            throw new InvalidArgumentServiceException("QLT has to be less than or equal to 9, when CVT is set to PNG");
+        }
         // TODO: Perform validation of CNT
+        // Integer or float > 0
         // TODO: Perform validation of SHD
         // TODO: Perform validation of LYR
         // TODO: Perform validation of ROT
+        // Only 90, 180 and 270 supported. ! can be used to flip horizontally.
         // TODO: Perform validation of GAM
         // TODO: Perform validation of CMP
         // TODO: Perform validation of PFL
