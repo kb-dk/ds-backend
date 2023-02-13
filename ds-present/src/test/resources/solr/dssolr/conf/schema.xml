@@ -21,7 +21,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="identifier_local" type="string"/>
   <field name="cataloging_language" type="string"/>
   <field name="shelf_location" type="text_general"/>
-  <field name="physical_location" type="text_general"/>
+  <field name="physical_location" type="text_general"/> <!--  May not be in data -->
   <field name="categories" type="string"/>
   <field name="collection" type="string" docValues="true"/>
 
