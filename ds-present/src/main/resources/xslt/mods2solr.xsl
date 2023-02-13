@@ -185,7 +185,7 @@
                 </xsl:for-each>
               </f:array>
             </xsl:if>
-            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'aut' or 'art'">
               <xsl:if test="m:name/m:namePart[@type='family']">
                 <f:array key="creator_family_name">
                     <xsl:for-each select="m:name">
@@ -198,7 +198,7 @@
                 </f:array>
               </xsl:if>
             </xsl:if>
-            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'aut' or 'art'">
               <xsl:if test="m:name/m:namePart[@type='given']">
                 <f:array key="creator_given_name">
                   <xsl:for-each select="m:name">
@@ -211,7 +211,7 @@
                 </f:array>
               </xsl:if>
             </xsl:if>
-            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'art' or 'aut'">
               <xsl:if test="m:name/m:namePart[@type='termsOfAddress']">
                 <f:array key="creator_terms_of_address">
                   <xsl:for-each select="m:name">
