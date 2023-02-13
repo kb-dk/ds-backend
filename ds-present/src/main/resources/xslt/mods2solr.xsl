@@ -72,11 +72,13 @@
 
        <!-- Start XSLT logic -->
            <!-- Here can be multiple values -->
-          <xsl:for-each select="m:recordInfo/m:languageOfCataloging/m:languageTerm[1]">
-            <f:string key="cataloging_language">
-              <xsl:value-of select="."/>
-            </f:string>
-          </xsl:for-each>
+          <xsl:if test="m:recordInfo/m:languageOfCataloging/m:languageTerm">
+            <xsl:for-each select="m:recordInfo/m:languageOfCataloging/m:languageTerm[1]">
+              <f:string key="cataloging_language">
+                <xsl:value-of select="."/>
+              </f:string>
+            </xsl:for-each>
+          </xsl:if>
           <xsl:if test="m:location/m:physicalLocation">
             <f:string key="physical_location">
               <xsl:value-of select="m:location/m:physicalLocation"/>
@@ -94,9 +96,11 @@
             <xsl:value-of select="m:identifier[@type='local']"/>
           </f:string>
           <!-- Categories seems to be a collection of other fields. -->
-          <f:string key="categories">
-          <xsl:value-of select="m:genre[@type='Categories']"/>
-          </f:string>
+          <xsl:if test="m:genre[@type='Categories']">
+            <f:string key="categories">
+              <xsl:value-of select="m:genre[@type='Categories']"/>
+            </f:string>
+          </xsl:if>
           <!-- Different things can be represented in note. -->
           <xsl:if test="m:note[@displayLabel='Catalog Name']">
             <f:string key="catalog_name">
