@@ -148,7 +148,7 @@
               <xsl:value-of select="m:titleInfo[@type='alternative']/m:title"/>
             </f:string>
           </xsl:if>
-          <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+          <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'aut' or 'art'">
             <xsl:if test="m:name/m:namePart and m:name/m:namePart !=''">
               <f:array key="creator_name">
                 <xsl:for-each select="m:name">
