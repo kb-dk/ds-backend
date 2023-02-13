@@ -128,20 +128,39 @@
               <xsl:value-of select="m:note[@displayLabel='Description']"/>
             </f:string>
           </xsl:if>
+          <xsl:if test="m:titleInfo/m:title">
+            <f:string key="title">
+              <xsl:value-of select="m:titleInfo/m:title"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="m:titleInfo/m:subTitle">
+            <f:string key="subtitle">
+              <xsl:value-of select="m:titleInfo/m:subTitle"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="m:titleInfo[@type='alternative']/m:title">
+            <f:string key="alternative_title">
+              <xsl:value-of select="m:titleInfo[@type='alternative']/m:title"/>
+            </f:string>
+          </xsl:if>
           <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
-            <xsl:if test="m:name/m:namePart">
+            <xsl:if test="m:name/m:namePart and m:name/m:namePart !=''">
               <f:array key="creator_name">
                 <xsl:for-each select="m:name">
-                  <f:string>
-                  <xsl:value-of select="normalize-space(concat(m:namePart[@type='family'],', ',m:namePart[@type='given']))"/>
-                  </f:string>
+                  <xsl:if test="m:namePart">
+                    <f:string>
+                      <xsl:value-of select="normalize-space(concat(m:namePart[@type='family'],', ',m:namePart[@type='given']))"/>
+                    </f:string>
+                  </xsl:if>
                 </xsl:for-each>
               </f:array>
               <f:array key="creator_full_name">
                 <xsl:for-each select="m:name">
-                  <f:string>
-                    <xsl:value-of select="normalize-space(concat(m:namePart[@type='given'], ' ',m:namePart[@type='family']))"/>
-                  </f:string>
+                  <xsl:if test="m:namePart">
+                    <f:string>
+                      <xsl:value-of select="normalize-space(concat(m:namePart[@type='given'], ' ',m:namePart[@type='family']))"/>
+                    </f:string>
+                  </xsl:if>
                 </xsl:for-each>
               </f:array>
             </xsl:if>
@@ -149,9 +168,11 @@
               <xsl:if test="m:name/m:namePart[@type='family']">
                 <f:array key="creator_family_name">
                     <xsl:for-each select="m:name">
-                      <f:string>
-                        <xsl:value-of select="m:namePart[@type='family']"/>
-                      </f:string>
+                      <xsl:if test="m:namePart[@type='family']">
+                        <f:string>
+                          <xsl:value-of select="m:namePart[@type='family']"/>
+                        </f:string>
+                      </xsl:if>
                     </xsl:for-each>
                 </f:array>
               </xsl:if>
@@ -160,9 +181,11 @@
               <xsl:if test="m:name/m:namePart[@type='given']">
                 <f:array key="creator_given_name">
                   <xsl:for-each select="m:name">
-                    <f:string>
-                      <xsl:value-of select="m:namePart[@type='given']"/>
-                    </f:string>
+                    <xsl:if test="m:namePart[@type='given']">
+                      <f:string>
+                        <xsl:value-of select="m:namePart[@type='given']"/>
+                      </f:string>
+                    </xsl:if>
                   </xsl:for-each>
                 </f:array>
               </xsl:if>
@@ -171,9 +194,11 @@
               <xsl:if test="m:name/m:namePart[@type='termsOfAddress']">
                 <f:array key="creator_terms_of_address">
                   <xsl:for-each select="m:name">
-                    <f:string>
-                      <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
-                    </f:string>
+                    <xsl:if test="m:namePart[@type='termsOfAddress']">
+                      <f:string>
+                        <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
+                      </f:string>
+                    </xsl:if>
                   </xsl:for-each>
                 </f:array>
               </xsl:if>
@@ -285,24 +310,24 @@
               </f:string>
             </xsl:for-each>
           </f:array>
-          <!-- TODO: We should target these nodes in a simpler way-->
-          <f:string key="file_size">
-             <!--- This is the METS element with image metadata. Path might be optimised -->
-             <!--- PATH: "../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object"-->
-            <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:size"/>
-          </f:string>
-          <f:string key="image_height">
-            <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight"/>
-          </f:string>
-          <f:string key="image_width">
-            <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth"/>
-          </f:string>
-          <f:string key="image_size">
-            <xsl:value-of select="../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth * ../../../../mets:amdSec/mets:techMD/mets:mdWrap/mets:xmlData/premis:object/premis:objectCharacteristics/premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight"/>
-          </f:string>
-         <!--- End XSLT logic -->
       </xsl:for-each>
-   </f:map>
+      <!--- This is the METS element with image metadata from the PremisObject -->
+      <xsl:for-each select="//mets:amdSec/mets:techMD[@ID='PremisObject1']//premis:objectCharacteristics">
+        <f:string key="file_size">
+          <xsl:value-of select="premis:size"/>
+        </f:string>
+        <f:string key="image_height">
+          <xsl:value-of select="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight"/>
+        </f:string>
+        <f:string key="image_width">
+          <xsl:value-of select="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth"/>
+        </f:string>
+        <f:string key="image_size">
+          <xsl:value-of select="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth"/>
+        </f:string>
+      </xsl:for-each>
+      <!--- End XSLT logic -->
+    </f:map>
    </xsl:variable>
  
     <!-- Define output -->
