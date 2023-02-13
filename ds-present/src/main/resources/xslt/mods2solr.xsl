@@ -133,14 +133,14 @@
               <f:array key="creator_name">
                 <xsl:for-each select="m:name">
                   <f:string>
-                  <xsl:value-of select="concat(m:namePart[@type='family'],', ',m:namePart[@type='given'])"/>
+                  <xsl:value-of select="normalize-space(concat(m:namePart[@type='family'],', ',m:namePart[@type='given']))"/>
                   </f:string>
                 </xsl:for-each>
               </f:array>
               <f:array key="creator_full_name">
                 <xsl:for-each select="m:name">
                   <f:string>
-                    <xsl:value-of select="concat(m:namePart[@type='given'], ' ',m:namePart[@type='family'])"/>
+                    <xsl:value-of select="normalize-space(concat(m:namePart[@type='given'], ' ',m:namePart[@type='family']))"/>
                   </f:string>
                 </xsl:for-each>
               </f:array>
