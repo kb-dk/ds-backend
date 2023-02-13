@@ -134,10 +134,25 @@
               </xsl:for-each>
             </f:array>
           </xsl:if>
-          <xsl:if test="m:note[@displayLabel='Description']">
-            <f:string key="description">
-              <xsl:value-of select="m:note[@displayLabel='Description']"/>
-            </f:string>
+          <!--Extracts descriptions from two different fields if at least one of them are present -->
+          <xsl:if test="m:note[@displayLabel='Description'] or m:physicalDescription/not(m:note[@displayLabel='Pageorientation'])">
+            <f:array key="description">
+              <xsl:for-each select="m:note[@displayLabel='Description']">
+                <f:string>
+                  <xsl:value-of select="."/>
+                </f:string>
+              </xsl:for-each>
+              <xsl:for-each select="m:physicalDescription">
+                <xsl:for-each select="m:form
+                                      | m:reformattingQuality
+                                      | m:internetMediaType
+                                      | m:extent
+                                      | m:digitalOrigin
+                                      | m:note[not(@displayLabel='Pageorientation')]">
+                  <f:string><xsl:value-of select="normalize-space(.)"/></f:string>
+                </xsl:for-each>
+              </xsl:for-each>
+            </f:array>
           </xsl:if>
           <xsl:if test="m:titleInfo/m:title">
             <f:string key="title">
