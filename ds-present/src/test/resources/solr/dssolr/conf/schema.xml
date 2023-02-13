@@ -32,7 +32,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="creator_family_name" type="text_strict" multiValued="true"/>
   <field name="creator_given_name" type="text_strict" multiValued="true"/>
   <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
-    
+  <field name="creator_affiliation" type="text_general" multiValued="false"/>
+  <field name="creator_description" type="text_general" multiValued="false"/>
+
+
+
   <field name="area" type="text_general" multiValued="false"/>
   <field name="subject" type="text_general" multiValued="true"/>
 

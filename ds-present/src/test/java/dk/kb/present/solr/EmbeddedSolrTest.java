@@ -53,6 +53,8 @@ public class EmbeddedSolrTest {
 	public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
 	public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
 	public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
+	public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
+	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
 
 
 
@@ -304,6 +306,38 @@ public class EmbeddedSolrTest {
 		assertEquals(2,typeResources.size());
 		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
 		assertTrue(typeResources.contains("Tegning"));
+
+		//TODO more fields
+
+	}
+
+	@Test
+	void testRecordANSK() throws Exception {
+
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK);
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		//System.out.println(prettyJsonString);
+
+		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+		embeddedServer.add(document);
+		embeddedServer.commit();
+		assertEquals(1, getNumberOfTotalDocuments());
+
+
+		//Full life cycle test
+		SolrDocument record = getRecordById("urn:uuid:652b8260-9d78-11ed-92f5-005056882ec3");
+
+		//Single value field
+		assertEquals("ANSK_11614.tif",record.getFieldValue("identifier_local"));
+
+		//multivalue field
+		Collection<Object> typeResources = record.getFieldValues("type_of_resource");
+		assertEquals(2,typeResources.size());
+		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
+		assertTrue(typeResources.contains("Anskuelsesbillede"));
 
 		//TODO more fields
 

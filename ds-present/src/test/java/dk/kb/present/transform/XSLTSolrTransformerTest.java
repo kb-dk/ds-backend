@@ -33,7 +33,8 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
 	public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
 	public static final String RECORD_45dd4830 = "xml/copyright_extraction/45dd4830-717f-11e0-82d7-002185371280.xml";
-	
+	public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
+	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
 	
 	
 	
@@ -100,6 +101,28 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXslt096() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testNoNameButAffiliation() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DNF);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testNoTermsOfAddress() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);

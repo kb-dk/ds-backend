@@ -118,47 +118,65 @@
             </f:string>
           </xsl:if>
           <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
-            <f:array key="creator_name">
+            <xsl:if test="m:name/m:namePart">
+              <f:array key="creator_name">
                 <xsl:for-each select="m:name">
                   <f:string>
                   <xsl:value-of select="concat(m:namePart[@type='family'],', ',m:namePart[@type='given'])"/>
                   </f:string>
                 </xsl:for-each>
-            </f:array>
-            <f:array key="creator_full_name">
-              <xsl:for-each select="m:name">
-                <f:string>
-                  <xsl:value-of select="concat(m:namePart[@type='given'], ' ',m:namePart[@type='family'])"/>
-                </f:string>
-              </xsl:for-each>
-            </f:array>
-            <f:array key="creator_family_name">
-              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+              </f:array>
+              <f:array key="creator_full_name">
                 <xsl:for-each select="m:name">
                   <f:string>
-                    <xsl:value-of select="m:namePart[@type='family']"/>
+                    <xsl:value-of select="concat(m:namePart[@type='given'], ' ',m:namePart[@type='family'])"/>
                   </f:string>
                 </xsl:for-each>
+              </f:array>
+            </xsl:if>
+            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+              <xsl:if test="m:name/m:namePart[@type='family']">
+                <f:array key="creator_family_name">
+                    <xsl:for-each select="m:name">
+                      <f:string>
+                        <xsl:value-of select="m:namePart[@type='family']"/>
+                      </f:string>
+                    </xsl:for-each>
+                </f:array>
               </xsl:if>
-            </f:array>
-            <f:array key="creator_given_name">
-              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
-                <xsl:for-each select="m:name">
-                  <f:string>
-                    <xsl:value-of select="m:namePart[@type='given']"/>
-                  </f:string>
-                </xsl:for-each>
+            </xsl:if>
+            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+              <xsl:if test="m:name/m:namePart[@type='given']">
+                <f:array key="creator_given_name">
+                  <xsl:for-each select="m:name">
+                    <f:string>
+                      <xsl:value-of select="m:namePart[@type='given']"/>
+                    </f:string>
+                  </xsl:for-each>
+                </f:array>
               </xsl:if>
-            </f:array>
-            <f:array key="creator_terms_of_address">
-              <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
-                <xsl:for-each select="m:name">
-                  <f:string>
-                    <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
-                  </f:string>
-                </xsl:for-each>
+            </xsl:if>
+            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre'">
+              <xsl:if test="m:name/m:namePart[@type='termsOfAddress']">
+                <f:array key="creator_terms_of_address">
+                  <xsl:for-each select="m:name">
+                    <f:string>
+                      <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
+                    </f:string>
+                  </xsl:for-each>
+                </f:array>
               </xsl:if>
-            </f:array>
+            </xsl:if>
+            <xsl:if test="m:name/m:affiliation">
+              <f:string key="creator_affiliation">
+                <xsl:value-of select="m:name/m:affiliation"/>
+              </f:string>
+            </xsl:if>
+            <xsl:if test="m:name/m:description">
+              <f:string key="creator_description">
+                <xsl:value-of select="m:name/m:description"/>
+              </f:string>
+            </xsl:if>
           </xsl:if>
           <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
             <xsl:choose>
