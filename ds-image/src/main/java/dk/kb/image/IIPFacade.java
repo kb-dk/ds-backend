@@ -263,7 +263,8 @@ public class IIPFacade {
         IIPParamValidation.ctwValidation(ctw);
         // TODO: Think about validation of INV
         // The INV parameter is an empty param. We have implemented it as a bool. No reason to validate.
-        // TODO: Perform validation of COL
+        // Validation of COL
+        IIPParamValidation.colValidation(col);
         }
 
     /**

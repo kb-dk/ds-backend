@@ -180,6 +180,7 @@ public class IIPParamValidation {
     }
 
     // TODO: JAVADOC
+    // TODO: SPlit into smaller  private methods
     public static void ctwValidation(String ctw){
         // Strip string for brackets
         ctw = ctw.replace("[","");
@@ -220,5 +221,12 @@ public class IIPParamValidation {
     }
     // TODO: Perform validation of INV
     // TODO: Perform validation of COL
+    public static void colValidation(String col){
+        String[] values = {"grey", "gray", "binary"};
+        boolean b = Arrays.asList(values).contains(col);
+        if (!b){
+            throw new InvalidArgumentServiceException("COL has to be specified as one of the following values when set: grey, gray or binary");
+        }
+    }
 
 }

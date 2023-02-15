@@ -1,5 +1,6 @@
 package dk.kb.image;
 
+import com.google.common.annotations.VisibleForTesting;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -284,6 +285,20 @@ public class IIPValidationTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void colTest(){
+        String col = "multicolor";
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.colValidation(col);
+        });
+
+        String expectedMessage = "COL has to be specified as one of the following values when set: grey, gray or binary";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+
     }
     /*
     @Test
