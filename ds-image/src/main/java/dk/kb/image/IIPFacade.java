@@ -239,7 +239,8 @@ public class IIPFacade {
         IIPParamValidation.jtlValidation(jtl);
         // Validation of PTL
         IIPParamValidation.ptlValidation(ptl);
-        // TODO: Perform validation of WID
+        // Validation of WID
+        IIPParamValidation.widValidation(wid, cvt);
         // TODO: Perform validation of HEI
         // Validation of RGN
         IIPParamValidation.rgnValidation(rgn);
