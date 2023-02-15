@@ -39,6 +39,16 @@ public class IIPParamValidation {
         }
     }
     // TODO: Perform validation of PTL
+    public static void ptlValidation(List<Integer> ptl) {
+        if (ptl.size() < 2) {
+            throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
+        }
+        if (ptl.size() > 2) {
+            log.warn("JTL contains more than 2 values. PTL can only contain two values: index x and resolution level r");
+            throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
+        }
+    }
+
     // TODO: Perform validation of WID
     // TODO: Perform validation of HEI
 
