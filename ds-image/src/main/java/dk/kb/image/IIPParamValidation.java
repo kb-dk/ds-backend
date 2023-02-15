@@ -9,19 +9,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// TODO: JAVADOC
+/**
+ * Parameter validation for the Internet Imaging Protocol. The protocol can be found : <a href="https://iipimage.sourceforge.io/documentation/protocol/">here</a>.
+ * Each method in this class has been made from this specification.
+ */
 public class IIPParamValidation {
     private static final Logger log = LoggerFactory.getLogger(IIPParamValidation.class);
 
-
-    // TODO: JAVADOC
+    /**
+     * Validate that FIF is set  and isn't empty as it is required in IIP
+     */
     public static void fifValidation(String fif){
         if (fif == null || fif.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter FIF must be defined");
         }
     }
 
-    // TODO: JAVADOC
+    /**
+     * Validate that CVT is set to either jpeg or png, as these are the allowed types for export in IIP
+     */
     public static void cvtValidation(String cvt){
         if (!(cvt.equals("jpeg") | cvt.equals("png"))) {
             // Maybe add a fallback to either one of them here?
@@ -30,7 +36,9 @@ public class IIPParamValidation {
         }
     }
 
-    // TODO: JAVADOC
+    /**
+     * Validate that JTL is correctly set, when exporting JPEG tiles.
+     */
     public static void jtlValidation(List<Integer> jtl){
         if (jtl.size() < 2){
             throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r");
@@ -40,7 +48,10 @@ public class IIPParamValidation {
             throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r");
         }
     }
-    // TODO: JAVADOC
+
+    /**
+     * Validate that PTL is correctly set, when exporting PNG tiles.
+     */
     public static void ptlValidation(List<Integer> ptl) {
         if (ptl.size() < 2) {
             throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
@@ -53,28 +64,35 @@ public class IIPParamValidation {
 
     // TODO: Add validation, that only one of CVT, JTL or PTL is set
 
-    // TODO: JAVADOC
-    // Only for use with cvt, should validate that cvt is set
+    /**
+     * Validate that WID(width) is only set, when used together with CVT.
+     */
     public static void widValidation(Long wid, String cvt) {
         if (cvt == null || cvt.isEmpty() && wid != null) {
             throw new InvalidArgumentServiceException("The parameter WID is only to be set, when the parameter CVT is in use");
         }
     }
-    // TODO: JAVADOC
-    // Only for use with cvt, should validate that cvt is set
+
+    /**
+     * Validate that HEI(height) is only set, when used together with CVT.
+     */
     public static void heiValidation(Long hei, String cvt) {
         if (cvt == null || cvt.isEmpty() && hei != null) {
             throw new InvalidArgumentServiceException("The parameter HEI is only to be set, when the parameter CVT is in use");
         }
     }
 
-    // TODO: JAVADOC
+    /**
+     * Validate that RGN(region) is correctly set, by validating each element of the list.
+     */
     public static void rgnValidation(List<Float> rgn){
+        // TODO: Add check for CVT being set
         if (rgn.size() != 4){
             throw new InvalidArgumentServiceException("The parameter RGN has to contain four numbers. " +
                     "The first number representing X. The second number representing Y. The third number representing W " +
                     "The fourth number representing H between 0.0 and 1.0. All numbers should be between 0.0 and 1.0");
         }
+        // TODO: Convert to loop
         if (!(rgn.get(0) >= 0.0F && rgn.get(0) <= 1.0)){
             throw new InvalidArgumentServiceException("The value of x in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
         }
@@ -89,7 +107,9 @@ public class IIPParamValidation {
         }
     }
 
-    // TODO: JAVADOC
+    /**
+     * Validate that QLT(compression level) is set correctly, depending on the value of CVT.
+     */
     public static void qltValidation(int qlt, String cvt){
         if (qlt < 0){
             throw new InvalidArgumentServiceException("QLT has to be equal to or greater than 0.");
@@ -102,14 +122,18 @@ public class IIPParamValidation {
         }
     }
 
-    // TODO: JAVADOC
+    /**
+     * Validate that CNT(contrast adjustment) is done correctly.
+     */
     public static void cntValidation(float cnt){
         if (cnt < 0.0){
             throw new InvalidArgumentServiceException("CNT has to be equal to or greater than 0");
         }
     }
 
-    // TODO: JAVADOC
+    /**
+     * Validate that SHD(Simulated hill-shading) is done correctly and that each value given are in range.
+     */
     public static void shdValidation(List<Integer> shd){
         if (shd.size() != 2){
             throw new InvalidArgumentServiceException("The parameter SHD has to contain exactly two values: h and v");
@@ -124,7 +148,9 @@ public class IIPParamValidation {
 
     }
 
-    // TODO: JAVADOC
+    /**
+     * Validate that ROT(rotate) has been set to one of the allowed values.
+     */
     public static void rotValidation(String rot){
         // Only 90, 180 and 270 supported. ! can be used to flip horizontally.
         String[] values = {"90","180","270","!90", "!180", "!270"};
@@ -134,7 +160,9 @@ public class IIPParamValidation {
         }
     }
 
-    // TODO: JAVADOC
+    /**
+     * Validate that CMP(colormap) has been set to one of the allowed values.
+     */
     public static void cmpValidation(String cmp){
         String[] values = {"GREY","JET","COLD","HOT", "RED", "GREEN", "BLUE"};
         boolean b = Arrays.asList(values).contains(cmp);
@@ -143,7 +171,9 @@ public class IIPParamValidation {
         }
     }
 
-    // TODO: JAVADOC
+    /**
+     * Validate that JSON profile has been defined correctly.
+     */
     public static void pflValidation(String pfl){
         // Slice input string and get indexes of delimitters
         int endOfR = pfl.indexOf(":");
@@ -179,8 +209,10 @@ public class IIPParamValidation {
         // TODO: Perform validation of MINMAX, when param has been implemented
     }
 
-    // TODO: JAVADOC
     // TODO: SPlit into smaller  private methods
+    /**
+     * Validate correct use of CTW(Color twist/ channel recombination)
+     */
     public static void ctwValidation(String ctw){
         // Strip string for brackets
         ctw = ctw.replace("[","");
@@ -220,7 +252,9 @@ public class IIPParamValidation {
         }
     }
     // TODO: Perform validation of INV
-    // TODO: Perform validation of COL
+    /**
+     * Validate that COL(color transformation) has been set to one of the allowed values.
+     */
     public static void colValidation(String col){
         String[] values = {"grey", "gray", "binary"};
         boolean b = Arrays.asList(values).contains(col);
