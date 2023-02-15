@@ -228,8 +228,7 @@ public class IIPFacade {
             String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
             Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
             List<Integer> jtl, List<Integer> ptl, String cvt) {
-        // TODO: Split method into smaller methods in a validation class, so that each method can be tested alone.
-        // HOW DO WE HANDLE VALUES THAT DONT NEED TO BE SET?
+        // TODO: FIGURE OUT HOW WE HANDLE VALUES THAT DONT NEED TO BE SET?
 
         // Validates fif param
         IIPParamValidation.fifValidation(fif);
@@ -241,7 +240,8 @@ public class IIPFacade {
         IIPParamValidation.ptlValidation(ptl);
         // Validation of WID
         IIPParamValidation.widValidation(wid, cvt);
-        // TODO: Perform validation of HEI
+        // Validation of HEI
+        IIPParamValidation.heiValidation(hei, cvt);
         // Validation of RGN
         IIPParamValidation.rgnValidation(rgn);
         // Validation of QLT

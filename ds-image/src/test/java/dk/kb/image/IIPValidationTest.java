@@ -188,6 +188,28 @@ public class IIPValidationTest {
         assertTrue(actualMessage1.contains(expectedMessage));
         assertTrue(actualMessage2.contains(expectedMessage));
     }
+
+    @Test
+    public void heiTest(){
+        Long hei = 800L;
+
+        // Null cvt
+        Exception exception1 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.heiValidation(hei, null);
+        });
+
+        // Empty cvt
+        Exception exception2 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.heiValidation(hei, "");
+        });
+
+        String expectedMessage = "The parameter HEI is only to be set, when the parameter CVT is in use";
+        String actualMessage1 = exception1.getMessage();
+        String actualMessage2 = exception2.getMessage();
+
+        assertTrue(actualMessage1.contains(expectedMessage));
+        assertTrue(actualMessage2.contains(expectedMessage));
+    }
     /*
     @Test
     public void templateTest(){
