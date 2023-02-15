@@ -235,7 +235,8 @@ public class IIPFacade {
         IIPParamValidation.fifValidation(fif);
         // Validates cvt param
         IIPParamValidation.cvtValidation(cvt);
-        // TODO: Perform validation of JTL
+        // Validation of JTL
+        IIPParamValidation.jtlValidation(jtl);
         // TODO: Perform validation of PTL
         // TODO: Perform validation of WID
         // TODO: Perform validation of HEI

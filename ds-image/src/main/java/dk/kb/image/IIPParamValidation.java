@@ -1,31 +1,48 @@
 package dk.kb.image;
 
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
 
+// TODO: JAVADOC
 public class IIPParamValidation {
+    private static final Logger log = LoggerFactory.getLogger(IIPParamValidation.class);
 
+
+    // TODO: JAVADOC
     public static void fifValidation(String fif){
         if (fif == null || fif.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter FIF must be defined");
         }
     }
 
+    // TODO: JAVADOC
     public static void cvtValidation(String cvt){
-        if (!("jpeg".equals(cvt) | "png".equals(cvt))) {
+        if (!(cvt.equals("jpeg") | cvt.equals("png"))) {
             // Maybe add a fallback to either one of them here?
             throw new InvalidArgumentServiceException(
                     "The parameter CVT must be defined and must be either 'jpeg' or 'png'. It was '" + cvt + "'");
         }
     }
 
-    // TODO: Perform validation of JTL
+    // TODO: JAVADOC
+    public static void jtlValidation(List<Integer> jtl){
+        if (jtl.size() < 2){
+            throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r");
+        }
+        if (jtl.size() > 2){
+            log.warn("JTL contains more than 2 values. JTL can only contain two values: index x and resolution level r");
+            throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r");
+        }
+    }
     // TODO: Perform validation of PTL
     // TODO: Perform validation of WID
     // TODO: Perform validation of HEI
 
+    // TODO: JAVADOC
     public static void rgnValidation(List<Float> rgn){
         if (rgn.size() != 4){
             throw new InvalidArgumentServiceException("The parameter RGN has to contain four numbers. " +
@@ -46,6 +63,7 @@ public class IIPParamValidation {
         }
     }
 
+    // TODO: JAVADOC
     public static void qltValidation(int qlt, String cvt){
         if (qlt < 0){
             throw new InvalidArgumentServiceException("QLT has to be equal to or greater than 0.");
@@ -58,12 +76,14 @@ public class IIPParamValidation {
         }
     }
 
+    // TODO: JAVADOC
     public static void cntValidation(float cnt){
         if (cnt < 0.0){
             throw new InvalidArgumentServiceException("CNT has to be equal to or greater than 0");
         }
     }
 
+    // TODO: JAVADOC
     public static void rotValidation(String rot){
         // Only 90, 180 and 270 supported. ! can be used to flip horizontally.
         String[] values = {"90","180","270","!90", "!180", "!270"};

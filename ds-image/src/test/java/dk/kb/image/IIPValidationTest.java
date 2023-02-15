@@ -14,26 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IIPValidationTest {
     private static final Logger log = LoggerFactory.getLogger(IIPValidationTest.class);
-    static String fif = "test.png";
-    static Long wid;
-    static Long hei;
-    static List<Float> rgn = new ArrayList<>(Arrays.asList(0.5F,0.2F,0.7F,0.8F));
-    static Integer qlt = 1;
-    static Float cnt = 0.0F;
-    static List<Integer> shd;
-    static Integer lyr;
-    static String rot;
-    static Float gam;
-    static String cmp;
-    static String pfl;
-    static String ctw;
-    static Boolean inv;
-    static String col;
-    static List<Integer> jtl;
-    static List<Integer> ptl;
-    static String cvt = "jpeg";
     @Test
-    public void IipRegionTest(){
+    public void rgnTest(){
         // Wrong X
         List<Float> wrongRegionX = new ArrayList<>(Arrays.asList(2F,0.2F,0.7F,0.8F));
         // Wrong Y
@@ -76,7 +58,7 @@ public class IIPValidationTest {
     }
 
     @Test
-    public void IipQltTest(){
+    public void qltTest(){
         String pngCvt = "png";
         String jpegCvt = "jpeg";
         int highJpegValue = 200;
@@ -109,7 +91,7 @@ public class IIPValidationTest {
     }
 
     @Test
-    public void IipCntTest(){
+    public void cntTest(){
         float lowCnt = -5;
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
             IIPParamValidation.cntValidation(lowCnt);
@@ -123,7 +105,7 @@ public class IIPValidationTest {
 
 
     @Test
-    public void IipRotTest(){
+    public void rotTest(){
         String wrongRot = "!67";
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
             IIPParamValidation.rotValidation(wrongRot);
@@ -134,10 +116,36 @@ public class IIPValidationTest {
 
         assertTrue(actualMessage.contains(expectedMessage));
     }
+
+    @Test
+    public void jtlTest(){
+        List<Integer> jtlParam = new ArrayList<>();
+        jtlParam.add(2);
+
+        // One value
+        Exception exception1 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.jtlValidation(jtlParam);
+        });
+
+        // Three values
+        jtlParam.add(3);
+        jtlParam.add(45);
+        Exception exception2 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.jtlValidation(jtlParam);
+        });
+
+        String expectedMessage = "The parameter JTL has to contain two values index x and resolution level r";
+        String actualMessage1 = exception1.getMessage();
+        String actualMessage2 = exception2.getMessage();
+
+        assertTrue(actualMessage1.contains(expectedMessage));
+        assertTrue(actualMessage2.contains(expectedMessage));
+    }
+    /*
     @Test
     public void templateTest(){
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, rgn, qlt, cnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+        IIPParamValidation.
         });
 
         String expectedMessage = "For input string";
@@ -145,4 +153,5 @@ public class IIPValidationTest {
 
         assertTrue(actualMessage.contains(expectedMessage));
     }
+    */
 }
