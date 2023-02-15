@@ -276,7 +276,8 @@ public class CopyrightAccessExtractor {
                 //http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031
                 //Add last parameters such as size and format: 
                 //http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031&CVT=jpeg
-                String link = "http://kb-images.kb.dk/?FIF=/DAMJP2"+ref;            
+                //String link = "http://kb-images.kb.dk/?FIF=/DAMJP2"+ref;   //Direct call             
+                String link = "http://devel11:10001/ds-image/v1/IIP/?FIF=/DAMJP2/"+ref;   //ds-image searcher                              
                 return link;                
             }
         }
@@ -377,7 +378,7 @@ public class CopyrightAccessExtractor {
                 return ref;                
             }
         }
-        log.warn("No material type found");
-        return null;         
+        log.warn("No material type found");  //TODO. data error?
+        return "Ukendt";         
     }    
 }

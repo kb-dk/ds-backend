@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- 
+Important! READ before making changes to the schema.
+Since we are using schema.xml and not managed-schema.xml all filters defined has to be loaded by class and not by name parameter.
+Read about this bug: https://issues.apache.org/jira/browse/SOLR-16203
+
+In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>  
+-->
+
 <schema name="example" version="1.6">
   <uniqueKey>id</uniqueKey>
   
@@ -12,9 +20,15 @@
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
   <field name="identifier_local" type="string"/>
   <field name="cataloging_language" type="string"/>
-  <field name="genre" type="string"/>
-  <field name="collection" type="string"/>
+  <field name="shelf_location" type="text_general"/>
+  <field name="physical_location" type="text_general"/> <!--  May not be in data -->
+  <field name="categories" type="string"/>
+  <field name="collection" type="string" docValues="true"/>
 
+  <!-- Fields on title -->
+  <field name="title" type="text_general"/>
+  <field name="subtitle" type="text_general"/>
+  <field name="alternative_title" type="text_general"/>
 
   <!-- Fields on creator -->
   <field name="creator_name" type="text_strict" multiValued="true"/>
@@ -23,13 +37,19 @@
   <field name="creator_family_name" type="text_strict" multiValued="true"/>
   <field name="creator_given_name" type="text_strict" multiValued="true"/>
   <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
-    
+  <field name="creator_affiliation" type="text_general" multiValued="false"/>
+  <field name="creator_description" type="text_general" multiValued="false"/>
+
+
+
   <field name="area" type="text_general" multiValued="false"/>
   <field name="subject" type="text_general" multiValued="true"/>
 
   <field name="topic" type="text_general" multiValued="true"/>
-  <field name="description" type="text_general" multiValued="false"/>
-  <field name="note" type="text_general" multiValued="true"/>
+  <field name="description" type="text_general" multiValued="true"/>
+  <field name="content" type="text_general" multiValued="true"/>
+  <field name="internal_note" type="text_general" multiValued="true"/>
+  <field name="catalog_name" type="string" docValues="true"/>
 
   <field name="subject_name" type="text_general" multiValued="true"/>
   <field name="subject_full_name" type="string" multiValued="true"  docValues="true"/>
@@ -55,8 +75,10 @@
 
   <field name="file_size" type="pint"/>
   <field name="image_height" type="pint"/>
-  <field name="image_width" type="pint"/> 
-  
+  <field name="image_width" type="pint"/>
+  <field name="image_size" type="pfloat"/>
+
+
   <field name="freetext" type="freetext" multiValued="true" stored="false"/>
 
 
@@ -90,87 +112,56 @@
   
   <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
     <analyzer>
-      <tokenizer name="standard"/>
-      <filter name="lowercase"/>
-      <filter name="stop" format="snowball" ignoreCase="true" words="lang/stopwords_da.txt"/>
-      <filter name="snowballPorter" language="Danish"/>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>      
+      <filter class="solr.StopFilterFactory"  format="snowball" ignoreCase="true" words="lang/stopwords_da.txt"/>      
+      <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>     
     </analyzer>
   </fieldType>
-  <fieldType name="text_en" class="solr.TextField" positionIncrementGap="100">
-    <analyzer type="index">
-      <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_en.txt"/>
-      <filter name="lowercase"/>
-      <filter name="englishPossessive"/>
-      <filter name="keywordMarker" protected="protwords.txt"/>
-      <filter name="porterStem"/>
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer name="standard"/>
-      <filter name="synonymGraph" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_en.txt"/>
-      <filter name="lowercase"/>
-      <filter name="englishPossessive"/>
-      <filter name="keywordMarker" protected="protwords.txt"/>
-      <filter name="porterStem"/>
-    </analyzer>
-  </fieldType>
+  
+  
 
   
-  <fieldType name="text_gen_sort" class="solr.SortableTextField" positionIncrementGap="100" multiValued="true">
-    <analyzer type="index">
-      <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
-      <filter name="lowercase"/>
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
-      <filter name="synonymGraph" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
-      <filter name="lowercase"/>
-    </analyzer>
-  </fieldType>
      
      
    <!-- Very string field matching. Only lower case. diacritics  must match.  No matching cross multifields-->  
   <fieldType name="text_strict" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="0">
     <analyzer type="index">
           <tokenizer class="solr.WhitespaceTokenizerFactory"/>                 
-         <filter name="lowercase"/> 
-               
+          <filter class="solr.LowerCaseFilterFactory"/>               
     </analyzer>
     <analyzer type="query">
           <tokenizer class="solr.WhitespaceTokenizerFactory"/>      
-          <filter name="lowercase"/> 
+          <filter class="solr.LowerCaseFilterFactory"/> 
     </analyzer>
   </fieldType>
      
      
   <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
-    <analyzer type="index">
-      <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
-      <filter name="lowercase"/>
+    <analyzer type="index">          
+       <tokenizer class="solr.StandardTokenizerFactory"/>
+       <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt"/>      
+       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
     <analyzer type="query">
-      <tokenizer name="standard"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
-      <filter name="lowercase"/>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
   
    <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
     <analyzer type="index">
-      <tokenizer name="standard"/>
-      <charFilter name="mapping" mapping="mapping-FoldToASCII.txt"/>    
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>
-      <filter name="lowercase"/>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>    
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>      
+      <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
     <analyzer type="query">
-      <tokenizer name="standard"/>
-      <charFilter name="mapping" mapping="mapping-FoldToASCII.txt"/>
-      <filter name="stop" ignoreCase="true" words="lang/stopwords_da.txt"/>      
-      <filter name="lowercase"/>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>      
+      <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
   

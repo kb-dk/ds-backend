@@ -32,7 +32,14 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
 	public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
 	public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
-
+	public static final String RECORD_45dd4830 = "xml/copyright_extraction/45dd4830-717f-11e0-82d7-002185371280.xml";
+	public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
+	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
+	public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
+	public static final String RECORD_KE06 = "xml/copyright_extraction/KE066530.tif.xml";
+	public static final String RECORD_OA = "xml/copyright_extraction/OA_102-2007-pl_0004.tif.xml";
+	public static final String  RECORD_Elf = "xml/copyright_extraction/Elf_113136.tif.xml";
+	
 
 	@Test
 	void testSolOld() throws IOException {
@@ -45,6 +52,9 @@ class XSLTSolrTransformerTest{
 
 	}
 
+	
+	
+	
 	@Test
 	void testSolrNew() throws Exception {
 
@@ -59,13 +69,12 @@ class XSLTSolrTransformerTest{
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
 
+	/**
+	 * This record is tested thoroughly in EmbeddedSolrTest.testRecordDPK()
+	 */
 	@Test
 	void testXsltNewDpkItem() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DPK);
-		// TODO: Add more detailed test
-		// Some tests could be to check for area and genre fields.
-
-
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
@@ -75,11 +84,80 @@ class XSLTSolrTransformerTest{
 	}
 
 	@Test
-	void testXslt096() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090);
+	void testXslt45dd() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_45dd4830 );
 		// TODO: Add more detailed test
 		// One test could be to check for production_date_start and production_date_end values
 
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	/**
+	 * This record is fully tested in EmbeddedSolrTest.testRecord096c9090()
+	 */
+	@Test
+	void testXslt096() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testNoNameButAffiliation() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DNF);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testNoNameMultipleNames() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_OA);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testWhitespaceTrim() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_FM);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testEmptyCollection() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_Elf);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testNoTermsOfAddress() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
