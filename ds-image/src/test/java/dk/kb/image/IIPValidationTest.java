@@ -45,16 +45,16 @@ public class IIPValidationTest {
 
         // Collecting exceptions
         Exception exceptionX = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, wrongRegionX, qlt, cnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+            IIPParamValidation.rgnValidation(wrongRegionX);
         });
         Exception exceptionY = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, wrongRegionY, qlt, cnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+            IIPParamValidation.rgnValidation(wrongRegionY);
         });
         Exception exceptionW = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, wrongRegionW, qlt, cnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+            IIPParamValidation.rgnValidation(wrongRegionW);
         });
         Exception exceptionH = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, wrongRegionH, qlt, cnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+            IIPParamValidation.rgnValidation(wrongRegionH);
         });
 
         // Creating test values and getting exception messages
@@ -78,13 +78,14 @@ public class IIPValidationTest {
     @Test
     public void IipQltTest(){
         String pngCvt = "png";
+        String jpegCvt = "jpeg";
         int highJpegValue = 200;
         int highPngValue = 15;
         int lowValue = -30;
 
         // Test for negative value
         Exception exceptionForLowValue = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, rgn, lowValue, cnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+            IIPParamValidation.qltValidation(lowValue, jpegCvt);
         });
         String expectedMessageForLowValue = "QLT has to be equal to or greater than 0.";
         String actualMessageForLowValue = exceptionForLowValue.getMessage();
@@ -92,7 +93,7 @@ public class IIPValidationTest {
 
         // Test for value above 100 while cvt is jpeg
         Exception exceptionForHighValue = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, rgn, highJpegValue, cnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+            IIPParamValidation.qltValidation(highJpegValue, jpegCvt);
         });
         String expectedMessageForHighValue = "QLT has to be less than or equal to 100, when CVT is set to JPEG";
         String actualMessageForHighValue = exceptionForHighValue.getMessage();
@@ -100,7 +101,7 @@ public class IIPValidationTest {
 
         // Test for too high value, while cvt is set to png
         Exception exceptionForHighPngValue = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, rgn, highPngValue, cnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, pngCvt);
+            IIPParamValidation.qltValidation(highPngValue, pngCvt);
         });
         String expectedMessageForHighPngValue = "QLT has to be less than or equal to 9, when CVT is set to PNG";
         String actualMessageForHighPngValue = exceptionForHighPngValue.getMessage();
@@ -111,7 +112,7 @@ public class IIPValidationTest {
     public void IipCntTest(){
         float lowCnt = -5;
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, rgn, qlt, lowCnt, shd, lyr, rot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+            IIPParamValidation.cntValidation(lowCnt);
         });
 
         String expectedMessage = "CNT has to be equal to or greater than 0";
@@ -125,7 +126,7 @@ public class IIPValidationTest {
     public void IipRotTest(){
         String wrongRot = "!67";
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPFacade.getInstance().validateIIPRequest(fif, wid, hei, rgn, qlt, cnt, shd, lyr, wrongRot, gam, cmp, pfl, ctw, inv, col, jtl, ptl, cvt);
+            IIPParamValidation.rotValidation(wrongRot);
         });
 
         String expectedMessage = "ROT has to be specified as one of the following values when set: 90, 180, 270, !90, !180, !270";
