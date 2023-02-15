@@ -210,6 +210,39 @@ public class IIPValidationTest {
         assertTrue(actualMessage1.contains(expectedMessage));
         assertTrue(actualMessage2.contains(expectedMessage));
     }
+
+    @Test
+    public void shdTest(){
+        List<Integer> shd = new ArrayList<>();
+
+        // Test for wrong size
+        Exception exception1 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.shdValidation(shd);
+        });
+        String expectedMessage1 = "The parameter SHD has to contain exactly two values: h and v";
+        String actualMessage1 = exception1.getMessage();
+
+        // Test for wrong h value
+        shd.add(200);
+        shd.add(4);
+        Exception exception2 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.shdValidation(shd);
+        });
+        String expectedMessage2 = "The h value of parameter SHD is set incorrectly. It has to be an angle between -90 and 90.";
+        String actualMessage2 = exception2.getMessage();
+
+        // Test for wrong v value
+        shd.set(0, 40);
+        Exception exception3 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.shdValidation(shd);
+        });
+        String expectedMessage3 = "The v value of parameter SHD is set incorrectly. It has to be a number between -1 and 1.";
+        String actualMessage3 = exception3.getMessage();
+
+        assertTrue(actualMessage1.contains(expectedMessage1));
+        assertTrue(actualMessage2.contains(expectedMessage2));
+        assertTrue(actualMessage3.contains(expectedMessage3));
+    }
     /*
     @Test
     public void templateTest(){
