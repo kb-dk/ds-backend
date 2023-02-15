@@ -250,11 +250,13 @@ public class IIPFacade {
         IIPParamValidation.cntValidation(cnt);
         // Validation of SHD
         IIPParamValidation.shdValidation(shd);
-        // TODO: Perform validation of LYR
+        // Validation of the parameter lYR is server dependent and is checked by the server
         // Validation of ROT
         IIPParamValidation.rotValidation(rot);
         // TODO: Perform validation of GAM
-        // TODO: Perform validation of CMP
+        // Not relevant to validate GAM, as i can be set as a float
+        // Validation of CMP
+        IIPParamValidation.cmpValidation(cmp);
         // TODO: Perform validation of PFL
         // TODO: Perform validation of MINMAX
         // TODO: Perform validation of CTW

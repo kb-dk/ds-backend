@@ -121,7 +121,6 @@ public class IIPParamValidation {
         }
 
     }
-    // TODO: Perform validation of LYR
 
     // TODO: JAVADOC
     public static void rotValidation(String rot){
@@ -133,8 +132,14 @@ public class IIPParamValidation {
         }
     }
 
-    // TODO: Perform validation of GAM
     // TODO: Perform validation of CMP
+    public static void cmpValidation(String cmp){
+        String[] values = {"GREY","JET","COLD","HOT", "RED", "GREEN", "BLUE"};
+        boolean b = Arrays.asList(values).contains(cmp);
+        if (!b){
+            throw new InvalidArgumentServiceException("CMP has to be specified as one of the following values when set: GREY, JET, COLD, HOT, RED, GREEN or BLUE");
+        }
+    }
     // TODO: Perform validation of PFL
     // TODO: Perform validation of MINMAX
     // TODO: Perform validation of CTW
