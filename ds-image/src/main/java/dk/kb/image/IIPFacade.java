@@ -248,7 +248,8 @@ public class IIPFacade {
         IIPParamValidation.qltValidation(qlt, cvt);
         // Validation of CNT
         IIPParamValidation.cntValidation(cnt);
-        // TODO: Perform validation of SHD
+        // Validation of SHD
+        IIPParamValidation.shdValidation(shd);
         // TODO: Perform validation of LYR
         // Validation of ROT
         IIPParamValidation.rotValidation(rot);

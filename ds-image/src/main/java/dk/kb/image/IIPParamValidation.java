@@ -58,7 +58,7 @@ public class IIPParamValidation {
             throw new InvalidArgumentServiceException("The parameter WID is only to be set, when the parameter CVT is in use");
         }
     }
-    // TODO: Perform validation of HEI
+    // TODO: JAVADOC
     // Only for use with cvt, should validate that cvt is set
     public static void heiValidation(Long hei, String cvt) {
         if (cvt == null || cvt.isEmpty() && hei != null) {
@@ -106,6 +106,22 @@ public class IIPParamValidation {
             throw new InvalidArgumentServiceException("CNT has to be equal to or greater than 0");
         }
     }
+
+    // TODO: JAVADOC
+    public static void shdValidation(List<Integer> shd){
+        if (shd.size() != 2){
+            throw new InvalidArgumentServiceException("The parameter SHD has to contain exactly two values: h and v");
+        }
+        // TODO: Sanity check description of h and v values with Toke
+        if (shd.get(0) < -90 || shd.get(0) > 90){
+            throw new InvalidArgumentServiceException("The h value of parameter SHD is set incorrectly. It has to be an angle between -90 and 90.");
+        }
+        if (shd.get(1) < -1 || shd.get(1) > 1){
+            throw new InvalidArgumentServiceException("The v value of parameter SHD is set incorrectly. It has to be a number between -1 and 1.");
+        }
+
+    }
+    // TODO: Perform validation of LYR
 
     // TODO: JAVADOC
     public static void rotValidation(String rot){
