@@ -85,25 +85,20 @@ public class IIPParamValidation {
     /**
      * Validate that RGN(region) is correctly set, by validating each element of the list.
      */
-    public static void rgnValidation(List<Float> rgn){
-        // TODO: Add check for CVT being set
+    public static void rgnValidation(List<Float> rgn, String cvt){
+        if (cvt == null || cvt.isEmpty() && rgn != null) {
+            throw new InvalidArgumentServiceException("The parameter RGN can only be used when the parameter CVT is in use");
+        }
         if (rgn.size() != 4){
             throw new InvalidArgumentServiceException("The parameter RGN has to contain four numbers. " +
                     "The first number representing X. The second number representing Y. The third number representing W " +
                     "The fourth number representing H between 0.0 and 1.0. All numbers should be between 0.0 and 1.0");
         }
-        // TODO: Convert to loop
-        if (!(rgn.get(0) >= 0.0F && rgn.get(0) <= 1.0)){
-            throw new InvalidArgumentServiceException("The value of x in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
-        }
-        if (!(rgn.get(1) >= 0.0F && rgn.get(1) <= 1.0)){
-            throw new InvalidArgumentServiceException("The value of y in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
-        }
-        if (!(rgn.get(2) >= 0.0F && rgn.get(2) <= 1.0)){
-            throw new InvalidArgumentServiceException("The value of w in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
-        }
-        if (!(rgn.get(3) >= 0.0F && rgn.get(3) <= 1.0)){
-            throw new InvalidArgumentServiceException("The value of h in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
+        String[] regionValueNames = new String[]{"x", "y", "w", "h"};
+        for (int i = 0; i < rgn.size(); i++) {
+            if (!(rgn.get(i) >= 0.0F && rgn.get(i) <= 1.0)){
+                throw new InvalidArgumentServiceException("The value of " + regionValueNames[i] + " in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
+            }
         }
     }
 

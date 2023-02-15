@@ -29,16 +29,16 @@ public class IIPValidationTest {
 
         // Collecting exceptions
         Exception exceptionX = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPParamValidation.rgnValidation(wrongRegionX);
+            IIPParamValidation.rgnValidation(wrongRegionX, "jpeg");
         });
         Exception exceptionY = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPParamValidation.rgnValidation(wrongRegionY);
+            IIPParamValidation.rgnValidation(wrongRegionY, "jpeg");
         });
         Exception exceptionW = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPParamValidation.rgnValidation(wrongRegionW);
+            IIPParamValidation.rgnValidation(wrongRegionW, "jpeg");
         });
         Exception exceptionH = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPParamValidation.rgnValidation(wrongRegionH);
+            IIPParamValidation.rgnValidation(wrongRegionH, "jpeg");
         });
 
         // Creating test values and getting exception messages
