@@ -242,7 +242,7 @@ public class IIPFacade {
         // Validation of HEI
         IIPParamValidation.heiValidation(hei, cvt);
         // Validation of RGN
-        IIPParamValidation.rgnValidation(rgn);
+        IIPParamValidation.rgnValidation(rgn, cvt);
         // Validation of QLT
         IIPParamValidation.qltValidation(qlt, cvt);
         // Validation of CNT
