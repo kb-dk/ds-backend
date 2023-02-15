@@ -50,7 +50,8 @@ public class IIPParamValidation {
     }
 
     // TODO: Add validation, that only one of CVT, JTL or PTL is set
-    // TODO: Perform validation of WID
+
+    // TODO: JAVADOC
     // Only for use with cvt, should validate that cvt is set
     public static void widValidation(Long wid, String cvt) {
         if (cvt == null || cvt.isEmpty() && wid != null) {
@@ -59,6 +60,11 @@ public class IIPParamValidation {
     }
     // TODO: Perform validation of HEI
     // Only for use with cvt, should validate that cvt is set
+    public static void heiValidation(Long hei, String cvt) {
+        if (cvt == null || cvt.isEmpty() && hei != null) {
+            throw new InvalidArgumentServiceException("The parameter HEI is only to be set, when the parameter CVT is in use");
+        }
+    }
 
     // TODO: JAVADOC
     public static void rgnValidation(List<Float> rgn){
