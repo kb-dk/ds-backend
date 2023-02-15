@@ -760,11 +760,11 @@
        <str name="facet.field">creator_full_name</str>
         <str name="facet.field">access_materiale_type</str>
         
-       <str name="hl">off</str>
+       <str name="hl">on</str>
        <str name="hl.requireFieldMatch">false</str>
        <str name="hl.encoder">html</str>
        <str name="f.text.hl.preserveMulti">true</str>        
-       <str name="hl.fl">content</str>     
+       <str name="hl.fl">freetext</str>     
         
      </lst>
       <arr name="last-components">
