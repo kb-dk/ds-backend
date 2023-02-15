@@ -141,6 +141,30 @@ public class IIPValidationTest {
         assertTrue(actualMessage1.contains(expectedMessage));
         assertTrue(actualMessage2.contains(expectedMessage));
     }
+    @Test
+    public void ptlTest(){
+        List<Integer> ptlParam = new ArrayList<>();
+        ptlParam.add(2);
+
+        // One value
+        Exception exception1 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.ptlValidation(ptlParam);
+        });
+
+        // Three values
+        ptlParam.add(3);
+        ptlParam.add(45);
+        Exception exception2 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.ptlValidation(ptlParam);
+        });
+
+        String expectedMessage = "The parameter PTL has to contain two values index x and resolution level r";
+        String actualMessage1 = exception1.getMessage();
+        String actualMessage2 = exception2.getMessage();
+
+        assertTrue(actualMessage1.contains(expectedMessage));
+        assertTrue(actualMessage2.contains(expectedMessage));
+    }
     /*
     @Test
     public void templateTest(){
