@@ -254,10 +254,11 @@ public class IIPFacade {
         // Validation of ROT
         IIPParamValidation.rotValidation(rot);
         // TODO: Perform validation of GAM
-        // Not relevant to validate GAM, as i can be set as a float
+        // Not relevant to validate GAM, as it only can be set as a float
         // Validation of CMP
         IIPParamValidation.cmpValidation(cmp);
-        // TODO: Perform validation of PFL
+        // Validation of PFL
+        IIPParamValidation.pflValidation(pfl);
         // TODO: Perform validation of MINMAX
         // TODO: Perform validation of CTW
         // TODO: Perform validation of INV

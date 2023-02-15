@@ -256,6 +256,21 @@ public class IIPValidationTest {
 
         assertTrue(actualMessage.contains(expectedMessage));
     }
+
+    @Test
+    public void pflTest(){
+        String pfl = "notANumber:23,1-2,3";
+
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.pflValidation(pfl);
+        });
+
+        String expectedMessage = "The value of r needs to be a number, but was: notANumber";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+
+    }
     /*
     @Test
     public void templateTest(){
