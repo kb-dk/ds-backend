@@ -243,6 +243,19 @@ public class IIPValidationTest {
         assertTrue(actualMessage2.contains(expectedMessage2));
         assertTrue(actualMessage3.contains(expectedMessage3));
     }
+
+    @Test
+    public void cmpTest(){
+        String wrongCmp = "pink";
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.cmpValidation(wrongCmp);
+        });
+
+        String expectedMessage = "CMP has to be specified as one of the following values when set: GREY, JET, COLD, HOT, RED, GREEN or BLUE";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
     /*
     @Test
     public void templateTest(){
