@@ -220,16 +220,15 @@ public class IIPFacade {
     }
 
     /**
-     * Validates IIP parameters and throws appropriate exceptions if any are invalid.
+     * Validates IIP parameters and throws appropriate exceptions if any parameters are invalid.
      * See https://iipimage.sourceforge.io/documentation/protocol/
-     * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
+     * @throws ServiceException if any parameters are not conforming to the IIP specification.
      */
     public void validateIIPRequest(
             String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
             Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
             List<Integer> jtl, List<Integer> ptl, String cvt) {
         // TODO: FIGURE OUT HOW WE HANDLE VALUES THAT DONT NEED TO BE SET?
-
         // Validates fif param
         IIPParamValidation.fifValidation(fif);
         // Validates cvt param
@@ -253,15 +252,17 @@ public class IIPFacade {
         // Validation of the parameter lYR is server dependent and is checked by the server
         // Validation of ROT
         IIPParamValidation.rotValidation(rot);
-        // TODO: Perform validation of GAM
-        // Not relevant to validate GAM, as it only can be set as a float
+        // TODO: Think about validation of GAM
+        // Is it relevant to validate GAM, as it only can be set as a float and it does not seem to have a min and max
         // Validation of CMP
         IIPParamValidation.cmpValidation(cmp);
         // Validation of PFL
         IIPParamValidation.pflValidation(pfl);
-        // TODO: Perform validation of MINMAX
-        // TODO: Perform validation of CTW
-        // TODO: Perform validation of INV
+        // TODO: Perform validation of MINMAX, which is not in our proxy
+        // Validation of CTW
+        IIPParamValidation.ctwValidation(ctw);
+        // TODO: Think about validation of INV
+        // The INV parameter is an empty param. We have implemented it as a bool. No reason to validate.
         // TODO: Perform validation of COL
         }
 

@@ -265,11 +265,25 @@ public class IIPValidationTest {
             IIPParamValidation.pflValidation(pfl);
         });
 
-        String expectedMessage = "The value of r needs to be a number, but was: notANumber";
+        String expectedMessage = "The value of r needs to be a positive number, but was: notANumber";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
 
+    }
+
+    @Test
+    public void ctwTest(){
+        String ctw= "[2,3,3;3,4,5;6,7,hest]";
+
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.ctwValidation(ctw);
+        });
+
+        String expectedMessage = "The value of b in array3 needs to be a number, but was: hest";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
     /*
     @Test
