@@ -38,7 +38,7 @@ public class IIPParamValidation {
             throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r");
         }
     }
-    // TODO: Perform validation of PTL
+    // TODO: JAVADOC
     public static void ptlValidation(List<Integer> ptl) {
         if (ptl.size() < 2) {
             throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
@@ -49,8 +49,16 @@ public class IIPParamValidation {
         }
     }
 
+    // TODO: Add validation, that only one of CVT, JTL or PTL is set
     // TODO: Perform validation of WID
+    // Only for use with cvt, should validate that cvt is set
+    public static void widValidation(Long wid, String cvt) {
+        if (cvt == null || cvt.isEmpty() && wid != null) {
+            throw new InvalidArgumentServiceException("The parameter WID is only to be set, when the parameter CVT is in use");
+        }
+    }
     // TODO: Perform validation of HEI
+    // Only for use with cvt, should validate that cvt is set
 
     // TODO: JAVADOC
     public static void rgnValidation(List<Float> rgn){
