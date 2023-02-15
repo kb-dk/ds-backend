@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // TODO: JAVADOC
 public class IIPParamValidation {
@@ -132,7 +134,7 @@ public class IIPParamValidation {
         }
     }
 
-    // TODO: Perform validation of CMP
+    // TODO: JAVADOC
     public static void cmpValidation(String cmp){
         String[] values = {"GREY","JET","COLD","HOT", "RED", "GREEN", "BLUE"};
         boolean b = Arrays.asList(values).contains(cmp);
@@ -140,7 +142,35 @@ public class IIPParamValidation {
             throw new InvalidArgumentServiceException("CMP has to be specified as one of the following values when set: GREY, JET, COLD, HOT, RED, GREEN or BLUE");
         }
     }
-    // TODO: Perform validation of PFL
+
+    // TODO: JAVADOC
+    public static void pflValidation(String pfl){
+        // Slice input string and get indexes of delimitters
+        int endOfR = pfl.indexOf(":");
+        int endOfPairOne = pfl.indexOf("-");
+        String pairOne = pfl.substring(endOfR + 1, endOfPairOne);
+        String pairTwo = pfl.substring(endOfPairOne + 1);
+        int pairOneComma = pairOne.indexOf(",");
+        int pairTwoComma = pairTwo.indexOf(",");
+
+        // Create map with values as string
+        Map<String, String> values = new HashMap<>();
+        values.put("r", pfl.substring(0, endOfR));
+        values.put("x1", pairOne.substring(0, pairOneComma));
+        values.put("y1", pairOne.substring(pairOneComma+1));
+        values.put("x2", pairTwo.substring(0, pairTwoComma));
+        values.put("y2", pairTwo.substring(pairTwoComma+1));
+
+        // Convert string values to integers, throws exception when fails
+        for (Map.Entry<String, String> entry: values.entrySet()) {
+            try {
+                int realValue = Integer.parseInt(entry.getValue());
+            } catch (NumberFormatException e){
+                throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a number, but was: " + entry.getValue());
+            }
+        }
+    }
+
     // TODO: Perform validation of MINMAX
     // TODO: Perform validation of CTW
     // TODO: Perform validation of INV
