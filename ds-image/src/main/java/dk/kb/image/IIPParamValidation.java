@@ -170,7 +170,7 @@ public class IIPParamValidation {
      * Validate that JSON profile has been defined correctly.
      */
     public static void pflValidation(String pfl){
-        // Slice input string and get indexes of delimitters
+        // Slice input string and get indexes of delimiters
         int endOfR = pfl.indexOf(":");
         int endOfPairOne = pfl.indexOf("-");
         String pairOne = pfl.substring(endOfR + 1, endOfPairOne);
@@ -199,12 +199,10 @@ public class IIPParamValidation {
         }
     }
 
-
     public static void minmaxValidation(){
         // TODO: Perform validation of MINMAX, when param has been implemented
     }
 
-    // TODO: SPlit into smaller  private methods
     /**
      * Validate correct use of CTW(Color twist/ channel recombination)
      */
@@ -222,8 +220,14 @@ public class IIPParamValidation {
         String stringArray3 = ctw.substring(endOfSecondArray + 1);
 
         String[] stringArrays = new String[]{stringArray1, stringArray2, stringArray3};
-
         // Splits each array formatted as a comma separated string into a map containing r,g,b keys and values as string
+        splitCommaSeparatedStringToMap(stringArrays);
+    }
+
+    /**
+     * Split string that contains comma separated RGB values into a map where each value has its own entry
+     */
+    private static void splitCommaSeparatedStringToMap(String[] stringArrays) {
         for (int i = 0; i < stringArrays.length; i++) {
             int count = i+1;
             int endOfR = stringArrays[i].indexOf(",");
@@ -236,16 +240,26 @@ public class IIPParamValidation {
             array.put("b", stringArrays[i].substring(endOfG + 1));
 
             // Validates that r, g and b can be converted to floats in each map of arrays
-            for (Map.Entry<String, String> entry: array.entrySet()) {
-                try {
-                    float realValue = Float.parseFloat(entry.getValue());
-                } catch (NumberFormatException e){
-                    throw new InvalidArgumentServiceException(
-                            "The value of " + entry.getKey() + " in array" + count + " needs to be a number, but was: " + entry.getValue());
-                }
+            ValidateStringToFloatConversion(count, array);
+        }
+    }
+
+    /**
+     * Validate that each value from given map can be converted from string to float
+     * @param count used to deliver meaningfully service exception
+     * @param array map consisting of r, g and b values to be checked for conversion
+     */
+    private static void ValidateStringToFloatConversion(int count, Map<String, String> array) {
+        for (Map.Entry<String, String> entry: array.entrySet()) {
+            try {
+                float realValue = Float.parseFloat(entry.getValue());
+            } catch (NumberFormatException e){
+                throw new InvalidArgumentServiceException(
+                        "The value of " + entry.getKey() + " in array" + count + " needs to be a number, but was: " + entry.getValue());
             }
         }
     }
+
     // TODO: Perform validation of INV
     /**
      * Validate that COL(color transformation) has been set to one of the allowed values.
