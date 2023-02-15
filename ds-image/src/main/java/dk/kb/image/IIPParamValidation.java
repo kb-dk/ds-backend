@@ -165,14 +165,59 @@ public class IIPParamValidation {
         for (Map.Entry<String, String> entry: values.entrySet()) {
             try {
                 int realValue = Integer.parseInt(entry.getValue());
+                if (realValue < 0){
+                    throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a positive number, but was: " + entry.getValue());
+                }
             } catch (NumberFormatException e){
-                throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a number, but was: " + entry.getValue());
+                throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a positive number, but was: " + entry.getValue());
             }
         }
     }
 
-    // TODO: Perform validation of MINMAX
-    // TODO: Perform validation of CTW
+
+    public static void minmaxValidation(){
+        // TODO: Perform validation of MINMAX, when param has been implemented
+    }
+
+    // TODO: JAVADOC
+    public static void ctwValidation(String ctw){
+        // Strip string for brackets
+        ctw = ctw.replace("[","");
+        ctw = ctw.replace("]","");
+
+        // Split CWT string into 3 strings, each containing an array
+        int endOfFirstArray = ctw.indexOf(";");
+        int endOfSecondArray = ctw.lastIndexOf(";");
+
+        String stringArray1 = ctw.substring(0,endOfFirstArray);
+        String stringArray2 = ctw.substring(endOfFirstArray + 1, endOfSecondArray);
+        String stringArray3 = ctw.substring(endOfSecondArray + 1);
+
+        String[] stringArrays = new String[]{stringArray1, stringArray2, stringArray3};
+
+        // Splits each array formatted as a comma separated string into a map containing r,g,b keys and values as string
+        for (int i = 0; i < stringArrays.length; i++) {
+            int count = i+1;
+            int endOfR = stringArrays[i].indexOf(",");
+            int endOfG = stringArrays[i].lastIndexOf(",");
+
+            // Defined as map, so that exception makes sense
+            Map<String, String> array = new HashMap<>();
+            array.put("r", stringArrays[i].substring(0, endOfR));
+            array.put("g", stringArrays[i].substring(endOfR + 1, endOfG));
+            array.put("b", stringArrays[i].substring(endOfG + 1));
+
+            // Validates that r, g and b can be converted to floats in each map of arrays
+            for (Map.Entry<String, String> entry: array.entrySet()) {
+                try {
+                    float realValue = Float.parseFloat(entry.getValue());
+                } catch (NumberFormatException e){
+                    throw new InvalidArgumentServiceException(
+                            "The value of " + entry.getKey() + " in array" + count + " needs to be a number, but was: " + entry.getValue());
+                }
+            }
+        }
+    }
     // TODO: Perform validation of INV
     // TODO: Perform validation of COL
 
