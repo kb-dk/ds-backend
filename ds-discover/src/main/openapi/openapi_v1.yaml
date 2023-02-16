@@ -137,6 +137,18 @@ paths:
             example: 10
             default: 10
 
+        - name: start
+          in: query
+          description: | 
+            For pagination. Only return documents in the resultset from position start and forward.                        
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 20
+            default: 0
+
+
         - name: fl
           in: query
           description: | 
@@ -148,9 +160,9 @@ paths:
           required: false
           schema:
             type: string
-            example: '*, [child]'
-            default: '*, [child]'
-
+            example: 'id,title'
+            default: '*'
+       
         - name: facet
           in: query
           description: | 
