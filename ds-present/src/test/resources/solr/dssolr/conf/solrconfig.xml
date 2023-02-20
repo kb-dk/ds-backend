@@ -777,7 +777,7 @@
        <str name="hl">off</str>
        <str name="hl.requireFieldMatch">false</str>
        <str name="hl.encoder">html</str>
-       <str name="f.text.hl.preserveMulti">true</str>        
+       <str name="f.text.hl.preserveMulti">false</str>        
        <str name="hl.fl">content</str>     
         
      </lst>
