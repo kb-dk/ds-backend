@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class IIPValidationTest {
     // TODO: Add logging for all tests
     private static final Logger log = LoggerFactory.getLogger(IIPValidationTest.class);
+
     @Test
     public void rgnTest(){
         // Wrong X
@@ -58,6 +59,7 @@ public class IIPValidationTest {
         assertTrue(actualHMessage.contains(expectedHMessage));
         log.info("IIP region params gets validated correctly.");
     }
+
 
     @Test
     public void qltTest(){
@@ -212,10 +214,12 @@ public class IIPValidationTest {
         assertTrue(actualMessage2.contains(expectedMessage));
     }
 
+
     @Test
     public void shdTest(){
         List<Integer> shd = new ArrayList<>();
 
+        shd.add(200);
         // Test for wrong size
         Exception exception1 = assertThrows(InvalidArgumentServiceException.class, () -> {
             IIPParamValidation.shdValidation(shd);
@@ -224,7 +228,6 @@ public class IIPValidationTest {
         String actualMessage1 = exception1.getMessage();
 
         // Test for wrong h value
-        shd.add(200);
         shd.add(4);
         Exception exception2 = assertThrows(InvalidArgumentServiceException.class, () -> {
             IIPParamValidation.shdValidation(shd);
@@ -244,6 +247,7 @@ public class IIPValidationTest {
         assertTrue(actualMessage2.contains(expectedMessage2));
         assertTrue(actualMessage3.contains(expectedMessage3));
     }
+
 
     @Test
     public void cmpTest(){
@@ -300,6 +304,35 @@ public class IIPValidationTest {
         assertTrue(actualMessage.contains(expectedMessage));
 
     }
+
+    @Test
+    public void oneOutputTypeTest(){
+        String cvt = "jpeg";
+        List<Integer> jtl = new ArrayList<>();
+        jtl.add(2);
+        List<Integer> ptl = new ArrayList<>();
+        ptl.add(234);
+
+        // All params set
+        Exception exception1 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.validateOneJtlPtlCvtExists(jtl,ptl, cvt);
+        });
+        String expectedMessage1 = "The parameters JTL, PTL and CVT are all set. Only one can be set at a time";
+        String actualMessage1 = exception1.getMessage();
+        assertTrue(actualMessage1.contains(expectedMessage1));
+
+
+        // Two params set
+        Exception exception2 = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.validateOneJtlPtlCvtExists(jtl,ptl, null);
+        });
+        String expectedMessage2 = "The parameters JTL and PTL are set. Only one of these can be set at a time";
+        String actualMessage2 = exception2.getMessage();
+
+        assertTrue(actualMessage2.contains(expectedMessage2));
+    }
+
+
     /*
     @Test
     public void templateTest(){

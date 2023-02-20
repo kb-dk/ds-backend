@@ -228,7 +228,7 @@ public class IIPFacade {
             String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
             Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
             List<Integer> jtl, List<Integer> ptl, String cvt) {
-        // TODO: FIGURE OUT HOW WE HANDLE VALUES THAT DONT NEED TO BE SET?
+        // TODO: FIGURE OUT HOW WE HANDLE VALUES THAT DONT NEED TO BE SET? Maybe add a if null continue where it applies
         // Validates fif param
         IIPParamValidation.fifValidation(fif);
         // Validates cvt param
