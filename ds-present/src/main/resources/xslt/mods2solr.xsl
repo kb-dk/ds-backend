@@ -90,7 +90,7 @@
             </f:string>
           </xsl:if>
           <f:string key="id">
-            <xsl:value-of select="m:identifier[@type='uri']"/>
+            <xsl:value-of select="substring-after(m:identifier[@type='uri'],'urn:uuid:')"/>
           </f:string>
           <f:string key="identifier_local">
             <xsl:value-of select="m:identifier[@type='local']"/>
