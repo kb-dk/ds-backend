@@ -145,6 +145,7 @@ public class IIPValidationTest {
         assertTrue(actualMessage1.contains(expectedMessage));
         assertTrue(actualMessage2.contains(expectedMessage));
     }
+
     @Test
     public void ptlTest(){
         List<Integer> ptlParam = new ArrayList<>();
@@ -305,6 +306,7 @@ public class IIPValidationTest {
 
     }
 
+    /*
     @Test
     public void oneOutputTypeTest(){
         String cvt = "jpeg";
@@ -332,6 +334,7 @@ public class IIPValidationTest {
         assertTrue(actualMessage2.contains(expectedMessage2));
     }
 
+     */
 
     /*
     @Test

@@ -107,6 +107,7 @@ public class IIPFacade {
             String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, List<Integer> SHD,
             Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
+
         validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, SHD, LYR, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
 
         // Defaults
@@ -228,10 +229,11 @@ public class IIPFacade {
             String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
             Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
             List<Integer> jtl, List<Integer> ptl, String cvt) {
-        // TODO: FIGURE OUT HOW WE HANDLE VALUES THAT DONT NEED TO BE SET? Maybe add a if null continue where it applies
         // Validates fif param
         IIPParamValidation.fifValidation(fif);
-        // Validates cvt param
+        // Validate that only one of CVT, JTl and PTl are set.
+        IIPParamValidation.validateOneJtlPtlCvtExists(jtl, ptl, cvt);
+        // Validates CVT param
         IIPParamValidation.cvtValidation(cvt);
         // Validation of JTL
         IIPParamValidation.jtlValidation(jtl);
@@ -252,8 +254,6 @@ public class IIPFacade {
         // Validation of the parameter lYR is server dependent and is checked by the server
         // Validation of ROT
         IIPParamValidation.rotValidation(rot);
-        // TODO: Think about validation of GAM
-        // Is it relevant to validate GAM, as it only can be set as a float and it does not seem to have a min and max
         // Validation of CMP
         IIPParamValidation.cmpValidation(cmp);
         // Validation of PFL
