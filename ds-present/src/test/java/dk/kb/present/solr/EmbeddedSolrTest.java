@@ -105,7 +105,7 @@ public class EmbeddedSolrTest {
 
 
 		//Full life cycle test
-		SolrDocument record = getRecordById("urn:uuid:05fea810-7181-11e0-82d7-002185371280");
+		SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
 
 		//Single value field
 		assertEquals("000332.tif",record.getFieldValue("identifier_local"));
@@ -140,7 +140,7 @@ public class EmbeddedSolrTest {
 
 
 		//Full life cycle test
-		SolrDocument record = getRecordById("urn:uuid:3956d820-7b7d-11e6-b2b3-0016357f605f");
+		SolrDocument record = getRecordById("3956d820-7b7d-11e6-b2b3-0016357f605f");
 
 		//Single value fields
 		assertEquals("DPK000107.tif",record.getFieldValue("identifier_local"));
@@ -189,7 +189,7 @@ public class EmbeddedSolrTest {
 
 
 		//Full life cycle test
-		SolrDocument record = getRecordById("urn:uuid:096c9090-717f-11e0-82d7-002185371280");
+		SolrDocument record = getRecordById("096c9090-717f-11e0-82d7-002185371280");
 
 		//Single value field
 		assertEquals("Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",record.getFieldValue("shelf_location"));
@@ -296,7 +296,7 @@ public class EmbeddedSolrTest {
 
 
 		//Full life cycle test
-		SolrDocument record = getRecordById("urn:uuid:aaf3b130-e6e7-11e6-bdbe-00505688346e");
+		SolrDocument record = getRecordById("aaf3b130-e6e7-11e6-bdbe-00505688346e");
 
 		//Single value field
 		assertEquals("DT005031.tif",record.getFieldValue("identifier_local"));
@@ -328,7 +328,7 @@ public class EmbeddedSolrTest {
 
 
 		//Full life cycle test
-		SolrDocument record = getRecordById("urn:uuid:652b8260-9d78-11ed-92f5-005056882ec3");
+		SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
 
 		//Single value field
 		assertEquals("ANSK_11614.tif",record.getFieldValue("identifier_local"));
@@ -360,7 +360,7 @@ public class EmbeddedSolrTest {
 
 
 		//Full life cycle test
-		SolrDocument record = getRecordById("urn:uuid:54b34b50-2ce6-11ed-81b4-005056882ec3");
+		SolrDocument record = getRecordById("54b34b50-2ce6-11ed-81b4-005056882ec3");
 
 		//Single value field
 		assertEquals("SKF_f_0137.tif",record.getFieldValue("identifier_local"));
@@ -390,7 +390,7 @@ public class EmbeddedSolrTest {
 		assertEquals(1, getNumberOfTotalDocuments());
 
 		//Full life cycle test
-		SolrDocument record = getRecordById("urn:uuid:8e608940-d6db-11e3-8d2e-0016357f605f");
+		SolrDocument record = getRecordById("8e608940-d6db-11e3-8d2e-0016357f605f");
 
 		//Single value field
 		assertEquals("KHP0001-049.tif",record.getFieldValue("identifier_local"));
