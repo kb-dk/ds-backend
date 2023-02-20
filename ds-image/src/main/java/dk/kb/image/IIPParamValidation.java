@@ -42,14 +42,12 @@ public class IIPParamValidation {
      * Validate that JTL is correctly set, when exporting JPEG tiles.
      */
     public static void jtlValidation(List<Integer> jtl){
-        if (jtl != null && !jtl.isEmpty()) {
-            if (jtl.size() < 2) {
+        if (jtl.size() != 0 & jtl != null & !jtl.isEmpty()) {
+            if (jtl.size() != 2){
                 throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r");
             }
-            else if (jtl.size() > 2) {
-                log.warn("JTL contains more than 2 values. JTL can only contain two values: index x and resolution level r");
-                throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r");
-            }
+            // TODO: If JTL is defined as three or more the program throws a "Class java.lang.Integer can not be instantiated using a constructor with a single String argument"
+
         }
     }
 
@@ -62,28 +60,35 @@ public class IIPParamValidation {
                 throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
             }
             else if (ptl.size() > 2) {
-                log.warn("JTL contains more than 2 values. PTL can only contain two values: index x and resolution level r");
+                // TODO: If PTL is defined as three or more the program throws a "Class java.lang.Integer can not be instantiated using a constructor with a single String argument"
+                log.warn("PTL contains more than 2 values. PTL can only contain two values: index x and resolution level r");
                 throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
             }
         }
     }
 
-    // TODO: Add validation, that only one of CVT, JTL or PTL is set
+    /**
+     * The IIP protocol requires one of JTL, PTL and CVT to be set. This method validates that only one of these are indeed set.
+     */
     public static void validateOneJtlPtlCvtExists(List<Integer> jtl, List<Integer> ptl, String cvt){
-        if (jtl != null && ptl != null && cvt != null){
-            throw new InvalidArgumentServiceException("The parameters JTL, PTL and CVT are all set. Only one can be set at a time");
-        }
-        else if (jtl == null && ptl != null && cvt != null){
-            throw new InvalidArgumentServiceException("The parameters PTL and CVT are set. Only one of these can be set at a time");
-        }
-        else if (jtl != null && ptl != null && cvt == null){
-            throw new InvalidArgumentServiceException("The parameters JTL and PTL are set. Only one of these can be set at a time");
-        }
-        else if (jtl != null && ptl == null && cvt != null){
-            throw new InvalidArgumentServiceException("The parameters JTL and CVT are set. Only one of these can be set at a time");
-        }
+        boolean jtlPresent = (jtl != null && !jtl.isEmpty());
+        boolean ptlPresent = (ptl != null && !ptl.isEmpty());
+        boolean cvtPresent = (cvt != null && !cvt.isEmpty() && !cvt.isBlank());
 
-
+        if (jtlPresent && ptlPresent && cvtPresent){
+            log.error("The parameters JTL, PTL and CVT are all set. Only one can be set at a time");
+            throw new InvalidArgumentServiceException(cvt + "The parameters JTL, PTL and CVT are all set. Only one can be set at a time");
+        }
+        // CVT gets set anyway.
+        else if (!cvtPresent && jtlPresent && ptlPresent){
+            throw new InvalidArgumentServiceException("The parameters JTL and PTL are set. Only one can be set at a time");
+        }
+        else if (!jtlPresent && ptlPresent && cvtPresent){
+            throw new InvalidArgumentServiceException("The parameters PTL and CVT are set. Only one can be set at a time");
+        }
+        else if (!ptlPresent && jtlPresent && cvtPresent){
+            throw new InvalidArgumentServiceException("The parameters JTL and CVT are set. Only one can be set at a time");
+        }
     }
 
     /**
