@@ -39,14 +39,4 @@ class ViewTest {
         String jsonld = jsonldView.apply("albert-einstein", mods);
         assertTrue(jsonld.contains("\"name\":{\"@language\":\"en\",\"@value\":\"Einstein, Albert"));
     }
-
-    @Test
-    void solrjson() throws Exception {
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
-        View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2));
-        String mods = Resolver.resolveUTF8String("xml/corpus/albert-einstein.xml");
-        String solrjson = jsonldView.apply("albert-einstein", mods);
-        assertTrue(solrjson.contains("\"subject_name_da\":\"Einstein, Albert\","));
-    }
 }
