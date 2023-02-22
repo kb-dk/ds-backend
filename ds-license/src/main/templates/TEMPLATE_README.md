@@ -18,4 +18,5 @@ needed for returning XML with proper element names (`book` instead of `BookDto` 
  * pojo.mustache
  * model.mustache (adapted with extra imports)
  * modelInnerEnum.mustache
+ * modelEnum.mustache (adapted with `import io.swagger.annotations.ApiModelProperty;` )
  * jackson_annotations.mustache
