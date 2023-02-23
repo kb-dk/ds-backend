@@ -164,7 +164,7 @@ public class IIPFacade {
 
     public javax.ws.rs.core.StreamingOutput getDeepzoomTile(
             URI requestURI,
-            String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD,
+            String imageid, Integer layer, String tiles, String format, Float CNT,
             Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
         IIPParamValidation.validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
 
@@ -195,7 +195,6 @@ public class IIPFacade {
         ProxyHelper.addIfPresent(builder, "tiles", tiles);
         ProxyHelper.addIfPresent(builder, "format", format);
         ProxyHelper.addIfPresent(builder, "CNT", CNT);
-        ProxyHelper.addIfPresent(builder, "SHD", SHD);
 
         ProxyHelper.addIfPresent(builder, "GAM", GAM);
         ProxyHelper.addIfPresent(builder, "CMP", CMP);

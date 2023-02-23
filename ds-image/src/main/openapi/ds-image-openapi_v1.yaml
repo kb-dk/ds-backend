@@ -478,7 +478,6 @@ paths:
           
       # IIP parameters 
       - $ref: '#/components/parameters/CNT'
-      - $ref: '#/components/parameters/SHD'
       - $ref: '#/components/parameters/GAM'
       - $ref: '#/components/parameters/CMP'
       - $ref: '#/components/parameters/CTW'
@@ -885,23 +884,6 @@ components:
         format: float
         minimum: 0
         exclusiveMinimum: true
-    # SHD for IIP and DeepZoom
-    SHD:
-      name: SHD
-      in: query
-      description: |-
-        Simulated hill-shading for image normal data. The argument is the angle of incidence of the light source in the horizontal plane (from 12 o’clock), h and the vertical angle of incidence, v, with 0 representing a horizontal direction and -1 vertically downwards
-        
-        **SHD has to be defined as h,v**
-      schema: 
-        type: array
-        items:
-          type: integer
-          format: int32
-        minItems: 2
-        maxItems: 2
-      style: form
-      explode: false
     # GAM for IIP and DeepZoom
     GAM:
       name: GAM

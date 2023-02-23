@@ -80,8 +80,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      *
      * @param CNT: Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float &gt; 0. A value of 1.0 indicates no contrast change
      *
-     * @param SHD: Simulated hill-shading for image normal data. The argument is the angle of incidence of the light source in the horizontal plane (from 12 o’clock), h and the vertical angle of incidence, v, with 0 representing a horizontal direction and -1 vertically downwards  **SHD has to be defined as h,v**
-     *
      * @param GAM: Apply gamma correction, g: each pixel value to the power of g.  If g&#x3D;log or g&#x3D;logarithm, the logarithm is applied
      *
      * @param CMP: Generate colormap using one of the standard colormap schemes, s: GREY, JET, COLD, HOT, RED, GREEN and BLUE.
@@ -97,22 +95,22 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       *   </ul>
       * @throws ServiceException when other http codes should be returned
       *
-      * DeepZoom can bee used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below.
+      * DeepZoom can be used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below.
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public javax.ws.rs.core.StreamingOutput getDeepzoomTile(String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
+    public javax.ws.rs.core.StreamingOutput getDeepzoomTile(String imageid, Integer layer, String tiles, String format, Float CNT, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
         try {
             log.debug("getDeepzoomTile(imageid='{}', layer={}, tiles='{}', format='{}', " +
-                      "CNT={}, SHD={}, GAM={}, CMP='{}', CTW='{}', INV={}, COL='{}') called with call details: {}",
+                      "CNT={}, GAM={}, CMP='{}', CTW='{}', INV={}, COL='{}') called with call details: {}",
                       imageid, layer, tiles, format,
-                      CNT, SHD, GAM, CMP, CTW, INV, COL,
+                      CNT, GAM, CMP, CTW, INV, COL,
                       getCallDetails());
             httpServletResponse.setContentType(getMIME(format));
             return IIPFacade.getInstance().getDeepzoomTile(
                     uriInfo.getRequestUri(),
-                    imageid, layer, tiles, format, CNT, SHD, GAM, CMP, CTW, INV, COL);
+                    imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
 
         } catch (Exception e){
             throw handleException(e);

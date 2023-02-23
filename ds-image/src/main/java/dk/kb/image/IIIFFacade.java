@@ -129,25 +129,6 @@ public class IIIFFacade {
     }
 
     /**
-     * Validates IIP parameters and throws appropriate exceptions if any are invalid.
-     * See https://iipimage.sourceforge.io/documentation/protocol/
-     * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
-     */
-    private void validateIIPRequest(
-            String fif, Integer wid, Integer hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
-            Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
-            List<Integer> jtl, List<Integer> ptl, String cvt) {
-        if (fif == null || fif.isEmpty()) {
-            throw new InvalidArgumentServiceException("The parameter FIF must be defined");
-        }
-        if (!("jpeg".equals(cvt) | "png".equals(cvt))) {
-            throw new InvalidArgumentServiceException(
-                    "The parameter CVT must be defined and must be either 'jpeg' or 'png'. It was '" + cvt + "'");
-        }
-        // TODO: Perform validation of all parameters
-    }
-
-    /**
      * Validates IIIF Image API parameters and throws appropriate exceptions if they are not valid.
      * See https://iiif.io/api/image/3.0/
      * @throws ServiceException thrown if any parameters are not conforming to the IIIF specification.
