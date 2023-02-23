@@ -113,17 +113,12 @@ paths:
             Standard query syntax, but all terms must be qualified. Does not affect scoring.
             If multiple filter queries are provided, the result set is the intersection of the filters.
             
-            The default is `entity_type:the_object` to limit searches to the topmost document in the nested documents
-            structure. This is paired with `*, [child]` for the `fl` (Field List) parameter to retrieve sub-documents
-            for the search result.
           required: false
           schema:
             type: array
             items:
               type: string
-            example: ['entity_type:the_object']
-            default: ['entity_type:the_object']
-
+                       
         - name: rows
           in: query
           description: | 
@@ -140,27 +135,26 @@ paths:
         - name: start
           in: query
           description: | 
-            For pagination. Only return documents in the resultset from position start and forward.                        
+            For pagination. Only return documents in the resultset from position start and forward. Next page typical start from 20                        
           required: false
           schema:
             type: integer
             format: int32
-            example: 20
+            example: 0
             default: 0
 
 
         - name: fl
           in: query
           description: | 
-            Solr field list param [fl](https://solr.apache.org/guide/8_10/common-query-parameters.html#fl-field-list-parameter)
-            
+            Solr field list param [fl](https://solr.apache.org/guide/8_10/common-query-parameters.html#fl-field-list-parameter)            
             Solr fields to return in the response. `*` means all available standard fields.
             It is recommended to include the pseudo-field [[child]](https://solr.apache.org/guide/8_0/transforming-result-documents.html#child-childdoctransformerfactory)
             to include nested documents.
           required: false
           schema:
             type: string
-            example: 'id,title'
+            example: '*'
             default: '*'
        
         - name: facet
