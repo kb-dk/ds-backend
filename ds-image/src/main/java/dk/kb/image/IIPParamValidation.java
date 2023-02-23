@@ -42,6 +42,8 @@ public class IIPParamValidation {
 
     /**
      * Validate that JTL is correctly set, when exporting JPEG tiles.
+     * JTL should contain index n at resolution level r, specified as r,n.
+     * For example: 5,800
      */
     public static void jtlValidation(List<Integer> jtl){
         if (jtl.size() != 0 & jtl != null & !jtl.isEmpty()) {
@@ -55,6 +57,8 @@ public class IIPParamValidation {
 
     /**
      * Validate that PTL is correctly set, when exporting PNG tiles.
+     * PTL should contain index n at resolution level r, specified as r,n.
+     * For example: 5,800
      */
     public static void ptlValidation(List<Integer> ptl) {
         if (ptl != null && !ptl.isEmpty()) {
@@ -70,7 +74,7 @@ public class IIPParamValidation {
     }
 
     /**
-     * The IIP protocol requires one of JTL, PTL and CVT to be set. This method validates that only one of these are indeed set.
+     * The IIP protocol requires one and only one of JTL, PTL and CVT to be set. This method validates that only one of these are indeed set.
      */
     public static void validateOneJtlPtlCvtExists(List<Integer> jtl, List<Integer> ptl, String cvt){
         boolean jtlPresent = (jtl != null && !jtl.isEmpty());
@@ -95,6 +99,8 @@ public class IIPParamValidation {
 
     /**
      * Validate that WID(width) is only set, when used together with CVT.
+     * WID has to be set as width in pixels.
+     * For example 1200
      */
     public static void widValidation(Long wid, String cvt) {
         if (cvt == null || cvt.isEmpty() && wid != null) {
@@ -104,6 +110,8 @@ public class IIPParamValidation {
 
     /**
      * Validate that HEI(height) is only set, when used together with CVT.
+     * HEI has to be set as height in pixels.
+     * For example 800
      */
     public static void heiValidation(Long hei, String cvt) {
         if (cvt == null || cvt.isEmpty() && hei != null) {
@@ -113,6 +121,8 @@ public class IIPParamValidation {
 
     /**
      * Validate that RGN(region) is correctly set, by validating each element of the list.
+     * RGN has to be defined as x,y,w,h
+     * An example could be 0.2,0.0,0.5,0.5
      */
     public static void rgnValidation(List<Float> rgn, String cvt){
         if ((cvt == null || cvt.isEmpty()) && (!rgn.isEmpty() || rgn != null)) {
@@ -133,6 +143,8 @@ public class IIPParamValidation {
 
     /**
      * Validate that QLT(compression level) is set correctly, depending on the value of CVT.
+     * When CVT = JPEG, QLT has to be between 0-100
+     * When CVT = PNG, QLT has to be between 0-9
      */
     public static void qltValidation(Integer qlt, String cvt){
         if (qlt != null) {
@@ -148,6 +160,8 @@ public class IIPParamValidation {
 
     /**
      * Validate that CNT(contrast adjustment) is done correctly.
+     * CNT is a multiplication of pixel values by factor, c.
+     * CNT should be an integer or float > 0.
      */
     public static void cntValidation(Float cnt){
         if (cnt != null){
@@ -158,24 +172,8 @@ public class IIPParamValidation {
     }
 
     /**
-     * Validate that SHD(Simulated hill-shading) is done correctly and that each value given are in range.
-     */
-    public static void shdValidation(List<Integer> shd){
-        if ((shd != null || !shd.isEmpty()) && shd.size() != 0) {
-            if (shd.size() != 2) {
-                throw new InvalidArgumentServiceException("The parameter SHD has to contain exactly two values: h and v");
-            }
-            // TODO: Sanity check description of h and v values with Toke
-            else if (shd.get(0) < -90 || shd.get(0) > 90) {
-                throw new InvalidArgumentServiceException("The h value of parameter SHD is set incorrectly. It has to be an angle between -90 and 90.");
-            } else if (shd.get(1) < -1 || shd.get(1) > 1) {
-                throw new InvalidArgumentServiceException("The v value of parameter SHD is set incorrectly. It has to be a number between -1 and 1.");
-            }
-        }
-    }
-
-    /**
      * Validate that ROT(rotate) has been set to one of the allowed values.
+     * Allowed values are: 0, 90, 180, 270, !90, !180, !270.
      */
     public static void rotValidation(String rot){
         if (rot != null || !rot.isEmpty()) {
@@ -190,6 +188,7 @@ public class IIPParamValidation {
 
     /**
      * Validate that CMP(colormap) has been set to one of the allowed values.
+     * Allowed values are GREY, JET, COLD, HOT, RED, GREEN, BLUE.
      */
     public static void cmpValidation(String cmp){
         if (cmp != null) {
@@ -203,6 +202,8 @@ public class IIPParamValidation {
 
     /**
      * Validate that JSON profile has been defined correctly.
+     * PFL has to be defined specifically as r:x1,y1-x2,y2
+     * Example: 800:20,20-440,440
      */
     public static void pflValidation(String pfl){
         if (pfl != null) {
@@ -242,6 +243,7 @@ public class IIPParamValidation {
 
     /**
      * Validate correct use of CTW(Color twist/ channel recombination)
+     * CTW has to be defined as [array;array;array] using ; as delimiter between arrays and , between integers
      */
     public static void ctwValidation(String ctw){
         if (ctw != null){
@@ -326,4 +328,12 @@ public class IIPParamValidation {
         }
     }
 
+    public static void deepzoomFormatValidation(String format){
+        String[] values = {"jpg", "png", "jpeg"};
+        boolean b = Arrays.asList(values).contains(format);
+        if (!b) {
+            throw new InvalidArgumentServiceException("Format for Deepzoom tile has to be either 'jpg', 'jpeg' or 'png'");
+        }
+
+    }
 }
