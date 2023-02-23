@@ -108,7 +108,7 @@ public class IIPFacade {
             Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
 
-        validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, SHD, LYR, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
+        validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
 
         // Defaults
         if (CVT == null || "jpg".equals(CVT)) {
@@ -178,7 +178,7 @@ public class IIPFacade {
             URI requestURI,
             String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD,
             Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
-        validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, SHD, GAM, CMP, CTW, INV, COL);
+        validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
 
         // Defaults
         if (format == null) {
@@ -226,8 +226,8 @@ public class IIPFacade {
      * @throws ServiceException if any parameters are not conforming to the IIP specification.
      */
     public void validateIIPRequest(
-            String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
-            Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
+            String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt,
+            String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
             List<Integer> jtl, List<Integer> ptl, String cvt) {
         // Validates fif param
         IIPParamValidation.fifValidation(fif);
@@ -249,9 +249,6 @@ public class IIPFacade {
         IIPParamValidation.qltValidation(qlt, cvt);
         // Validation of CNT
         IIPParamValidation.cntValidation(cnt);
-        // Validation of SHD
-        IIPParamValidation.shdValidation(shd);
-        // Validation of the parameter lYR is server dependent and is checked by the server
         // Validation of ROT
         IIPParamValidation.rotValidation(rot);
         // Validation of CMP
@@ -289,17 +286,18 @@ public class IIPFacade {
      * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
      */
     private void validateDeepzoomTileRequest(
-            String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD,
+            String imageid, Integer layer, String tiles, String format, Float CNT,
             Float GAM, String CMP, String CTW, Boolean INV, String COL) {
         if (imageid == null || imageid.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter imageid must be defined");
         }
         // Layer is an integer. Not sure it this has to be validated against a maximum number maybe?
+        // Validate tile parameter
         IIPParamValidation.deepzoomTileValidation(tiles);
+        // Validate tile output format
+        IIPParamValidation.deepzoomFormatValidation(format);
         // Validate CNT
         IIPParamValidation.cntValidation(CNT);
-        // Validate SHD
-        IIPParamValidation.shdValidation(SHD);
         // Validate CMP
         IIPParamValidation.cmpValidation(CMP);
         // Validate CTW
