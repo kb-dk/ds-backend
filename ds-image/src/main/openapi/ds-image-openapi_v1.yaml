@@ -225,7 +225,8 @@ paths:
       description: |-
         Most of our services at the Royal Library makes use of the IIIF standard.
         IIP is currently supported for backwards compatibility and support might be dropped in the future.
-        There is no support or updates scheduled for this endpoint.
+        There is no support or updates scheduled for this endpoint. Our API supports parameters from version 1.0 and onwards. 
+        This means that parameters like Simulated hill-shading (SHD) from version 0.9.7 and quality layers (LYR) from version 0.9.9 aren't supported through this API.
       operationId: IIPImageRequest
       parameters:
         - name: FIF
