@@ -103,7 +103,16 @@ paths:
           schema:
             type: string
             default: '*:*'
-            example: '*:*'
+          examples:
+            all:
+              value: '*:*'
+              summary: 'All documents in the collection'
+            free:
+              value: 'jens hansen'
+              summary: 'Free text query'
+            qualified:
+              value: 'author:andersen'
+              summary: 'Qualified query'
 
         - name: fq
           in: query
@@ -118,7 +127,7 @@ paths:
             type: array
             items:
               type: string
-                       
+
         - name: rows
           in: query
           description: | 
@@ -156,7 +165,7 @@ paths:
             type: string
             example: '*'
             default: '*'
-       
+
         - name: facet
           in: query
           description: | 
