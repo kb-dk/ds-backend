@@ -54,11 +54,9 @@ public class IIPParamValidation {
         cmpValidation(cmp);
         // Validation of PFL
         pflValidation(pfl);
-        // TODO: Perform validation of MINMAX, which is not in our proxy
+        // TODO: Perform validation of MINMAX, which is not in our proxy yet
         // Validation of CTW
         ctwValidation(ctw);
-        // TODO: Think about validation of INV
-        // The INV parameter is an empty param. We have implemented it as a bool. No reason to validate.
         // Validation of COL
         colValidation(col);
     }
@@ -125,8 +123,8 @@ public class IIPParamValidation {
             if (jtl.size() != 2){
                 throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r");
             }
-            // TODO: If JTL is defined as three or more the program throws a "Class java.lang.Integer can not be instantiated using a constructor with a single String argument"
-
+            // TODO: If JTL (or PTL below) is defined as three or more the program throws a "Class java.lang.Integer can not be instantiated using a constructor with a single String argument"
+            // I am not sure if this is due to the max size of the list as defined in our openAPI YAML
         }
     }
 
@@ -141,7 +139,6 @@ public class IIPParamValidation {
                 throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
             }
             else if (ptl.size() > 2) {
-                // TODO: If PTL is defined as three or more the program throws a "Class java.lang.Integer can not be instantiated using a constructor with a single String argument"
                 log.warn("PTL contains more than 2 values. PTL can only contain two values: index x and resolution level r");
                 throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
             }
@@ -376,7 +373,6 @@ public class IIPParamValidation {
         }
     }
 
-    // TODO: Perform validation of INV
     /**
      * Validate that COL(color transformation) has been set to one of the allowed values.
      */
@@ -411,6 +407,4 @@ public class IIPParamValidation {
         }
 
     }
-
-
 }
