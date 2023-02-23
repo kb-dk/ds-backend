@@ -148,11 +148,16 @@ paths:
           required: false
           schema:
             type: integer
-            format: int32
-            example: 0
+            format: int32            
             default: 0
-
-
+          examples:
+            from0:
+              value: 0
+              summary: 'from start'
+            from20:
+              value: 20
+              summary: 'from document 20'
+            
         - name: fl
           in: query
           description: | 
