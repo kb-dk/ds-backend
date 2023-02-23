@@ -1,6 +1,7 @@
 package dk.kb.image;
 
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,80 @@ import java.util.regex.Pattern;
  */
 public class IIPParamValidation {
     private static final Logger log = LoggerFactory.getLogger(IIPParamValidation.class);
+
+    /**
+     * Validates IIP parameters and throws appropriate exceptions if any parameters are invalid.
+     * See https://iipimage.sourceforge.io/documentation/protocol/
+     * @throws ServiceException if any parameters are not conforming to the IIP specification.
+     */
+    public static void validateIIPRequest(
+            String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt,
+            String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
+            List<Integer> jtl, List<Integer> ptl, String cvt) {
+        // Validates fif param
+        fifValidation(fif);
+        // Validate that only one of CVT, JTl and PTl are set.
+        validateOneJtlPtlCvtExists(jtl, ptl, cvt);
+        // Validates CVT param
+        cvtValidation(cvt);
+        // Validation of JTL
+        jtlValidation(jtl);
+        // Validation of PTL
+        ptlValidation(ptl);
+        // Validation of WID
+        widValidation(wid, cvt);
+        // Validation of HEI
+        heiValidation(hei, cvt);
+        // Validation of RGN
+        rgnValidation(rgn, cvt);
+        // Validation of QLT
+        qltValidation(qlt, cvt);
+        // Validation of CNT
+        cntValidation(cnt);
+        // Validation of ROT
+        rotValidation(rot);
+        // Validation of CMP
+        cmpValidation(cmp);
+        // Validation of PFL
+        pflValidation(pfl);
+        // TODO: Perform validation of MINMAX, which is not in our proxy
+        // Validation of CTW
+        ctwValidation(ctw);
+        // TODO: Think about validation of INV
+        // The INV parameter is an empty param. We have implemented it as a bool. No reason to validate.
+        // Validation of COL
+        colValidation(col);
+    }
+
+    /**
+     * Validates Deepzoom parameters and throws appropriate exceptions if any are invalid.
+     * See https://iipimage.sourceforge.io/documentation/protocol/
+     * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon documentation
+     * https://openseadragon.github.io/docs/
+     * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
+     */
+    static void validateDeepzoomTileRequest(
+            String imageid, Integer layer, String tiles, String format, Float CNT,
+            Float GAM, String CMP, String CTW, Boolean INV, String COL) {
+        if (imageid == null || imageid.isEmpty()) {
+            throw new InvalidArgumentServiceException("The parameter imageid must be defined");
+        }
+        // Layer is an integer. Not sure it this has to be validated against a maximum number maybe?
+        // Validate tile parameter
+        deepzoomTileValidation(tiles);
+        // Validate tile output format
+        deepzoomFormatValidation(format);
+        // Validate CNT
+        cntValidation(CNT);
+        // Validate CMP
+        cmpValidation(CMP);
+        // Validate CTW
+        ctwValidation(CTW);
+        // Validate COL
+        colValidation(COL);
+        // TODO: Perform validation of all parameters
+    }
+
 
     /**
      * Validate that FIF is set  and isn't empty as it is required in IIP
@@ -336,4 +411,6 @@ public class IIPParamValidation {
         }
 
     }
+
+
 }

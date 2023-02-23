@@ -14,7 +14,6 @@
  */
 package dk.kb.image;
 
-import com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -23,12 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Proxy for an image server that supports the
@@ -108,7 +104,7 @@ public class IIPFacade {
             Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
 
-        validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
+        IIPParamValidation.validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
 
         // Defaults
         if (CVT == null || "jpg".equals(CVT)) {
@@ -178,7 +174,7 @@ public class IIPFacade {
             URI requestURI,
             String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD,
             Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
-        validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
+        IIPParamValidation.validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
 
         // Defaults
         if (format == null) {
@@ -221,50 +217,6 @@ public class IIPFacade {
     }
 
     /**
-     * Validates IIP parameters and throws appropriate exceptions if any parameters are invalid.
-     * See https://iipimage.sourceforge.io/documentation/protocol/
-     * @throws ServiceException if any parameters are not conforming to the IIP specification.
-     */
-    public void validateIIPRequest(
-            String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt,
-            String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
-            List<Integer> jtl, List<Integer> ptl, String cvt) {
-        // Validates fif param
-        IIPParamValidation.fifValidation(fif);
-        // Validate that only one of CVT, JTl and PTl are set.
-        IIPParamValidation.validateOneJtlPtlCvtExists(jtl, ptl, cvt);
-        // Validates CVT param
-        IIPParamValidation.cvtValidation(cvt);
-        // Validation of JTL
-        IIPParamValidation.jtlValidation(jtl);
-        // Validation of PTL
-        IIPParamValidation.ptlValidation(ptl);
-        // Validation of WID
-        IIPParamValidation.widValidation(wid, cvt);
-        // Validation of HEI
-        IIPParamValidation.heiValidation(hei, cvt);
-        // Validation of RGN
-        IIPParamValidation.rgnValidation(rgn, cvt);
-        // Validation of QLT
-        IIPParamValidation.qltValidation(qlt, cvt);
-        // Validation of CNT
-        IIPParamValidation.cntValidation(cnt);
-        // Validation of ROT
-        IIPParamValidation.rotValidation(rot);
-        // Validation of CMP
-        IIPParamValidation.cmpValidation(cmp);
-        // Validation of PFL
-        IIPParamValidation.pflValidation(pfl);
-        // TODO: Perform validation of MINMAX, which is not in our proxy
-        // Validation of CTW
-        IIPParamValidation.ctwValidation(ctw);
-        // TODO: Think about validation of INV
-        // The INV parameter is an empty param. We have implemented it as a bool. No reason to validate.
-        // Validation of COL
-        IIPParamValidation.colValidation(col);
-        }
-
-    /**
      * Validates Deepzoom DZI parameters and throws appropriate exceptions if any are invalid.
      * See https://iipimage.sourceforge.io/documentation/protocol/
      * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon documentation
@@ -276,35 +228,6 @@ public class IIPFacade {
         if (imageid == null || imageid.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter imageid must be defined");
         }
-    }
-
-    /**
-     * Validates Deepzoom parameters and throws appropriate exceptions if any are invalid.
-     * See https://iipimage.sourceforge.io/documentation/protocol/
-     * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon documentation
-     * https://openseadragon.github.io/docs/
-     * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
-     */
-    private void validateDeepzoomTileRequest(
-            String imageid, Integer layer, String tiles, String format, Float CNT,
-            Float GAM, String CMP, String CTW, Boolean INV, String COL) {
-        if (imageid == null || imageid.isEmpty()) {
-            throw new InvalidArgumentServiceException("The parameter imageid must be defined");
-        }
-        // Layer is an integer. Not sure it this has to be validated against a maximum number maybe?
-        // Validate tile parameter
-        IIPParamValidation.deepzoomTileValidation(tiles);
-        // Validate tile output format
-        IIPParamValidation.deepzoomFormatValidation(format);
-        // Validate CNT
-        IIPParamValidation.cntValidation(CNT);
-        // Validate CMP
-        IIPParamValidation.cmpValidation(CMP);
-        // Validate CTW
-        IIPParamValidation.ctwValidation(CTW);
-        // Validate COL
-        IIPParamValidation.colValidation(COL);
-        // TODO: Perform validation of all parameters
     }
 
 }
