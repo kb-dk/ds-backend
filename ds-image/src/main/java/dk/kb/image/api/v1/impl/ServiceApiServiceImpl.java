@@ -24,6 +24,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     @Override
     public String ping() throws ServiceException {
         try{
+            log.debug("ping() called with call details: {}", getCallDetails());
             return "Pong";
         } catch (Exception e){
             throw handleException(e);
@@ -39,19 +40,24 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
      */
     @Override
     public StatusDto status() {
-        String host = "N/A";
         try {
-            host = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            log.warn("Exception resolving hostname", e);
+            log.debug("status() called with call details: {}", getCallDetails());
+            String host = "N/A";
+            try {
+                host = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                log.warn("Exception resolving hostname", e);
+            }
+            return new StatusDto()
+                    .application(BuildInfoManager.getName())
+                    .version(BuildInfoManager.getVersion())
+                    .build(BuildInfoManager.getBuildTime())
+                    .java(System.getProperty("java.version"))
+                    .heap(Runtime.getRuntime().maxMemory() / 1000000L)
+                    .server(host)
+                    .health("ok");
+        } catch (Exception e) {
+            throw handleException(e);
         }
-        return new StatusDto()
-                .application(BuildInfoManager.getName())
-                .version(BuildInfoManager.getVersion())
-                .build(BuildInfoManager.getBuildTime())
-                .java(System.getProperty("java.version"))
-                .heap(Runtime.getRuntime().maxMemory()/1000000L)
-                .server(host)
-                .health("ok");
     }
 }
