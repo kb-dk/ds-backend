@@ -235,7 +235,7 @@ public class IIPValidationTest {
             IIPParamValidation.pflValidation(pfl);
         });
 
-        String expectedMessage = "The value of r needs to be a positive number, but was: notANumber";
+        String expectedMessage = "The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 by was: '" + pfl + "'";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

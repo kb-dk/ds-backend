@@ -279,6 +279,14 @@ public class IIPParamValidation {
      */
     public static void pflValidation(String pfl){
         if (pfl != null) {
+            Pattern correctPattern = Pattern.compile("\\d+:\\d+,\\d+-\\d+,\\d+", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = correctPattern.matcher(pfl);
+            boolean matchFound = matcher.find();
+            if(!matchFound) {
+                throw new InvalidArgumentServiceException("The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 by was: '" + pfl + "'");
+            }
+
+
             // Slice input string and get indexes of delimiters
             int endOfR = pfl.indexOf(":");
             int endOfPairOne = pfl.indexOf("-");
