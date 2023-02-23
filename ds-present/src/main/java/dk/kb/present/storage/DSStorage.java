@@ -18,8 +18,8 @@ import dk.kb.present.backend.api.v1.DsStorageApi;
 import dk.kb.present.backend.invoker.v1.ApiClient;
 import dk.kb.present.backend.invoker.v1.ApiException;
 import dk.kb.present.backend.model.v1.DsRecordDto;
-import dk.kb.present.webservice.exception.InternalServiceException;
-import dk.kb.present.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

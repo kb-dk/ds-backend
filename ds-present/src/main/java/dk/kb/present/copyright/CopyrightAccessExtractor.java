@@ -19,7 +19,7 @@ import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
 
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
-import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.xml.XMLEscapeSanitiser;
 
 /**

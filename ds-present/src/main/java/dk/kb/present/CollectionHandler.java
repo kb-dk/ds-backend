@@ -15,8 +15,8 @@
 package dk.kb.present;
 
 import dk.kb.present.storage.Storage;
-import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
-import dk.kb.present.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

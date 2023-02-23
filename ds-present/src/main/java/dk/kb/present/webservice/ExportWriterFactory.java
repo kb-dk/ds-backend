@@ -14,8 +14,12 @@
  */
 package dk.kb.present.webservice;
 
-import dk.kb.present.webservice.exception.InternalServiceException;
-import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.stream.CSVStreamWriter;
+import dk.kb.util.webservice.stream.ExportWriter;
+import dk.kb.util.webservice.stream.ExportXMLStreamWriter;
+import dk.kb.util.webservice.stream.JSONStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +36,8 @@ import java.util.Locale;
 /**
  * Helper for streaming export from web services. Wraps an OutputStream providing serialization of Jackson annotated
  * Objects to either JSON, JSON Lines or CSV.
+ * @deprecated will be removed when kb-util has been updated to include the check for {@code response == null} in the
+ * {@link #wrap(OutputStream, HttpServletResponse, FORMAT, boolean, String)} method.
  */
 public class ExportWriterFactory {
     private static final Logger log = LoggerFactory.getLogger(ExportWriterFactory.class);
