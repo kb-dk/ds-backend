@@ -294,7 +294,18 @@ public class IIPFacade {
         if (imageid == null || imageid.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter imageid must be defined");
         }
-        
+        // Layer is an integer. Not sure it this has to be validated against a maximum number maybe?
+        IIPParamValidation.deepzoomTileValidation(tiles);
+        // Validate CNT
+        IIPParamValidation.cntValidation(CNT);
+        // Validate SHD
+        IIPParamValidation.shdValidation(SHD);
+        // Validate CMP
+        IIPParamValidation.cmpValidation(CMP);
+        // Validate CTW
+        IIPParamValidation.ctwValidation(CTW);
+        // Validate COL
+        IIPParamValidation.colValidation(COL);
         // TODO: Perform validation of all parameters
     }
 

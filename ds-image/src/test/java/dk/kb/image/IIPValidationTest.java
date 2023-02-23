@@ -306,35 +306,20 @@ public class IIPValidationTest {
 
     }
 
-    /*
     @Test
-    public void oneOutputTypeTest(){
-        String cvt = "jpeg";
-        List<Integer> jtl = new ArrayList<>();
-        jtl.add(2);
-        List<Integer> ptl = new ArrayList<>();
-        ptl.add(234);
+    public void deepzoomTileTest(){
+        String testTiles = "3.4";
 
-        // All params set
-        Exception exception1 = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPParamValidation.validateOneJtlPtlCvtExists(jtl,ptl, cvt);
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.deepzoomTileValidation(testTiles);
         });
-        String expectedMessage1 = "The parameters JTL, PTL and CVT are all set. Only one can be set at a time";
-        String actualMessage1 = exception1.getMessage();
-        assertTrue(actualMessage1.contains(expectedMessage1));
 
+        String expectedMessage = "Deepzoom parameter 'tiles' is specified incorrectly. it has to be defined as x_y";
+        String actualMessage = exception.getMessage();
 
-        // Two params set
-        Exception exception2 = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPParamValidation.validateOneJtlPtlCvtExists(jtl,ptl, null);
-        });
-        String expectedMessage2 = "The parameters JTL and PTL are set. Only one of these can be set at a time";
-        String actualMessage2 = exception2.getMessage();
-
-        assertTrue(actualMessage2.contains(expectedMessage2));
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
-     */
 
     /*
     @Test

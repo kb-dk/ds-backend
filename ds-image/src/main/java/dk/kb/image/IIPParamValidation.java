@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Parameter validation for the Internet Imaging Protocol. The protocol can be found : <a href="https://iipimage.sourceforge.io/documentation/protocol/">here</a>.
@@ -225,10 +227,10 @@ public class IIPParamValidation {
                 try {
                     int realValue = Integer.parseInt(entry.getValue());
                     if (realValue < 0) {
-                        throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a positive number, but was: " + entry.getValue());
+                        throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a positive number, but was: '" + entry.getValue() + "'");
                     }
                 } catch (NumberFormatException e) {
-                    throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a positive number, but was: " + entry.getValue());
+                    throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a positive number, but was: '" + entry.getValue() + "'");
                 }
             }
         }
@@ -308,6 +310,19 @@ public class IIPParamValidation {
             if (!b) {
                 throw new InvalidArgumentServiceException("COL has to be specified as one of the following values when set: grey, gray or binary");
             }
+        }
+    }
+
+    /**
+     * Validate that Deepzoom tiles are specified correctly.
+     * @param tiles string to validate.
+     */
+    public static void deepzoomTileValidation(String tiles){
+        Pattern correctPattern = Pattern.compile("\\d+_+\\d", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = correctPattern.matcher(tiles);
+        boolean matchFound = matcher.find();
+        if(!matchFound) {
+            throw new InvalidArgumentServiceException("Deepzoom parameter 'tiles' is specified incorrectly. it has to be defined as x_y");
         }
     }
 
