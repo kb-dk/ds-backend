@@ -297,20 +297,6 @@ paths:
         
         # As of now, EQ and ST are not implemented in the OpenAPI version
         - $ref: '#/components/parameters/CNT'
-            
-        - $ref: '#/components/parameters/SHD'
-            
-        - name: LYR
-          in: query
-          description: |- 
-            The number of quality layers, l, in an image to decode. This is for file types that can contain multiple quality layers, such as JPEG2000.
-            
-            For example, a request for LYR=3 will decode only the first 3 quality layers present in the image.
-            
-            The number of layers decoded will be limited to a maximum given by the MAX_LAYERS environment variable if this has been set in the server configuration. This can be useful to either limit the quality of the images users may see or to speed up decoding by only decoding the faster lower quality layers.
-          schema:
-            type: integer
-            format: int32
 
         - name: ROT
           in: query

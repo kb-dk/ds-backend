@@ -72,12 +72,6 @@ public class IIPFacade {
      *
      * @param CNT: Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float &gt; 0. A value of 1.0 indicates no contrast change
      *
-     * @param SHD: Simulated hill-shading for image normal data. The argument is the angle of incidence of the light source in the horizontal plane (from 12 o’clock), h and the vertical angle of incidence, v, with 0 representing a horizontal direction and -1 vertically downwards  **SHD has to be defined as h,v**
-     *
-     * @param LYR: The number of quality layers, l, in an image to decode. This is for file types that can contain multiple quality layers, such as JPEG2000.  For example, a request for LYR&#x3D;3 will decode only the first 3 quality layers present in the image.  The number of layers decoded will be limited to a maximum given by the MAX_LAYERS environment variable if this has been set in the server configuration. This can be useful to either limit the quality of the images users may see or to speed up decoding by only decoding the faster lower quality layers.
-     *
-     * @param ROT: Rotate (and flip) image by given number of degrees, r. Only 90, 180 and 270 supported.  If angle is prefixed by an exclamation mark !, the image is flipped horizontally before rotation (ex: ROT&#x3D;!90). Vertical flipping can be achieved by combining horizontal flipping and 180° rotation
-     *
      * @param GAM: Apply gamma correction, g: each pixel value to the power of g.  If g&#x3D;log or g&#x3D;logarithm, the logarithm is applied
      *
      * @param CMP: Generate colormap using one of the standard colormap schemes, s: GREY, JET, COLD, HOT, RED, GREEN and BLUE.
@@ -101,10 +95,10 @@ public class IIPFacade {
      */
     public javax.ws.rs.core.StreamingOutput getIIPImage(
             URI requestURI,
-            String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, List<Integer> SHD,
-            Integer LYR, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
+            String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT,
+            String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
-        validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, SHD, LYR, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
+        validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
 
         // Defaults
         if (CVT == null || "jpg".equals(CVT)) {
@@ -121,9 +115,7 @@ public class IIPFacade {
         ProxyHelper.addIfPresent(builder, "RGN", RGN);
         ProxyHelper.addIfPresent(builder, "QLT", QLT);
         ProxyHelper.addIfPresent(builder, "CNT", CNT);
-        ProxyHelper.addIfPresent(builder, "SHD", SHD);
 
-        ProxyHelper.addIfPresent(builder, "LYR", LYR);
         ProxyHelper.addIfPresent(builder, "ROT", ROT);
         ProxyHelper.addIfPresent(builder, "GAM", GAM);
         ProxyHelper.addIfPresent(builder, "CMP", CMP);
@@ -222,8 +214,8 @@ public class IIPFacade {
      * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
      */
     private void validateIIPRequest(
-            String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt, List<Integer> shd,
-            Integer lyr, String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
+            String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt,
+            String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
             List<Integer> jtl, List<Integer> ptl, String cvt) {
         if (fif == null || fif.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter FIF must be defined");
