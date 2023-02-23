@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.List;
@@ -98,7 +97,8 @@ public class IIPFacade {
             String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT,
             String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
-        validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
+
+        IIPParamValidation.validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
 
         // Defaults
         if (CVT == null || "jpg".equals(CVT)) {
@@ -166,7 +166,7 @@ public class IIPFacade {
             URI requestURI,
             String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD,
             Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
-        validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, SHD, GAM, CMP, CTW, INV, COL);
+        IIPParamValidation.validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
 
         // Defaults
         if (format == null) {
@@ -209,25 +209,6 @@ public class IIPFacade {
     }
 
     /**
-     * Validates IIP parameters and throws appropriate exceptions if any are invalid.
-     * See https://iipimage.sourceforge.io/documentation/protocol/
-     * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
-     */
-    private void validateIIPRequest(
-            String fif, Long wid, Long hei, List<Float> rgn, Integer qlt, Float cnt,
-            String rot, Float gam, String cmp, String pfl, String ctw, Boolean inv, String col,
-            List<Integer> jtl, List<Integer> ptl, String cvt) {
-        if (fif == null || fif.isEmpty()) {
-            throw new InvalidArgumentServiceException("The parameter FIF must be defined");
-        }
-        if (!("jpeg".equals(cvt) | "png".equals(cvt))) {
-            throw new InvalidArgumentServiceException(
-                    "The parameter CVT must be defined and must be either 'jpeg' or 'png'. It was '" + cvt + "'");
-        }
-        // TODO: Perform validation of all parameters
-    }
-
-    /**
      * Validates Deepzoom DZI parameters and throws appropriate exceptions if any are invalid.
      * See https://iipimage.sourceforge.io/documentation/protocol/
      * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon documentation
@@ -239,23 +220,6 @@ public class IIPFacade {
         if (imageid == null || imageid.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter imageid must be defined");
         }
-    }
-
-    /**
-     * Validates Deepzoom parameters and throws appropriate exceptions if any are invalid.
-     * See https://iipimage.sourceforge.io/documentation/protocol/
-     * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon documentation
-     * https://openseadragon.github.io/docs/
-     * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
-     */
-    private void validateDeepzoomTileRequest(
-            String imageid, Integer layer, String tiles, String format, Float CNT, List<Integer> SHD,
-            Float GAM, String CMP, String CTW, Boolean INV, String COL) {
-        if (imageid == null || imageid.isEmpty()) {
-            throw new InvalidArgumentServiceException("The parameter imageid must be defined");
-        }
-        
-        // TODO: Perform validation of all parameters
     }
 
 }
