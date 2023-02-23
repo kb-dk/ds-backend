@@ -39,7 +39,7 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_KE06 = "xml/copyright_extraction/KE066530.tif.xml";
 	public static final String RECORD_OA = "xml/copyright_extraction/OA_102-2007-pl_0004.tif.xml";
 	public static final String  RECORD_Elf = "xml/copyright_extraction/Elf_113136.tif.xml";
-	
+	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
 
 	@Test
 	void testSolOld() throws IOException {
@@ -197,6 +197,20 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXsltKhp0001049() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_KHP0001_049);
+		// TODO: Add more detailed test
+		// Test that date_created is present and that subject is not
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testUldall() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ULDALL);
 		// TODO: Add more detailed test
 		// Test that date_created is present and that subject is not
 

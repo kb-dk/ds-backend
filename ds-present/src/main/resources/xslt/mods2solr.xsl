@@ -239,6 +239,28 @@
                 </f:array>
               </xsl:if>
             </xsl:if>
+            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'art' or 'aut'">
+              <xsl:if test="m:name/m:namePart[@type='date']">
+                <f:array key="creator_date_of_birth">
+                  <xsl:for-each select="m:name">
+                    <xsl:if test="m:namePart[@type='date'] and substring-before(m:namePart[@type='date'], '/') != ''">
+                      <f:string>
+                        <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
+                      </f:string>
+                    </xsl:if>
+                  </xsl:for-each>
+                </f:array>
+                <f:array key="creator_date_of_death">
+                  <xsl:for-each select="m:name">
+                    <xsl:if test="m:namePart[@type='date'] and substring-after(m:namePart[@type='date'], '/') != ''">
+                      <f:string>
+                        <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
+                      </f:string>
+                    </xsl:if>
+                  </xsl:for-each>
+                </f:array>
+              </xsl:if>
+            </xsl:if>
             <xsl:if test="m:name/m:affiliation">
               <f:string key="creator_affiliation">
                 <xsl:value-of select="m:name/m:affiliation"/>
