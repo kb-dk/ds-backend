@@ -23,7 +23,7 @@ class SolrServiceTest {
     //@Test
     void baseSearch() {
         SolrService solr = new SolrService("test", "http://localhost:10007", "solr", "ds");
-        String response = solr.query("*:*", null, null, null, null, null, null, null, null, null, null, null);
+        String response = solr.query("*:*", null, null, null, null, null, null, null, null, null, null, null, null);
         assertTrue(response.contains("responseHeader"), "The Solr response should contain a header");
     }
 }

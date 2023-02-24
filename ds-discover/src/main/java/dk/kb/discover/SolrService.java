@@ -45,6 +45,7 @@ public class SolrService {
     public static final String FQ = "fq";
     public static final String FL = "fl";
     public static final String ROWS = "rows";
+    public static final String START = "start";
     public static final String FACET = "facet";
     public static final String FACET_FIELD = "facet.field";
     public static final String QOP = "q.op";
@@ -136,7 +137,7 @@ public class SolrService {
      * @param debugExplainStructured true if debug information should be structuredinstead of just a string.
      * @return Solr response.
      */
-    public String query(String q, List<String> fq, Integer rows, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
+    public String query(String q, List<String> fq, Integer rows, Integer start, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
         if (q == null) {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
@@ -155,6 +156,9 @@ public class SolrService {
         if (rows != null) {
             builder.queryParam(ROWS, rows);
         }
+        if (start != null ) {
+            builder.queryParam(START, start);            
+        }        
         if (fl != null) {
             builder.queryParam(FL, fl);
         }

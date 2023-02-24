@@ -103,7 +103,16 @@ paths:
           schema:
             type: string
             default: '*:*'
-            example: '*:*'
+          examples:
+            all:
+              value: '*:*'
+              summary: 'All documents in the collection'
+            free:
+              value: 'jens hansen'
+              summary: 'Free text query'
+            qualified:
+              value: 'author:andersen'
+              summary: 'Qualified query'
 
         - name: fq
           in: query
@@ -113,16 +122,11 @@ paths:
             Standard query syntax, but all terms must be qualified. Does not affect scoring.
             If multiple filter queries are provided, the result set is the intersection of the filters.
             
-            The default is `entity_type:the_object` to limit searches to the topmost document in the nested documents
-            structure. This is paired with `*, [child]` for the `fl` (Field List) parameter to retrieve sub-documents
-            for the search result.
           required: false
           schema:
             type: array
             items:
               type: string
-            example: ['entity_type:the_object']
-            default: ['entity_type:the_object']
 
         - name: rows
           in: query
@@ -137,19 +141,35 @@ paths:
             example: 10
             default: 10
 
+        - name: start
+          in: query
+          description: | 
+            For pagination. Only return documents in the resultset from position start and forward. Next page typical start from 20                        
+          required: false
+          schema:
+            type: integer
+            format: int32            
+            default: 0
+          examples:
+            from0:
+              value: 0
+              summary: 'from start. First document is document number 0 so returning documents 0,1,2,..,(rows-parameter)'
+            from20:
+              value: 20
+              summary: 'from document 21 and forwards. So returning document 21,22,.., 21+(rows-parameter)'
+            
         - name: fl
           in: query
           description: | 
-            Solr field list param [fl](https://solr.apache.org/guide/8_10/common-query-parameters.html#fl-field-list-parameter)
-            
+            Solr field list param [fl](https://solr.apache.org/guide/8_10/common-query-parameters.html#fl-field-list-parameter)            
             Solr fields to return in the response. `*` means all available standard fields.
             It is recommended to include the pseudo-field [[child]](https://solr.apache.org/guide/8_0/transforming-result-documents.html#child-childdoctransformerfactory)
             to include nested documents.
           required: false
           schema:
             type: string
-            example: '*, [child]'
-            default: '*, [child]'
+            example: '*'
+            default: '*'
 
         - name: facet
           in: query
