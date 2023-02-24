@@ -153,10 +153,10 @@ paths:
           examples:
             from0:
               value: 0
-              summary: 'from start'
+              summary: 'from start. First document is document number 0 so returning documents 0,1,2,..,(rows-parameter)'
             from20:
               value: 20
-              summary: 'from document 20'
+              summary: 'from document 21 and forwards. So returning document 21,22,.., 21+(rows-parameter)'
             
         - name: fl
           in: query
