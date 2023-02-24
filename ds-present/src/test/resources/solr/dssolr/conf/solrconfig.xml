@@ -768,8 +768,6 @@
        <str name="facet.mincount">1</str>
        <str name="facet.limit">10</str>
        
-
-       <str name="facet.field">categories</str>
        <str name="facet.field">catalog_name</str>
        <str name="facet.field">collection</str>
        <str name="facet.field">type_of_resource</str>
