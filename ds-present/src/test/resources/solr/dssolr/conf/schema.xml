@@ -43,7 +43,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
 
   <field name="area" type="text_general" multiValued="false"/>
-  <field name="subject" type="text_general" multiValued="true"/>
+    
+  <!-- This has been split into several fields such as topic 
+   <field name="subject" type="text_general" multiValued="true"/>
+   -->
 
   <field name="topic" type="text_general" multiValued="true"/>
   <field name="description" type="text_general" multiValued="true"/>
@@ -180,7 +183,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <copyField source="creator_given_name" dest="freetext"/>
     <copyField source="creator_terms_of_address" dest="freetext"/>
     <copyField source="area" dest="freetext"/>
-    <copyField source="subject" dest="freetext"/>
     <copyField source="subject_name" dest="freetext"/>
     <copyField source="subject_full_name" dest="freetext"/>
     <copyField source="subject_family_name" dest="freetext"/>
