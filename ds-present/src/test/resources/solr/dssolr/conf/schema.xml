@@ -81,10 +81,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="image_width" type="pint"/>
   <field name="image_size" type="pfloat"/>
 
-
-  <field name="freetext" type="freetext" multiValued="true" stored="false"/>
-
-
   <!--  Fields related to copyright and access conditions -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -97,6 +93,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- Temporary set by rettighedsudtreakkeren -->
   <field name="imageurl" type="string"/>
 
+
+  <!-- Most fields are copied to this field for matching. -->
+  <field name="freetext" type="freetext" multiValued="true" stored="false"/>
 
   <!-- END FIELDS  -->
   
