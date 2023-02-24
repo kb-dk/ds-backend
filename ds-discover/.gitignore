@@ -13,4 +13,4 @@ conf/ds-discover-environment.yaml
 conf/ds-discover-local.yaml
 setup_project.sh
 /deploy2Devel11.sh
-/.gitignore
+
