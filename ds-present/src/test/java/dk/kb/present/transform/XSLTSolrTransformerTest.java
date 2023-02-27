@@ -41,19 +41,6 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
 
 	@Test
-	void testSolOld() throws IOException {
-		String solrString = TestUtil.getTransformed(MODS2SOLR_OLD,  RECORD_000332);
-		// TODO: Add more detailed test
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);                
-		String prettyJsonString = gson.toJson(je);        
-		System.out.println(prettyJsonString );
-
-	}
-
-
-
-	@Test
 	void testSolrNew() throws Exception {
 
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_000332);
