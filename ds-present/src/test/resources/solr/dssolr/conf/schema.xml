@@ -39,8 +39,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
   <field name="creator_affiliation" type="text_general" multiValued="false"/>
   <field name="creator_description" type="text_general" multiValued="false"/>
-  <field name="creator_date_of_birth" type="text_general" multiValued="false"/>
-  <field name="creator_date_of_death" type="text_general" multiValued="false"/>
+  <field name="creator_date_of_birth" type="text_general" multiValued="true"/>
+  <field name="creator_date_of_death" type="text_general" multiValued="true"/>
 
 
   <field name="area" type="text_general" multiValued="false"/>
