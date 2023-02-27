@@ -153,20 +153,23 @@ public class IIPParamValidation {
         boolean ptlPresent = (ptl != null && !ptl.isEmpty());
         boolean cvtPresent = (cvt != null && !cvt.isEmpty() && !cvt.isBlank());
 
-        if (jtlPresent && ptlPresent && cvtPresent){
-            log.error("The parameters JTL, PTL and CVT are all set. Only one can be set at a time");
-            throw new InvalidArgumentServiceException(cvt + "The parameters JTL, PTL and CVT are all set. Only one can be set at a time");
+        boolean[] valuesPresent = new boolean[]{jtlPresent,ptlPresent,cvtPresent};
+
+        if (areMoreThanOneTrue(valuesPresent)){
+            log.error("More than one of the parameters JTL, PTL and CVT are set. Only one can be set at a time");
+            throw new InvalidArgumentServiceException("More than one of the parameters JTL, PTL and CVT are set. Only one can be set at a time");
         }
-        // CVT gets set anyway.
-        else if (!cvtPresent && jtlPresent && ptlPresent){
-            throw new InvalidArgumentServiceException("The parameters JTL and PTL are set. Only one can be set at a time");
+    }
+
+    public static boolean areMoreThanOneTrue(boolean[] arrayOfBools) {
+        int trueBooleans = 0;
+        for (boolean i : arrayOfBools) {
+            trueBooleans += i ? 1 : 0;
+            if (trueBooleans >= 2) {
+                return true;
+            }
         }
-        else if (!jtlPresent && ptlPresent && cvtPresent){
-            throw new InvalidArgumentServiceException("The parameters PTL and CVT are set. Only one can be set at a time");
-        }
-        else if (!ptlPresent && jtlPresent && cvtPresent){
-            throw new InvalidArgumentServiceException("The parameters JTL and CVT are set. Only one can be set at a time");
-        }
+        return false;
     }
 
     /**

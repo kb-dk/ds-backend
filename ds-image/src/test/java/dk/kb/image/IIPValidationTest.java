@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -294,6 +295,28 @@ public class IIPValidationTest {
         });
 
         String expectedMessage = "Format for Deepzoom tile has to be either 'jpg', 'jpeg' or 'png'";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testOnlyOneOfJtlPtlCvtExists(){
+        List<Integer> ptl = new ArrayList<>();
+        ptl.add(2);
+        ptl.add(24);
+
+        List<Integer> jtl = new ArrayList<>();
+        jtl.add(2);
+        jtl.add(12);
+
+        String cvt = "jpeg";
+
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.validateOneJtlPtlCvtExists(jtl, ptl, cvt);
+        });
+
+        String expectedMessage = "More than one of the parameters JTL, PTL and CVT are set. Only one can be set at a time";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
