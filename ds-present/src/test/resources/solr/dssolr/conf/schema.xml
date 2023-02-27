@@ -20,9 +20,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
   <field name="identifier_local" type="string"/>
   <field name="cataloging_language" type="string"/>
-  <field name="shelf_location" type="text_general"/>
+  <field name="shelf_location" type="string"/>
   <field name="physical_location" type="text_general"/> <!--  May not be in data -->
-  <field name="categories" type="string"/>
+  <field name="categories" type="string" docValues="true"/>
   <field name="collection" type="string" docValues="true"/>
 
   <!-- Fields on title -->
@@ -44,7 +44,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
 
   <field name="area" type="text_general" multiValued="false"/>
-  <field name="subject" type="text_general" multiValued="true"/>
+    
+  <!-- This has been split into several fields such as topic 
+   <field name="subject" type="text_general" multiValued="true"/>
+   -->
 
   <field name="topic" type="text_general" multiValued="true"/>
   <field name="description" type="text_general" multiValued="true"/>
@@ -72,16 +75,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="subject_date_of_birth" type="string" multiValued="true"/>
   <field name="subject_date_of_death" type="string" multiValued="true"/>
   <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
-  <field name="type_of_resource" type="string" multiValued="true"/>
+  <field name="type_of_resource" type="string" multiValued="true"  docValues="true"/>
 
   <field name="file_size" type="pint"/>
   <field name="image_height" type="pint"/>
   <field name="image_width" type="pint"/>
   <field name="image_size" type="pfloat"/>
-
-
-  <field name="freetext" type="freetext" multiValued="true" stored="false"/>
-
 
   <!--  Fields related to copyright and access conditions -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -95,6 +94,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- Temporary set by rettighedsudtreakkeren -->
   <field name="imageurl" type="string"/>
 
+
+  <!-- Most fields are copied to this field for matching. -->
+  <field name="freetext" type="freetext" multiValued="true" stored="false"/>
 
   <!-- END FIELDS  -->
   
@@ -118,7 +120,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
       <filter class="solr.StopFilterFactory"  format="snowball" ignoreCase="true" words="lang/stopwords_da.txt"/>      
       <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>     
     </analyzer>
-  </fieldType>
+  </fieldType>    <copyField source="creator_name" dest="freetext"/>
   
   
 
@@ -170,21 +172,30 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
  
  
  
-  <!-- START COPYFIELD  -->
+    <!-- START COPYFIELD  -->
    
-   <copyField source="creator_full_name" dest="creator_full_name_strict"/> 
-    <copyField source="creator_name" dest="freetext"/>
+    <!-- Exact  spelling of author gives high ranking  -->
+    <copyField source="creator_full_name" dest="creator_full_name_strict"/> 
+    
+   
     <copyField source="creator_name" dest="freetext"/> 
     <copyField source="creator_full_name" dest="freetext"/>   
     <copyField source="creator_given_name" dest="freetext"/>
     <copyField source="creator_terms_of_address" dest="freetext"/>
     <copyField source="area" dest="freetext"/>
-    <copyField source="subject" dest="freetext"/>
     <copyField source="subject_name" dest="freetext"/>
     <copyField source="subject_full_name" dest="freetext"/>
     <copyField source="subject_family_name" dest="freetext"/>
     <copyField source="subject_given_name" dest="freetext"/>
-    
+    <copyField source="categories" dest="freetext"/>
+    <copyField source="catalog_name" dest="freetext"/>
+    <copyField source="collection" dest="freetext"/>
+    <copyField source="type_of_resource" dest="freetext"/>
+    <copyField source="content" dest="freetext"/>
+    <copyField source="shelf_location" dest="freetext"/>
+    <copyField source="title" dest="freetext"/>
+    <copyField source="subtitle" dest="freetext"/>
+    <copyField source="alternative_title" dest="freetext"/>
         
     
   <!-- END COPYFIELD  -->    
