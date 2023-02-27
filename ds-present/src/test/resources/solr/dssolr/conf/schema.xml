@@ -26,9 +26,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="collection" type="string" docValues="true" stored="true"/>
 
   <!-- Fields on title -->
-  <field name="title" type="text_general"/>
-  <field name="subtitle" type="text_general"/>
-  <field name="alternative_title" type="text_general"/>
+  <field name="title" type="text_general"/> <!-- Currently only present in maps collection-->
+  <field name="subtitle" type="text_general"/> <!--  May not be in data -->
+  <field name="alternative_title" type="text_general"/> <!--  May not be in data -->
 
   <!-- Fields on creator -->
   <field name="creator_name" type="text_strict" multiValued="true"/>
@@ -39,7 +39,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
   <field name="creator_affiliation" type="text_general" multiValued="false"/>
   <field name="creator_description" type="text_general" multiValued="false"/>
-
+  <field name="creator_date_of_birth" type="text_general" multiValued="true"/>
+  <field name="creator_date_of_death" type="text_general" multiValued="true"/>
 
 
   <field name="area" type="text_general" multiValued="false"/>
