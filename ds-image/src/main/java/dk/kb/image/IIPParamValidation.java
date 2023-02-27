@@ -105,7 +105,7 @@ public class IIPParamValidation {
      */
     public static void cvtValidation(String cvt){
         if (cvt != null) {
-            if (!(cvt.equals("jpeg") | cvt.equals("png"))) {
+            if (!(cvt.equals("jpeg") || cvt.equals("png"))) {
                 // Maybe add a fallback to either one of them here?
                 throw new InvalidArgumentServiceException(
                         "The parameter CVT must be defined and must be either 'jpeg' or 'png'. It was '" + cvt + "'");
@@ -119,9 +119,9 @@ public class IIPParamValidation {
      * For example: 5,800
      */
     public static void jtlValidation(List<Integer> jtl){
-        if (jtl.size() != 0 & jtl != null & !jtl.isEmpty()) {
+        if (jtl != null && !jtl.isEmpty()) {
             if (jtl.size() != 2){
-                throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r");
+                throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r. Input was: '" + jtl + "'");
             }
             // TODO: If JTL (or PTL below) is defined as three or more the program throws a "Class java.lang.Integer can not be instantiated using a constructor with a single String argument"
             // I am not sure if this is due to the max size of the list as defined in our openAPI YAML
@@ -136,11 +136,11 @@ public class IIPParamValidation {
     public static void ptlValidation(List<Integer> ptl) {
         if (ptl != null && !ptl.isEmpty()) {
             if (ptl.size() < 2) {
-                throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
+                throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r. Input was: '" + ptl + "'");
             }
             else if (ptl.size() > 2) {
-                log.warn("PTL contains more than 2 values. PTL can only contain two values: index x and resolution level r");
-                throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r");
+                log.warn("PTL contains more than 2 values. PTL can only contain two values: index x and resolution level r. Input was: '" + ptl + "'");
+                throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r. Input was: '" + ptl + "'");
             }
         }
     }
@@ -201,7 +201,7 @@ public class IIPParamValidation {
             throw new InvalidArgumentServiceException("The parameter RGN can only be used when the parameter CVT is in use");
         }
         else if (!rgn.isEmpty() && rgn.size() != 4){
-            throw new InvalidArgumentServiceException("CVT=" + cvt + "...."+ "The parameter RGN has to contain four numbers. " +
+            throw new InvalidArgumentServiceException("The parameter RGN has to contain four numbers. " +
                     "The first number representing X. The second number representing Y. The third number representing W " +
                     "The fourth number representing H between 0.0 and 1.0. All numbers should be between 0.0 and 1.0");
         }
@@ -248,12 +248,12 @@ public class IIPParamValidation {
      * Allowed values are: 0, 90, 180, 270, !90, !180, !270.
      */
     public static void rotValidation(String rot){
-        if (rot != null || !rot.isEmpty()) {
+        if (rot != null && !rot.isEmpty()) {
             // Only 90, 180 and 270 supported. ! can be used to flip horizontally.
             String[] values = {"0", "90", "180", "270", "!90", "!180", "!270"};
             boolean b = Arrays.asList(values).contains(rot);
             if (!b) {
-                throw new InvalidArgumentServiceException("ROT has to be specified as one of the following values when set: 90, 180, 270, !90, !180, !270");
+                throw new InvalidArgumentServiceException("ROT has to be specified as one of the following values when set: 90, 180, 270, !90, !180, !270. The provided ROT was: '" + rot + "'");
             }
         }
     }
@@ -267,7 +267,7 @@ public class IIPParamValidation {
             String[] values = {"GREY", "JET", "COLD", "HOT", "RED", "GREEN", "BLUE"};
             boolean b = Arrays.asList(values).contains(cmp);
             if (!b) {
-                throw new InvalidArgumentServiceException(" CMP has to be specified as one of the following values when set: GREY, JET, COLD, HOT, RED, GREEN or BLUE");
+                throw new InvalidArgumentServiceException("CMP has to be specified as one of the following values when set: GREY, JET, COLD, HOT, RED, GREEN or BLUE. The provided CMP was: '" + cmp + "'");
             }
         }
     }
@@ -279,29 +279,21 @@ public class IIPParamValidation {
      */
     public static void pflValidation(String pfl){
         if (pfl != null) {
-            Pattern correctPattern = Pattern.compile("\\d+:\\d+,\\d+-\\d+,\\d+", Pattern.CASE_INSENSITIVE);
+            // Each group in the pattern represents a part of r:x1,y1-x2,y2
+            Pattern correctPattern = Pattern.compile("(\\d+):(\\d+),(\\d+)-(\\d+),(\\d+)", Pattern.CASE_INSENSITIVE);
             Matcher matcher = correctPattern.matcher(pfl);
             boolean matchFound = matcher.find();
             if(!matchFound) {
                 throw new InvalidArgumentServiceException("The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 by was: '" + pfl + "'");
             }
 
-
-            // Slice input string and get indexes of delimiters
-            int endOfR = pfl.indexOf(":");
-            int endOfPairOne = pfl.indexOf("-");
-            String pairOne = pfl.substring(endOfR + 1, endOfPairOne);
-            String pairTwo = pfl.substring(endOfPairOne + 1);
-            int pairOneComma = pairOne.indexOf(",");
-            int pairTwoComma = pairTwo.indexOf(",");
-
             // Create map with values as string
             Map<String, String> values = new HashMap<>();
-            values.put("r", pfl.substring(0, endOfR));
-            values.put("x1", pairOne.substring(0, pairOneComma));
-            values.put("y1", pairOne.substring(pairOneComma + 1));
-            values.put("x2", pairTwo.substring(0, pairTwoComma));
-            values.put("y2", pairTwo.substring(pairTwoComma + 1));
+            values.put("r", matcher.group(0));
+            values.put("x1", matcher.group(1));
+            values.put("y1", matcher.group(2));
+            values.put("x2", matcher.group(3));
+            values.put("y2", matcher.group(4));
 
             // Convert string values to integers, throws exception when fails
             for (Map.Entry<String, String> entry : values.entrySet()) {
@@ -327,21 +319,13 @@ public class IIPParamValidation {
      */
     public static void ctwValidation(String ctw){
         if (ctw != null){
-        // Strip string for brackets
-        ctw = ctw.replace("[","");
-        ctw = ctw.replace("]","");
-
-        // Split CWT string into 3 strings, each containing an array
-        int endOfFirstArray = ctw.indexOf(";");
-        int endOfSecondArray = ctw.lastIndexOf(";");
-
-        String stringArray1 = ctw.substring(0,endOfFirstArray);
-        String stringArray2 = ctw.substring(endOfFirstArray + 1, endOfSecondArray);
-        String stringArray3 = ctw.substring(endOfSecondArray + 1);
-
-        String[] stringArrays = new String[]{stringArray1, stringArray2, stringArray3};
-        // Splits each array formatted as a comma separated string into a map containing r,g,b keys and values as string
-        splitCommaSeparatedStringToMap(stringArrays);
+            // Strip string for brackets
+            ctw = ctw.replace("[","");
+            ctw = ctw.replace("]","");
+            // Split string into arrays
+            String[] stringArrays = ctw.split(";");
+            // Splits each array formatted as a comma separated string into a map containing r,g,b keys and values as string
+            splitCommaSeparatedStringToMap(stringArrays);
         }
     }
 
@@ -351,17 +335,16 @@ public class IIPParamValidation {
     private static void splitCommaSeparatedStringToMap(String[] stringArrays) {
         for (int i = 0; i < stringArrays.length; i++) {
             int count = i+1;
-            int endOfR = stringArrays[i].indexOf(",");
-            int endOfG = stringArrays[i].lastIndexOf(",");
 
+            String[] rgbArray = stringArrays[i].split(",");
             // Defined as map, so that exception makes sense
-            Map<String, String> array = new HashMap<>();
-            array.put("r", stringArrays[i].substring(0, endOfR));
-            array.put("g", stringArrays[i].substring(endOfR + 1, endOfG));
-            array.put("b", stringArrays[i].substring(endOfG + 1));
+            Map<String, String> rgbMap = new HashMap<>();
+            rgbMap.put("r", rgbArray[0]);
+            rgbMap.put("g", rgbArray[1]);
+            rgbMap.put("b", rgbArray[2]);
 
-            // Validates that r, g and b can be converted to floats in each map of arrays
-            ValidateStringToFloatConversion(count, array);
+            // Validates that r, g and b can be converted to floats in each map
+            ValidateStringToFloatConversion(count, rgbMap);
         }
     }
 
