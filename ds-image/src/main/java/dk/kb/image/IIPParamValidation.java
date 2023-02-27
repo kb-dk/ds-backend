@@ -161,7 +161,7 @@ public class IIPParamValidation {
         }
     }
 
-    public static boolean areMoreThanOneTrue(boolean[] arrayOfBools) {
+    private static boolean areMoreThanOneTrue(boolean[] arrayOfBools) {
         int trueBooleans = 0;
         for (boolean i : arrayOfBools) {
             trueBooleans += i ? 1 : 0;
