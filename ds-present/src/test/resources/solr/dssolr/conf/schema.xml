@@ -18,12 +18,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="_version_" type="plong" indexed="false" stored="false"/> 
   
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
-  <field name="identifier_local" type="string"/>
-  <field name="cataloging_language" type="string"/>
-  <field name="shelf_location" type="string"/>
+  <field name="identifier_local" type="string"  stored="true"/>
+  <field name="cataloging_language" type="string"  stored="true"/>
+  <field name="shelf_location" type="string"  stored="true"/>
   <field name="physical_location" type="text_general"/> <!--  May not be in data -->
-  <field name="categories" type="string" docValues="true"/>
-  <field name="collection" type="string" docValues="true"/>
+  <field name="categories" type="string" docValues="true" stored="true"/>
+  <field name="collection" type="string" docValues="true" stored="true"/>
 
   <!-- Fields on title -->
   <field name="title" type="text_general"/>
