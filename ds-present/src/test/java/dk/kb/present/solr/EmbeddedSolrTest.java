@@ -55,6 +55,7 @@ public class EmbeddedSolrTest {
 	public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
 	public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
 	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
+	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
 
 
 
@@ -400,6 +401,40 @@ public class EmbeddedSolrTest {
 		assertEquals(2,typeResources.size());
 		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
 		assertTrue(typeResources.contains("Dia"));
+		//TODO more fields
+	}
+
+	@Test
+	void testRecordUldallForTitle() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ULDALL);
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		//System.out.println(prettyJsonString);
+
+		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+		embeddedServer.add(document);
+		embeddedServer.commit();
+		assertEquals(1, getNumberOfTotalDocuments());
+
+		//Full life cycle test
+		SolrDocument record = getRecordById("e2519ce0-9fb0-11e8-8891-00505688346e");
+
+		//Single value field
+		assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("identifier_local"));
+
+		// Title field
+		assertEquals("Foborg, Foburgum", record.getFieldValue("title"));
+
+		/*
+		//multivalue field
+		Collection<Object> typeResources = record.getFieldValues("type_of_resource");
+		assertEquals(2,typeResources.size());
+		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
+		assertTrue(typeResources.contains("Dia"));
+
+		 */
 		//TODO more fields
 	}
 
