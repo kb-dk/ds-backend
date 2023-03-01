@@ -138,29 +138,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     
     }
 
-    /**
-     * Ping the server to check if the server is reachable.
-     * 
-     * @return <ul>
-      *   <li>code = 200, message = "OK", response = String.class</li>
-      *   <li>code = 406, message = "Not Acceptable", response = ErrorDto.class</li>
-      *   <li>code = 500, message = "Internal Error", response = String.class</li>
-      *   </ul>
-      * @throws ServiceException when other http codes should be returned
-      *
-      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public String ping() throws ServiceException {
-        try {
-            log.debug("ping() called with call details: {}", getCallDetails());
-            return "pong";
-        } catch (Exception e){
-            throw handleException(e);
-        }
-    
-    }
-
 
     /**
      * Perform a Solr-compatible search in the stated collection
@@ -212,40 +189,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
                 .map(Parameter::getName)
                 .forEach(extras::remove);
         return extras;
-    }
-
-    /**
-     * Detailed status / health check for the service
-     * 
-     * @return <ul>
-      *   <li>code = 200, message = "OK", response = StatusDto.class</li>
-      *   <li>code = 500, message = "Internal Error", response = String.class</li>
-      *   </ul>
-      * @throws ServiceException when other http codes should be returned
-      *
-      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public StatusDto status() throws ServiceException {
-        try {
-            log.debug("status() called with call details: {}", getCallDetails());
-            String host = "N/A";
-            try {
-                host = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException e) {
-                log.warn("Exception resolving hostname", e);
-            }
-            return new StatusDto()
-                    .application(BuildInfoManager.getName())
-                    .version(BuildInfoManager.getVersion())
-                    .build(BuildInfoManager.getBuildTime())
-                    .java(System.getProperty("java.version"))
-                    .heap(Runtime.getRuntime().maxMemory()/1000000L)
-                    .server(host)
-                    .health("ok");
-        } catch (Exception e){
-            throw handleException(e);
-        }
     }
 
 }

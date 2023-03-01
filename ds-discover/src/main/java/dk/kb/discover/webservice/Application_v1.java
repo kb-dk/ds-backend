@@ -7,6 +7,7 @@ import java.util.Set;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.fasterxml.jackson.jaxrs.xml.JacksonXMLProvider;
 import dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl;
+import dk.kb.discover.api.v1.impl.ServiceApiServiceImpl;
 import dk.kb.util.webservice.exception.ServiceExceptionMapper;
 
 
@@ -18,6 +19,7 @@ public class Application_v1 extends javax.ws.rs.core.Application {
                 JacksonJsonProvider.class,
                 JacksonXMLProvider.class,
                 DsDiscoverApiServiceImpl.class,
+                ServiceApiServiceImpl.class,
                 ServiceExceptionMapper.class
         ));
     }
