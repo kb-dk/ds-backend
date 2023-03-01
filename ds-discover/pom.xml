@@ -420,7 +420,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.build.outputDirectory}/openapi_v1.yaml</inputSpec>
+                            <inputSpec>${project.build.outputDirectory}/ds-discover-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>
                                 ${project.basedir}/.openapi-codegen-ignore-api
                             </ignoreFileOverride>
@@ -444,7 +444,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.build.outputDirectory}/openapi_v1.yaml</inputSpec>
+                            <inputSpec>${project.build.outputDirectory}/ds-discover-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-impl</ignoreFileOverride>
 
                             <configOptions>
@@ -485,8 +485,8 @@
                             <directory>${project.build.outputDirectory}</directory>
                             <targetPath>.</targetPath>
                             <includes>
-                                <include>openapi_v1.json</include>
-                                <include>openapi_v1.yaml</include>
+                                <include>ds-discover-openapi_v1.json</include>
+                                <include>ds-discover-openapi_v1.yaml</include>
                             </includes>
                         </resource>
                     </webResources>

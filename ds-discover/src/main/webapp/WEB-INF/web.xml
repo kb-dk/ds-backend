@@ -29,13 +29,13 @@
             <!--THIS IS A HACK. But it seems like the simplest way to recover the original specs-->
             <param-name>static-resources-list</param-name>
             <param-value>
-                /openapi_.*\..+
+                /ds-discover-openapi_.*\..+
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <!--/v1 matches the server url in src/main/openapi/openapi_v1.yaml-->
+        <!--/v1 matches the server url in src/main/openapi/ds-discover-openapi_v1.yaml-->
         <servlet-name>RestServlet_v1</servlet-name>
         <url-pattern>/v1/*</url-pattern>
     </servlet-mapping>

@@ -9,7 +9,7 @@ Tomcat deployment or OpenAPI.
 
 ## Initial use
 
-After a fresh checkout or after the `openapi_v1.yaml` specification has changed, the `api` and the `model` files 
+After a fresh checkout or after the `ds-discover-openapi_v1.yaml` specification has changed, the `api` and the `model` files 
 must be (re)generated. This is done by calling 
 ```
 mvn package
@@ -93,9 +93,9 @@ will typically be static files and JavaScript.
 [OpenAPI 1.3](https://swagger.io/specification/) generates interfaces and skeleton code for webservices.
 It also generates online documentation, which includes sample calls and easy testing of the endpoints.
 
-Everything is defined centrally in the file [src/main/openapi/openapi_v1.yaml](src/main/openapi/openapi_v1.yaml).
+Everything is defined centrally in the file [src/main/openapi/ds-discover-openapi_v1.yaml](src/main/openapi/ds-discover-ds-discover-openapi_v1.yaml).
 IntelliJ IDEA has a plugin for editing OpenAPI files that provides a semi-live preview of the generated GUI and
-the online [Swagger Editor](https://editor.swagger.io/) can be used by copy-pasting the content of `openapi_v1.yaml`.
+the online [Swagger Editor](https://editor.swagger.io/) can be used by copy-pasting the content of `ds-discover-openapi_v1.yaml`.
 
 
 The interfaces and models generated from the OpenAPI definition are stored in `target/generated-sources/`.
@@ -104,13 +104,13 @@ They are recreated on each `mvn package`.
 Skeleton classes are added to `/src/main/java/${project.package}/api/v1/impl/` but only if they are not already present. 
 A reference to the classes must be present in `/src/main/java/${project.package}/webservice/Application` or its equivalent.
 
-A common pattern during initial definition of the `openapi_v1.yaml` is to delay the implementation phase and recreate 
+A common pattern during initial definition of the `ds-discover-openapi_v1.yaml` is to delay the implementation phase and recreate 
 the skeleton implementation files on each build. This can be done by setting `generateOperationBody` in the `pom.xml` 
 to `true`.
 
-**Tip:** If the `openapi_v1.yaml` is changed a lot during later development of the application, it might be better to have 
+**Tip:** If the `ds-discover-openapi_v1.yaml` is changed a lot during later development of the application, it might be better to have 
 `<generateOperationBody>true</generateOperationBody>` in `pom.xml` and add the implementation code to manually created
-classed (initially copied from the OpenAPI-generated skeleton impl classes). When changes to `openapi_v1.yaml` results in
+classed (initially copied from the OpenAPI-generated skeleton impl classes). When changes to `ds-discover-openapi_v1.yaml` results in
 changed skeleton implementation classes, the changes can be manually ported to the real implementation classes.
 
 **Note:** The classes in `/src/main/java/${project.package}api/impl/` will be instantiated for each REST-call.
@@ -141,9 +141,9 @@ _additions_ to APIs in production (both new methods and in responses) should gen
 When a project hase been deployed in production and new functionality requires breaking the API contract, developers
 should
 
-  * Create a new OpenAPI YAML, e.g. `openapi_v2.yaml` (preferably by copying `openapi_v1.yaml` and adjusting) and place
-    it alongside `openapi_v1.yaml`
-    * Edit the old `openapi_v1.yaml` and add a note that a new version is available
+  * Create a new OpenAPI YAML, e.g. `openapi_v2.yaml` (preferably by copying `ds-discover-openapi_v1.yaml` and adjusting) and place
+    it alongside `ds-discover-openapi_v1.yaml`
+    * Edit the old `ds-discover-openapi_v1.yaml` and add a note that a new version is available
   * Locate the `openapi-generator-maven-plugin` section in `pom.xml` and add setup for the new version (copy-paste 
     the two `execution` blocks for Version 1 and adjust accordingly)
   * Create a new `Application` version alongside `webservice/Application_v1.java` (copy the old one and adjust the

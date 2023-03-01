@@ -90,7 +90,7 @@ public interface {{classname}}  {
             path = path + "/";
         }
         String version = java.util.regex.Pattern.compile(".*/([^/]+)/$").matcher(path).replaceAll("$1");
-        return Response.temporaryRedirect(URI.create("api-docs?url=" + path + "openapi" + "_" + version + ".yaml")).build();
+        return Response.temporaryRedirect(URI.create("api-docs?url=" + path + "ds-discover-openapi" + "_" + version + ".yaml")).build();
     }
 }
 {{/operations}}
