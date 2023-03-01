@@ -108,24 +108,4 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
         }
     }
 
-    /**
-     * Ping the server to check if the server is reachable.
-     * 
-     * @return <ul>
-      *   <li>code = 200, message = "OK", response = String.class</li>
-      *   </ul>
-      * @throws ServiceException when other http codes should be returned
-      *
-      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public String ping() throws ServiceException {
-        try {
-            log.debug("ping() called with call details: {}", getCallDetails());
-            return "pong";
-        } catch (Exception e){
-            throw handleException(e);
-        }
-    }
-
 }
