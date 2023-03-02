@@ -262,75 +262,60 @@
               </xsl:if>
             </xsl:if>
             <!-- Extract creator date of birth and death if present.
-            Currently, this extraction also creates an empty field if one of them are not present. This happens because they are extracted from the same field.
-            One solution would be to define them as one field named creator_alive or something like that. But thats NOT IDEAL-->
+                 Complex extraction that saves the first value for a creator and then matches this date
+                 up against three different patterns to determine which dates are present.
+                 This works, but might not return all death dates if the first result doesn't have a death date -->
             <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'art' or 'aut'">
               <xsl:if test="m:name/m:namePart[@type='date']">
-                <!--
-                <xsl:for-each-group select="cities/city" group-by="@country">
-                  <tr>
-                    <td><xsl:value-of select="position()"/></td>
-                    <td><xsl:value-of select="@country"/></td>
-                    <td>
-                      <xsl:value-of select="current-group()/@name" separator=", "/>
-                    </td>
-                    <td><xsl:value-of select="sum(current-group()/@pop)"/></td>
-                  </tr>
-                </xsl:for-each-group>
-                -->
-                  <f:array key="creator_date_of_birth">
-                    <xsl:for-each select="m:name">
-                      <xsl:if test="m:namePart[@type='date'] and substring-before(m:namePart[@type='date'], '/') != ''">
-                      <f:string>
+                <!-- Select single testDate -->
+                <xsl:variable name="testDate" select="m:name[1]"/>
+                <!-- Scenario 1 -->
+                <xsl:choose>
+                  <xsl:when test="matches($testDate, '\d+-\d+-\d+/\d+-\d+-\d+')">
+                    <f:array key="creator_date_of_birth">
+                      <xsl:for-each select="m:name">
+                        <xsl:if test="substring-before(m:namePart[@type='date'], '/') != ''">
+                        <f:string>
                           <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
                         </f:string>
-                      </xsl:if>
-                    </xsl:for-each>
-                  </f:array>
-                  <f:array key="creator_date_of_death">
-                    <xsl:for-each select="m:name">
-                      <xsl:if test="m:namePart[@type='date'] and substring-after(m:namePart[@type='date'], '/') != ''">
-                        <f:string>
-                          <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
-                        </f:string>
-                      </xsl:if>
-                    </xsl:for-each>
-                  </f:array>
-
-
-                  <xsl:variable name="testDate">1893-0-0/</xsl:variable>
-                  <xsl:if test="substring-after($testDate, '/') != substring-after(m:name/m:namePart[@type='date'], '/')">
-
-                    <f:string key="deathtest">
-                      <xsl:value-of select="substring-after(m:name/m:namePart[@type='date'], '/')"/>
-                    </f:string>
-                  </xsl:if>
-
-
-                  <xsl:variable name="deathtest" select="m:name/m:namePart[@type='date'] and substring-after(m:name/m:namePart[@type='date'], '/') != ''"/>
-                  <f:string key="deathtest">
-                    <xsl:value-of select="$deathtest"/>
-                  </f:string>
-
-                <!--
-                  <xsl:if test="$deathtest">
-                  <f:array key="creator_date_of_death_realstuff">
-                    <xsl:for-each select="m:name">
-                      <xsl:if test="m:namePart[@type='date'] and substring-after(m:namePart[@type='date'], '/') != ''">
-                        <f:string>
-                          <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
-                        </f:string>
-                      </xsl:if>
-                    </xsl:for-each>
-                  </f:array>
-                  </xsl:if>
-                -->
-
-
-
-
-
-
+                        </xsl:if>
+                      </xsl:for-each>
+                    </f:array>
+                    <f:array key="creator_date_of_death">
+                      <xsl:for-each select="m:name">
+                        <xsl:if test="substring-after(m:namePart[@type='date'], '/') != ''">
+                          <f:string>
+                            <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
+                          </f:string>
+                        </xsl:if>
+                      </xsl:for-each>
+                    </f:array>
+                  </xsl:when>
+                  <!-- Scenario 2 -->
+                  <xsl:when test="matches($testDate, '\d+-\d+-\d+/')">
+                    <f:array key="creator_date_of_birth">
+                      <xsl:for-each select="m:name">
+                        <xsl:if test="substring-before(m:namePart[@type='date'], '/') != ''">
+                          <f:string>
+                            <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
+                          </f:string>
+                        </xsl:if>
+                      </xsl:for-each>
+                    </f:array>
+                  </xsl:when>
+                  <!-- Scenario 3 -->
+                  <xsl:when test="matches($testDate, '/\d+-\d+-\d+')">
+                    <f:array key="creator_date_of_death">
+                      <xsl:for-each select="m:name">
+                        <xsl:if test="substring-after(m:namePart[@type='date'], '/') != ''">
+                          <f:string>
+                            <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
+                          </f:string>
+                        </xsl:if>
+                      </xsl:for-each>
+                    </f:array>
+                  </xsl:when>
+                </xsl:choose>
               </xsl:if>
               <!-- If there is an affiliation for the creator it gets extracted here-->
               <xsl:if test="m:name/m:affiliation">
