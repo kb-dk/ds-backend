@@ -214,18 +214,20 @@ public class IIPParamValidation {
      * An example could be 0.2,0.0,0.5,0.5
      */
     public static void rgnValidation(List<Float> rgn, String cvt){
-        if ((cvt == null || cvt.isEmpty()) && (!rgn.isEmpty() || rgn != null)) {
-            throw new InvalidArgumentServiceException("The parameter RGN can only be used when the parameter CVT is in use");
-        }
-        else if (!rgn.isEmpty() && rgn.size() != 4){
-            throw new InvalidArgumentServiceException("The parameter RGN has to contain four numbers. " +
-                    "The first number representing X. The second number representing Y. The third number representing W " +
-                    "The fourth number representing H between 0.0 and 1.0. All numbers should be between 0.0 and 1.0");
-        }
-        String[] regionValueNames = new String[]{"x", "y", "w", "h"};
-        for (int i = 0; i < rgn.size(); i++) {
-            if (!(rgn.get(i) >= 0.0F && rgn.get(i) <= 1.0)){
-                throw new InvalidArgumentServiceException("The value of " + regionValueNames[i] + " in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
+        if (rgn != null){
+            if ((cvt == null || cvt.isEmpty()) && !rgn.isEmpty()) {
+                throw new InvalidArgumentServiceException("The parameter RGN can only be used when the parameter CVT is in use");
+            }
+            else if (!rgn.isEmpty() && rgn.size() != 4){
+                throw new InvalidArgumentServiceException("The parameter RGN has to contain four numbers. " +
+                        "The first number representing X. The second number representing Y. The third number representing W " +
+                        "The fourth number representing H between 0.0 and 1.0. All numbers should be between 0.0 and 1.0");
+            }
+            String[] regionValueNames = new String[]{"x", "y", "w", "h"};
+            for (int i = 0; i < rgn.size(); i++) {
+                if (!(rgn.get(i) >= 0.0F && rgn.get(i) <= 1.0)){
+                    throw new InvalidArgumentServiceException("The value of " + regionValueNames[i] + " in parameter RGN is out of bounds. It has to be between 0.0 and 1.0");
+                }
             }
         }
     }
