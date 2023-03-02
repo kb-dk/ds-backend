@@ -97,8 +97,6 @@ public class IIPParamValidation {
     public static void fifValidation(String fif){
         if (fif == null || fif.isEmpty()) {
             throw new InvalidArgumentServiceException("The parameter FIF must be defined");
-        } else {
-            log.info("FIF is defined as: '" + fif +"'");
         }
     }
 
@@ -111,8 +109,6 @@ public class IIPParamValidation {
                 // Maybe add a fallback to either one of them here?
                 throw new InvalidArgumentServiceException(
                         "The parameter CVT must be defined and must be either 'jpeg' or 'png'. It was '" + cvt + "'");
-            } else {
-                log.info("CVT was set to: '" + cvt + "'");
             }
         }
     }
@@ -126,8 +122,6 @@ public class IIPParamValidation {
         if (jtl != null && !jtl.isEmpty()) {
             if (jtl.size() != 2){
                 throw new InvalidArgumentServiceException("The parameter JTL has to contain two values index x and resolution level r. Input was: '" + jtl + "'");
-            } else {
-                log.info("JTL contains the following two values: '" + jtl + "'");
             }
             // TODO: If JTL (or PTL below) is defined as three or more the program throws a "Class java.lang.Integer can not be instantiated using a constructor with a single String argument"
             // I am not sure if this is due to the max size of the list as defined in our openAPI YAML
@@ -147,8 +141,6 @@ public class IIPParamValidation {
             else if (ptl.size() > 2) {
                 log.warn("PTL contains more than 2 values. PTL can only contain two values: index x and resolution level r. Input was: '" + ptl + "'");
                 throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r. Input was: '" + ptl + "'");
-            } else {
-                log.info("PTL contains the following two values: '" + ptl + "'");
             }
         }
     }
@@ -166,8 +158,6 @@ public class IIPParamValidation {
         if (areMoreThanOneTrue(valuesPresent)){
             log.error("More than one of the parameters JTL, PTL and CVT are set. Only one can be set at a time");
             throw new InvalidArgumentServiceException("More than one of the parameters JTL, PTL and CVT are set. Only one can be set at a time");
-        } else {
-            log.info("One of the parameters JTL, PTL and CVT has been set, which is correct");
         }
     }
 
@@ -190,8 +180,6 @@ public class IIPParamValidation {
     public static void widValidation(Long wid, String cvt) {
         if (cvt == null || cvt.isEmpty() && wid != null) {
             throw new InvalidArgumentServiceException("The parameter WID is only to be set, when the parameter CVT is in use");
-        } else {
-            log.info("WID is set together with CVT. WID is set to: '" + wid + "'");
         }
     }
 
@@ -203,8 +191,6 @@ public class IIPParamValidation {
     public static void heiValidation(Long hei, String cvt) {
         if (cvt == null || cvt.isEmpty() && hei != null) {
             throw new InvalidArgumentServiceException("The parameter HEI is only to be set, when the parameter CVT is in use");
-        } else {
-            log.info("HEI is set together with CVT. WID is set to: '" + hei + "'");
         }
     }
 
@@ -245,8 +231,6 @@ public class IIPParamValidation {
                 throw new InvalidArgumentServiceException("QLT has to be less than or equal to 100, when CVT is set to JPEG");
             } else if (cvt.equals("png") && qlt > 9) {
                 throw new InvalidArgumentServiceException("QLT has to be less than or equal to 9, when CVT is set to PNG");
-            } else {
-                log.info("QLT has been set correctly according to specified CVT");
             }
         }
     }
@@ -260,8 +244,6 @@ public class IIPParamValidation {
         if (cnt != null){
             if (cnt < 0.0){
                 throw new InvalidArgumentServiceException("CNT has to be equal to or greater than 0");
-            } else if ( cnt >= 0.0) {
-                log.info("CNT has been set correctly");
             }
         }
     }
@@ -277,8 +259,6 @@ public class IIPParamValidation {
             boolean b = Arrays.asList(values).contains(rot);
             if (!b) {
                 throw new InvalidArgumentServiceException("ROT has to be specified as one of the following values when set: 90, 180, 270, !90, !180, !270. The provided ROT was: '" + rot + "'");
-            } else {
-                log.info("ROT has been set correctly");
             }
         }
     }
@@ -293,8 +273,6 @@ public class IIPParamValidation {
             boolean b = Arrays.asList(values).contains(cmp);
             if (!b) {
                 throw new InvalidArgumentServiceException("CMP has to be specified as one of the following values when set: GREY, JET, COLD, HOT, RED, GREEN or BLUE. The provided CMP was: '" + cmp + "'");
-            } else {
-                log.info("CMP has been set correctly");
             }
         }
     }
@@ -312,8 +290,6 @@ public class IIPParamValidation {
             boolean matchFound = matcher.find();
             if(!matchFound) {
                 throw new InvalidArgumentServiceException("The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 by was: '" + pfl + "'");
-            } else {
-                log.info("PFL has been defined correctly");
             }
 
             // Create map with values as string
@@ -330,8 +306,6 @@ public class IIPParamValidation {
                     int realValue = Integer.parseInt(entry.getValue());
                     if (realValue < 0) {
                         throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a positive number, but was: '" + entry.getValue() + "'");
-                    } else {
-                        log.info("The value of " + entry.getKey() + " is valid as it has been set to: '" + entry.getValue() + "'");
                     }
                 } catch (NumberFormatException e) {
                     throw new InvalidArgumentServiceException("The value of " + entry.getKey() + " needs to be a positive number, but was: '" + entry.getValue() + "'");
@@ -404,8 +378,6 @@ public class IIPParamValidation {
             boolean b = Arrays.asList(values).contains(col);
             if (!b) {
                 throw new InvalidArgumentServiceException("COL has to be specified as one of the following values when set: grey, gray or binary");
-            } else {
-                log.info("COL has benn set correctly");
             }
         }
     }
@@ -420,8 +392,6 @@ public class IIPParamValidation {
         boolean matchFound = matcher.find();
         if(!matchFound) {
             throw new InvalidArgumentServiceException("Deepzoom parameter 'tiles' is specified incorrectly. it has to be defined as x_y");
-        } else {
-            log.info("Deepzoom parameter 'tiles' is specified correctly as: '" + tiles + "'");
         }
     }
 
@@ -430,9 +400,6 @@ public class IIPParamValidation {
         boolean b = Arrays.asList(values).contains(format);
         if (!b) {
             throw new InvalidArgumentServiceException("Format for Deepzoom tile has to be either 'jpg', 'jpeg' or 'png'");
-        } else {
-            log.info("Deepzoom tile format is set correctly");
         }
-
     }
 }
