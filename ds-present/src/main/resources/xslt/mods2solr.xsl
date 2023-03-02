@@ -298,7 +298,13 @@
                   </f:array>
 
 
+                  <xsl:variable name="testDate">1893-0-0/</xsl:variable>
+                  <xsl:if test="substring-after($testDate, '/') != substring-after(m:name/m:namePart[@type='date'], '/')">
 
+                    <f:string key="deathtest">
+                      <xsl:value-of select="substring-after(m:name/m:namePart[@type='date'], '/')"/>
+                    </f:string>
+                  </xsl:if>
 
 
                   <xsl:variable name="deathtest" select="m:name/m:namePart[@type='date'] and substring-after(m:name/m:namePart[@type='date'], '/') != ''"/>
