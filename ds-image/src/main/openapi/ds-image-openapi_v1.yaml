@@ -225,7 +225,8 @@ paths:
       description: |-
         Most of our services at the Royal Library makes use of the IIIF standard.
         IIP is currently supported for backwards compatibility and support might be dropped in the future.
-        There is no support or updates scheduled for this endpoint.
+        There is no support or updates scheduled for this endpoint. Our API supports parameters from version 1.0 and onwards. 
+        This means that parameters like Simulated hill-shading (SHD) from version 0.9.7 and quality layers (LYR) from version 0.9.9 aren't supported through this API.
       operationId: IIPImageRequest
       parameters:
         - name: FIF
@@ -297,20 +298,6 @@ paths:
         
         # As of now, EQ and ST are not implemented in the OpenAPI version
         - $ref: '#/components/parameters/CNT'
-            
-        - $ref: '#/components/parameters/SHD'
-            
-        - name: LYR
-          in: query
-          description: |- 
-            The number of quality layers, l, in an image to decode. This is for file types that can contain multiple quality layers, such as JPEG2000.
-            
-            For example, a request for LYR=3 will decode only the first 3 quality layers present in the image.
-            
-            The number of layers decoded will be limited to a maximum given by the MAX_LAYERS environment variable if this has been set in the server configuration. This can be useful to either limit the quality of the images users may see or to speed up decoding by only decoding the faster lower quality layers.
-          schema:
-            type: integer
-            format: int32
 
         - name: ROT
           in: query
@@ -491,7 +478,6 @@ paths:
           
       # IIP parameters 
       - $ref: '#/components/parameters/CNT'
-      - $ref: '#/components/parameters/SHD'
       - $ref: '#/components/parameters/GAM'
       - $ref: '#/components/parameters/CMP'
       - $ref: '#/components/parameters/CTW'
@@ -898,23 +884,6 @@ components:
         format: float
         minimum: 0
         exclusiveMinimum: true
-    # SHD for IIP and DeepZoom
-    SHD:
-      name: SHD
-      in: query
-      description: |-
-        Simulated hill-shading for image normal data. The argument is the angle of incidence of the light source in the horizontal plane (from 12 o’clock), h and the vertical angle of incidence, v, with 0 representing a horizontal direction and -1 vertically downwards
-        
-        **SHD has to be defined as h,v**
-      schema: 
-        type: array
-        items:
-          type: integer
-          format: int32
-        minItems: 2
-        maxItems: 2
-      style: form
-      explode: false
     # GAM for IIP and DeepZoom
     GAM:
       name: GAM
