@@ -53,10 +53,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="description" type="text_general" multiValued="true"/>
   <field name="content" type="text_general" multiValued="true"/>
   <field name="internal_note" type="text_general" multiValued="true"/>
-  <field name="catalog_name" type="string" docValues="true"/>
+  <field name="catalog_name" type="string" stored="true" docValues="true"/>
 
   <field name="subject_name" type="text_general" multiValued="true"/>
-  <field name="subject_full_name" type="string" multiValued="true"  docValues="true"/>
+  <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true"/>
   <field name="subject_family_name" type="text_general" multiValued="true"/>
   <field name="subject_given_name" type="text_general" multiValued="true" />
 
@@ -65,15 +65,15 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <!-- Fields on production of physical and digital object. -->
   <!-- TODO: Format as date -->
-  <field name="date_created" type="string"/>
-  <field name="production_date_start" type="string"/>
-  <field name="production_date_end" type="string"/>
-  <field name="digital_surrogate_production_date" type="string"/>
+  <field name="date_created" type="string" stored="true"/>
+  <field name="production_date_start" type="string" stored="true" />
+  <field name="production_date_end" type="string" stored="true"/>
+  <field name="digital_surrogate_production_date" type="string" stored="true"/>
 
   <!-- Fields on subject -->
   
-  <field name="subject_date_of_birth" type="string" multiValued="true"/>
-  <field name="subject_date_of_death" type="string" multiValued="true"/>
+  <field name="subject_date_of_birth" type="string" multiValued="true" stored="true"/>
+  <field name="subject_date_of_death" type="string" multiValued="true" stored="true"/>
   <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
   <field name="type_of_resource" type="string" multiValued="true"  docValues="true"/>
 
