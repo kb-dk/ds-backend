@@ -19,6 +19,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
   <field name="identifier_local" type="string"  stored="true"/>
+  <field name="accession_number" type="string" stored="true"/>
   <field name="cataloging_language" type="string"  stored="true"/>
   <field name="shelf_location" type="string"  stored="true"/>
   <field name="physical_location" type="text_general"/> <!--  May not be in data -->

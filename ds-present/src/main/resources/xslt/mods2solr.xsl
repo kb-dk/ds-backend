@@ -99,6 +99,11 @@
           <f:string key="identifier_local">
             <xsl:value-of select="m:identifier[@type='local']"/>
           </f:string>
+          <xsl:if test="m:identifier[@type='accession number']">
+            <f:string key="accession_number">
+              <xsl:value-of select="m:identifier[@type='accession number']"/>
+            </f:string>
+          </xsl:if>
           <!-- Categories seems to be a collection of other fields. -->
           <!-- TODO: Check with MODS standard-->
           <xsl:if test="m:genre[@type='Categories']">

@@ -56,6 +56,7 @@ public class EmbeddedSolrTest {
 	public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
 	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
 	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
+	public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
 
 
 
@@ -442,6 +443,27 @@ public class EmbeddedSolrTest {
 
 		 */
 		//TODO more fields
+	}
+
+	@Test
+	void testAccessionNumberExtraction() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_FM);
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		//System.out.println(prettyJsonString);
+
+		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+		embeddedServer.add(document);
+		embeddedServer.commit();
+		assertEquals(1, getNumberOfTotalDocuments());
+
+		//Full life cycle test
+		SolrDocument record = getRecordById("14f4a700-f9ee-11e7-988a-00505688346e");
+
+		//Single value field
+		assertEquals("2000-3/7",record.getFieldValue("accession_number"));
 	}
 
 	
