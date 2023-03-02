@@ -53,7 +53,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
                     .version(BuildInfoManager.getVersion())
                     .build(BuildInfoManager.getBuildTime())
                     .java(System.getProperty("java.version"))
-                    .heap(Runtime.getRuntime().maxMemory() / 1000000L)
+                    .heap(Runtime.getRuntime().maxMemory() / 1048576)
                     .server(host)
                     .health("ok");
         } catch (Exception e) {

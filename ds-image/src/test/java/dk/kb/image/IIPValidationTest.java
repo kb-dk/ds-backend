@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -114,7 +115,7 @@ public class IIPValidationTest {
             IIPParamValidation.rotValidation(wrongRot);
         });
 
-        String expectedMessage = "ROT has to be specified as one of the following values when set: 90, 180, 270, !90, !180, !270";
+        String expectedMessage = "ROT has to be specified as one of the following values when set: 90, 180, 270, !90, !180, !270. The provided ROT was: '" + wrongRot + "'";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -122,33 +123,35 @@ public class IIPValidationTest {
 
     @Test
     public void jtlTest(){
-        List<Integer> jtlParam = new ArrayList<>();
-        jtlParam.add(2);
+        List<Integer> jtl = new ArrayList<>();
+        jtl.add(2);
+        String expectedMessage1 = "The parameter JTL has to contain two values index x and resolution level r. Input was: '" + jtl + "'";
 
         // One value
         Exception exception1 = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPParamValidation.jtlValidation(jtlParam);
+            IIPParamValidation.jtlValidation(jtl);
         });
 
         // Three values
-        jtlParam.add(3);
-        jtlParam.add(45);
+        jtl.add(3);
+        jtl.add(45);
         Exception exception2 = assertThrows(InvalidArgumentServiceException.class, () -> {
-            IIPParamValidation.jtlValidation(jtlParam);
+            IIPParamValidation.jtlValidation(jtl);
         });
 
-        String expectedMessage = "The parameter JTL has to contain two values index x and resolution level r";
+        String expectedMessage2 = "The parameter JTL has to contain two values index x and resolution level r. Input was: '" + jtl + "'";
         String actualMessage1 = exception1.getMessage();
         String actualMessage2 = exception2.getMessage();
 
-        assertTrue(actualMessage1.contains(expectedMessage));
-        assertTrue(actualMessage2.contains(expectedMessage));
+        assertTrue(actualMessage1.contains(expectedMessage1));
+        assertTrue(actualMessage2.contains(expectedMessage2));
     }
 
     @Test
     public void ptlTest(){
         List<Integer> ptlParam = new ArrayList<>();
         ptlParam.add(2);
+        String expectedMessage1 = "The parameter PTL has to contain two values index x and resolution level r. Input was: '" + ptlParam + "'";
 
         // One value
         Exception exception1 = assertThrows(InvalidArgumentServiceException.class, () -> {
@@ -162,12 +165,12 @@ public class IIPValidationTest {
             IIPParamValidation.ptlValidation(ptlParam);
         });
 
-        String expectedMessage = "The parameter PTL has to contain two values index x and resolution level r";
+        String expectedMessage2 = "The parameter PTL has to contain two values index x and resolution level r. Input was: '" + ptlParam + "'";
         String actualMessage1 = exception1.getMessage();
         String actualMessage2 = exception2.getMessage();
 
-        assertTrue(actualMessage1.contains(expectedMessage));
-        assertTrue(actualMessage2.contains(expectedMessage));
+        assertTrue(actualMessage1.contains(expectedMessage1));
+        assertTrue(actualMessage2.contains(expectedMessage2));
     }
 
     @Test
@@ -221,7 +224,7 @@ public class IIPValidationTest {
             IIPParamValidation.cmpValidation(wrongCmp);
         });
 
-        String expectedMessage = "CMP has to be specified as one of the following values when set: GREY, JET, COLD, HOT, RED, GREEN or BLUE";
+        String expectedMessage = "CMP has to be specified as one of the following values when set: GREY, JET, COLD, HOT, RED, GREEN or BLUE. The provided CMP was: '" + wrongCmp + "'";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -229,7 +232,7 @@ public class IIPValidationTest {
 
     @Test
     public void pflTest(){
-        String pfl = "notANumber:23,1-2,3";
+        String pfl = "notNumber:23,1-2,3";
 
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
             IIPParamValidation.pflValidation(pfl);
@@ -292,6 +295,28 @@ public class IIPValidationTest {
         });
 
         String expectedMessage = "Format for Deepzoom tile has to be either 'jpg', 'jpeg' or 'png'";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testOnlyOneOfJtlPtlCvtExists(){
+        List<Integer> ptl = new ArrayList<>();
+        ptl.add(2);
+        ptl.add(24);
+
+        List<Integer> jtl = new ArrayList<>();
+        jtl.add(2);
+        jtl.add(12);
+
+        String cvt = "jpeg";
+
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> {
+            IIPParamValidation.validateOneJtlPtlCvtExists(jtl, ptl, cvt);
+        });
+
+        String expectedMessage = "More than one of the parameters JTL, PTL and CVT are set. Only one can be set at a time";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
