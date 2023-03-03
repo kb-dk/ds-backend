@@ -30,7 +30,7 @@ import dk.kb.license.model.v1.UserGroupDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.solr.AbstractSolrJClient;
 import dk.kb.license.validation.LicenseValidator;
-import dk.kb.license.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.license.storage.DsLicenseUnitTestUtil;
 
 /*
