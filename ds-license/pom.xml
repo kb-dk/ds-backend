@@ -664,6 +664,10 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
+                    
+                    <!-- Will generate a jar file with classes-->
+                    <attachClasses>true</attachClasses>
+
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
