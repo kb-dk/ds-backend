@@ -75,7 +75,7 @@ public class XsltCopyrightMapper {
         }
         catch(Exception e) {
         	//Data error! will be fixed
-            log.error("Error transforming... Probably data error");
+            log.error("Error transforming... Probably data error:"+e.getMessage());
             solrFieldsMap.put(ACCESS_SKABELSESAAR_FIELD,"9999");       
         	
         }
