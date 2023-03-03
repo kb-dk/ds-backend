@@ -95,6 +95,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 
     @Override
     public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
+        log.debug("checkAccessForIds(...) called with call details: {}", getCallDetails());
 
         //MonitorCache.registerNewRestMethodCall("checkAccessForIds");
         try{
@@ -121,6 +122,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 
     @Override
     public ValidateAccessOutputDto validateAccess(@Valid ValidateAccessInputDto input) {
+        log.debug("validateAccess(...) called with call details: {}", getCallDetails());
 
         System.out.println("validate access called");
         //MonitorCache.registerNewRestMethodCall("validateAccess");
@@ -139,8 +141,8 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 
     @Override
     public GetUsersLicensesOutputDto getUserLicenses(@NotNull GetUsersLicensesInputDto input) {
+        log.debug("getUserLicenses(...) called with call details: {}", getCallDetails());
         //  MonitorCache.registerNewRestMethodCall("getUserLicenses");
-        log.info("getUserLicenses called");
 
         ArrayList<LicenseOverviewDto> list = new ArrayList<LicenseOverviewDto>();
         GetUsersLicensesOutputDto output = new GetUsersLicensesOutputDto();
@@ -177,6 +179,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 
     
     public String getUserLicenseQuery(@NotNull GetUserQueryInputDto input) {
+        log.debug("getUserLicenseQuery(...) called with call details: {}", getCallDetails());
 
         //MonitorCache.registerNewRestMethodCall("getUserLicenseQuery");
         log.info("getUserLicenseQuery called");
@@ -200,9 +203,9 @@ log.info("output (groups)" + output.getUserLicenseGroups());
 
     @Override
     public GetUserGroupsOutputDto getUserGroups(GetUserGroupsInputDto input) {                  
-        //MonitorCache.registerNewRestMethodCall("getUserGroups"); 
-        log.info("getUserGroups called");
-        try {      
+        log.debug("getUserGroups(...) called with call details: {}", getCallDetails());
+        //MonitorCache.registerNewRestMethodCall("getUserGroups");
+        try {
             ArrayList<UserGroupDto> groups = LicenseValidator.getUsersGroups(input);                     
             GetUserGroupsOutputDto output = new GetUserGroupsOutputDto();
             output.setGroups(groups);
@@ -217,6 +220,7 @@ log.info("output (groups)" + output.getUserLicenseGroups());
 
     @Override
     public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses(GetUserGroupsAndLicensesInputDto input) {
+        log.debug("getUserGroupsAndLicenses(...) called with call details: {}", getCallDetails());
 
         //MonitorCache.registerNewRestMethodCall("getUserGroupsAndLicensesJSON");
 
