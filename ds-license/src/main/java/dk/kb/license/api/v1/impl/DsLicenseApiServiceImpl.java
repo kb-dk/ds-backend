@@ -1,58 +1,34 @@
 package dk.kb.license.api.v1.impl;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-
-import dk.kb.license.model.v1.*;
 import dk.kb.license.api.v1.DsLicenseApi;
-import dk.kb.license.facade.LicenseModuleFacade;
-
-import dk.kb.license.storage.PresentationType;
+import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
+import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
+import dk.kb.license.model.v1.GetUserGroupsAndLicensesInputDto;
+import dk.kb.license.model.v1.GetUserGroupsAndLicensesOutputDto;
+import dk.kb.license.model.v1.GetUserGroupsInputDto;
+import dk.kb.license.model.v1.GetUserGroupsOutputDto;
+import dk.kb.license.model.v1.GetUserQueryInputDto;
+import dk.kb.license.model.v1.GetUserQueryOutputDto;
+import dk.kb.license.model.v1.GetUsersLicensesInputDto;
+import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
+import dk.kb.license.model.v1.HelloReplyDto;
+import dk.kb.license.model.v1.LicenseOverviewDto;
+import dk.kb.license.model.v1.UserGroupDto;
+import dk.kb.license.model.v1.ValidateAccessInputDto;
+import dk.kb.license.model.v1.ValidateAccessOutputDto;
 import dk.kb.license.storage.License;
+import dk.kb.license.storage.PresentationType;
 import dk.kb.license.validation.LicenseValidator;
-
-
-import dk.kb.license.webservice.exception.ServiceException;
-import dk.kb.license.webservice.exception.InternalServiceException;
-
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
+import dk.kb.util.webservice.ImplBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
-import java.io.File;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.core.MediaType;
-import org.apache.cxf.jaxrs.model.wadl.Description;
-import org.apache.cxf.jaxrs.model.wadl.DocTarget;
-import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.apache.cxf.jaxrs.ext.multipart.*;
-
-import io.swagger.annotations.Api;
+import java.util.ArrayList;
 
 /**
  * ds-license
@@ -60,47 +36,8 @@ import io.swagger.annotations.Api;
  * <p>ds-license by the Royal Danish Library 
  *
  */
-public class DsLicenseApiServiceImpl implements DsLicenseApi {
+public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
-
-
-
-    /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
-
-    @Context
-    private transient UriInfo uriInfo;
-
-    @Context
-    private transient SecurityContext securityContext;
-
-    @Context
-    private transient HttpHeaders httpHeaders;
-
-    @Context
-    private transient Providers providers;
-
-    @Context
-    private transient Request request;
-
-    // Disabled as it is always null? TODO: Investigate when it can be not-null, then re-enable with type
-    //@Context
-    //private transient ContextResolver contextResolver;
-
-    @Context
-    private transient HttpServletRequest httpServletRequest;
-
-    @Context
-    private transient HttpServletResponse httpServletResponse;
-
-    @Context
-    private transient ServletContext servletContext;
-
-    @Context
-    private transient ServletConfig servletConfig;
-
-    @Context
-    private transient MessageContext messageContext;
-
 
 
     /**
@@ -158,6 +95,7 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
 
     @Override
     public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
+        log.debug("checkAccessForIds(...) called with call details: {}", getCallDetails());
 
         //MonitorCache.registerNewRestMethodCall("checkAccessForIds");
         try{
@@ -184,6 +122,7 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
 
     @Override
     public ValidateAccessOutputDto validateAccess(@Valid ValidateAccessInputDto input) {
+        log.debug("validateAccess(...) called with call details: {}", getCallDetails());
 
         System.out.println("validate access called");
         //MonitorCache.registerNewRestMethodCall("validateAccess");
@@ -202,8 +141,8 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
 
     @Override
     public GetUsersLicensesOutputDto getUserLicenses(@NotNull GetUsersLicensesInputDto input) {
+        log.debug("getUserLicenses(...) called with call details: {}", getCallDetails());
         //  MonitorCache.registerNewRestMethodCall("getUserLicenses");
-        log.info("getUserLicenses called");
 
         ArrayList<LicenseOverviewDto> list = new ArrayList<LicenseOverviewDto>();
         GetUsersLicensesOutputDto output = new GetUsersLicensesOutputDto();
@@ -240,6 +179,7 @@ public class DsLicenseApiServiceImpl implements DsLicenseApi {
 
     
     public String getUserLicenseQuery(@NotNull GetUserQueryInputDto input) {
+        log.debug("getUserLicenseQuery(...) called with call details: {}", getCallDetails());
 
         //MonitorCache.registerNewRestMethodCall("getUserLicenseQuery");
         log.info("getUserLicenseQuery called");
@@ -263,9 +203,9 @@ log.info("output (groups)" + output.getUserLicenseGroups());
 
     @Override
     public GetUserGroupsOutputDto getUserGroups(GetUserGroupsInputDto input) {                  
-        //MonitorCache.registerNewRestMethodCall("getUserGroups"); 
-        log.info("getUserGroups called");
-        try {      
+        log.debug("getUserGroups(...) called with call details: {}", getCallDetails());
+        //MonitorCache.registerNewRestMethodCall("getUserGroups");
+        try {
             ArrayList<UserGroupDto> groups = LicenseValidator.getUsersGroups(input);                     
             GetUserGroupsOutputDto output = new GetUserGroupsOutputDto();
             output.setGroups(groups);
@@ -280,6 +220,7 @@ log.info("output (groups)" + output.getUserLicenseGroups());
 
     @Override
     public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses(GetUserGroupsAndLicensesInputDto input) {
+        log.debug("getUserGroupsAndLicenses(...) called with call details: {}", getCallDetails());
 
         //MonitorCache.registerNewRestMethodCall("getUserGroupsAndLicensesJSON");
 
@@ -309,22 +250,5 @@ log.info("output (groups)" + output.getUserLicenseGroups());
         // TODO Auto-generated method stub
         return null;
     }
-
-
-    /**
-     * This method simply converts any Exception into a Service exception
-     * @param e: Any kind of exception
-     * @return A ServiceException
-     * @see dk.kb.license.webservice.ServiceExceptionMapper
-     */
-    private ServiceException handleException(Exception e) {
-        if (e instanceof ServiceException) {
-            return (ServiceException) e; // Do nothing - this is a declared ServiceException from within module.
-        } else {// Unforseen exception (should not happen). Wrap in internal service exception
-            log.error("ServiceException(HTTP 500):", e); //You probably want to log this.
-            return new InternalServiceException(e.getMessage());
-        }
-    }
-
 
 }

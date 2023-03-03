@@ -15,8 +15,8 @@ import dk.kb.license.util.LicenseChangelogGenerator;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.storage.LicenseModuleStorage;
-import dk.kb.license.webservice.exception.InternalServiceException;
-import dk.kb.license.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
 
 
