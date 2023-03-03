@@ -148,10 +148,10 @@ paths:
         '200':
           description: 'The Solr filter query'
           content:
-            application/json:
-              schema:           
+            text/plain:
+              schema:
                 type: string
-                                          
+                example: '(((subject:"Tyskland") OR (id:*manus!judsam!*)) -(group:"klausuleret"))'                      
 
   /getUserGroups:
     post:
