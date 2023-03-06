@@ -117,6 +117,12 @@ public class EmbeddedSolrTest {
 		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
 		assertTrue(typeResources.contains("Grafik"));
 
+		Collection<Object> createrDateOfDeath = record.getFieldValues("creator_date_of_death");
+		assertEquals(3,createrDateOfDeath.size());
+		assertTrue(createrDateOfDeath.contains("1868-2-14"));
+		assertTrue(createrDateOfDeath.contains("1895-6-25"));
+		assertTrue(createrDateOfDeath.contains("1865-3-8"));
+
 		//TODO more fields
 
 	}
