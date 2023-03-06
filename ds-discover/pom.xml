@@ -338,6 +338,47 @@
         </resources>
         <plugins>
 
+         <!-- The generated classes for the OpenAPI client are problematic. Disable checking of those for now.
+     This setup, minus the excludes-section, was copied from sbforge-parent 22-->
+            <plugin>
+                <groupId>de.thetaphi</groupId>
+                <artifactId>forbiddenapis</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <!--
+                    if the used Java version is too new,
+                    don't fail, just do nothing:
+                  -->
+                    <failOnUnsupportedJava>true</failOnUnsupportedJava>
+                    <bundledSignatures>
+                        <!--
+                      This will automatically choose the right
+                      signatures based on 'maven.compiler.target':
+                    -->
+                        <bundledSignature>jdk-unsafe</bundledSignature>
+                        <bundledSignature>jdk-deprecated</bundledSignature>
+                        <!-- disallow undocumented classes like sun.misc.Unsafe: -->
+                        <bundledSignature>jdk-non-portable</bundledSignature>
+                        <!-- don't allow unsafe reflective access: -->
+                        <bundledSignature>jdk-reflection</bundledSignature>
+                    </bundledSignatures>
+                    <excludes>
+                        <exclude>**/*Api.class</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>${api.check.phase}</phase>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>testCheck</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.1.0</version>
