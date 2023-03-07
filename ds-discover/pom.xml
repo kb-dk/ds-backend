@@ -449,14 +449,14 @@
               
                 <dependencies>
                     <dependency>
-                        <!-- This is a dependency here, as we need the ds-storage-openapi_v1.yaml on build time and no more-->
-                        <groupId>dk.kb.storage</groupId>
-                        <artifactId>ds-storage</artifactId>
-                        <version>1.2-SNAPSHOT</version>
+                        <!-- This is a dependency here, as we need the ds-license-openapi_v1.yaml on build time and no more-->
+                        <groupId>dk.kb.license</groupId>
+                        <artifactId>ds-license</artifactId>
+                        <version>1.0-SNAPSHOT</version>
                         <type>jar</type>
                         <classifier>classes</classifier>
                         <exclusions>
-                            <!-- We really just need the ds-storage-openapi_v1.yaml ..-->
+                            <!-- We really just need the ds-license-openapi_v1.yaml ..-->
                             <exclusion>
                                 <groupId>*</groupId>
                                 <artifactId>*</artifactId>
@@ -477,7 +477,9 @@
                         </goals>
                         <configuration>
                             <!-- Loaded from dependency above-->                                       
-                            <inputSpec>ds-storage-openapi_v1.yaml</inputSpec>
+                            <inputSpec>ds-license-openapi_v1.yaml</inputSpec>
+                          
+
 
                             <generatorName>java</generatorName>
                             <library>native</library>
