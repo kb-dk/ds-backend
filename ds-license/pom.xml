@@ -503,6 +503,14 @@
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
             </resource>
+            <!-- 2: Copy only build.properties with filtering -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>build.properties</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
 
@@ -596,7 +604,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.build.outputDirectory}/openapi_v1.yaml</inputSpec>
+                            <inputSpec>${project.build.outputDirectory}/ds-license-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>
                                 ${project.basedir}/.openapi-codegen-ignore-api
                             </ignoreFileOverride>
@@ -620,7 +628,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.build.outputDirectory}/openapi_v1.yaml</inputSpec>
+                            <inputSpec>${project.build.outputDirectory}/ds-license-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-impl</ignoreFileOverride>
 
                             <configOptions>
@@ -641,7 +649,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.build.outputDirectory}/openapi_v1.yaml</inputSpec>
+                            <inputSpec>${project.build.outputDirectory}/ds-license-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-model</ignoreFileOverride>
                             <generatorName>java</generatorName>
 
@@ -671,13 +679,20 @@
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
+                        <webResource> <!-- Store application name, version and build time -->
+                            <directory>${basedir}/src/main/resources/</directory>
+                            <includes>
+                                <include>build.properties</include>
+                            </includes>
+                            <filtering>true</filtering>
+                        </webResource>
                         <resource>
                             <!--Include the openapi spec files so we can serve them-->
                             <directory>${project.build.outputDirectory}</directory>
                             <targetPath>.</targetPath>
                             <includes>
-                                <include>openapi_v1.json</include>
-                                <include>openapi_v1.yaml</include>
+                                <include>ds-license-openapi_v1.json</include>
+                                <include>ds-license-openapi_v1.yaml</include>
                             </includes>
                         </resource>
                     </webResources>

@@ -41,7 +41,7 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <!--/v1 matches the server url in src/main/openapi/openapi_v1.yaml-->
+        <!--/v1 matches the server url in src/main/openapi/ds-license-openapi_v1.yaml-->
         <servlet-name>RestServlet_v1</servlet-name>
         <url-pattern>/v1/*</url-pattern>
     </servlet-mapping>
