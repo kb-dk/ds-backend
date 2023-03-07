@@ -39,7 +39,7 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_OA = "xml/copyright_extraction/OA_102-2007-pl_0004.tif.xml";
 	public static final String  RECORD_Elf = "xml/copyright_extraction/Elf_113136.tif.xml";
 	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
-
+	public static final String RECORD_KOB_KIN ="xml/copyright_extraction/kob_kin_pl_0027.tif.xml";
 	@Test
 	void testSolrNew() throws Exception {
 
@@ -207,6 +207,19 @@ class XSLTSolrTransformerTest{
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
 
+	@Test
+	void testChineseTitels() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_KOB_KIN );
+		// TODO: Add more detailed test
+		// One test could be to check for production_date_start and production_date_end values
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
 
 
 }

@@ -130,7 +130,8 @@
               <xsl:for-each select="m:note[@type='content']">
                 <xsl:if test=". != ''">
                   <f:string>
-                    <xsl:value-of select="."/>
+                    <!-- First use of replace 'zh|'. This check is done multiple times to remove 'zh|' in front of chinese characters -->
+                    <xsl:value-of select="f:replace(., 'zh\|', '')"/>
                   </f:string>
                 </xsl:if>
               </xsl:for-each>
@@ -142,7 +143,7 @@
               <xsl:for-each select="m:note[@type='Intern note']">
                 <xsl:if test=". !='' and . !='Intern note:' and . !='Ekstern note:' and . !='Alt. navn:' and . != 'Kunstnernote:' and . !='Aktiv:'">
                   <f:string>
-                    <xsl:value-of select="."/>
+                    <xsl:value-of select="f:replace(., 'zh\|', '')"/>
                   </f:string>
                 </xsl:if>
               </xsl:for-each>
@@ -173,19 +174,19 @@
           <!-- Extract title if present.-->
           <xsl:if test="m:titleInfo/m:title">
             <f:string key="title">
-              <xsl:value-of select="m:titleInfo/m:title"/>
+              <xsl:value-of select="f:replace(m:titleInfo/m:title, 'zh\|', '')"/>
             </f:string>
           </xsl:if>
           <!-- Extract subtitle if present.-->
           <xsl:if test="m:titleInfo/m:subTitle">
             <f:string key="subtitle">
-              <xsl:value-of select="m:titleInfo/m:subTitle"/>
+              <xsl:value-of select="f:replace(m:titleInfo/m:subTitle, 'zh\|', '')"/>
             </f:string>
           </xsl:if>
           <!-- Extract alternative title if present.-->
           <xsl:if test="m:titleInfo[@type='alternative']/m:title">
             <f:string key="alternative_title">
-              <xsl:value-of select="m:titleInfo[@type='alternative']/m:title"/>
+              <xsl:value-of select="f:replace(m:titleInfo[@type='alternative']/m:title, 'zh\|', '')"/>
             </f:string>
           </xsl:if>
           <!-- Extracts information on creator of item.
@@ -200,13 +201,13 @@
                     <f:string>
                       <xsl:choose>
                         <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given'] and m:namePart[@type='family'] != '' and m:namePart[@type='given'] != ''">
-                          <xsl:value-of select="normalize-space(concat(m:namePart[@type='family'],', ', m:namePart[@type='given']))"/>
+                          <xsl:value-of select="normalize-space(concat(f:replace(m:namePart[@type='family'], 'zh\|', ''),', ', f:replace(m:namePart[@type='given'],'zh\|', '')))"/>
                         </xsl:when>
                         <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
-                          <xsl:value-of select="m:namePart[@type='family']"/>
+                          <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
                         </xsl:when>
                         <xsl:when test="m:namePart[@type='given'] and not (m:namePart[@type='family'])">
-                          <xsl:value-of select="m:namePart[@type='given']"/>
+                          <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
                         </xsl:when>
                       </xsl:choose>
                     </f:string>
@@ -218,7 +219,7 @@
                 <xsl:for-each select="m:name">
                   <xsl:if test="./m:namePart[@type='family'] or ./m:namePart[@type='given']">
                     <f:string>
-                      <xsl:value-of select="normalize-space(concat(m:namePart[@type='given'], ' ',m:namePart[@type='family']))"/>
+                      <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='given'], ' ',m:namePart[@type='family'])), 'zh\|', '')"/>
                     </f:string>
                   </xsl:if>
                 </xsl:for-each>
@@ -231,7 +232,7 @@
                     <xsl:for-each select="m:name">
                       <xsl:if test="m:namePart[@type='family']">
                         <f:string>
-                          <xsl:value-of select="m:namePart[@type='family']"/>
+                          <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
                         </f:string>
                       </xsl:if>
                     </xsl:for-each>
@@ -245,7 +246,7 @@
                   <xsl:for-each select="m:name">
                     <xsl:if test="m:namePart[@type='given']">
                       <f:string>
-                        <xsl:value-of select="m:namePart[@type='given']"/>
+                        <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
                       </f:string>
                     </xsl:if>
                   </xsl:for-each>
@@ -259,7 +260,7 @@
                   <xsl:for-each select="m:name">
                     <xsl:if test="m:namePart[@type='termsOfAddress']">
                       <f:string>
-                        <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
+                        <xsl:value-of select="f:replace(m:namePart[@type='termsOfAddress'], 'zh\|', '')"/>
                       </f:string>
                     </xsl:if>
                   </xsl:for-each>
@@ -325,12 +326,12 @@
               <!-- If there is an affiliation for the creator it gets extracted here-->
               <xsl:if test="m:name/m:affiliation">
                 <f:string key="creator_affiliation">
-                  <xsl:value-of select="m:name/m:affiliation"/>
+                  <xsl:value-of select="f:replace(m:name/m:affiliation, 'zh\|', '')"/>
                 </f:string>
               </xsl:if>
               <xsl:if test="m:name/m:description">
                 <f:string key="creator_description">
-                  <xsl:value-of select="m:name/m:description"/>
+                  <xsl:value-of select="f:replace(m:name/m:description, 'zh\|', '')"/>
                 </f:string>
               </xsl:if>
             </xsl:if>
@@ -360,7 +361,7 @@
                 <xsl:for-each select="m:topic[@lang]">
                   <xsl:if test=". != ''">
                     <f:string>
-                      <xsl:value-of select="."/>
+                      <xsl:value-of select="f:replace(., 'zh\|', '')"/>
                     </f:string>
                   </xsl:if>
                 </xsl:for-each>
@@ -382,13 +383,13 @@
                 <f:string>
                   <xsl:choose>
                     <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given']">
-                      <xsl:value-of select="normalize-space(concat(m:namePart[@type='family'],', ', m:namePart[@type='given']))"/>
+                      <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='family'],', ', m:namePart[@type='given'])), 'zh\|', '')"/>
                     </xsl:when>
                     <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
-                      <xsl:value-of select="m:namePart[@type='family']"/>
+                      <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
                     </xsl:when>
                     <xsl:when test="m:namePart[@type='given'] and not (m:namePart[@type='family'])">
-                      <xsl:value-of select="m:namePart[@type='given']"/>
+                      <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
                     </xsl:when>
                   </xsl:choose>
                 </f:string>
@@ -397,7 +398,7 @@
             <f:array key="subject_full_name">
               <xsl:for-each select="m:subject/m:name">
               <f:string>
-                <xsl:value-of select="normalize-space(concat(m:namePart[@type='given'],' ',m:namePart[@type='family']))"/>
+                <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='given'],' ',m:namePart[@type='family'])), 'zh\|', '')"/>
               </f:string>
               </xsl:for-each>
             </f:array>
@@ -405,7 +406,7 @@
               <f:array key="subject_family_name">
                 <xsl:for-each select="m:subject/m:name">
                   <f:string>
-                      <xsl:value-of select="m:namePart[@type='family']"/>
+                      <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
                   </f:string>
                 </xsl:for-each>
               </f:array>
@@ -414,7 +415,7 @@
               <f:array key="subject_given_name">
                 <xsl:for-each select="m:subject/m:name">
                   <f:string>
-                    <xsl:value-of select="m:namePart[@type='given']"/>
+                    <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
                   </f:string>
                 </xsl:for-each>
               </f:array>
@@ -439,7 +440,7 @@
               <f:array key="subject_terms_of_address">
                 <xsl:for-each select="m:subject/m:name">
                   <f:string>
-                    <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
+                    <xsl:value-of select="f:replace(m:namePart[@type='termsOfAddress'], 'zh\|', '')"/>
                   </f:string>
                 </xsl:for-each>
               </f:array>
