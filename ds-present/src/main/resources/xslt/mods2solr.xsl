@@ -388,6 +388,11 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:if>
+          <xsl:if test="m:originInfo/m:place">
+            <f:string key="place_of_production">
+              <xsl:value-of select="normalize-space(m:originInfo/m:place)"/>
+            </f:string>
+          </xsl:if>
           <!-- The topic of given item gets extracted here, if present-->
           <xsl:if test="m:subject/m:topic[@lang]">
             <f:array key="topic">

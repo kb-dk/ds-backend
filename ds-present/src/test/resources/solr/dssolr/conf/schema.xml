@@ -73,6 +73,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- TODO: Format as date -->
   <field name="date_created" type="string" stored="true"/>
   <field name="production_date_start" type="string" stored="true" />
+  <field name="place_of_production" type="string" stored="true" />
   <field name="production_date_end" type="string" stored="true"/>
   <field name="digital_surrogate_production_date" type="string" stored="true"/>
 

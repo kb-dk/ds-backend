@@ -420,7 +420,7 @@ public class EmbeddedSolrTest {
 	}
 
 	@Test
-	void testRecordUldallForTitle() throws Exception {
+	void testRecordUldallForTitleAndPlaceOfProduction() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ULDALL);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -441,6 +441,9 @@ public class EmbeddedSolrTest {
 
 		// Title field
 		assertEquals("Foborg, Foburgum", record.getFieldValue("title"));
+
+		// Place of production
+		assertEquals("Danmark", record.getFieldValue("place_of_production"));
 
 		/*
 		//multivalue field
