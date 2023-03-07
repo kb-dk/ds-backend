@@ -325,9 +325,15 @@
               </xsl:if>
               <!-- If there is an affiliation for the creator it gets extracted here-->
               <xsl:if test="m:name/m:affiliation">
-                <f:string key="creator_affiliation">
-                  <xsl:value-of select="f:replace(m:name/m:affiliation, 'zh\|', '')"/>
-                </f:string>
+                <f:array key="creator_affiliation">
+                  <xsl:for-each select="m:name/m:affiliation">
+                    <xsl:if test=". != ''">
+                      <f:string>
+                        <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+                      </f:string>
+                    </xsl:if>
+                  </xsl:for-each>
+                </f:array>
               </xsl:if>
               <xsl:if test="m:name/m:description">
                 <f:string key="creator_description">
@@ -446,12 +452,15 @@
               </f:array>
             </xsl:if>
           </xsl:if>
+        <!-- Display label can in theory contain anything.
+             Resource Description seems to be the field that contains the most precise description of a given resource. -->
         <xsl:if test="m:typeOfResource[@displayLabel='Resource Description']">
           <f:string key="resource_description">
             <xsl:value-of select="m:typeOfResource[@displayLabel='Resource Description']"/>
           </f:string>
         </xsl:if>
           <!-- Type of resource gets extracted here if present -->
+          <!-- TODO: Should probably be named something like resource_categories -->
           <xsl:if test="m:typeOfResource">
             <f:array key="type_of_resource">
               <xsl:for-each select="m:typeOfResource">
