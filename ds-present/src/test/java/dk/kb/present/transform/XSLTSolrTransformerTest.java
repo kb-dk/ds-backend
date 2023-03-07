@@ -40,6 +40,7 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_9C = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
 	public static final String RECORD_3B03 = "xml/copyright_extraction/3b03aa00-fee2-11e8-ab76-00505688346e.xml";
 	public static final String RECORD_DB_hans = "xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml";
+	public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
 	@Test
 	void testSolrNew() throws Exception {
 
@@ -252,6 +253,20 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testDifferentRelatedItems() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_DB_hans);
+		// TODO: Add more detailed test
+		// One test could be to check for production_date_start and production_date_end values
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
+
+	@Test
+	void testTitleExtraction() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_JB000132);
 		// TODO: Add more detailed test
 		// One test could be to check for production_date_start and production_date_end values
 
