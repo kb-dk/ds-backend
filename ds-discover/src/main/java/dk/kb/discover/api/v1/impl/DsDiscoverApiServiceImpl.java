@@ -1,20 +1,9 @@
 package dk.kb.discover.api.v1.impl;
 
-import dk.kb.discover.SolrManager;
-import dk.kb.discover.SolrService;
-import dk.kb.discover.api.v1.DsDiscoverApi;
-import dk.kb.discover.model.v1.StatusDto;
-import dk.kb.discover.webservice.BuildInfoManager;
-import dk.kb.util.webservice.ImplBase;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-import dk.kb.util.webservice.exception.ServiceException;
-import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.apache.cxf.jaxrs.model.OperationResourceInfo;
-import org.apache.cxf.jaxrs.model.Parameter;
-import org.apache.cxf.jaxrs.model.ParameterType;
-import org.apache.cxf.jaxrs.utils.JAXRSUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -26,11 +15,26 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.apache.cxf.jaxrs.model.OperationResourceInfo;
+import org.apache.cxf.jaxrs.model.Parameter;
+import org.apache.cxf.jaxrs.model.ParameterType;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import dk.kb.discover.SolrManager;
+import dk.kb.discover.SolrService;
+import dk.kb.discover.api.v1.DsDiscoverApi;
+import dk.kb.discover.backend.api.v1.DsLicenseApi;
+import dk.kb.discover.backend.invoker.v1.ApiClient;
+import dk.kb.discover.backend.model.v1.GetUserQueryInputDto;
+import dk.kb.discover.backend.model.v1.GetUsersFilterQueryOutputDto;
+import dk.kb.discover.backend.model.v1.UserObjAttributeDto;
+import dk.kb.util.webservice.ImplBase;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 
 /**
  * ds-discover
@@ -158,6 +162,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     public String solrSearch(String collection, String q, List<String> fq, Integer rows, Integer start, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
     
         try {
+        	        	
             log.debug("solrSearch(collection='{}', q='{}', ...) called with call details: {}",
                       collection, q, getCallDetails());
             Map<String, String[]> extra = getExtraParams();
@@ -167,12 +172,55 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             SolrService solr = SolrManager.getSolrService(collection);
             // TODO: Pass the map of request parameters instead of all parameters as first class
             httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
+           
+             //Add filter query from license module.
+            DsLicenseApi licenseClient = getDsLicenseApiClient();
+            GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
+            GetUsersFilterQueryOutputDto filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
+            log.info("filter query from licensemodule:"+filterQuery.getFilterQuery());
+            
+            fq.add(filterQuery.getFilterQuery()); //Add the filter query
+            
+            
             return solr.query(q, fq, rows, start, fl, facet, facetField, qOp, wt, version, indent, debug, debugExplainStructured);
         } catch (Exception e){
             throw handleException(e);
         }
     }
 
+    
+    private static GetUserQueryInputDto getLicenseQueryDto() {
+    	   GetUserQueryInputDto getQueryDto = new GetUserQueryInputDto(); 
+          
+    	   getQueryDto.setPresentationType("Search"); // Important. Must be defined in Licensemodule with same name           
+         
+    	   //"everybody=true" is a value everyone will (from keycloak?)
+    	   UserObjAttributeDto everybodyUserAttribute=new UserObjAttributeDto();         
+           everybodyUserAttribute.setAttribute("everybody"); 
+           ArrayList<String> values = new ArrayList<String>();
+           values.add("yes");
+           everybodyUserAttribute.setValues(values);
+           
+           List<UserObjAttributeDto> allAttributes = new ArrayList<UserObjAttributeDto>(); 
+           allAttributes.add(everybodyUserAttribute);
+           
+           getQueryDto.setAttributes(allAttributes);           
+           return getQueryDto;
+    	
+    	
+    }
+    
+    private static DsLicenseApi getDsLicenseApiClient() {
+        ApiClient apiClient = new ApiClient();
+        //Todo take from YAML
+        apiClient.setHost("devel11.statsbiblioteket.dk");
+        apiClient.setPort(10001);
+        apiClient.setBasePath("/ds-license/v1");
+        DsLicenseApi  dsAPI = new DsLicenseApi (apiClient);
+        return dsAPI;
+    }
+    
+    
     /**
      * Subtracts parameters defined for the called endpoint from the total set of parameters in the called URI,
      * resulting in a map of unhandled parameters.

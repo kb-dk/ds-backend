@@ -26,7 +26,12 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+               
     </repositories>
+
+
+
+
 
     <scm>
         <url>https://github.com/kb-dk/ds-discover</url>
@@ -320,7 +325,6 @@
 
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider -->
-
 
     </dependencies>
 
