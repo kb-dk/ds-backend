@@ -7,6 +7,8 @@ import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
+
 import static org.junit.Assert.assertTrue;
 
 public class XSLTSchemaDotOrgTransformerTest {

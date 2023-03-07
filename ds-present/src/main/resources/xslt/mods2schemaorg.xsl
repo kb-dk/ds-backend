@@ -609,6 +609,8 @@
                 <f:string key="sameAs"><xsl:value-of select="@authorityURI"/></f:string>
             </xsl:if>
             <xsl:variable name="language"><xsl:value-of select="@xml:lang"/></xsl:variable>
+
+            <!--
             <f:map key="name">
                 <xsl:element name="f:string">
                     <xsl:attribute name="key">@language</xsl:attribute>
@@ -626,43 +628,57 @@
                         </xsl:choose>
                     </xsl:for-each>
                 </xsl:element>
-                <!-- Creates name for persons -->
-                <xsl:element name="f:string">
-                    <xsl:attribute name="key">name</xsl:attribute>
-                    <xsl:for-each select="concat(m:namePart[@type='given'],' ', m:namePart[@type='family'])">
-                        <xsl:value-of select="."/>
-                    </xsl:for-each>
-                </xsl:element>
-                <!-- Creates givenName for persons -->
-                <xsl:element name="f:string">
-                    <xsl:attribute name="key">givenName</xsl:attribute>
-                    <xsl:for-each select="m:namePart[@type='given']">
-                        <xsl:value-of select="."/>
-                    </xsl:for-each>
-                </xsl:element>
-                <!-- Creates familyName for persons -->
-                <xsl:element name="f:string">
-                    <xsl:attribute name="key">familyName</xsl:attribute>
-                    <xsl:for-each select="m:namePart[@type='family']">
-                        <xsl:value-of select="."/>
-                    </xsl:for-each>
-                </xsl:element>
-                <!-- Creates birthDate for persons -->
+            </f:map> -->
+            <!-- Creates name for persons -->
+            <xsl:element name="f:string">
+                <xsl:attribute name="key">name</xsl:attribute>
+                <xsl:for-each select="concat(m:namePart[@type='given'],' ', m:namePart[@type='family'])">
+                    <xsl:value-of select="."/>
+                </xsl:for-each>
+            </xsl:element>
+            <!-- Creates givenName for persons -->
+            <xsl:element name="f:string">
+                <xsl:attribute name="key">givenName</xsl:attribute>
+                <xsl:for-each select="m:namePart[@type='given']">
+                    <xsl:value-of select="."/>
+                </xsl:for-each>
+            </xsl:element>
+            <!-- Creates familyName for persons -->
+            <xsl:element name="f:string">
+                <xsl:attribute name="key">familyName</xsl:attribute>
+                <xsl:for-each select="m:namePart[@type='family']">
+                    <xsl:value-of select="."/>
+                </xsl:for-each>
+            </xsl:element>
+            <!-- Creates birthDate for persons -->
+            <xsl:if test="substring-before(m:namePart[@type='date'], '/') != ''">
                 <xsl:element name="f:string">
                     <xsl:attribute name="key">birthDate</xsl:attribute>
                     <xsl:for-each select="substring-before(m:namePart[@type='date'], '/')">
                         <xsl:value-of select="."/>
                     </xsl:for-each>
                 </xsl:element>
-                <!-- Creates deathDate for persons -->
+            </xsl:if>
+            <!-- Creates deathDate for persons -->
+            <xsl:if test="substring-after(m:namePart[@type='date'], '/') != ''">
                 <xsl:element name="f:string">
                     <xsl:attribute name="key">deathDate</xsl:attribute>
                     <xsl:for-each select="substring-after(m:namePart[@type='date'], '/')">
                         <xsl:value-of select="."/>
                     </xsl:for-each>
                 </xsl:element>
-                <!-- TODO: Figure out which schema.org field is most appropriate for termsOfAddress content.-->
-            </f:map>
+            </xsl:if>
+            <!-- Creates affiliation for persons -->
+            <xsl:if test="m:affiliation">
+                <xsl:element name="f:string">
+                    <xsl:attribute name="key">affiliation</xsl:attribute>
+                    <xsl:for-each select="m:affiliation" >
+                        <xsl:value-of select="."/>
+                    </xsl:for-each>
+                </xsl:element>
+            </xsl:if>
+            <!-- TODO: Figure out which schema.org field is most appropriate for termsOfAddress content.-->
+
             <xsl:if test="t:residence">
                 <xsl:element name="f:array">
                     <xsl:attribute name="key">
