@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.*;
 
-import java.io.IOException;
-
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -35,7 +33,6 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
 	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
 	public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
-	public static final String RECORD_KE06 = "xml/copyright_extraction/KE066530.tif.xml";
 	public static final String RECORD_OA = "xml/copyright_extraction/OA_102-2007-pl_0004.tif.xml";
 	public static final String  RECORD_Elf = "xml/copyright_extraction/Elf_113136.tif.xml";
 	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";

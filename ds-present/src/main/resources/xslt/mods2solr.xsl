@@ -446,6 +446,11 @@
               </f:array>
             </xsl:if>
           </xsl:if>
+        <xsl:if test="m:typeOfResource[@displayLabel='Resource Description']">
+          <f:string key="resource_description">
+            <xsl:value-of select="m:typeOfResource[@displayLabel='Resource Description']"/>
+          </f:string>
+        </xsl:if>
           <!-- Type of resource gets extracted here if present -->
           <xsl:if test="m:typeOfResource">
             <f:array key="type_of_resource">

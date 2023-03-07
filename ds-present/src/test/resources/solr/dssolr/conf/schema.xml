@@ -25,6 +25,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="physical_location" type="text_general"/> <!--  May not be in data -->
   <field name="categories" type="string" docValues="true" stored="true"/>
   <field name="collection" type="string" docValues="true" stored="true"/>
+  <field name="resource_description" type="string" multiValued="false"  docValues="true"/>
+  <field name="type_of_resource" type="string" multiValued="true"  docValues="true"/>
+
 
   <!-- Fields on title -->
   <field name="title" type="text_general"/> <!-- Currently only present in maps collection-->
@@ -76,7 +79,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="subject_date_of_birth" type="string" multiValued="true" stored="true"/>
   <field name="subject_date_of_death" type="string" multiValued="true" stored="true"/>
   <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
-  <field name="type_of_resource" type="string" multiValued="true"  docValues="true"/>
 
   <field name="file_size" type="pint"/>
   <field name="image_height" type="pint"/>
