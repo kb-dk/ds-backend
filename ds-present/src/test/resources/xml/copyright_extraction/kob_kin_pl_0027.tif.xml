@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="026232b6-40d1-4895-b8f0-82381d07b2f8" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2023-03-02T15:21:17.497+01:00">
+        <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
+            <mets:name>kbDk</mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+        <mets:agent ID="kbDkCumulusBevaringsService" ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="API">
+            <mets:name>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+    </mets:metsHdr>
+    <mets:dmdSec CREATED="2023-03-02T15:21:17.497+01:00" ID="Mods1">
+        <mets:mdWrap MDTYPE="MODS">
+            <mets:xmlData>
+                <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                    <mods:genre type="Categories">Kinesiske plakater, CAR- BLO katagori</mods:genre>
+                    <mods:identifier type="uri">urn:uuid:26d4dd60-6708-11e2-b40f-0016357f605f</mods:identifier>
+                    <mods:identifier type="local">kob_kin_pl_0027.tif</mods:identifier>
+                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/images/BILLED/PLAKATER/kob_kin_pl_0027.tif</mods:identifier>
+                    <mods:location>
+                        <mods:shelfLocator>Kob-kin-27</mods:shelfLocator>
+                    </mods:location>
+                    <mods:name type="personal">
+                        <mods:role>
+                            <mods:roleTerm type="code">cre</mods:roleTerm>
+                        </mods:role>
+                        <mods:affiliation>Haidian Yangfang dian jiedao zhongxin xiaoxue (zh|海淀区羊坊店街道中心小学)</mods:affiliation>
+                    </mods:name>
+                    <mods:note type="content">Udgivet af Beijing renmin</mods:note>
+                    <mods:note type="content">Propaganda maleri (宣传画)</mods:note>
+                    <mods:note type="content">53 x 76,7 cm.</mods:note>
+                    <mods:note displayLabel="Catalog Name">Samlingsbilleder</mods:note>
+                    <mods:originInfo altRepGroup="original">
+                        <mods:dateCreated>1972</mods:dateCreated>
+                    </mods:originInfo>
+                    <mods:originInfo altRepGroup="surrogate">
+                        <mods:dateCaptured>2019-06-27T10:27:21.000+02:00</mods:dateCaptured>
+                    </mods:originInfo>
+                    <mods:physicalDescription>
+                        <mods:note displayLabel="Pageorientation">LTR</mods:note>
+                    </mods:physicalDescription>
+                    <mods:recordInfo>
+                        <mods:languageOfCataloging>
+                            <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
+                        </mods:languageOfCataloging>
+                    </mods:recordInfo>
+                    <mods:relatedItem type="otherFormat">
+                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/images/BILLED/PLAKATER/kob_kin_pl_0027.jpg</mods:identifier>
+                    </mods:relatedItem>
+                    <mods:relatedItem type="host" displayLabel="Samling">
+                        <mods:titleInfo>
+                            <mods:title>Orientalsk samling</mods:title>
+                        </mods:titleInfo>
+                    </mods:relatedItem>
+                    <mods:subject lang="da">
+                        <mods:topic lang="da">Børn</mods:topic>
+                        <mods:topic lang="da">Undervisning</mods:topic>
+                        <mods:topic lang="da">Kina</mods:topic>
+                    </mods:subject>
+                    <mods:typeOfResource displayLabel="Generel Resource Description">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Resource Description">Plakat</mods:typeOfResource>
+                </mods:mods>
+            </mets:xmlData>
+        </mets:mdWrap>
+    </mets:dmdSec>
+    <mets:amdSec>
+        <mets:techMD CREATED="2023-03-02T15:21:17.515+01:00" ID="PremisObject1">
+            <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>26d4dd60-6708-11e2-b40f-0016357f605f</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:objectCharacteristics>
+                            <premis:compositionLevel>0</premis:compositionLevel>
+                            <premis:fixity>
+                                <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
+                                <premis:messageDigest>4e0bb8a2b352d33d8cee047b3b6dcfad</premis:messageDigest>
+                            </premis:fixity>
+                            <premis:size>74409280</premis:size>
+                            <premis:format>
+                                <premis:formatDesignation>
+                                    <premis:formatName>TIFF Image</premis:formatName>
+                                    <premis:formatVersion/>
+                                </premis:formatDesignation>
+                                <premis:formatNote>Validated by Cumulus version: 11.1.8</premis:formatNote>
+                            </premis:format>
+                            <premis:creatingApplication>
+                                <premis:creatingApplicationName>Adobe Photoshop CC 2019</premis:creatingApplicationName>
+                            </premis:creatingApplication>
+                            <premis:objectCharacteristicsExtension>
+                                <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://id.kb.dk/standards/mix/version_2_0/mix.xsd">
+                                    <mix:BasicDigitalObjectInformation>
+                                        <mix:ObjectIdentifier>
+                                            <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
+                                            <mix:objectIdentifierValue>26d4dd60-6708-11e2-b40f-0016357f605f</mix:objectIdentifierValue>
+                                        </mix:ObjectIdentifier>
+                                        <mix:fileSize>74409280</mix:fileSize>
+                                        <mix:FormatDesignation>
+                                            <mix:formatName>TIFF Image</mix:formatName>
+                                            <mix:formatVersion/>
+                                        </mix:FormatDesignation>
+                                        <mix:byteOrder>big endian</mix:byteOrder>
+                                        <mix:Compression>
+                                            <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                                        </mix:Compression>
+                                        <mix:Fixity>
+                                            <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
+                                            <mix:messageDigest>4e0bb8a2b352d33d8cee047b3b6dcfad</mix:messageDigest>
+                                        </mix:Fixity>
+                                    </mix:BasicDigitalObjectInformation>
+                                    <mix:BasicImageInformation>
+                                        <mix:BasicImageCharacteristics>
+                                            <mix:imageWidth>5819</mix:imageWidth>
+                                            <mix:imageHeight>4261</mix:imageHeight>
+                                            <mix:PhotometricInterpretation>
+                                                <mix:colorSpace>RGB</mix:colorSpace>
+                                                <mix:ColorProfile>
+                                                    <mix:IccProfile>
+                                                        <mix:iccProfileName>Adobe RGB (1998)</mix:iccProfileName>
+                                                    </mix:IccProfile>
+                                                </mix:ColorProfile>
+                                            </mix:PhotometricInterpretation>
+                                        </mix:BasicImageCharacteristics>
+                                    </mix:BasicImageInformation>
+                                    <mix:ImageCaptureMetadata>
+                                        <mix:GeneralCaptureInformation>
+                                            <mix:dateTimeCreated>2023-03-02T15:21:17.518+01:00</mix:dateTimeCreated>
+                                        </mix:GeneralCaptureInformation>
+                                        <mix:ScannerCapture>
+                                            <mix:ScannerModel>
+                                                <mix:scannerModelName>ScannTECH 601i-fb/ms</mix:scannerModelName>
+                                            </mix:ScannerModel>
+                                            <mix:MaximumOpticalResolution>
+                                                <mix:xOpticalResolution>200</mix:xOpticalResolution>
+                                                <mix:yOpticalResolution>200</mix:yOpticalResolution>
+                                            </mix:MaximumOpticalResolution>
+                                        </mix:ScannerCapture>
+                                        <mix:DigitalCameraCapture>
+                                            <mix:digitalCameraManufacturer>ProServ GmbH</mix:digitalCameraManufacturer>
+                                            <mix:DigitalCameraModel>
+                                                <mix:digitalCameraModelName>ScannTECH 601i-fb/ms</mix:digitalCameraModelName>
+                                            </mix:DigitalCameraModel>
+                                            <mix:CameraCaptureSettings>
+                                                <mix:ImageData/>
+                                            </mix:CameraCaptureSettings>
+                                        </mix:DigitalCameraCapture>
+                                        <mix:orientation>normal*</mix:orientation>
+                                    </mix:ImageCaptureMetadata>
+                                    <mix:ImageAssessmentMetadata>
+                                        <mix:ImageColorEncoding>
+                                            <mix:BitsPerSample>
+                                                <mix:bitsPerSampleValue>8</mix:bitsPerSampleValue>
+                                                <mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
+                                            </mix:BitsPerSample>
+                                            <mix:samplesPerPixel>3</mix:samplesPerPixel>
+                                        </mix:ImageColorEncoding>
+                                    </mix:ImageAssessmentMetadata>
+                                    <mix:ChangeHistory>
+                                        <mix:ImageProcessing>
+                                            <mix:sourceData>initial capture</mix:sourceData>
+                                            <mix:ProcessingSoftware>
+                                                <mix:processingSoftwareName>Adobe Photoshop CC 2019</mix:processingSoftwareName>
+                                            </mix:ProcessingSoftware>
+                                        </mix:ImageProcessing>
+                                    </mix:ChangeHistory>
+                                </mix:mix>
+                            </premis:objectCharacteristicsExtension>
+                        </premis:objectCharacteristics>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:techMD>
+        <mets:rightsMD CREATED="2023-03-02T15:21:17.520+01:00" ID="ModsRights1">
+            <mets:mdWrap MDTYPE="MODS">
+                <mets:xmlData>
+                    <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                        <mods:accessCondition>
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD http://id.kb.dk/schemas/dk-corporate-creator/copyright-md.xsd">
+                                <cdl:creator>
+                                    <dk:creator.corporate>
+                                        <cdl:name>Haidian Yangfang dian jiedao zhongxin xiaoxue (zh|海淀区羊坊店街道中心小学)</cdl:name>
+                                    </dk:creator.corporate>
+                                </cdl:creator>
+                            </cdl:copyright>
+                        </mods:accessCondition>
+                    </mods:mods>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:rightsMD>
+        <mets:digiprovMD CREATED="2023-03-02T15:21:17.521+01:00" ID="PremisEvent1">
+            <mets:mdWrap MDTYPE="PREMIS:EVENT">
+                <mets:xmlData>
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
+                        <premis:eventIdentifier>
+                            <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+                            <premis:eventIdentifierValue>ed657dfa-fa82-4ec9-b389-1b7e6cff7962</premis:eventIdentifierValue>
+                        </premis:eventIdentifier>
+                        <premis:eventType>ingestion</premis:eventType>
+                        <premis:eventDateTime>2023-03-02T15:21:17.522+01:00</premis:eventDateTime>
+                        <premis:eventDetailInformation>
+                            <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
+file.encoding: UTF-8
+file.encoding.pkg: sun.io
+file.separator: /
+java.awt.graphicsenv: sun.awt.X11GraphicsEnvironment
+java.class.version: 52.0
+java.runtime.version: 1.8.0_332-b09
+java.specification.version: 1.8
+java.vm.info: mixed mode
+java.vm.name: OpenJDK 64-Bit Server VM
+java.vm.specification.name: Java Virtual Machine Specification
+java.vm.version: 25.332-b09
+java.vm.vendor: Red Hat, Inc.
+line.separator: 
+
+os.arch: amd64
+os.name: Linux
+os.version: 4.18.0-372.9.1.el8.x86_64
+sun.arch.data.model: 64
+sun.boot.library.path: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.332.b09-2.el8_6.x86_64/jre/lib/amd64
+sun.cpu.endian: little
+sun.io.unicode.encoding: UnicodeLittle
+sun.java.launcher: SUN_STANDARD
+sun.jnu.encoding: UTF-8
+sun.management.compiler: HotSpot 64-Bit Tiered Compilers
+sun.os.patch.level: unknown
+user.country: DK
+user.home: /home/tomcat
+user.timezone: Europe/Copenhagen
+user.language: da
+
+</premis:eventDetail>
+                        </premis:eventDetailInformation>
+                        <premis:linkingAgentIdentifier>
+                            <premis:linkingAgentIdentifierType>kbDkInternal</premis:linkingAgentIdentifierType>
+                            <premis:linkingAgentIdentifierValue>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </premis:linkingAgentIdentifierValue>
+                        </premis:linkingAgentIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>26d4dd60-6708-11e2-b40f-0016357f605f</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>026232b6-40d1-4895-b8f0-82381d07b2f8</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                    </premis:event>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+        <mets:digiprovMD CREATED="2023-03-02T15:21:17.522+01:00" ID="PremisRepresentation1">
+            <mets:mdWrap MDTYPE="PREMIS">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>026232b6-40d1-4895-b8f0-82381d07b2f8</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2023-03-02T15:21:17.522+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>logical</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2023-03-02T15:21:17.523+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Low</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2023-03-02T15:21:17.523+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:relationship>
+                            <premis:relationshipType>structural</premis:relationshipType>
+                            <premis:relationshipSubType>represents</premis:relationshipSubType>
+                            <premis:relatedObjectIdentifier>
+                                <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+                                <premis:relatedObjectIdentifierValue>511b3e1a-ebfb-48e0-affe-c820788ac483</premis:relatedObjectIdentifierValue>
+                            </premis:relatedObjectIdentifier>
+                        </premis:relationship>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+    </mets:amdSec>
+    <mets:fileSec>
+        <mets:fileGrp>
+            <mets:file ID="fileId1">
+                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:26d4dd60-6708-11e2-b40f-0016357f605f"/>
+            </mets:file>
+        </mets:fileGrp>
+    </mets:fileSec>
+    <mets:structMap TYPE="logical">
+        <mets:div DMDID="Mods1" ADMID="ModsRights1 PremisEvent1 PremisObject1 PremisRepresentation1">
+            <mets:fptr FILEID="fileId1"/>
+        </mets:div>
+    </mets:structMap>
+</mets:mets>
