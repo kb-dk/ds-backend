@@ -104,13 +104,25 @@
               <xsl:value-of select="m:identifier[@type='accession number']"/>
             </f:string>
           </xsl:if>
-          <!-- Categories seems to be a collection of other fields. -->
-          <!-- TODO: Check with MODS standard-->
+          <!-- Categories seems to be a collection of multiple categories seperated by commas. -->
+          <!-- According to the MODS standard genre should contain info more specific than typeOfResource -->
           <xsl:if test="m:genre[@type='Categories']">
             <f:string key="categories">
               <xsl:value-of select="m:genre[@type='Categories']"/>
             </f:string>
+            <!-- Creates an array of categories split on commas.
+                  Regex removes dates from categories-->
+            <f:array key="list_of_categories">
+              <xsl:for-each select="distinct-values(tokenize(m:genre[@type='Categories'], ','))">
+                <xsl:if test=". != '' and not(matches(. , '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'))">
+                  <f:string>
+                    <xsl:value-of select="normalize-space(.)"/>
+                  </f:string>
+                </xsl:if>
+              </xsl:for-each>
+            </f:array>
           </xsl:if>
+
           <!-- Different things can be represented in note. -->
           <!-- If catalog name exists, extract it-->
           <xsl:if test="m:note[@displayLabel='Catalog Name']">

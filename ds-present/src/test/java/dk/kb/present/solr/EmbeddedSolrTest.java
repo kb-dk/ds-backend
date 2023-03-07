@@ -408,6 +408,13 @@ public class EmbeddedSolrTest {
 		assertEquals(2,typeResources.size());
 		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
 		assertTrue(typeResources.contains("Dia"));
+
+		Collection<Object> listOfCategories = record.getFieldValues("list_of_categories");
+		assertEquals(7, listOfCategories.size());
+		assertTrue(listOfCategories.contains("KHP"));
+		assertTrue(listOfCategories.contains("1940-1950"));
+		assertTrue(listOfCategories.contains("ikke UA"));
+
 		//TODO more fields
 	}
 
@@ -466,6 +473,7 @@ public class EmbeddedSolrTest {
 		assertEquals("2000-3/7",record.getFieldValue("accession_number"));
 	}
 
+	// TODO: Add test for list_of_categories
 	
 
 	/*

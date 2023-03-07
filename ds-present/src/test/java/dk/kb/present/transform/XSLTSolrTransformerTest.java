@@ -235,7 +235,7 @@ class XSLTSolrTransformerTest{
 	}
 
 	@Test
-	void testMultiple() throws Exception {
+	void testMultipleDescriptions() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_3B03);
 		// TODO: Add more detailed test
 		// One test could be to check for production_date_start and production_date_end values
