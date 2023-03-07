@@ -43,7 +43,7 @@
                         </xsl:for-each>
                     </xsl:variable>
                     <xsl:variable name="record-id">
-                        <xsl:value-of select="m:identifier[@type='uri']"/>
+                        <xsl:value-of select="substring-after(m:identifier[@type='uri'], 'urn:uuid:')"/>
                     </xsl:variable>
                     <!-- save the entire mods in a variable -->
                     <xsl:variable name="mods" select="."/>

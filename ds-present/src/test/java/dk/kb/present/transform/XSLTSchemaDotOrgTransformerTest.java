@@ -7,6 +7,8 @@ import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.Assert.assertTrue;
+
 public class XSLTSchemaDotOrgTransformerTest {
     public static final String MODS2SCHEMAORG = "xslt/mods2schemaorg.xsl";
     public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml";
@@ -22,6 +24,6 @@ public class XSLTSchemaDotOrgTransformerTest {
         String prettyJsonString = gson.toJson(je);
         System.out.println(prettyJsonString );
 
-        //  assertTrue(solrString.contains("{\"id\":\""));
+        assertTrue(schemaOrgString.contains("\"id\":\"05fea810-7181-11e0-82d7-002185371280\""));
     }
 }
