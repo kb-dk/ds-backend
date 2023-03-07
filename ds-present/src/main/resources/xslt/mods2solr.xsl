@@ -335,10 +335,17 @@
                   </xsl:for-each>
                 </f:array>
               </xsl:if>
+              <!-- Description of affiliation, maybe this could have a better field name-->
               <xsl:if test="m:name/m:description">
-                <f:string key="creator_description">
-                  <xsl:value-of select="f:replace(m:name/m:description, 'zh\|', '')"/>
-                </f:string>
+                <f:array key="creator_description">
+                  <xsl:for-each select="m:name/m:description">
+                    <xsl:if test=". != ''">
+                      <f:string>
+                        <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+                      </f:string>
+                    </xsl:if>
+                  </xsl:for-each>
+                </f:array>
               </xsl:if>
             </xsl:if>
           </xsl:if>
