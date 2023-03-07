@@ -67,32 +67,6 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 
     }
 
-    /**
-     * Ping the server to check if the server is reachable.
-     * 
-     * @return <ul>
-     *   <li>code = 200, message = "OK", response = String.class</li>
-     *   <li>code = 406, message = "Not Acceptable", response = ErrorDto.class</li>
-     *   <li>code = 500, message = "Internal Error", response = String.class</li>
-     *   </ul>
-     * @throws ServiceException when other http codes should be returned
-     *
-     * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public String ping() throws ServiceException {
-        // TODO: Implement...
-
-
-        try { 
-            String response = "C8wES";
-            return response;
-        } catch (Exception e){
-            throw handleException(e);
-        }
-
-    }
-
     @Override
     public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
         log.debug("checkAccessForIds(...) called with call details: {}", getCallDetails());
@@ -244,11 +218,5 @@ log.info("output (groups)" + output.getUserLicenseGroups());
 
     }
 
-
-    @Override
-    public String extractStatistics() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 }
