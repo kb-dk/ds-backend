@@ -619,7 +619,9 @@
                       This will automatically choose the right
                       signatures based on 'maven.compiler.target':
                     -->
-                        <bundledSignature>jdk-unsafe</bundledSignature>
+                        
+                        <!-- <bundledSignature>jdk-unsafe</bundledSignature> TODO can not build ds-storage client with this active. --> 
+                        
                         <bundledSignature>jdk-deprecated</bundledSignature>
                         <!-- disallow undocumented classes like sun.misc.Unsafe: -->
                         <bundledSignature>jdk-non-portable</bundledSignature>
