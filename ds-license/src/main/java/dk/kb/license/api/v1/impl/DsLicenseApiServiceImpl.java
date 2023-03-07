@@ -10,6 +10,7 @@ import dk.kb.license.model.v1.GetUserGroupsInputDto;
 import dk.kb.license.model.v1.GetUserGroupsOutputDto;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUserQueryOutputDto;
+import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.license.model.v1.GetUsersLicensesInputDto;
 import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
 import dk.kb.license.model.v1.HelloReplyDto;
@@ -37,186 +38,186 @@ import java.util.ArrayList;
  *
  */
 public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
-    private Logger log = LoggerFactory.getLogger(this.toString());
+	private Logger log = LoggerFactory.getLogger(this.toString());
 
 
-    /**
-     * Request a Hello World message, for testing purposes
-     * 
-     * @param alternateHello: Optional alternative to using the word &#39;Hello&#39; in the reply
-     * 
-     * @return <ul>
-     *   <li>code = 200, message = "A JSON structure containing a Hello World message", response = HelloReplyDto.class</li>
-     *   </ul>
-     * @throws ServiceException when other http codes should be returned
-     *
-     * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public HelloReplyDto getGreeting(String alternateHello) throws ServiceException {
-        // TODO: Implement...
+	/**
+	 * Request a Hello World message, for testing purposes
+	 * 
+	 * @param alternateHello: Optional alternative to using the word &#39;Hello&#39; in the reply
+	 * 
+	 * @return <ul>
+	 *   <li>code = 200, message = "A JSON structure containing a Hello World message", response = HelloReplyDto.class</li>
+	 *   </ul>
+	 * @throws ServiceException when other http codes should be returned
+	 *
+	 * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
+	 */
+	@Override
+	public HelloReplyDto getGreeting(String alternateHello) throws ServiceException {
+		// TODO: Implement...
 
 
-        try { 
-            HelloReplyDto response = new HelloReplyDto();
-            response.setMessage("KbqLzzD6");
-            return response;
-        } catch (Exception e){
-            throw handleException(e);
-        }
+		try { 
+			HelloReplyDto response = new HelloReplyDto();
+			response.setMessage("KbqLzzD6");
+			return response;
+		} catch (Exception e){
+			throw handleException(e);
+		}
 
-    }
+	}
 
-    @Override
-    public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
-        log.debug("checkAccessForIds(...) called with call details: {}", getCallDetails());
+	@Override
+	public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
+		log.debug("checkAccessForIds(...) called with call details: {}", getCallDetails());
 
-        //MonitorCache.registerNewRestMethodCall("checkAccessForIds");
-        try{
+		//MonitorCache.registerNewRestMethodCall("checkAccessForIds");
+		try{
 
-            PresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
-        }
-        catch(IllegalArgumentException e){
-            log.error("Unknown presentationtype:"+input.getPresentationType());
-            CheckAccessForIdsOutputDto output =  new CheckAccessForIdsOutputDto();
-            output.setAccessIds(new ArrayList<String>());
-            output.setPresentationType(input.getPresentationType());
-            output.setQuery("(NoAccess:NoAccess)"); //query that returns nothing
-            return output;
-        }
+			PresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
+		}
+		catch(IllegalArgumentException e){
+			log.error("Unknown presentationtype:"+input.getPresentationType());
+			CheckAccessForIdsOutputDto output =  new CheckAccessForIdsOutputDto();
+			output.setAccessIds(new ArrayList<String>());
+			output.setPresentationType(input.getPresentationType());
+			output.setQuery("(NoAccess:NoAccess)"); //query that returns nothing
+			return output;
+		}
 
-        try {      
-            CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForIds(input);      
-            return output;
-        } catch (Exception e) {
-            log.error("Error in checkAccessForIds:",e);
-            throw handleException(e);
-        }   
-    }
+		try {      
+			CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForIds(input);      
+			return output;
+		} catch (Exception e) {
+			log.error("Error in checkAccessForIds:",e);
+			throw handleException(e);
+		}   
+	}
 
-    @Override
-    public ValidateAccessOutputDto validateAccess(@Valid ValidateAccessInputDto input) {
-        log.debug("validateAccess(...) called with call details: {}", getCallDetails());
+	@Override
+	public ValidateAccessOutputDto validateAccess(@Valid ValidateAccessInputDto input) {
+		log.debug("validateAccess(...) called with call details: {}", getCallDetails());
 
-        System.out.println("validate access called");
-        //MonitorCache.registerNewRestMethodCall("validateAccess");
+		System.out.println("validate access called");
+		//MonitorCache.registerNewRestMethodCall("validateAccess");
 
-        try {
-            boolean access =  LicenseValidator.validateAccess(input);   
-            ValidateAccessOutputDto output = new ValidateAccessOutputDto();
-            output.setAccess(access);
-            return output;              
-        } catch (Exception e) {
-            throw handleException(e);
-        }   
+		try {
+			boolean access =  LicenseValidator.validateAccess(input);   
+			ValidateAccessOutputDto output = new ValidateAccessOutputDto();
+			output.setAccess(access);
+			return output;              
+		} catch (Exception e) {
+			throw handleException(e);
+		}   
 
-    }
-
-
-    @Override
-    public GetUsersLicensesOutputDto getUserLicenses(@NotNull GetUsersLicensesInputDto input) {
-        log.debug("getUserLicenses(...) called with call details: {}", getCallDetails());
-        //  MonitorCache.registerNewRestMethodCall("getUserLicenses");
-
-        ArrayList<LicenseOverviewDto> list = new ArrayList<LicenseOverviewDto>();
-        GetUsersLicensesOutputDto output = new GetUsersLicensesOutputDto();
-        output.setLicenses(list);
-        try {   
-            ArrayList<License> licenses = LicenseValidator.getUsersLicenses(input);
-
-            for (License current: licenses){
-                LicenseOverviewDto  item = new LicenseOverviewDto();
-                if ("en".equals(input.getLocale())){                      
-                    item.setName(current.getLicenseName_en());
-                    item.setDescription(current.getDescription_en());         
-
-                }
-                else{
-                    item.setName(current.getLicenseName());
-                    item.setDescription(current.getDescription_dk());              
-                }
-
-                item.setValidFrom(current.getValidFrom());
-                item.setValidTo(current.getValidTo());    
-                list.add(item);
-            }     
-            return output;    
-        } catch (Exception e) {
-            throw handleException(e);
-        }   
-    }
+	}
 
 
+	@Override
+	public GetUsersLicensesOutputDto getUserLicenses(@NotNull GetUsersLicensesInputDto input) {
+		log.debug("getUserLicenses(...) called with call details: {}", getCallDetails());
+		//  MonitorCache.registerNewRestMethodCall("getUserLicenses");
+
+		ArrayList<LicenseOverviewDto> list = new ArrayList<LicenseOverviewDto>();
+		GetUsersLicensesOutputDto output = new GetUsersLicensesOutputDto();
+		output.setLicenses(list);
+		try {   
+			ArrayList<License> licenses = LicenseValidator.getUsersLicenses(input);
+
+			for (License current: licenses){
+				LicenseOverviewDto  item = new LicenseOverviewDto();
+				if ("en".equals(input.getLocale())){                      
+					item.setName(current.getLicenseName_en());
+					item.setDescription(current.getDescription_en());         
+
+				}
+				else{
+					item.setName(current.getLicenseName());
+					item.setDescription(current.getDescription_dk());              
+				}
+
+				item.setValidFrom(current.getValidFrom());
+				item.setValidTo(current.getValidTo());    
+				list.add(item);
+			}     
+			return output;    
+		} catch (Exception e) {
+			throw handleException(e);
+		}   
+	}
 
 
 
 
-    
-    public String getUserLicenseQuery(@NotNull GetUserQueryInputDto input) {
-        log.debug("getUserLicenseQuery(...) called with call details: {}", getCallDetails());
+	public  GetUsersFilterQueryOutputDto getUserLicenseQuery(@NotNull GetUserQueryInputDto input) {
+		log.debug("getUserLicenseQuery(...) called with call details: {}", getCallDetails());
 
-        //MonitorCache.registerNewRestMethodCall("getUserLicenseQuery");
-        log.info("getUserLicenseQuery called");
-        try {
-            GetUserQueryOutputDto output = LicenseValidator.getUserQuery(input);   
-            
-log.info("-------------------getUserLicenseQuery----------------");
-log.info("input (presentationtype): "+input.getPresentationType());
-log.info("input (attributes): "+input.getAttributes());         
-log.info("output (User license query):"+output.getQuery());
-log.info("output (groups)" + output.getUserLicenseGroups());
-            
-            return output.getQuery();  
-        } catch (Exception e) {
-            throw handleException(e);
-        }   
+		//MonitorCache.registerNewRestMethodCall("getUserLicenseQuery");
+		log.info("getUserLicenseQuery called");
+		try {
+			GetUserQueryOutputDto output = LicenseValidator.getUserQuery(input);   
 
-    }
+			log.info("-------------------getUserLicenseQuery----------------");
+			log.info("input (presentationtype): "+input.getPresentationType());
+			log.info("input (attributes): "+input.getAttributes());         
+			log.info("output (User license query):"+output.getQuery());
+			log.info("output (groups)" + output.getUserLicenseGroups());
 
+			GetUsersFilterQueryOutputDto filterQuery= new GetUsersFilterQueryOutputDto();
+			filterQuery.setFilterQuery(output.getQuery());
 
+			return filterQuery;
+		} catch (Exception e) {
+			throw handleException(e);
+		}   
 
-    @Override
-    public GetUserGroupsOutputDto getUserGroups(GetUserGroupsInputDto input) {                  
-        log.debug("getUserGroups(...) called with call details: {}", getCallDetails());
-        //MonitorCache.registerNewRestMethodCall("getUserGroups");
-        try {
-            ArrayList<UserGroupDto> groups = LicenseValidator.getUsersGroups(input);                     
-            GetUserGroupsOutputDto output = new GetUserGroupsOutputDto();
-            output.setGroups(groups);
-
-            return output;    
-        } catch (Exception e) {
-            throw handleException(e);
-        }   
-
-    }
+	}
 
 
-    @Override
-    public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses(GetUserGroupsAndLicensesInputDto input) {
-        log.debug("getUserGroupsAndLicenses(...) called with call details: {}", getCallDetails());
 
-        //MonitorCache.registerNewRestMethodCall("getUserGroupsAndLicensesJSON");
+	@Override
+	public GetUserGroupsOutputDto getUserGroups(GetUserGroupsInputDto input) {                  
+		log.debug("getUserGroups(...) called with call details: {}", getCallDetails());
+		//MonitorCache.registerNewRestMethodCall("getUserGroups");
+		try {
+			ArrayList<UserGroupDto> groups = LicenseValidator.getUsersGroups(input);                     
+			GetUserGroupsOutputDto output = new GetUserGroupsOutputDto();
+			output.setGroups(groups);
 
-        GetUserGroupsInputDto input1 = new GetUserGroupsInputDto();
-        input1.setAttributes(input.getAttributes());
-        input1.setLocale(input.getLocale());
+			return output;    
+		} catch (Exception e) {
+			throw handleException(e);
+		}   
 
-        GetUsersLicensesInputDto input2 = new GetUsersLicensesInputDto();
-        input2.setAttributes(input.getAttributes());
-        input2.setLocale(input.getLocale());
+	}
 
-        GetUserGroupsOutputDto userGroups = getUserGroups(input1);          
 
-        GetUsersLicensesOutputDto userLicenses = getUserLicenses(input2);        
-        GetUserGroupsAndLicensesOutputDto  output = new GetUserGroupsAndLicensesOutputDto();
-        output.setAllPresentationTypes(LicenseValidator.getAllPresentationtypeNames(input.getLocale()));
-        output.setAllGroups(LicenseValidator.getAllGroupeNames(input.getLocale()));
-        output.setGroups(userGroups.getGroups());
-        output.setLicenses(userLicenses.getLicenses());           
-        return output;
+	@Override
+	public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses(GetUserGroupsAndLicensesInputDto input) {
+		log.debug("getUserGroupsAndLicenses(...) called with call details: {}", getCallDetails());
 
-    }
+		//MonitorCache.registerNewRestMethodCall("getUserGroupsAndLicensesJSON");
+
+		GetUserGroupsInputDto input1 = new GetUserGroupsInputDto();
+		input1.setAttributes(input.getAttributes());
+		input1.setLocale(input.getLocale());
+
+		GetUsersLicensesInputDto input2 = new GetUsersLicensesInputDto();
+		input2.setAttributes(input.getAttributes());
+		input2.setLocale(input.getLocale());
+
+		GetUserGroupsOutputDto userGroups = getUserGroups(input1);          
+
+		GetUsersLicensesOutputDto userLicenses = getUserLicenses(input2);        
+		GetUserGroupsAndLicensesOutputDto  output = new GetUserGroupsAndLicensesOutputDto();
+		output.setAllPresentationTypes(LicenseValidator.getAllPresentationtypeNames(input.getLocale()));
+		output.setAllGroups(LicenseValidator.getAllGroupeNames(input.getLocale()));
+		output.setGroups(userGroups.getGroups());
+		output.setLicenses(userLicenses.getLicenses());           
+		return output;
+
+	}
 
 
 }

@@ -8,7 +8,7 @@ Method | HTTP request | Description
 [**getGreeting**](DsLicenseApi.md#getGreeting) | **GET** /hello | Request a Hello World message, for testing purposes
 [**getUserGroups**](DsLicenseApi.md#getUserGroups) | **POST** /getUserGroups | Get the groups that the user has access to
 [**getUserGroupsAndLicenses**](DsLicenseApi.md#getUserGroupsAndLicenses) | **POST** /getUserGroupsAndLicenses | Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes
-[**getUserLicenseQuery**](DsLicenseApi.md#getUserLicenseQuery) | **POST** /getUserLicenseQuery | Shows the filter query for Solr generated from the user attributes. This query is used to filter IDs
+[**getUserLicenseQuery**](DsLicenseApi.md#getUserLicenseQuery) | **POST** /getUserLicenseQuery | Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search
 [**getUserLicenses**](DsLicenseApi.md#getUserLicenses) | **POST** /getUserLicenses | Get a list of all licences that validates from user attributes.
 [**validateAccess**](DsLicenseApi.md#validateAccess) | **POST** /validateAccess | Validate if user has access to all groups in input.
 
@@ -255,9 +255,9 @@ No authorization required
 
 <a name="getUserLicenseQuery"></a>
 # **getUserLicenseQuery**
-> String getUserLicenseQuery(getUserQueryInputDto)
+> GetUsersFilterQueryOutputDto getUserLicenseQuery(getUserQueryInputDto)
 
-Shows the filter query for Solr generated from the user attributes. This query is used to filter IDs
+Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search
 
 ### Example
 ```java
@@ -276,7 +276,7 @@ public class Example {
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     GetUserQueryInputDto getUserQueryInputDto = new GetUserQueryInputDto(); // GetUserQueryInputDto | 
     try {
-      String result = apiInstance.getUserLicenseQuery(getUserQueryInputDto);
+      GetUsersFilterQueryOutputDto result = apiInstance.getUserLicenseQuery(getUserQueryInputDto);
       System.out.println(result);
     } catch (ApiException e) {
       System.err.println("Exception when calling DsLicenseApi#getUserLicenseQuery");
@@ -297,7 +297,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**String**
+[**GetUsersFilterQueryOutputDto**](GetUsersFilterQueryOutputDto.md)
 
 ### Authorization
 
@@ -306,12 +306,12 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/json
- - **Accept**: text/plain
+ - **Accept**: application/json
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | The Solr filter query |  -  |
+**200** | The Solr filter query. |  -  |
 
 <a name="getUserLicenses"></a>
 # **getUserLicenses**

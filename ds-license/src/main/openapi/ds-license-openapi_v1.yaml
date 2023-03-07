@@ -108,7 +108,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'Shows the filter query for Solr generated from the user attributes. This query is used to filter IDs'
+      summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
       operationId: getUserLicenseQuery      
       requestBody:
         content:
@@ -119,12 +119,13 @@ paths:
     
       responses:
         '200':
-          description: 'The Solr filter query'
+          description: 'The Solr filter query.'
           content:
-            text/plain:
-              schema:
-                type: string
-                example: '(((subject:"Tyskland") OR (id:*manus!judsam!*)) -(group:"klausuleret"))'                      
+            application/json:    # Media type
+              schema:            # Request body contents
+                $ref: '#/components/schemas/GetUsersFilterQueryOutput'                    
+                example: '{"filterQuery": "(((subject:\"Tyskland\") OR (id:*manus!judsam!*)) -(access_blokeret:true))"}'                      
+
 
   /getUserGroups:
     post:
@@ -377,6 +378,12 @@ components:
             $ref: '#/components/schemas/LicenseOverview'
 
 
+    GetUsersFilterQueryOutput:
+      type: object
+      properties:                
+        filterQuery:
+          type: string      
+          
 
     GetUserQueryInput:
       type: object
