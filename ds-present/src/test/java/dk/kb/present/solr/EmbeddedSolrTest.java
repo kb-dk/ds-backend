@@ -57,6 +57,7 @@ public class EmbeddedSolrTest {
 	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
 	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
 	public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
+	public static final String RECORD_DB_hans = "xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml";
 
 
 
@@ -473,8 +474,29 @@ public class EmbeddedSolrTest {
 		assertEquals("2000-3/7",record.getFieldValue("accession_number"));
 	}
 
-	// TODO: Add test for list_of_categories
-	
+	@Test
+	void testPublishedInAndCollection() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DB_hans);
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		//System.out.println(prettyJsonString);
+
+		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+		embeddedServer.add(document);
+		embeddedServer.commit();
+		assertEquals(1, getNumberOfTotalDocuments());
+
+		//Full life cycle test
+		SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
+
+		//Single value field
+		assertEquals("Bladtegnersamlingen",record.getFieldValue("collection"));
+		assertEquals("Aktuelt", record.getFieldValue("published_in"));
+	}
+
+
 
 	/*
 	 * ------- Private helper methods below -------------- 

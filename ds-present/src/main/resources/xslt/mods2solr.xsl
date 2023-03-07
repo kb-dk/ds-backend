@@ -131,11 +131,20 @@
             </f:string>
           </xsl:if>
           <!-- If host collection exist, extract it-->
-          <xsl:if test="m:relatedItem[@type='host']/m:titleInfo/m:title">
+          <xsl:if test="m:relatedItem[@type='host' and @displayLabel='Samling']">
             <f:string key="collection">
-              <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
+              <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Samling'])"/>
             </f:string>
           </xsl:if>
+
+          <xsl:if test="m:relatedItem[@type='host' and @displayLabel='Publication']">
+            <f:string key="published_in">
+              <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Publication'])"/>
+            </f:string>
+          </xsl:if>
+
+
+
           <!-- if note field of type content exists extract it-->
           <xsl:if test="m:note[@type='content']">
             <f:array key="content">

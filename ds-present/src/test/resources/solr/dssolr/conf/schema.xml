@@ -26,6 +26,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="categories" type="string" docValues="true" stored="true"/>
   <field name="list_of_categories" type="string"  multiValued="true" docValues="true" stored="true"/>
   <field name="collection" type="string" docValues="true" stored="true"/>
+  <field name="published_in" type="string" docValues="true" stored="true"/>
   <field name="resource_description" type="string" multiValued="false"  docValues="true"/>
   <field name="type_of_resource" type="string" multiValued="true"  docValues="true"/>
 
