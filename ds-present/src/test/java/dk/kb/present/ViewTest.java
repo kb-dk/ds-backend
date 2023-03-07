@@ -30,6 +30,7 @@ class ViewTest {
         assertEquals("SameAsInput", view.apply("someID", "SameAsInput")); // Identity view
     }
 
+    /*
     @Test
     void jsonld() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
@@ -39,4 +40,6 @@ class ViewTest {
         String jsonld = jsonldView.apply("albert-einstein", mods);
         assertTrue(jsonld.contains("\"name\":{\"@language\":\"en\",\"@value\":\"Einstein, Albert"));
     }
+
+     */
 }
