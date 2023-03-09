@@ -63,7 +63,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         String prettyJsonString = gson.toJson(je);
 
         System.out.println(prettyJsonString);
-        System.out.println(schemaOrgString);
+        //System.out.println(schemaOrgString);
 
 
         Assertions.assertTrue(schemaOrgString.contains("\"id\":\"770379f0-8a0d-11e1-805f-0016357f605f\""));
