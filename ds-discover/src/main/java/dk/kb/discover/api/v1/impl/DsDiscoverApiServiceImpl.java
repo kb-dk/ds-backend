@@ -88,6 +88,8 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     private transient MessageContext messageContext;
 
 
+    private static DsLicenseApi licenseClient;  
+    
     /**
      * Solr [Collection Management Commands](https://solr.apache.org/guide/8_10/collection-management.html)
      * 
@@ -181,7 +183,8 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             DsLicenseApi licenseClient = getDsLicenseApiClient();
             GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
             GetUsersFilterQueryOutputDto filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
-            log.info("filter query from licensemodule:"+filterQuery.getFilterQuery()); // in the start this is a very usefull log!            
+                        
+            log.info("Using filter query='{}'  for user attributes='{}' ",filterQuery.getFilterQuery(), getLicenseQueryDto()) ;
             fq.add(filterQuery.getFilterQuery()); //Add the additional filter query
                         
             return solr.query(q, fq, rows, start, fl, facet, facetField, qOp, wt, version, indent, debug, debugExplainStructured);
@@ -213,11 +216,14 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     }
     
     private static DsLicenseApi getDsLicenseApiClient() {
+      
+      if (licenseClient!= null) {
+        return licenseClient;
+      }
         
-        ApiClient client = Configuration.getDefaultApiClient();        
-
-        String dsLicenseUrl = ServiceConfig.getConfig().getString("config.licensemodule.url");                                
-        return new DsLicenseClient(dsLicenseUrl);        
+      String dsLicenseUrl = ServiceConfig.getConfig().getString("config.licensemodule.url");                                
+      licenseClient = new DsLicenseClient(dsLicenseUrl);               
+      return licenseClient;
     }
     
     
