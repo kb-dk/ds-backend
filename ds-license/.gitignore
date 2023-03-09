@@ -12,3 +12,5 @@ README_OLD.md
 conf/ds-license-environment.yaml
 conf/ds-license-local.yaml
 setup_project.sh
+/.openapi-generator-ignore
+
