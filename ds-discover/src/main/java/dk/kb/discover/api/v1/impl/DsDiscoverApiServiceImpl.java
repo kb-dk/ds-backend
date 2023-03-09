@@ -24,6 +24,7 @@ import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import dk.kb.discover.SolrManager;
 import dk.kb.discover.SolrService;
 import dk.kb.discover.api.v1.DsDiscoverApi;
@@ -34,6 +35,7 @@ import dk.kb.license.invoker.v1.Configuration;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
+import dk.kb.license.util.DsLicenseClient;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -214,13 +216,8 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         
         ApiClient client = Configuration.getDefaultApiClient();        
 
-        //get properties from YAML-file
-        client.setHost(ServiceConfig.getConfig().getString("config.licensemodule.host"));
-        int port = Integer.parseInt(ServiceConfig.getConfig().getString("config.licensemodule.port"));
-        client.setPort(port);
-        client.setBasePath(ServiceConfig.getConfig().getString("config.licensemodule.basepath"));
-                        
-        return new DsLicenseApi(client);        
+        String dsLicenseUrl = ServiceConfig.getConfig().getString("config.licensemodule.url");                                
+        return new DsLicenseClient(dsLicenseUrl);        
     }
     
     

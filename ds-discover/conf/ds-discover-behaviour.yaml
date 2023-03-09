@@ -37,6 +37,5 @@ config:
 
   #License module is called to generate a filter query that is used when calling Solr          
   licensemodule:
-    host: localhost
-    port: 9076
-    basepath: /ds-license/v1      
+    url: http://localhost:9076/ds-license/v1
+          
