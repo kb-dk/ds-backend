@@ -31,6 +31,21 @@
             <role key="prt" href="http://id.loc.gov/vocabulary/relators/art">relator:prt</role>
         </roles>
     </xsl:variable>
+
+    <xsl:variable name="types">
+        <types>
+            <type key="Fotografi" href="https://schema.org/Photograph">Photograph</type>
+            <type key="Anskuelsesbillede" href="https://schema.org/Poster">Poster</type>
+            <type key="Postkort" href="https://schema.org/Message">Message</type>
+            <type key="Grafik" href="https://schema.org/Photograph">Photograph</type>
+            <type key="Negativ" href="https://schema.org/Photograph">Photograph</type>
+            <type key="Plakat" href="https://schema.org/Poster">Poster</type>
+            <type key="Bladtegning" href="https://schema.org/Drawing">Drawing</type>
+            <type key="Tegning" href="https://schema.org/Drawing">Drawing</type>
+            <type key="Arkitekturfotografi" href="https://schema.org/Photograph">Photograph</type>
+            <type key="Genstand" href="https://schema.org/Thing">Thing</type> <!-- Product, CreativeArtwork, Thing??????-->
+        </types>
+    </xsl:variable>
     <xsl:template match="/">
 
         <xsl:variable name="json">
@@ -57,12 +72,26 @@
                         </f:map>
                     </f:array>
                     <f:string key="@type">
-                        <!-- TODO this only works with COP mods, figure out a method for finding type i preservation mods -->
+                        <!-- TODO this only works with COP mods, figure out a method for finding type i preservation mods
                         <xsl:choose>
                             <xsl:when test="contains($record-id,'images')">VisualArtwork</xsl:when>
                             <xsl:when test="contains($record-id,'manus')">Manuscript</xsl:when>
                             <xsl:when test="contains($record-id,'letters')">Message</xsl:when>
                             <xsl:when test="contains($record-id,'books')">Book</xsl:when>
+                            <xsl:otherwise>CreativeWork</xsl:otherwise>
+                        </xsl:choose> -->
+                        <!-- Mapping from resourcetypes in new MODS -->
+                        <xsl:choose>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Fotografi'">Photograph</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Anskuelsesbillede'">Poster</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Postkort'">Message</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Grafik'">Photograph</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Negativ'">Photograph</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Plakat'">Poster</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Bladtegning'">Drawing</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Tegning'">Drawing</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Arkitekturfotografi'">Photograph</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Genstand'">Thing</xsl:when>
                             <xsl:otherwise>CreativeWork</xsl:otherwise>
                         </xsl:choose>
                     </f:string>
@@ -622,7 +651,7 @@
                     </xsl:variable>
                     <xsl:for-each select="m:title">
                         <f:map>
-                            <f:string key="@value"><xsl:value-of select="."/></f:string>
+                            <f:string key="value"><xsl:value-of select="."/></f:string>
                             <f:string key="@language"><xsl:value-of select="$xml_lang"/></f:string>
                         </f:map>
                     </xsl:for-each>

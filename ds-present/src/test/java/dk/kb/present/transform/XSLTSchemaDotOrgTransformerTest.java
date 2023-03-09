@@ -30,6 +30,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(schemaOrgString);
 
         Assertions.assertTrue(schemaOrgString.contains("\"id\":\"05fea810-7181-11e0-82d7-002185371280\""));
+        Assertions.assertTrue(schemaOrgString.contains("\"@type\":\"Photograph\""));
         Assertions.assertTrue(schemaOrgString.contains("\"dateCreated\":\"1899\""));
         Assertions.assertTrue(schemaOrgString.contains("\"temporal\":\"Created between 1850 and 1899\""));
         Assertions.assertTrue(schemaOrgString.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"Emil Bærentzen\",\"givenName\":\"Emil\",\"familyName\":\"Bærentzen\",\"birthDate\":\"1799-10-30\",\"deathDate\":\"1868-2-14\","));
