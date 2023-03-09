@@ -57,7 +57,8 @@ public class EmbeddedSolrTest {
 	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
 	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
 	public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
-
+	public static final String RECORD_DB_hans = "xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml";
+	public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
 
 
 
@@ -408,11 +409,18 @@ public class EmbeddedSolrTest {
 		assertEquals(2,typeResources.size());
 		assertTrue(typeResources.contains("Billede, Todimensionalt billedmateriale"));
 		assertTrue(typeResources.contains("Dia"));
+
+		Collection<Object> listOfCategories = record.getFieldValues("list_of_categories");
+		assertEquals(7, listOfCategories.size());
+		assertTrue(listOfCategories.contains("KHP"));
+		assertTrue(listOfCategories.contains("1940-1950"));
+		assertTrue(listOfCategories.contains("ikke UA"));
+
 		//TODO more fields
 	}
 
 	@Test
-	void testRecordUldallForTitle() throws Exception {
+	void testRecordUldallForTitleAndPlaceOfProduction() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ULDALL);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -433,6 +441,9 @@ public class EmbeddedSolrTest {
 
 		// Title field
 		assertEquals("Foborg, Foburgum", record.getFieldValue("title"));
+
+		// Place of production
+		assertEquals("Danmark", record.getFieldValue("place_of_production"));
 
 		/*
 		//multivalue field
@@ -466,7 +477,50 @@ public class EmbeddedSolrTest {
 		assertEquals("2000-3/7",record.getFieldValue("accession_number"));
 	}
 
-	
+	@Test
+	void testPublishedInAndCollection() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DB_hans);
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		//System.out.println(prettyJsonString);
+
+		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+		embeddedServer.add(document);
+		embeddedServer.commit();
+		assertEquals(1, getNumberOfTotalDocuments());
+
+		//Full life cycle test
+		SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
+
+		//Single value field
+		assertEquals("Bladtegnersamlingen",record.getFieldValue("collection"));
+		assertEquals("Aktuelt", record.getFieldValue("published_in"));
+	}
+
+	@Test
+	void testTitle() throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_JB000132);
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		//System.out.println(prettyJsonString);
+
+		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+		embeddedServer.add(document);
+		embeddedServer.commit();
+		assertEquals(1, getNumberOfTotalDocuments());
+
+		//Full life cycle test
+		SolrDocument record = getRecordById("770379f0-8a0d-11e1-805f-0016357f605f");
+
+		//Single value field
+		assertEquals("Romeo og Julie", record.getFieldValue("title"));
+	}
+
+
 
 	/*
 	 * ------- Private helper methods below -------------- 

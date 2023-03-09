@@ -104,13 +104,25 @@
               <xsl:value-of select="m:identifier[@type='accession number']"/>
             </f:string>
           </xsl:if>
-          <!-- Categories seems to be a collection of other fields. -->
-          <!-- TODO: Check with MODS standard-->
+          <!-- Categories seems to be a collection of multiple categories seperated by commas. -->
+          <!-- According to the MODS standard genre should contain info more specific than typeOfResource -->
           <xsl:if test="m:genre[@type='Categories']">
             <f:string key="categories">
               <xsl:value-of select="m:genre[@type='Categories']"/>
             </f:string>
+            <!-- Creates an array of categories split on commas.
+                  Regex removes dates from categories-->
+            <f:array key="list_of_categories">
+              <xsl:for-each select="distinct-values(tokenize(m:genre[@type='Categories'], ','))">
+                <xsl:if test=". != '' and not(matches(. , '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'))">
+                  <f:string>
+                    <xsl:value-of select="normalize-space(.)"/>
+                  </f:string>
+                </xsl:if>
+              </xsl:for-each>
+            </f:array>
           </xsl:if>
+
           <!-- Different things can be represented in note. -->
           <!-- If catalog name exists, extract it-->
           <xsl:if test="m:note[@displayLabel='Catalog Name']">
@@ -119,11 +131,20 @@
             </f:string>
           </xsl:if>
           <!-- If host collection exist, extract it-->
-          <xsl:if test="m:relatedItem[@type='host']/m:titleInfo/m:title">
+          <xsl:if test="m:relatedItem[@type='host' and @displayLabel='Samling']">
             <f:string key="collection">
-              <xsl:value-of select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
+              <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Samling'])"/>
             </f:string>
           </xsl:if>
+
+          <xsl:if test="m:relatedItem[@type='host' and @displayLabel='Publication']">
+            <f:string key="published_in">
+              <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Publication'])"/>
+            </f:string>
+          </xsl:if>
+
+
+
           <!-- if note field of type content exists extract it-->
           <xsl:if test="m:note[@type='content']">
             <f:array key="content">
@@ -267,198 +288,203 @@
                 </f:array>
               </xsl:if>
             </xsl:if>
-            <!-- Extract creator date of birth and death if present.
-                 Complex extraction that saves the first value for a creator and then matches this date
-                 up against three different patterns to determine which dates are present.
-                 This works, but might not return all death dates if the first result doesn't have a death date -->
-            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'art' or 'aut'">
-              <xsl:if test="m:name/m:namePart[@type='date']">
-                <!-- Select single testDate -->
-                <xsl:variable name="testDate" select="m:name[1]"/>
-                <!-- Scenario 1 -->
-                <xsl:choose>
-                  <xsl:when test="matches($testDate, '\d+-\d+-\d+/\d+-\d+-\d+')">
-                    <f:array key="creator_date_of_birth">
-                      <xsl:for-each select="m:name">
-                        <xsl:if test="substring-before(m:namePart[@type='date'], '/') != ''">
+          <!-- Extract creator date of birth and death if present.
+               Complex extraction that saves the first value for a creator and then matches this date
+               up against three different patterns to determine which dates are present.
+               This works, but might not return all death dates if the first result doesn't have a death date -->
+          <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'art' or 'aut'">
+            <xsl:if test="m:name/m:namePart[@type='date']">
+              <!-- Select single testDate -->
+              <xsl:variable name="testDate" select="m:name[1]"/>
+              <!-- Scenario 1 -->
+              <xsl:choose>
+                <xsl:when test="matches($testDate, '\d+-\d+-\d+/\d+-\d+-\d+')">
+                  <f:array key="creator_date_of_birth">
+                    <xsl:for-each select="m:name">
+                      <xsl:if test="substring-before(m:namePart[@type='date'], '/') != ''">
+                      <f:string>
+                        <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
+                      </f:string>
+                      </xsl:if>
+                    </xsl:for-each>
+                  </f:array>
+                  <f:array key="creator_date_of_death">
+                    <xsl:for-each select="m:name">
+                      <xsl:if test="substring-after(m:namePart[@type='date'], '/') != ''">
+                        <f:string>
+                          <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
+                        </f:string>
+                      </xsl:if>
+                    </xsl:for-each>
+                  </f:array>
+                </xsl:when>
+                <!-- Scenario 2 -->
+                <xsl:when test="matches($testDate, '\d+-\d+-\d+/')">
+                  <f:array key="creator_date_of_birth">
+                    <xsl:for-each select="m:name">
+                      <xsl:if test="substring-before(m:namePart[@type='date'], '/') != ''">
                         <f:string>
                           <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
                         </f:string>
-                        </xsl:if>
-                      </xsl:for-each>
-                    </f:array>
-                    <f:array key="creator_date_of_death">
-                      <xsl:for-each select="m:name">
-                        <xsl:if test="substring-after(m:namePart[@type='date'], '/') != ''">
-                          <f:string>
-                            <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
-                          </f:string>
-                        </xsl:if>
-                      </xsl:for-each>
-                    </f:array>
-                  </xsl:when>
-                  <!-- Scenario 2 -->
-                  <xsl:when test="matches($testDate, '\d+-\d+-\d+/')">
-                    <f:array key="creator_date_of_birth">
-                      <xsl:for-each select="m:name">
-                        <xsl:if test="substring-before(m:namePart[@type='date'], '/') != ''">
-                          <f:string>
-                            <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
-                          </f:string>
-                        </xsl:if>
-                      </xsl:for-each>
-                    </f:array>
-                  </xsl:when>
-                  <!-- Scenario 3 -->
-                  <xsl:when test="matches($testDate, '/\d+-\d+-\d+')">
-                    <f:array key="creator_date_of_death">
-                      <xsl:for-each select="m:name">
-                        <xsl:if test="substring-after(m:namePart[@type='date'], '/') != ''">
-                          <f:string>
-                            <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
-                          </f:string>
-                        </xsl:if>
-                      </xsl:for-each>
-                    </f:array>
-                  </xsl:when>
-                </xsl:choose>
-              </xsl:if>
-              <!-- If there is an affiliation for the creator it gets extracted here-->
-              <xsl:if test="m:name/m:affiliation">
-                <f:array key="creator_affiliation">
-                  <xsl:for-each select="m:name/m:affiliation">
-                    <xsl:if test=". != ''">
-                      <f:string>
-                        <xsl:value-of select="f:replace(., 'zh\|', '')"/>
-                      </f:string>
-                    </xsl:if>
-                  </xsl:for-each>
-                </f:array>
-              </xsl:if>
-              <!-- Description of affiliation, maybe this could have a better field name-->
-              <xsl:if test="m:name/m:description">
-                <f:array key="creator_description">
-                  <xsl:for-each select="m:name/m:description">
-                    <xsl:if test=". != ''">
-                      <f:string>
-                        <xsl:value-of select="f:replace(., 'zh\|', '')"/>
-                      </f:string>
-                    </xsl:if>
-                  </xsl:for-each>
-                </f:array>
-              </xsl:if>
+                      </xsl:if>
+                    </xsl:for-each>
+                  </f:array>
+                </xsl:when>
+                <!-- Scenario 3 -->
+                <xsl:when test="matches($testDate, '/\d+-\d+-\d+')">
+                  <f:array key="creator_date_of_death">
+                    <xsl:for-each select="m:name">
+                      <xsl:if test="substring-after(m:namePart[@type='date'], '/') != ''">
+                        <f:string>
+                          <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
+                        </f:string>
+                      </xsl:if>
+                    </xsl:for-each>
+                  </f:array>
+                </xsl:when>
+              </xsl:choose>
             </xsl:if>
-          </xsl:if>
-          <!-- Information on the original gets extracted here. Production date primarily-->
-          <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
-            <xsl:choose>
-              <xsl:when test="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']">
-                <f:string key="production_date_start">
-                  <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']"/>
-                </f:string>
-                <f:string key="production_date_end">
-                  <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
-                </f:string>
-              </xsl:when>
-              <xsl:otherwise>
-                <f:string key="date_created">
-                  <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
-                </f:string>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:if>
-          <!-- The topic of given item gets extracted here, if present-->
-          <xsl:if test="m:subject/m:topic[@lang]">
-            <f:array key="topic">
-              <xsl:for-each select="m:subject">
-                <xsl:for-each select="m:topic[@lang]">
+            <!-- If there is an affiliation for the creator it gets extracted here-->
+            <xsl:if test="m:name/m:affiliation">
+              <f:array key="creator_affiliation">
+                <xsl:for-each select="m:name/m:affiliation">
                   <xsl:if test=". != ''">
                     <f:string>
                       <xsl:value-of select="f:replace(., 'zh\|', '')"/>
                     </f:string>
                   </xsl:if>
                 </xsl:for-each>
-              </xsl:for-each>
-            </f:array>
+              </f:array>
+            </xsl:if>
+            <!-- Description of affiliation, maybe this could have a better field name-->
+            <xsl:if test="m:name/m:description">
+              <f:array key="creator_description">
+                <xsl:for-each select="m:name/m:description">
+                  <xsl:if test=". != ''">
+                    <f:string>
+                      <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+                    </f:string>
+                  </xsl:if>
+                </xsl:for-each>
+              </f:array>
+            </xsl:if>
           </xsl:if>
-          <!-- geographical data gets extracted here -->
-          <xsl:if test="m:subject/m:hierarchicalGeographic">
-            <xsl:for-each select="m:subject/m:hierarchicalGeographic">
-              <f:string key="area">
-                <xsl:value-of select="m:area"/>
+        </xsl:if>
+        <!-- Information on the original gets extracted here. Production date primarily-->
+        <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
+          <xsl:choose>
+            <xsl:when test="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']">
+              <f:string key="production_date_start">
+                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start']"/>
+              </f:string>
+              <f:string key="production_date_end">
+                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
+              </f:string>
+            </xsl:when>
+            <xsl:otherwise>
+              <f:string key="date_created">
+                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
+              </f:string>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:if>
+        <xsl:if test="m:originInfo/m:place">
+          <f:string key="place_of_production">
+            <xsl:value-of select="normalize-space(m:originInfo/m:place)"/>
+          </f:string>
+        </xsl:if>
+        <!-- The topic of given item gets extracted here, if present-->
+        <xsl:if test="m:subject/m:topic[@lang]">
+          <f:array key="topic">
+            <xsl:for-each select="m:subject">
+              <xsl:for-each select="m:topic[@lang]">
+                <xsl:if test=". != ''">
+                  <f:string>
+                    <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+                  </f:string>
+                </xsl:if>
+              </xsl:for-each>
+            </xsl:for-each>
+          </f:array>
+        </xsl:if>
+        <!-- geographical data gets extracted here -->
+        <xsl:if test="m:subject/m:hierarchicalGeographic">
+          <xsl:for-each select="m:subject/m:hierarchicalGeographic">
+            <f:string key="area">
+              <xsl:value-of select="m:area"/>
+            </f:string>
+          </xsl:for-each>
+        </xsl:if>
+        <!-- Data on subject person gets extracted here. Including names, dates of birth, death and terms of address -->
+        <xsl:if test="m:subject/m:name">
+          <f:array key="subject_name">
+            <xsl:for-each select="m:subject/m:name">
+              <f:string>
+                <xsl:choose>
+                  <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given']">
+                    <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='family'],', ', m:namePart[@type='given'])), 'zh\|', '')"/>
+                  </xsl:when>
+                  <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
+                    <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
+                  </xsl:when>
+                  <xsl:when test="m:namePart[@type='given'] and not (m:namePart[@type='family'])">
+                    <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
+                  </xsl:when>
+                </xsl:choose>
               </f:string>
             </xsl:for-each>
-          </xsl:if>
-          <!-- Data on subject person gets extracted here. Including names, dates of birth, death and terms of address -->
-          <xsl:if test="m:subject/m:name">
-            <f:array key="subject_name">
+          </f:array>
+          <f:array key="subject_full_name">
+            <xsl:for-each select="m:subject/m:name">
+            <f:string>
+              <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='given'],' ',m:namePart[@type='family'])), 'zh\|', '')"/>
+            </f:string>
+            </xsl:for-each>
+          </f:array>
+          <xsl:if test="m:subject/m:name/m:namePart[@type='family'] and m:subject/m:name/m:namePart[@type='family'] != ''">
+            <f:array key="subject_family_name">
               <xsl:for-each select="m:subject/m:name">
                 <f:string>
-                  <xsl:choose>
-                    <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given']">
-                      <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='family'],', ', m:namePart[@type='given'])), 'zh\|', '')"/>
-                    </xsl:when>
-                    <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
-                      <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
-                    </xsl:when>
-                    <xsl:when test="m:namePart[@type='given'] and not (m:namePart[@type='family'])">
-                      <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
-                    </xsl:when>
-                  </xsl:choose>
+                    <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
                 </f:string>
               </xsl:for-each>
             </f:array>
-            <f:array key="subject_full_name">
+          </xsl:if>
+          <xsl:if test="m:subject/m:name/m:namePart[@type='given'] and m:subject/m:name/m:namePart[@type='given'] != ''">
+            <f:array key="subject_given_name">
               <xsl:for-each select="m:subject/m:name">
-              <f:string>
-                <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='given'],' ',m:namePart[@type='family'])), 'zh\|', '')"/>
-              </f:string>
+                <f:string>
+                  <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
+                </f:string>
               </xsl:for-each>
             </f:array>
-            <xsl:if test="m:subject/m:name/m:namePart[@type='family'] and m:subject/m:name/m:namePart[@type='family'] != ''">
-              <f:array key="subject_family_name">
-                <xsl:for-each select="m:subject/m:name">
-                  <f:string>
-                      <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
-                  </f:string>
-                </xsl:for-each>
-              </f:array>
-            </xsl:if>
-            <xsl:if test="m:subject/m:name/m:namePart[@type='given'] and m:subject/m:name/m:namePart[@type='given'] != ''">
-              <f:array key="subject_given_name">
-                <xsl:for-each select="m:subject/m:name">
-                  <f:string>
-                    <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
-                  </f:string>
-                </xsl:for-each>
-              </f:array>
-            </xsl:if>
-            <xsl:if test="m:subject/m:name/m:namePart[@type='date'] and m:subject/m:name/m:namePart[@type='date'] != ''">
-              <f:array key="subject_date_of_birth">
-                <xsl:for-each select="m:subject/m:name">
-                  <f:string>
-                    <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
-                  </f:string>
-                </xsl:for-each>
-              </f:array>
-              <f:array key="subject_date_of_death">
-                <xsl:for-each select="m:subject/m:name">
-                  <f:string>
-                    <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
-                  </f:string>
-                </xsl:for-each>
-              </f:array>
-            </xsl:if>
-            <xsl:if test="m:subject/m:name/m:namePart[@type='termsOfAddress'] and m:subject/m:name/m:namePart[@type='termsOfAddress'] != ''">
-              <f:array key="subject_terms_of_address">
-                <xsl:for-each select="m:subject/m:name">
-                  <f:string>
-                    <xsl:value-of select="f:replace(m:namePart[@type='termsOfAddress'], 'zh\|', '')"/>
-                  </f:string>
-                </xsl:for-each>
-              </f:array>
-            </xsl:if>
           </xsl:if>
+          <xsl:if test="m:subject/m:name/m:namePart[@type='date'] and m:subject/m:name/m:namePart[@type='date'] != ''">
+            <f:array key="subject_date_of_birth">
+              <xsl:for-each select="m:subject/m:name">
+                <f:string>
+                  <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
+                </f:string>
+              </xsl:for-each>
+            </f:array>
+            <f:array key="subject_date_of_death">
+              <xsl:for-each select="m:subject/m:name">
+                <f:string>
+                  <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
+                </f:string>
+              </xsl:for-each>
+            </f:array>
+          </xsl:if>
+          <xsl:if test="m:subject/m:name/m:namePart[@type='termsOfAddress'] and m:subject/m:name/m:namePart[@type='termsOfAddress'] != ''">
+            <f:array key="subject_terms_of_address">
+              <xsl:for-each select="m:subject/m:name">
+                <f:string>
+                  <xsl:value-of select="f:replace(m:namePart[@type='termsOfAddress'], 'zh\|', '')"/>
+                </f:string>
+              </xsl:for-each>
+            </f:array>
+          </xsl:if>
+        </xsl:if>
         <!-- Display label can in theory contain anything.
              Resource Description seems to be the field that contains the most precise description of a given resource. -->
         <xsl:if test="m:typeOfResource[@displayLabel='Resource Description']">
@@ -466,17 +492,25 @@
             <xsl:value-of select="m:typeOfResource[@displayLabel='Resource Description']"/>
           </f:string>
         </xsl:if>
-          <!-- Type of resource gets extracted here if present -->
-          <!-- TODO: Should probably be named something like resource_categories -->
-          <xsl:if test="m:typeOfResource">
-            <f:array key="type_of_resource">
-              <xsl:for-each select="m:typeOfResource">
-                <f:string>
-                  <xsl:value-of select="."/>
-                </f:string>
-              </xsl:for-each>
-            </f:array>
-          </xsl:if>
+        <!-- Type of resource gets extracted here if present -->
+        <!-- TODO: Should probably be named something like resource_categories -->
+        <xsl:if test="m:typeOfResource">
+          <f:array key="type_of_resource">
+            <xsl:for-each select="m:typeOfResource">
+              <f:string>
+                <xsl:value-of select="."/>
+              </f:string>
+            </xsl:for-each>
+          </f:array>
+        </xsl:if>
+        <!-- Create target_audience. This is not in our test files but part of MODS standard.
+              Could be used in other collections. -->
+        <xsl:if test="m:targetInfo">
+          <f:string key="target_audience">
+            <xsl:value-of select="m:targetInfo"/>
+          </f:string>
+        </xsl:if>
+
       </xsl:for-each>
       <!--- This is the METS element with image metadata from the PremisObject
        This extraction is used to provide information on image size-->

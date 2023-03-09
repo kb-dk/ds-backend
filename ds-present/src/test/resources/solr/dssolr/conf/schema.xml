@@ -24,7 +24,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="shelf_location" type="string"  stored="true"/>
   <field name="physical_location" type="text_general"/> <!--  May not be in data -->
   <field name="categories" type="string" docValues="true" stored="true"/>
+  <field name="list_of_categories" type="string"  multiValued="true" docValues="true" stored="true"/>
   <field name="collection" type="string" docValues="true" stored="true"/>
+  <field name="published_in" type="string" docValues="true" stored="true"/>
   <field name="resource_description" type="string" multiValued="false"  docValues="true"/>
   <field name="type_of_resource" type="string" multiValued="true"  docValues="true"/>
 
@@ -71,6 +73,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- TODO: Format as date -->
   <field name="date_created" type="string" stored="true"/>
   <field name="production_date_start" type="string" stored="true" />
+  <field name="place_of_production" type="string" stored="true" />
   <field name="production_date_end" type="string" stored="true"/>
   <field name="digital_surrogate_production_date" type="string" stored="true"/>
 
@@ -84,6 +87,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="image_height" type="pint"/>
   <field name="image_width" type="pint"/>
   <field name="image_size" type="pfloat"/>
+  <field name="target_audience" type="string" stored="true"/> <!-- Not in test data. Part of MODS and might be in other collections-->
 
   <!--  Fields related to copyright and access conditions -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>

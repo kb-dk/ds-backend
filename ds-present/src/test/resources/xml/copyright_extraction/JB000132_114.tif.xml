@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="c67ea849-d690-4818-870b-ce20a9bb664d" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
-    <mets:metsHdr CREATEDATE="2023-03-09T10:06:12.679+01:00">
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="7caa57cb-1b51-4878-9fc0-8e0ee64ed923" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2023-03-07T15:14:50.970+01:00">
         <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
             <mets:name>kbDk</mets:name>
             <mets:note>kbDkInternal</mets:note>
@@ -9,97 +9,127 @@
             <mets:note>kbDkInternal</mets:note>
         </mets:agent>
     </mets:metsHdr>
-    <mets:dmdSec CREATED="2023-03-09T10:06:12.679+01:00" ID="Mods1">
+    <mets:dmdSec CREATED="2023-03-07T15:14:50.971+01:00" ID="Mods1">
         <mets:mdWrap MDTYPE="MODS">
             <mets:xmlData>
                 <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
-                    <mods:genre>Topografi</mods:genre>
-                    <mods:genre type="Categories">Kobberstikkene fra Resens ATLAS DANICUS (Danmark), Fyn, danske</mods:genre>
-                    <mods:identifier type="uri">urn:uuid:e2519ce0-9fb0-11e8-8891-00505688346e</mods:identifier>
-                    <mods:identifier type="local">Uldall_186_2_Foborg.tif</mods:identifier>
-                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Maps/0000/086/130/Uldall_186_2_Foborg.tif</mods:identifier>
-                    <mods:identifier type="Original Asset Reference">cumulus-core-01:/Depot/nb/preingest/DP/Maps/Fra_Samlingsbilleder/Uldall_186_2_Foborg.tif</mods:identifier>
-                    <mods:identifier type="Scan number" displayLabel="Scan Number">re000067, DO518914 (kobberstik)</mods:identifier>
-                    <mods:language>
-                        <mods:languageTerm authority="rfc4646" type="code">mul</mods:languageTerm>
-                    </mods:language>
+                    <mods:genre type="Categories">John R. Johnsen balletfotos, Den Kongelige Ballet , Hønningen, Mette , Neumeier, John, Kronstam, Henning, Kirk, Mette-Ida, Romeo og Julie, Johnsen, John R., CAR- BLO katagori</mods:genre>
+                    <mods:identifier type="uri">urn:uuid:770379f0-8a0d-11e1-805f-0016357f605f</mods:identifier>
+                    <mods:identifier type="local">JB000132_114.tif</mods:identifier>
+                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/Images/BALLET/JB000132_114.tif</mods:identifier>
                     <mods:location>
-                        <mods:shelfLocator>HS Uldall 186 fol</mods:shelfLocator>
+                        <mods:shelfLocator>Billedsamlingen. John R. Johnsen. Balletfotografier</mods:shelfLocator>
                     </mods:location>
                     <mods:name type="personal">
                         <mods:role>
                             <mods:roleTerm type="code">cre</mods:roleTerm>
                         </mods:role>
-                        <mods:namePart type="family">Resen</mods:namePart>
-                        <mods:namePart type="given">Peder Hansen</mods:namePart>
-                        <mods:namePart type="date">1625-0-0/1688-0-0</mods:namePart>
-                        <mods:namePart type="termsOfAddress">historiker</mods:namePart>
+                        <mods:namePart type="family">Johnsen</mods:namePart>
+                        <mods:namePart type="given">John R. (John Rosforth)</mods:namePart>
+                        <mods:namePart type="date">1945-0-0/2016-0-0</mods:namePart>
+                        <mods:namePart type="termsOfAddress">fotograf</mods:namePart>
                     </mods:name>
-                    <mods:note type="content">Håndtegning</mods:note>
-                    <mods:note type="content">Indsat: Horne Kirke som ligger ved Hvedholm</mods:note>
-                    <mods:note type="content">Kortet sidder i: P. J. Resenii Atlas Danicus s. Descriptio Regni Daniæ, continens tabulas accuratissimas Daniæ geographicas etc. 7 Voll.</mods:note>
-                    <mods:note type="content">1111,232,331,1</mods:note>
-                    <mods:note type="content">(Dette Exemplar har tilhørt Geheimeraad Grev A.G. Moltke, og er det eene af de 2 reenskrevne Exemplarer, som haves af dette Værk, hvorom Kof. Ancher handler i sin Lovhistorie T. 2 pag. 348-392. Deri er mange Tegninger over Øerne, Stæderne og Monumenter).</mods:note>
-                    <mods:note type="content">Varianttitel: Resens Atlas</mods:note>
-                    <mods:note displayLabel="Catalog Name">Maps</mods:note>
-                    <mods:originInfo>
-                        <mods:place>
-                            <mods:placeTerm type="text">Danmark</mods:placeTerm>
-                        </mods:place>
-                    </mods:originInfo>
+                    <mods:note type="content">Negativ nr. 27_34</mods:note>
+                    <mods:note type="citation/reference">Dansen i spejlet: John R. Johnsens balletfoto</mods:note>
+                    <mods:note displayLabel="Catalog Name">Samlingsbilleder</mods:note>
                     <mods:originInfo altRepGroup="original">
-                        <mods:dateCreated point="start">1670</mods:dateCreated>
-                        <mods:dateCreated point="end">1679</mods:dateCreated>
+                        <mods:dateCreated>1974</mods:dateCreated>
                     </mods:originInfo>
                     <mods:originInfo altRepGroup="surrogate">
-                        <mods:dateCaptured>2013-09-20T13:24:21.000+02:00</mods:dateCaptured>
+                        <mods:dateCaptured>2019-06-24T14:52:07.000+02:00</mods:dateCaptured>
                     </mods:originInfo>
+                    <mods:physicalDescription>
+                        <mods:note displayLabel="Pageorientation">LTR</mods:note>
+                    </mods:physicalDescription>
                     <mods:recordInfo>
                         <mods:languageOfCataloging>
                             <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
                         </mods:languageOfCataloging>
                     </mods:recordInfo>
                     <mods:relatedItem type="otherFormat">
-                        <mods:identifier displayLabel="image" type="uri">http://kb-images.kb.dk/DAMJP2/DAM/Maps/0000/086/130/Uldall_186_2_Foborg.jp2</mods:identifier>
+                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/Images/BALLET/JB000132_114.jpg</mods:identifier>
                     </mods:relatedItem>
-                    <mods:subject>
-                        <mods:hierarchicalGeographic>
-                            <mods:area areaType="area">Fåborg</mods:area>
-                        </mods:hierarchicalGeographic>
+                    <mods:relatedItem type="host" displayLabel="Samling">
+                        <mods:titleInfo>
+                            <mods:title>Billedsamlingen</mods:title>
+                        </mods:titleInfo>
+                    </mods:relatedItem>
+                    <mods:relatedItem type="host">
+                        <mods:identifier type="URL">https://www.kb.dk/find-materiale/samlinger/billedsamlingen/John_R_Johnsens_balletfoto/Index.html</mods:identifier>
+                        <mods:note type="URL-tekst">John R. Johnsens balletfotos</mods:note>
+                    </mods:relatedItem>
+                    <mods:subject lang="da">
+                        <mods:topic lang="da">ballet</mods:topic>
+                        <mods:topic lang="da">dans</mods:topic>
+                        <mods:topic lang="da">balletfotos</mods:topic>
                     </mods:subject>
                     <mods:subject>
-                        <mods:topic lang="da">Fåborg</mods:topic>
-                        <mods:topic lang="da">Faaborg</mods:topic>
-                        <mods:topic lang="da">Fyn</mods:topic>
+                        <mods:topic>KBpublicering</mods:topic>
                     </mods:subject>
-                    <mods:subject displayLabel="Topographical Number">
-                        <mods:geographicCode>1111,232,331,1</mods:geographicCode>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Hønningen</mods:namePart>
+                            <mods:namePart type="given">Mette</mods:namePart>
+                            <mods:namePart type="date">1944-10-3/</mods:namePart>
+                            <mods:namePart type="termsOfAddress">danser</mods:namePart>
+                            <mods:displayForm>som Lady Capulet</mods:displayForm>
+                            <mods:affiliation>Den Kongelige Ballet</mods:affiliation>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Kirk</mods:namePart>
+                            <mods:namePart type="given">Mette-Ida</mods:namePart>
+                            <mods:namePart type="date">1955-1-11/</mods:namePart>
+                            <mods:namePart type="termsOfAddress">danser</mods:namePart>
+                            <mods:displayForm>som Julie</mods:displayForm>
+                            <mods:affiliation>Den Kongelige Ballet</mods:affiliation>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Kronstam</mods:namePart>
+                            <mods:namePart type="given">Henning</mods:namePart>
+                            <mods:namePart type="date">1934-6-29/1995-5-28</mods:namePart>
+                            <mods:namePart type="termsOfAddress">danser</mods:namePart>
+                            <mods:displayForm>som Lord Capulet</mods:displayForm>
+                            <mods:affiliation>Den Kongelige Ballet</mods:affiliation>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">Neumeier</mods:namePart>
+                            <mods:namePart type="given">John</mods:namePart>
+                            <mods:namePart type="date">1939-2-24/</mods:namePart>
+                            <mods:namePart type="termsOfAddress">koreograf</mods:namePart>
+                            <mods:affiliation>Den Kongelige Ballet</mods:affiliation>
+                        </mods:name>
                     </mods:subject>
                     <mods:titleInfo>
-                        <mods:title>Foborg, Foburgum</mods:title>
+                        <mods:title>Romeo og Julie</mods:title>
                     </mods:titleInfo>
-                    <mods:typeOfResource displayLabel="Generel Resource Description">Kort, Todimensionalt billedmateriale</mods:typeOfResource>
-                    <mods:typeOfResource displayLabel="Resource Description">Atlas</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Generel Resource Description">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Resource Description">Negativ</mods:typeOfResource>
                 </mods:mods>
             </mets:xmlData>
         </mets:mdWrap>
     </mets:dmdSec>
     <mets:amdSec>
-        <mets:techMD CREATED="2023-03-09T10:06:12.695+01:00" ID="PremisObject1">
+        <mets:techMD CREATED="2023-03-07T15:14:51.022+01:00" ID="PremisObject1">
             <mets:mdWrap MDTYPE="PREMIS:OBJECT">
                 <mets:xmlData>
                     <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
-                            <premis:objectIdentifierValue>e2519ce0-9fb0-11e8-8891-00505688346e</premis:objectIdentifierValue>
+                            <premis:objectIdentifierValue>770379f0-8a0d-11e1-805f-0016357f605f</premis:objectIdentifierValue>
                         </premis:objectIdentifier>
                         <premis:objectCharacteristics>
                             <premis:compositionLevel>0</premis:compositionLevel>
                             <premis:fixity>
                                 <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
-                                <premis:messageDigest>92a378f969d4bde0fd0d04303b2bb202</premis:messageDigest>
+                                <premis:messageDigest>ddbb075e106e3e8344185e957cb03deb</premis:messageDigest>
                             </premis:fixity>
-                            <premis:size>90697670</premis:size>
+                            <premis:size>16554668</premis:size>
                             <premis:format>
                                 <premis:formatDesignation>
                                     <premis:formatName>TIFF Image</premis:formatName>
@@ -108,16 +138,16 @@
                                 <premis:formatNote>Validated by Cumulus version: 11.1.8</premis:formatNote>
                             </premis:format>
                             <premis:creatingApplication>
-                                <premis:creatingApplicationName>Adobe Photoshop CS6</premis:creatingApplicationName>
+                                <premis:creatingApplicationName>Adobe Photoshop CC 2019</premis:creatingApplicationName>
                             </premis:creatingApplication>
                             <premis:objectCharacteristicsExtension>
                                 <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://id.kb.dk/standards/mix/version_2_0/mix.xsd">
                                     <mix:BasicDigitalObjectInformation>
                                         <mix:ObjectIdentifier>
                                             <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
-                                            <mix:objectIdentifierValue>e2519ce0-9fb0-11e8-8891-00505688346e</mix:objectIdentifierValue>
+                                            <mix:objectIdentifierValue>770379f0-8a0d-11e1-805f-0016357f605f</mix:objectIdentifierValue>
                                         </mix:ObjectIdentifier>
-                                        <mix:fileSize>90697670</mix:fileSize>
+                                        <mix:fileSize>16554668</mix:fileSize>
                                         <mix:FormatDesignation>
                                             <mix:formatName>TIFF Image</mix:formatName>
                                             <mix:formatVersion/>
@@ -128,13 +158,13 @@
                                         </mix:Compression>
                                         <mix:Fixity>
                                             <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
-                                            <mix:messageDigest>92a378f969d4bde0fd0d04303b2bb202</mix:messageDigest>
+                                            <mix:messageDigest>ddbb075e106e3e8344185e957cb03deb</mix:messageDigest>
                                         </mix:Fixity>
                                     </mix:BasicDigitalObjectInformation>
                                     <mix:BasicImageInformation>
                                         <mix:BasicImageCharacteristics>
-                                            <mix:imageWidth>6023</mix:imageWidth>
-                                            <mix:imageHeight>5019</mix:imageHeight>
+                                            <mix:imageWidth>1976</mix:imageWidth>
+                                            <mix:imageHeight>2789</mix:imageHeight>
                                             <mix:PhotometricInterpretation>
                                                 <mix:colorSpace>RGB</mix:colorSpace>
                                                 <mix:ColorProfile>
@@ -147,12 +177,12 @@
                                     </mix:BasicImageInformation>
                                     <mix:ImageCaptureMetadata>
                                         <mix:GeneralCaptureInformation>
-                                            <mix:dateTimeCreated>2006-10-13T02:54:32.000+02:00</mix:dateTimeCreated>
+                                            <mix:dateTimeCreated>2023-03-07T15:14:51.025+01:00</mix:dateTimeCreated>
                                         </mix:GeneralCaptureInformation>
                                         <mix:ScannerCapture>
                                             <mix:MaximumOpticalResolution>
-                                                <mix:xOpticalResolution>300</mix:xOpticalResolution>
-                                                <mix:yOpticalResolution>300</mix:yOpticalResolution>
+                                                <mix:xOpticalResolution>400</mix:xOpticalResolution>
+                                                <mix:yOpticalResolution>400</mix:yOpticalResolution>
                                             </mix:MaximumOpticalResolution>
                                         </mix:ScannerCapture>
                                         <mix:orientation>normal*</mix:orientation>
@@ -168,10 +198,9 @@
                                     </mix:ImageAssessmentMetadata>
                                     <mix:ChangeHistory>
                                         <mix:ImageProcessing>
-                                            <mix:dateTimeProcessed>2006-10-13T02:54:32.000+02:00</mix:dateTimeProcessed>
                                             <mix:sourceData>initial capture</mix:sourceData>
                                             <mix:ProcessingSoftware>
-                                                <mix:processingSoftwareName>Adobe Photoshop CS6</mix:processingSoftwareName>
+                                                <mix:processingSoftwareName>Adobe Photoshop CC 2019</mix:processingSoftwareName>
                                             </mix:ProcessingSoftware>
                                         </mix:ImageProcessing>
                                     </mix:ChangeHistory>
@@ -182,7 +211,7 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:techMD>
-        <mets:rightsMD CREATED="2023-03-09T10:06:12.699+01:00" ID="ModsRights1">
+        <mets:rightsMD CREATED="2023-03-07T15:14:51.031+01:00" ID="ModsRights1">
             <mets:mdWrap MDTYPE="MODS">
                 <mets:xmlData>
                     <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
@@ -190,9 +219,9 @@
                             <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD http://id.kb.dk/schemas/dk-corporate-creator/copyright-md.xsd">
                                 <cdl:creator>
                                     <cdl:creator.person>
-                                        <cdl:name>Resen, Peder Hansen</cdl:name>
-                                        <cdl:year.birth>1625-0-0</cdl:year.birth>
-                                        <cdl:year.death>1688-0-0</cdl:year.death>
+                                        <cdl:name>Johnsen, John R. (John Rosforth)</cdl:name>
+                                        <cdl:year.birth>1945-0-0</cdl:year.birth>
+                                        <cdl:year.death>2016-0-0</cdl:year.death>
                                     </cdl:creator.person>
                                 </cdl:creator>
                             </cdl:copyright>
@@ -201,16 +230,16 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:rightsMD>
-        <mets:digiprovMD CREATED="2023-03-09T10:06:12.700+01:00" ID="PremisEvent1">
+        <mets:digiprovMD CREATED="2023-03-07T15:14:51.032+01:00" ID="PremisEvent1">
             <mets:mdWrap MDTYPE="PREMIS:EVENT">
                 <mets:xmlData>
                     <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
                         <premis:eventIdentifier>
                             <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
-                            <premis:eventIdentifierValue>7d55328e-8799-45ce-93d6-fbef1d7bc9c2</premis:eventIdentifierValue>
+                            <premis:eventIdentifierValue>3dcb2705-2361-43b9-a2e8-249e03618231</premis:eventIdentifierValue>
                         </premis:eventIdentifier>
                         <premis:eventType>ingestion</premis:eventType>
-                        <premis:eventDateTime>2023-03-09T10:06:12.700+01:00</premis:eventDateTime>
+                        <premis:eventDateTime>2023-03-07T15:14:51.035+01:00</premis:eventDateTime>
                         <premis:eventDetailInformation>
                             <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
 file.encoding: UTF-8
@@ -251,45 +280,45 @@ user.language: da
                         </premis:linkingAgentIdentifier>
                         <premis:linkingObjectIdentifier>
                             <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
-                            <premis:linkingObjectIdentifierValue>e2519ce0-9fb0-11e8-8891-00505688346e</premis:linkingObjectIdentifierValue>
+                            <premis:linkingObjectIdentifierValue>770379f0-8a0d-11e1-805f-0016357f605f</premis:linkingObjectIdentifierValue>
                         </premis:linkingObjectIdentifier>
                         <premis:linkingObjectIdentifier>
                             <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
-                            <premis:linkingObjectIdentifierValue>c67ea849-d690-4818-870b-ce20a9bb664d</premis:linkingObjectIdentifierValue>
+                            <premis:linkingObjectIdentifierValue>7caa57cb-1b51-4878-9fc0-8e0ee64ed923</premis:linkingObjectIdentifierValue>
                         </premis:linkingObjectIdentifier>
                     </premis:event>
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:digiprovMD>
-        <mets:digiprovMD CREATED="2023-03-09T10:06:12.700+01:00" ID="PremisRepresentation1">
+        <mets:digiprovMD CREATED="2023-03-07T15:14:51.037+01:00" ID="PremisRepresentation1">
             <mets:mdWrap MDTYPE="PREMIS">
                 <mets:xmlData>
                     <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
-                            <premis:objectIdentifierValue>c67ea849-d690-4818-870b-ce20a9bb664d</premis:objectIdentifierValue>
+                            <premis:objectIdentifierValue>7caa57cb-1b51-4878-9fc0-8e0ee64ed923</premis:objectIdentifierValue>
                         </premis:objectIdentifier>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
                             <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2023-03-09T10:06:12.701+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-03-07T15:14:51.037+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>logical</premis:preservationLevelType>
                             <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2023-03-09T10:06:12.701+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-03-07T15:14:51.039+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
                             <premis:preservationLevelValue>Low</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2023-03-09T10:06:12.701+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-03-07T15:14:51.039+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:relationship>
                             <premis:relationshipType>structural</premis:relationshipType>
                             <premis:relationshipSubType>represents</premis:relationshipSubType>
                             <premis:relatedObjectIdentifier>
                                 <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
-                                <premis:relatedObjectIdentifierValue>c6d61579-9005-4a66-b518-566bf553b1c4</premis:relatedObjectIdentifierValue>
+                                <premis:relatedObjectIdentifierValue>d1c808f3-12fb-44fe-9c58-927725e988b2</premis:relatedObjectIdentifierValue>
                             </premis:relatedObjectIdentifier>
                         </premis:relationship>
                     </premis:object>
@@ -300,7 +329,7 @@ user.language: da
     <mets:fileSec>
         <mets:fileGrp>
             <mets:file ID="fileId1">
-                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:e2519ce0-9fb0-11e8-8891-00505688346e"/>
+                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:770379f0-8a0d-11e1-805f-0016357f605f"/>
             </mets:file>
         </mets:fileGrp>
     </mets:fileSec>
