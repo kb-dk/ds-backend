@@ -58,13 +58,13 @@
                     </f:array>
                     <f:string key="@type">
                         <!-- TODO this only works with COP mods, figure out a method for finding type i preservation mods -->
-                        <!--xsl:choose>
+                        <xsl:choose>
                             <xsl:when test="contains($record-id,'images')">VisualArtwork</xsl:when>
                             <xsl:when test="contains($record-id,'manus')">Manuscript</xsl:when>
                             <xsl:when test="contains($record-id,'letters')">Message</xsl:when>
                             <xsl:when test="contains($record-id,'books')">Book</xsl:when>
                             <xsl:otherwise>CreativeWork</xsl:otherwise>
-                        </xsl:choose-->
+                        </xsl:choose>
                     </f:string>
                     <f:string key="id">
                         <xsl:value-of select="$record-id"/>
@@ -278,6 +278,24 @@
                             </f:map>
                         </xsl:for-each>
                     </f:array>
+                    <!-- Insert dateCreated if only one date present or dateCreated and temporal
+                            If dateCreated has start and end point -->
+                    <xsl:choose>
+                        <xsl:when test="m:originInfo[@altRepGroup='original']/m:dateCreated[@point]">
+                            <f:string key="dateCreated">
+                                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end']"/>
+                            </f:string>
+                            <f:string key="temporal">
+                                <xsl:value-of select="concat('Created between ', m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start'], ' and ', m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end'])"/>
+                            </f:string>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <f:string key="dateCreated">
+                                <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
+                            </f:string>
+                        </xsl:otherwise>
+                    </xsl:choose>
+
                     <xsl:variable name="to_date">
                         <xsl:choose>
                             <xsl:when test="m:originInfo/m:dateCreated/@t:notAfter">
