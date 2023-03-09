@@ -759,7 +759,13 @@
         <str name="qf">
         identifier_local^5.0
         creator_full_name_strict^5.0        
-        freetext
+        topic^2.0
+        shelf_location
+        content
+        collection
+        catalog_name
+        resource_description
+        freetext^0.5       
        </str>
        
         <str name="pf">
