@@ -115,6 +115,8 @@
                             <xsl:with-param name="mods" select="$mods" />
                         </xsl:call-template>
                     </xsl:if>
+
+                    <!--
                     <xsl:for-each select="distinct-values(m:name/m:role/m:roleTerm)">
                         <xsl:variable name="term" select="."/>
                         <xsl:if test="not(contains($term,'last-modified-by'))">
@@ -129,6 +131,30 @@
                             </f:array>
                         </xsl:if>
                     </xsl:for-each>
+                    -->
+                    <xsl:for-each select="distinct-values(m:name/m:role/m:roleTerm)">
+                        <xsl:variable name="term" select="."/>
+                        <xsl:if test="not(contains($term,'last-modified-by'))">
+                            <f:array>
+                                <xsl:attribute name="key"><xsl:value-of select="$roles/roles/role[@key=$term]"/></xsl:attribute>
+                                <!--
+                                <xsl:for-each select="$mods//m:name[m:role/m:roleTerm = $term]">
+                                    <xsl:call-template name="get-names">
+                                        <xsl:with-param name="record_identifier" select="$record-id"/>
+                                        <xsl:with-param name="cataloging_language" select="$cataloging_language" />
+                                    </xsl:call-template>
+                                </xsl:for-each>
+                                -->
+                                <xsl:for-each select="$mods//m:name[m:role/m:roleTerm = $term]">
+                                    <xsl:call-template name="get-names">
+                                        <xsl:with-param name="record_identifier" select="$record-id"/>
+                                        <xsl:with-param name="cataloging_language" select="$cataloging_language" />
+                                    </xsl:call-template>
+                                </xsl:for-each>
+                            </f:array>
+                        </xsl:if>
+                    </xsl:for-each>
+
                     <xsl:if test="m:note[@type or @displayLabel]">
                         <!-- TODO: can have more notes of same type, fix it -->
  <!--                       <xsl:for-each select="m:note[@type or @displayLabel and not(contains(@type,'situation'))]">
@@ -220,15 +246,14 @@
                             </f:map>
                         </xsl:if>
                         <!-- *********************** Subjects, Categories etc ******************** -->
-                        <xsl:for-each select="distinct-values(m:subject/m:name/m:role/m:roleTerm)">
-                            <xsl:variable name="term" select="."/>
-                            <xsl:for-each select="$mods//m:subject/m:name[m:role/m:roleTerm = $term]">
-                                <xsl:call-template name="get-names">
-                                    <xsl:with-param name="record_identifier" select="$record-id"/>
-                                    <xsl:with-param name="cataloging_language" select="$cataloging_language" />
-                                </xsl:call-template>
+                        <xsl:if test="m:subject/m:name[@type='personal']">
+                            <xsl:for-each select="$mods/m:subject/m:name[@type='personal']">
+                                    <xsl:call-template name="get-names">
+                                        <xsl:with-param name="record_identifier" select="$record-id"/>
+                                        <xsl:with-param name="cataloging_language" select="$cataloging_language" />
+                                    </xsl:call-template>
                             </xsl:for-each>
-                        </xsl:for-each>
+                        </xsl:if>
                         <xsl:for-each select="distinct-values(m:subject/m:topic)">
                             <f:string><xsl:value-of select="."/></f:string>
                         </xsl:for-each>
@@ -584,20 +609,6 @@
                 </xsl:for-each>
             </f:array>
         </xsl:if>
-        <xsl:for-each select="distinct-values(m:name/m:role/m:roleTerm)">
-            <xsl:variable name="term" select="."/>
-            <xsl:if test="not(contains($term,'last-modified-by'))">
-                <f:array>
-                    <xsl:attribute name="key"><xsl:value-of select="$roles/roles/role[@key=$term]"/></xsl:attribute>
-                    <xsl:for-each select="$mods//m:name[m:role/m:roleTerm = $term]">
-                        <xsl:call-template name="get-names">
-                            <xsl:with-param name="record_identifier" select="$record_identifier"/>
-                            <xsl:with-param name="cataloging_language" select="$cataloging_language" />
-                        </xsl:call-template>
-                    </xsl:for-each>
-                </f:array>
-            </xsl:if>
-        </xsl:for-each>
     </xsl:template>
     <xsl:template name="get-names">
         <xsl:param name="record_identifier"/>
