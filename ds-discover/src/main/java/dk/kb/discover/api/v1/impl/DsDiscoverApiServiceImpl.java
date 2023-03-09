@@ -27,11 +27,13 @@ import org.slf4j.LoggerFactory;
 import dk.kb.discover.SolrManager;
 import dk.kb.discover.SolrService;
 import dk.kb.discover.api.v1.DsDiscoverApi;
-import dk.kb.discover.backend.api.v1.DsLicenseApi;
-import dk.kb.discover.backend.invoker.v1.ApiClient;
-import dk.kb.discover.backend.model.v1.GetUserQueryInputDto;
-import dk.kb.discover.backend.model.v1.GetUsersFilterQueryOutputDto;
-import dk.kb.discover.backend.model.v1.UserObjAttributeDto;
+import dk.kb.discover.config.ServiceConfig;
+import dk.kb.license.client.v1.DsLicenseApi;
+import dk.kb.license.invoker.v1.ApiClient;
+import dk.kb.license.invoker.v1.Configuration;
+import dk.kb.license.model.v1.GetUserQueryInputDto;
+import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
+import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -177,11 +179,9 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             DsLicenseApi licenseClient = getDsLicenseApiClient();
             GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
             GetUsersFilterQueryOutputDto filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
-            log.info("filter query from licensemodule:"+filterQuery.getFilterQuery());
-            
-            fq.add(filterQuery.getFilterQuery()); //Add the filter query
-            
-            
+            log.info("filter query from licensemodule:"+filterQuery.getFilterQuery()); // in the start this is a very usefull log!            
+            fq.add(filterQuery.getFilterQuery()); //Add the additional filter query
+                        
             return solr.query(q, fq, rows, start, fl, facet, facetField, qOp, wt, version, indent, debug, debugExplainStructured);
         } catch (Exception e){
             throw handleException(e);
@@ -211,13 +211,16 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     }
     
     private static DsLicenseApi getDsLicenseApiClient() {
-        ApiClient apiClient = new ApiClient();
-        //Todo take from YAML
-        apiClient.setHost("devel11.statsbiblioteket.dk");
-        apiClient.setPort(10001);
-        apiClient.setBasePath("/ds-license/v1");
-        DsLicenseApi  dsAPI = new DsLicenseApi (apiClient);
-        return dsAPI;
+        
+        ApiClient client = Configuration.getDefaultApiClient();        
+
+        //get properties from YAML-file
+        client.setHost(ServiceConfig.getConfig().getString("config.licensemodule.host"));
+        int port = Integer.parseInt(ServiceConfig.getConfig().getString("config.licensemodule.port"));
+        client.setPort(port);
+        client.setBasePath(ServiceConfig.getConfig().getString("config.licensemodule.basepath"));
+                        
+        return new DsLicenseApi(client);        
     }
     
     

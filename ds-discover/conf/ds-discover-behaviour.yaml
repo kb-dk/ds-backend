@@ -1,17 +1,42 @@
+# This config contains developer specific overrides, such as read-only account credentials and test server locations.
+# It is a mix of behaviour and environmental setup.
 #
-# This config contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
+# If will be automatically merged with the ds-discover-behaviour.yams upon application start.
+# Values in the ds-discover-local.yaml files takes precedence over the behaviour file as the files are sorted
+# alphanumerically by name and applied in order.
 #
-# The behaviour config is normally controlled by developers and is part of the code repository.
-# Sensitive information such as machine names and user/passwords should not be part of this config.
+# This config is controlled by the individual developer and is not part of the code repository.
 #
-# It will be automatically merged with the environment config when accessed through the
-# application config system.
-#
-#
+
 config:
+  # Local experimenting with limits
+  limits:
+    max: 10000
 
-  autoupdate:
-    enabled: true
-    intervalms: 60000
+  solr:
+    # Test purpose only in ds-discover-behaviour.yaml. Override in environment configuration.
+    collections:
+      # Keys are collection names
+
+      # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost
+      - ds: # http://localhost:10007/solr/ds/select?q=foo
+          # The Solr server, including port
+          # Mandatory
+          server: 'http://localhost:10007'
+          # The path for the Solr service
+          # Optional. Default is 'solr'
+          path: 'solr'
+          # The Solr collection ID
+          # Mandatory. Typically the same as the abstract collection name
+          collection: 'ds'
+          # TODO: Default params
+          #
+          #
+          #
 
 
+  #License module is called to generate a filter query that is used when calling Solr          
+  licensemodule:
+    host: localhost
+    port: 9076
+    basepath: /ds-license/v1      
