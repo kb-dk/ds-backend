@@ -14,3 +14,4 @@ conf/ds-discover-local.yaml
 setup_project.sh
 /deploy2Devel11.sh
 
+/.openapi-generator-ignore
