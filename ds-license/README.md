@@ -158,7 +158,6 @@ mvn jetty:run
 The Swagger UI is available at <http://localhost:8080/ds-license/api/>, providing access to both the `v1` and the 
 `devel` versions of the GUI. 
 
-
 ## Deployment to a server (development/stage/production).
 * Install Tomcat9 server 
 * Install PostgreSql (or any JDBC database).
@@ -168,6 +167,41 @@ The Swagger UI is available at <http://localhost:8080/ds-license/api/>, providin
 * Make a ds-license.yaml file. (Make a copy of /conf/ds-license-environment.yaml rename it, and edit the properties). 
 * Configure conf/ds-license.yaml with the JDCB properties for the database. 
 
+## Using a client to call the service 
+This project produces a support JAR containing client code for calling the service from Java.
+This can be used from an external project by adding the following to the [pom.xml](pom.xml):
+```xml
+<!-- Used by the OpenAPI client -->
+<dependency>
+    <groupId>org.openapitools</groupId>
+    <artifactId>jackson-databind-nullable</artifactId>
+    <version>0.2.2</version>
+</dependency>
 
-See the file [DEVELOPER.md](DEVELOPER.md) for developer specific details and how to deploy to tomcat.
+<dependency>
+    <groupId>dk.kb.license</groupId>
+    <artifactId>ds-license</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <type>jar</type>
+    <classifier>classes</classifier>
+    <!-- Do not perform transitive dependency resolving for the OpenAPI client -->
+    <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+after this a client can be created with
+```java
+    DsLicenseClient licenseClient = new DsLicenseClient("https://example.com/ds-license/v1");
+```
+During development, a SNAPSHOT for the OpenAPI client can be installed locally by running
+```shell
+mvn install
+```
+
+## Other
+See the file [DEVELOPER.md](DEVELOPER.md) for more developer specific details.
 
