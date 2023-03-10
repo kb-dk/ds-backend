@@ -14,12 +14,15 @@
  */
 package dk.kb.present.storage;
 
-import dk.kb.present.backend.api.v1.DsStorageApi;
-import dk.kb.present.backend.invoker.v1.ApiClient;
-import dk.kb.present.backend.invoker.v1.ApiException;
-import dk.kb.present.backend.model.v1.DsRecordDto;
+
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.webservice.exception.InternalServiceException;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
+import dk.kb.storage.client.v1.DsStorageApi;
+import dk.kb.storage.invoker.v1.ApiException;
+import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.util.DsStorageClient;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,17 +45,13 @@ public class DSStorage implements Storage {
     private final String id;
     private final String recordBase;
 
-    private final String host;
-    private final int port;
-    private final String basepath;
-    private final String scheme;
+    private final String storageUrl;
     private final int batchCount;
 
-    // Used for logging and debugging
-    private final String serverHuman;
 
     private final boolean isDefault;
-    private final DsStorageApi dsStorageClient;
+    
+    private static DsStorageApi storageClient;  
 
     /**
      * Create a Storage connection to a ds-storage server.
@@ -67,27 +66,18 @@ public class DSStorage implements Storage {
      * @param isDefault if true, this is the default storage for collections.
      */
     public DSStorage(String id, String recordBase,
-                     String scheme, String host, int port, String basepath,
+                     String storageUrl,
                      int batchCount, boolean isDefault) {
         this.id = id;
-        this.scheme = scheme;
-        this.host = host;
-        this.port = port;
-        this.basepath = basepath;
+        
+        this.storageUrl = storageUrl;
         this.batchCount = batchCount;
         this.recordBase = recordBase;
 
         this.isDefault = isDefault;
+       
 
-        ApiClient apiClient = new ApiClient();
-        apiClient.setHost(host);
-        apiClient.setPort(port);
-        apiClient.setBasePath(basepath);
-        apiClient.setScheme(scheme);
-
-        serverHuman = scheme + "://" + host + ":" + port + "/" + basepath;
-
-        dsStorageClient = new DsStorageApi(apiClient);
+        storageClient = getDsStorageApiClient(storageUrl);
 //        if (isEmpty(id) || isEmpty(scheme) || isEmpty(host) || isEmpty(basepath) || isEmpty(recordBase)) {
 //            throw new IllegalArgumentException("All parameters must be specified for " + this);
 //        }
@@ -108,9 +98,9 @@ public class DSStorage implements Storage {
     public DsRecordDto getDSRecord(String id){
         log.debug("getDSRecord(id='{}') called", id);
         try {
-            return dsStorageClient.getRecord(id);
+            return storageClient.getRecord(id);
         } catch (ApiException e) {
-            log.debug("Unable to retrieve record '" + id + "' from " + serverHuman + "...", e);
+            log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
             throw new NotFoundServiceException("Unable to retrieve record '" + id + "'", e);
         }
     }
@@ -145,7 +135,7 @@ public class DSStorage implements Storage {
 
                 long request = pending < batchCount ? (int) pending : batchCount;
                 try {
-                    records = dsStorageClient.getRecordsModifiedAfter(finalRecordBase, lastMTime.get(), request);
+                    records = storageClient.getRecordsModifiedAfter(finalRecordBase, lastMTime.get(), request);
                 } catch (ApiException e) {
                     String message = String.format(
                             Locale.ROOT,
@@ -184,6 +174,17 @@ public class DSStorage implements Storage {
         return StreamSupport.stream(((Iterable<DsRecordDto>) () -> iterator).spliterator(), false);
     }
 
+    private static DsStorageApi getDsStorageApiClient(String storageUrl) {       
+        if (storageClient!= null) {
+          log.info("Ds-storage client generated from url:"+storageUrl);
+        	return storageClient;
+        }
+                                                 
+        storageClient = new DsStorageClient(storageUrl);               
+        return storageClient;
+      }
+    
+    
     @Override
     public String getID() {
         return id;
@@ -202,11 +203,8 @@ public class DSStorage implements Storage {
     @Override
     public String toString() {
         return "DSStorage(" +
-               "id='" + id + '\'' +
-               ", host='" + host + '\'' +
-               ", port=" + port +
-               ", basepath='" + basepath + '\'' +
-               ", scheme='" + scheme + '\'' +
+               "id='" + id + '\'' +               
+               ", storageUrl='" + storageUrl + '\'' +
                ", batchCount='" + batchCount + '\'' +
                ", recordBase='" + recordBase + '\'' +
                ", isDefault=" + isDefault +

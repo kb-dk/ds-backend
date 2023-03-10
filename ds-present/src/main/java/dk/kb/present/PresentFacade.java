@@ -14,7 +14,6 @@
  */
 package dk.kb.present;
 
-import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
@@ -26,6 +25,7 @@ import dk.kb.present.webservice.exception.InternalServiceException;
 import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.present.webservice.exception.ServiceException;
+import dk.kb.storage.model.v1.DsRecordDto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

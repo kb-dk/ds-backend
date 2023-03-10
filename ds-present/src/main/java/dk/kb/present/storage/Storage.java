@@ -14,9 +14,10 @@
  */
 package dk.kb.present.storage;
 
-import dk.kb.present.backend.model.v1.DsRecordDto;
 
 import java.util.stream.Stream;
+
+import dk.kb.storage.model.v1.DsRecordDto;
 
 /**
  * Provides access to records.
