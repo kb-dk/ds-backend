@@ -30,8 +30,6 @@ import dk.kb.discover.SolrService;
 import dk.kb.discover.api.v1.DsDiscoverApi;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.license.client.v1.DsLicenseApi;
-import dk.kb.license.invoker.v1.ApiClient;
-import dk.kb.license.invoker.v1.Configuration;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
