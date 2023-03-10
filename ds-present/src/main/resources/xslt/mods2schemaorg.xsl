@@ -31,6 +31,21 @@
             <role key="prt" href="http://id.loc.gov/vocabulary/relators/art">relator:prt</role>
         </roles>
     </xsl:variable>
+
+    <xsl:variable name="types">
+        <types>
+            <type key="Fotografi" href="https://schema.org/Photograph">Photograph</type>
+            <type key="Anskuelsesbillede" href="https://schema.org/Poster">Poster</type>
+            <type key="Postkort" href="https://schema.org/Message">Message</type>
+            <type key="Grafik" href="https://schema.org/Photograph">Photograph</type>
+            <type key="Negativ" href="https://schema.org/Photograph">Photograph</type>
+            <type key="Plakat" href="https://schema.org/Poster">Poster</type>
+            <type key="Bladtegning" href="https://schema.org/Drawing">Drawing</type>
+            <type key="Tegning" href="https://schema.org/Drawing">Drawing</type>
+            <type key="Arkitekturfotografi" href="https://schema.org/Photograph">Photograph</type>
+            <type key="Genstand" href="https://schema.org/Thing">Thing</type> <!-- Product, CreativeArtwork, Thing??????-->
+        </types>
+    </xsl:variable>
     <xsl:template match="/">
 
         <xsl:variable name="json">
@@ -57,12 +72,26 @@
                         </f:map>
                     </f:array>
                     <f:string key="@type">
-                        <!-- TODO this only works with COP mods, figure out a method for finding type i preservation mods -->
+                        <!-- TODO this only works with COP mods, figure out a method for finding type i preservation mods
                         <xsl:choose>
                             <xsl:when test="contains($record-id,'images')">VisualArtwork</xsl:when>
                             <xsl:when test="contains($record-id,'manus')">Manuscript</xsl:when>
                             <xsl:when test="contains($record-id,'letters')">Message</xsl:when>
                             <xsl:when test="contains($record-id,'books')">Book</xsl:when>
+                            <xsl:otherwise>CreativeWork</xsl:otherwise>
+                        </xsl:choose> -->
+                        <!-- Mapping from resourcetypes in new MODS -->
+                        <xsl:choose>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Fotografi'">Photograph</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Anskuelsesbillede'">Poster</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Postkort'">Message</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Grafik'">Photograph</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Negativ'">Photograph</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Plakat'">Poster</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Bladtegning'">Drawing</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Tegning'">Drawing</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Arkitekturfotografi'">Photograph</xsl:when>
+                            <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Genstand'">Thing</xsl:when>
                             <xsl:otherwise>CreativeWork</xsl:otherwise>
                         </xsl:choose>
                     </f:string>
@@ -81,32 +110,41 @@
                         </xsl:choose-->
                     </f:string>
                     <f:map key="kb:admin_data">
+                        <!-- NOTE: Everything in this comment was available in old data, not present in new.ff
                         <f:array>
                             <xsl:attribute name="key">kb:last_modified_by</xsl:attribute>
-                            <!-- NOTE: this data is not available in preservation mods -->
-                            <!--xsl:for-each select="m:name[@type='cumulus' and m:role/m:roleTerm = 'last-modified-by']">
+                             NOTE: this data is not available in preservation mods
+                            <xsl:for-each select="m:name[@type='cumulus' and m:role/m:roleTerm = 'last-modified-by']">
                                 <xsl:call-template name="get-names">
                                     <xsl:with-param name="record_identifier" select="$record-id"/>
                                     <xsl:with-param name="cataloging_language" select="$cataloging_language"/>
                                     <xsl:with-param name="agent_type" select="'Person'"/>
                                 </xsl:call-template>
-                            </xsl:for-each-->
+                            </xsl:for-each>
                         </f:array>
                         <xsl:for-each select="m:recordInfo/m:recordCreationDate">
-                            <!-- NOTE: generally not available in test records, do we need this? -->
+                             NOTE: generally not available in test records, do we need this?
                             <f:string key="kb:record_created">
                                 <xsl:value-of select="."/>
                             </f:string>
                         </xsl:for-each>
                         <xsl:for-each select="m:recordInfo/m:recordChangeDate">
-                            <!-- NOTE: generally not available in test records, do we need this? -->
+                             NOTE: generally not available in test records, do we need this?
                             <f:string key="kb:record_revised">
                                 <xsl:value-of select="."/>
                             </f:string>
-                        </xsl:for-each>
+                        </xsl:for-each> -->
                         <f:string key="kb:cataloging_language">
                             <xsl:value-of select="m:recordInfo/m:languageOfCataloging/m:languageTerm"/>
                         </f:string>
+                        <f:string key="kb:local_identifier">
+                            <xsl:value-of select="m:identifier[@type='local']"/>
+                        </f:string>
+                        <xsl:if test="m:location/m:shelfLocator">
+                            <f:string key="kb:shelflocator">
+                                <xsl:value-of select="m:location/m:shelfLocator"/>
+                            </f:string>
+                        </xsl:if>
                     </f:map>
                     <xsl:if test="m:titleInfo/m:title">
                         <xsl:call-template name="get-title">
@@ -472,23 +510,41 @@
 
                     </xsl:if>
                     <f:array key="identifier">
-                        <xsl:if test="m:location/m:physicalLocation[@displayLabel='Shelf Mark' and not(@transliteration)]">
-                            <xsl:for-each select="m:location/m:physicalLocation[@displayLabel='Shelf Mark' and not(@transliteration)]">
+                        <xsl:for-each select="m:identifier[@type='uri']">
+                            <f:map>
+                                <f:string key="@type">PropertyValue</f:string>
+                                <f:string key="PropertyID">UUID</f:string>
+                                <f:string key="value"><xsl:value-of select="substring-after(., 'urn:uuid:')"/></f:string>
+                            </f:map>
+                        </xsl:for-each>
+
+                        <xsl:if test="m:location/m:shelfLocator">
+                            <xsl:for-each select="m:location/m:shelfLocator">
                                 <f:map>
                                     <f:string key="@type">PropertyValue</f:string>
-                                    <f:string key="additionalType">shelf_mark</f:string>
-                                    <f:string key="@value"><xsl:value-of select="."/></f:string>
+                                    <f:string key="PropertyID">ShelfLocator</f:string>
+                                    <f:string key="value"><xsl:value-of select="."/></f:string>
                                 </f:map>
                             </xsl:for-each>
                         </xsl:if>
 
-                        <xsl:for-each select="m:identifier[@type='local'][1]">
+                        <xsl:for-each select="m:identifier[@type='local']">
                             <f:map>
                                 <f:string key="@type">PropertyValue</f:string>
-                                <f:string key="additionalType">local_identifier</f:string>
-                                <f:string key="@value"><xsl:value-of select="."/></f:string>
+                                <f:string key="PropertyID">local_identifier</f:string>
+                                <f:string key="value"><xsl:value-of select="."/></f:string>
                             </f:map>
                         </xsl:for-each>
+
+                        <xsl:if test="m:identifier[@type='accession number']">
+                            <xsl:for-each select="m:identifier[@type='accession number']">
+                                <f:map>
+                                    <f:string key="@type">PropertyValue</f:string>
+                                    <f:string key="PropertyID">accession_number</f:string>
+                                    <f:string key="value"><xsl:value-of select="."/></f:string>
+                                </f:map>
+                            </xsl:for-each>
+                        </xsl:if>
 
                         <xsl:for-each select="m:relatedItem[@type='original']/m:identifier">
                             <f:map>
@@ -507,17 +563,23 @@
                         </xsl:for-each>
 
                     </f:array>
-                    <xsl:if test="m:relatedItem[m:typeOfResource/@collection='yes']/m:titleInfo/m:title">
+                    <xsl:if test="m:relatedItem[@type='host']">
                         <f:array key="isPartOf">
-                            <xsl:for-each select="m:relatedItem[m:typeOfResource/@collection='yes']">
-                                <f:map>
-                                    <f:string key="@type">Collection</f:string>
-                                    <f:string key="headline"><xsl:value-of select="m:titleInfo/m:title"/></f:string>
-                                    <f:string key="description">
-                                        <xsl:value-of select="m:typeOfResource[@collection='yes']"/>
-                                    </f:string>
-                                </f:map>
-                            </xsl:for-each>
+
+                            <xsl:variable name="collectionTitle" select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
+                            <xsl:variable name="collectionDescription" select="m:relatedItem[@type='host']/m:note[@type='URL-tekst']"/>
+                            <xsl:variable name="collectionURL" select="m:relatedItem[@type='host']/m:identifier[@type='URL']"/>
+
+                            <f:map>
+                                <f:string key="@type">Collection</f:string>
+                                <f:string key="headline"><xsl:value-of select="$collectionTitle"/></f:string>
+                                <f:string key="description">
+                                    <xsl:value-of select="$collectionDescription"/>
+                                </f:string>
+                                <f:string key="url">
+                                    <xsl:value-of select="$collectionURL"/>
+                                </f:string>
+                            </f:map>
                         </f:array>
                     </xsl:if>
                     <xsl:if test="m:language/m:languageTerm[@authority='rfc4646']">
@@ -589,7 +651,7 @@
                     </xsl:variable>
                     <xsl:for-each select="m:title">
                         <f:map>
-                            <f:string key="@value"><xsl:value-of select="."/></f:string>
+                            <f:string key="value"><xsl:value-of select="."/></f:string>
                             <f:string key="@language"><xsl:value-of select="$xml_lang"/></f:string>
                         </f:map>
                     </xsl:for-each>
