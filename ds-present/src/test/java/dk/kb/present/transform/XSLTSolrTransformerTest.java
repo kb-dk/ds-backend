@@ -21,6 +21,7 @@ import com.google.gson.*;
  *
  */
 class XSLTSolrTransformerTest{
+	// TODO: Disable printing of XSLT output
 
 	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
 	public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
