@@ -2,14 +2,12 @@ package dk.kb.present.solr;
 
 import java.io.File;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -117,11 +115,9 @@ public class EmbeddedSolrTest {
 		assertEquals("000332.tif",record.getFieldValue("identifier_local"));
 
 		//multivalue field
-		String[] contentInType = new String[]{"Billede, Todimensionalt billedmateriale", "Grafik"};
-		assertMultivalueField(record, "type_of_resource", 2, contentInType );
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
 		// Creator date of death
-		String[] contentInDates = new String[]{"1868-2-14", "1895-6-25", "1865-3-8"};
-		assertMultivalueField(record, "creator_date_of_death", 3, contentInDates );
+		assertMultivalueField(record, "creator_date_of_death", "1868-2-14", "1895-6-25", "1865-3-8" );
 
 		//TODO more fields
 
@@ -161,13 +157,11 @@ public class EmbeddedSolrTest {
 
 		//Multivalue fields
 		// type_of_resource
-		String[] contentInType = new String[]{"Billede, Todimensionalt billedmateriale", "Postkort"};
-		assertMultivalueField(record, "type_of_resource", 2, contentInType );
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Postkort" );
 
 		// topic
-		String[] contentInTopic = new String[]{"postkort","forter","Dannebrog", "børn", "arkitekturer",
-				"postcards", "forts", "Dannebrog", "children", "architectures"};
-		assertMultivalueField(record, "topic", 10, contentInTopic );
+		assertMultivalueField(record, "topic", "postkort","forter","Dannebrog", "børn", "arkitekturer",
+				"postcards", "forts", "Dannebrog", "children", "architectures" );
 	}
 
 
@@ -206,61 +200,47 @@ public class EmbeddedSolrTest {
 
 		//multivalue fields
 		// creator_name
-		String[] contentInCreatorName = new String[]{"Clemens, Johann Friderich"};
-		assertMultivalueField(record,"creator_name", 1, contentInCreatorName);
+		assertMultivalueField(record,"creator_name", "Clemens, Johann Friderich");
 
 		// creator_full_name
-		String[] contentInCreatorFullName = new String[]{"Johann Friderich Clemens"};
-		assertMultivalueField(record,"creator_full_name", 1, contentInCreatorFullName);
+		assertMultivalueField(record,"creator_full_name", "Johann Friderich Clemens");
 
 		// creator_family_name
-		String[] contentInCreatorFamilyName = new String[]{"Clemens"};
-		assertMultivalueField(record,"creator_family_name", 1, contentInCreatorFamilyName);
+		assertMultivalueField(record,"creator_family_name", "Clemens");
 
 		// creator_given_name
-		String[] contentInCreatorGivenName = new String[]{"Johann Friderich"};
-		assertMultivalueField(record,"creator_given_name", 1, contentInCreatorGivenName);
+		assertMultivalueField(record,"creator_given_name", "Johann Friderich");
 
 		// creator_terms_of_address
-		String[] contentInCreatorTermsOfAddress = new String[]{"kobberstikker"};
-		assertMultivalueField(record,"creator_terms_of_address", 1, contentInCreatorTermsOfAddress);
+		assertMultivalueField(record,"creator_terms_of_address", "kobberstikker");
 		Collection<Object> creatorTermsOfAddress = record.getFieldValues("creator_terms_of_address");
 
 		// type_of_resource
-		String[] contentInType = new String[]{"Billede, Todimensionalt billedmateriale", "Grafik"};
-		assertMultivalueField(record, "type_of_resource", 2, contentInType );
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
 
 		// topic
-		String[] contentInTopic = new String[]{"Poul Egede. 1911,7507.", "Billedet befinder sig i Kort- og Billedafdelingen, Det Kongelige Bibliotek"};
-		assertMultivalueField(record, "topic", 2, contentInTopic );
+		assertMultivalueField(record, "topic", "Poul Egede. 1911,7507.", "Billedet befinder sig i Kort- og Billedafdelingen, Det Kongelige Bibliotek" );
 
 		// subject_name
-		String[] contentInSubjectName = new String[]{"Egede, Poul Hansen"};
-		assertMultivalueField(record,"subject_name", 1, contentInSubjectName);
+		assertMultivalueField(record,"subject_name", "Egede, Poul Hansen");
 
 		// subject_full_name
-		String[] contentInSubjectFullName = new String[]{"Poul Hansen Egede"};
-		assertMultivalueField(record,"subject_full_name", 1, contentInSubjectFullName);
+		assertMultivalueField(record,"subject_full_name", "Poul Hansen Egede");
 
 		// subject_family_name
-		String[] contentInSubjectFamilyName = new String[]{"Egede"};
-		assertMultivalueField(record,"subject_family_name", 1, contentInSubjectFamilyName);
+		assertMultivalueField(record,"subject_family_name", "Egede");
 
 		// subject_given_name
-		String[] contentInSubjectGivenName = new String[]{"Poul Hansen"};
-		assertMultivalueField(record,"subject_given_name", 1, contentInSubjectGivenName);
+		assertMultivalueField(record,"subject_given_name", "Poul Hansen");
 
 		// subject_date_of_birth
-		String[] contentInSubjectBirthDate = new String[]{"1708"};
-		assertMultivalueField(record,"subject_date_of_birth", 1, contentInSubjectBirthDate);
+		assertMultivalueField(record,"subject_date_of_birth", "1708");
 
 		// subject_date_of_death
-		String[] contentInSubjectDeathDate = new String[]{"1789"};
-		assertMultivalueField(record,"subject_date_of_death", 1, contentInSubjectDeathDate);
+		assertMultivalueField(record,"subject_date_of_death", "1789");
 
 		// subject_terms_of_address
-		String[] contentInSubjectTermsOfAddress= new String[]{"teolog, missionær, grønlandsfarer og biskop"};
-		assertMultivalueField(record,"subject_terms_of_address", 1, contentInSubjectTermsOfAddress);
+		assertMultivalueField(record,"subject_terms_of_address", "teolog, missionær, grønlandsfarer og biskop");
 	}
 
 	@Test
@@ -285,8 +265,7 @@ public class EmbeddedSolrTest {
 		assertEquals("DT005031.tif",record.getFieldValue("identifier_local"));
 
 		//multivalue field
-		String[] contentInType = new String[]{"Billede, Todimensionalt billedmateriale", "Tegning"};
-		assertMultivalueField(record, "type_of_resource", 2, contentInType );
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Tegning" );
 		//TODO more fields
 	}
 
@@ -312,8 +291,7 @@ public class EmbeddedSolrTest {
 		assertEquals("ANSK_11614.tif",record.getFieldValue("identifier_local"));
 
 		//multivalue field
-		String[] contentInType = new String[]{"Billede, Todimensionalt billedmateriale", "Anskuelsesbillede"};
-		assertMultivalueField(record, "type_of_resource", 2, contentInType );
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Anskuelsesbillede" );
 		//TODO more fields
 
 	}
@@ -340,8 +318,7 @@ public class EmbeddedSolrTest {
 		assertEquals("SKF_f_0137.tif",record.getFieldValue("identifier_local"));
 
 		//multivalue field
-		String[] contentInType = new String[]{"Billede, Todimensionalt billedmateriale", "Fotografi"};
-		assertMultivalueField(record, "type_of_resource", 2, contentInType );
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Fotografi" );
 		//TODO more fields
 
 	}
@@ -353,7 +330,7 @@ public class EmbeddedSolrTest {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+		System.out.println(prettyJsonString);
 
 		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
 		embeddedServer.add(document);
@@ -367,11 +344,15 @@ public class EmbeddedSolrTest {
 		assertEquals("KHP0001-049.tif",record.getFieldValue("identifier_local"));
 
 		//multivalue field
-		String[] contentInType = new String[]{"Billede, Todimensionalt billedmateriale", "Dia"};
-		assertMultivalueField(record, "type_of_resource", 2, contentInType );
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Dia" );
 
-		String[] contentInCollection = new String[]{"KHP", "1940-1950", "ikke UA"};
-		assertMultivalueField(record, "list_of_categories", 7, contentInCollection);
+		assertMultivalueField(record, "list_of_categories", "KHP",
+				"Keld Helmer-Petersen",
+				"1940-1950",
+				"Helmer-Petersen",
+				"Keld",
+				"CAR- BLO katagori",
+				"ikke UA");
 		//TODO more fields
 	}
 
@@ -550,10 +531,10 @@ public class EmbeddedSolrTest {
 		assertEquals(imgWidth, record.getFieldValue("image_width"));
 	}
 
-	private void assertMultivalueField(SolrDocument record, String fieldName, int itemsInField, String[] contentInField) {
+	private void assertMultivalueField(SolrDocument record, String fieldName, String... contentsInField) {
 		Collection<Object> fieldValues = record.getFieldValues(fieldName);
-		assertEquals(itemsInField,fieldValues.size());
-		for (String s : contentInField) {
+		assertEquals(contentsInField.length,fieldValues.size());
+		for (String s : contentsInField) {
 			assertTrue(fieldValues.contains(s));
 		}
 	}
