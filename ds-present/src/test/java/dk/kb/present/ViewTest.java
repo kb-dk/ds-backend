@@ -31,6 +31,7 @@ class ViewTest {
     }
 
     /*
+    // TODO: Make this work with new metadatafiles
     @Test
     void jsonld() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
