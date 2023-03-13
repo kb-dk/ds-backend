@@ -462,16 +462,54 @@
           <xsl:if test="m:subject/m:name/m:namePart[@type='date'] and m:subject/m:name/m:namePart[@type='date'] != ''">
             <f:array key="subject_date_of_birth">
               <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                  <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
-                </f:string>
+                <xsl:variable name="subjectDateOfBirth" select="substring-before(m:namePart[@type='date'], '/')"/>
+                <xsl:choose>
+                  <xsl:when test="matches($subjectDateOfBirth, '\d{4}-0-0')">
+                    <f:string>
+                      <xsl:value-of select="substring-before($subjectDateOfBirth, '-')"/>
+                    </f:string>
+                  </xsl:when>
+                  <xsl:when test="matches($subjectDateOfBirth, '\d{4}-\d{2}-0')">
+                    <xsl:analyze-string select="$subjectDateOfBirth" regex="(\d{{4}}-\d{{2}})-0">
+                      <xsl:matching-substring>
+                        <f:string>
+                          <xsl:value-of select="f:regex-group(1)"/>
+                        </f:string>
+                      </xsl:matching-substring>
+                    </xsl:analyze-string>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <f:string>
+                      <xsl:value-of select="$subjectDateOfBirth"/>
+                    </f:string>
+                  </xsl:otherwise>
+                </xsl:choose>
               </xsl:for-each>
             </f:array>
             <f:array key="subject_date_of_death">
               <xsl:for-each select="m:subject/m:name">
-                <f:string>
-                  <xsl:value-of select="substring-after(m:namePart[@type='date'], '/')"/>
-                </f:string>
+                <xsl:variable name="subjectDateOfDeath" select="substring-after(m:namePart[@type='date'], '/')"/>
+                <xsl:choose>
+                  <xsl:when test="matches($subjectDateOfDeath, '\d{4}-0-0')">
+                    <f:string>
+                      <xsl:value-of select="substring-before($subjectDateOfDeath, '-')"/>
+                    </f:string>
+                  </xsl:when>
+                  <xsl:when test="matches($subjectDateOfDeath, '\d{4}-\d{2}-0')">
+                    <xsl:analyze-string select="$subjectDateOfDeath" regex="(\d{{4}}-\d{{2}})-0">
+                      <xsl:matching-substring>
+                        <f:string>
+                          <xsl:value-of select="f:regex-group(1)"/>
+                        </f:string>
+                      </xsl:matching-substring>
+                    </xsl:analyze-string>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <f:string>
+                      <xsl:value-of select="$subjectDateOfDeath"/>
+                    </f:string>
+                  </xsl:otherwise>
+                </xsl:choose>
               </xsl:for-each>
             </f:array>
           </xsl:if>
@@ -534,7 +572,7 @@
         </xsl:if>
         <!-- Calculates the size of the digital image-->
         <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth">
-        <f:string key="image_size">
+        <f:string key="image_size_pixels">
           <xsl:value-of select="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth"/>
         </f:string>
         </xsl:if>
