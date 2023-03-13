@@ -56,7 +56,7 @@ public class XSLTSchemaDotOrgTransformerTest {
     }
 
     @Test
-    void testCreators() throws Exception {
+    void testCreatorsAndHeadline() throws Exception {
         String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_JB000132);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -75,6 +75,7 @@ public class XSLTSchemaDotOrgTransformerTest {
                 "{\"@type\":\"Person\",\"name\":\"Henning Kronstam\",\"givenName\":\"Henning\",\"familyName\":\"Kronstam\",\"birthDate\":\"1934-6-29\",\"deathDate\":\"1995-5-28\",\"affiliation\":\"Den Kongelige Ballet\"}," +
                 "{\"@type\":\"Person\",\"name\":\"John Neumeier\",\"givenName\":\"John\",\"familyName\":\"Neumeier\",\"birthDate\":\"1939-2-24\",\"affiliation\":\"Den Kongelige Ballet\"}," +
                 "\"ballet\",\"dans\",\"balletfotos\",\"KBpublicering\"]"));
+        Assertions.assertTrue(schemaOrgString.contains("\"headline\":[{\"value\":\"Romeo og Julie\",\"@language\":\"da\"}]"));
 
 
     }

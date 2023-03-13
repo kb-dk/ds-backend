@@ -81,6 +81,7 @@
                             <xsl:otherwise>CreativeWork</xsl:otherwise>
                         </xsl:choose> -->
                         <!-- Mapping from resourcetypes in new MODS -->
+                        <!-- TODO: Maybe sanitycheck this mapping with Sigge. -->
                         <xsl:choose>
                             <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Fotografi'">Photograph</xsl:when>
                             <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']='Anskuelsesbillede'">Poster</xsl:when>
@@ -658,16 +659,28 @@
                 </xsl:for-each>
             </f:array>
         </xsl:if>
-        <xsl:if test="m:titleInfo/@type">
+        <xsl:if test="m:titleInfo/@type or m:titleInfo/m:subTitle">
             <f:array key="alternativeHeadline">
                 <xsl:for-each select="m:titleInfo[@type]">
                     <xsl:variable name="xml_lang"><xsl:value-of select="@xml:lang"/></xsl:variable>
                     <xsl:for-each select="m:title">
                         <f:map>
-                            <f:string key="@value"><xsl:value-of select="."/></f:string>
+                            <f:string key="value"><xsl:value-of select="."/></f:string>
                             <f:string key="@language"><xsl:value-of select="$xml_lang"/></f:string>
                         </f:map>
                     </xsl:for-each>
+                </xsl:for-each>
+                <xsl:for-each select="m:titleInfo/m:subTitle">
+                    <xsl:variable name="xml_lang">
+                        <xsl:choose>
+                            <xsl:when test="@xml:lang"><xsl:value-of select="@xml:lang"/></xsl:when>
+                            <xsl:otherwise><xsl:value-of select="$cataloging_language"/></xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <f:map>
+                        <f:string key="value"><xsl:value-of select="."/></f:string>
+                        <f:string key="@language"><xsl:value-of select="$xml_lang"/></f:string>
+                    </f:map>
                 </xsl:for-each>
             </f:array>
         </xsl:if>
