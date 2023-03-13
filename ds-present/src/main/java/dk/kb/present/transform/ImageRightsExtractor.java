@@ -44,7 +44,7 @@ public class ImageRightsExtractor extends DSTransformer {
     @Override
     public String apply(String modsInMetsXml, Map<String, String> metadata) {
         try {
-            metadata.putAll(XsltCopyrightMapper.xsltCopyrightTransformer(modsInMetsXml));
+            metadata.putAll(XsltCopyrightMapper.applyXsltCopyrightTransformer(modsInMetsXml));
         } catch (Exception e) {
             log.warn("Unable to parse rights section from mods-in-mets XML with metadata {}", metadata);
             throw new InternalServiceException("Unable to parse rights section");
