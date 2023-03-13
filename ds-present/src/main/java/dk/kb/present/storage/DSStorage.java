@@ -15,13 +15,13 @@
 package dk.kb.present.storage;
 
 
-import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.webservice.exception.InternalServiceException;
-import dk.kb.present.webservice.exception.NotFoundServiceException;
 import dk.kb.storage.client.v1.DsStorageApi;
 import dk.kb.storage.invoker.v1.ApiException;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.util.DsStorageClient;
+
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

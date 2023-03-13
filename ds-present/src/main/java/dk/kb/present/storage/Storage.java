@@ -23,7 +23,7 @@ import dk.kb.storage.model.v1.DsRecordDto;
  * Provides access to records.
  *
  * Note that no methods uses checked Exceptions. Implementations are aimed towards web services and should throw
- * appropriate {@link dk.kb.present.webservice.exception.ServiceException}s instead.
+ * appropriate {@link dk.kb.util.webservice.exception.ServiceException}s instead.
  */
 public interface Storage {
 

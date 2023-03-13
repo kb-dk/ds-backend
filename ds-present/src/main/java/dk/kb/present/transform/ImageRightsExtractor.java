@@ -15,7 +15,7 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.copyright.XsltCopyrightMapper;
-import dk.kb.present.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

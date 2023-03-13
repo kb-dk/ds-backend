@@ -1,25 +1,16 @@
 package dk.kb.present.api.v1.impl;
 
 import dk.kb.present.PresentFacade;
-import dk.kb.present.api.v1.*;
+import dk.kb.present.api.v1.DsPresentApi;
 import dk.kb.present.model.v1.CollectionDto;
-
-import dk.kb.present.webservice.exception.ServiceException;
-import dk.kb.present.webservice.exception.InternalServiceException;
-
 import dk.kb.util.webservice.ImplBase;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.StreamingOutput;
 import java.util.List;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.*;
-import javax.ws.rs.ext.Providers;
-
-import org.apache.cxf.jaxrs.ext.MessageContext;
 
 /**
  * ds-present
@@ -48,6 +39,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     @Override
     public CollectionDto getCollection(String id) throws ServiceException {
         try {
+            log.debug("() called with call details: {}", getCallDetails());
             return PresentFacade.getCollection(id);
         } catch (Exception e){
             throw handleException(e);
@@ -67,6 +59,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     @Override
     public List<CollectionDto> getCollections() throws ServiceException {
         try {
+            log.debug("getCollections() called with call details: {}", getCallDetails());
             return PresentFacade.getCollections();
         } catch (Exception e){
             throw handleException(e);
@@ -92,6 +85,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     @Override
     public String getRecord(String id, String format) throws ServiceException {
         try {
+            log.debug("getRecord(id='{}', format='{}') called with call details: {}", id, format, getCallDetails());
             return PresentFacade.getRecord(id, format);
         } catch (Exception e){
             throw handleException(e);
@@ -100,32 +94,15 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
 
     @Override
     public StreamingOutput getRecords(String collection, Long mTime, Long maxRecords, String format) {
+        log.debug("getRecords(collection='{}', mTime={}, maxRecords={}, format='{}') called with call details: {}",
+                  collection, mTime, maxRecords, format, getCallDetails());
         if (collection == null) {
             throw new InternalServiceException("collection must be specified but was not");
         }
-        long finalMTime = mTime == null ? 0L : mTime;
-        long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
         try {
+            long finalMTime = mTime == null ? 0L : mTime;
+            long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecords(httpServletResponse, collection, finalMTime, finalMaxRecords, format);
-        } catch (Exception e){
-            throw handleException(e);
-        }
-    }
-
-    /**
-     * Ping the server to check if the server is reachable.
-     * 
-     * @return <ul>
-      *   <li>code = 200, message = "OK", response = String.class</li>
-      *   </ul>
-      * @throws ServiceException when other http codes should be returned
-      *
-      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-     */
-    @Override
-    public String ping() throws ServiceException {
-        try {
-            return "pong";
         } catch (Exception e){
             throw handleException(e);
         }
