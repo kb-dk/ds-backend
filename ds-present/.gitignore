@@ -16,3 +16,7 @@ setup_project.sh
 /testdata/
 /deploy2Devel11.sh
 /.gitignore
+
+# Solr Cloud
+cloud
+bin/cache

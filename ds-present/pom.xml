@@ -254,7 +254,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.6.2</version>
+            <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -319,6 +319,22 @@
             <version>10.6</version>
         </dependency>
 
+      <!-- Client for ds-storage This will also require the org.openapitools dependency-->
+      <dependency>
+        <groupId>dk.kb.storage</groupId>
+        <artifactId>ds-storage</artifactId>
+          <version>1.2-SNAPSHOT</version>
+          <type>jar</type>
+          <classifier>classes</classifier>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+        </exclusions>
+      </dependency>
+
+
         <!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable -->
         <!-- Needed for the ds-storage client -->
         <dependency>
@@ -326,6 +342,73 @@
             <artifactId>jackson-databind-nullable</artifactId>
             <version>0.2.2</version>
         </dependency>
+
+
+
+
+    <!-- Enmbedded solr for unittest -->
+    <dependency>
+      <groupId>org.apache.solr</groupId>
+      <artifactId>solr-solrj</artifactId>
+      <version>9.1.1</version>
+      <scope>test</scope>  
+   <exclusions>
+	    <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12-impl</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </exclusion>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </exclusion>
+    </exclusions>
+   </dependency>
+
+    <dependency>
+      <groupId>org.apache.solr</groupId>
+      <artifactId>solr-test-framework</artifactId>
+      <version>9.1.1</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion> <!-- Solves the "multiple slf bindings" warning -->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12-impl</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </exclusion>
+      </exclusions>    
+    </dependency>
+
     </dependencies>
 
     <build>
@@ -418,67 +501,7 @@
                     <packageName>${project.package}</packageName>
                 </configuration>
 
-                <dependencies>
-                    <dependency>
-                        <!-- This is a dependency here, as we need the openapi_ds-storage_v1.yaml on build time and no more-->
-                        <groupId>dk.kb.storage</groupId>
-                        <artifactId>ds-storage</artifactId>
-                        <version>1.2-SNAPSHOT</version>
-                        <type>jar</type>
-                        <classifier>classes</classifier>
-                        <exclusions>
-                            <!-- We really just need the openapi_ds-storage_v1.yaml...-->
-                            <exclusion>
-                                <groupId>*</groupId>
-                                <artifactId>*</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-
-                </dependencies>
-
-                <executions>
-
-                    <!-- Client for the ds-storage backend -->
-                    <execution>
-                        <id>Generate client for the ds-storage backend</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Loaded from dependency above-->
-                            <inputSpec>openapi_ds-storage_v1.yaml</inputSpec>
-
-                            <generatorName>java</generatorName>
-                            <library>native</library>
-
-                            <!-- Do not generate doc or tests for this client, we will handle this ourselves-->
-                            <generateApiTests>false</generateApiTests>
-                            <generateApiDocumentation>false</generateApiDocumentation>
-                            <generateModelTests>false</generateModelTests>
-                            <generateModelDocumentation>false</generateModelDocumentation>
-
-                            <!-- Ensure ONLY the ApiClient and supporting classes are created, not the gradle mess-->
-                            <generateSupportingFiles>true</generateSupportingFiles>
-                            <supportingFilesToGenerate>ApiClient.java,ApiException.java,Configuration.java,Pair.java
-                            </supportingFilesToGenerate>
-
-                            <!-- Do NOT use the customised templates as they are only for the webservice part, not the client-->
-                            <!-- Hacked by Asger by setting to an existing folder without templates -->
-                            <templateDirectory>src/main/</templateDirectory>
-                            <packageName>${project.package}.backend</packageName>
-                            <configOptions>
-                                <apiPackage>${project.package}.backend.api.v1</apiPackage>
-                                <modelPackage>${project.package}.backend.model.v1</modelPackage>
-                                <invokerPackage>${project.package}.backend.invoker.v1</invokerPackage>
-
-                                <sourceFolder>target/generated-sources</sourceFolder>
-                                <implFolder>target/generated-sources</implFolder>
-
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
+               
                     <!-- Version 1 -->
                     <!-- When a new version is needed, make a copy of two v1-related executions below, then change
                          v1 to v2 in the copy.
@@ -492,6 +515,7 @@
                          * Update src/main/webapp/api/index.html
                     -->
 
+                 <executions>
                     <execution>
                         <!-- Generate API and Model-files from the OpenAPI specification (positioned under the target/generated-sources/ folder).
                              These files are overwritten on all builds, so they should never be edited manually. -->
@@ -543,44 +567,6 @@
                 </executions>
             </plugin>
 
-            <!-- The generated classes for the OpenAPI client are problematic. Disable checking of those for now.
-                 This setup, minus the excludes-section, was copied from sbforge-parent 22-->
-            <plugin>
-                <groupId>de.thetaphi</groupId>
-                <artifactId>forbiddenapis</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <!--
-                    if the used Java version is too new,
-                    don't fail, just do nothing:
-                  -->
-                    <failOnUnsupportedJava>true</failOnUnsupportedJava>
-                    <bundledSignatures>
-                        <!--
-                      This will automatically choose the right
-                      signatures based on 'maven.compiler.target':
-                    -->
-                        <bundledSignature>jdk-unsafe</bundledSignature>
-                        <bundledSignature>jdk-deprecated</bundledSignature>
-                        <!-- disallow undocumented classes like sun.misc.Unsafe: -->
-                        <bundledSignature>jdk-non-portable</bundledSignature>
-                        <!-- don't allow unsafe reflective access: -->
-                        <bundledSignature>jdk-reflection</bundledSignature>
-                    </bundledSignatures>
-                    <excludes>
-                        <exclude>**/DsStorageApi.class</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>${api.check.phase}</phase>
-                        <goals>
-                            <goal>check</goal>
-                            <goal>testCheck</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

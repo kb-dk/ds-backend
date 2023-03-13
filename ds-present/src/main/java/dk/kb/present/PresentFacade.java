@@ -14,21 +14,20 @@
  */
 package dk.kb.present;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
 import dk.kb.present.webservice.ExportWriterFactory;
-import dk.kb.util.json.JSON;
+import dk.kb.storage.model.v1.DsRecordDto;
+
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.stream.ExportWriter;
 import dk.kb.util.webservice.stream.JSONStreamWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
 
 /**
  *
@@ -224,15 +224,12 @@ public class PresentFacade {
         if (Boolean.TRUE.equals(record.getDeleted())) {
             return "\"delete\": { \"id\": \"" + record.getId() + "\" }";
         }
-        List<String> solrJSONs = splitSolrJSON(record.getData());
+        // When we had nested solr documentds, we had to split on documents. This has been removed. See outcommented method  splitSolrJSON if it becomes relevant
         StringBuilder sb = new StringBuilder();
-        for (int i = 0 ; i < solrJSONs.size() ; i++) {
-            sb.append("\"add\": { \"doc\" : ").append(solrJSONs.get(i)).append(" }");
-            if (i != solrJSONs.size()-1) {
-                sb.append(",\n");
-            }
-        }
+        sb.append("\"add\": { \"doc\" : ").append(record.getData()).append(" }");
+       
         return sb.toString();
+    
     }
 
     /**
@@ -243,6 +240,8 @@ public class PresentFacade {
      */
     // Really hacking here to handle the case of the source containing multiple MODS-sections
     // TODO: Hopefully determine that 1 record = 1 mods always
+    
+    /* No used 
     private static List<String> splitSolrJSON(String solrJSONs) {
         ObjectMapper mapper = new ObjectMapper();
         List<?> jsonArray = JSON.fromJson(solrJSONs, List.class);
@@ -257,7 +256,7 @@ public class PresentFacade {
         }
         return strArray;
     }
-
+*/
     private static void setFilename(
             HttpServletResponse httpServletResponse,
             Long mTime, Long maxRecords, ExportWriterFactory.FORMAT deliveryFormat) {

@@ -14,10 +14,12 @@
  */
 package dk.kb.present.storage;
 
-import dk.kb.present.backend.model.v1.DsRecordDto;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
+import dk.kb.storage.model.v1.DsRecordDto;
+
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+
 import dk.kb.util.Resolver;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd" TYPE="File" OBJID="3ce002eb-8f57-40ef-8b3d-a8652a852f6e" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
-    <mets:metsHdr CREATEDATE="2022-11-14T07:44:39.912+01:00">
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="cf81470e-e9e8-4417-b13f-83ab68745e4e" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2023-02-23T08:05:44.902+01:00">
         <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
             <mets:name>kbDk</mets:name>
             <mets:note>kbDkInternal</mets:note>
@@ -9,70 +9,103 @@
             <mets:note>kbDkInternal</mets:note>
         </mets:agent>
     </mets:metsHdr>
-    <mets:dmdSec CREATED="2022-11-14T07:44:39.912+01:00" ID="Mods1">
+    <mets:dmdSec CREATED="2023-02-23T08:05:44.902+01:00" ID="Mods1">
         <mets:mdWrap MDTYPE="MODS">
             <mets:xmlData>
-                <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
-                    <mods:genre type="Categories">Skoler i alm., Skolehistorie, 69 testfiler</mods:genre>
-                    <mods:identifier type="uri">urn:uuid:4c9b74b0-2ce6-11ed-81b4-005056882ec3</mods:identifier>
-                    <mods:identifier type="local">SKF_f_0138.tif</mods:identifier>
-                    <mods:identifier type="Asset Reference">cumulus-core-test-01:/Depot/DAM/test/Samlingsbilleder/0001/645/242/SKF_f_0138.tif</mods:identifier>
-                    <mods:identifier type="Original Asset Reference">cumulus-core-01:/Depot/DAM/Samlingsbilleder/Emdrup/fotosamling/SKF_f_0138.tif</mods:identifier>
-                    <mods:identifier displayLabel="Accession number" type="accession number">0138</mods:identifier>
-                    <mods:note type="content">Beskrivelse: Vallensved Skole.  Opført i 1831 efter kancellitegning 1829. Facade mod gårdsplads.  Fotografi</mods:note>
-                    <mods:note type="content"/>
-                    <mods:note type="content">Topografisk nr: 0477</mods:note>
-                    <mods:note displayLabel="Beskrivelse">Vallensved Skole.Opført i 1831 efter kancellitegning 1829. Facade mod gårdsplads.Fotografi</mods:note>
-                    <mods:note displayLabel="Catalog Name">Samlingsbilleder</mods:note>
+                <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                    <mods:genre>Topografi</mods:genre>
+                    <mods:genre type="Categories">Slovakiet, Tjekkiet, Seriekort Slovakiet, Tjekkiet, Ungarn, Østrig 1880-1939 1:75 000</mods:genre>
+                    <mods:identifier type="uri">urn:uuid:21e50d70-b65a-11e6-a4d4-00505688346e</mods:identifier>
+                    <mods:identifier type="local">au000712.tif</mods:identifier>
+                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Maps/0000/075/586/au000712.tif</mods:identifier>
+                    <mods:identifier type="Original Asset Reference">cumulus-core-01:/Depot/nb/preingest/DP/Maps/austrian/au000712.tif</mods:identifier>
+                    <mods:language>
+                        <mods:languageTerm authority="rfc4646" type="code">ger</mods:languageTerm>
+                    </mods:language>
+                    <mods:location>
+                        <mods:shelfLocator>KBK Depot</mods:shelfLocator>
+                    </mods:location>
+                    <mods:name type="personal">
+                        <mods:role>
+                            <mods:roleTerm type="code">cre</mods:roleTerm>
+                        </mods:role>
+                        <mods:affiliation>Generalstab des Heeres</mods:affiliation>
+                    </mods:name>
+                    <mods:name type="personal">
+                        <mods:role>
+                            <mods:roleTerm type="code">cre</mods:roleTerm>
+                        </mods:role>
+                        <mods:affiliation>K.u.k. Militärgeographisches Institut</mods:affiliation>
+                    </mods:name>
+                    <mods:note type="content">Kortet hører til: [Tschechoslowakei] / K.u.k. Militärgeographisches Institut</mods:note>
+                    <mods:note type="content">1936-1938 udgivet af Gen St d H, betegnet: Sonderausgabe!</mods:note>
+                    <mods:note type="content">Kort 4252 og 4353 med titlen: Befestigungskarte Tschechoslowakei, betegnet: Geheim</mods:note>
+                    <mods:note type="content">Serien haves ikke komplet</mods:note>
+                    <mods:note displayLabel="Catalog Name">Maps</mods:note>
+                    <mods:originInfo>
+                        <mods:place>
+                            <mods:placeTerm type="text">Tyskland</mods:placeTerm>
+                        </mods:place>
+                    </mods:originInfo>
+                    <mods:originInfo altRepGroup="original">
+                        <mods:dateCreated>1912-1938</mods:dateCreated>
+                        <mods:dateCreated point="start">1912</mods:dateCreated>
+                        <mods:dateCreated point="end">1938</mods:dateCreated>
+                    </mods:originInfo>
+                    <mods:physicalDescription>
+                        <mods:form type="Dimensions">1 kort på ark 56 x 72 cm eller mindre</mods:form>
+                    </mods:physicalDescription>
                     <mods:recordInfo>
                         <mods:languageOfCataloging>
                             <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
                         </mods:languageOfCataloging>
-                        <mods:recordInfoNote>LTR</mods:recordInfoNote>
                     </mods:recordInfo>
                     <mods:relatedItem type="otherFormat">
-                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-test-01:/Depot/DAM/test/Samlingsbilleder/0001/645/242/SKF_f_0138.jpg</mods:identifier>
-                    </mods:relatedItem>
-                    <mods:relatedItem type="series" displayLabel="Samling">
-                        <mods:titleInfo>
-                            <mods:title>Skolehistorie</mods:title>
-                        </mods:titleInfo>
-                    </mods:relatedItem>
-                    <mods:relatedItem type="host">
-                        <mods:identifier type="URL">https://skolehistorie.au.dk/samlinger/skolehistorisk-fotosamling/</mods:identifier>
-                        <mods:note type="URL-tekst">Skolehistorie.au.dk</mods:note>
+                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Maps/0000/075/586/au000712.jpg</mods:identifier>
                     </mods:relatedItem>
                     <mods:subject>
-                        <mods:geographic>Danmark</mods:geographic>
+                        <mods:hierarchicalGeographic>
+                            <mods:area areaType="area">Tjekkoslovakiet</mods:area>
+                        </mods:hierarchicalGeographic>
                     </mods:subject>
-                    <mods:subject displayLabel="Topografinummer">
-                        <mods:geographicCode>0477</mods:geographicCode>
+                    <mods:subject>
+                        <mods:topic lang="da">Tjekkiet</mods:topic>
+                        <mods:topic lang="da">Slovakiet</mods:topic>
+                        <mods:topic lang="da">Polen</mods:topic>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:cartographics>
+                            <mods:scale>Målestok 1:75 000</mods:scale>
+                        </mods:cartographics>
+                    </mods:subject>
+                    <mods:subject displayLabel="Topographical Number">
+                        <mods:geographicCode>1155</mods:geographicCode>
                     </mods:subject>
                     <mods:titleInfo>
-                        <mods:title>Vallensved Skole</mods:title>
+                        <mods:title>[Tjekkoslovakiet] 1:75 000 Trnava 4659</mods:title>
                     </mods:titleInfo>
-                    <mods:typeOfResource displayLabel="Generel materialebetegnelse">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
-                    <mods:typeOfResource displayLabel="Materialebetegnelse">Fotografi</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Generel Resource Description">Kort, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Resource Description">Kort</mods:typeOfResource>
                 </mods:mods>
             </mets:xmlData>
         </mets:mdWrap>
     </mets:dmdSec>
     <mets:amdSec>
-        <mets:techMD CREATED="2022-11-14T07:44:39.927+01:00" ID="PremisObject1">
+        <mets:techMD CREATED="2023-02-23T08:05:44.917+01:00" ID="PremisObject1">
             <mets:mdWrap MDTYPE="PREMIS:OBJECT">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:file">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
-                            <premis:objectIdentifierValue>4c9b74b0-2ce6-11ed-81b4-005056882ec3</premis:objectIdentifierValue>
+                            <premis:objectIdentifierValue>21e50d70-b65a-11e6-a4d4-00505688346e</premis:objectIdentifierValue>
                         </premis:objectIdentifier>
                         <premis:objectCharacteristics>
                             <premis:compositionLevel>0</premis:compositionLevel>
                             <premis:fixity>
                                 <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
-                                <premis:messageDigest>1d54b16ad6d9af0c83d0ebfd373faf1e</premis:messageDigest>
+                                <premis:messageDigest>b87f110eae16821033a4f1aaaf262954</premis:messageDigest>
                             </premis:fixity>
-                            <premis:size>54256404</premis:size>
+                            <premis:size>67039396</premis:size>
                             <premis:format>
                                 <premis:formatDesignation>
                                     <premis:formatName>TIFF Image</premis:formatName>
@@ -81,16 +114,16 @@
                                 <premis:formatNote>Validated by Cumulus version: 11.1.8</premis:formatNote>
                             </premis:format>
                             <premis:creatingApplication>
-                                <premis:creatingApplicationName>Omniscan 12.4 SR5 Build2118</premis:creatingApplicationName>
+                                <premis:creatingApplicationName>Adobe Photoshop Camera Raw 8.4 (Windows)</premis:creatingApplicationName>
                             </premis:creatingApplication>
                             <premis:objectCharacteristicsExtension>
-                                <mix:mix xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="http://www.loc.gov/mix/v20 http://www.loc.gov/standards/mix/mix20/mix20.xsd">
+                                <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://id.kb.dk/standards/mix/version_2_0/mix.xsd">
                                     <mix:BasicDigitalObjectInformation>
                                         <mix:ObjectIdentifier>
                                             <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
-                                            <mix:objectIdentifierValue>4c9b74b0-2ce6-11ed-81b4-005056882ec3</mix:objectIdentifierValue>
+                                            <mix:objectIdentifierValue>21e50d70-b65a-11e6-a4d4-00505688346e</mix:objectIdentifierValue>
                                         </mix:ObjectIdentifier>
-                                        <mix:fileSize>54256404</mix:fileSize>
+                                        <mix:fileSize>67039396</mix:fileSize>
                                         <mix:FormatDesignation>
                                             <mix:formatName>TIFF Image</mix:formatName>
                                             <mix:formatVersion/>
@@ -101,13 +134,13 @@
                                         </mix:Compression>
                                         <mix:Fixity>
                                             <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
-                                            <mix:messageDigest>1d54b16ad6d9af0c83d0ebfd373faf1e</mix:messageDigest>
+                                            <mix:messageDigest>b87f110eae16821033a4f1aaaf262954</mix:messageDigest>
                                         </mix:Fixity>
                                     </mix:BasicDigitalObjectInformation>
                                     <mix:BasicImageInformation>
                                         <mix:BasicImageCharacteristics>
-                                            <mix:imageWidth>4758</mix:imageWidth>
-                                            <mix:imageHeight>3801</mix:imageHeight>
+                                            <mix:imageWidth>5671</mix:imageWidth>
+                                            <mix:imageHeight>3939</mix:imageHeight>
                                             <mix:PhotometricInterpretation>
                                                 <mix:colorSpace>RGB</mix:colorSpace>
                                                 <mix:ColorProfile>
@@ -120,12 +153,12 @@
                                     </mix:BasicImageInformation>
                                     <mix:ImageCaptureMetadata>
                                         <mix:GeneralCaptureInformation>
-                                            <mix:dateTimeCreated>2022-11-14T07:44:39.929+01:00</mix:dateTimeCreated>
+                                            <mix:dateTimeCreated>2023-02-23T08:05:44.919+01:00</mix:dateTimeCreated>
                                         </mix:GeneralCaptureInformation>
                                         <mix:ScannerCapture>
                                             <mix:MaximumOpticalResolution>
-                                                <mix:xOpticalResolution>400</mix:xOpticalResolution>
-                                                <mix:yOpticalResolution>400</mix:yOpticalResolution>
+                                                <mix:xOpticalResolution>300</mix:xOpticalResolution>
+                                                <mix:yOpticalResolution>300</mix:yOpticalResolution>
                                             </mix:MaximumOpticalResolution>
                                         </mix:ScannerCapture>
                                         <mix:orientation>normal*</mix:orientation>
@@ -143,7 +176,7 @@
                                         <mix:ImageProcessing>
                                             <mix:sourceData>initial capture</mix:sourceData>
                                             <mix:ProcessingSoftware>
-                                                <mix:processingSoftwareName>Omniscan 12.4 SR5 Build2118</mix:processingSoftwareName>
+                                                <mix:processingSoftwareName>Adobe Photoshop Camera Raw 8.4 (Windows)</mix:processingSoftwareName>
                                             </mix:ProcessingSoftware>
                                         </mix:ImageProcessing>
                                     </mix:ChangeHistory>
@@ -154,29 +187,38 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:techMD>
-        <!--Inside mets:rightsMD-->
-        <mets:rightsMD CREATED="2022-11-14T07:44:39.934+01:00" ID="ModsRights1">
+        <mets:rightsMD CREATED="2023-02-23T08:05:44.920+01:00" ID="ModsRights1">
             <mets:mdWrap MDTYPE="MODS">
                 <mets:xmlData>
-                    <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
-                        <mods:accessCondition type="use and reproduction" displayLabel="Restricted ">Ejermærke</mods:accessCondition>
+                    <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
                         <mods:accessCondition>
-                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD /usr/local/ginnungagap/current/script/xsd/copyright-md.xsd"/>
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD http://id.kb.dk/schemas/dk-corporate-creator/copyright-md.xsd">
+                                <cdl:creator>
+                                    <dk:creator.corporate>
+                                        <cdl:name>Generalstab des Heeres</cdl:name>
+                                    </dk:creator.corporate>
+                                </cdl:creator>
+                                <cdl:creator>
+                                    <dk:creator.corporate>
+                                        <cdl:name>K.u.k. Militärgeographisches Institut</cdl:name>
+                                    </dk:creator.corporate>
+                                </cdl:creator>
+                            </cdl:copyright>
                         </mods:accessCondition>
                     </mods:mods>
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:rightsMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:44:39.935+01:00" ID="PremisEvent1">
+        <mets:digiprovMD CREATED="2023-02-23T08:05:44.921+01:00" ID="PremisEvent1">
             <mets:mdWrap MDTYPE="PREMIS:EVENT">
                 <mets:xmlData>
-                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd">
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
                         <premis:eventIdentifier>
                             <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
-                            <premis:eventIdentifierValue>0903f21e-eb75-49c6-9cb9-2726469ef89e</premis:eventIdentifierValue>
+                            <premis:eventIdentifierValue>0bc33cad-2da0-4c43-8b74-a45a4c1b44ac</premis:eventIdentifierValue>
                         </premis:eventIdentifier>
                         <premis:eventType>ingestion</premis:eventType>
-                        <premis:eventDateTime>2022-11-14T07:44:39.936+01:00</premis:eventDateTime>
+                        <premis:eventDateTime>2023-02-23T08:05:44.921+01:00</premis:eventDateTime>
                         <premis:eventDetailInformation>
                             <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
 file.encoding: UTF-8
@@ -217,45 +259,45 @@ user.language: da
                         </premis:linkingAgentIdentifier>
                         <premis:linkingObjectIdentifier>
                             <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
-                            <premis:linkingObjectIdentifierValue>4c9b74b0-2ce6-11ed-81b4-005056882ec3</premis:linkingObjectIdentifierValue>
+                            <premis:linkingObjectIdentifierValue>21e50d70-b65a-11e6-a4d4-00505688346e</premis:linkingObjectIdentifierValue>
                         </premis:linkingObjectIdentifier>
                         <premis:linkingObjectIdentifier>
                             <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
-                            <premis:linkingObjectIdentifierValue>3ce002eb-8f57-40ef-8b3d-a8652a852f6e</premis:linkingObjectIdentifierValue>
+                            <premis:linkingObjectIdentifierValue>cf81470e-e9e8-4417-b13f-83ab68745e4e</premis:linkingObjectIdentifierValue>
                         </premis:linkingObjectIdentifier>
                     </premis:event>
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:digiprovMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:44:39.936+01:00" ID="PremisRepresentation1">
+        <mets:digiprovMD CREATED="2023-02-23T08:05:44.921+01:00" ID="PremisRepresentation1">
             <mets:mdWrap MDTYPE="PREMIS">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:representation">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
-                            <premis:objectIdentifierValue>3ce002eb-8f57-40ef-8b3d-a8652a852f6e</premis:objectIdentifierValue>
+                            <premis:objectIdentifierValue>cf81470e-e9e8-4417-b13f-83ab68745e4e</premis:objectIdentifierValue>
                         </premis:objectIdentifier>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
                             <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:44:39.936+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-02-23T08:05:44.922+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>logical</premis:preservationLevelType>
                             <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:44:39.937+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-02-23T08:05:44.922+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
                             <premis:preservationLevelValue>Low</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:44:39.937+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-02-23T08:05:44.922+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:relationship>
                             <premis:relationshipType>structural</premis:relationshipType>
                             <premis:relationshipSubType>represents</premis:relationshipSubType>
                             <premis:relatedObjectIdentifier>
                                 <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
-                                <premis:relatedObjectIdentifierValue>80af22e6-802d-4fc0-88b5-bf22497daa0d</premis:relatedObjectIdentifierValue>
+                                <premis:relatedObjectIdentifierValue>504e77fa-b8de-44f7-94ff-d1a375fcf100</premis:relatedObjectIdentifierValue>
                             </premis:relatedObjectIdentifier>
                         </premis:relationship>
                     </premis:object>
@@ -266,7 +308,7 @@ user.language: da
     <mets:fileSec>
         <mets:fileGrp>
             <mets:file ID="fileId1">
-                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:4c9b74b0-2ce6-11ed-81b4-005056882ec3"/>
+                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:21e50d70-b65a-11e6-a4d4-00505688346e"/>
             </mets:file>
         </mets:fileGrp>
     </mets:fileSec>

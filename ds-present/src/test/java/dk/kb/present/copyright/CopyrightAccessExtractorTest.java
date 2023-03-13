@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
+import dk.kb.present.TestUtil;
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
@@ -196,7 +197,7 @@ public class CopyrightAccessExtractorTest {
 
 
         //TEMPORARY TEST, FIELD WILL BE REMOVED
-        assertEquals("http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031",copyright.getImageUrl());
+        //assertEquals("http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031",copyright.getImageUrl());
 
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
@@ -339,7 +340,8 @@ public class CopyrightAccessExtractorTest {
         assertEquals(false, mapper.isPligtAfleveret());
 
     }
-
+    
+	
     @Test
     void testAccessConditionwith3Persons1Corporate() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/000332.tif.xml");
@@ -365,6 +367,12 @@ public class CopyrightAccessExtractorTest {
         assertEquals(1895, mapper.getLastDeathYearForPerson());   
         assertEquals(1899, mapper.getSkabelsesAar());
         assertEquals(true, mapper.isEjerMaerke());
+
+    
+        //XSLT mapping
+         HashMap<String, String> xsltMap = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);
+        //System.out.println(xsltMap);
+         //TODO test fields
     }
 
 
@@ -402,7 +410,7 @@ public class CopyrightAccessExtractorTest {
     void testSolrFields2XsltMapper() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DT013769.tif.xml");
         
-        HashMap<String, String> xsltMapper = XsltCopyrightMapper.xsltCopyrightTransformer(mods);        
+        HashMap<String, String> xsltMapper = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);        
         assertEquals("Tegning",xsltMapper.get(XsltCopyrightMapper.ACCESS_MATERIALE_TYPE)); 
         assertEquals("1971",xsltMapper.get(XsltCopyrightMapper.ACCESS_SKABELSESAAR_FIELD));
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA,xsltMapper.get(XsltCopyrightMapper.ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD));

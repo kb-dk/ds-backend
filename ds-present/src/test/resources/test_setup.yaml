@@ -20,14 +20,19 @@ config:
         order: sequential
         backends:
           # Problematic: Can we rely on the test being started with the working folder at the root of the project?
+      
+        #    - folder:
+        #       root: 'src/test/resources/xml'
+        #      extension: '.xml'
+        #     whitelist: *whitelist
+        #  - folder:
+        #      root: 'src/test/resources/xml/corpus'
+        #      extension: '.xml'
+        #      whitelist: *whitelist
           - folder:
-              root: 'src/test/resources/xml'
-              extension: '.xml'
-              whitelist: *whitelist
-          - folder:
-              root: 'src/test/resources/xml/corpus'
-              extension: '.xml'
-              whitelist: *whitelist
+              root: 'src/test/resources/xml/copyright_extraction'
+              extension: '.xml'                            
+              
 
   # Settings for handling at the record level
   record:

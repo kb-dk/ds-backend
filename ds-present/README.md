@@ -42,15 +42,38 @@ After this, a record for ID `doms.radio:albert-einstein.xml` should be delivered
 
 ### Setup Solr
 
-Checkout [ds-solr](https://github.com/kb-dk/ds-solr/), change to the `solr-nested-indexing` branch and follow
-the README, using the Solr setup from `nested-template/conf/`. This boils down to
+ds-present comes with convenience scripts for downloading, installing and starting Solr 9 in Cloud mode.
+
 ```shell
   bin/cloud_install.sh
   bin/cloud_start.sh
-  bin/cloud_sync.sh nested-template/conf/ ds-conf ds
+  bin/cloud_sync.sh src/test/resources/solr/dssolr/conf/ ds-conf ds
 ```
+
 Check that the collection was created by visiting
 [http://localhost:10007/solr/#/~cloud?view=graph](http://localhost:10007/solr/#/~cloud?view=graph)
+
+After this Solr is available at http://localhost:10007/solr/ and can be stopped and started with
+```
+bin/cloud_stop.sh
+bin/cloud_start.sh
+```
+
+If the Solr configuration is changed, force an update of `ds` with
+```
+FORCE_CONFIG=true bin/cloud_sync.sh src/test/resources/solr/dssolr/conf/ ds-conf ds
+```
+
+Clear all records in the `ds` collection, but keep the collection with
+```
+bin/cloud_clear.sh ds
+```
+
+Fully delete the `ds` collection with
+```
+bin/cloud_delete.sh ds
+```
+
 
 ### Extract SolrJSONDocuments and index in Solr
 
@@ -66,6 +89,7 @@ curl -s 'http://localhost:9073/ds-present/v1/records?collection=remote&maxRecord
 Indekser dem i Solr:
 
 curl -X POST -H 'Content-Type: application/json' 'http://localhost:10007/solr/ds/update' --data-binary @solrdocs.json
+
 curl -X POST -H 'Content-Type: application/json' 'http://localhost:10007/solr/ds/update' --data-binary '{ "commit": {} }'
 ```
 

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd" TYPE="File" OBJID="acb4d09f-60f6-40d4-b96c-3b55bff29749" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
-    <mets:metsHdr CREATEDATE="2022-11-14T07:29:10.365+01:00">
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="d0ec2dca-b0b0-4060-92e9-5fb680982d33" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2023-02-09T10:24:54.302+01:00">
         <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
             <mets:name>kbDk</mets:name>
             <mets:note>kbDkInternal</mets:note>
@@ -9,45 +9,49 @@
             <mets:note>kbDkInternal</mets:note>
         </mets:agent>
     </mets:metsHdr>
-    <mets:dmdSec CREATED="2022-11-14T07:29:10.367+01:00" ID="Mods1">
+    <mets:dmdSec CREATED="2023-02-09T10:24:54.307+01:00" ID="Mods1">
         <mets:mdWrap MDTYPE="MODS">
             <mets:xmlData>
-                <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
-                    <mods:genre type="Categories">Danske portrætter, X-langtidsbevaring test - BLO, Diverse, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-02 09:01:13</mods:genre>
-                    <mods:identifier type="uri">urn:uuid:096c9090-717f-11e0-82d7-002185371280</mods:identifier>
-                    <mods:identifier type="local">000225.tif</mods:identifier>
-                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/samlingsbilleder/2268/000225.tif</mods:identifier>
-                    <mods:identifier displayLabel="Accession number" type="accession number">1911-7507</mods:identifier>
+                <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                    <mods:genre>Portræt og person</mods:genre>
+                    <mods:genre type="Categories">Danske portrætter, CAR- BLO katagori, Diverse, Portrætsamlingen, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-02 09:01:13</mods:genre>
+                    <mods:identifier type="uri">urn:uuid:45dd4830-717f-11e0-82d7-002185371280</mods:identifier>
+                    <mods:identifier type="local">500514.tif</mods:identifier>
+                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/samlingsbilleder/2268/500514.tif</mods:identifier>
                     <mods:location>
-                        <mods:shelfLocator>Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)</mods:shelfLocator>
+                        <mods:shelfLocator>Billedsamlingen. Danske portrætter, 4°, Karen Bixen, v</mods:shelfLocator>
                     </mods:location>
                     <mods:name type="personal">
                         <mods:role>
                             <mods:roleTerm type="code">cre</mods:roleTerm>
                         </mods:role>
-                        <mods:namePart type="family">Clemens</mods:namePart>
-                        <mods:namePart type="given">Johann Friderich</mods:namePart>
-                        <mods:namePart type="date">1748-11-29/1831-11-5</mods:namePart>
-                        <mods:namePart type="termsOfAddress">kobberstikker</mods:namePart>
+                        <mods:namePart type="family">Knudsen</mods:namePart>
+                        <mods:namePart type="given">Helge</mods:namePart>
+                        <mods:namePart type="date">1897-1-17/1985-6-5</mods:namePart>
+                        <mods:namePart type="termsOfAddress">pressefotograf</mods:namePart>
                     </mods:name>
+                    <mods:note type="content">30-11-1949. "Seven Gothic Tales" bliver forsynet med en hilsen til journalisterne.</mods:note>
+                    <mods:note type="content">ke012023-24</mods:note>
                     <mods:note displayLabel="Catalog Name">Samlingsbilleder</mods:note>
                     <mods:originInfo altRepGroup="original">
-                        <mods:dateCreated>1755-1831</mods:dateCreated>
-                        <mods:dateCreated point="start">1755</mods:dateCreated>
-                        <mods:dateCreated point="end">1831</mods:dateCreated>
+                        <mods:dateCreated point="start">1920</mods:dateCreated>
+                        <mods:dateCreated point="end">1985</mods:dateCreated>
                     </mods:originInfo>
                     <mods:originInfo altRepGroup="surrogate">
-                        <mods:dateCaptured>2019-07-02T11:38:58.000+02:00</mods:dateCaptured>
+                        <mods:dateCaptured>2019-07-02T12:05:42.000+02:00</mods:dateCaptured>
                     </mods:originInfo>
+                    <mods:physicalDescription>
+                        <mods:form type="Dimensions">130 x 180 mm</mods:form>
+                    </mods:physicalDescription>
                     <mods:recordInfo>
                         <mods:languageOfCataloging>
                             <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
                         </mods:languageOfCataloging>
                     </mods:recordInfo>
                     <mods:relatedItem type="otherFormat">
-                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/samlingsbilleder/2268/000225.jpg</mods:identifier>
+                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/samlingsbilleder/2268/500514.jpg</mods:identifier>
                     </mods:relatedItem>
-                    <mods:relatedItem type="series" displayLabel="Samling">
+                    <mods:relatedItem type="host" displayLabel="Samling">
                         <mods:titleInfo>
                             <mods:title>Billedsamlingen</mods:title>
                         </mods:titleInfo>
@@ -56,43 +60,61 @@
                         <mods:identifier type="URL">https://www.kb.dk/find-materiale/samlinger/billedsamlingen</mods:identifier>
                         <mods:note type="URL-tekst">Det Kgl. Biblioteks billedsamling</mods:note>
                     </mods:relatedItem>
+                    <mods:subject lang="da">
+                        <mods:hierarchicalGeographic>
+                            <mods:area areaType="area">Danmark</mods:area>
+                        </mods:hierarchicalGeographic>
+                    </mods:subject>
+                    <mods:subject lang="da">
+                        <mods:topic lang="da">Karen Blixen-Finecke. 30-11-1949. "Seven Gothictales bliv forsyndet med en hilsen til Journalisterne.</mods:topic>
+                        <mods:topic lang="da">Fotograf:.Helge Knudsen. Aftenbladet.</mods:topic>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:topic>sh85105182</mods:topic>
+                    </mods:subject>
                     <mods:subject>
                         <mods:name type="personal">
-                            <mods:namePart type="family">Egede</mods:namePart>
-                            <mods:namePart type="given">Poul Hansen</mods:namePart>
-                            <mods:namePart type="date">1708-0-0/1789-0-0</mods:namePart>
-                            <mods:namePart type="termsOfAddress">teolog, missionær, grønlandsfarer og biskop</mods:namePart>
+                            <mods:namePart type="family">Blytgen-Petersen</mods:namePart>
+                            <mods:namePart type="given">Emil</mods:namePart>
+                            <mods:namePart type="date">1905-0-0/1989-0-0</mods:namePart>
+                            <mods:namePart type="termsOfAddress">redaktør, kontorchef, ambassadør </mods:namePart>
                         </mods:name>
                     </mods:subject>
-                    <mods:titleInfo>
-                        <mods:title>Poul Egede</mods:title>
-                    </mods:titleInfo>
-                    <mods:typeOfResource displayLabel="Generel materialebetegnelse">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
-                    <mods:typeOfResource displayLabel="Materialebetegnelse">Grafik</mods:typeOfResource>
+                    <mods:subject>
+                        <mods:name type="personal">
+                            <mods:namePart type="family">von Blixen-Finecke f. Christentze Dinesen</mods:namePart>
+                            <mods:namePart type="given">Karen (Tanne)</mods:namePart>
+                            <mods:namePart type="date">1885-4-17/1962-9-7</mods:namePart>
+                            <mods:namePart type="termsOfAddress">forfatter, baronesse</mods:namePart>
+                            <mods:displayForm>Karen Blixen</mods:displayForm>
+                        </mods:name>
+                    </mods:subject>
+                    <mods:typeOfResource displayLabel="Generel Resource Description">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Resource Description">Fotografi</mods:typeOfResource>
                 </mods:mods>
             </mets:xmlData>
         </mets:mdWrap>
     </mets:dmdSec>
     <mets:amdSec>
-        <mets:techMD CREATED="2022-11-14T07:29:10.423+01:00" ID="PremisObject1">
+        <mets:techMD CREATED="2023-02-09T10:24:54.390+01:00" ID="PremisObject1">
             <mets:mdWrap MDTYPE="PREMIS:OBJECT">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:file">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
-                            <premis:objectIdentifierValue>096c9090-717f-11e0-82d7-002185371280</premis:objectIdentifierValue>
+                            <premis:objectIdentifierValue>45dd4830-717f-11e0-82d7-002185371280</premis:objectIdentifierValue>
                         </premis:objectIdentifier>
                         <premis:objectCharacteristics>
                             <premis:compositionLevel>0</premis:compositionLevel>
                             <premis:fixity>
                                 <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
-                                <premis:messageDigest>dcabcfb55f727c7855292f58ba8175c0</premis:messageDigest>
+                                <premis:messageDigest>cf86ad842a7a295e26167abc662fee8e</premis:messageDigest>
                             </premis:fixity>
-                            <premis:size>6691996</premis:size>
+                            <premis:size>30177776</premis:size>
                             <premis:format>
                                 <premis:formatDesignation>
                                     <premis:formatName>TIFF Image</premis:formatName>
-                                    <premis:formatVersion>6.0</premis:formatVersion>
+                                    <premis:formatVersion/>
                                 </premis:formatDesignation>
                                 <premis:formatNote>Validated by Cumulus version: 11.1.8</premis:formatNote>
                             </premis:format>
@@ -100,16 +122,16 @@
                                 <premis:creatingApplicationName>Adobe Photoshop CC 2019</premis:creatingApplicationName>
                             </premis:creatingApplication>
                             <premis:objectCharacteristicsExtension>
-                                <mix:mix xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="http://www.loc.gov/mix/v20 http://www.loc.gov/standards/mix/mix20/mix20.xsd">
+                                <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://id.kb.dk/standards/mix/version_2_0/mix.xsd">
                                     <mix:BasicDigitalObjectInformation>
                                         <mix:ObjectIdentifier>
                                             <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
-                                            <mix:objectIdentifierValue>096c9090-717f-11e0-82d7-002185371280</mix:objectIdentifierValue>
+                                            <mix:objectIdentifierValue>45dd4830-717f-11e0-82d7-002185371280</mix:objectIdentifierValue>
                                         </mix:ObjectIdentifier>
-                                        <mix:fileSize>6691996</mix:fileSize>
+                                        <mix:fileSize>30177776</mix:fileSize>
                                         <mix:FormatDesignation>
                                             <mix:formatName>TIFF Image</mix:formatName>
-                                            <mix:formatVersion>6.0</mix:formatVersion>
+                                            <mix:formatVersion/>
                                         </mix:FormatDesignation>
                                         <mix:byteOrder>big endian</mix:byteOrder>
                                         <mix:Compression>
@@ -117,18 +139,18 @@
                                         </mix:Compression>
                                         <mix:Fixity>
                                             <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
-                                            <mix:messageDigest>dcabcfb55f727c7855292f58ba8175c0</mix:messageDigest>
+                                            <mix:messageDigest>cf86ad842a7a295e26167abc662fee8e</mix:messageDigest>
                                         </mix:Fixity>
                                     </mix:BasicDigitalObjectInformation>
                                     <mix:BasicImageInformation>
                                         <mix:BasicImageCharacteristics>
-                                            <mix:imageWidth>1227</mix:imageWidth>
-                                            <mix:imageHeight>1812</mix:imageHeight>
+                                            <mix:imageWidth>3631</mix:imageWidth>
+                                            <mix:imageHeight>2768</mix:imageHeight>
                                             <mix:PhotometricInterpretation>
                                                 <mix:colorSpace>RGB</mix:colorSpace>
                                                 <mix:ColorProfile>
                                                     <mix:IccProfile>
-                                                        <mix:iccProfileName>Custom RGB</mix:iccProfileName>
+                                                        <mix:iccProfileName>Adobe RGB (1998)</mix:iccProfileName>
                                                     </mix:IccProfile>
                                                 </mix:ColorProfile>
                                             </mix:PhotometricInterpretation>
@@ -136,12 +158,12 @@
                                     </mix:BasicImageInformation>
                                     <mix:ImageCaptureMetadata>
                                         <mix:GeneralCaptureInformation>
-                                            <mix:dateTimeCreated>2022-11-14T07:29:10.430+01:00</mix:dateTimeCreated>
+                                            <mix:dateTimeCreated>1970-01-21T03:10:36.000+01:00</mix:dateTimeCreated>
                                         </mix:GeneralCaptureInformation>
                                         <mix:ScannerCapture>
                                             <mix:MaximumOpticalResolution>
-                                                <mix:xOpticalResolution>300</mix:xOpticalResolution>
-                                                <mix:yOpticalResolution>300</mix:yOpticalResolution>
+                                                <mix:xOpticalResolution>304</mix:xOpticalResolution>
+                                                <mix:yOpticalResolution>304</mix:yOpticalResolution>
                                             </mix:MaximumOpticalResolution>
                                         </mix:ScannerCapture>
                                         <mix:orientation>normal*</mix:orientation>
@@ -157,6 +179,7 @@
                                     </mix:ImageAssessmentMetadata>
                                     <mix:ChangeHistory>
                                         <mix:ImageProcessing>
+                                            <mix:dateTimeProcessed>1970-01-21T03:10:36.000+01:00</mix:dateTimeProcessed>
                                             <mix:sourceData>initial capture</mix:sourceData>
                                             <mix:ProcessingSoftware>
                                                 <mix:processingSoftwareName>Adobe Photoshop CC 2019</mix:processingSoftwareName>
@@ -170,18 +193,18 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:techMD>
-        <!--Inside mets:rightsMD-->
-        <mets:rightsMD CREATED="2022-11-14T07:29:10.434+01:00" ID="ModsRights1">
+        <mets:rightsMD CREATED="2023-02-09T10:24:54.411+01:00" ID="ModsRights1">
             <mets:mdWrap MDTYPE="MODS">
                 <mets:xmlData>
-                    <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
+                    <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                        <mods:accessCondition type="use and reproduction" displayLabel="Restricted">Ejermærke</mods:accessCondition>
                         <mods:accessCondition>
-                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD /usr/local/ginnungagap/current/script/xsd/copyright-md.xsd">
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD http://id.kb.dk/schemas/dk-corporate-creator/copyright-md.xsd">
                                 <cdl:creator>
                                     <cdl:creator.person>
-                                        <cdl:name>Clemens, Johann Friderich</cdl:name>
-                                        <cdl:year.birth>1748-11-29</cdl:year.birth>
-                                        <cdl:year.death>1831-11-5</cdl:year.death>
+                                        <cdl:name>Knudsen, Helge</cdl:name>
+                                        <cdl:year.birth>1897-1-17</cdl:year.birth>
+                                        <cdl:year.death>1985-6-5</cdl:year.death>
                                     </cdl:creator.person>
                                 </cdl:creator>
                             </cdl:copyright>
@@ -190,16 +213,16 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:rightsMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:29:10.438+01:00" ID="PremisEvent1">
+        <mets:digiprovMD CREATED="2023-02-09T10:24:54.422+01:00" ID="PremisEvent1">
             <mets:mdWrap MDTYPE="PREMIS:EVENT">
                 <mets:xmlData>
-                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd">
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
                         <premis:eventIdentifier>
                             <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
-                            <premis:eventIdentifierValue>89459819-17cf-4737-98ad-f5d6022f8b3e</premis:eventIdentifierValue>
+                            <premis:eventIdentifierValue>96597865-f65a-4654-9a8b-932194825cc4</premis:eventIdentifierValue>
                         </premis:eventIdentifier>
                         <premis:eventType>ingestion</premis:eventType>
-                        <premis:eventDateTime>2022-11-14T07:29:10.439+01:00</premis:eventDateTime>
+                        <premis:eventDateTime>2023-02-09T10:24:54.424+01:00</premis:eventDateTime>
                         <premis:eventDetailInformation>
                             <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
 file.encoding: UTF-8
@@ -240,45 +263,45 @@ user.language: da
                         </premis:linkingAgentIdentifier>
                         <premis:linkingObjectIdentifier>
                             <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
-                            <premis:linkingObjectIdentifierValue>096c9090-717f-11e0-82d7-002185371280</premis:linkingObjectIdentifierValue>
+                            <premis:linkingObjectIdentifierValue>45dd4830-717f-11e0-82d7-002185371280</premis:linkingObjectIdentifierValue>
                         </premis:linkingObjectIdentifier>
                         <premis:linkingObjectIdentifier>
                             <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
-                            <premis:linkingObjectIdentifierValue>acb4d09f-60f6-40d4-b96c-3b55bff29749</premis:linkingObjectIdentifierValue>
+                            <premis:linkingObjectIdentifierValue>d0ec2dca-b0b0-4060-92e9-5fb680982d33</premis:linkingObjectIdentifierValue>
                         </premis:linkingObjectIdentifier>
                     </premis:event>
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:digiprovMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:29:10.443+01:00" ID="PremisRepresentation1">
+        <mets:digiprovMD CREATED="2023-02-09T10:24:54.425+01:00" ID="PremisRepresentation1">
             <mets:mdWrap MDTYPE="PREMIS">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:representation">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
-                            <premis:objectIdentifierValue>acb4d09f-60f6-40d4-b96c-3b55bff29749</premis:objectIdentifierValue>
+                            <premis:objectIdentifierValue>d0ec2dca-b0b0-4060-92e9-5fb680982d33</premis:objectIdentifierValue>
                         </premis:objectIdentifier>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
                             <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:29:10.444+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-02-09T10:24:54.432+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>logical</premis:preservationLevelType>
                             <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:29:10.444+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-02-09T10:24:54.433+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
                             <premis:preservationLevelValue>Low</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:29:10.444+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-02-09T10:24:54.434+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:relationship>
                             <premis:relationshipType>structural</premis:relationshipType>
                             <premis:relationshipSubType>represents</premis:relationshipSubType>
                             <premis:relatedObjectIdentifier>
                                 <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
-                                <premis:relatedObjectIdentifierValue>e8f30272-b1c1-4ceb-a451-7a4c0b34b466</premis:relatedObjectIdentifierValue>
+                                <premis:relatedObjectIdentifierValue>3c5d09ec-02f4-4c8e-b476-9840d47ed78f</premis:relatedObjectIdentifierValue>
                             </premis:relatedObjectIdentifier>
                         </premis:relationship>
                     </premis:object>
@@ -289,7 +312,7 @@ user.language: da
     <mets:fileSec>
         <mets:fileGrp>
             <mets:file ID="fileId1">
-                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:096c9090-717f-11e0-82d7-002185371280"/>
+                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:45dd4830-717f-11e0-82d7-002185371280"/>
             </mets:file>
         </mets:fileGrp>
     </mets:fileSec>

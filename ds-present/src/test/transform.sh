@@ -1,17 +1,17 @@
 #!/bin/bash
 
 : ${INPUT:="$1"}
-: ${INPUT:="resources/xml/cps1/SKG_20160704_12_16_05.tif.xml"}
+: ${INPUT:="resources/xml/copyright_extraction/000332.tif.xml"}
 
 : ${USE_ID:="$2"}
-: ${USE_ID:="ds.samlinger:3571e3f0-2ce6-11ed-81b4-005056882ec3"}
+: ${USE_ID:="ds.samlinger:05fea810-7181-11e0-82d7-002185371280"}
 
 : ${XSLT:="../main/resources/xslt/mods2solr.xsl"}
 
-: ${SAXON_JAR:="/home/$USER/saxon/saxon9he.jar"}
+: ${SAXON_JAR:="/home/$USER/saxon/saxon-he-11.4.jar"}
 SAXON="java -jar "$SAXON_JAR" --suppressXsltNamespaceCheck:on  "
 if [[ ! -s "$SAXON_JAR" ]]; then
-    >&2 echo "$SAXON_JAR not available. Please install it from https://sourceforge.net/projects/saxon/files/Saxon-HE/"
+    >&2 echo "$SAXON_JAR not available. Please install it from https://sourceforge.net/projects/saxon/files/Saxon-HE/11/Java/SaxonHE11-4J.zip/download"
     >&2 echo "The installation folder should be /home/$USER/saxon/"
     exit 2
 fi

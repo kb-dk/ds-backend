@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version111/mets.xsd" TYPE="File" OBJID="641964fe-d874-4ff7-a306-fb798de634a3" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
-    <mets:metsHdr CREATEDATE="2022-11-14T07:40:20.319+01:00">
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="7b367ab9-bb95-4eec-968e-94841e954d6a" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2023-02-13T12:58:33.993+01:00">
         <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
             <mets:name>kbDk</mets:name>
             <mets:note>kbDkInternal</mets:note>
@@ -9,68 +9,67 @@
             <mets:note>kbDkInternal</mets:note>
         </mets:agent>
     </mets:metsHdr>
-    <mets:dmdSec CREATED="2022-11-14T07:40:20.320+01:00" ID="Mods1">
+    <mets:dmdSec CREATED="2023-02-13T12:58:33.993+01:00" ID="Mods1">
         <mets:mdWrap MDTYPE="MODS">
             <mets:xmlData>
-                <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
-                    <mods:genre type="Categories">København, Gamle filer oktav, København</mods:genre>
-                    <mods:identifier type="uri">urn:uuid:848acc80-1b72-11e7-be94-00505688346e</mods:identifier>
-                    <mods:identifier type="local">DT119609.tif</mods:identifier>
-                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Samlingsbilleder/0000/433/351/DT119609.tif</mods:identifier>
-                    <mods:identifier type="Original Asset Reference">cumulus-core-01:/Depot/nb/preingest/DP/Images/Migrering-DT/DT119609.tif</mods:identifier>
+                <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                    <mods:genre type="Categories">Elfelt4-Formidling, CAR- BLO katagori</mods:genre>
+                    <mods:identifier type="uri">urn:uuid:09222b40-dba1-11e5-9785-0016357f605f</mods:identifier>
+                    <mods:identifier type="local">Elf_113136.tif</mods:identifier>
+                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/samlingsbilleder/KOB/Elfelt_4/Formidlingsfiler/Elf_113136.tif</mods:identifier>
                     <mods:location>
-                        <mods:shelfLocator>Billedsamlingen. Topografisk samling, København, 8°, (36), Tivoli, 47, Tivoligarden</mods:shelfLocator>
+                        <mods:shelfLocator>N112</mods:shelfLocator>
                     </mods:location>
+                    <mods:name type="personal">
+                        <mods:role>
+                            <mods:roleTerm type="code">cre</mods:roleTerm>
+                        </mods:role>
+                        <mods:namePart type="family">Elfelt</mods:namePart>
+                        <mods:namePart type="given">Lars Peter</mods:namePart>
+                        <mods:namePart type="date">1866-1-1/1931-2-18</mods:namePart>
+                        <mods:namePart type="termsOfAddress">hoffotograf, filminstruktør</mods:namePart>
+                    </mods:name>
                     <mods:note displayLabel="Catalog Name">Samlingsbilleder</mods:note>
-                    <mods:originInfo altRepGroup="surrogate">
-                        <mods:dateCaptured>2014-03-30T14:45:18.000+02:00</mods:dateCaptured>
+                    <mods:originInfo altRepGroup="original">
+                        <mods:dateCreated point="start">1890</mods:dateCreated>
+                        <mods:dateCreated point="end">1940</mods:dateCreated>
                     </mods:originInfo>
+                    <mods:originInfo altRepGroup="surrogate">
+                        <mods:dateCaptured>2015-06-09T15:50:59.000+02:00</mods:dateCaptured>
+                    </mods:originInfo>
+                    <mods:physicalDescription>
+                        <mods:note displayLabel="Pageorientation">LTR</mods:note>
+                    </mods:physicalDescription>
                     <mods:recordInfo>
                         <mods:languageOfCataloging>
                             <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
                         </mods:languageOfCataloging>
-                        <mods:recordInfoNote>LTR</mods:recordInfoNote>
                     </mods:recordInfo>
                     <mods:relatedItem type="otherFormat">
-                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/0000/433/351/DT119609.jpg</mods:identifier>
+                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/Samlingsbilleder/samlingsbilleder/KOB/Elfelt_4/Formidlingsfiler/Elf_113136.jpg</mods:identifier>
                     </mods:relatedItem>
-                    <mods:relatedItem type="series" displayLabel="Samling">
-                        <mods:titleInfo>
-                            <mods:title>Billedsamlingen</mods:title>
-                        </mods:titleInfo>
-                    </mods:relatedItem>
-                    <mods:relatedItem type="host">
-                        <mods:identifier type="URL">https://www.kb.dk/find-materiale/samlinger/billedsamlingen/index.html</mods:identifier>
-                        <mods:note type="URL-tekst">Det Kgl. Biblioteks billedsamling</mods:note>
-                    </mods:relatedItem>
-                    <mods:subject>
-                        <mods:geographic>Danmark, København, Vesterbrogade, Tivoli</mods:geographic>
-                    </mods:subject>
-                    <mods:titleInfo>
-                        <mods:title>Tivoligarden foran hovedindgangen</mods:title>
-                    </mods:titleInfo>
-                    <mods:typeOfResource displayLabel="Generel materialebetegnelse">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
-                    <mods:typeOfResource displayLabel="Materialebetegnelse">Fotografi</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Generel Resource Description">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Resource Description">Negativ</mods:typeOfResource>
                 </mods:mods>
             </mets:xmlData>
         </mets:mdWrap>
     </mets:dmdSec>
     <mets:amdSec>
-        <mets:techMD CREATED="2022-11-14T07:40:20.350+01:00" ID="PremisObject1">
+        <mets:techMD CREATED="2023-02-13T12:58:34.026+01:00" ID="PremisObject1">
             <mets:mdWrap MDTYPE="PREMIS:OBJECT">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:file">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
-                            <premis:objectIdentifierValue>848acc80-1b72-11e7-be94-00505688346e</premis:objectIdentifierValue>
+                            <premis:objectIdentifierValue>09222b40-dba1-11e5-9785-0016357f605f</premis:objectIdentifierValue>
                         </premis:objectIdentifier>
                         <premis:objectCharacteristics>
                             <premis:compositionLevel>0</premis:compositionLevel>
                             <premis:fixity>
                                 <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
-                                <premis:messageDigest>d3ed107bdbe63739482688421ea4823a</premis:messageDigest>
+                                <premis:messageDigest>54a4a1a5f31db34b6c70ea1671c58efb</premis:messageDigest>
                             </premis:fixity>
-                            <premis:size>9091324</premis:size>
+                            <premis:size>48705976</premis:size>
                             <premis:format>
                                 <premis:formatDesignation>
                                     <premis:formatName>TIFF Image</premis:formatName>
@@ -82,13 +81,13 @@
                                 <premis:creatingApplicationName>Adobe Photoshop CS6</premis:creatingApplicationName>
                             </premis:creatingApplication>
                             <premis:objectCharacteristicsExtension>
-                                <mix:mix xmlns:xlink="http://www.w3.org.1999/xlink" xsi:schemaLocation="http://www.loc.gov/mix/v20 http://www.loc.gov/standards/mix/mix20/mix20.xsd">
+                                <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://id.kb.dk/standards/mix/version_2_0/mix.xsd">
                                     <mix:BasicDigitalObjectInformation>
                                         <mix:ObjectIdentifier>
                                             <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
-                                            <mix:objectIdentifierValue>848acc80-1b72-11e7-be94-00505688346e</mix:objectIdentifierValue>
+                                            <mix:objectIdentifierValue>09222b40-dba1-11e5-9785-0016357f605f</mix:objectIdentifierValue>
                                         </mix:ObjectIdentifier>
-                                        <mix:fileSize>9091324</mix:fileSize>
+                                        <mix:fileSize>48705976</mix:fileSize>
                                         <mix:FormatDesignation>
                                             <mix:formatName>TIFF Image</mix:formatName>
                                             <mix:formatVersion/>
@@ -99,18 +98,18 @@
                                         </mix:Compression>
                                         <mix:Fixity>
                                             <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
-                                            <mix:messageDigest>d3ed107bdbe63739482688421ea4823a</mix:messageDigest>
+                                            <mix:messageDigest>54a4a1a5f31db34b6c70ea1671c58efb</mix:messageDigest>
                                         </mix:Fixity>
                                     </mix:BasicDigitalObjectInformation>
                                     <mix:BasicImageInformation>
                                         <mix:BasicImageCharacteristics>
-                                            <mix:imageWidth>1512</mix:imageWidth>
-                                            <mix:imageHeight>2000</mix:imageHeight>
+                                            <mix:imageWidth>4724</mix:imageWidth>
+                                            <mix:imageHeight>3435</mix:imageHeight>
                                             <mix:PhotometricInterpretation>
                                                 <mix:colorSpace>RGB</mix:colorSpace>
                                                 <mix:ColorProfile>
                                                     <mix:IccProfile>
-                                                        <mix:iccProfileName>Adobe RGB (1998)</mix:iccProfileName>
+                                                        <mix:iccProfileName>eciRGB v2 ICCv4</mix:iccProfileName>
                                                     </mix:IccProfile>
                                                 </mix:ColorProfile>
                                             </mix:PhotometricInterpretation>
@@ -118,14 +117,26 @@
                                     </mix:BasicImageInformation>
                                     <mix:ImageCaptureMetadata>
                                         <mix:GeneralCaptureInformation>
-                                            <mix:dateTimeCreated>2022-11-14T07:40:20.352+01:00</mix:dateTimeCreated>
+                                            <mix:dateTimeCreated>2023-02-13T12:58:34.035+01:00</mix:dateTimeCreated>
                                         </mix:GeneralCaptureInformation>
                                         <mix:ScannerCapture>
+                                            <mix:ScannerModel>
+                                                <mix:scannerModelName>iQSmart 3</mix:scannerModelName>
+                                            </mix:ScannerModel>
                                             <mix:MaximumOpticalResolution>
-                                                <mix:xOpticalResolution>72</mix:xOpticalResolution>
-                                                <mix:yOpticalResolution>72</mix:yOpticalResolution>
+                                                <mix:xOpticalResolution>300</mix:xOpticalResolution>
+                                                <mix:yOpticalResolution>300</mix:yOpticalResolution>
                                             </mix:MaximumOpticalResolution>
                                         </mix:ScannerCapture>
+                                        <mix:DigitalCameraCapture>
+                                            <mix:digitalCameraManufacturer>Creo</mix:digitalCameraManufacturer>
+                                            <mix:DigitalCameraModel>
+                                                <mix:digitalCameraModelName>iQSmart 3</mix:digitalCameraModelName>
+                                            </mix:DigitalCameraModel>
+                                            <mix:CameraCaptureSettings>
+                                                <mix:ImageData/>
+                                            </mix:CameraCaptureSettings>
+                                        </mix:DigitalCameraCapture>
                                         <mix:orientation>normal*</mix:orientation>
                                     </mix:ImageCaptureMetadata>
                                     <mix:ImageAssessmentMetadata>
@@ -152,29 +163,37 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:techMD>
-        <!--Inside mets:rightsMD-->
-        <mets:rightsMD CREATED="2022-11-14T07:40:20.354+01:00" ID="ModsRights1">
+        <mets:rightsMD CREATED="2023-02-13T12:58:34.037+01:00" ID="ModsRights1">
             <mets:mdWrap MDTYPE="MODS">
                 <mets:xmlData>
-                    <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
-                        <mods:accessCondition type="use and reproduction" displayLabel="Restricted ">Ejermærke</mods:accessCondition>
+                    <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                        <mods:accessCondition type="use and reproduction" displayLabel="Restricted">CC-BY</mods:accessCondition>
+                        <mods:accessCondition type="use and reproduction note" displayLabel="Restricted">Se journalnummer 81293</mods:accessCondition>
                         <mods:accessCondition>
-                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD /usr/local/ginnungagap/current/script/xsd/copyright-md.xsd"/>
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD http://id.kb.dk/schemas/dk-corporate-creator/copyright-md.xsd">
+                                <cdl:creator>
+                                    <cdl:creator.person>
+                                        <cdl:name>Elfelt, Lars Peter</cdl:name>
+                                        <cdl:year.birth>1866-1-1</cdl:year.birth>
+                                        <cdl:year.death>1931-2-18</cdl:year.death>
+                                    </cdl:creator.person>
+                                </cdl:creator>
+                            </cdl:copyright>
                         </mods:accessCondition>
                     </mods:mods>
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:rightsMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:40:20.355+01:00" ID="PremisEvent1">
+        <mets:digiprovMD CREATED="2023-02-13T12:58:34.041+01:00" ID="PremisEvent1">
             <mets:mdWrap MDTYPE="PREMIS:EVENT">
                 <mets:xmlData>
-                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd">
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
                         <premis:eventIdentifier>
                             <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
-                            <premis:eventIdentifierValue>80d4623a-5ec0-42fd-ba9e-494a8f012aa5</premis:eventIdentifierValue>
+                            <premis:eventIdentifierValue>cc04b3da-449d-427a-868f-47d68868bc70</premis:eventIdentifierValue>
                         </premis:eventIdentifier>
                         <premis:eventType>ingestion</premis:eventType>
-                        <premis:eventDateTime>2022-11-14T07:40:20.355+01:00</premis:eventDateTime>
+                        <premis:eventDateTime>2023-02-13T12:58:34.042+01:00</premis:eventDateTime>
                         <premis:eventDetailInformation>
                             <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
 file.encoding: UTF-8
@@ -215,45 +234,45 @@ user.language: da
                         </premis:linkingAgentIdentifier>
                         <premis:linkingObjectIdentifier>
                             <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
-                            <premis:linkingObjectIdentifierValue>848acc80-1b72-11e7-be94-00505688346e</premis:linkingObjectIdentifierValue>
+                            <premis:linkingObjectIdentifierValue>09222b40-dba1-11e5-9785-0016357f605f</premis:linkingObjectIdentifierValue>
                         </premis:linkingObjectIdentifier>
                         <premis:linkingObjectIdentifier>
                             <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
-                            <premis:linkingObjectIdentifierValue>641964fe-d874-4ff7-a306-fb798de634a3</premis:linkingObjectIdentifierValue>
+                            <premis:linkingObjectIdentifierValue>7b367ab9-bb95-4eec-968e-94841e954d6a</premis:linkingObjectIdentifierValue>
                         </premis:linkingObjectIdentifier>
                     </premis:event>
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:digiprovMD>
-        <mets:digiprovMD CREATED="2022-11-14T07:40:20.356+01:00" ID="PremisRepresentation1">
+        <mets:digiprovMD CREATED="2023-02-13T12:58:34.047+01:00" ID="PremisRepresentation1">
             <mets:mdWrap MDTYPE="PREMIS">
                 <mets:xmlData>
-                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis-v3-0.xsd" xsi:type="premis:representation">
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
                         <premis:objectIdentifier>
                             <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
-                            <premis:objectIdentifierValue>641964fe-d874-4ff7-a306-fb798de634a3</premis:objectIdentifierValue>
+                            <premis:objectIdentifierValue>7b367ab9-bb95-4eec-968e-94841e954d6a</premis:objectIdentifierValue>
                         </premis:objectIdentifier>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
                             <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:40:20.356+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-02-13T12:58:34.048+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>logical</premis:preservationLevelType>
                             <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:40:20.356+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-02-13T12:58:34.049+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
                             <premis:preservationLevelValue>Low</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2022-11-14T07:40:20.357+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-02-13T12:58:34.049+01:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:relationship>
                             <premis:relationshipType>structural</premis:relationshipType>
                             <premis:relationshipSubType>represents</premis:relationshipSubType>
                             <premis:relatedObjectIdentifier>
                                 <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
-                                <premis:relatedObjectIdentifierValue>9bacb7bb-3146-4707-9d9d-bf73371ec74a</premis:relatedObjectIdentifierValue>
+                                <premis:relatedObjectIdentifierValue>Uid:dk:kb:doms:2007-01/09222b40-dba1-11e5-9785-0016357f605f</premis:relatedObjectIdentifierValue>
                             </premis:relatedObjectIdentifier>
                         </premis:relationship>
                     </premis:object>
@@ -264,7 +283,7 @@ user.language: da
     <mets:fileSec>
         <mets:fileGrp>
             <mets:file ID="fileId1">
-                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:848acc80-1b72-11e7-be94-00505688346e"/>
+                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:09222b40-dba1-11e5-9785-0016357f605f"/>
             </mets:file>
         </mets:fileGrp>
     </mets:fileSec>

@@ -1,6 +1,9 @@
 package dk.kb.present.copyright;
 
 import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  *
  * @author teg
@@ -25,6 +28,8 @@ import java.util.HashMap;
  */
 public class XsltCopyrightMapper {
         
+    private static final Logger log = LoggerFactory.getLogger(XsltCopyrightMapper.class);
+	
     //These fields must be define in the Solr schema.xml (and temporary also 'imageurl')
     public static final String ACCESS_BLOKERET_FIELD="access_blokeret";
     public static final String ACCESS_PLIGTAFLEVERET_FIELD="access_pligtafleveret";
@@ -35,11 +40,22 @@ public class XsltCopyrightMapper {
     public static final String ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD="access_searlige_visningsvilkaar";
     public static final String ACCESS_MATERIALE_TYPE="access_materiale_type";
      
+            
+    /**
+     * Will return a map of key value pair to enrich the XSLT. These additional field all starts with 'access_'. See final ACCESS values in class.
+     * The extracted values are not just a field extract from a single field, but depend on various copyright logic. These values
+     * are not used for presentation, but for all access validation when searching/viewing the records/images. The fields in solr are
+     * used in licensemodule. 
+     * 
+     * @param modMedsXML The med/mods record in XML format
+     * @return
+     * @throws Exception
+     */
     
-    public static HashMap<String,String> xsltCopyrightTransformer(String modMedsXML) throws Exception{
+    public static HashMap<String,String> applyXsltCopyrightTransformer (String modMedsXML) throws Exception{
                         
         HashMap<String,String> solrFieldsMap = new HashMap<String,String>(); 
-        
+        try {
         CopyrightAccessDto copyrightAccessDto = CopyrightAccessExtractor.buildCopyrightFields(modMedsXML);
         CopyrightAccessDto2SolrFieldsMapper mapper= new CopyrightAccessDto2SolrFieldsMapper(copyrightAccessDto);
         
@@ -66,6 +82,13 @@ public class XsltCopyrightMapper {
         
         if (copyrightAccessDto.getImageUrl() != null) {
           solrFieldsMap.put("imageurl",mapper.getImageUrl());
+        }
+        }
+        catch(Exception e) {
+        	//Data error! will be fixed
+            log.error("Error transforming... Probably data error:"+e.getMessage());
+            solrFieldsMap.put(ACCESS_SKABELSESAAR_FIELD,"9999");       
+        	
         }
         
         return solrFieldsMap;
