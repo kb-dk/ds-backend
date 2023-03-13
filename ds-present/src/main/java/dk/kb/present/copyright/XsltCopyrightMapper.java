@@ -40,8 +40,16 @@ public class XsltCopyrightMapper {
     public static final String ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD="access_searlige_visningsvilkaar";
     public static final String ACCESS_MATERIALE_TYPE="access_materiale_type";
      
+            
+    /**
+     * Will return a map of key value pair to enrich the XSLT.
+     * 
+     * @param modMedsXML The med/mods record in XML format
+     * @return
+     * @throws Exception
+     */
     
-    public static HashMap<String,String> xsltCopyrightTransformer(String modMedsXML) throws Exception{
+    public static HashMap<String,String> applyXsltCopyrightTransformer (String modMedsXML) throws Exception{
                         
         HashMap<String,String> solrFieldsMap = new HashMap<String,String>(); 
         try {

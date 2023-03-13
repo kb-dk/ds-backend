@@ -15,17 +15,6 @@
 package dk.kb.present.storage;
 
 
-import dk.kb.storage.client.v1.DsStorageApi;
-import dk.kb.storage.invoker.v1.ApiException;
-import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.util.DsStorageClient;
-
-import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.webservice.exception.NotFoundServiceException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +22,16 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import dk.kb.storage.client.v1.DsStorageApi;
+import dk.kb.storage.invoker.v1.ApiException;
+import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.util.DsStorageClient;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 
 /**
  * Proxy for a ds-storage https://github.com/kb-dk/ds-storage instance.
@@ -56,11 +55,8 @@ public class DSStorage implements Storage {
     /**
      * Create a Storage connection to a ds-storage server.
      * @param id the ID for the storage, used for connecting collections to storages.
-     * @param recordBase the base used for requests to {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
-     * @param scheme the scheme for the connection: {@code http} or {@code https}.
-     * @param host the host name for the server: {@code example.com}.
-     * @param port the port for the server: {@code 8080}.
-     * @param basepath the basepath for the service: {@code /ds-storage/v1/}.
+     * @param recordBase the base used for requests to {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}. 
+     * @param storageUrl The full url to the service. Example: http://localhost:9072/ds-storage/v1/
      * @param batchCount the number of records to request in one call when paging using
      *                   {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
      * @param isDefault if true, this is the default storage for collections.
@@ -175,12 +171,12 @@ public class DSStorage implements Storage {
     }
 
     private static DsStorageApi getDsStorageApiClient(String storageUrl) {       
-        if (storageClient!= null) {
-          log.info("Ds-storage client generated from url:"+storageUrl);
+        if (storageClient!= null) {            
         	return storageClient;
         }
                                                  
         storageClient = new DsStorageClient(storageUrl);               
+        log.info("Ds-storage client generated from url:"+storageUrl);
         return storageClient;
       }
     
