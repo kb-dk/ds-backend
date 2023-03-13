@@ -125,7 +125,13 @@ public class EmbeddedSolrTest {
 		assertTrue(createrDateOfDeath.contains("1895-6-25"));
 		assertTrue(createrDateOfDeath.contains("1865-3-8"));
 
+		assertContent(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Postkort");
+
 		//TODO more fields
+
+	}
+
+	private void assertContent(SolrDocument record, String typeOfResource, String s, String postkort) {
 
 	}
 
@@ -159,7 +165,7 @@ public class EmbeddedSolrTest {
 		assertEquals("Samlingsbilleder",record.getFieldValue("catalog_name"));
 		assertEquals("Billedsamlingen", record.getFieldValue("collection"));
 		assertEquals("Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian", record.getFieldValue("area"));
-		assertEquals(9657172, record.getFieldValue("file_size"));
+		assertEquals(9657172L, record.getFieldValue("file_size"));
 		assertEquals(1429, record.getFieldValue("image_height"));
 		assertEquals(2247, record.getFieldValue("image_width"));
 
@@ -208,7 +214,7 @@ public class EmbeddedSolrTest {
 		assertEquals("Billedsamlingen",record.getFieldValue("collection"));
 		assertEquals("1755",record.getFieldValue("production_date_start"));
 		assertEquals("1831",record.getFieldValue("production_date_end"));
-		assertEquals(6691996, record.getFieldValue("file_size"));
+		assertEquals(6691996L, record.getFieldValue("file_size"));
 		assertEquals(1812, record.getFieldValue("image_height"));
 		assertEquals(1227, record.getFieldValue("image_width"));
 
@@ -586,6 +592,8 @@ public class EmbeddedSolrTest {
 		return rsp.getResults().getNumFound();
 
 	}
+	
+	
 
 
 
