@@ -42,7 +42,10 @@ public class XsltCopyrightMapper {
      
             
     /**
-     * Will return a map of key value pair to enrich the XSLT.
+     * Will return a map of key value pair to enrich the XSLT. These additional field all starts with 'access_'. See final ACCESS values in class.
+     * The extracted values are not just a field extract from a single field, but depend on various copyright logic. These values
+     * are not used for presentation, but for all access validation when searching/viewing the records/images. The fields in solr are
+     * used in licensemodule. 
      * 
      * @param modMedsXML The med/mods record in XML format
      * @return
