@@ -86,7 +86,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="file_size" type="pint"/>
   <field name="image_height" type="pint"/>
   <field name="image_width" type="pint"/>
-  <field name="image_size" type="pfloat"/>
+  <field name="image_size_pixels" type="plong"/>
   <field name="target_audience" type="string" stored="true"/> <!-- Not in test data. Part of MODS and might be in other collections-->
 
   <!--  Fields related to copyright and access conditions -->
