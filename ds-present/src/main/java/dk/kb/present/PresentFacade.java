@@ -18,23 +18,22 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
-import dk.kb.present.webservice.ExportWriter;
 import dk.kb.present.webservice.ExportWriterFactory;
-import dk.kb.present.webservice.JSONStreamWriter;
-import dk.kb.present.webservice.exception.InternalServiceException;
-import dk.kb.present.webservice.exception.InvalidArgumentServiceException;
-import dk.kb.present.webservice.exception.NotFoundServiceException;
-import dk.kb.present.webservice.exception.ServiceException;
 import dk.kb.storage.model.v1.DsRecordDto;
+
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
+import dk.kb.util.webservice.stream.ExportWriter;
+import dk.kb.util.webservice.stream.JSONStreamWriter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
-
 import javax.ws.rs.core.StreamingOutput;
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
