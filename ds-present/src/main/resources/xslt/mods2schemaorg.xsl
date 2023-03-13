@@ -532,7 +532,7 @@
                         <xsl:for-each select="m:identifier[@type='local']">
                             <f:map>
                                 <f:string key="@type">PropertyValue</f:string>
-                                <f:string key="PropertyID">local_identifier</f:string>
+                                <f:string key="PropertyID">localIdentifier</f:string>
                                 <f:string key="value"><xsl:value-of select="."/></f:string>
                             </f:map>
                         </xsl:for-each>
@@ -773,6 +773,18 @@
                 </xsl:element>
             </xsl:if>
             <!-- TODO: Figure out which schema.org field is most appropriate for termsOfAddress content.-->
+            <!-- Terms of adress often relates to occupation. As of now it gets represented in hasOccupation -->
+            <xsl:if test="m:namePart[@type='termsOfAddress']">
+                <xsl:element name="f:map">
+                    <xsl:attribute name="key">hasOccupation</xsl:attribute>
+
+                    <f:string key="@type">Occupation</f:string>
+                    <f:string key="name">
+                        <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
+                    </f:string>
+
+                </xsl:element>
+            </xsl:if>
 
             <xsl:if test="t:residence">
                 <xsl:element name="f:array">
