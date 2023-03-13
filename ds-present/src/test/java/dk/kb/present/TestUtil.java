@@ -32,7 +32,7 @@ public class TestUtil {
 	public static String getTransformedWithAccessFieldsAdded(String xsltResource, String xmlResource) throws Exception {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource);	       	        		   
 		String mods = Resolver.resolveUTF8String(xmlResource);
-		HashMap<String, String> accessFields = XsltCopyrightMapper.xsltCopyrightTransformer(mods);		        
+		HashMap<String, String> accessFields = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);		        
 		//System.out.println("access fields:"+accessFields);
 		return transformer.apply(mods, accessFields);
 	}

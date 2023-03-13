@@ -370,7 +370,7 @@ public class CopyrightAccessExtractorTest {
 
     
         //XSLT mapping
-         HashMap<String, String> xsltMap = XsltCopyrightMapper.xsltCopyrightTransformer(mods);
+         HashMap<String, String> xsltMap = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);
         //System.out.println(xsltMap);
          //TODO test fields
     }
@@ -410,7 +410,7 @@ public class CopyrightAccessExtractorTest {
     void testSolrFields2XsltMapper() throws Exception {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DT013769.tif.xml");
         
-        HashMap<String, String> xsltMapper = XsltCopyrightMapper.xsltCopyrightTransformer(mods);        
+        HashMap<String, String> xsltMapper = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);        
         assertEquals("Tegning",xsltMapper.get(XsltCopyrightMapper.ACCESS_MATERIALE_TYPE)); 
         assertEquals("1971",xsltMapper.get(XsltCopyrightMapper.ACCESS_SKABELSESAAR_FIELD));
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA,xsltMapper.get(XsltCopyrightMapper.ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD));
