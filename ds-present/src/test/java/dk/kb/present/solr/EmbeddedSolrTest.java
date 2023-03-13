@@ -189,7 +189,7 @@ public class EmbeddedSolrTest {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+		System.out.println(prettyJsonString);
 
 		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
 		embeddedServer.add(document);
@@ -273,12 +273,12 @@ public class EmbeddedSolrTest {
 		// subject_date_of_birth
 		Collection<Object> subjectDateOfBirth = record.getFieldValues("subject_date_of_birth");
 		assertEquals(1,subjectDateOfBirth.size());
-		assertTrue(subjectDateOfBirth.contains("1708-0-0"));
+		assertTrue(subjectDateOfBirth.contains("1708"));
 
 		// subject_date_of_death
 		Collection<Object> subjectDateOfDeath = record.getFieldValues("subject_date_of_death");
 		assertEquals(1,subjectDateOfDeath.size());
-		assertTrue(subjectDateOfDeath.contains("1789-0-0"));
+		assertTrue(subjectDateOfDeath.contains("1789"));
 
 		// subject_terms_of_address
 		Collection<Object> subjectTermsOfAddress = record.getFieldValues("subject_terms_of_address");
