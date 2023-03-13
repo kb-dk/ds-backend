@@ -135,14 +135,14 @@
                                 <xsl:value-of select="."/>
                             </f:string>
                         </xsl:for-each> -->
-                        <f:string key="kb:cataloging_language">
+                        <f:string key="kb:catalogingLanguage">
                             <xsl:value-of select="m:recordInfo/m:languageOfCataloging/m:languageTerm"/>
                         </f:string>
-                        <f:string key="kb:local_identifier">
+                        <f:string key="kb:localIdentifier">
                             <xsl:value-of select="m:identifier[@type='local']"/>
                         </f:string>
                         <xsl:if test="m:location/m:shelfLocator">
-                            <f:string key="kb:shelflocator">
+                            <f:string key="kb:shelfLocator">
                                 <xsl:value-of select="m:location/m:shelfLocator"/>
                             </f:string>
                         </xsl:if>
@@ -322,7 +322,7 @@
                                 <f:array key="name">
                                     <f:map>
                                         <f:string key="@language">da</f:string>
-                                        <f:string key="@value">
+                                        <f:string key="value">
                                             <xsl:for-each
                                                     select="distinct-values($mods//h:a[contains(@href,$subject) and @xml:lang='da'])">
                                                 <xsl:value-of select="."/>
@@ -331,7 +331,7 @@
                                     </f:map>
                                     <f:map>
                                         <f:string key="@language">en</f:string>
-                                        <f:string key="@value">
+                                        <f:string key="value">
                                             <xsl:for-each
                                                     select="distinct-values($mods//h:a[contains(@href,$subject) and @xml:lang='en'])">
                                                 <xsl:value-of select="."/>
@@ -490,7 +490,7 @@
                                         </xsl:otherwise>
                                     </xsl:choose>
 
-                                    <f:string key="@value">
+                                    <f:string key="value">
                                         <xsl:choose>
                                             <xsl:when test="contains($the_field,'xtent')">
                                                 <!-- xsl:value-of select="replace(.,'^.*(\d+).*$','$1')"/ -->
@@ -541,7 +541,17 @@
                             <xsl:for-each select="m:identifier[@type='accession number']">
                                 <f:map>
                                     <f:string key="@type">PropertyValue</f:string>
-                                    <f:string key="PropertyID">accession_number</f:string>
+                                    <f:string key="PropertyID">accessionNumber</f:string>
+                                    <f:string key="value"><xsl:value-of select="."/></f:string>
+                                </f:map>
+                            </xsl:for-each>
+                        </xsl:if>
+
+                        <xsl:if test="m:location/m:physicalLocation">
+                            <xsl:for-each select="m:location/m:physicalLocation">
+                                <f:map>
+                                    <f:string key="@type">PropertyValue</f:string>
+                                    <f:string key="PropertyID">physicalLocation</f:string>
                                     <f:string key="value"><xsl:value-of select="."/></f:string>
                                 </f:map>
                             </xsl:for-each>
@@ -550,7 +560,7 @@
                         <xsl:for-each select="m:relatedItem[@type='original']/m:identifier">
                             <f:map>
                                 <f:string key="@type">PropertyValue</f:string>
-                                <f:string key="additionalType">original_object_identifier</f:string>
+                                <f:string key="additionalType">originalObjectIdentifier</f:string>
                                 <f:string key="@value"><xsl:value-of select="."/></f:string>
                             </f:map>
                         </xsl:for-each>
@@ -714,25 +724,6 @@
             </xsl:if>
             <xsl:variable name="language"><xsl:value-of select="@xml:lang"/></xsl:variable>
 
-            <!--
-            <f:map key="name">
-                <xsl:element name="f:string">
-                    <xsl:attribute name="key">@language</xsl:attribute>
-                    <xsl:choose>
-                        <xsl:when test="$language"><xsl:value-of select="$language"/></xsl:when>
-                        <xsl:otherwise><xsl:value-of select="$cataloging_language"/></xsl:otherwise>
-                    </xsl:choose>
-                </xsl:element>
-                <xsl:element name="f:string">
-                    <xsl:attribute name="key">@value</xsl:attribute>
-                    <xsl:for-each select="m:namePart">
-                        <xsl:choose>
-                            <xsl:when test="@type = 'date'"> (<xsl:value-of select="."/>)</xsl:when>
-                            <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:for-each>
-                </xsl:element>
-            </f:map> -->
             <!-- Creates name for persons -->
             <xsl:element name="f:string">
                 <xsl:attribute name="key">name</xsl:attribute>
