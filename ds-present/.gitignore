@@ -20,3 +20,4 @@ setup_project.sh
 # Solr Cloud
 cloud
 bin/cache
+/.editorconfig
