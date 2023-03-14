@@ -74,8 +74,10 @@ public class XsltCopyrightMapper {
             solrFieldsMap.put(ACCESS_OPHAVSPERSON_DOEDSAAR_FIELD,""+copyrightAccessDto.getOphavsPersonDoedsAar());    
         }
         
-        solrFieldsMap.put(ACCESS_SKABELSESAAR_FIELD,""+copyrightAccessDto.getSkabelsesAar()); // will always be there.        
-        
+        if (copyrightAccessDto.getSkabelsesAar() != null ) {
+        	solrFieldsMap.put(ACCESS_SKABELSESAAR_FIELD,""+copyrightAccessDto.getSkabelsesAar()); // maybe only use this    
+        }        
+     
         if (mapper.getSearligevisningsVilkaar() != null) {
            solrFieldsMap.put(ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD,mapper.getSearligevisningsVilkaar());
         }        

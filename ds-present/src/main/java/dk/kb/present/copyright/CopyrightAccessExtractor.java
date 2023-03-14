@@ -55,7 +55,9 @@ public class CopyrightAccessExtractor {
 		String fileName = getFileName(document); //used as parameter to methods for log statement        
 
 		copyrightDto.setMaterialeType(getMaterialType(document));
-		copyrightDto.setSkabelsesAar(getSkabelsesAar(document,fileName));
+		
+		
+		
 
 
 		//TEMORARY SOLUTION TO SET IMAGE LINK!
@@ -79,11 +81,18 @@ public class CopyrightAccessExtractor {
 		ArrayList<AccessCondition> accessConditionList = buildAccessConditions(accessConditions);
 		copyrightDto.setAccessConditionsList(accessConditionList);        
 
+
 		Integer lastDeathYearForPerson = getLastDeathYearForPerson(accessConditionList);
 		if (lastDeathYearForPerson !=  null) {
 			copyrightDto.setOphavsPersonDoedsAar(lastDeathYearForPerson);;
 		}
-
+		
+					
+		Integer skabelsesAar = getSkabelsesAar(document,fileName);
+		if (skabelsesAar != null) {
+			 copyrightDto.setSkabelsesAar(skabelsesAar);
+		}
+		
 		return  copyrightDto;
 	}
 
@@ -288,7 +297,8 @@ public class CopyrightAccessExtractor {
 	}
 
 
-	// See documentation. Can be 3 different fields, one MUST always be there.
+	// See documentation. Can be these different fields, one MUST always be there IF person.death was not found	
+	
 	//<mods:dateCreated>1868</mods:dateCreated>  (notice no point attibute)
 	//<mods:dateCreated point="end">1900</mods:dateCreated> 
 	//<mods:dateCaptured>2014-04-04T11:52:16.000+02:00</mods:dateCaptured> 
@@ -305,7 +315,7 @@ public class CopyrightAccessExtractor {
 				String unknownDateFormat=e.getTextContent();
 				//Skabelsesår (dataformat: YYYY, YYYY-MM eller YYYY-MM-DD (til nøds YYYY.MM.DD)), men læser kun de YYYY.                
 				//bemærk der altid tages de 4 første
-
+				// 
 				if (unknownDateFormat.toLowerCase(Locale.getDefault()).indexOf("ubekendt") == -1) { //can be "Ubekendt" or a dato. Skip if "Ubekendt"
 					try {
 						return Integer.parseInt(unknownDateFormat.substring(0,4));
@@ -326,8 +336,7 @@ public class CopyrightAccessExtractor {
 
 		Element e = (Element)  dateCaptured .item(0);               
 		if (e == null) {           
-			log.error("no createDate/dateCaptured defined for record:"+fileName); //data error. 'should' not happen according to specification
-			throw new Exception("no createDate/dateCaptured defined for record");
+			return null;
 		}
 		return Integer.parseInt(e.getTextContent().substring(0,4));                                               
 	}
