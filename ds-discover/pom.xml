@@ -502,6 +502,10 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
+
+                    <!-- Generate a JAR with client classes and openapi-YAML for easy use by other services -->
+                    <attachClasses>true</attachClasses>
+
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
