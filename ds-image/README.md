@@ -31,40 +31,4 @@ The default port is 8103 and the default Hello World service can be accessed at
 The Swagger UI is available at <http://localhost:8103/ds-image/api/>, providing access to both the `v1` and the 
 `devel` versions of the GUI. 
 
-## Using a client to call the service 
-This project produces a support JAR containing client code for calling the service from Java.
-This can be used from an external project by adding the following to the [pom.xml](pom.xml):
-```xml
-<!-- Used by the OpenAPI client -->
-<dependency>
-    <groupId>org.openapitools</groupId>
-    <artifactId>jackson-databind-nullable</artifactId>
-    <version>0.2.2</version>
-</dependency>
-
-<dependency>
-    <groupId>dk.kb.image</groupId>
-    <artifactId>ds-image</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <type>jar</type>
-    <classifier>classes</classifier>
-    <!-- Do not perform transitive dependency resolving for the OpenAPI client -->
-    <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-```
-after this a client can be created with
-```java
-    DsImageClient imageClient = new DsImageClient("https://example.com/ds-image/v1");
-```
-During development, a SNAPSHOT for the OpenAPI client can be installed locally by running
-```shell
-mvn install
-```
-
-
 See the file [DEVELOPER.md](DEVELOPER.md) for developer specific details and how to deploy to tomcat.
