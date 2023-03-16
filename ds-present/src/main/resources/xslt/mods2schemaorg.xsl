@@ -643,10 +643,18 @@
                                 <xsl:value-of select="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured"/>
                             </f:string>
                         </xsl:if>
-
-
-
                     </xsl:element>
+                    <!-- Create target_audience. This is not in our test files but part of MODS standard.
+                              Could be used in other collections. -->
+                    <xsl:if test="m:targetInfo">
+                        <f:map>
+                            <xsl:attribute name="key">audience</xsl:attribute>
+                            <f:string key="@type">Audience</f:string>
+                            <f:string key="name">
+                                <xsl:value-of select="m:targetInfo"/>
+                            </f:string>
+                        </f:map>
+                    </xsl:if>
                     <xsl:if test="m:language/m:languageTerm[@authority='rfc4646']">
                         <f:array key="inLanguage">
                             <xsl:for-each select="m:language/m:languageTerm[@authority='rfc4646']">
