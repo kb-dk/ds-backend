@@ -733,6 +733,7 @@
             <f:string key="@type">
                 <xsl:choose>
                     <xsl:when test="contains(@type,'corporate')">Organization</xsl:when>
+                    <xsl:when test="m:affiliation and not(m:namePart)">Organization</xsl:when>
                     <xsl:otherwise><xsl:value-of select="$inferred_originator_type"/></xsl:otherwise>
                 </xsl:choose>
             </f:string>
@@ -742,26 +743,32 @@
             <xsl:variable name="language"><xsl:value-of select="@xml:lang"/></xsl:variable>
 
             <!-- Creates name for persons -->
-            <xsl:element name="f:string">
-                <xsl:attribute name="key">name</xsl:attribute>
-                <xsl:for-each select="concat(m:namePart[@type='given'],' ', m:namePart[@type='family'])">
-                    <xsl:value-of select="."/>
-                </xsl:for-each>
-            </xsl:element>
+            <xsl:if test="m:namePart[@type='given'] or m:namePart[@type='family']">
+                <xsl:element name="f:string">
+                    <xsl:attribute name="key">name</xsl:attribute>
+                    <xsl:for-each select="concat(m:namePart[@type='given'],' ', m:namePart[@type='family'])">
+                        <xsl:value-of select="."/>
+                    </xsl:for-each>
+                </xsl:element>
+            </xsl:if>
             <!-- Creates givenName for persons -->
-            <xsl:element name="f:string">
-                <xsl:attribute name="key">givenName</xsl:attribute>
-                <xsl:for-each select="m:namePart[@type='given']">
-                    <xsl:value-of select="."/>
-                </xsl:for-each>
-            </xsl:element>
+            <xsl:if test="m:namePart[@type='given']">
+                <xsl:element name="f:string">
+                    <xsl:attribute name="key">givenName</xsl:attribute>
+                    <xsl:for-each select="m:namePart[@type='given']">
+                        <xsl:value-of select="."/>
+                    </xsl:for-each>
+                </xsl:element>
+            </xsl:if>
             <!-- Creates familyName for persons -->
-            <xsl:element name="f:string">
-                <xsl:attribute name="key">familyName</xsl:attribute>
-                <xsl:for-each select="m:namePart[@type='family']">
-                    <xsl:value-of select="."/>
-                </xsl:for-each>
-            </xsl:element>
+            <xsl:if test="m:namePart[@type='family']">
+                <xsl:element name="f:string">
+                    <xsl:attribute name="key">familyName</xsl:attribute>
+                    <xsl:for-each select="m:namePart[@type='family']">
+                        <xsl:value-of select="."/>
+                    </xsl:for-each>
+                </xsl:element>
+            </xsl:if>
             <!-- Creates birthDate for persons -->
             <xsl:if test="substring-before(m:namePart[@type='date'], '/') != ''">
                 <xsl:element name="f:string">
@@ -789,6 +796,14 @@
                     </xsl:for-each>
                 </xsl:element>
             </xsl:if>
+            <xsl:if test="m:description">
+                <xsl:element name="f:string">
+                    <xsl:attribute name="key">description</xsl:attribute>
+                    <xsl:for-each select="m:description" >
+                        <xsl:value-of select="."/>
+                    </xsl:for-each>
+                </xsl:element>
+            </xsl:if>
             <!-- TODO: Figure out which schema.org field is most appropriate for termsOfAddress content.-->
             <!-- Terms of adress often relates to occupation. As of now it gets represented in hasOccupation -->
             <xsl:if test="m:namePart[@type='termsOfAddress']">
@@ -802,14 +817,7 @@
 
                 </xsl:element>
             </xsl:if>
-            <xsl:choose>
-                <xsl:when test="m:name/m:description and m:name/m:affiliation"></xsl:when>
-            </xsl:choose>
-            <xsl:if test="m:name/m:description">
-                <f:string key="description">
-                    <xsl:value-of select="m:name/m:description"/>
-                </f:string>
-            </xsl:if>
+
 
             <xsl:if test="t:residence">
                 <xsl:element name="f:array">
