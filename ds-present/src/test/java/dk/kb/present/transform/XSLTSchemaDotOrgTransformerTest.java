@@ -18,7 +18,7 @@ public class XSLTSchemaDotOrgTransformerTest {
     public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
     public static final String RECORD_KHP0001_001 = "xml/copyright_extraction/KHP0001-001.tif.xml";
     public static final String RECORD_KE066530 = "xml/copyright_extraction/KE066530.tif.xml";
-    public static final String RECORD_9c17 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
+    public static final String RECORD_DPK000107 = "xml/copyright_extraction/DPK000107.tif.xml";
 
     @Test
     void testDateCreatedAndTemporal() throws Exception {
@@ -65,10 +65,8 @@ public class XSLTSchemaDotOrgTransformerTest {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(schemaOrgString);
         String prettyJsonString = gson.toJson(je);
-
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
-
 
         Assertions.assertTrue(schemaOrgString.contains("\"id\":\"770379f0-8a0d-11e1-805f-0016357f605f\""));
         Assertions.assertTrue(schemaOrgString.contains("\"dateCreated\":\"1974\""));
@@ -85,14 +83,23 @@ public class XSLTSchemaDotOrgTransformerTest {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(schemaOrgString);
         String prettyJsonString = gson.toJson(je);
-
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
         Assertions.assertTrue(schemaOrgString.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"Mason Jackson\",\"givenName\":\"Mason\",\"familyName\":\"Jackson\",\"birthDate\":\"1819-5-25\",\"deathDate\":\"1903-12-28\",\"description\":\"britisk\"," +
                 "\"hasOccupation\":{\"@type\":\"Occupation\",\"name\":\"xylograf\"}},"+
                 "{\"@type\":\"Organization\",\"affiliation\":\"The Illustrated London News\",\"description\":\"engelsk avis\"}]"));
+    }
 
+    @Test
+    void testContentLocation() throws Exception {
+        String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_DPK000107);
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(schemaOrgString);
+        String prettyJsonString = gson.toJson(je);
+        System.out.println(prettyJsonString);
+        //System.out.println(schemaOrgString);
     }
 
 

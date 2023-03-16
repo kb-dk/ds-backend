@@ -224,7 +224,13 @@
                         <f:array key="contentLocation">
                             <f:map>
                                 <f:string key="@type">Place</f:string>
-                                <f:map key="kb:address">
+                                <f:string key="description">
+                                    <xsl:value-of select="m:subject/m:hierarchicalGeographic/m:area"/>
+                                </f:string>
+
+                                <!-- kb:address is quite internal. Place above is more schema.org like-->
+                                <!-- Would it make sense to keep the kb: namespace. I am not sure what we are using it for?-->
+                                <!--<f:map key="kb:address">
                                     <f:string key="@type">kb:place</f:string>
                                     <xsl:for-each select="m:subject/m:hierarchicalGeographic">
                                         <xsl:for-each select="m:area">
@@ -243,7 +249,7 @@
                                             <f:string key="kb:city"><xsl:value-of select="m:city"/></f:string>
                                         </xsl:if>
                                     </xsl:for-each>
-                                </f:map>
+                                </f:map>-->
                                 <xsl:for-each select="m:subject/m:cartographics/m:coordinates[1]">
                                     <xsl:if test="not(contains(.,'0.0,0.0'))">
                                         <f:string key="latitude"><xsl:value-of select="substring-before(.,',')"/></f:string>
@@ -796,6 +802,7 @@
                     </xsl:for-each>
                 </xsl:element>
             </xsl:if>
+            <!-- Creates description for persons-->
             <xsl:if test="m:description">
                 <xsl:element name="f:string">
                     <xsl:attribute name="key">description</xsl:attribute>
