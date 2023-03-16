@@ -607,6 +607,46 @@
                             </xsl:if>
                         </f:array>
                     </xsl:if>
+                    <xsl:element name="f:map">
+                        <xsl:attribute name="key">image</xsl:attribute>
+                        <f:string key="@type">ImageObject</f:string>
+
+                        <xsl:for-each select="//mets:amdSec/mets:techMD[@ID='PremisObject1']//premis:objectCharacteristics">
+                        <xsl:if test="premis:size">
+                            <f:string key="contentSize">
+                                <xsl:value-of select="xs:long(premis:size)"/>
+                            </f:string>
+                        </xsl:if>
+                        <!-- TODO: Needs to point to same URL as overall URL for the record-->
+                        <f:string key="contentURL"></f:string>
+                        <!-- Extracts the height of the digital image-->
+                        <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight">
+                            <f:string key="height">
+                                <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight)"/>
+                            </f:string>
+                        </xsl:if>
+                        <!-- Extracts the width of the digital image-->
+                        <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth">
+                            <f:string key="width">
+                                <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)"/>
+                            </f:string>
+                        </xsl:if>
+                        <!-- Calculates the size of the digital image in pixels. Does not have a direct equivalent in schema.org-->
+                        <!--<xsl:if test="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)">
+                            <f:string key="image_size_pixels">
+                                <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)"/>
+                            </f:string>
+                        </xsl:if>-->
+                        </xsl:for-each>
+                        <xsl:if test="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured">
+                            <f:string key="dateCreated">
+                                <xsl:value-of select="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured"/>
+                            </f:string>
+                        </xsl:if>
+
+
+
+                    </xsl:element>
                     <xsl:if test="m:language/m:languageTerm[@authority='rfc4646']">
                         <f:array key="inLanguage">
                             <xsl:for-each select="m:language/m:languageTerm[@authority='rfc4646']">

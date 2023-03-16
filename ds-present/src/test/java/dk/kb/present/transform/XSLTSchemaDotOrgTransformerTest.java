@@ -117,7 +117,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(schemaOrgString);
         String prettyJsonString = gson.toJson(je);
-        //System.out.println(prettyJsonString);
+        System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
         Assertions.assertTrue(schemaOrgString.contains("\"material\":{\"size\":{\"@type\":\"Text\",\"value\":\"23,5 x 16,5 cm.\"}"));
@@ -136,4 +136,14 @@ public class XSLTSchemaDotOrgTransformerTest {
         Assertions.assertTrue(schemaOrgString.contains("\"kb:internalNotes\":[\"Montering: opklæbet på karton og monteret i passepartout\",\"Kunstnernote: Bisson, Louis-Auguste (1814–1876) fransk fotograf\",\"Bisson, Auguste-Rosalie (1826–1900) fransk fotograf\",\"Aktiv: 1852–1863\"]},"));
     }
 
+    @Test
+    void testTemplate() throws Exception {
+        String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_DPK000107);
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(schemaOrgString);
+        String prettyJsonString = gson.toJson(je);
+        System.out.println(prettyJsonString);
+        //System.out.println(schemaOrgString);
+    }
 }
