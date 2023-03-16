@@ -76,7 +76,7 @@ public class XSLTSchemaDotOrgTransformerTest {
 
     }
 
-    /*
+
     @Test
     void testCreatorDescription() throws Exception {
         String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_9c17);
@@ -89,5 +89,5 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(schemaOrgString);
     }
 
-     */
+
 }
