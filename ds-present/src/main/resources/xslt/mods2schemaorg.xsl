@@ -448,6 +448,7 @@
                                 </xsl:choose>
                             </xsl:variable>
 
+                            <!-- start here -->
                             <xsl:for-each select="m:form
                                             | m:reformattingQuality
                                             | m:internetMediaType
@@ -463,8 +464,11 @@
                                         <xsl:otherwise>
                                             <xsl:choose>
                                                 <xsl:when test="@type">
-                                                    <xsl:value-of select="my:escape_stuff(lower-case(@type))"/></xsl:when>
-                                                <xsl:otherwise><xsl:value-of select="my:escape_stuff(lower-case(local-name(.)))"/></xsl:otherwise>
+                                                    <xsl:value-of select="my:escape_stuff(lower-case(@type))"/>
+                                                </xsl:when>
+                                                <xsl:otherwise>
+                                                    <xsl:value-of select="my:escape_stuff(lower-case(local-name(.)))"/>
+                                                </xsl:otherwise>
                                             </xsl:choose>
                                         </xsl:otherwise>
                                     </xsl:choose>
@@ -510,6 +514,7 @@
                                 </f:map>
 
                             </xsl:for-each>
+                            <!-- end here -->
 
 
 
@@ -800,6 +805,14 @@
                     </f:string>
 
                 </xsl:element>
+            </xsl:if>
+            <xsl:choose>
+                <xsl:when test="m:name/m:description and m:name/m:affiliation"></xsl:when>
+            </xsl:choose>
+            <xsl:if test="m:name/m:description">
+                <f:string key="description">
+                    <xsl:value-of select="m:name/m:description"/>
+                </f:string>
             </xsl:if>
 
             <xsl:if test="t:residence">

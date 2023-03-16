@@ -17,6 +17,7 @@ public class XSLTSchemaDotOrgTransformerTest {
     public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml";
     public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
     public static final String RECORD_KHP0001_001 = "xml/copyright_extraction/KHP0001-001.tif.xml";
+    public static final String RECORD_9c17 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
 
     @Test
     void testDateCreatedAndTemporal() throws Exception {
@@ -73,6 +74,20 @@ public class XSLTSchemaDotOrgTransformerTest {
         Assertions.assertTrue(schemaOrgString.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"John R. (John Rosforth) Johnsen\",\"givenName\":\"John R. (John Rosforth)\",\"familyName\":\"Johnsen\",\"birthDate\":\"1945-0-0\",\"deathDate\":\"2016-0-0\",\"hasOccupation\":{\"@type\":\"Occupation\",\"name\":\"fotograf\"}}]"));
         Assertions.assertTrue(schemaOrgString.contains("\"headline\":[{\"value\":\"Romeo og Julie\",\"@language\":\"da\"}]"));
 
-
     }
+
+    /*
+    @Test
+    void testCreatorDescription() throws Exception {
+        String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_9c17);
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(schemaOrgString);
+        String prettyJsonString = gson.toJson(je);
+
+        System.out.println(prettyJsonString);
+        //System.out.println(schemaOrgString);
+    }
+
+     */
 }
