@@ -92,14 +92,31 @@ public class XSLTSchemaDotOrgTransformerTest {
     }
 
     @Test
-    void testContentLocation() throws Exception {
+    void testContentLocationAndKeywords() throws Exception {
         String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_DPK000107);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(schemaOrgString);
         String prettyJsonString = gson.toJson(je);
-        System.out.println(prettyJsonString);
+        //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
+
+        Assertions.assertTrue(schemaOrgString.contains("\"keywords\":[\"Postkortsamlingen\",\"Vestindien\",\"Postkort\",\"CAR- BLO katagori\"]"));
+        Assertions.assertTrue(schemaOrgString.contains("\"contentLocation\":[{\"@type\":\"Place\",\"description\":\"Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian\"}]"));
+    }
+
+
+    @Test
+    void testExample() throws Exception {
+        String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_DPK000107);
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(schemaOrgString);
+        String prettyJsonString = gson.toJson(je);
+        //System.out.println(prettyJsonString);
+        //System.out.println(schemaOrgString);
+
+
     }
 
 

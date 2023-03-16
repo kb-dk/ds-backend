@@ -305,6 +305,7 @@
                                     </xsl:call-template>
                             </xsl:for-each>
                         </xsl:if>
+
                         <xsl:for-each select="distinct-values(m:subject/m:topic)">
                             <f:string><xsl:value-of select="."/></f:string>
                         </xsl:for-each>
@@ -313,45 +314,18 @@
                                 <f:string><xsl:value-of select="."/></f:string>
                             </xsl:for-each>
                         </xsl:if>
+                    </f:array>
+                    <f:array key="keywords">
                         <xsl:variable name="categories" as="xs:string *">
-                            <xsl:for-each select="m:extension/h:div">
-                                <xsl:for-each select="h:a[@href]">
-                                    <xsl:sort select="@href" data-type="text" />
-                                    <xsl:if test="not(contains(@href,'editions'))">
-                                        <xsl:variable name="cat"><xsl:value-of
-                                                select="replace(@href,'^.*subject(\d+).*$','subject$1')"/></xsl:variable>
-                                        <xsl:value-of select="$cat"/>
-                                    </xsl:if>
-                                </xsl:for-each>
-                            </xsl:for-each>
+                            <xsl:value-of select="m:genre[@type='Categories']"/>
                         </xsl:variable>
-                        <xsl:for-each select="distinct-values($categories)" >
-                            <xsl:variable name="subject"
-                                          select="concat(replace(.,'(.*/sub)([^/]+)','sub$2'),'')"/>
-                            <f:map>
-                                <f:string key="@type">DefinedTerm</f:string>
-                                <f:string key="id"><xsl:value-of select="concat(substring-before($record-id,'object'),$subject)"/></f:string>
-                                <f:array key="name">
-                                    <f:map>
-                                        <f:string key="@language">da</f:string>
-                                        <f:string key="value">
-                                            <xsl:for-each
-                                                    select="distinct-values($mods//h:a[contains(@href,$subject) and @xml:lang='da'])">
-                                                <xsl:value-of select="."/>
-                                            </xsl:for-each>
-                                        </f:string>
-                                    </f:map>
-                                    <f:map>
-                                        <f:string key="@language">en</f:string>
-                                        <f:string key="value">
-                                            <xsl:for-each
-                                                    select="distinct-values($mods//h:a[contains(@href,$subject) and @xml:lang='en'])">
-                                                <xsl:value-of select="."/>
-                                            </xsl:for-each>
-                                        </f:string>
-                                    </f:map>
-                                </f:array>
-                            </f:map>
+                        <xsl:for-each select="distinct-values(tokenize(replace($categories, ', ', ','), ','))" >
+                                <xsl:if test=". != '' and not(matches(. , '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'))">
+                                    <xsl:variable name="subject" select="normalize-space(.)"/>
+                                    <f:string>
+                                        <xsl:value-of select="$subject"/>
+                                    </f:string>
+                                </xsl:if>
                         </xsl:for-each>
                     </f:array>
                     <!-- Insert dateCreated if only one date present or dateCreated and temporal
