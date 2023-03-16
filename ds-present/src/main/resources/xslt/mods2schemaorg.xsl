@@ -344,11 +344,11 @@
                                 <xsl:value-of select="concat('Created between ', m:originInfo[@altRepGroup='original']/m:dateCreated[@point='start'], ' and ', m:originInfo[@altRepGroup='original']/m:dateCreated[@point='end'])"/>
                             </f:string>
                         </xsl:when>
-                        <xsl:otherwise>
+                        <xsl:when test="m:originInfo[@altRepGroup='original']/m:dateCreated">
                             <f:string key="dateCreated">
                                 <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
                             </f:string>
-                        </xsl:otherwise>
+                        </xsl:when>
                     </xsl:choose>
 
                     <xsl:variable name="to_date">
@@ -418,9 +418,14 @@
                               | m:internetMediaType
                               | m:extent
                               | m:digitalOrigin
-                              | m:note[not(@type='pageOrientation' or @type='AIM Color Codes')]]">
+                              | m:note[not(@displayLabel='Pageorientation' or @type='AIM Color Codes')]]">
 
-                        <xsl:for-each select="m:physicalDescription">
+                        <xsl:for-each select="m:physicalDescription[m:form
+                              | m:reformattingQuality
+                              | m:internetMediaType
+                              | m:extent
+                              | m:digitalOrigin
+                              | m:note[not(@displayLabel='Pageorientation' or @type='AIM Color Codes')]]">
                             <xsl:variable name="label">
                                 <xsl:choose>
                                     <xsl:when test="@displayLabel"><xsl:value-of select="@displayLabel"/></xsl:when>
@@ -439,7 +444,7 @@
                                             | m:internetMediaType
                                             | m:extent
                                             | m:digitalOrigin
-                                            | m:note[not(@type='pageOrientation' or @type='AIM Color Codes')]">
+                                            | m:note[not(@displayLabel='Pageorientation' or @type='AIM Color Codes')]">
 
                                 <xsl:variable name="label">
                                     <xsl:choose>
