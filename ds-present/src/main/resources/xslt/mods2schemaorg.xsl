@@ -433,7 +433,7 @@
                               | m:internetMediaType
                               | m:extent
                               | m:digitalOrigin
-                              | m:note[not(@type='pageOrientation')]]">
+                              | m:note[not(@type='pageOrientation' or @type='AIM Color Codes')]]">
 
                         <xsl:for-each select="m:physicalDescription">
                             <xsl:variable name="label">
@@ -448,14 +448,12 @@
                                 </xsl:choose>
                             </xsl:variable>
 
-                            <!-- start here -->
-                            <!-- <f:array key="testArray"> -->
                             <xsl:for-each select="m:form
                                             | m:reformattingQuality
                                             | m:internetMediaType
                                             | m:extent
                                             | m:digitalOrigin
-                                            | m:note[not(@type='pageOrientation')]">
+                                            | m:note[not(@type='pageOrientation' or @type='AIM Color Codes')]">
 
                                 <xsl:variable name="the_field">
                                     <xsl:choose>
@@ -513,10 +511,7 @@
                                         </xsl:choose>
                                     </f:string>
                                 </f:map>
-
                             </xsl:for-each>
-                            <!-- end here -->
-
 
 
                         </xsl:for-each>
