@@ -72,14 +72,6 @@
                         </f:map>
                     </f:array>
                     <f:string key="@type">
-                        <!-- TODO this only works with COP mods, figure out a method for finding type i preservation mods
-                        <xsl:choose>
-                            <xsl:when test="contains($record-id,'images')">VisualArtwork</xsl:when>
-                            <xsl:when test="contains($record-id,'manus')">Manuscript</xsl:when>
-                            <xsl:when test="contains($record-id,'letters')">Message</xsl:when>
-                            <xsl:when test="contains($record-id,'books')">Book</xsl:when>
-                            <xsl:otherwise>CreativeWork</xsl:otherwise>
-                        </xsl:choose> -->
                         <!-- Mapping from resourcetypes in new MODS -->
                         <!-- TODO: Maybe sanitycheck this mapping with Sigge. -->
                         <xsl:choose>
@@ -155,22 +147,6 @@
                         </xsl:call-template>
                     </xsl:if>
 
-                    <!--
-                    <xsl:for-each select="distinct-values(m:name/m:role/m:roleTerm)">
-                        <xsl:variable name="term" select="."/>
-                        <xsl:if test="not(contains($term,'last-modified-by'))">
-                            <f:array>
-                                <xsl:attribute name="key"><xsl:value-of select="$roles/roles/role[@key=$term]"/></xsl:attribute>
-                                <xsl:for-each select="$mods//m:name[m:role/m:roleTerm = $term]">
-                                    <xsl:call-template name="get-names">
-                                        <xsl:with-param name="record_identifier" select="$record-id"/>
-                                        <xsl:with-param name="cataloging_language" select="$cataloging_language" />
-                                    </xsl:call-template>
-                                </xsl:for-each>
-                            </f:array>
-                        </xsl:if>
-                    </xsl:for-each>
-                    -->
                     <xsl:for-each select="distinct-values(m:name/m:role/m:roleTerm)">
                         <xsl:variable name="term" select="."/>
                         <xsl:if test="not(contains($term,'last-modified-by'))">
@@ -306,6 +282,10 @@
                             </xsl:for-each>
                         </xsl:if>
 
+                        <xsl:if test="m:note[@displayLabel='Description']">
+                            <f:string><xsl:value-of select="m:note[@displayLabel='Description']"/></f:string>
+                        </xsl:if>
+
                         <xsl:for-each select="distinct-values(m:subject/m:topic)">
                             <f:string><xsl:value-of select="."/></f:string>
                         </xsl:for-each>
@@ -419,15 +399,16 @@
                             <xsl:variable name="label">
                                 <xsl:choose>
                                     <xsl:when test="@displayLabel"><xsl:value-of select="@displayLabel"/></xsl:when>
+                                    <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:choose>
-                                            <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>
-                                            <xsl:otherwise><xsl:value-of select="local-name(.)"/></xsl:otherwise>
-                                        </xsl:choose>
+                                        <xsl:value-of select="local-name(.)"/>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:variable>
-
+                            <f:map>
+                                <xsl:attribute name="key">
+                                    <xsl:value-of select="my:escape_stuff(lower-case($label))"/>
+                                </xsl:attribute>
                             <xsl:for-each select="m:form
                                             | m:reformattingQuality
                                             | m:internetMediaType
@@ -435,20 +416,29 @@
                                             | m:digitalOrigin
                                             | m:note[not(@type='pageOrientation' or @type='AIM Color Codes')]">
 
+                                <xsl:variable name="label">
+                                    <xsl:choose>
+                                        <xsl:when test="@displayLabel"><xsl:value-of select="@displayLabel"/></xsl:when>
+                                        <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="local-name(.)"/>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:variable>
+
                                 <xsl:variable name="the_field">
                                     <xsl:choose>
                                         <xsl:when test="string-length($label) &gt; 0">
                                             <xsl:value-of select="my:escape_stuff(lower-case($label))"/>
                                         </xsl:when>
+                                        <xsl:when test="@type='Dimensions'">
+                                            <xsl:value-of select="my:escape_stuff(lower-case(@type))"/>
+                                        </xsl:when>
+                                        <xsl:when test="@type">
+                                            <xsl:value-of select="my:escape_stuff(lower-case(@type))"/>
+                                        </xsl:when>
                                         <xsl:otherwise>
-                                            <xsl:choose>
-                                                <xsl:when test="@type">
-                                                    <xsl:value-of select="my:escape_stuff(lower-case(@type))"/>
-                                                </xsl:when>
-                                                <xsl:otherwise>
-                                                    <xsl:value-of select="my:escape_stuff(lower-case(local-name(.)))"/>
-                                                </xsl:otherwise>
-                                            </xsl:choose>
+                                            <xsl:value-of select="my:escape_stuff(lower-case(local-name(.)))"/>
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:variable>
@@ -470,7 +460,7 @@
                                         <xsl:otherwise>
                                             <xsl:choose>
                                                 <xsl:when test="$the_field='size'">
-                                                    <f:string key="@type">QuantitativeValue</f:string>
+                                                    <f:string key="@type">Text</f:string>
                                                 </xsl:when>
                                                 <xsl:otherwise>
                                                     <f:string key="@type">Product</f:string>
@@ -492,6 +482,8 @@
                                     </f:string>
                                 </f:map>
                             </xsl:for-each>
+
+                            </f:map>
 
 
                         </xsl:for-each>
@@ -898,6 +890,7 @@
             <xsl:when test="contains($arg,'medium')">material</xsl:when>
             <xsl:when test="contains($arg,'extent')">materialExtent<!-- numberOfPages--></xsl:when>
             <xsl:when test="contains($arg,'physicaldescription')">material</xsl:when>
+            <xsl:when test="contains($arg, 'dimensions')">size</xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="replace($arg,'\s',$sep_string,'s')"/>
             </xsl:otherwise>

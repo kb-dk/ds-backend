@@ -19,6 +19,7 @@ public class XSLTSchemaDotOrgTransformerTest {
     public static final String RECORD_KHP0001_001 = "xml/copyright_extraction/KHP0001-001.tif.xml";
     public static final String RECORD_KE066530 = "xml/copyright_extraction/KE066530.tif.xml";
     public static final String RECORD_DPK000107 = "xml/copyright_extraction/DPK000107.tif.xml";
+    public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
 
     @Test
     void testDateCreatedAndTemporal() throws Exception {
@@ -107,14 +108,16 @@ public class XSLTSchemaDotOrgTransformerTest {
 
 
     @Test
-    void testExample() throws Exception {
-        String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_DPK000107);
+    void testMaterialSize() throws Exception {
+        String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_ANSK);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(schemaOrgString);
         String prettyJsonString = gson.toJson(je);
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
+
+        Assertions.assertTrue(schemaOrgString.contains("\"material\":{\"size\":{\"@type\":\"Text\",\"value\":\"23,5 x 16,5 cm.\"}"));
 
 
     }
