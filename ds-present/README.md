@@ -111,4 +111,40 @@ mvn jetty:run
 
 The Swagger UI is available at <http://localhost:9073/ds-present/api/>. 
 
+## Using a client to call the service 
+This project produces a support JAR containing client code for calling the service from Java.
+This can be used from an external project by adding the following to the [pom.xml](pom.xml):
+```xml
+<!-- Used by the OpenAPI client -->
+<dependency>
+    <groupId>org.openapitools</groupId>
+    <artifactId>jackson-databind-nullable</artifactId>
+    <version>0.2.2</version>
+</dependency>
+
+<dependency>
+    <groupId>dk.kb.present</groupId>
+    <artifactId>ds-present</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <type>jar</type>
+    <classifier>classes</classifier>
+    <!-- Do not perform transitive dependency resolving for the OpenAPI client -->
+    <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+after this a client can be created with
+```java
+    DsPresentClient presentClient = new DsPresentClient("https://example.com/ds-present/v1");
+```
+During development, a SNAPSHOT for the OpenAPI client can be installed locally by running
+```shell
+mvn install
+```
+
+
 See the file [DEVELOPER.md](DEVELOPER.md) for developer specific details and how to deploy to tomcat.
