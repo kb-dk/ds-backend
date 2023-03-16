@@ -193,7 +193,7 @@
               </xsl:for-each>
             </f:array>
           </xsl:if>
-          <!-- Some metadata records contains multiple titles with no language indication. Therefore this part extracts the first one,
+          <!-- Some metadata records contains multiple titles with no language indication. Therefore this part extracts the first one. -->
           <!-- Extract title if present.-->
           <xsl:if test="m:titleInfo/m:title">
             <f:string key="title">
