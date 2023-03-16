@@ -20,6 +20,7 @@ public class XSLTSchemaDotOrgTransformerTest {
     public static final String RECORD_KE066530 = "xml/copyright_extraction/KE066530.tif.xml";
     public static final String RECORD_DPK000107 = "xml/copyright_extraction/DPK000107.tif.xml";
     public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
+    public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
 
     @Test
     void testDateCreatedAndTemporal() throws Exception {
@@ -78,7 +79,7 @@ public class XSLTSchemaDotOrgTransformerTest {
 
 
     @Test
-    void testCreatorDescription() throws Exception {
+    void testCreatorDescriptionAndContentNoteToAbout() throws Exception {
         String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_KE066530);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -90,6 +91,8 @@ public class XSLTSchemaDotOrgTransformerTest {
         Assertions.assertTrue(schemaOrgString.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"Mason Jackson\",\"givenName\":\"Mason\",\"familyName\":\"Jackson\",\"birthDate\":\"1819-5-25\",\"deathDate\":\"1903-12-28\",\"description\":\"britisk\"," +
                 "\"hasOccupation\":{\"@type\":\"Occupation\",\"name\":\"xylograf\"}},"+
                 "{\"@type\":\"Organization\",\"affiliation\":\"The Illustrated London News\",\"description\":\"engelsk avis\"}]"));
+
+        Assertions.assertTrue(schemaOrgString.contains("\"F. 3639\",\"Efter fotografi af: Petersen, Jens (19.3.1829-1.2.1905) fotograf\",\"Trykt i: The Illustrated London News, 28.11.1863\"]"));
     }
 
     @Test
@@ -118,9 +121,19 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(schemaOrgString);
 
         Assertions.assertTrue(schemaOrgString.contains("\"material\":{\"size\":{\"@type\":\"Text\",\"value\":\"23,5 x 16,5 cm.\"}"));
-
-
     }
 
+    @Test
+    void testInternalNotesToKbAdmin() throws Exception {
+        String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_DNF);
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(schemaOrgString);
+        String prettyJsonString = gson.toJson(je);
+        // System.out.println(prettyJsonString);
+        //System.out.println(schemaOrgString);
+
+        Assertions.assertTrue(schemaOrgString.contains("\"kb:internalNotes\":[\"Montering: opklæbet på karton og monteret i passepartout\",\"Kunstnernote: Bisson, Louis-Auguste (1814–1876) fransk fotograf\",\"Bisson, Auguste-Rosalie (1826–1900) fransk fotograf\",\"Aktiv: 1852–1863\"]},"));
+    }
 
 }

@@ -138,6 +138,18 @@
                                 <xsl:value-of select="m:location/m:shelfLocator"/>
                             </f:string>
                         </xsl:if>
+                        <!-- if note field of type internal note exist extracts it, but remove empty prefixes for notes-->
+                        <xsl:if test="m:note[@type='Intern note']">
+                            <f:array key="kb:internalNotes">
+                                <xsl:for-each select="m:note[@type='Intern note']">
+                                    <xsl:if test=". !='' and . !='Intern note:' and . !='Ekstern note:' and . !='Alt. navn:' and . != 'Kunstnernote:' and . !='Aktiv:'">
+                                        <f:string>
+                                            <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+                                        </f:string>
+                                    </xsl:if>
+                                </xsl:for-each>
+                            </f:array>
+                        </xsl:if>
                     </f:map>
                     <xsl:if test="m:titleInfo/m:title">
                         <xsl:call-template name="get-title">
@@ -294,7 +306,20 @@
                                 <f:string><xsl:value-of select="."/></f:string>
                             </xsl:for-each>
                         </xsl:if>
+
+                        <!-- Notes of type content         -->
+                        <!-- if note field of type content exists extract it-->
+                        <xsl:if test="m:note[@type='content']">
+                            <xsl:for-each select="m:note[@type='content']">
+                                <xsl:if test=". != ''">
+                                    <f:string>
+                                        <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+                                    </f:string>
+                                </xsl:if>
+                            </xsl:for-each>
+                        </xsl:if>
                     </f:array>
+
                     <f:array key="keywords">
                         <xsl:variable name="categories" as="xs:string *">
                             <xsl:value-of select="m:genre[@type='Categories']"/>
