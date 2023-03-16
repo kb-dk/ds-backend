@@ -253,6 +253,12 @@
                             </f:map>
                         </f:array>
                     </xsl:if>
+                    <xsl:if test="m:originInfo/m:place">
+                        <f:map key="locationCreated">
+                            <f:string key="@type">Place</f:string>
+                            <f:string key="name"><xsl:value-of select="normalize-space(m:originInfo/m:place)"/></f:string>
+                        </f:map>
+                    </xsl:if>
                     <f:array key="about">
                         <xsl:if test="./m:relatedItem[@type='event']/node() or m:note[@type='situation']/node()">
                             <f:map>
@@ -591,6 +597,16 @@
                                     <xsl:value-of select="$collectionURL"/>
                                 </f:string>
                             </f:map>
+
+
+                            <xsl:if test="m:relatedItem[@displayLabel='Publication']">
+                                <f:map>
+                                    <f:string key="@type">Periodical</f:string>
+                                    <f:string key="name">
+                                        <xsl:value-of select="m:relatedItem[@displayLabel='Publication']/m:titleInfo/m:title"/>
+                                    </f:string>
+                                </f:map>
+                            </xsl:if>
                         </f:array>
                     </xsl:if>
                     <xsl:if test="m:language/m:languageTerm[@authority='rfc4646']">
