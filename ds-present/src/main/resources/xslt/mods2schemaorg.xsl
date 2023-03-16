@@ -693,16 +693,6 @@
                     <xsl:for-each select="m:physicalDescription/m:note[@displayLabel='Pageorientation'][1]">
                         <f:string key="kb:read_direction"><xsl:value-of select="."/></f:string>
                     </xsl:for-each>
-                    <xsl:element name="f:array">
-                        <xsl:attribute name="key">encoding</xsl:attribute>
-                        <xsl:for-each select="m:relatedItem[m:identifier]">
-                            <xsl:call-template name="make_page_field">
-                                <xsl:with-param name="cataloging_language" select="$cataloging_language"/>
-                                <xsl:with-param name="mods" select="$mods"/>
-                                <xsl:with-param name="record_identifier" select="$record-id"/>
-                            </xsl:call-template>
-                        </xsl:for-each>
-                    </xsl:element>
                 </xsl:for-each>
             </f:map>
         </xsl:variable>
