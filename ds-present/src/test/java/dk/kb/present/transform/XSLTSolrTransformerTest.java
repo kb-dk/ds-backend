@@ -42,6 +42,7 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_3B03 = "xml/copyright_extraction/3b03aa00-fee2-11e8-ab76-00505688346e.xml";
 	public static final String RECORD_DB_hans = "xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml";
 	public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
+	public static final String RECORD_beb9 = "xml/copyright_extraction/beb9f1e0-bc32-11e2-9acb-0016357f605f.xml";
 	@Test
 	void testSolrNew() throws Exception {
 
@@ -279,6 +280,19 @@ class XSLTSolrTransformerTest{
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
 
+	@Test
+	void testNewError() throws Exception {
+
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_beb9);
+		// TODO: Add more detailed test
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString );
+
+		//  assertTrue(solrString.contains("{\"id\":\""));
+	}
 
 
 }

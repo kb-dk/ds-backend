@@ -193,22 +193,23 @@
               </xsl:for-each>
             </f:array>
           </xsl:if>
+          <!-- Some metadata records contains multiple titles with no language indication. Therefore this part extracts the first one,
           <!-- Extract title if present.-->
           <xsl:if test="m:titleInfo/m:title">
             <f:string key="title">
-              <xsl:value-of select="f:replace(m:titleInfo/m:title, 'zh\|', '')"/>
+              <xsl:value-of select="f:replace(m:titleInfo/m:title[1], 'zh\|', '')"/>
             </f:string>
           </xsl:if>
           <!-- Extract subtitle if present.-->
           <xsl:if test="m:titleInfo/m:subTitle">
             <f:string key="subtitle">
-              <xsl:value-of select="f:replace(m:titleInfo/m:subTitle, 'zh\|', '')"/>
+              <xsl:value-of select="f:replace(m:titleInfo/m:subTitle[1], 'zh\|', '')"/>
             </f:string>
           </xsl:if>
           <!-- Extract alternative title if present.-->
           <xsl:if test="m:titleInfo[@type='alternative']/m:title">
             <f:string key="alternative_title">
-              <xsl:value-of select="f:replace(m:titleInfo[@type='alternative']/m:title, 'zh\|', '')"/>
+              <xsl:value-of select="f:replace(m:titleInfo[@type='alternative']/m:title[1], 'zh\|', '')"/>
             </f:string>
           </xsl:if>
           <!-- Extracts information on creator of item.

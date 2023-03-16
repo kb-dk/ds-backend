@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="6a9731fe-076d-4976-bd77-67dcb2b49aa1" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2023-03-16T09:29:12.743+01:00">
+        <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
+            <mets:name>kbDk</mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+        <mets:agent ID="kbDkCumulusBevaringsService" ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="API">
+            <mets:name>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+    </mets:metsHdr>
+    <mets:dmdSec CREATED="2023-03-16T09:29:12.747+01:00" ID="Mods1">
+        <mets:mdWrap MDTYPE="MODS">
+            <mets:xmlData>
+                <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                    <mods:genre>Topografi</mods:genre>
+                    <mods:genre type="Categories">Johannes Mejer, 60 tegnede Karter over danske Provindser, paa meget faae nær alle af Joh. Meyer, copierede af Jac. Langebek.</mods:genre>
+                    <mods:identifier type="uri">urn:uuid:beb9f1e0-bc32-11e2-9acb-0016357f605f</mods:identifier>
+                    <mods:identifier type="local">me000267.tif</mods:identifier>
+                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Maps/Maps/KORTSA/Mejer/me000267.tif</mods:identifier>
+                    <mods:language>
+                        <mods:languageTerm authority="rfc4646" type="code">de</mods:languageTerm>
+                    </mods:language>
+                    <mods:location>
+                        <mods:shelfLocator>HS NKS 369 folio</mods:shelfLocator>
+                    </mods:location>
+                    <mods:name type="personal">
+                        <mods:role>
+                            <mods:roleTerm type="code">cre</mods:roleTerm>
+                        </mods:role>
+                        <mods:namePart type="family">Langebek</mods:namePart>
+                        <mods:namePart type="given">Jacob</mods:namePart>
+                        <mods:namePart type="date">1710-0-0/1775-0-0</mods:namePart>
+                        <mods:namePart type="termsOfAddress">historiker</mods:namePart>
+                    </mods:name>
+                    <mods:name type="personal">
+                        <mods:role>
+                            <mods:roleTerm type="code">cre</mods:roleTerm>
+                        </mods:role>
+                        <mods:namePart type="family">Mejer</mods:namePart>
+                        <mods:namePart type="given">Johannes</mods:namePart>
+                        <mods:namePart type="date">1606-0-0/1674-0-0</mods:namePart>
+                        <mods:namePart type="termsOfAddress">kartograf</mods:namePart>
+                    </mods:name>
+                    <mods:note displayLabel="Catalog Name">Maps</mods:note>
+                    <mods:originInfo>
+                        <mods:place>
+                            <mods:placeTerm type="text">Danmark</mods:placeTerm>
+                        </mods:place>
+                    </mods:originInfo>
+                    <mods:originInfo altRepGroup="original">
+                        <mods:dateCreated>1760?</mods:dateCreated>
+                    </mods:originInfo>
+                    <mods:originInfo altRepGroup="surrogate">
+                        <mods:dateCaptured>2018-11-27T14:25:38.000+01:00</mods:dateCaptured>
+                    </mods:originInfo>
+                    <mods:recordInfo>
+                        <mods:languageOfCataloging>
+                            <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
+                        </mods:languageOfCataloging>
+                    </mods:recordInfo>
+                    <mods:relatedItem type="otherFormat">
+                        <mods:identifier displayLabel="image" type="uri">http://kb-images.kb.dk/DAMJP2/online_master_arkiv_6/non-archival/Maps/KORTSA/Mejer/me000267.jp2</mods:identifier>
+                    </mods:relatedItem>
+                    <mods:subject>
+                        <mods:hierarchicalGeographic>
+                            <mods:area areaType="area">Danmark</mods:area>
+                            <mods:area areaType="area">København</mods:area>
+                        </mods:hierarchicalGeographic>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:topic lang="da">Amager</mods:topic>
+                        <mods:topic lang="da">Danmark</mods:topic>
+                        <mods:topic lang="da">København</mods:topic>
+                        <mods:topic lang="da">Nordsjælland</mods:topic>
+                        <mods:topic lang="da">Saltholm</mods:topic>
+                        <mods:topic lang="da">Sjælland, Nord</mods:topic>
+                    </mods:subject>
+                    <mods:titleInfo>
+                        <mods:title>60 tegnede Karter over danske Provindser, paa meget faae nær alle af Joh. Meyer, copierede af Jac. Langebek.</mods:title>
+                        <mods:title>Grundtriß von dem Ländtlein Amag vnd Insul Saltholm mit Copenhagen &amp; Kristianshafen ao 1656. Im Julio entworffen</mods:title>
+                    </mods:titleInfo>
+                    <mods:typeOfResource displayLabel="Generel Resource Description">Kort, Todimensionalt billedmateriale</mods:typeOfResource>
+                    <mods:typeOfResource displayLabel="Resource Description">Atlas</mods:typeOfResource>
+                </mods:mods>
+            </mets:xmlData>
+        </mets:mdWrap>
+    </mets:dmdSec>
+    <mets:amdSec>
+        <mets:techMD CREATED="2023-03-16T09:29:12.907+01:00" ID="PremisObject1">
+            <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>beb9f1e0-bc32-11e2-9acb-0016357f605f</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:objectCharacteristics>
+                            <premis:compositionLevel>0</premis:compositionLevel>
+                            <premis:fixity>
+                                <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
+                                <premis:messageDigest>83035cdeac65d4a632e4497ee82c7be5</premis:messageDigest>
+                            </premis:fixity>
+                            <premis:size>35588532</premis:size>
+                            <premis:format>
+                                <premis:formatDesignation>
+                                    <premis:formatName>TIFF Image</premis:formatName>
+                                    <premis:formatVersion/>
+                                </premis:formatDesignation>
+                                <premis:formatNote>Validated by Cumulus version: 11.1.8</premis:formatNote>
+                            </premis:format>
+                            <premis:creatingApplication>
+                                <premis:creatingApplicationName>Adobe Photoshop CC 2019</premis:creatingApplicationName>
+                            </premis:creatingApplication>
+                            <premis:objectCharacteristicsExtension>
+                                <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://id.kb.dk/standards/mix/version_2_0/mix.xsd">
+                                    <mix:BasicDigitalObjectInformation>
+                                        <mix:ObjectIdentifier>
+                                            <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
+                                            <mix:objectIdentifierValue>beb9f1e0-bc32-11e2-9acb-0016357f605f</mix:objectIdentifierValue>
+                                        </mix:ObjectIdentifier>
+                                        <mix:fileSize>35588532</mix:fileSize>
+                                        <mix:FormatDesignation>
+                                            <mix:formatName>TIFF Image</mix:formatName>
+                                            <mix:formatVersion/>
+                                        </mix:FormatDesignation>
+                                        <mix:byteOrder>big endian</mix:byteOrder>
+                                        <mix:Compression>
+                                            <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                                        </mix:Compression>
+                                        <mix:Fixity>
+                                            <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
+                                            <mix:messageDigest>83035cdeac65d4a632e4497ee82c7be5</mix:messageDigest>
+                                        </mix:Fixity>
+                                    </mix:BasicDigitalObjectInformation>
+                                    <mix:BasicImageInformation>
+                                        <mix:BasicImageCharacteristics>
+                                            <mix:imageWidth>4027</mix:imageWidth>
+                                            <mix:imageHeight>2944</mix:imageHeight>
+                                            <mix:PhotometricInterpretation>
+                                                <mix:colorSpace>RGB</mix:colorSpace>
+                                                <mix:ColorProfile>
+                                                    <mix:IccProfile>
+                                                        <mix:iccProfileName>Adobe RGB (1998)</mix:iccProfileName>
+                                                    </mix:IccProfile>
+                                                </mix:ColorProfile>
+                                            </mix:PhotometricInterpretation>
+                                        </mix:BasicImageCharacteristics>
+                                    </mix:BasicImageInformation>
+                                    <mix:ImageCaptureMetadata>
+                                        <mix:GeneralCaptureInformation>
+                                            <mix:dateTimeCreated>2023-03-16T09:29:12.925+01:00</mix:dateTimeCreated>
+                                        </mix:GeneralCaptureInformation>
+                                        <mix:ScannerCapture>
+                                            <mix:MaximumOpticalResolution>
+                                                <mix:xOpticalResolution>600</mix:xOpticalResolution>
+                                                <mix:yOpticalResolution>600</mix:yOpticalResolution>
+                                            </mix:MaximumOpticalResolution>
+                                        </mix:ScannerCapture>
+                                        <mix:orientation>normal*</mix:orientation>
+                                    </mix:ImageCaptureMetadata>
+                                    <mix:ImageAssessmentMetadata>
+                                        <mix:ImageColorEncoding>
+                                            <mix:BitsPerSample>
+                                                <mix:bitsPerSampleValue>8</mix:bitsPerSampleValue>
+                                                <mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
+                                            </mix:BitsPerSample>
+                                            <mix:samplesPerPixel>3</mix:samplesPerPixel>
+                                        </mix:ImageColorEncoding>
+                                    </mix:ImageAssessmentMetadata>
+                                    <mix:ChangeHistory>
+                                        <mix:ImageProcessing>
+                                            <mix:sourceData>initial capture</mix:sourceData>
+                                            <mix:ProcessingSoftware>
+                                                <mix:processingSoftwareName>Adobe Photoshop CC 2019</mix:processingSoftwareName>
+                                            </mix:ProcessingSoftware>
+                                        </mix:ImageProcessing>
+                                    </mix:ChangeHistory>
+                                </mix:mix>
+                            </premis:objectCharacteristicsExtension>
+                        </premis:objectCharacteristics>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:techMD>
+        <mets:rightsMD CREATED="2023-03-16T09:29:12.934+01:00" ID="ModsRights1">
+            <mets:mdWrap MDTYPE="MODS">
+                <mets:xmlData>
+                    <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                        <mods:accessCondition>
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD http://id.kb.dk/schemas/dk-corporate-creator/copyright-md.xsd">
+                                <cdl:creator>
+                                    <cdl:creator.person>
+                                        <cdl:name>Langebek, Jacob</cdl:name>
+                                        <cdl:year.birth>1710-0-0</cdl:year.birth>
+                                        <cdl:year.death>1775-0-0</cdl:year.death>
+                                    </cdl:creator.person>
+                                </cdl:creator>
+                                <cdl:creator>
+                                    <cdl:creator.person>
+                                        <cdl:name>Mejer, Johannes</cdl:name>
+                                        <cdl:year.birth>1606-0-0</cdl:year.birth>
+                                        <cdl:year.death>1674-0-0</cdl:year.death>
+                                    </cdl:creator.person>
+                                </cdl:creator>
+                            </cdl:copyright>
+                        </mods:accessCondition>
+                    </mods:mods>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:rightsMD>
+        <mets:digiprovMD CREATED="2023-03-16T09:29:12.938+01:00" ID="PremisEvent1">
+            <mets:mdWrap MDTYPE="PREMIS:EVENT">
+                <mets:xmlData>
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
+                        <premis:eventIdentifier>
+                            <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+                            <premis:eventIdentifierValue>5803db6c-bda2-4a4a-b098-c17a179312df</premis:eventIdentifierValue>
+                        </premis:eventIdentifier>
+                        <premis:eventType>ingestion</premis:eventType>
+                        <premis:eventDateTime>2023-03-16T09:29:12.942+01:00</premis:eventDateTime>
+                        <premis:eventDetailInformation>
+                            <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
+file.encoding: UTF-8
+file.encoding.pkg: sun.io
+file.separator: /
+java.awt.graphicsenv: sun.awt.X11GraphicsEnvironment
+java.class.version: 52.0
+java.runtime.version: 1.8.0_332-b09
+java.specification.version: 1.8
+java.vm.info: mixed mode
+java.vm.name: OpenJDK 64-Bit Server VM
+java.vm.specification.name: Java Virtual Machine Specification
+java.vm.version: 25.332-b09
+java.vm.vendor: Red Hat, Inc.
+line.separator: 
+
+os.arch: amd64
+os.name: Linux
+os.version: 4.18.0-372.9.1.el8.x86_64
+sun.arch.data.model: 64
+sun.boot.library.path: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.332.b09-2.el8_6.x86_64/jre/lib/amd64
+sun.cpu.endian: little
+sun.io.unicode.encoding: UnicodeLittle
+sun.java.launcher: SUN_STANDARD
+sun.jnu.encoding: UTF-8
+sun.management.compiler: HotSpot 64-Bit Tiered Compilers
+sun.os.patch.level: unknown
+user.country: DK
+user.home: /home/tomcat
+user.timezone: Europe/Copenhagen
+user.language: da
+
+</premis:eventDetail>
+                        </premis:eventDetailInformation>
+                        <premis:linkingAgentIdentifier>
+                            <premis:linkingAgentIdentifierType>kbDkInternal</premis:linkingAgentIdentifierType>
+                            <premis:linkingAgentIdentifierValue>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </premis:linkingAgentIdentifierValue>
+                        </premis:linkingAgentIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>beb9f1e0-bc32-11e2-9acb-0016357f605f</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>6a9731fe-076d-4976-bd77-67dcb2b49aa1</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                    </premis:event>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+        <mets:digiprovMD CREATED="2023-03-16T09:29:12.944+01:00" ID="PremisRepresentation1">
+            <mets:mdWrap MDTYPE="PREMIS">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>6a9731fe-076d-4976-bd77-67dcb2b49aa1</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2023-03-16T09:29:12.950+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>logical</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2023-03-16T09:29:12.951+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Low</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2023-03-16T09:29:12.957+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:relationship>
+                            <premis:relationshipType>structural</premis:relationshipType>
+                            <premis:relationshipSubType>represents</premis:relationshipSubType>
+                            <premis:relatedObjectIdentifier>
+                                <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+                                <premis:relatedObjectIdentifierValue>7687744c-cf38-41ee-8d35-7f15a61e0039</premis:relatedObjectIdentifierValue>
+                            </premis:relatedObjectIdentifier>
+                        </premis:relationship>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+    </mets:amdSec>
+    <mets:fileSec>
+        <mets:fileGrp>
+            <mets:file ID="fileId1">
+                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:beb9f1e0-bc32-11e2-9acb-0016357f605f"/>
+            </mets:file>
+        </mets:fileGrp>
+    </mets:fileSec>
+    <mets:structMap TYPE="logical">
+        <mets:div DMDID="Mods1" ADMID="ModsRights1 PremisEvent1 PremisObject1 PremisRepresentation1">
+            <mets:fptr FILEID="fileId1"/>
+        </mets:div>
+    </mets:structMap>
+</mets:mets>
