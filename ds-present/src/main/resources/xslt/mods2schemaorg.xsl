@@ -91,16 +91,16 @@
                     <f:string key="id">
                         <xsl:value-of select="$record-id"/>
                     </f:string>
+
+
+                    <xsl:variable name="imageUrl">
+                        <xsl:variable name="reference">
+                            <xsl:value-of select="f:replace(m:identifier[@type='Asset Reference'], 'cumulus-core-01:/Depot', '')"/>
+                        </xsl:variable>
+                        <xsl:value-of select="f:replace($reference, '.tif', '')"/>
+                    </xsl:variable>
                     <f:string key="url">
-                        <!-- TODO this only works with COP mods, we need a way to get the uri to the image/object in DS -->
-                        <!--xsl:choose>
-                            <xsl:when test="contains($record-id,'luftfo')">
-                                <xsl:value-of select="concat('http://www5.kb.dk/danmarksetfraluften/',$record-id)"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="concat('http://www5.kb.dk/',$record-id,'/en/')"/>
-                            </xsl:otherwise>
-                        </xsl:choose-->
+                        <xsl:value-of select="$imageUrl"/>
                     </f:string>
                     <f:map key="kb:admin_data">
                         <!-- NOTE: Everything in this comment was available in old data, not present in new.ff
@@ -622,8 +622,9 @@
                                 <xsl:value-of select="xs:long(premis:size)"/>
                             </f:string>
                         </xsl:if>
-                        <!-- TODO: Needs to point to same URL as overall URL for the record-->
-                        <f:string key="contentURL"></f:string>
+                        <f:string key="contentURL">
+                            <xsl:value-of select="$imageUrl"/>
+                        </f:string>
                         <!-- Extracts the height of the digital image-->
                         <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight">
                             <f:string key="height">
