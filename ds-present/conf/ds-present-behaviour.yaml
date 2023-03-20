@@ -125,3 +125,7 @@ config:
               transformers:
                 - xslt:
                     stylesheet: 'xslt/mods2solr.xsl'
+
+  # Imageserver to be used when constructing URLs to be shown in Schema.org XSLT transformation
+  # This has to be set before image URLs are working.
+  imageserver: 'http:/example/imageserver'
