@@ -43,6 +43,7 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_DB_hans = "xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml";
 	public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
 	public static final String RECORD_beb9 = "xml/copyright_extraction/beb9f1e0-bc32-11e2-9acb-0016357f605f.xml";
+	public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
 	@Test
 	void testSolrNew() throws Exception {
 
@@ -281,9 +282,9 @@ class XSLTSolrTransformerTest{
 	}
 
 	@Test
-	void testNewError() throws Exception {
+	void testImageResource() throws Exception {
 
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_beb9);
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_40221e30);
 		// TODO: Add more detailed test
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
