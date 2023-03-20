@@ -24,6 +24,10 @@
        <xsl:param name="access_ophavsperson_doedsaar"/>
        <xsl:param name="access_searlige_visningsvilkaar"/>
        <xsl:param name="access_materiale_type"/>
+       <xsl:param name="access_foto_aftale "/>
+       <xsl:param name="access_billede_aftale"/>
+       <xsl:param name="access_ophavsret_tekst"/>
+              
        <xsl:param name="imageurl"/>
               
   <xsl:template match="/">
@@ -36,6 +40,10 @@
      <!-- Some fields always here. Required in schema -->
      <f:string key="access_blokeret"><xsl:value-of select="$access_blokeret"/></f:string>        
      <f:string key="access_materiale_type"><xsl:value-of select="$access_materiale_type"/></f:string>
+     <f:string key="access_foto_aftale"><xsl:value-of select="$access_foto_aftale"/></f:string>
+     <f:string key="access_billede_aftale"><xsl:value-of select="$access_billede_aftale"/></f:string>
+     <f:string key="access_ophavsret_tekst"><xsl:value-of select="$access_ophavsret_tekst"/></f:string>
+
 
      <!-- Only add fields if not empty -->
      <xsl:if test="$access_skabelsesaar!= ''">
