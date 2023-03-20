@@ -8,8 +8,15 @@ import dk.kb.present.TestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Locale;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class XSLTSchemaDotOrgTransformerTest {
@@ -33,14 +40,10 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString );
         //System.out.println(schemaOrgString);
 
-        Assertions.assertTrue(schemaOrgString.contains("\"id\":\"05fea810-7181-11e0-82d7-002185371280\""));
-        Assertions.assertTrue(schemaOrgString.contains("\"@type\":\"Photograph\""));
-        Assertions.assertTrue(schemaOrgString.contains("\"dateCreated\":\"1899\""));
-        Assertions.assertTrue(schemaOrgString.contains("\"temporal\":\"Created between 1850 and 1899\""));
-        Assertions.assertTrue(schemaOrgString.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"Emil Bærentzen\",\"givenName\":\"Emil\",\"familyName\":\"Bærentzen\",\"birthDate\":\"1799-10-30\",\"deathDate\":\"1868-2-14\",\"affiliation\":\"Em. Bærentzen & Co. lith. Inst.\",\"hasOccupation\":{\"@type\":\"Occupation\",\"name\":\"maler, litograf\"}}," +
-                "{\"@type\":\"Person\",\"name\":\"Heinrich August Georg Schiøtt\",\"givenName\":\"Heinrich August Georg\",\"familyName\":\"Schiøtt\",\"birthDate\":\"1823-12-17\",\"deathDate\":\"1895-6-25\",\"hasOccupation\":{\"@type\":\"Occupation\",\"name\":\"maler\"}}," +
-                "{\"@type\":\"Person\",\"name\":\"Edvard Westerberg\",\"givenName\":\"Edvard\",\"familyName\":\"Westerberg\",\"birthDate\":\"1824-11-8\",\"deathDate\":\"1865-3-8\",\"hasOccupation\":{\"@type\":\"Occupation\",\"name\":\"tegner, litograf\"}}]"));
-    }
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_000332_schemaorg.json");
+
+        Assertions.assertEquals(schemaOrgString, correctString);
+        }
 
     @Test
     void testDateCreatedNoTemporal() throws Exception {
@@ -52,12 +55,9 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        Assertions.assertTrue(schemaOrgString.contains("\"id\":\"e5a0e980-d6cb-11e3-8d2e-0016357f605f\""));
-        Assertions.assertTrue(schemaOrgString.contains("\"dateCreated\":\"1942\""));
-        Assertions.assertTrue(schemaOrgString.contains("\"about\":[\"Træ\",\"Sne\",\"Vinter\",\"Vej\",\"KBpublicering\"]"));
-        Assertions.assertTrue(schemaOrgString.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"Keld Helmer-Petersen\",\"givenName\":\"Keld\",\"familyName\":\"Helmer-Petersen\",\"birthDate\":\"1920-8-23\",\"deathDate\":\"2013-3-6\",\"hasOccupation\":{\"@type\":\"Occupation\",\"name\":\"fotograf\"}}]"));
-        Assertions.assertFalse(schemaOrgString.contains("\"temporal\""));
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_KHP0001_001_schemaorg.json");
 
+        Assertions.assertEquals(schemaOrgString, correctString);
     }
 
     @Test
@@ -70,11 +70,9 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        Assertions.assertTrue(schemaOrgString.contains("\"id\":\"770379f0-8a0d-11e1-805f-0016357f605f\""));
-        Assertions.assertTrue(schemaOrgString.contains("\"dateCreated\":\"1974\""));
-        Assertions.assertTrue(schemaOrgString.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"John R. (John Rosforth) Johnsen\",\"givenName\":\"John R. (John Rosforth)\",\"familyName\":\"Johnsen\",\"birthDate\":\"1945-0-0\",\"deathDate\":\"2016-0-0\",\"hasOccupation\":{\"@type\":\"Occupation\",\"name\":\"fotograf\"}}]"));
-        Assertions.assertTrue(schemaOrgString.contains("\"headline\":[{\"value\":\"Romeo og Julie\",\"@language\":\"da\"}]"));
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_JB000132_schemaorg.json");
 
+        Assertions.assertEquals(schemaOrgString, correctString);
     }
 
 
@@ -88,11 +86,8 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        Assertions.assertTrue(schemaOrgString.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"Mason Jackson\",\"givenName\":\"Mason\",\"familyName\":\"Jackson\",\"birthDate\":\"1819-5-25\",\"deathDate\":\"1903-12-28\",\"description\":\"britisk\"," +
-                "\"hasOccupation\":{\"@type\":\"Occupation\",\"name\":\"xylograf\"}},"+
-                "{\"@type\":\"Organization\",\"affiliation\":\"The Illustrated London News\",\"description\":\"engelsk avis\"}]"));
-
-        Assertions.assertTrue(schemaOrgString.contains("\"F. 3639\",\"Efter fotografi af: Petersen, Jens (19.3.1829-1.2.1905) fotograf\",\"Trykt i: The Illustrated London News, 28.11.1863\"]"));
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_KE066530_schemaorg.json");
+        Assertions.assertEquals(schemaOrgString, correctString);
     }
 
     @Test
@@ -105,8 +100,8 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        Assertions.assertTrue(schemaOrgString.contains("\"keywords\":[\"Postkortsamlingen\",\"Vestindien\",\"Postkort\",\"CAR- BLO katagori\"]"));
-        Assertions.assertTrue(schemaOrgString.contains("\"contentLocation\":[{\"@type\":\"Place\",\"description\":\"Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian\"}]"));
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_DPK000107_schemaorg.json");
+        Assertions.assertEquals(schemaOrgString,correctString);
     }
 
 
@@ -117,10 +112,11 @@ public class XSLTSchemaDotOrgTransformerTest {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(schemaOrgString);
         String prettyJsonString = gson.toJson(je);
-        System.out.println(prettyJsonString);
+        //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        Assertions.assertTrue(schemaOrgString.contains("\"material\":{\"size\":{\"@type\":\"Text\",\"value\":\"23,5 x 16,5 cm.\"}"));
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_ANSK_schemaorg.json");
+        Assertions.assertEquals(schemaOrgString,correctString);
     }
 
     @Test
@@ -130,20 +126,33 @@ public class XSLTSchemaDotOrgTransformerTest {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(schemaOrgString);
         String prettyJsonString = gson.toJson(je);
-        // System.out.println(prettyJsonString);
+        //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        Assertions.assertTrue(schemaOrgString.contains("\"kb:internalNotes\":[\"Montering: opklæbet på karton og monteret i passepartout\",\"Kunstnernote: Bisson, Louis-Auguste (1814–1876) fransk fotograf\",\"Bisson, Auguste-Rosalie (1826–1900) fransk fotograf\",\"Aktiv: 1852–1863\"]},"));
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_DNF_schemaorg.json");
+        Assertions.assertEquals(schemaOrgString,correctString);
     }
 
-    @Test
-    void testTemplate() throws Exception {
-        String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_DPK000107);
+    /**
+     * Method used to create test files.
+     * @param jsonString to save to file.
+     */
+    private void createTestFile(String filename, String jsonString) throws IOException {
+        try (PrintWriter out = new PrintWriter(new FileWriter("src/test/resources/schemaOrgJsonTestFiles/" + filename))) {
+            Gson gson = new Gson();
+            out.write(jsonString);
+        }
+    }
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = JsonParser.parseString(schemaOrgString);
-        String prettyJsonString = gson.toJson(je);
-        System.out.println(prettyJsonString);
-        //System.out.println(schemaOrgString);
+    /**
+     * Import test file to assert JSON strings against.
+     * @param path of file to load
+     * @return the file as a string
+     */
+    private String importTestFile(String path) throws IOException {
+        Path fileName = Path.of(path);
+        String jsonString = Files.readString(fileName);
+
+        return jsonString;
     }
 }
