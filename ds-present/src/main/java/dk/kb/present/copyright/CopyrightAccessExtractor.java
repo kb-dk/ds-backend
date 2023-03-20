@@ -2,7 +2,10 @@ package dk.kb.present.copyright;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,6 +44,19 @@ public class CopyrightAccessExtractor {
 
 	private static final Logger log = LoggerFactory.getLogger(CopyrightAccessExtractor.class);
 
+
+	
+	//Lowercase important
+	private static final HashSet<String> FOTOGRAFI_AFTALE = Stream.of("dia", "digital optagelse", "fotografi", "fotogravure","negativ")
+			              .collect(Collectors.toCollection(HashSet::new));
+	 
+	//Lowercase important
+	private static final HashSet<String> BILLEDE_AFTALE = Stream.of("akvarel", "grafik", "postkort", "plakats","tegning","tryk","silhuet",
+                                              "arkitekturfotografi","arkitekturtegning","anskuelsesbillede","genstand",
+                                              "bladtegning","kort","atlas","prospekt")
+                                              .collect(Collectors.toCollection(HashSet::new));
+
+	
 	public static CopyrightAccessDto buildCopyrightFields(String xml) throws Exception {
 
 		if (xml == null) {
@@ -53,13 +69,16 @@ public class CopyrightAccessExtractor {
 		Document document = createDocFromXml(xml);
 
 		String fileName = getFileName(document); //used as parameter to methods for log statement        
-
+        copyrightDto.setFilNavn(fileName);
+		
+        
+        String materialeType=getMaterialType(document);
 		copyrightDto.setMaterialeType(getMaterialType(document));
 		
+		copyrightDto.setBilledeAftale(isBilledeAftale(materialeType));
+		copyrightDto.setFotoAftale(isFotoAftale(materialeType));
 		
 		
-
-
 		//TEMORARY SOLUTION TO SET IMAGE LINK!
 		copyrightDto.setImageUrl(getImageLink(document));
 
@@ -92,6 +111,7 @@ public class CopyrightAccessExtractor {
 		if (skabelsesAar != null) {
 			 copyrightDto.setSkabelsesAar(skabelsesAar);
 		}
+		 
 		
 		return  copyrightDto;
 	}
@@ -263,6 +283,15 @@ public class CopyrightAccessExtractor {
 		return document;
 	}
 
+	
+
+    private static boolean isFotoAftale(String materialeType) {
+        return FOTOGRAFI_AFTALE.contains(materialeType.toLowerCase(Locale.getDefault()));      
+    }
+    
+    private static boolean isBilledeAftale(String materialeType) {
+        return BILLEDE_AFTALE.contains(materialeType.toLowerCase(Locale.getDefault()));        
+    }
 
 	/**
 	 *  This is a temporary fix to enrich copyright data with image link also.
@@ -342,6 +371,7 @@ public class CopyrightAccessExtractor {
 	}
 
 	/* Find person with most recent death year. Return null if just one person  is not dead.   
+	 * Also return null if no persons is found
 	 * Notice last name logic is no longer in use!
 	 */       
 	private static Integer getLastDeathYearForPerson(ArrayList<AccessCondition> accessConditionList) {
@@ -399,7 +429,19 @@ public class CopyrightAccessExtractor {
 				return ref;                
 			}
 		}
-		log.warn("No material type found");  //TODO. data error?
+		//TEMP! TODO FJERN!
+		try {
+			log.warn("No material type found");  //TODO. data error?
+			String fileName = getFileName(doc);
+			log.warn("No material type found for file:"+fileName);
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace(); //TEMP!
+			
+		}
+		
+		
 		return "Ukendt";         
 	}    
 
@@ -417,10 +459,9 @@ public class CopyrightAccessExtractor {
 				return id;
 			}
 		}
-
 		log.error("No identificer with attribute type='local' found");            	
 		return null;
-
 	}
 
+	
 }
