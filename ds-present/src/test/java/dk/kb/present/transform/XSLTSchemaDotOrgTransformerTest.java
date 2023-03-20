@@ -32,6 +32,11 @@ public class XSLTSchemaDotOrgTransformerTest {
     public static final String RECORD_40221e = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
 
     @Test
+    void updateTestFiles() throws Exception {
+        createTestFiles(RECORD_000332, RECORD_JB000132, RECORD_KHP0001_001, RECORD_KE066530, RECORD_DPK000107,
+                RECORD_ANSK, RECORD_DNF, RECORD_40221e);
+    }
+    @Test
     void testDateCreatedAndTemporal() throws Exception {
 
         String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_000332);
@@ -42,7 +47,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_000332_schemaorg.json");
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/schemaOrg_000332.json");
 
         Assertions.assertEquals(schemaOrgString, correctString);
         }
@@ -57,7 +62,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_KHP0001_001_schemaorg.json");
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/schemaOrg_KHP0001-001.json");
 
         Assertions.assertEquals(schemaOrgString, correctString);
     }
@@ -72,7 +77,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_JB000132_schemaorg.json");
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/schemaOrg_JB000132_114.json");
 
         Assertions.assertEquals(schemaOrgString, correctString);
     }
@@ -88,7 +93,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_KE066530_schemaorg.json");
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/schemaOrg_KE066530.json");
         Assertions.assertEquals(schemaOrgString, correctString);
     }
 
@@ -102,8 +107,8 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_DPK000107_schemaorg.json");
-        Assertions.assertEquals(schemaOrgString,correctString);
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/schemaOrg_DPK000107.json");
+        Assertions.assertEquals(schemaOrgString, correctString);
     }
 
 
@@ -117,8 +122,8 @@ public class XSLTSchemaDotOrgTransformerTest {
         //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_ANSK_schemaorg.json");
-        Assertions.assertEquals(schemaOrgString,correctString);
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/schemaOrg_ANSK_11614.json");
+        Assertions.assertEquals(schemaOrgString, correctString);
     }
 
     @Test
@@ -128,11 +133,11 @@ public class XSLTSchemaDotOrgTransformerTest {
         Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(schemaOrgString);
         String prettyJsonString = gson.toJson(je);
-        System.out.println(prettyJsonString);
+        //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
 
-        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/record_DNF_schemaorg.json");
-        //Assertions.assertEquals(schemaOrgString,correctString);
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/schemaOrg_DNF_1951-00352_00052.json");
+        Assertions.assertEquals(schemaOrgString, correctString);
     }
 
     @Test
@@ -142,18 +147,24 @@ public class XSLTSchemaDotOrgTransformerTest {
         Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(schemaOrgString);
         String prettyJsonString = gson.toJson(je);
-        System.out.println(prettyJsonString);
+        //System.out.println(prettyJsonString);
         //System.out.println(schemaOrgString);
+
+        String correctString = importTestFile("src/test/resources/schemaOrgJsonTestFiles/schemaOrg_40221e30-1414-11e9-8fb8-00505688346e.json");
+        Assertions.assertEquals(schemaOrgString, correctString);
+
     }
 
-    /**
-     * Method used to create test files.
-     * @param jsonString to save to file.
-     */
-    private void createTestFile(String filename, String jsonString) throws IOException {
-        try (PrintWriter out = new PrintWriter(new FileWriter("src/test/resources/schemaOrgJsonTestFiles/" + filename, Charset.defaultCharset()))) {
-            Gson gson = new Gson();
-            out.write(jsonString);
+
+    private void createTestFiles(String... records) throws Exception {
+        for (String record : records) {
+            String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, record);
+            String filename = record.replaceAll("xml/copyright_extraction/", "schemaOrg_");
+            String completeFilename = filename.replaceAll("\\..+", ".json");
+            //String completeFilename = filename.replaceAll("\\.tif\\.xml", ".json");
+            try (PrintWriter out = new PrintWriter(new FileWriter("src/test/resources/schemaOrgJsonTestFiles/" + completeFilename, Charset.defaultCharset()))) {
+                out.write(schemaOrgString);
+            }
         }
     }
 
