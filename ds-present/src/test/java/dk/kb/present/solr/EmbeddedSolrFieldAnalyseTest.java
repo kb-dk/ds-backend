@@ -151,7 +151,9 @@ public class EmbeddedSolrFieldAnalyseTest {
 				document.addField("creator_full_name", "Maria Dąbrowska");
 				document.addField("creator_full_name", "Gabriel García Márquez");
 				document.addField("creator_full_name", "Günter Grass");
-								
+                document.addField("access_billede_aftale", false);
+                document.addField("access_foto_aftale", false);
+				
 				embeddedServer.add(document);
 				embeddedServer.commit();
 
