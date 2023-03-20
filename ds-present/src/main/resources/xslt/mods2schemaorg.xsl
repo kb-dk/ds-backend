@@ -192,14 +192,6 @@
                         <xsl:if test="not(contains($term,'last-modified-by'))">
                             <f:array>
                                 <xsl:attribute name="key"><xsl:value-of select="$roles/roles/role[@key=$term]"/></xsl:attribute>
-                                <!--
-                                <xsl:for-each select="$mods//m:name[m:role/m:roleTerm = $term]">
-                                    <xsl:call-template name="get-names">
-                                        <xsl:with-param name="record_identifier" select="$record-id"/>
-                                        <xsl:with-param name="cataloging_language" select="$cataloging_language" />
-                                    </xsl:call-template>
-                                </xsl:for-each>
-                                -->
                                 <xsl:for-each select="$mods//m:name[m:role/m:roleTerm = $term]">
                                     <xsl:call-template name="get-names">
                                         <xsl:with-param name="record_identifier" select="$record-id"/>
@@ -209,33 +201,6 @@
                             </f:array>
                         </xsl:if>
                     </xsl:for-each>
-
-                    <xsl:if test="m:note[@type or @displayLabel]">
-                        <!-- TODO: can have more notes of same type, fix it -->
- <!--                       <xsl:for-each select="m:note[@type or @displayLabel and not(contains(@type,'situation'))]">
-                            <xsl:variable name="the_field">
-                                <xsl:choose>
-                                    <xsl:when test="@type">
-                                        <xsl:choose>
-                                            <xsl:when test="contains(@type,'citation/reference')">citation</xsl:when>
-                                            <xsl:when test="matches( @displayLabel,'ript$')">kb:script</xsl:when>
-                                            <xsl:when test="contains( @displayLabel,'ript:')">kb:scriptDetail</xsl:when>
-                                            <xsl:otherwise><xsl:value-of select="concat('kb:',my:escape_stuff(@type))"/></xsl:otherwise>
-                                        </xsl:choose>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:value-of select="concat('kb:',my:escape_stuff(@displayLabel),generate-id(.))"/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:variable>
-                            <f:string>
-                                <xsl:attribute name="key">
-                                    <xsl:value-of select="$the_field"/>
-                                </xsl:attribute>
-                                <xsl:value-of select="."/>
-                            </f:string>
-                        </xsl:for-each>-->
-                    </xsl:if>
                     <xsl:if test="m:subject/m:hierarchicalGeographic">
                         <f:array key="contentLocation">
                             <f:map>
@@ -334,8 +299,7 @@
                                 <f:string><xsl:value-of select="."/></f:string>
                             </xsl:for-each>
                         </xsl:if>
-
-                        <!-- Notes of type content         -->
+                        <!-- Notes of type content -->
                         <!-- if note field of type content exists extract it-->
                         <xsl:if test="m:note[@type='content']">
                             <xsl:for-each select="m:note[@type='content']">
@@ -347,7 +311,7 @@
                             </xsl:for-each>
                         </xsl:if>
                     </f:array>
-
+                    <!-- Extract keywords from categories field-->
                     <f:array key="keywords">
                         <xsl:variable name="categories" as="xs:string *">
                             <xsl:value-of select="m:genre[@type='Categories']"/>
@@ -467,6 +431,8 @@
                                 <xsl:attribute name="key">
                                     <xsl:value-of select="my:escape_stuff(lower-case($label))"/>
                                 </xsl:attribute>
+
+                            <!--Populates material map with metadata on materials used -->
                             <xsl:for-each select="m:form
                                             | m:reformattingQuality
                                             | m:internetMediaType
@@ -483,7 +449,6 @@
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:variable>
-
                                 <xsl:variable name="the_field">
                                     <xsl:choose>
                                         <xsl:when test="string-length($label) &gt; 0">
@@ -500,7 +465,6 @@
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:variable>
-
                                 <f:map>
                                     <xsl:attribute name="key">
                                         <xsl:value-of select="$the_field"/>
@@ -526,7 +490,6 @@
                                             </xsl:choose>
                                         </xsl:otherwise>
                                     </xsl:choose>
-
                                     <f:string key="value">
                                         <xsl:choose>
                                             <xsl:when test="contains($the_field,'xtent')">
@@ -540,13 +503,10 @@
                                     </f:string>
                                 </f:map>
                             </xsl:for-each>
-
                             </f:map>
-
-
                         </xsl:for-each>
-
                     </xsl:if>
+                    <!--Extracts all possible identifiers-->
                     <f:array key="identifier">
                         <xsl:for-each select="m:identifier[@type='uri']">
                             <f:map>
@@ -555,7 +515,6 @@
                                 <f:string key="value"><xsl:value-of select="substring-after(., 'urn:uuid:')"/></f:string>
                             </f:map>
                         </xsl:for-each>
-
                         <xsl:if test="m:location/m:shelfLocator">
                             <xsl:for-each select="m:location/m:shelfLocator">
                                 <f:map>
@@ -565,7 +524,6 @@
                                 </f:map>
                             </xsl:for-each>
                         </xsl:if>
-
                         <xsl:for-each select="m:identifier[@type='local']">
                             <f:map>
                                 <f:string key="@type">PropertyValue</f:string>
@@ -573,7 +531,6 @@
                                 <f:string key="value"><xsl:value-of select="."/></f:string>
                             </f:map>
                         </xsl:for-each>
-
                         <xsl:if test="m:identifier[@type='accession number']">
                             <xsl:for-each select="m:identifier[@type='accession number']">
                                 <f:map>
@@ -583,7 +540,6 @@
                                 </f:map>
                             </xsl:for-each>
                         </xsl:if>
-
                         <xsl:if test="m:location/m:physicalLocation">
                             <xsl:for-each select="m:location/m:physicalLocation">
                                 <f:map>
@@ -593,7 +549,6 @@
                                 </f:map>
                             </xsl:for-each>
                         </xsl:if>
-
                         <xsl:for-each select="m:relatedItem[@type='original']/m:identifier">
                             <f:map>
                                 <f:string key="@type">PropertyValue</f:string>
@@ -601,7 +556,6 @@
                                 <f:string key="@value"><xsl:value-of select="."/></f:string>
                             </f:map>
                         </xsl:for-each>
-
                         <xsl:for-each select="m:identifier[@type='domsGuid']">
                             <f:map>
                                 <f:string key="@type">PropertyValue</f:string>
@@ -609,15 +563,13 @@
                                 <f:string key="@value"><xsl:value-of select="."/></f:string>
                             </f:map>
                         </xsl:for-each>
-
                     </f:array>
+                    <!-- Adds information on which collections/publications the given CreativeWork is a part of-->
                     <xsl:if test="m:relatedItem[@type='host']">
                         <f:array key="isPartOf">
-
                             <xsl:variable name="collectionTitle" select="m:relatedItem[@type='host']/m:titleInfo/m:title"/>
                             <xsl:variable name="collectionDescription" select="m:relatedItem[@type='host']/m:note[@type='URL-tekst']"/>
                             <xsl:variable name="collectionURL" select="m:relatedItem[@type='host']/m:identifier[@type='URL']"/>
-
                             <f:map>
                                 <f:string key="@type">Collection</f:string>
                                 <f:string key="headline"><xsl:value-of select="$collectionTitle"/></f:string>
@@ -628,8 +580,6 @@
                                     <xsl:value-of select="$collectionURL"/>
                                 </f:string>
                             </f:map>
-
-
                             <xsl:if test="m:relatedItem[@displayLabel='Publication']">
                                 <f:map>
                                     <f:string key="@type">Periodical</f:string>
@@ -640,10 +590,10 @@
                             </xsl:if>
                         </f:array>
                     </xsl:if>
+                    <!--Extract metadata on the digital image-->
                     <xsl:element name="f:map">
                         <xsl:attribute name="key">image</xsl:attribute>
                         <f:string key="@type">ImageObject</f:string>
-
                         <xsl:for-each select="//mets:amdSec/mets:techMD[@ID='PremisObject1']//premis:objectCharacteristics">
                         <xsl:if test="premis:size">
                             <f:string key="contentSize">
@@ -670,7 +620,7 @@
                             <f:string key="image_size_pixels">
                                 <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)"/>
                             </f:string>
-                        </xsl:if>-->
+                        </xsl:if> -->
                         </xsl:for-each>
                         <xsl:if test="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured">
                             <f:string key="dateCreated">
@@ -733,6 +683,7 @@
         <xsl:value-of select="f:xml-to-json($json)"/>
     </xsl:template>
 
+    <!--Template for title extraction. Reused from old codebase-->
     <xsl:template name="get-title">
         <xsl:param name="cataloging_language"/>
         <xsl:param name="record_identifier"/>
@@ -781,6 +732,8 @@
             </f:array>
         </xsl:if>
     </xsl:template>
+
+    <!-- Template for name extraction. Has been modified to new metadata format-->
     <xsl:template name="get-names">
         <xsl:param name="record_identifier"/>
         <xsl:param name="cataloging_language"/>
@@ -797,7 +750,6 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-
         <f:map>
             <f:string key="@type">
                 <xsl:choose>
@@ -810,7 +762,6 @@
                 <f:string key="sameAs"><xsl:value-of select="@authorityURI"/></f:string>
             </xsl:if>
             <xsl:variable name="language"><xsl:value-of select="@xml:lang"/></xsl:variable>
-
             <!-- Creates name for persons -->
             <xsl:if test="m:namePart[@type='given'] or m:namePart[@type='family']">
                 <xsl:element name="f:string">
@@ -879,16 +830,12 @@
             <xsl:if test="m:namePart[@type='termsOfAddress']">
                 <xsl:element name="f:map">
                     <xsl:attribute name="key">hasOccupation</xsl:attribute>
-
                     <f:string key="@type">Occupation</f:string>
                     <f:string key="name">
                         <xsl:value-of select="m:namePart[@type='termsOfAddress']"/>
                     </f:string>
-
                 </xsl:element>
             </xsl:if>
-
-
             <xsl:if test="t:residence">
                 <xsl:element name="f:array">
                     <xsl:attribute name="key">
@@ -981,6 +928,7 @@
             </f:string>
         </xsl:if>
     </xsl:template>
+    <!-- Old function that is still in use. Used to map from descriptions in MODS to fields in Schema.org-->
     <xsl:function name="my:escape_stuff">
         <xsl:param name="arg"/>
         <xsl:choose>
@@ -994,7 +942,8 @@
         </xsl:choose>
     </xsl:function>
     <!--Function to get property from config file.
-        Used to get imageserver to construct URLs for images-->
+        Used to get imageserver to construct URLs for images.
+        Created with inspiration from this stackoverflow thread: https://stackoverflow.com/questions/4326138/how-to-read-a-properties-file-inside-a-xsl-file-->
     <xsl:function name="my:getProperty" as="xs:string?">
         <xsl:param name="key" as="xs:string"/>
         <xsl:variable name="lines" as="xs:string*" select="
