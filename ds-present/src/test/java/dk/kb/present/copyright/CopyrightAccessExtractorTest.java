@@ -2,12 +2,13 @@ package dk.kb.present.copyright;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
-import dk.kb.present.TestUtil;
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
@@ -37,11 +38,14 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Grafik",copyright.getMaterialeType()); 
 
+        assertFalse(copyright.isFotoAftale());
+        assertTrue(copyright.isBilledeAftale());
+        
         assertEquals(2,copyright.getAccessConditionsList().size());
         assertEquals(1831,copyright.getSkabelsesAar());
 
 
-        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);
+        AccessCondition accessCondition1 = copyright.getAccessConditionsList().get(0);  //Ejermærke
         AccessCondition accessCondition2 = copyright.getAccessConditionsList().get(1);                
 
         assertEquals("copyrighted",accessCondition2.getCopyrightStatus());        
@@ -65,6 +69,11 @@ public class CopyrightAccessExtractorTest {
         assertEquals(1831, mapper.getLastDeathYearForPerson());        
         assertEquals(true, mapper.isEjerMaerke());
         assertEquals(1831, mapper.getSkabelsesAar());
+                
+        assertFalse(mapper.isFotoAftale());        
+        assertTrue(mapper.isBilledeAftale());
+        assertEquals("Fri af ophavsret", mapper.getOphavsretTekst()); //TEMP!
+        System.out.println(mapper.getOphavsretTekst());
 
     }
 
@@ -76,6 +85,11 @@ public class CopyrightAccessExtractorTest {
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DPK000107.tif.xml");
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Postkort",copyright.getMaterialeType());  
+
+        assertFalse(copyright.isFotoAftale());
+        assertTrue(copyright.isBilledeAftale());
+        
+        
         assertEquals(2016,copyright.getSkabelsesAar());
         assertEquals(2,copyright.getAccessConditionsList().size());
 
@@ -87,8 +101,10 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
 
         assertEquals(null, mapper.getLastDeathYearForPerson());        
-        assertEquals(true, mapper.isEjerMaerke());
+        assertEquals(true, mapper.isEjerMaerke());        
         assertEquals(2016, mapper.getSkabelsesAar());  
+        
+        assertEquals("Beskyttet af ophavsret", mapper.getOphavsretTekst()); //TEMP!
 
 
     }
@@ -100,7 +116,10 @@ public class CopyrightAccessExtractorTest {
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Fotografi",copyright.getMaterialeType()); 
-
+        
+        assertTrue(copyright.isFotoAftale());
+        assertFalse(copyright.isBilledeAftale());
+        
         assertEquals(1,copyright.getAccessConditionsList().size());
         assertEquals(1964,copyright.getSkabelsesAar());
 
@@ -118,9 +137,10 @@ public class CopyrightAccessExtractorTest {
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
         assertEquals(null, mapper.getLastDeathYearForPerson());//The record is a person profile photo, not art by a person.
         assertEquals(1964, mapper.getSkabelsesAar()); 
-        assertEquals(false, mapper.isEjerMaerke());
-
-
+        assertEquals(false, mapper.isEjerMaerke());        
+        assertTrue(mapper.isFotoAftale());
+        assertFalse(mapper.isBilledeAftale());
+        
 
 
     }
@@ -170,7 +190,7 @@ public class CopyrightAccessExtractorTest {
         assertEquals(true, mapper.isEjerMaerke());
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_BLOKERET,mapper.getSearligevisningsVilkaar());
         
-        
+        assertEquals("Fri af ophavsret", mapper.getOphavsretTekst()); //TEMP! 
 
     }
 
@@ -181,6 +201,10 @@ public class CopyrightAccessExtractorTest {
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Tegning",copyright.getMaterialeType()); 
+      
+        assertFalse(copyright.isFotoAftale());
+        assertTrue(copyright.isBilledeAftale());
+                
         assertEquals(3,copyright.getAccessConditionsList().size());
         assertEquals(1987,copyright.getSkabelsesAar());
 
@@ -205,6 +229,9 @@ public class CopyrightAccessExtractorTest {
         assertEquals(1987, mapper.getSkabelsesAar());               
         assertEquals(1998, mapper.getLastDeathYearForPerson());
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET,mapper.getSearligevisningsVilkaar());
+        
+        assertEquals("Beskyttet af ophavsret", mapper.getOphavsretTekst()); //TEMP!
+    
     }
 
 
@@ -215,6 +242,10 @@ public class CopyrightAccessExtractorTest {
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Bladtegning",copyright.getMaterialeType()); 
+        assertFalse(copyright.isFotoAftale());
+        assertTrue(copyright.isBilledeAftale());
+        
+        
         assertEquals(2,copyright.getAccessConditionsList().size());
         assertEquals(1977,copyright.getSkabelsesAar());
 
@@ -242,6 +273,10 @@ public class CopyrightAccessExtractorTest {
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Tegning",copyright.getMaterialeType()); 
+        assertFalse(copyright.isFotoAftale());
+        assertTrue(copyright.isBilledeAftale());
+        
+        
         assertEquals(3,copyright.getAccessConditionsList().size());
         assertEquals(1971,copyright.getSkabelsesAar());
 
@@ -299,6 +334,9 @@ public class CopyrightAccessExtractorTest {
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Dia",copyright.getMaterialeType()); 
+        assertTrue(copyright.isFotoAftale());
+        assertFalse(copyright.isBilledeAftale());
+                
         assertEquals(4,copyright.getAccessConditionsList().size());
         assertEquals(1942,copyright.getSkabelsesAar());
 
@@ -328,6 +366,10 @@ public class CopyrightAccessExtractorTest {
 
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Dia",copyright.getMaterialeType()); 
+        assertTrue(copyright.isFotoAftale());
+        assertFalse(copyright.isBilledeAftale());
+        
+        
         assertEquals(3,copyright.getAccessConditionsList().size());         
         assertEquals(1942,copyright.getSkabelsesAar());
 
@@ -348,6 +390,9 @@ public class CopyrightAccessExtractorTest {
 
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Grafik",copyright.getMaterialeType()); 
+        assertFalse(copyright.isFotoAftale());
+        assertTrue(copyright.isBilledeAftale());
+        
         assertEquals(1899,copyright.getSkabelsesAar());
 
         assertEquals(3,copyright.getAccessConditionsList().get(1).getCreatorPersonList().size());                                   
