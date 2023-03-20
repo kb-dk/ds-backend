@@ -28,14 +28,17 @@ public class CopyrightAccessDto {
     public static final String SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA ="Visning kun af metadata";
     public static final String SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET ="Visning kun på stedet";
     public static final String SPECIAL_RESTRICTION_PLIGTAFLEVERET ="Pligtafleveret";
-    public static final String SPECIAL_RESTRICTION_CCBY="CC-BY";
+    public static final String SPECIAL_RESTRICTION_CCBY="CC-BY";  // Not seen in data yet...
     
     private ArrayList<AccessCondition> accessConditionsList;
     
     private String imageUrl=null;
     private Integer skabelsesAar=null;
     private Integer ophavsPersonDoedsAar=null;
-      
+    private String filNavn=null;
+    private boolean fotoAftale=false;
+    private boolean billedeAftale=false;   
+    
     private String materialeType=null;
 
     public  CopyrightAccessDto() {                    
@@ -50,25 +53,21 @@ public class CopyrightAccessDto {
         this.skabelsesAar = skabelsesAar;
     }
 
+    public String getFilNavn() {
+		return filNavn;
+	}
 
+	public void setFilNavn(String filNavn) {
+		this.filNavn = filNavn;
+	}
 
-
-
-    public Integer getOphavsPersonDoedsAar() {
+	public Integer getOphavsPersonDoedsAar() {
         return ophavsPersonDoedsAar;
     }
 
-
-
-
-
-    public void setOphavsPersonDoedsAar(Integer ophavsPersonDoedsAar) {
+	public void setOphavsPersonDoedsAar(Integer ophavsPersonDoedsAar) {
         this.ophavsPersonDoedsAar = ophavsPersonDoedsAar;
     }
-
-
-
-
 
     public ArrayList<AccessCondition> getAccessConditionsList() {
         return accessConditionsList;
@@ -77,8 +76,6 @@ public class CopyrightAccessDto {
     public void setAccessConditionsList(ArrayList<AccessCondition> accessConditionsList) {
         this.accessConditionsList = accessConditionsList;
     }
-    
-    
    
 
     public String getImageUrl() {
@@ -97,9 +94,28 @@ public class CopyrightAccessDto {
         this.materialeType = materialeType;
     }
 
+    public boolean isFotoAftale() {
+		return fotoAftale;
+	}
 
 
-    public class AccessCondition{
+	public void setFotoAftale(boolean fotoAftale) {
+		this.fotoAftale = fotoAftale;
+	}
+
+
+	public boolean isBilledeAftale() {
+		return billedeAftale;
+	}
+
+
+	public void setBilledeAftale(boolean billedeAftale) {
+		this.billedeAftale = billedeAftale;
+	}
+
+
+
+	public class AccessCondition{
               
         private String type;
         private String displayLabel;    
@@ -208,15 +224,8 @@ public class CopyrightAccessDto {
         }
         public void setYearEnded(String yearEnded) {
             this.yearEnded = yearEnded;
-        }
-      
-
+        }     
     }
-
-
-
-
-
     
 
 }

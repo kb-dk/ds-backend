@@ -17,8 +17,10 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     private String searligeVisningsVilkaar; //Fra 'rullelisten'. (Blokeret er på rullelisten med håndteres specielt)
     private String materialeType;
     private boolean ejerMaerke;
-    private boolean vandMaerke; //PT. ikke i brug
     private boolean pligtAfleveret;
+    private boolean fotoAftale;
+    private boolean billedeAftale;
+    private String ophavsretTekst; //Temporary field for jura
     
     private String imageUrl=null; 
     public CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
@@ -29,15 +31,38 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         skabelsesAar=accessDto.getSkabelsesAar();
         
         accessNote=getAccessNote(accessDto);   
-
-        //Ejermærke, vandmærke
-        ejerMaerke=getEjermaerke(accessDto);
-        vandMaerke=getVandmaerke(accessDto);
+        
+        //Vandmærke benyttes ikke længere
+        ejerMaerke=getEjermaerke(accessDto);        
         pligtAfleveret=getPligtAfleveret(accessDto);
         materialeType=accessDto.getMaterialeType();  
-        imageUrl=accessDto.getImageUrl();        
+        imageUrl=accessDto.getImageUrl();
+        fotoAftale=accessDto.isFotoAftale();
+        billedeAftale=accessDto.isBilledeAftale();
+        System.out.println(billedeAftale);
+     
+        //Very important TEMPORARY logic with hardcoded data so 'jura' can test.
+        if ((ophavsPersonDoedsAar!= null && ophavsPersonDoedsAar <=  1952)  || (skabelsesAar!= null && skabelsesAar <=  1882)) {
+            ophavsretTekst="Fri af ophavsret";            
+        }
+        else {// Some material types can have further restrictions.
+            ophavsretTekst="Beskyttet af ophavsret";
+
+            if (!fotoAftale && !billedeAftale) {
+                if (searligeVisningsVilkaar != null) {
+                    log.error("No fotoaftale and billedeAftale, but already has another searligeVisningsVilkaar:"+ searligeVisningsVilkaar  +" for file:"+accessDto.getFilNavn());
+                }
+                else {
+                  searligeVisningsVilkaar=CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET;  
+                }            
+          }                        
+        }        
     }
    
+    public String getOphavsretTekst() {
+        return ophavsretTekst;
+    }
+    
     public boolean isPligtAfleveret() {
         return pligtAfleveret;
     }
@@ -78,8 +103,14 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         return searligeVisningsVilkaar;
     }
 
-    
+    public boolean isFotoAftale() {
+        return fotoAftale;
+    }
 
+    public boolean isBilledeAftale() {
+        return billedeAftale;
+    }
+    
     private boolean getBlokeret(CopyrightAccessDto accessDto) {
 
         for (AccessCondition ac : accessDto.getAccessConditionsList()) {
@@ -170,20 +201,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         }
         return false;
     }
-    
- // <mods:accessCondition type="use and reproduction" displayLabel="Restricted">Ejermærke</mods:accessCondition>    
-    private  boolean getVandmaerke(CopyrightAccessDto accessDto) {
-        for (AccessCondition ac: accessDto.getAccessConditionsList()) {
-            if (CopyrightAccessDto.TYPE_USE_AND_REPRODUCTION.equals(ac.getType()) && 
-                CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED.equals(ac.getDisplayLabel()) &&
-                CopyrightAccessDto.USE_AND_REPRODUCTION_EJERMAERKE.equals(ac.getValue())){                                         
-                return true;                                                   
-            }            
-        }
-        return false;
-    }
-    
-    
+   
     
     //<mods:accessCondition type="pligtaflevering">Pligtafleveret</mods:accessCondition>    
     private  boolean getPligtAfleveret(CopyrightAccessDto accessDto) {
