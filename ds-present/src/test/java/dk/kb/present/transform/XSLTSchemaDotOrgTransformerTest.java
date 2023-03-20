@@ -32,11 +32,6 @@ public class XSLTSchemaDotOrgTransformerTest {
     public static final String RECORD_40221e = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
 
     @Test
-    void updateTestFiles() throws Exception {
-        createTestFiles(RECORD_000332, RECORD_JB000132, RECORD_KHP0001_001, RECORD_KE066530, RECORD_DPK000107,
-                RECORD_ANSK, RECORD_DNF, RECORD_40221e);
-    }
-    @Test
     void testDateCreatedAndTemporal() throws Exception {
 
         String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, RECORD_000332);
@@ -156,6 +151,13 @@ public class XSLTSchemaDotOrgTransformerTest {
     }
 
 
+    /**
+     * Update test files when XSLT changes.
+     */
+    private void updateTestFiles() throws Exception {
+        createTestFiles(RECORD_000332, RECORD_JB000132, RECORD_KHP0001_001, RECORD_KE066530, RECORD_DPK000107,
+                RECORD_ANSK, RECORD_DNF, RECORD_40221e);
+    }
     private void createTestFiles(String... records) throws Exception {
         for (String record : records) {
             String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, record);
