@@ -22,8 +22,11 @@ import org.slf4j.LoggerFactory;
  * access_note                    | String (only if value)
  * access_skabelsesaar            | int (only if value)
  * access_ophavsperson_doedsaar   | int (only if value)  
+ * access_ophavsret_tekst         | string   (temporary!)
  * access_searlige_visningsvilkaar| String (only if value)
  * access_materiale_type          | String (always)   
+ * access_foto_aftale             | boolean
+ * access_billede_aftale          | boolean
  * imageurl                       | String (temporary hack) 
  */
 public class XsltCopyrightMapper {
@@ -37,8 +40,11 @@ public class XsltCopyrightMapper {
     public static final String ACCESS_NOTE_FIELD="access_note";
     public static final String ACCESS_SKABELSESAAR_FIELD="access_skabelsesaar";
     public static final String ACCESS_OPHAVSPERSON_DOEDSAAR_FIELD="access_ophavsperson_doedsaar";
+    public static final String ACCESS_OPHAVSRET_TEKST_FIELD="access_ophavsret_tekst";    
     public static final String ACCESS_SEARLIGE_VISNINGSVILKAAR_FIELD="access_searlige_visningsvilkaar";
     public static final String ACCESS_MATERIALE_TYPE="access_materiale_type";
+    public static final String ACCESS_FOTO_AFTALE_FIELD="access_foto_aftale";
+    public static final String ACCESS_BILLEDE_AFTALE_FIELD="access_billede_aftale";
      
             
     /**
@@ -55,8 +61,9 @@ public class XsltCopyrightMapper {
     public static HashMap<String,String> applyXsltCopyrightTransformer (String modMedsXML) throws Exception{
                         
         HashMap<String,String> solrFieldsMap = new HashMap<String,String>(); 
+        CopyrightAccessDto copyrightAccessDto = null;
         try {
-        CopyrightAccessDto copyrightAccessDto = CopyrightAccessExtractor.buildCopyrightFields(modMedsXML);
+        copyrightAccessDto = CopyrightAccessExtractor.buildCopyrightFields(modMedsXML);        
         CopyrightAccessDto2SolrFieldsMapper mapper= new CopyrightAccessDto2SolrFieldsMapper(copyrightAccessDto);
         
         solrFieldsMap.put(ACCESS_MATERIALE_TYPE, mapper.getMaterialeType());
@@ -64,7 +71,9 @@ public class XsltCopyrightMapper {
         solrFieldsMap.put(ACCESS_BLOKERET_FIELD,""+mapper.isBlokeret()); //true or false
         solrFieldsMap.put(ACCESS_EJERMAERKE_FIELD,""+mapper.isEjerMaerke()); //true or false
         solrFieldsMap.put(ACCESS_PLIGTAFLEVERET_FIELD,""+mapper.isPligtAfleveret()); //true or false
-        
+        solrFieldsMap.put(ACCESS_OPHAVSRET_TEKST_FIELD,mapper.getOphavsretTekst());        
+        solrFieldsMap.put(ACCESS_BILLEDE_AFTALE_FIELD,""+mapper.isBilledeAftale()); //true or false
+        solrFieldsMap.put(ACCESS_FOTO_AFTALE_FIELD,""+mapper.isFotoAftale()); //true or false
         
         if (mapper.getAccessNote() != null) {
           solrFieldsMap.put(ACCESS_NOTE_FIELD,mapper.getAccessNote()); //String
