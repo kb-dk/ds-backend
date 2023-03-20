@@ -14,7 +14,26 @@
 
     <xsl:output method="text"/>
     <xsl:param name="sep_string" select="'/'"/>
-    <xsl:param name="imageurl"/>
+    <!--Loading properties from config-->
+
+
+    <xsl:variable name="properties">
+        <xsl:choose>
+            <xsl:when test="unparsed-text('conf/ds-present-local.yaml')">
+                <xsl:value-of select="unparsed-text('conf/ds-present-local.yaml')"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="unparsed-text('conf/ds-present-behaviour.yaml')"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
+    <!--Used to escape single quotes from config-->
+    <xsl:variable name="singlequote"><xsl:text>'</xsl:text></xsl:variable>
+    <!--get imageserver property from config-->
+    <xsl:variable name="imageserver">
+        <xsl:value-of select="my:getProperty('imageserver')"/>
+    </xsl:variable>
     <xsl:variable name="roles">
         <roles>
             <role key="act" href="https://schema.org/actor">actor</role>
@@ -91,13 +110,22 @@
                     <f:string key="id">
                         <xsl:value-of select="$record-id"/>
                     </f:string>
-
-
+                    <!--Create image URL by combining imageserver with image identifier -->
                     <xsl:variable name="imageUrl">
-                        <xsl:variable name="reference">
-                            <xsl:value-of select="f:replace(m:identifier[@type='Asset Reference'], 'cumulus-core-01:/Depot', '')"/>
+                        <xsl:variable name="server">
+                            <xsl:value-of select="f:replace($imageserver, $singlequote, '')"/>
                         </xsl:variable>
-                        <xsl:value-of select="f:replace($reference, '.tif', '')"/>
+                        <xsl:variable name="imageIdentifier">
+                            <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
+                        </xsl:variable>
+                        <xsl:choose>
+                            <xsl:when test="$server = ''">
+                                <xsl:value-of select="concat('https://example.com/imageserver/', f:substring-before($imageIdentifier, '.jp'))"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="concat($server, f:substring-before($imageIdentifier, '.jp'))"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:variable>
                     <f:string key="url">
                         <xsl:value-of select="$imageUrl"/>
@@ -964,5 +992,16 @@
                 <xsl:value-of select="replace($arg,'\s',$sep_string,'s')"/>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:function>
+    <!--Function to get property from config file.
+        Used to get imageserver to construct URLs for images-->
+    <xsl:function name="my:getProperty" as="xs:string?">
+        <xsl:param name="key" as="xs:string"/>
+        <xsl:variable name="lines" as="xs:string*" select="
+          for $x in
+            for $i in tokenize($properties, '\n')[matches(., '^[^!#]')] return
+              tokenize($i, ': ')
+            return translate(normalize-space($x), '\', '')"/>
+        <xsl:sequence select="$lines[index-of($lines, $key)+1]"/>
     </xsl:function>
 </xsl:transform>
