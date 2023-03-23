@@ -21,7 +21,6 @@ import com.google.gson.*;
  *
  */
 class XSLTSolrTransformerTest{
-	// TODO: Disable printing of XSLT output
 
 	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
 	public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
@@ -53,7 +52,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);        
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -67,7 +65,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -75,13 +72,11 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXslt45dd() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_45dd4830 );
-		// TODO: Add more detailed test
 		// One test could be to check for production_date_start and production_date_end values
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -95,7 +90,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -106,7 +100,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -117,7 +110,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -128,7 +120,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -139,7 +130,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -150,7 +140,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -158,13 +147,10 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXsltDt005031() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DT005031);
-		// TODO: Add more detailed test
-		// Test that date_created is present and that subject is not
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -172,13 +158,10 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXsltSkfF0137() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_SKF_f_0137);
-		// TODO: Add more detailed test
-		// Test that date_created is present and that subject is not
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -186,13 +169,11 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXsltKhp0001049() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_KHP0001_049);
-		// TODO: Add more detailed test
-		// Test that date_created is present and that subject is not
+
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -206,7 +187,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -220,7 +200,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -234,7 +213,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -248,7 +226,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -262,7 +239,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
@@ -276,7 +252,6 @@ class XSLTSolrTransformerTest{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
