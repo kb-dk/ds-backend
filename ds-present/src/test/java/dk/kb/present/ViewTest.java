@@ -30,17 +30,17 @@ class ViewTest {
         assertEquals("SameAsInput", view.apply("someID", "SameAsInput")); // Identity view
     }
 
-    /*
-    // TODO: Make this work with new metadatafiles
+
+    // Should still work after update of XSLT to JSON-LD, might fail and need reassessment
     @Test
     void jsonld() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1));
-        String mods = Resolver.resolveUTF8String("xml/corpus/albert-einstein.xml");
-        String jsonld = jsonldView.apply("albert-einstein", mods);
-        assertTrue(jsonld.contains("\"name\":{\"@language\":\"en\",\"@value\":\"Einstein, Albert"));
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
+        String jsonld = jsonldView.apply("40221e30-1414-11e9-8fb8-00505688346e", mods);
+        assertTrue(jsonld.contains("\"headline\":[{\"value\":\"Christian VIII\",\"@language\":\"da\"}]"));
     }
 
-     */
+
 }
