@@ -42,14 +42,14 @@ class XSLTTransformerTest {
     @Test
     void testJSONLDAlbert() throws IOException {
         JSONObject jsonld = new JSONObject( TestUtil.getTransformed(MODS2JSONLD, ALBERT));
-        // TODO: Remove this test as it is done on old metadata format
+        // TODO: When transformation to JSON-LD has been removed replace this test as it is done on old metadata format
         //assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"Einstein, Albert\",\"@language\":\"en\"}"));
     }
 
     @Test
     void testJSONLDChinese() throws IOException {
         JSONObject jsonld = new JSONObject(TestUtil.getTransformed(MODS2JSONLD, CHINESE));
-        // TODO: Remove this test as it is done on old metadata format
+        // TODO: When transformation to JSON-LD has been removed replace this test as it is done on old metadata format
         //assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"周培春 Zhou Peichun\",\"@language\":\"zh\"}"));
     }
 
