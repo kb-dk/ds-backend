@@ -25,10 +25,10 @@ class DataCleanupTest {
 
     @Test
     public void testDeclarationRemoval() throws IOException {
-        String xmlWithDeclaration = Resolver.resolveUTF8String("xml/corpus/albert-einstein.xml");
+        String xmlWithDeclaration = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
         assertTrue(xmlWithDeclaration.startsWith("<?xml version"), "The test XML should have a declaration");
         String stripped = DataCleanup.removeXMLDeclaration(xmlWithDeclaration);
-        assertTrue(stripped.startsWith("<rss"), "The cleaned test XML should not have a declaration");
+        assertTrue(stripped.startsWith("<mets:mets"), "The cleaned test XML should not have a declaration");
     }
 
     @Test
