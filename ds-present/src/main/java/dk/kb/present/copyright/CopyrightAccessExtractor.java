@@ -84,7 +84,7 @@ public class CopyrightAccessExtractor {
 
 		NodeList nList = document.getElementsByTagName("mets:rightsMD");
 		if (nList.getLength()==0) {
-			log.info("No rightsMD found");
+			//log.info("No rightsMD found"); //This is not an error anymore
 			copyrightDto.setAccessConditionsList(new ArrayList<AccessCondition>()); //Set empty list
 			return copyrightDto;
 		}
@@ -101,7 +101,7 @@ public class CopyrightAccessExtractor {
 		copyrightDto.setAccessConditionsList(accessConditionList);        
 
 
-		Integer lastDeathYearForPerson = getLastDeathYearForPerson(accessConditionList);
+		Integer lastDeathYearForPerson = getLastDeathYearForPerson(accessConditionList,fileName);
 		if (lastDeathYearForPerson !=  null) {
 			copyrightDto.setOphavsPersonDoedsAar(lastDeathYearForPerson);;
 		}
@@ -356,7 +356,15 @@ public class CopyrightAccessExtractor {
 				}
 			}
 			else if ("end".equals(point)) {
-				return Integer.parseInt(e.getTextContent());
+			    try {
+			        int year=Integer.parseInt(e.getTextContent());
+			        return year;
+			    }
+			    catch(Exception ex) {
+			        log.debug("Error parsing year from dateCreated:"+e.getTextContent() +" for record:"+fileName);
+			        return 9999;
+			    }
+				
 			}                                        
 
 		}
@@ -374,13 +382,13 @@ public class CopyrightAccessExtractor {
 	 * Also return null if no persons is found
 	 * Notice last name logic is no longer in use!
 	 */       
-	private static Integer getLastDeathYearForPerson(ArrayList<AccessCondition> accessConditionList) {
+	private static Integer getLastDeathYearForPerson(ArrayList<AccessCondition> accessConditionList, String fileName) {
 
 		Integer highestYear = null;
 		for (AccessCondition ac: accessConditionList) {
 
 			for (CreatorPerson p : ac.getCreatorPersonList()) {
-				Integer year= extractYear(p.getYearDeath());
+				Integer year= extractYear(p.getYearDeath(),fileName);
 				//System.out.println("parsed year:"+year);
 				if (year == null) {
 					return null;// I am not quite dead yet!
@@ -402,7 +410,7 @@ public class CopyrightAccessExtractor {
 	 * YYYY or YYYY-M-DD or  YYYY-MM-DD or...
 	 * 
 	 */
-	private static  Integer extractYear(String yearString) {
+	private static  Integer extractYear(String yearString, String fileName) {
 		if (yearString==null || yearString.length() <4) {            
 			return null;
 		}
@@ -412,7 +420,7 @@ public class CopyrightAccessExtractor {
 			return year;
 		}
 		catch(Exception e) {
-			log.warn("Could not parse year from:"+yearString);
+			log.warn("Could not parse year from:"+yearString +" from record:"+fileName);
 			return 9999; // Set a default that is safe when there is a date field, but it can not be parsed.
 		}                        
 	}

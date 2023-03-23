@@ -21,7 +21,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
     private boolean fotoAftale;
     private boolean billedeAftale;
     private String ophavsretTekst; //Temporary field for jura
-    
+    private String filNavn;//used to log which records has errors
     private String imageUrl=null; 
     public CopyrightAccessDto2SolrFieldsMapper(CopyrightAccessDto accessDto) {
         
@@ -29,7 +29,7 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         searligeVisningsVilkaar= getSearligeVisningsVilkaar(accessDto);
         ophavsPersonDoedsAar = accessDto.getOphavsPersonDoedsAar();                
         skabelsesAar=accessDto.getSkabelsesAar();
-        
+        filNavn= accessDto.getFilNavn();
         accessNote=getAccessNote(accessDto);   
         
         //Vandmærke benyttes ikke længere
@@ -45,20 +45,18 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         if ((ophavsPersonDoedsAar!= null && ophavsPersonDoedsAar <=  1952)  || (skabelsesAar!= null && skabelsesAar <=  1882)) {
             ophavsretTekst="Fri af ophavsret";            
         }
-        else {// Some material types can have further restrictions.
-            ophavsretTekst="Beskyttet af ophavsret";
-
+        else {
+            ophavsretTekst="Beskyttet af ophavsret"; 
+           // Some material types can have further restrictions, and they not always set correct. 
+            // It was too much manual work to do this by hand for the curators and too many errors.
             if (!fotoAftale && !billedeAftale) {
-                if (searligeVisningsVilkaar != null) {
-                    log.error("No fotoaftale and billedeAftale, but already has another searligeVisningsVilkaar:"+ searligeVisningsVilkaar  +" for file:"+accessDto.getFilNavn());
-                }
-                else {
-                  searligeVisningsVilkaar=CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET;  
-                }            
-          }                        
+                 searligeVisningsVilkaar=CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_PAA_STEDET;              
+            }                        
         }        
     }
-   
+    public String getFilnavn() {
+       return filNavn;        
+    }    
     public String getOphavsretTekst() {
         return ophavsretTekst;
     }
