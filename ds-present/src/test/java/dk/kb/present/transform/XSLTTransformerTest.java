@@ -32,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class XSLTTransformerTest {
     public static final String MODS2JSONLD = "xslt/mods2schemaorg.xsl";
-    public static final String MODS2SOLR_OLD = "xslt/mods2solr_OLD.xsl";
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
     public static final String ALBERT = "xml/corpus/albert-einstein.xml"; //Need to be updated to newest version
     public static final String CHINESE = "xml/corpus/chinese-manuscripts.xml"; //Need to be updated to newest version
@@ -46,13 +45,13 @@ class XSLTTransformerTest {
         //assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"Einstein, Albert\",\"@language\":\"en\"}"));
     }
 
+    // TODO: Compared to the testing done in XSLTSchemaDotOrgTransformerTest these two tests seem redundant
     @Test
     void testJSONLDChinese() throws IOException {
         JSONObject jsonld = new JSONObject(TestUtil.getTransformed(MODS2JSONLD, CHINESE));
         // TODO: When transformation to JSON-LD has been reviewed replace this test as it is done on old metadata format
         //assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"周培春 Zhou Peichun\",\"@language\":\"zh\"}"));
     }
-
     
     @Test
     void testNew000332() throws IOException {
@@ -60,9 +59,7 @@ class XSLTTransformerTest {
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
-        String prettyJsonString = gson.toJson(je);
 
-        //System.out.println(prettyJsonString );
     }
 
     @Test
@@ -70,14 +67,12 @@ class XSLTTransformerTest {
     	Map<String, String>  parameters = new HashMap<String,String>();
     	parameters.put("external_parameter1" , "value1");
     	parameters.put("external_parameter2" , "value2");
-    	    
-    	
+
         String solrString =  TestUtil.getTransformed("id_inject.xsl", "id_inject.xml", parameters);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
         String prettyJsonString = gson.toJson(je);
 
-//        System.out.println(prettyJsonString );
         assertTrue(solrString.contains("{\"field_external1\":\"value1"), "External field_parameter1 was not 'value1':"+prettyJsonString); //First parameter
         assertTrue(solrString.contains("\"field_external2\":\"value2"), "External field_parameter2 was not 'value2':"+prettyJsonString); 
                    
