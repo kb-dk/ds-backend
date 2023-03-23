@@ -42,22 +42,22 @@ class PresentFacadeTest {
         }
     }
 
-   /*  TODO FIX!
+
     @Test
     void getRecord() {
         // Throws an Exception if not found
-        PresentFacade.getRecord("local:albert-einstein.xml", "mods");
+        PresentFacade.getRecord("local:40221e30-1414-11e9-8fb8-00505688346e.xml", "mods");
     }
-*/
+
   
-    /*  TODO FIX!
+
     @Test
     void getRecordsMODS() throws IOException {
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods");
         String result = toString(out);
-        assertTrue(result.contains("<md:namePart>Simonsen, David</md:namePart>"));
+        assertTrue(result.contains("<mods:namePart type=\"family\">Andersen</mods:namePart>"));
     }
-    */
+
 
     @Test
     void getRecordsMODSDeclaration() throws IOException {
@@ -73,43 +73,50 @@ class PresentFacadeTest {
         assertTrue(count <= 1, "There should be at most 1 XML declaration but there was " + count);
     }
 
-    /*  TODO FIX!
+
     @Test
     void getRecordsRaw() throws IOException {
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord");
         String result = toString(out);
-        assertTrue(result.contains("\"id\":\"tystrup-soroe.xml\",\"deleted\":false"));
+
+        assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"deleted\":false"));
         assertTrue(result.contains(",\n"), "Result should contain a comma followed by newline as it should be a multi-entry JSON array"); // Plain JSON array
         assertTrue(result.endsWith("]\n"), "Result should end with ']' as it should be a JSON array"); // JSON array
     }
-*/
+
 
     
-    /*  TODO FIX!
+
     @Test
     void getRecordsRawLines() throws IOException {
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord-lines");
         String result = toString(out);
-        assertTrue(result.contains("\"id\":\"tystrup-soroe.xml\",\"deleted\":false"));
+        assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"deleted\":false"));
         assertFalse(result.contains(",\n"), "Result should not contain a comma followed by newline as it should be a multi-entry JSON-Lines");
         assertFalse(result.endsWith("]\n"), "Result should not end with ']' as it should be in JSON-Lin es");
     }
-*/
 
-    /*  TODO FIX!
+
+
+    /* TODO: FIX!
+    //   Can only be fixed, when the updated XSLT to JSON-LD has been reviewed and merged to master
+
     @Test
     void getRecordsJSONLD() throws IOException {
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "json-ld");
         String result = toString(out);
-        assertTrue(result.contains("\"@value\":\"Letters to\\/from David Simonsen\"}"), "Result should contain the name David Simonsen in the expected wrapping");
+        System.out.println(result);
+        //assertTrue(result.contains("\"@value\":\"Letters to\\/from David Simonsen\"}"), "Result should contain the name David Simonsen in the expected wrapping");
         assertTrue(result.contains(",\n"), "Result should contain a comma followed by newline as it should be a multi-entry JSON array"); // Plain JSON array
         assertTrue(result.endsWith("]\n"), "Result should end with ']' as it should be a JSON array"); // JSON array
     }
- */
-    
+
+     */
+
     /*  TODO FIX!
+    /   Can only be fixed, when the updated XSLT to JSON-LD has been reviewed and merged to master
     @Test
     void getRecordsJSONLDLines() throws IOException {
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "json-ld-lines");
