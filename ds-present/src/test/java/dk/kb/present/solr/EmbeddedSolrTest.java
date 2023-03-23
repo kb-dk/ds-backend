@@ -284,12 +284,8 @@ public class EmbeddedSolrTest {
         assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Dia" );
 
 		assertMultivalueField(record, "list_of_categories", "KHP",
-				"Keld Helmer-Petersen",
-				"1940-1950",
-				"Helmer-Petersen",
-				"Keld",
-				"CAR- BLO katagori",
-				"ikke UA");
+				"Keld Helmer-Petersen", "1940-1950", "Helmer-Petersen", "Keld",
+				"CAR- BLO katagori", "ikke UA");
 	}
 
     @Test
