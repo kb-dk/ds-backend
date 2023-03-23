@@ -533,6 +533,11 @@
             </f:array>
           </xsl:if>
         </xsl:if>
+        <xsl:if test="m:subject/m:cartographics/m:scale">
+          <f:string key="map_scale">
+            <xsl:value-of select="m:subject/m:cartographics/m:scale"/>
+          </f:string>
+        </xsl:if>
         <!-- Extract image resource-->
         <xsl:if test="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
           <xsl:variable name="noPrefix">

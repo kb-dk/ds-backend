@@ -82,6 +82,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="subject_date_of_birth" type="string" multiValued="true" stored="true"/>
   <field name="subject_date_of_death" type="string" multiValued="true" stored="true"/>
   <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
+  <field name="map_scale" type="string" stored="true"/>
 
   <field name="image_resource" type="string"/>
   <field name="file_size" type="plong"/>
