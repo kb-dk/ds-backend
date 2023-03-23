@@ -47,7 +47,7 @@ public class EmbeddedSolrTest {
     private static EmbeddedSolrServer embeddedServer = null;
 
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-    public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
+    public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml";
     public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
     public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
     public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
@@ -66,8 +66,8 @@ public class EmbeddedSolrTest {
     @BeforeAll
     public static void startEmbeddedSolrServer() throws Exception {
 
-        File solrHomeDir = new File(solr_home);		
-        String solrHomeAbsoluteDir= solrHomeDir.getAbsolutePath();	
+        File solrHomeDir = new File(solr_home);
+        String solrHomeAbsoluteDir= solrHomeDir.getAbsolutePath();
         Path solrHome =  Paths.get(solrHomeAbsoluteDir);
         System.setProperty("solr.install.dir", solrHomeAbsoluteDir);
         Properties props = new Properties();
@@ -94,7 +94,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecord000332() throws Exception {
-        indexRecord(RECORD_000332);	
+        indexRecord(RECORD_000332);
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
@@ -230,10 +230,9 @@ public class EmbeddedSolrTest {
         //Single value field
         assertEquals("DT005031.tif",record.getFieldValue("identifier_local"));
 
-        //multivalue field
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Tegning" );
-        //TODO more fields
-    }
+		//multivalue field
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Tegning" );
+	}
 
     @Test
     void testRecordANSK() throws Exception {
@@ -248,11 +247,9 @@ public class EmbeddedSolrTest {
         //Single value field
         assertEquals("ANSK_11614.tif",record.getFieldValue("identifier_local"));
 
-        //multivalue field
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Anskuelsesbillede" );
-        //TODO more fields
-
-    }
+		//multivalue field
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Anskuelsesbillede" );
+	}
 
     @Test
     void testRecordSkfF0137() throws Exception {
@@ -267,15 +264,13 @@ public class EmbeddedSolrTest {
         //Single value field
         assertEquals("SKF_f_0137.tif",record.getFieldValue("identifier_local"));
 
-        //multivalue field
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Fotografi" );
-        //TODO more fields
-
-    }
+		//multivalue field
+		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Fotografi" );
+	}
 
     @Test
-    void testRecordKhp() throws Exception {	    	    
-        indexRecord(RECORD_KHP0001_049);		
+    void testRecordKhp() throws Exception {
+        indexRecord(RECORD_KHP0001_049);
 
         assertEquals(1, getNumberOfTotalDocuments());
 
@@ -288,15 +283,14 @@ public class EmbeddedSolrTest {
         //multivalue field
         assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Dia" );
 
-        assertMultivalueField(record, "list_of_categories", "KHP",
-                "Keld Helmer-Petersen",
-                "1940-1950",
-                "Helmer-Petersen",
-                "Keld",
-                "CAR- BLO katagori",
-                "ikke UA");
-        //TODO more fields
-    }
+		assertMultivalueField(record, "list_of_categories", "KHP",
+				"Keld Helmer-Petersen",
+				"1940-1950",
+				"Helmer-Petersen",
+				"Keld",
+				"CAR- BLO katagori",
+				"ikke UA");
+	}
 
     @Test
     void testRecordUldallForTitleAndPlaceOfProduction() throws Exception {
@@ -313,14 +307,12 @@ public class EmbeddedSolrTest {
         // Title field
         assertEquals("Foborg, Foburgum", record.getFieldValue("title"));
 
-        // Place of production
-        assertEquals("Danmark", record.getFieldValue("place_of_production"));
-
-        //TODO more fields
-    }
+		// Place of production
+		assertEquals("Danmark", record.getFieldValue("place_of_production"));
+	}
 
     @Test
-    void testAccessionNumberExtraction() throws Exception {	    
+    void testAccessionNumberExtraction() throws Exception {
         indexRecord(RECORD_FM);
 
         assertEquals(1, getNumberOfTotalDocuments());
@@ -349,7 +341,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testTitle() throws Exception {
-        
+
         indexRecord(RECORD_JB000132);
         assertEquals(1, getNumberOfTotalDocuments());
 
@@ -363,7 +355,7 @@ public class EmbeddedSolrTest {
     @Test
     void testResourceId() throws Exception {
         indexRecord(RECORD_40221e30);
-        
+
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
@@ -375,9 +367,9 @@ public class EmbeddedSolrTest {
 
     @Test
     void testMapScale() throws Exception {
-        
+
         indexRecord(RECORD_0c02aa10);
-        
+
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
@@ -390,14 +382,14 @@ public class EmbeddedSolrTest {
 
 
     /*
-     * ------- Private helper methods below -------------- 
+     * ------- Private helper methods below --------------
      */
 
     /*
      * Embedded solr does not have a http listener, so we can not add call and add documents as JSON.
-     * They needs to be converted to SolrInputDocument. This seems to be the simplest way to do it... 
+     * They needs to be converted to SolrInputDocument. This seems to be the simplest way to do it...
      * Correct me if I am wrong.
-     * 
+     *
      */
     private  SolrInputDocument convertJsonToSolrJavaDoc(String json) throws Exception{
 
@@ -418,13 +410,13 @@ public class EmbeddedSolrTest {
                 for (Object o : (ArrayList<Object>) value) {
                     //		System.out.println("Adding:"+key +"="+o.toString());
                     document.addField(key, o.toString());
-                }            	
-            }            
-            else {//sanity check, should not happen         
-                log.error("Unknown json type"+value.getClass());               
+                }
+            }
+            else {//sanity check, should not happen
+                log.error("Unknown json type"+value.getClass());
                 throw new Exception("Unknown json type"+value.getClass());
-            }                                      
-        }        
+            }
+        }
         return document;
     }
 
@@ -439,21 +431,21 @@ public class EmbeddedSolrTest {
 
         SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
         embeddedServer.add(document);
-        embeddedServer.commit();                
+        embeddedServer.commit();
 
     }
 
 
 
-    private SolrDocument getRecordById(String id) throws Exception{	    
+    private SolrDocument getRecordById(String id) throws Exception{
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("id:\""+id +"\"");
-        solrQuery.setRows(10);           
-        QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 
+        solrQuery.setRows(10);
+        QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
         if (rsp.getResults().getNumFound() !=1) {
             throw new Exception("No record found with id:"+id);
         }
-        return rsp.getResults().get(0);           
+        return rsp.getResults().get(0);
     }
 
 
@@ -465,7 +457,7 @@ public class EmbeddedSolrTest {
         solrQuery.setRows(10);
         solrQuery.add("fl", "id");
 
-        QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 
+        QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
         return rsp.getResults().getNumFound();
 
     }
