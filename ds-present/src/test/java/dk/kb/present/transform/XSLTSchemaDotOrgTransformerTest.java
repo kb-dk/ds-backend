@@ -7,17 +7,21 @@ import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
+import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 
+import java.io.StringBufferInputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -28,6 +32,8 @@ import static org.junit.Assert.assertTrue;
 public class XSLTSchemaDotOrgTransformerTest {
     private static final Logger log = LoggerFactory.getLogger(XSLTSchemaDotOrgTransformerTest.class);
 
+    public static final String JSON_ROOT = "src/test/resources/schemaOrgJsonTestFiles/";
+    
     public static final String MODS2SCHEMAORG = "xslt/mods2schemaorg.xsl";
     public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml";
     public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
@@ -63,6 +69,12 @@ public class XSLTSchemaDotOrgTransformerTest {
     @Test
     void testCreatorsAndHeadline() throws Exception {
         assertJSONTransformation(MODS2SCHEMAORG, RECORD_JB000132, "schemaOrg_JB000132_114.json");
+    }
+
+    // Same functionality as testCreatorsAndHeadline but using a different XSLTFactory creation method
+    @Test
+    void testFactory() throws Exception {
+        assertJSONTransformationFactory(MODS2SCHEMAORG, RECORD_JB000132, "schemaOrg_JB000132_114.json");
     }
 
 
@@ -102,7 +114,7 @@ public class XSLTSchemaDotOrgTransformerTest {
     private void createTestFiles(String... records) throws Exception {
         if (1 == 1) {
             throw new IllegalStateException(
-                    "The MODS2SCHEMAORG XSTL isa faulty and do not generate the proper URL to images (the image ID + " +
+                    "The MODS2SCHEMAORG XSTL is faulty and does not generate the proper URL to images (the image ID + " +
                     "more is missing). This must be fixed before generating new testfiles.");
         }
         for (String record : records) {
@@ -111,7 +123,7 @@ public class XSLTSchemaDotOrgTransformerTest {
             String filename = record.replaceAll("xml/copyright_extraction/", "schemaOrg_");
             String completeFilename = filename.replaceAll("\\..+", ".json");
             //String completeFilename = filename.replaceAll("\\.tif\\.xml", ".json");
-            try (PrintWriter out = new PrintWriter(new FileWriter("src/test/resources/schemaOrgJsonTestFiles/" + completeFilename, Charset.defaultCharset()))) {
+            try (PrintWriter out = new PrintWriter(new FileWriter(JSON_ROOT + completeFilename, Charset.defaultCharset()))) {
                 out.write(schemaOrgString);
             }
         }
@@ -135,20 +147,54 @@ public class XSLTSchemaDotOrgTransformerTest {
      * <br/>
      * The helper expects the output to be JSON and comparison is done with pretty printed JSON for easy visuel
      * comparison.
+     * <br/>
+     * The {@code XSLTTransformer} used is created directly.
      * @param xslt the transforming stylesheet.
      * @param xml  the xml to transform.
      * @param expectedJSONFile the expected result, relative to {@code src/test/resources/schemaOrgJsonTestFiles/}.
      */
     private void assertJSONTransformation(String xslt, String xml, String expectedJSONFile) throws Exception {
         Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/");
-
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(xslt, xml, injections);
 
+        assertJSON(expectedJSONFile, transformedJSON);
+    }
+
+    /**
+     * Perform a transformation of the given {@code xml} using the given {@code xslt}.
+     * The {@link XSLTTransformer} is used with injection {@code imageserver: "https://example.com/imageserver/"}.
+     * <br/>
+     * The helper expects the output to be JSON and comparison is done with pretty printed JSON for easy visuel
+     * comparison.
+     * <br/>
+     * The {@code XSLTTransformer} used is created using {@link XSLTFactory}.
+     * @param xslt the transforming stylesheet.
+     * @param xml  the xml to transform.
+     * @param expectedJSONFile the expected result, relative to {@code src/test/resources/schemaOrgJsonTestFiles/}.
+     */
+    private void assertJSONTransformationFactory(String xslt, String xml, String expectedJSONFile) throws Exception {
+        String yamlStr =
+                "stylesheet: '" + xslt + "'\n" +
+                "injections:\n" +
+                "  - imageserver: 'http:/example/imageserver/'\n";
+        YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
+        String transformedJSON = TestUtil.getTransformedFromConfigWithAccessFields(yaml, xml);
+
+        assertJSON(expectedJSONFile, transformedJSON);
+    }
+
+    /**
+     * Load JSON from the {@code expectedJSONFile} and compare it to {@code actualJSON},
+     * where both JSONs are pretty printed.
+     * @param expectedJSONFile a file containing the expected JSON.
+     * @param actualJSON a String with the actual JSON.
+     */
+    private void assertJSON(String expectedJSONFile, String actualJSON) throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = JsonParser.parseString(transformedJSON);
+        JsonElement je = JsonParser.parseString(actualJSON);
         String transformedPrettyJSON = gson.toJson(je);
 
-        String expectedJSON = importTestFile("src/test/resources/schemaOrgJsonTestFiles/" + expectedJSONFile);
+        String expectedJSON = importTestFile(JSON_ROOT + expectedJSONFile);
         String expectedPrettyJSON = gson.toJson(JsonParser.parseString(expectedJSON));
 
         Assertions.assertEquals(expectedPrettyJSON, transformedPrettyJSON);
