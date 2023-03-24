@@ -436,10 +436,8 @@ public class CopyrightAccessExtractor {
 				String ref = e.getTextContent();                
 				return ref;                
 			}
-		}
-		//TEMP! TODO FJERN!
-		try {
-			log.warn("No material type found");  //TODO. data error?
+		}		
+		try {		
 			String fileName = getFileName(doc);
 			log.warn("No material type found for file:"+fileName);
 			
