@@ -94,6 +94,10 @@ config:
               transformers:
                 - xslt:
                     stylesheet: 'xslt/mods2schemaorg.xsl'
+                    injections:
+                        # Imageserver to be used when constructing URLs to be shown in Schema.org XSLT transformation
+                        # This has to be set before image URLs are working.
+                      - imageserver: 'http:/example/imageserver'
           - SolrJSON:
               mime: 'application/json'
               transformers:

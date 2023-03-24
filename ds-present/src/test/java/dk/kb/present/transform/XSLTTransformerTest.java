@@ -1,9 +1,11 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.*;
@@ -36,8 +38,7 @@ class XSLTTransformerTest {
     public static final String CHINESE = "xml/corpus/chinese-manuscripts.xml"; //Need to be updated to newest version
 
     public static final String NEW_000332 = "xml/copyright_extraction/000332.tif.xml"; //Updated version
-    
-    
+
     @Test
     void testJSONLDAlbert() throws IOException {
         JSONObject jsonld = new JSONObject( TestUtil.getTransformed(MODS2JSONLD, ALBERT));
@@ -84,6 +85,41 @@ class XSLTTransformerTest {
 
     }
 
-    
+    @Test
+    void testFixedInjection() throws IOException {
+    	Map<String, String>  fixed = new HashMap<String,String>();
+    	fixed.put("external_parameter1" , "value1");
+    	fixed.put("external_parameter2" , "value2");
+
+
+        String solrString =  TestUtil.getTransformed("id_inject.xsl", "id_inject.xml", fixed, null);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(solrString);
+        String prettyJsonString = gson.toJson(je);
+
+//        System.out.println(prettyJsonString );
+        assertTrue(solrString.contains("{\"field_external1\":\"value1"), "External field_parameter1 was not 'value1':"+prettyJsonString); //First parameter
+        assertTrue(solrString.contains("\"field_external2\":\"value2"), "External field_parameter2 was not 'value2':"+prettyJsonString);
+    }
+
+    @Test
+    void testFixedInjectionOverride() throws IOException {
+    	Map<String, String>  fixed = Map.of("external_parameter1" , "defaultValueSomething",
+                                            "external_parameter2" , "value2");
+
+        Map<String, String>  metadata = Map.of("external_parameter1" , "value1");
+
+
+        String solrString =  TestUtil.getTransformed("id_inject.xsl", "id_inject.xml", fixed, metadata);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(solrString);
+        String prettyJsonString = gson.toJson(je);
+
+//        System.out.println(prettyJsonString );
+        assertTrue(solrString.contains("{\"field_external1\":\"value1"), "External field_parameter1 was not 'value1':"+prettyJsonString); //First parameter
+        assertTrue(solrString.contains("\"field_external2\":\"value2"), "External field_parameter2 was not 'value2':"+prettyJsonString);
+    }
+
+
     
 }

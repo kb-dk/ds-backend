@@ -15,7 +15,6 @@
 package dk.kb.present.transform;
 
 import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,15 +50,21 @@ public class XSLTTransformer extends DSTransformer {
     }
     public final String stylesheet;
     public final Transformer transformer;
+    public final Map<String, String> fixedInjections;
 
     /**
      * Construct a transformer that uses Saxon to perform an XSLT transformation on its input.
      * @param stylesheet the stylesheet for the transformation. This can be be a file resolved relatively to the current
      *                   folder, under the user.home or on the classpath.
+     * @param fixedInjections variables that should always be injected into the transformator.
+     *                   These co-exists with {@code metadata} in {@link #apply(String, Map)}.
+     *                   If the same key is in both {@code injections} and {@code metadata}, {@code metadata} wins.
+     *                   Ignored if null.
      * @throws IOException if the stylesheet could not be resolved.
      */
-    public XSLTTransformer(String stylesheet) throws IOException {
+    public XSLTTransformer(String stylesheet, Map<String, String> fixedInjections) throws IOException {
         this.stylesheet = stylesheet;
+        this.fixedInjections = fixedInjections;
         URL stylesheetURL = Resolver.resolveURL(stylesheet);
         if (stylesheetURL == null) {
             throw new FileNotFoundException("Unable to resolve stylesheet '" + stylesheet + "'");
@@ -84,6 +89,9 @@ public class XSLTTransformer extends DSTransformer {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             try (Reader in = new StringReader(s)) {
                 transformer.clearParameters();
+                if (fixedInjections != null) {
+                    fixedInjections.forEach(transformer::setParameter);
+                }
                 metadata.forEach(transformer::setParameter);
                 transformer.transform(new StreamSource(in), new StreamResult(out));
             }

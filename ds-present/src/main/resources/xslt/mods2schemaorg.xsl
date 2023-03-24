@@ -14,26 +14,11 @@
 
     <xsl:output method="text"/>
     <xsl:param name="sep_string" select="'/'"/>
-    <!--Loading properties from config-->
-
-
-    <xsl:variable name="properties">
-        <xsl:choose>
-            <xsl:when test="unparsed-text('conf/ds-present-local.yaml')">
-                <xsl:value-of select="unparsed-text('conf/ds-present-local.yaml')"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="unparsed-text('conf/ds-present-behaviour.yaml')"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:variable>
+    <!--Properties injected from config -->
+    <xsl:param name="imageserver"/>
 
     <!--Used to escape single quotes from config-->
     <xsl:variable name="singlequote"><xsl:text>'</xsl:text></xsl:variable>
-    <!--get imageserver property from config-->
-    <xsl:variable name="imageserver">
-        <xsl:value-of select="my:getProperty('imageserver')"/>
-    </xsl:variable>
     <xsl:variable name="roles">
         <roles>
             <role key="act" href="https://schema.org/actor">actor</role>
@@ -120,7 +105,7 @@
                         </xsl:variable>
                         <xsl:choose>
                             <xsl:when test="$server = ''">
-                                <xsl:value-of select="concat('https://example.com/imageserver/', f:substring-before($imageIdentifier, '.jp'))"/>
+                                <xsl:value-of select="concat($imageserver, f:substring-before($imageIdentifier, '.jp'))"/>
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:value-of select="concat($server, f:substring-before($imageIdentifier, '.jp'))"/>
@@ -940,17 +925,5 @@
                 <xsl:value-of select="replace($arg,'\s',$sep_string,'s')"/>
             </xsl:otherwise>
         </xsl:choose>
-    </xsl:function>
-    <!--Function to get property from config file.
-        Used to get imageserver to construct URLs for images.
-        Created with inspiration from this stackoverflow thread: https://stackoverflow.com/questions/4326138/how-to-read-a-properties-file-inside-a-xsl-file-->
-    <xsl:function name="my:getProperty" as="xs:string?">
-        <xsl:param name="key" as="xs:string"/>
-        <xsl:variable name="lines" as="xs:string*" select="
-          for $x in
-            for $i in tokenize($properties, '\n')[matches(., '^[^!#]')] return
-              tokenize($i, ': ')
-            return translate(normalize-space($x), '\', '')"/>
-        <xsl:sequence select="$lines[index-of($lines, $key)+1]"/>
     </xsl:function>
 </xsl:transform>
