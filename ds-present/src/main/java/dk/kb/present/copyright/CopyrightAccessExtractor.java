@@ -437,15 +437,9 @@ public class CopyrightAccessExtractor {
 				return ref;                
 			}
 		}		
-		try {		
-			String fileName = getFileName(doc);
-			log.warn("No material type found for file:"+fileName);
-			
-		}
-		catch (Exception e) {
-			e.printStackTrace(); //TEMP!
-			
-		}
+		
+	   String fileName = getFileName(doc);
+	   log.warn("No material type found for file:"+fileName);			
 		
 		
 		return "Ukendt";         
