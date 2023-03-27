@@ -73,7 +73,6 @@ public class CopyrightAccessExtractorTest {
         assertFalse(mapper.isFotoAftale());        
         assertTrue(mapper.isBilledeAftale());
         assertEquals("Fri af ophavsret", mapper.getOphavsretTekst()); //TEMP!
-        System.out.println(mapper.getOphavsretTekst());
 
     }
 

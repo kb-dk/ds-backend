@@ -40,546 +40,458 @@ import dk.kb.present.TestUtil;
 
 public class EmbeddedSolrTest {
 
-	private static final Logger log = LoggerFactory.getLogger(EmbeddedSolrTest.class);
-	private static String solr_home = "target/test-classes/solr";
-
-	private static CoreContainer coreContainer = null;
-	private static EmbeddedSolrServer embeddedServer = null;
-
-	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-	public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
-	public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
-	public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
-	public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
-	public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
-	public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
-	public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
-	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
-	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
-	public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
-	public static final String RECORD_DB_hans = "xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml";
-	public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
-	public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
-	public static final String RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
-
-
-	@BeforeAll
-	public static void startEmbeddedSolrServer() throws Exception {
-
-		File solrHomeDir = new File(solr_home);		
-		String solrHomeAbsoluteDir= solrHomeDir.getAbsolutePath();	
-		Path solrHome =  Paths.get(solrHomeAbsoluteDir);
-		System.setProperty("solr.install.dir", solrHomeAbsoluteDir);
-		Properties props = new Properties();
-		// props.put("solr.install.dir", solrHomeDir.getAbsolutePath()); //Does not
-		// work. Use system property above for now
-		coreContainer = new CoreContainer(solrHome, props);
-		coreContainer.load();
-		embeddedServer = new EmbeddedSolrServer(coreContainer, "dssolr");
-	}
+    private static final Logger log = LoggerFactory.getLogger(EmbeddedSolrTest.class);
+    private static String solr_home = "target/test-classes/solr";
+
+    private static CoreContainer coreContainer = null;
+    private static EmbeddedSolrServer embeddedServer = null;
+
+    public static final String MODS2SOLR = "xslt/mods2solr.xsl";
+    public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml"; 
+    public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
+    public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
+    public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
+    public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
+    public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
+    public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
+    public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
+    public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
+    public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
+    public static final String RECORD_DB_hans = "xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml";
+    public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
+    public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
+    public static final String RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
 
-	@AfterAll
-	public static void tearDown() throws Exception {
-		coreContainer.shutdown();
-		embeddedServer.close();
-	}
 
-	/*
-	 * Delete all documents in solr between tests, so each unittest gets a clean solr.
-	 */
-	@BeforeEach
-	public void deleteDocs() throws Exception {
-		embeddedServer.deleteByQuery("*:*");
-	}
+    @BeforeAll
+    public static void startEmbeddedSolrServer() throws Exception {
 
-	@Test
-	void testRecord000332() throws Exception {
+        File solrHomeDir = new File(solr_home);		
+        String solrHomeAbsoluteDir= solrHomeDir.getAbsolutePath();	
+        Path solrHome =  Paths.get(solrHomeAbsoluteDir);
+        System.setProperty("solr.install.dir", solrHomeAbsoluteDir);
+        Properties props = new Properties();
+        // props.put("solr.install.dir", solrHomeDir.getAbsolutePath()); //Does not
+        // work. Use system property above for now
+        coreContainer = new CoreContainer(solrHome, props);
+        coreContainer.load();
+        embeddedServer = new EmbeddedSolrServer(coreContainer, "dssolr");
+    }
 
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_000332);
+    @AfterAll
+    public static void tearDown() throws Exception {
+        coreContainer.shutdown();
+        embeddedServer.close();
+    }
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+    /*
+     * Delete all documents in solr between tests, so each unittest gets a clean solr.
+     */
+    @BeforeEach
+    public void deleteDocs() throws Exception {
+        embeddedServer.deleteByQuery("*:*");
+    }
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();                
-		assertEquals(1, getNumberOfTotalDocuments());
+    @Test
+    void testRecord000332() throws Exception {
+        indexRecord(RECORD_000332);	
+        assertEquals(1, getNumberOfTotalDocuments());
 
+        //Full life cycle test
+        SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
 
+        //Single value field
+        assertEquals("000332.tif",record.getFieldValue("identifier_local"));
 
-		//Single value field
-		assertEquals("000332.tif",record.getFieldValue("identifier_local"));
+        //multivalue field
+        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
+        // Creator date of death
+        assertMultivalueField(record, "creator_date_of_death", "1868-2-14", "1895-6-25", "1865-3-8" );
 
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
-		// Creator date of death
-		assertMultivalueField(record, "creator_date_of_death", "1868-2-14", "1895-6-25", "1865-3-8" );
+        //TODO more fields
 
-		//TODO more fields
+    }
 
-	}
 
 
+    /**
+     * Full test for one item.
+     */
+    @Test
+    void testRecordDPK() throws Exception {
 
-	/**
-	 * Full test for one item.
-	 */
-	@Test
-	void testRecordDPK() throws Exception {
+        indexRecord(RECORD_DPK);
 
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DPK);
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();                
-		assertEquals(1, getNumberOfTotalDocuments());
+        //Full life cycle test
+        SolrDocument record = getRecordById("3956d820-7b7d-11e6-b2b3-0016357f605f");
 
+        assertContentAllSingleValues(record, "DPK000107.tif", "da",
+                "Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort/politistation",
+                "Postkortsamlingen, Vestindien, Postkort, Vestindien, CAR- BLO katagori, Postkortsamlingen, 2022-09-01 15:06:39, 2022-09-01 15:11:09",
+                "Samlingsbilleder", "Billedsamlingen", 9657172L, 1429,2247);
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("3956d820-7b7d-11e6-b2b3-0016357f605f");
+        //Single value fields
+        assertEquals("Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian", record.getFieldValue("area"));
 
-		assertContentAllSingleValues(record, "DPK000107.tif", "da",
-				"Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort/politistation",
-				"Postkortsamlingen, Vestindien, Postkort, Vestindien, CAR- BLO katagori, Postkortsamlingen, 2022-09-01 15:06:39, 2022-09-01 15:11:09",
-				"Samlingsbilleder", "Billedsamlingen", 9657172L, 1429,2247);
+        //Multivalue fields
+        // type_of_resource
+        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Postkort" );
 
-		//Single value fields
-		assertEquals("Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian", record.getFieldValue("area"));
+        // topic
+        assertMultivalueField(record, "topic", "postkort","forter","Dannebrog", "børn", "arkitekturer",
+                "postcards", "forts", "Dannebrog", "children", "architectures" );
+    }
 
-		//Multivalue fields
-		// type_of_resource
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Postkort" );
 
-		// topic
-		assertMultivalueField(record, "topic", "postkort","forter","Dannebrog", "børn", "arkitekturer",
-				"postcards", "forts", "Dannebrog", "children", "architectures" );
-	}
 
+    /**
+     * Full test for item
+     */
+    @Test
+    void testRecord096c9090() throws Exception {
 
+        indexRecord(RECORD_096c9090);
 
-	/**
-	 * Full test for item
-	 */
-	@Test
-	void testRecord096c9090() throws Exception {
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090);
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+        //Full life cycle test
+        SolrDocument record = getRecordById("096c9090-717f-11e0-82d7-002185371280");
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+        assertContentAllSingleValues(record,"000225.tif", "da",
+                "Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",
+                "Danske portrætter, X-langtidsbevaring test - BLO, Diverse, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-02 09:01:13",
+                "Samlingsbilleder","Billedsamlingen",6691996L,1812,1227);
 
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("096c9090-717f-11e0-82d7-002185371280");
+        //Single value field
+        assertEquals("1755",record.getFieldValue("production_date_start"));
+        assertEquals("1831",record.getFieldValue("production_date_end"));
 
-		assertContentAllSingleValues(record,"000225.tif", "da",
-				"Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",
-				"Danske portrætter, X-langtidsbevaring test - BLO, Diverse, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-02 09:01:13",
-				"Samlingsbilleder","Billedsamlingen",6691996L,1812,1227);
+        //multivalue fields
+        // creator_name
+        assertMultivalueField(record,"creator_name", "Clemens, Johann Friderich");
 
+        // creator_full_name
+        assertMultivalueField(record,"creator_full_name", "Johann Friderich Clemens");
 
-		//Single value field
-		assertEquals("1755",record.getFieldValue("production_date_start"));
-		assertEquals("1831",record.getFieldValue("production_date_end"));
+        // creator_family_name
+        assertMultivalueField(record,"creator_family_name", "Clemens");
 
-		//multivalue fields
-		// creator_name
-		assertMultivalueField(record,"creator_name", "Clemens, Johann Friderich");
+        // creator_given_name
+        assertMultivalueField(record,"creator_given_name", "Johann Friderich");
 
-		// creator_full_name
-		assertMultivalueField(record,"creator_full_name", "Johann Friderich Clemens");
+        // creator_terms_of_address
+        assertMultivalueField(record,"creator_terms_of_address", "kobberstikker");
+        Collection<Object> creatorTermsOfAddress = record.getFieldValues("creator_terms_of_address");
 
-		// creator_family_name
-		assertMultivalueField(record,"creator_family_name", "Clemens");
+        // type_of_resource
+        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
 
-		// creator_given_name
-		assertMultivalueField(record,"creator_given_name", "Johann Friderich");
+        // topic
+        assertMultivalueField(record, "topic", "Poul Egede. 1911,7507.", "Billedet befinder sig i Kort- og Billedafdelingen, Det Kongelige Bibliotek" );
 
-		// creator_terms_of_address
-		assertMultivalueField(record,"creator_terms_of_address", "kobberstikker");
-		Collection<Object> creatorTermsOfAddress = record.getFieldValues("creator_terms_of_address");
+        // subject_name
+        assertMultivalueField(record,"subject_name", "Egede, Poul Hansen");
 
-		// type_of_resource
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
+        // subject_full_name
+        assertMultivalueField(record,"subject_full_name", "Poul Hansen Egede");
 
-		// topic
-		assertMultivalueField(record, "topic", "Poul Egede. 1911,7507.", "Billedet befinder sig i Kort- og Billedafdelingen, Det Kongelige Bibliotek" );
+        // subject_family_name
+        assertMultivalueField(record,"subject_family_name", "Egede");
 
-		// subject_name
-		assertMultivalueField(record,"subject_name", "Egede, Poul Hansen");
+        // subject_given_name
+        assertMultivalueField(record,"subject_given_name", "Poul Hansen");
 
-		// subject_full_name
-		assertMultivalueField(record,"subject_full_name", "Poul Hansen Egede");
+        // subject_date_of_birth
+        assertMultivalueField(record,"subject_date_of_birth", "1708");
 
-		// subject_family_name
-		assertMultivalueField(record,"subject_family_name", "Egede");
+        // subject_date_of_death
+        assertMultivalueField(record,"subject_date_of_death", "1789");
 
-		// subject_given_name
-		assertMultivalueField(record,"subject_given_name", "Poul Hansen");
+        // subject_terms_of_address
+        assertMultivalueField(record,"subject_terms_of_address", "teolog, missionær, grønlandsfarer og biskop");
+    }
 
-		// subject_date_of_birth
-		assertMultivalueField(record,"subject_date_of_birth", "1708");
+    @Test
+    void testRecordDt005031() throws Exception {
 
-		// subject_date_of_death
-		assertMultivalueField(record,"subject_date_of_death", "1789");
+        indexRecord(RECORD_DT005031);
 
-		// subject_terms_of_address
-		assertMultivalueField(record,"subject_terms_of_address", "teolog, missionær, grønlandsfarer og biskop");
-	}
+        assertEquals(1, getNumberOfTotalDocuments());
 
-	@Test
-	void testRecordDt005031() throws Exception {
+        //Full life cycle test
+        SolrDocument record = getRecordById("aaf3b130-e6e7-11e6-bdbe-00505688346e");
 
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DT005031);
+        //Single value field
+        assertEquals("DT005031.tif",record.getFieldValue("identifier_local"));
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+        //multivalue field
+        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Tegning" );
+        //TODO more fields
+    }
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+    @Test
+    void testRecordANSK() throws Exception {
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("aaf3b130-e6e7-11e6-bdbe-00505688346e");
+        indexRecord(RECORD_ANSK);
 
-		//Single value field
-		assertEquals("DT005031.tif",record.getFieldValue("identifier_local"));
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Tegning" );
-		//TODO more fields
-	}
+        //Full life cycle test
+        SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
 
-	@Test
-	void testRecordANSK() throws Exception {
+        //Single value field
+        assertEquals("ANSK_11614.tif",record.getFieldValue("identifier_local"));
 
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK);
+        //multivalue field
+        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Anskuelsesbillede" );
+        //TODO more fields
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+    }
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+    @Test
+    void testRecordSkfF0137() throws Exception {
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
+        indexRecord(RECORD_SKF_f_0137);
 
-		//Single value field
-		assertEquals("ANSK_11614.tif",record.getFieldValue("identifier_local"));
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Anskuelsesbillede" );
-		//TODO more fields
+        //Full life cycle test
+        SolrDocument record = getRecordById("54b34b50-2ce6-11ed-81b4-005056882ec3");
 
-	}
+        //Single value field
+        assertEquals("SKF_f_0137.tif",record.getFieldValue("identifier_local"));
 
-	@Test
-	void testRecordSkfF0137() throws Exception {
+        //multivalue field
+        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Fotografi" );
+        //TODO more fields
 
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_SKF_f_0137);
+    }
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+    @Test
+    void testRecordKhp() throws Exception {	    	    
+        indexRecord(RECORD_KHP0001_049);		
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("54b34b50-2ce6-11ed-81b4-005056882ec3");
+        //Full life cycle test
+        SolrDocument record = getRecordById("8e608940-d6db-11e3-8d2e-0016357f605f");
 
-		//Single value field
-		assertEquals("SKF_f_0137.tif",record.getFieldValue("identifier_local"));
+        //Single value field
+        assertEquals("KHP0001-049.tif",record.getFieldValue("identifier_local"));
 
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Fotografi" );
-		//TODO more fields
+        //multivalue field
+        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Dia" );
 
-	}
+        assertMultivalueField(record, "list_of_categories", "KHP",
+                "Keld Helmer-Petersen",
+                "1940-1950",
+                "Helmer-Petersen",
+                "Keld",
+                "CAR- BLO katagori",
+                "ikke UA");
+        //TODO more fields
+    }
 
-	@Test
-	void testRecordKhp() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_KHP0001_049);
+    @Test
+    void testRecordUldallForTitleAndPlaceOfProduction() throws Exception {
+        indexRecord(RECORD_ULDALL);
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString);
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+        //Full life cycle test
+        SolrDocument record = getRecordById("e2519ce0-9fb0-11e8-8891-00505688346e");
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("8e608940-d6db-11e3-8d2e-0016357f605f");
+        //Single value field
+        assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("identifier_local"));
 
-		//Single value field
-		assertEquals("KHP0001-049.tif",record.getFieldValue("identifier_local"));
+        // Title field
+        assertEquals("Foborg, Foburgum", record.getFieldValue("title"));
 
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Dia" );
+        // Place of production
+        assertEquals("Danmark", record.getFieldValue("place_of_production"));
 
-		assertMultivalueField(record, "list_of_categories", "KHP",
-				"Keld Helmer-Petersen",
-				"1940-1950",
-				"Helmer-Petersen",
-				"Keld",
-				"CAR- BLO katagori",
-				"ikke UA");
-		//TODO more fields
-	}
+        //TODO more fields
+    }
 
-	@Test
-	void testRecordUldallForTitleAndPlaceOfProduction() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ULDALL);
+    @Test
+    void testAccessionNumberExtraction() throws Exception {	    
+        indexRecord(RECORD_FM);
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+        //Full life cycle test
+        SolrDocument record = getRecordById("14f4a700-f9ee-11e7-988a-00505688346e");
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("e2519ce0-9fb0-11e8-8891-00505688346e");
+        //Single value field
+        assertEquals("2000-3/7",record.getFieldValue("accession_number"));
+    }
 
-		//Single value field
-		assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("identifier_local"));
+    @Test
+    void testPublishedInAndCollection() throws Exception {
 
-		// Title field
-		assertEquals("Foborg, Foburgum", record.getFieldValue("title"));
+        indexRecord(RECORD_DB_hans);
 
-		// Place of production
-		assertEquals("Danmark", record.getFieldValue("place_of_production"));
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		//TODO more fields
-	}
+        //Full life cycle test
+        SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
 
-	@Test
-	void testAccessionNumberExtraction() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_FM);
+        //Single value field
+        assertEquals("Bladtegnersamlingen",record.getFieldValue("collection"));
+        assertEquals("Aktuelt", record.getFieldValue("published_in"));
+    }
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+    @Test
+    void testTitle() throws Exception {
+        
+        indexRecord(RECORD_JB000132);
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+        //Full life cycle test
+        SolrDocument record = getRecordById("770379f0-8a0d-11e1-805f-0016357f605f");
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("14f4a700-f9ee-11e7-988a-00505688346e");
+        //Single value field
+        assertEquals("Romeo og Julie", record.getFieldValue("title"));
+    }
 
-		//Single value field
-		assertEquals("2000-3/7",record.getFieldValue("accession_number"));
-	}
+    @Test
+    void testImageResource() throws Exception {       
+        indexRecord(RECORD_40221e30);
+        
+        assertEquals(1, getNumberOfTotalDocuments());
 
-	@Test
-	void testPublishedInAndCollection() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DB_hans);
+        //Full life cycle test
+        SolrDocument record = getRecordById("40221e30-1414-11e9-8fb8-00505688346e");
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+        //Single value field
+        assertEquals("/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592", record.getFieldValue("image_resource"));
+    }
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+    @Test
+    void testMapScale() throws Exception {
+        
+        indexRecord(RECORD_0c02aa10);
+        
+        assertEquals(1, getNumberOfTotalDocuments());
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
+        //Full life cycle test
+        SolrDocument record = getRecordById("0c02aa10-b657-11e6-aedf-00505688346e");
 
-		//Single value field
-		assertEquals("Bladtegnersamlingen",record.getFieldValue("collection"));
-		assertEquals("Aktuelt", record.getFieldValue("published_in"));
-	}
+        //Single value field
+        assertEquals("Målestok 1:75 000",record.getFieldValue("map_scale"));
+    }
 
-	@Test
-	void testTitle() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_JB000132);
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+    /*
+     * ------- Private helper methods below -------------- 
+     */
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("770379f0-8a0d-11e1-805f-0016357f605f");
+    /*
+     * Embedded solr does not have a http listener, so we can not add call and add documents as JSON.
+     * They needs to be converted to SolrInputDocument. This seems to be the simplest way to do it... 
+     * Correct me if I am wrong.
+     * 
+     */
+    private  SolrInputDocument convertJsonToSolrJavaDoc(String json) throws Exception{
 
-		//Single value field
-		assertEquals("Romeo og Julie", record.getFieldValue("title"));
-	}
+        //Object is string or String[] for multivalued
+        Map<String, Object> map = new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>(){});
 
-	@Test
-	void testImageResource() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_40221e30);
+        SolrInputDocument document = new SolrInputDocument();
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		//System.out.println(prettyJsonString);
+        for (String key : map.keySet()) {
+            //Object can be String or String[]
+            Object  value = map.get(key);
+            if (value instanceof String) {
+                //	System.out.println("Adding:"+key +"="+map.get(key));
+                document.addField(key, map.get(key));
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+            }
+            else if (value instanceof ArrayList) {
+                for (Object o : (ArrayList<Object>) value) {
+                    //		System.out.println("Adding:"+key +"="+o.toString());
+                    document.addField(key, o.toString());
+                }            	
+            }            
+            else {//sanity check, should not happen         
+                log.error("Unknown json type"+value.getClass());               
+                throw new Exception("Unknown json type"+value.getClass());
+            }                                      
+        }        
+        return document;
+    }
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("40221e30-1414-11e9-8fb8-00505688346e");
 
-		//Single value field
-		assertEquals("/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592", record.getFieldValue("image_resource"));
-	}
+    private void indexRecord(String recordXml) throws Exception{
+        String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, recordXml);
 
-	@Test
-	void testMapScale() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_0c02aa10);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement je = JsonParser.parseString(solrString);
+        String prettyJsonString = gson.toJson(je);
+        //System.out.println(prettyJsonString);
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
+        SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
+        embeddedServer.add(document);
+        embeddedServer.commit();                
 
-		SolrInputDocument document = convertJsonToSolrJavaDoc(prettyJsonString);
-		embeddedServer.add(document);
-		embeddedServer.commit();
-		assertEquals(1, getNumberOfTotalDocuments());
+    }
 
-		//Full life cycle test
-		SolrDocument record = getRecordById("0c02aa10-b657-11e6-aedf-00505688346e");
 
-		//Single value field
-		assertEquals("Målestok 1:75 000",record.getFieldValue("map_scale"));
-	}
 
+    private SolrDocument getRecordById(String id) throws Exception{	    
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setQuery("id:\""+id +"\"");
+        solrQuery.setRows(10);           
+        QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 
+        if (rsp.getResults().getNumFound() !=1) {
+            throw new Exception("No record found with id:"+id);
+        }
+        return rsp.getResults().get(0);           
+    }
 
 
-	/*
-	 * ------- Private helper methods below -------------- 
-	 */
+    private long getNumberOfTotalDocuments() throws Exception{
 
-	/*
-	 * Embedded solr does not have a http listener, so we can not add call and add documents as JSON.
-	 * They needs to be converted to SolrInputDocument. This seems to be the simplest way to do it... 
-	 * Correct me if I am wrong.
-	 * 
-	 */
-	private  SolrInputDocument convertJsonToSolrJavaDoc(String json) throws Exception{
+        // Test number of documents
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setQuery("*:*");
+        solrQuery.setRows(10);
+        solrQuery.add("fl", "id");
 
-		//Object is string or String[] for multivalued
-		Map<String, Object> map = new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>(){});
+        QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 
+        return rsp.getResults().getNumFound();
 
-		SolrInputDocument document = new SolrInputDocument();
+    }
 
-		for (String key : map.keySet()) {
-			//Object can be String or String[]
-			Object  value = map.get(key);
-			if (value instanceof String) {
-			//	System.out.println("Adding:"+key +"="+map.get(key));
-				document.addField(key, map.get(key));
+    private void assertContentAllSingleValues(SolrDocument record, String identifierLocal, String catalogingLanguage, String shelfLocation,
+            String categories, String catalogName, String collection,
+            Long filesize, int imgHeight, int imgWidth) throws Exception {
 
-			}
-			else if (value instanceof ArrayList) {
-				for (Object o : (ArrayList<Object>) value) {
-			//		System.out.println("Adding:"+key +"="+o.toString());
-					document.addField(key, o.toString());
-				}            	
-			}            
-			else {//sanity check, should not happen         
-				log.error("Unknown json type"+value.getClass());               
-				throw new Exception("Unknown json type"+value.getClass());
-			}                                      
-		}        
-		return document;
-	}
+        assertEquals(identifierLocal,record.getFieldValue("identifier_local"));
+        assertEquals(catalogingLanguage,record.getFieldValue("cataloging_language"));
+        assertEquals(shelfLocation,record.getFieldValue("shelf_location"));
+        assertEquals(categories,record.getFieldValue("categories"));
+        assertEquals(catalogName, record.getFieldValue("catalog_name"));
+        assertEquals(collection, record.getFieldValue("collection"));
+        assertEquals(filesize, record.getFieldValue("file_size"));
+        assertEquals(imgHeight, record.getFieldValue("image_height"));
+        assertEquals(imgWidth, record.getFieldValue("image_width"));
+    }
 
-
-	private SolrDocument getRecordById(String id) throws Exception{	    
-		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("id:\""+id +"\"");
-		solrQuery.setRows(10);           
-		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 
-		if (rsp.getResults().getNumFound() !=1) {
-			throw new Exception("No record found with id:"+id);
-		}
-		return rsp.getResults().get(0);           
-	}
-
-
-	private long getNumberOfTotalDocuments() throws Exception{
-
-		// Test number of documents
-		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("*:*");
-		solrQuery.setRows(10);
-		solrQuery.add("fl", "id");
-
-		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST); 
-		return rsp.getResults().getNumFound();
-
-	}
-
-	private void assertContentAllSingleValues(SolrDocument record, String identifierLocal, String catalogingLanguage, String shelfLocation,
-											  String categories, String catalogName, String collection,
-											  Long filesize, int imgHeight, int imgWidth) throws Exception {
-
-		assertEquals(identifierLocal,record.getFieldValue("identifier_local"));
-		assertEquals(catalogingLanguage,record.getFieldValue("cataloging_language"));
-		assertEquals(shelfLocation,record.getFieldValue("shelf_location"));
-		assertEquals(categories,record.getFieldValue("categories"));
-		assertEquals(catalogName, record.getFieldValue("catalog_name"));
-		assertEquals(collection, record.getFieldValue("collection"));
-		assertEquals(filesize, record.getFieldValue("file_size"));
-		assertEquals(imgHeight, record.getFieldValue("image_height"));
-		assertEquals(imgWidth, record.getFieldValue("image_width"));
-	}
-
-	private void assertMultivalueField(SolrDocument record, String fieldName, String... contentsInField) {
-		Collection<Object> fieldValues = record.getFieldValues(fieldName);
-		assertEquals(contentsInField.length,fieldValues.size());
-		for (String s : contentsInField) {
-			assertTrue(fieldValues.contains(s));
-		}
-	}
+    private void assertMultivalueField(SolrDocument record, String fieldName, String... contentsInField) {
+        Collection<Object> fieldValues = record.getFieldValues(fieldName);
+        assertEquals(contentsInField.length,fieldValues.size());
+        for (String s : contentsInField) {
+            assertTrue(fieldValues.contains(s));
+        }
+    }
 
 
 

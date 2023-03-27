@@ -24,7 +24,7 @@
        <xsl:param name="access_ophavsperson_doedsaar"/>
        <xsl:param name="access_searlige_visningsvilkaar"/>
        <xsl:param name="access_materiale_type"/>
-       <xsl:param name="access_foto_aftale "/>
+       <xsl:param name="access_foto_aftale"/>
        <xsl:param name="access_billede_aftale"/>
        <xsl:param name="access_ophavsret_tekst"/>
               
