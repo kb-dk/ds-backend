@@ -8,6 +8,7 @@ import dk.kb.present.TestUtil;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,10 +37,15 @@ public class XSLTSchemaDotOrgTransformerTest {
     
     public static final String MODS2SCHEMAORG = "xslt/mods2schemaorg.xsl";
     public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml";
+    public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
     public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
+    public static final String RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
     public static final String RECORD_KHP0001_001 = "xml/copyright_extraction/KHP0001-001.tif.xml";
+    public static final String RECORD_e5a0e980 = "xml/copyright_extraction/e5a0e980-d6cb-11e3-8d2e-0016357f605f.xml";
     public static final String RECORD_KE066530 = "xml/copyright_extraction/KE066530.tif.xml";
+    public static final String RECORD_f4668ad0 = "xml/copyright_extraction/f4668ad0-f334-11e8-b74f-00505688346e.xml";
     public static final String RECORD_DPK000107 = "xml/copyright_extraction/DPK000107.tif.xml";
+    public static final String RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
     public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
     public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
     public static final String RECORD_40221e = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
@@ -58,34 +64,34 @@ public class XSLTSchemaDotOrgTransformerTest {
 
     @Test
     void testDateCreatedAndTemporal() throws Exception {
-        assertJSONTransformation(MODS2SCHEMAORG, RECORD_000332, "schemaOrg_000332.json");
+        assertJSONTransformation(MODS2SCHEMAORG, RECORD_05fea810, "schemaOrg_05fea810-7181-11e0-82d7-002185371280.json");
     }
 
     @Test
     void testDateCreatedNoTemporal() throws Exception {
-        assertJSONTransformation(MODS2SCHEMAORG, RECORD_KHP0001_001, "schemaOrg_KHP0001-001.json");
+        assertJSONTransformation(MODS2SCHEMAORG, RECORD_e5a0e980, "schemaOrg_e5a0e980-d6cb-11e3-8d2e-0016357f605f.json");
     }
 
     @Test
     void testCreatorsAndHeadline() throws Exception {
-        assertJSONTransformation(MODS2SCHEMAORG, RECORD_JB000132, "schemaOrg_JB000132_114.json");
+        assertJSONTransformation(MODS2SCHEMAORG, RECORD_770379f0, "schemaOrg_770379f0-8a0d-11e1-805f-0016357f605f.json");
     }
 
     // Same functionality as testCreatorsAndHeadline but using a different XSLTFactory creation method
     @Test
     void testFactory() throws Exception {
-        assertJSONTransformationFactory(MODS2SCHEMAORG, RECORD_JB000132, "schemaOrg_JB000132_114.json");
+        assertJSONTransformationFactory(MODS2SCHEMAORG, RECORD_770379f0, "schemaOrg_770379f0-8a0d-11e1-805f-0016357f605f.json");
     }
 
 
     @Test
     void testCreatorDescriptionAndContentNoteToAbout() throws Exception {
-        assertJSONTransformation(MODS2SCHEMAORG, RECORD_KE066530, "schemaOrg_KE066530.json");
+        assertJSONTransformation(MODS2SCHEMAORG, RECORD_f4668ad0, "schemaOrg_f4668ad0-f334-11e8-b74f-00505688346e.json");
     }
 
     @Test
     void testContentLocationAndKeywords() throws Exception {
-        assertJSONTransformation(MODS2SCHEMAORG, RECORD_DPK000107, "schemaOrg_DPK000107.json");
+        assertJSONTransformation(MODS2SCHEMAORG, RECORD_3956d820, "schemaOrg_3956d820-7b7d-11e6-b2b3-0016357f605f.json");
     }
 
 
@@ -104,19 +110,12 @@ public class XSLTSchemaDotOrgTransformerTest {
         assertJSONTransformation(MODS2SCHEMAORG, RECORD_40221e, "schemaOrg_40221e30-1414-11e9-8fb8-00505688346e.json");
     }
 
-    /**
-     * Update test files when XSLT changes.
-     */
+
     private void updateTestFiles() throws Exception {
-        createTestFiles(RECORD_000332, RECORD_JB000132, RECORD_KHP0001_001, RECORD_KE066530, RECORD_DPK000107,
+        createTestFiles(RECORD_05fea810, RECORD_770379f0, RECORD_e5a0e980, RECORD_f4668ad0, RECORD_3956d820,
                 RECORD_ANSK, RECORD_DNF, RECORD_40221e);
     }
     private void createTestFiles(String... records) throws Exception {
-        if (1 == 1) {
-            throw new IllegalStateException(
-                    "The MODS2SCHEMAORG XSTL is faulty and does not generate the proper URL to images (the image ID + " +
-                    "more is missing). This must be fixed before generating new testfiles.");
-        }
         for (String record : records) {
             Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/");
             String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, record, injections);
@@ -176,7 +175,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         String yamlStr =
                 "stylesheet: '" + xslt + "'\n" +
                 "injections:\n" +
-                "  - imageserver: 'http:/example/imageserver/'\n";
+                "  - imageserver: 'https://example.com/imageserver/'\n";
         YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
         String transformedJSON = TestUtil.getTransformedFromConfigWithAccessFields(yaml, xml);
 
@@ -196,6 +195,9 @@ public class XSLTSchemaDotOrgTransformerTest {
 
         String expectedJSON = importTestFile(JSON_ROOT + expectedJSONFile);
         String expectedPrettyJSON = gson.toJson(JsonParser.parseString(expectedJSON));
+
+        //System.out.println(transformedPrettyJSON);
+        //System.out.println(expectedPrettyJSON);
 
         Assertions.assertEquals(expectedPrettyJSON, transformedPrettyJSON);
     }

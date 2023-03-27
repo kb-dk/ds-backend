@@ -95,23 +95,14 @@
                     <f:string key="id">
                         <xsl:value-of select="$record-id"/>
                     </f:string>
-                    <!--Create image URL by combining imageserver with image identifier -->
+
                     <xsl:variable name="imageUrl">
-                        <xsl:variable name="server">
-                            <xsl:value-of select="f:replace($imageserver, $singlequote, '')"/>
-                        </xsl:variable>
                         <xsl:variable name="imageIdentifier">
                             <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
                         </xsl:variable>
-                        <xsl:choose>
-                            <xsl:when test="$server = ''">
-                                <xsl:value-of select="concat($imageserver, f:substring-before($imageIdentifier, '.jp'))"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="concat($server, f:substring-before($imageIdentifier, '.jp'))"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
+                        <xsl:value-of select="concat($imageserver, f:substring-before($imageIdentifier, '.jp'))"/>
                     </xsl:variable>
+
                     <f:string key="url">
                         <xsl:value-of select="$imageUrl"/>
                     </f:string>
