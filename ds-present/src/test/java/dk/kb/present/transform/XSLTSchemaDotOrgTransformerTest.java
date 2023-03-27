@@ -8,7 +8,6 @@ import dk.kb.present.TestUtil;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -20,15 +19,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 
-import java.io.StringBufferInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class XSLTSchemaDotOrgTransformerTest {
     private static final Logger log = LoggerFactory.getLogger(XSLTSchemaDotOrgTransformerTest.class);
@@ -195,5 +190,6 @@ public class XSLTSchemaDotOrgTransformerTest {
 
         Assertions.assertEquals(expectedPrettyJSON, transformedPrettyJSON);
     }
+
 
 }
