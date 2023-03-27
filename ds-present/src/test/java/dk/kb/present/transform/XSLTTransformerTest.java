@@ -33,29 +33,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class XSLTTransformerTest {
     public static final String MODS2JSONLD = "xslt/mods2schemaorg.xsl";
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-    public static final String ALBERT = "xml/corpus/albert-einstein.xml"; //Need to be updated to newest version
-    public static final String CHINESE = "xml/corpus/chinese-manuscripts.xml"; //Need to be updated to newest version
+    public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
 
-    public static final String NEW_000332 = "xml/copyright_extraction/000332.tif.xml"; //Updated version
 
-    @Test
-    void testJSONLDAlbert() throws IOException {
-        JSONObject jsonld = new JSONObject( TestUtil.getTransformed(MODS2JSONLD, ALBERT));
-        // TODO: When transformation to JSON-LD has been reviewed replace this test as it is done on old metadata format
-        //assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"Einstein, Albert\",\"@language\":\"en\"}"));
-    }
-
-    // TODO: Compared to the testing done in XSLTSchemaDotOrgTransformerTest these two tests seem redundant
-    @Test
-    void testJSONLDChinese() throws IOException {
-        JSONObject jsonld = new JSONObject(TestUtil.getTransformed(MODS2JSONLD, CHINESE));
-        // TODO: When transformation to JSON-LD has been reviewed replace this test as it is done on old metadata format
-        //assertTrue(jsonld.toString().contains("\"name\":{\"@value\":\"周培春 Zhou Peichun\",\"@language\":\"zh\"}"));
-    }
     
     @Test
     void testNew000332() throws IOException {
-        String solrString =  TestUtil.getTransformed(MODS2SOLR, NEW_000332);
+        String solrString =  TestUtil.getTransformed(MODS2SOLR, RECORD_05fea810);
         // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);

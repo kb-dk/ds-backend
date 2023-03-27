@@ -34,7 +34,7 @@ class FileStorageTest {
     @Test
     void DSRecordAccess() throws IOException {
         Storage storage = getStorage();
-        assertTrue(storage.getDSRecord("000332.tif.xml").getData().contains("Bærentzen"));
+        assertTrue(storage.getDSRecord("05fea810-7181-11e0-82d7-002185371280.xml").getData().contains("Bærentzen"));
     }
 
     private Storage getStorage() throws IOException {

@@ -382,7 +382,7 @@ public class CopyrightAccessExtractorTest {
 	
     @Test
     void testAccessConditionwith3Persons1Corporate() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/000332.tif.xml");
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml");
 
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Grafik",copyright.getMaterialeType()); 
