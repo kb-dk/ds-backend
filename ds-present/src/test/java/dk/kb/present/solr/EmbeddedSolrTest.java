@@ -108,8 +108,6 @@ public class EmbeddedSolrTest {
         // Creator date of death
         assertMultivalueField(record, "creator_date_of_death", "1868-2-14", "1895-6-25", "1865-3-8" );
 
-        //TODO more fields
-
     }
 
 
@@ -252,7 +250,6 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordSkfF0137() throws Exception {
-
         indexRecord(RECORD_SKF_f_0137);
 
         assertEquals(1, getNumberOfTotalDocuments());
