@@ -540,12 +540,16 @@
         </xsl:if>
         <!-- Extract image resource-->
         <xsl:if test="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
-          <xsl:variable name="noPrefix">
-            <xsl:value-of select="f:substring-after(m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
-          </xsl:variable>
-          <f:string key="image_resource">
-            <xsl:value-of select="substring-before($noPrefix, '.jp')"/>
-          </f:string>
+          <f:array key="resource_id">
+            <xsl:for-each select="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
+              <xsl:variable name="noPrefix">
+                <xsl:value-of select="f:substring-after(., 'http://kb-images.kb.dk')"/>
+              </xsl:variable>
+              <f:string>
+                <xsl:value-of select="substring-before($noPrefix, '.jp')"/>
+              </f:string>
+            </xsl:for-each>
+          </f:array>
         </xsl:if>
         <!-- Display label can in theory contain anything.
              Resource Description seems to be the field that contains the most precise description of a given resource. -->

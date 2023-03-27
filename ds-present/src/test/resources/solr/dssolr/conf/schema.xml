@@ -84,7 +84,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
   <field name="map_scale" type="string" stored="true"/>
 
-  <field name="image_resource" type="string"/>
+  <field name="resource_id" type="string" multiValued="true"/>
   <field name="file_size" type="plong"/>
   <field name="image_height" type="pint"/>
   <field name="image_width" type="pint"/>
