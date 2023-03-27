@@ -325,7 +325,7 @@ public class CopyrightAccessExtractorTest {
 
     @Test
     void testPligtAfleveret_Ejermærke_Restricted() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/KHP0001-001.tif.xml");
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/e5a0e980-d6cb-11e3-8d2e-0016357f605f.xml");
 
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
