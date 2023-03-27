@@ -26,20 +26,20 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
 	public static final String RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
 	public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
-	public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
-	public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
-	public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
+	public static final String RECORD_aaf3b130 = "xml/copyright_extraction/aaf3b130-e6e7-11e6-bdbe-00505688346e.xml";
+	public static final String RECORD_54b34b50 = "xml/copyright_extraction/54b34b50-2ce6-11ed-81b4-005056882ec3.xml";
+	public static final String RECORD_8e608940 = "xml/copyright_extraction/8e608940-d6db-11e3-8d2e-0016357f605f.xml";
 	public static final String RECORD_45dd4830 = "xml/copyright_extraction/45dd4830-717f-11e0-82d7-002185371280.xml";
 	public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
 	public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
 	public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
-	public static final String RECORD_OA = "xml/copyright_extraction/OA_102-2007-pl_0004.tif.xml";
-	public static final String RECORD_Elf = "xml/copyright_extraction/Elf_113136.tif.xml";
-	public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
-	public static final String RECORD_KOB_KIN ="xml/copyright_extraction/kob_kin_pl_0027.tif.xml";
+	public static final String RECORD_5cc1bea0 = "xml/copyright_extraction/5cc1bea0-71fa-11e2-b31c-0016357f605f.xml";
+	public static final String RECORD_Elf = "xml/copyright_extraction/09222b40-dba1-11e5-9785-0016357f605f.xml";
+	public static final String RECORD_e2519ce0 = "xml/copyright_extraction/e2519ce0-9fb0-11e8-8891-00505688346e.xml";
+	public static final String RECORD_26d4dd60 ="xml/copyright_extraction/26d4dd60-6708-11e2-b40f-0016357f605f.xml";
 	public static final String RECORD_9C = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
 	public static final String RECORD_3B03 = "xml/copyright_extraction/3b03aa00-fee2-11e8-ab76-00505688346e.xml";
-	public static final String RECORD_DB_hans = "xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml";
+	public static final String RECORD_DB_hans = "xml/copyright_extraction/25461fb0-f664-11e0-9d29-0016357f605f.xml";
 	public static final String RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
 	public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
 	@Test
@@ -103,7 +103,7 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testNoNameMultipleNames() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_OA);
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_5cc1bea0);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
@@ -143,7 +143,7 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testXsltDt005031() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DT005031);
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_aaf3b130);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
@@ -154,7 +154,7 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testXsltSkfF0137() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_SKF_f_0137);
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_54b34b50);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
@@ -165,7 +165,7 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testXsltKhp0001049() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_KHP0001_049);
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_8e608940);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
@@ -176,9 +176,7 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testUldall() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ULDALL);
-		// TODO: Add more detailed test
-		// Test that date_created is present and that subject is not
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_e2519ce0);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
@@ -189,7 +187,7 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testChineseTitels() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_KOB_KIN );
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_26d4dd60);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);

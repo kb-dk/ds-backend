@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="50a98373-af47-4f1f-8361-7bb295d0e8af" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
-    <mets:metsHdr CREATEDATE="2023-02-13T09:43:11.659+01:00">
+    <mets:metsHdr CREATEDATE="2023-03-27T15:30:52.554+02:00">
         <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
             <mets:name>kbDk</mets:name>
             <mets:note>kbDkInternal</mets:note>
@@ -9,7 +9,7 @@
             <mets:note>kbDkInternal</mets:note>
         </mets:agent>
     </mets:metsHdr>
-    <mets:dmdSec CREATED="2023-02-13T09:43:11.660+01:00" ID="Mods1">
+    <mets:dmdSec CREATED="2023-03-27T15:30:52.554+02:00" ID="Mods1">
         <mets:mdWrap MDTYPE="MODS">
             <mets:xmlData>
                 <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
@@ -49,7 +49,7 @@
                         </mods:languageOfCataloging>
                     </mods:recordInfo>
                     <mods:relatedItem type="otherFormat">
-                        <mods:identifier displayLabel="image" type="uri">http://www.kb.dk/imageServicecumulus-core-01:/Depot/DAM/Samlingsbilleder/0000/538/918/FM103703H.jpg</mods:identifier>
+                        <mods:identifier displayLabel="image" type="uri">http://kb-images.kb.dk/DAMJP2/DAM/Samlingsbilleder/0000/538/918/FM103703H.jp2</mods:identifier>
                     </mods:relatedItem>
                     <mods:relatedItem type="host" displayLabel="Samling">
                         <mods:titleInfo>
@@ -65,6 +65,9 @@
                         <mods:topic lang="da">Mand</mods:topic>
                         <mods:topic lang="da">Kvinde</mods:topic>
                     </mods:subject>
+                    <mods:titleInfo>
+                        <mods:title>Dobbeltportræt af uidentificeret mand og kvinde</mods:title>
+                    </mods:titleInfo>
                     <mods:typeOfResource displayLabel="Generel Resource Description">Billede, Todimensionalt billedmateriale</mods:typeOfResource>
                     <mods:typeOfResource displayLabel="Resource Description">Fotografi</mods:typeOfResource>
                 </mods:mods>
@@ -72,7 +75,7 @@
         </mets:mdWrap>
     </mets:dmdSec>
     <mets:amdSec>
-        <mets:techMD CREATED="2023-02-13T09:43:11.709+01:00" ID="PremisObject1">
+        <mets:techMD CREATED="2023-03-27T15:30:52.571+02:00" ID="PremisObject1">
             <mets:mdWrap MDTYPE="PREMIS:OBJECT">
                 <mets:xmlData>
                     <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
@@ -130,7 +133,7 @@
                                     </mix:BasicImageInformation>
                                     <mix:ImageCaptureMetadata>
                                         <mix:GeneralCaptureInformation>
-                                            <mix:dateTimeCreated>2023-02-13T09:43:11.714+01:00</mix:dateTimeCreated>
+                                            <mix:dateTimeCreated>2023-03-27T15:30:52.574+02:00</mix:dateTimeCreated>
                                         </mix:GeneralCaptureInformation>
                                         <mix:ScannerCapture>
                                             <mix:MaximumOpticalResolution>
@@ -164,7 +167,7 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:techMD>
-        <mets:rightsMD CREATED="2023-02-13T09:43:11.724+01:00" ID="ModsRights1">
+        <mets:rightsMD CREATED="2023-03-27T15:30:52.575+02:00" ID="ModsRights1">
             <mets:mdWrap MDTYPE="MODS">
                 <mets:xmlData>
                     <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
@@ -181,16 +184,16 @@
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:rightsMD>
-        <mets:digiprovMD CREATED="2023-02-13T09:43:11.725+01:00" ID="PremisEvent1">
+        <mets:digiprovMD CREATED="2023-03-27T15:30:52.576+02:00" ID="PremisEvent1">
             <mets:mdWrap MDTYPE="PREMIS:EVENT">
                 <mets:xmlData>
                     <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
                         <premis:eventIdentifier>
                             <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
-                            <premis:eventIdentifierValue>f5117b47-440b-49ec-a363-bd4774706641</premis:eventIdentifierValue>
+                            <premis:eventIdentifierValue>88d9a037-8a53-4c13-855e-ee911fc12540</premis:eventIdentifierValue>
                         </premis:eventIdentifier>
                         <premis:eventType>ingestion</premis:eventType>
-                        <premis:eventDateTime>2023-02-13T09:43:11.726+01:00</premis:eventDateTime>
+                        <premis:eventDateTime>2023-03-27T15:30:52.576+02:00</premis:eventDateTime>
                         <premis:eventDetailInformation>
                             <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
 file.encoding: UTF-8
@@ -241,7 +244,7 @@ user.language: da
                 </mets:xmlData>
             </mets:mdWrap>
         </mets:digiprovMD>
-        <mets:digiprovMD CREATED="2023-02-13T09:43:11.726+01:00" ID="PremisRepresentation1">
+        <mets:digiprovMD CREATED="2023-03-27T15:30:52.576+02:00" ID="PremisRepresentation1">
             <mets:mdWrap MDTYPE="PREMIS">
                 <mets:xmlData>
                     <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
@@ -252,17 +255,17 @@ user.language: da
                         <premis:preservationLevel>
                             <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
                             <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2023-02-13T09:43:11.727+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-03-27T15:30:52.577+02:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>logical</premis:preservationLevelType>
                             <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2023-02-13T09:43:11.732+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-03-27T15:30:52.577+02:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:preservationLevel>
                             <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
                             <premis:preservationLevelValue>Low</premis:preservationLevelValue>
-                            <premis:preservationLevelDateAssigned>2023-02-13T09:43:11.733+01:00</premis:preservationLevelDateAssigned>
+                            <premis:preservationLevelDateAssigned>2023-03-27T15:30:52.577+02:00</premis:preservationLevelDateAssigned>
                         </premis:preservationLevel>
                         <premis:relationship>
                             <premis:relationshipType>structural</premis:relationshipType>

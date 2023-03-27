@@ -1,11 +1,6 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
-import dk.kb.present.config.ServiceConfig;
-import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
-import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.*;
@@ -35,12 +30,9 @@ class XSLTTransformerTest {
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
     public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
 
-
-    
     @Test
     void testNew000332() throws IOException {
         String solrString =  TestUtil.getTransformed(MODS2SOLR, RECORD_05fea810);
-        // TODO: Add more detailed test
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
 
