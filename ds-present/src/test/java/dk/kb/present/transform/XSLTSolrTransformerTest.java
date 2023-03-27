@@ -46,7 +46,6 @@ class XSLTSolrTransformerTest{
 	void testSolrNew() throws Exception {
 
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_05fea810);
-		// TODO: Add more detailed test
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
@@ -71,7 +70,6 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXslt45dd() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_45dd4830 );
-		// One test could be to check for production_date_start and production_date_end values
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
@@ -169,7 +167,6 @@ class XSLTSolrTransformerTest{
 	void testXsltKhp0001049() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_KHP0001_049);
 
-
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
@@ -193,8 +190,6 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testChineseTitels() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_KOB_KIN );
-		// TODO: Add more detailed test
-		// One test could be to check for production_date_start and production_date_end values
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
@@ -206,8 +201,6 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testMultipleAffiliations() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_9C);
-		// TODO: Add more detailed test
-		// One test could be to check for production_date_start and production_date_end values
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
@@ -219,8 +212,6 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testMultipleDescriptions() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_3B03);
-		// TODO: Add more detailed test
-		// One test could be to check for production_date_start and production_date_end values
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
@@ -232,9 +223,6 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testDifferentRelatedItems() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_DB_hans);
-		// TODO: Add more detailed test
-		// One test could be to check for production_date_start and production_date_end values
-
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
@@ -245,9 +233,6 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testTitleExtraction() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_770379f0);
-		// TODO: Add more detailed test
-		// One test could be to check for production_date_start and production_date_end values
-
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
@@ -257,14 +242,10 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testImageResource() throws Exception {
-
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_40221e30);
-		// TODO: Add more detailed test
-
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString );
 
 		//  assertTrue(solrString.contains("{\"id\":\""));
 	}
