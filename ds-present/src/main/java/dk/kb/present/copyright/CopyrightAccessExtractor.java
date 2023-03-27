@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,15 +47,14 @@ public class CopyrightAccessExtractor {
 
 
 	
+	//Lowercase important    
+    private static final Set<String> FOTOGRAFI_AFTALE = Set.of("dia", "digital optagelse", "fotografi", "fotogravure", "negativ");
+ 
 	//Lowercase important
-	private static final HashSet<String> FOTOGRAFI_AFTALE = Stream.of("dia", "digital optagelse", "fotografi", "fotogravure","negativ")
-			              .collect(Collectors.toCollection(HashSet::new));
-	 
-	//Lowercase important
-	private static final HashSet<String> BILLEDE_AFTALE = Stream.of("akvarel", "grafik", "postkort", "plakats","tegning","tryk","silhuet",
+	private static final Set<String> BILLEDE_AFTALE = Set.of("akvarel", "grafik", "postkort", "plakats","tegning","tryk","silhuet",
                                               "arkitekturfotografi","arkitekturtegning","anskuelsesbillede","genstand",
-                                              "bladtegning","kort","atlas","prospekt")
-                                              .collect(Collectors.toCollection(HashSet::new));
+                                              "bladtegning","kort","atlas","prospekt");
+                                              
 
 	
 	public static CopyrightAccessDto buildCopyrightFields(String xml) throws Exception {
