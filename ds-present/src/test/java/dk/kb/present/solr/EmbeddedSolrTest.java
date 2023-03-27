@@ -47,18 +47,17 @@ public class EmbeddedSolrTest {
     private static EmbeddedSolrServer embeddedServer = null;
 
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-    public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml";
-    public static final String RECORD_DPK = "xml/copyright_extraction/DPK000107.tif.xml";
+    public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
+    public static final String RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
     public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
     public static final String RECORD_DT005031 = "xml/copyright_extraction/DT005031.tif.xml";
     public static final String RECORD_SKF_f_0137 = "xml/copyright_extraction/SKF_f_0137.tif.xml";
     public static final String RECORD_KHP0001_049 = "xml/copyright_extraction/KHP0001-049.tif.xml";
-    public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
     public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
     public static final String RECORD_ULDALL = "xml/copyright_extraction/Uldall_186_2_Foborg.tif.xml";
     public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
     public static final String RECORD_DB_hans = "xml/copyright_extraction/db_hans_lollesgaard_00039.tif.xml";
-    public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
+    public static final String RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
     public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
     public static final String RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
 
@@ -94,7 +93,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecord000332() throws Exception {
-        indexRecord(RECORD_000332);
+        indexRecord(RECORD_05fea810);
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
@@ -121,7 +120,7 @@ public class EmbeddedSolrTest {
     @Test
     void testRecordDPK() throws Exception {
 
-        indexRecord(RECORD_DPK);
+        indexRecord(RECORD_3956d820);
 
         assertEquals(1, getNumberOfTotalDocuments());
 
@@ -338,7 +337,7 @@ public class EmbeddedSolrTest {
     @Test
     void testTitle() throws Exception {
 
-        indexRecord(RECORD_JB000132);
+        indexRecord(RECORD_770379f0);
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test

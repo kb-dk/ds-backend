@@ -81,7 +81,7 @@ public class CopyrightAccessExtractorTest {
     void testDateCaptured() throws Exception {
 
         // Rare situation where dateCaptured field is used. This is only used if there is no createdDate field         
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DPK000107.tif.xml");
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml");
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Postkort",copyright.getMaterialeType());  
 
