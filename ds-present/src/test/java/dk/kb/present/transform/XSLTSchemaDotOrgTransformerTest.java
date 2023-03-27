@@ -32,19 +32,12 @@ import static org.junit.Assert.assertTrue;
 
 public class XSLTSchemaDotOrgTransformerTest {
     private static final Logger log = LoggerFactory.getLogger(XSLTSchemaDotOrgTransformerTest.class);
-
     public static final String JSON_ROOT = "src/test/resources/schemaOrgJsonTestFiles/";
-    
     public static final String MODS2SCHEMAORG = "xslt/mods2schemaorg.xsl";
-    public static final String RECORD_000332 = "xml/copyright_extraction/000332.tif.xml";
     public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
-    public static final String RECORD_JB000132 = "xml/copyright_extraction/JB000132_114.tif.xml";
     public static final String RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
-    public static final String RECORD_KHP0001_001 = "xml/copyright_extraction/KHP0001-001.tif.xml";
     public static final String RECORD_e5a0e980 = "xml/copyright_extraction/e5a0e980-d6cb-11e3-8d2e-0016357f605f.xml";
-    public static final String RECORD_KE066530 = "xml/copyright_extraction/KE066530.tif.xml";
     public static final String RECORD_f4668ad0 = "xml/copyright_extraction/f4668ad0-f334-11e8-b74f-00505688346e.xml";
-    public static final String RECORD_DPK000107 = "xml/copyright_extraction/DPK000107.tif.xml";
     public static final String RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
     public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
     public static final String RECORD_DNF = "xml/copyright_extraction/DNF_1951-00352_00052.tif.xml";
