@@ -131,5 +131,5 @@ config:
                     stylesheet: 'xslt/mods2solr.xsl'
 
   # Imageserver to be used when constructing URLs to be shown in Schema.org XSLT transformation
-  # This has to be set before image URLs are working.
+  # This has to be set before image URLs are working. imageserver has to pe set without trailing slash as this is currently handled by the XSLT transformation
   imageserver: 'http:/example/imageserver'
