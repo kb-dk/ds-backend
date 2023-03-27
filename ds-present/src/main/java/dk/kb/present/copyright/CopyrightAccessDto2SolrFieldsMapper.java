@@ -39,7 +39,6 @@ public class CopyrightAccessDto2SolrFieldsMapper {
         imageUrl=accessDto.getImageUrl();
         fotoAftale=accessDto.isFotoAftale();
         billedeAftale=accessDto.isBilledeAftale();
-        System.out.println(billedeAftale);
      
         //Very important TEMPORARY logic with hardcoded data so 'jura' can test.
         if ((ophavsPersonDoedsAar!= null && ophavsPersonDoedsAar <=  1952)  || (skabelsesAar!= null && skabelsesAar <=  1882)) {
