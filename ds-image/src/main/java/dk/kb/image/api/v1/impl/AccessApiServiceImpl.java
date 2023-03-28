@@ -1,16 +1,32 @@
 package dk.kb.image.api.v1.impl;
 
+
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
 import dk.kb.image.api.v1.AccessApi;
+import dk.kb.image.util.BufferedImageUtils;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//License module client
+import dk.kb.license.client.v1.DsLicenseApi;
+import dk.kb.license.util.DsLicenseClient;
+import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
+import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
+import dk.kb.license.model.v1.UserObjAttributeDto;
+
+import javax.imageio.ImageIO;
 import javax.ws.rs.core.StreamingOutput;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,6 +38,8 @@ import java.util.List;
 public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private static final Logger log = LoggerFactory.getLogger(AccessApiServiceImpl.class);
 
+    private static DsLicenseApi licenseClient;     
+    
     /**
      * DeepZoom Image information
      *
@@ -251,6 +269,18 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
                       JTL, PTL, CVT, getCallDetails());
             String[] elements = FIF.split("[/\\\\]");
             String filename = elements[elements.length - 1] + "." + CVT;
+            String local_identifier=elements[elements.length - 1] +".tif";
+            log.info("local identifier:"+local_identifier);
+            
+
+            if (!hasAccessToImage(local_identifier)) {                
+                //Maybe throw a 403 (forbidden)  instead? For images that does not exist (wrong file-path), this no-access image  will also be shown.                
+                return getImageForbidden(); 
+            }
+               
+
+
+            
             // Show download link in Swagger UI, inline when opened directly in browser
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(CVT));
@@ -263,6 +293,79 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         }
     }
 
+    
+    protected StreamingOutput createStreamingOutput(final byte[] data){
+        return new StreamingOutput(){
+          @Override public void write(    OutputStream output) throws IOException {
+            output.write(data);
+          }
+        }
+      ;
+      }
+    
+    
+    private StreamingOutput getImageForbidden()  throws Exception {
+        BufferedImage image = BufferedImageUtils.getNoAccessImage();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", baos);
+        byte[] bytes = baos.toByteArray();
+        
+        return createStreamingOutput(bytes);
+
+    }
+    
+    private boolean hasAccessToImage(String localIdentifier) throws Exception{
+       
+        //Add filter query from license module.
+        DsLicenseApi licenseClient = getDsLicenseApiClient();
+        CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(localIdentifier);        
+        CheckAccessForIdsOutputDto checkAccessForIds = licenseClient.checkAccessForResourceIds(licenseQueryDto); //Use the resource field
+                   
+         List<String> ids  = checkAccessForIds.getAccessIds();
+         //TODO remove eventually when testing is done. Logs too many lines.
+         log.debug("License moduler filtering return ids:"+ids +" with filtering query:"+checkAccessForIds.getQuery());
+        
+        return (1==ids.size());
+    }
+    
+    
+    private static CheckAccessForIdsInputDto  getCheckAccessForIdsInputDto(String localIdentifier) {
+       
+        CheckAccessForIdsInputDto idsDto = new CheckAccessForIdsInputDto();
+        //TODO these attributes must come from Keycloak
+        UserObjAttributeDto everybodyUserAttribute=new UserObjAttributeDto();         
+        everybodyUserAttribute.setAttribute("everybody"); 
+        ArrayList<String> values = new ArrayList<String>();
+        values.add("yes");
+        everybodyUserAttribute.setValues(values);
+        
+        List<UserObjAttributeDto> allAttributes = new ArrayList<UserObjAttributeDto>(); 
+        allAttributes.add(everybodyUserAttribute);                  
+        idsDto.setPresentationType("Thumbnails");
+        idsDto.setAttributes(allAttributes);
+        
+        List<String> ids = new ArrayList<String>();
+        ids.add(localIdentifier);
+        idsDto.setAccessIds(ids);
+        return idsDto;
+     
+     
+ }
+    
+ 
+    private static DsLicenseApi getDsLicenseApiClient() {       
+        if (licenseClient!= null) {
+          return licenseClient;
+        }
+          
+        //String dsLicenseUrl = ServiceConfig.getConfig().getString("config.licensemodule.url");                                
+        //TODO in YAML
+        String dsLicenseUrl="http://localhost:10001/ds-license/v1/";
+        licenseClient = new DsLicenseClient(dsLicenseUrl);               
+        return licenseClient;
+      }
+    
+    
     /**
      * Derives the MIME type for replies. Only supports formats from IIIF Image and IIP protocols.
      * @param format simple form, e.g. {@code jpeg}, {@code pdf}...
