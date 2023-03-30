@@ -269,18 +269,12 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
                       JTL, PTL, CVT, getCallDetails());
             String[] elements = FIF.split("[/\\\\]");
             String filename = elements[elements.length - 1] + "." + CVT;
-            String local_identifier=elements[elements.length - 1] +".tif";
-            log.info("local identifier:"+local_identifier);
-            
-
-            if (!hasAccessToImage(local_identifier)) {                
+                       
+            if (!hasAccessToImage(FIF)) {                
                 //Maybe throw a 403 (forbidden)  instead? For images that does not exist (wrong file-path), this no-access image  will also be shown.                
                 return getImageForbidden(); 
             }
-               
 
-
-            
             // Show download link in Swagger UI, inline when opened directly in browser
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(CVT));
@@ -314,11 +308,11 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
 
     }
     
-    private boolean hasAccessToImage(String localIdentifier) throws Exception{
+    private boolean hasAccessToImage(String resource_id) throws Exception{
        
         //Add filter query from license module.
         DsLicenseApi licenseClient = getDsLicenseApiClient();
-        CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(localIdentifier);        
+        CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(resource_id);        
         CheckAccessForIdsOutputDto checkAccessForIds = licenseClient.checkAccessForResourceIds(licenseQueryDto); //Use the resource field
                    
          List<String> ids  = checkAccessForIds.getAccessIds();
@@ -329,7 +323,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     }
     
     
-    private static CheckAccessForIdsInputDto  getCheckAccessForIdsInputDto(String localIdentifier) {
+    private static CheckAccessForIdsInputDto  getCheckAccessForIdsInputDto(String resource_id) {
        
         CheckAccessForIdsInputDto idsDto = new CheckAccessForIdsInputDto();
         //TODO these attributes must come from Keycloak
@@ -345,7 +339,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         idsDto.setAttributes(allAttributes);
         
         List<String> ids = new ArrayList<String>();
-        ids.add(localIdentifier);
+        ids.add(resource_id);
         idsDto.setAccessIds(ids);
         return idsDto;
      
