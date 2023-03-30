@@ -539,10 +539,8 @@
           <f:array key="resource_id">
             <xsl:for-each select="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
               <xsl:variable name="noPrefix">
-                <xsl:value-of select="f:replace(., 'https?://[^/]*', '')"/>
-<!--
-                <xsl:value-of select="f:substring-after(., 'http://kb-images.kb.dk')"/>
--->
+                <!-- Replace image server by regex. Afterwards we manually replace the string '/imageServicecumulus-core-01:' which is present in some strings due to poor metadata -->
+                <xsl:value-of select="f:replace(f:replace(., 'https?://[^:/]*', ''), '/imageServicecumulus-core-01:', '')"/>
               </xsl:variable>
               <f:string>
                 <xsl:value-of select="substring-before($noPrefix, '.jp')"/>
