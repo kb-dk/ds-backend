@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.*;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,14 +47,8 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
 	@Test
 	void testSolrNew() throws Exception {
-
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_05fea810);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);        
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"id\":\"05fea810-7181-11e0-82d7-002185371280\""));
 	}
 
 	/**
@@ -60,22 +57,13 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXsltNewDpkItem() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_3956d820);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"shelf_location\":\"Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort\\/politistation\""));
 	}
 
 	@Test
 	void testXslt45dd() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_45dd4830 );
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_45dd4830);
+		assertTrue(solrString.contains("\"catalog_name\":\"Samlingsbilleder\",\"collection\":\"Billedsamlingen\""));
 	}
 
 	/**
@@ -84,168 +72,92 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXslt096() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"id\":\"096c9090-717f-11e0-82d7-002185371280\""));
 	}
 
 	@Test
 	void testNoNameButAffiliation() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DNF);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"creator_affiliation\":[\"Bisson frères\"],\"creator_description\":[\"fransk korporation\"]"));
+		assertFalse(solrString.contains("creator_given_name"));
 	}
 
 	@Test
 	void testNoNameMultipleNames() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_5cc1bea0);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
-	}
-
-	@Test
-	void testWhitespaceTrim() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_FM);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"creator_given_name\":[\"Chen\"]"));
+		assertTrue(solrString.contains("\"creator_date_of_birth\":[\"1945-0-0\",\"1945-0-0\"]"));
 	}
 
 	@Test
 	void testEmptyCollection() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_Elf);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertFalse(solrString.contains("collection"));
 	}
 
 	@Test
 	void testNoTermsOfAddress() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
-	}
-
-	@Test
-	void testXsltDt005031() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_aaf3b130);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertFalse(solrString.contains("creator_terms_of_address"));
 	}
 
 	@Test
 	void testXsltSkfF0137() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_54b34b50);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
-	}
-
-	@Test
-	void testXsltKhp0001049() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_8e608940);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"list_of_categories\":[\"Rytterskoler x\",\"Skolehistorie\",\"69 testfiler\"]"));
 	}
 
 	@Test
 	void testUldall() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_e2519ce0);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"catalog_name\":\"Maps\""));
 	}
 
 	@Test
 	void testChineseTitels() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_26d4dd60);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"creator_affiliation\":[\"Haidian Yangfang dian jiedao zhongxin xiaoxue (海淀区羊坊店街道中心小学)\"]"));
 	}
 
 	@Test
 	void testMultipleAffiliations() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_9C);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"creator_affiliation\":[\"Billedbladet\",\"Nordisk Pressefoto\"]"));
 	}
 
 	@Test
 	void testMultipleDescriptions() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_3B03);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		assertTrue(solrString.contains("\"creator_affiliation\":[\"Aftenbladet\",\"Associated Press\"],\"creator_description\":[\"dansk avis\",\"amerikansk nyhedsbureau\"]"));
 	}
 
 	@Test
 	void testDifferentRelatedItems() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_DB_hans);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DB_hans);
+		assertTrue(solrString.contains("\"collection\":\"Bladtegnersamlingen\",\"published_in\":\"Aktuelt\""));
 	}
 
 	@Test
 	void testTitleExtraction() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_770379f0);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_770379f0);
+		assertTrue(solrString.contains("\"title\":\"Romeo og Julie\""));
 	}
 
 	@Test
 	void testImageResource() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_40221e30);
+		assertTrue(solrString.contains("\"image_resource\":\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\""));
+	}
+
+	/**
+	 * Transform the input MODS record with an XSLT and return as pretty JSON
+	 */
+	private void prettyPrintSolrJsonFromMods(String record) throws Exception {
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, record);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
 		String prettyJsonString = gson.toJson(je);
-
-		//  assertTrue(solrString.contains("{\"id\":\""));
+		System.out.println(prettyJsonString);
 	}
 
 
