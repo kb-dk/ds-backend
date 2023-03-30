@@ -146,7 +146,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testImageResource() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_40221e30);
-		assertTrue(solrString.contains("\"image_resource\":\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\""));
+		assertTrue(solrString.contains("\"resource_id\":[\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
 	}
 
 	/**
