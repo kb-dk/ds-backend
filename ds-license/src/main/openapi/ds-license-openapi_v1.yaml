@@ -44,7 +44,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user.'
+      summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. ID filter field is defined in the YAML configuration'
       operationId: checkAccessForIds  
       requestBody:
         content:
@@ -60,6 +60,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAccessForIdsOutput'
+                 
+                
+  /checkAccessForResourceIds:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
+      operationId: checkAccessForResourceIds  
+      requestBody:
+        content:
+          application/json:    # Media type
+            schema:            # Request body contents
+              $ref: '#/components/schemas/CheckAccessForIdsInput'
+                
+    
+      responses:
+        '200':
+          description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckAccessForIdsOutput'
+
+                
 
 
   /validateAccess:

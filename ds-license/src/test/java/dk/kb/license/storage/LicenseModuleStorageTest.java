@@ -1016,18 +1016,18 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     @Test
     public void testMakeAuthIdPart() throws Exception {
 
-        String filterField=ServiceConfig.SOLR_FILTER_FIELD;
+        String filterField=ServiceConfig.SOLR_FILTER_ID_FIELD;
         ArrayList<String> ids = new ArrayList<String>(); 
         ids.add("testId1");
         ids.add("testId2");
-        String solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids);
+        String solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids,filterField);
         assertEquals("(" +filterField+":\"testId1\" OR "+filterField+":\"testId2\")", solrIdsQuery); 
 
         //prevent Lucene query injection. Remove all " and / from the string
         ids = new ArrayList<String>(); 
         ids.add("test\"Id3\\");
 
-        solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids); 
+        solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids,filterField); 
 
         assertEquals("("+filterField+":\"testId3\")", solrIdsQuery);                 
     }

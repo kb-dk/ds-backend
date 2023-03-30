@@ -4,7 +4,8 @@ All URIs are relative to *http://localhost/ds-license/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**checkAccessForIds**](DsLicenseApi.md#checkAccessForIds) | **POST** /checkAccessForIds | Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user.
+[**checkAccessForIds**](DsLicenseApi.md#checkAccessForIds) | **POST** /checkAccessForIds | Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. ID filter field is defined in the YAML configuration
+[**checkAccessForResourceIds**](DsLicenseApi.md#checkAccessForResourceIds) | **POST** /checkAccessForResourceIds | Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration
 [**getGreeting**](DsLicenseApi.md#getGreeting) | **GET** /hello | Request a Hello World message, for testing purposes
 [**getUserGroups**](DsLicenseApi.md#getUserGroups) | **POST** /getUserGroups | Get the groups that the user has access to
 [**getUserGroupsAndLicenses**](DsLicenseApi.md#getUserGroupsAndLicenses) | **POST** /getUserGroupsAndLicenses | Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes
@@ -17,7 +18,7 @@ Method | HTTP request | Description
 # **checkAccessForIds**
 > CheckAccessForIdsOutputDto checkAccessForIds(checkAccessForIdsInputDto)
 
-Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user.
+Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. ID filter field is defined in the YAML configuration
 
 ### Example
 ```java
@@ -40,6 +41,66 @@ public class Example {
       System.out.println(result);
     } catch (ApiException e) {
       System.err.println("Exception when calling DsLicenseApi#checkAccessForIds");
+      System.err.println("Status code: " + e.getCode());
+      System.err.println("Reason: " + e.getResponseBody());
+      System.err.println("Response headers: " + e.getResponseHeaders());
+      e.printStackTrace();
+    }
+  }
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **checkAccessForIdsInputDto** | [**CheckAccessForIdsInputDto**](CheckAccessForIdsInputDto.md)|  | [optional]
+
+### Return type
+
+[**CheckAccessForIdsOutputDto**](CheckAccessForIdsOutputDto.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. |  -  |
+
+<a name="checkAccessForResourceIds"></a>
+# **checkAccessForResourceIds**
+> CheckAccessForIdsOutputDto checkAccessForResourceIds(checkAccessForIdsInputDto)
+
+Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration
+
+### Example
+```java
+// Import classes:
+import dk.kb.license.ApiClient;
+import dk.kb.license.ApiException;
+import dk.kb.license.Configuration;
+import dk.kb.license.models.*;
+import dk.kb.license.api.DsLicenseApi;
+
+public class Example {
+  public static void main(String[] args) {
+    ApiClient defaultClient = Configuration.getDefaultApiClient();
+    defaultClient.setBasePath("http://localhost/ds-license/v1");
+
+    DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
+    CheckAccessForIdsInputDto checkAccessForIdsInputDto = new CheckAccessForIdsInputDto(); // CheckAccessForIdsInputDto | 
+    try {
+      CheckAccessForIdsOutputDto result = apiInstance.checkAccessForResourceIds(checkAccessForIdsInputDto);
+      System.out.println(result);
+    } catch (ApiException e) {
+      System.err.println("Exception when calling DsLicenseApi#checkAccessForResourceIds");
       System.err.println("Status code: " + e.getCode());
       System.err.println("Reason: " + e.getResponseBody());
       System.err.println("Response headers: " + e.getResponseHeaders());

@@ -28,7 +28,7 @@ public class LicenseValidator {
 	private static final Logger log = LoggerFactory.getLogger(LicenseValidator.class);		
 	public static final String LOCALE_DA = "da";
 	public static final String LOCALE_EN = "en";
-	public static final String NO_ACCESS = ServiceConfig.SOLR_FILTER_FIELD+":NoAccess";
+	public static final String NO_ACCESS = ServiceConfig.SOLR_FILTER_ID_FIELD+":NoAccess";
 
 	
 	
@@ -120,10 +120,56 @@ public class LicenseValidator {
 			throw new InvalidArgumentServiceException("Security problem: More Id's in output than input. Check for query injection.");
 		}
 		
-		log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size());
+		log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size() +" using resourceId field:"+ServiceConfig.SOLR_FILTER_ID_FIELD);
 		return output;		
 	}
 
+	
+	   //TODO shitload of javadoc
+    public static CheckAccessForIdsOutputDto checkAccessForResourceIds(CheckAccessForIdsInputDto input) throws Exception{
+       
+        if  (input.getAccessIds() == null || input.getAccessIds().size() == 0){
+            throw new InvalidArgumentServiceException("No ID's in input");          
+        }
+        
+        //Get the query. This also validates the input 
+        GetUserQueryInputDto inputQuery = new GetUserQueryInputDto();       
+        inputQuery.setAttributes(input.getAttributes());
+        inputQuery.setPresentationType(input.getPresentationType());
+        GetUserQueryOutputDto query = getUserQuery(inputQuery);
+        
+        
+        CheckAccessForIdsOutputDto output = new  CheckAccessForIdsOutputDto();
+        output.setPresentationType(input.getPresentationType());
+        output.setQuery(query.getQuery());
+
+        ArrayList<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
+    
+          // merge (union) results.   
+        Set<String> filteredIdsSet = new HashSet<String>();
+        
+        //Next step: use Future's to make multithreaded when we get more servers. 
+        //But currently these requests are less 10 ms
+        for (SolrServerClient server: servers){
+            List<String> filteredIds =server.filterResourceIds(input.getAccessIds(), query.getQuery());
+            log.info("#filtered id for server ("+input.getPresentationType()+") "+ server.getServerUrl() +" : "+filteredIds.size());
+            filteredIdsSet.addAll(filteredIds);
+        }
+        //Now we have to remove remove ID's not asked for that are here because of multivalue field. (set intersection)
+        filteredIdsSet.retainAll(input.getAccessIds());
+                        
+        output.setAccessIds(new ArrayList<String>(filteredIdsSet));
+        //Sanity check!
+        if (output.getAccessIds().size() > input.getAccessIds().size()){
+            throw new InvalidArgumentServiceException("Security problem: More Id's in output than input. Check for query injection.");
+        }
+        
+        log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size() +" using resourceId field:"+ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD);
+        return output;      
+    }
+
+	
+	
 	//TODO shitload of javadoc
 	public static GetUserQueryOutputDto getUserQuery(GetUserQueryInputDto input) throws Exception{
 		//validate

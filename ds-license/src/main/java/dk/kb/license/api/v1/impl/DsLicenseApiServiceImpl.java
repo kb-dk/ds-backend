@@ -96,6 +96,33 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 	}
 
 	@Override
+    public CheckAccessForIdsOutputDto checkAccessForResourceIds(@NotNull CheckAccessForIdsInputDto input) {
+        log.debug("checkAccessForResourceIds(...) called with call details: {}", getCallDetails());
+
+        //MonitorCache.registerNewRestMethodCall("checkAccessForIds");
+        try{
+
+            PresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
+        }
+        catch(IllegalArgumentException e){
+            log.error("Unknown presentationtype:"+input.getPresentationType());
+            CheckAccessForIdsOutputDto output =  new CheckAccessForIdsOutputDto();
+            output.setAccessIds(new ArrayList<String>());
+            output.setPresentationType(input.getPresentationType());
+            output.setQuery("(NoAccess:NoAccess)"); //query that returns nothing
+            return output;
+        }
+
+        try {      
+            CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForResourceIds(input);      
+            return output;
+        } catch (Exception e) {
+            log.error("Error in checkAccessForResourceIds:",e);
+            throw handleException(e);
+        }   
+    }
+	
+	@Override
 	public ValidateAccessOutputDto validateAccess(@Valid ValidateAccessInputDto input) {
 		log.debug("validateAccess(...) called with call details: {}", getCallDetails());
 

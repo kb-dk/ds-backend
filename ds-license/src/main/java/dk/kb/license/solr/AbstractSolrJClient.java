@@ -19,7 +19,9 @@ import dk.kb.license.config.ServiceConfig;
 
 public class AbstractSolrJClient {
     private static final Logger log = LoggerFactory.getLogger(AbstractSolrJClient.class);
-    private static String filterField;
+    private static String filterIdField;
+    private static String filterResourceIdField;
+    
     protected HttpSolrClient solrServer; 
     static{ 
         //Silent all the debugs log from HTTP Client (used by SolrJ)
@@ -31,18 +33,22 @@ public class AbstractSolrJClient {
         java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.OFF); 
         java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.OFF);
    
-        filterField=ServiceConfig.SOLR_FILTER_FIELD;
+        filterIdField=ServiceConfig.SOLR_FILTER_ID_FIELD;
+        filterResourceIdField= ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD;
     }
 
   
-    
+    /**
+     * Filter ID using the primary ID field 
+     *  
+     */      
     public List<String> filterIds(List<String> ids, String queryPartAccess) throws Exception{
 
         if (ids == null || ids.size() == 0){
             return new ArrayList<String>();
         }
 
-        String queryStr= makeAuthIdPart(ids); 
+        String queryStr= makeAuthIdPart(ids,filterIdField); 
         System.out.println("query:"+queryStr);
         
         SolrQuery query = new SolrQuery( queryStr);        
@@ -50,19 +56,50 @@ public class AbstractSolrJClient {
         query.setFilterQueries(queryPartAccess);
         log.debug("filter:"+queryPartAccess);
         
-        query.setFields(filterField); //only this field is used from resultset
+        query.setFields(filterIdField); //only this field is used from resultset
         query.setRows(Math.min(10000, ids.size()*200)); // Powerrating... each page can have max 200 segments (rare).. with 20 pages query this is 4000..               
         query.set("facet", "false"); //  Must be parameter set, because this java method does NOT work: query.setFacet(false);          
         QueryResponse response = solrServer.query(query);        
-        ArrayList<String> filteredIds = getIdsFromResponse(response);
+        ArrayList<String> filteredIds = getIdsFromResponse(response,ServiceConfig.SOLR_FILTER_ID_FIELD);
+
+        return filteredIds;
+
+    }
+     
+    /**
+     * Filter resourceIDs from the resourceid field (multifield in solr)
+     * This method is used for record resources such as images 
+     *  
+     */
+    public List<String> filterResourceIds(List<String> ids, String queryPartAccess) throws Exception{
+
+        if (ids == null || ids.size() == 0){
+            return new ArrayList<String>();
+        }
+
+        String queryStr= makeAuthIdPart(ids, ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD); 
+        System.out.println("query:"+queryStr);
+        
+        SolrQuery query = new SolrQuery( queryStr);        
+        
+        query.setFilterQueries(queryPartAccess);
+        log.debug("filter:"+queryPartAccess);
+        
+        query.setFields(filterResourceIdField); //only this field is used from resultset
+        query.setRows(Math.min(10000, ids.size()*200)); // Powerrating... each page can have max 200 segments (rare).. with 20 pages query this is 4000..               
+        query.set("facet", "false"); //  Must be parameter set, because this java method does NOT work: query.setFacet(false);          
+        QueryResponse response = solrServer.query(query); 
+        log.info("response:"+response);
+        ArrayList<String> filteredIds = getIdsFromResponse(response, ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD);
 
         return filteredIds;
 
     }
      
     
+    
     //Will also remove " from all ids to prevent Query-injection
-    public static String makeAuthIdPart (List<String> ids){
+    public static String makeAuthIdPart (List<String> ids, String filterField){
         StringBuilder queryIdPart = new StringBuilder();
         queryIdPart.append("(");
         for (int i = 0 ;i<ids.size();i++){
@@ -79,11 +116,12 @@ public class AbstractSolrJClient {
         return queryIdPart.toString();
     }
 
-    public static ArrayList<String> getIdsFromResponse(QueryResponse response){
+    public static ArrayList<String> getIdsFromResponse(QueryResponse response, String solrField){
         ArrayList<String> ids= new ArrayList<String>();
 
         for (SolrDocument current : response.getResults()){
-             Collection<Object> fieldValues = current.getFieldValues(filterField); //Multivalued
+                      
+            Collection<Object> fieldValues = current.getFieldValues(solrField); //Multivalued
              for (Object idFound : fieldValues){
                  ids.add(idFound.toString());                 
              }                           

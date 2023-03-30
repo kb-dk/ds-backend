@@ -18,7 +18,8 @@ public class ServiceConfig {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceConfig.class);
     
-    public static String SOLR_FILTER_FIELD = null;
+    public static String SOLR_FILTER_ID_FIELD = null;
+    public static String SOLR_FILTER_RESOURCE_ID_FIELD = null;
     public static ArrayList<SolrServerClient> SOLR_SERVERS = null;
     
     /**
@@ -38,7 +39,9 @@ public class ServiceConfig {
         serviceConfig = YAML.resolveLayeredConfigs(configFile);
     
         String solr_servers= serviceConfig.getString("config.license_solr_servers");
-        SOLR_FILTER_FIELD = serviceConfig.getString("config.license_solr_filter_field");
+        SOLR_FILTER_ID_FIELD = serviceConfig.getString("config.license_solr_filter_field");
+        SOLR_FILTER_RESOURCE_ID_FIELD = serviceConfig.getString("config.license_solr_resource_filter_field");
+        
         
         StringTokenizer tokens = new StringTokenizer(solr_servers, ",");  
         SOLR_SERVERS  = new ArrayList<SolrServerClient>(); 
@@ -49,14 +52,14 @@ public class ServiceConfig {
             
     
         log.info("Loaded solr-servers:"+solr_servers);
-        log.info("Loaded solr filter field:"+SOLR_FILTER_FIELD);
-        
+        log.info("Loaded solr id filter field:"+SOLR_FILTER_ID_FIELD);
+        log.info("Loaded solr resourceId filter field:"+SOLR_FILTER_RESOURCE_ID_FIELD);
     }
 
     
     //For unittest
     public static void setSOLR_FILTER_FIELD(String sOLR_FILTER_FIELD) {
-        SOLR_FILTER_FIELD = sOLR_FILTER_FIELD;
+        SOLR_FILTER_ID_FIELD = sOLR_FILTER_FIELD;
     }
 
     
