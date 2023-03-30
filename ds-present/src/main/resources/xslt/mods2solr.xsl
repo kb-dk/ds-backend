@@ -534,12 +534,15 @@
             <xsl:value-of select="m:subject/m:cartographics/m:scale"/>
           </f:string>
         </xsl:if>
-        <!-- Extract image resource-->
+        <!-- Extract resource id-->
         <xsl:if test="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
           <f:array key="resource_id">
             <xsl:for-each select="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
               <xsl:variable name="noPrefix">
+                <xsl:value-of select="f:replace(., 'https?://[^/]*', '')"/>
+<!--
                 <xsl:value-of select="f:substring-after(., 'http://kb-images.kb.dk')"/>
+-->
               </xsl:variable>
               <f:string>
                 <xsl:value-of select="substring-before($noPrefix, '.jp')"/>
