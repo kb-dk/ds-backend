@@ -31,14 +31,6 @@ class XSLTTransformerTest {
     public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
 
     @Test
-    void testNew000332() throws IOException {
-        String solrString =  TestUtil.getTransformed(MODS2SOLR, RECORD_05fea810);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = JsonParser.parseString(solrString);
-
-    }
-
-    @Test
     void testIDInjection() throws IOException {
     	Map<String, String>  parameters = new HashMap<String,String>();
     	parameters.put("external_parameter1" , "value1");
@@ -91,5 +83,5 @@ class XSLTTransformerTest {
     }
 
 
-    
+
 }
