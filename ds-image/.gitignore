@@ -11,3 +11,4 @@ README_OLD.md
 .openapi-generator/
 conf/ds-image-environment.yaml
 conf/ds-image-local.yaml
+/deploy2Devel11.sh
