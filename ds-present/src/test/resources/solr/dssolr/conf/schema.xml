@@ -84,7 +84,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
   <field name="map_scale" type="string" stored="true"/>
 
-  <field name="resource_id" type="string" multiValued="true"/>
+  <field name="resource_id" type="string" multiValued="true" stored="true"/>
   <field name="file_size" type="plong"/>
   <field name="image_height" type="pint"/>
   <field name="image_width" type="pint"/>
@@ -104,10 +104,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="access_billede_aftale" type="boolean"  indexed="true" required="true" docValues="true" stored="true"/>
   <field name="access_ophavsret_tekst" type="string" indexed="true"  docValues="true" stored="true"/>
   
-  <!-- Temporary set by rettighedsudtreakkeren -->
-  <field name="imageurl" type="string"/>
-
-
   <!-- Most fields are copied to this field for matching. -->
   <field name="freetext" type="freetext" multiValued="true" stored="false"/>
 

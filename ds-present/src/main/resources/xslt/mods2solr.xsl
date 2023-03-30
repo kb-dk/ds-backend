@@ -28,7 +28,6 @@
        <xsl:param name="access_billede_aftale"/>
        <xsl:param name="access_ophavsret_tekst"/>
               
-       <xsl:param name="imageurl"/>
               
   <xsl:template match="/">
   
@@ -69,10 +68,7 @@
       <xsl:if test="$access_searlige_visningsvilkaar!= ''">
         <f:string key="access_searlige_visningsvilkaar"><xsl:value-of select="$access_searlige_visningsvilkaar"/></f:string>
       </xsl:if>
-
-      <xsl:if test="$imageurl!= ''">
-        <f:string key="imageurl"><xsl:value-of select="$imageurl"/></f:string>
-      </xsl:if>
+   
       <!-- End externally provided parameters -->
 
 

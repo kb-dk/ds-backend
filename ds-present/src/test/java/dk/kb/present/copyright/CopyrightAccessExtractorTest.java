@@ -219,9 +219,6 @@ public class CopyrightAccessExtractorTest {
         assertEquals(CopyrightAccessDto.DISPLAY_LABEL_RESTRICTED.trim(),accessCondition2.getDisplayLabel()); //no white space error here  TODO                
 
 
-        //TEMPORARY TEST, FIELD WILL BE REMOVED
-        //assertEquals("http://kb-images.kb.dk/?FIF=/DAMJP2/DAM/Samlingsbilleder/0000/388/116/DT005031",copyright.getImageUrl());
-
         //Test field mapping       
         CopyrightAccessDto2SolrFieldsMapper mapper = new  CopyrightAccessDto2SolrFieldsMapper(copyright);
 
