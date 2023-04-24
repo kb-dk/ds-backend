@@ -76,7 +76,7 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
 //                stage('Cleanup') {
 //                   openshift.selector("project/${projectName}").delete()
 //              }
-//            }
+            }
         } catch (e) {
             currentBuild.result = 'FAILURE'
             throw e
