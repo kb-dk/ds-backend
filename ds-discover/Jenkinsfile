@@ -64,7 +64,7 @@ openshift.withCluster() { // Use "default" cluster or fallback to OpenShift clus
                         stage("Create build and deploy application") {
                             openshift.newBuild("--strategy source", "--binary", "-i kb-infra/kb-s2i-tomcat90", "--name ds-discover")
                             openshift.startBuild("ds-discover", "--from-dir=.", "--follow")
-                            openshift.newApp("ds-discover:latest")
+                            openshift.newApp("ds-discover", "-e BUILD_NUMBER=latest")
                             openshift.create("route", "edge", "--service=ds-discover")
                         }
                     }
