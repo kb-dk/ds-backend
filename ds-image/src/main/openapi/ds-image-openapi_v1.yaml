@@ -269,7 +269,8 @@ paths:
             
             When using the RGN parameter, please note that the WID parameter is **NOT** automatically adjusted. 
             If WID is not adjusted accordingly you will receive an upscale version of the region requested. 
-            If you don't know the original width of the image, this can be obtained through the ```/IIIF/{identifier}/info.{format}```-endpoint.  
+            WID defaults to the original image width in pixels.
+            The original width of the image, can be obtained through the ```/IIIF/{identifier}/info.{format}```-endpoint.  
               
             **RGN has to be defined as x,y,w,h and requires CVT, WID & HEI** 
           schema: 
