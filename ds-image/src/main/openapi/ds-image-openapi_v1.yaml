@@ -266,6 +266,10 @@ paths:
             Define a region of interest starting at relative coordinates x,y with width w and height h.
             
             For use with CVT requests. All values should be ratios in the range 0 – 1.0
+            
+            When using the RGN parameter, please note that the WID parameter is **NOT** automatically adjusted. 
+            If WID is not adjusted accordingly you will receive an upscale version of the region requested. 
+            If you don't know the original width of the image, this can be obtained through the ```/IIIF/{identifier}/info.{format}```-endpoint.  
               
             **RGN has to be defined as x,y,w,h and requires CVT, WID & HEI** 
           schema: 
