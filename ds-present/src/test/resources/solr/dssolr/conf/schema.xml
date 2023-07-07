@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- 
+<!--
 Important! READ before making changes to the schema.
 Since we are using schema.xml and not managed-schema.xml all filters defined has to be loaded by class and not by name parameter.
 Read about this bug: https://issues.apache.org/jira/browse/SOLR-16203
 
 In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>  
 -->
+<?documentation-description Fields in this schema should be described with two metatags.
+        ?Description should contain a description of the following field, while
+        ?Example should contain an example of how to use the field. If providing multiple
+        examples for a field, please encapsulate each example in a ?Example tag.
+
+        Furthermore the metatag ?schema-description is used to describe different schema fields.?>
+
 
 <schema name="example" version="1.6">
   <uniqueKey>id</uniqueKey>
@@ -15,8 +21,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   
    <!-- START FIELDS  -->
    <!-- Default solr field -->
-  <field name="_version_" type="plong" indexed="false" stored="false"/> 
-  
+  <field name="_version_" type="plong" indexed="false" stored="false"/>
+
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
   <field name="identifier_local" type="string"  stored="true"/>
   <field name="accession_number" type="string" stored="true"/>
@@ -32,7 +38,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
 
   <!-- Fields on title -->
-  <field name="title" type="text_general"/> <!-- Currently only present in maps collection-->
+  <?description The object title ?>
+  <?example     Den grimme ælling?>
+  <field name="titles" type="text_general" multiValued="true"/> <!-- Currently only present in maps collection-->
   <field name="subtitle" type="text_general"/> <!--  May not be in data -->
   <field name="alternative_title" type="text_general"/> <!--  May not be in data -->
 
@@ -61,16 +69,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="internal_note" type="text_general" multiValued="true"/>
   <field name="catalog_name" type="string" stored="true" docValues="true"/>
 
-  <field name="subject_name" type="text_general" multiValued="true"/>
-  <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true"/>
-  <field name="subject_family_name" type="text_general" multiValued="true"/>
-  <field name="subject_given_name" type="text_general" multiValued="true" />
 
-
-  
 
   <!-- Fields on production of physical and digital object. -->
-  <!-- TODO: Format as date -->
   <field name="date_created" type="string" stored="true"/>
   <field name="production_date_start" type="string" stored="true" />
   <field name="place_of_production" type="string" stored="true" />
@@ -78,10 +79,15 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="digital_surrogate_production_date" type="string" stored="true"/>
 
   <!-- Fields on subject -->
-  
+  <field name="subject_name" type="text_general" multiValued="true"/>
+  <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true"/>
+  <field name="subject_family_name" type="text_general" multiValued="true"/>
+  <field name="subject_given_name" type="text_general" multiValued="true" />
   <field name="subject_date_of_birth" type="string" multiValued="true" stored="true"/>
   <field name="subject_date_of_death" type="string" multiValued="true" stored="true"/>
   <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
+
+
   <field name="map_scale" type="string" stored="true"/>
 
   <field name="resource_id" type="string" multiValued="true" stored="true"/>
@@ -105,54 +111,56 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="access_ophavsret_tekst" type="string" indexed="true"  docValues="true" stored="true"/>
   
   <!-- Most fields are copied to this field for matching. -->
+  <?description freetext field, which contains text from multiple other fields.?>
   <field name="freetext" type="freetext" multiValued="true" stored="false"/>
+
+  <?description field for strict title matching. Matches exact titles?>
+  <?example Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
+  <field name="titles_strict" type="titles_strict" multiValued="true" stored="false"/>
 
   <!-- END FIELDS  -->
   
   
-  <!-- START FIELDTYPES  -->
-  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>   
-  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>  
-  <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>  
-  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>  
+
+  <?schema-description This part of the schema describes how different fields are defined and analysed when documents
+          are indexed or queries are sent to the index.?>
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+  <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
+  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
   <fieldType name="pint" class="solr.IntPointField" multiValued="false" indexed="true" required="false" stored="true" docValues="false"/>
   <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
-  
+
   <!-- Field is not analysed or tokenized. Used for author names, titles etc. This field is not usefull as search field, but good for docValues  -->
   <fieldType name="string" class="solr.StrField" sortMissingLast="true" indexed="true" required="false" stored="true" multiValued="false" docValues="true"/>
-  
-  
+
+
   <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
     <analyzer>
       <tokenizer class="solr.StandardTokenizerFactory"/>
-      <filter class="solr.LowerCaseFilterFactory"/>      
-      <filter class="solr.StopFilterFactory"  format="snowball" ignoreCase="true" words="lang/stopwords_da.txt"/>      
-      <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>     
-    </analyzer>
-  </fieldType>    <copyField source="creator_name" dest="freetext"/>
-  
-  
-
-  
-     
-     
-   <!-- Very string field matching. Only lower case. diacritics  must match.  No matching cross multifields-->  
-  <fieldType name="text_strict" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="0">
-    <analyzer type="index">
-          <tokenizer class="solr.WhitespaceTokenizerFactory"/>                 
-          <filter class="solr.LowerCaseFilterFactory"/>               
-    </analyzer>
-    <analyzer type="query">
-          <tokenizer class="solr.WhitespaceTokenizerFactory"/>      
-          <filter class="solr.LowerCaseFilterFactory"/> 
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory"  format="snowball" ignoreCase="true" words="lang/stopwords_da.txt"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>
     </analyzer>
   </fieldType>
-     
-     
+
+   <!-- Very string field matching. Only lower case. diacritics  must match.  No matching cross multifields-->
+  <fieldType name="text_strict" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="0">
+    <analyzer type="index">
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+          <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+          <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+
   <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
-    <analyzer type="index">          
+    <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
-       <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt"/>      
+       <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt"/>
        <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
     <analyzer type="query">
@@ -161,51 +169,63 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
-  
+
+  <fieldType name="titles_strict" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="true">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
    <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory"/>
-      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>    
-      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>      
+      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
     <analyzer type="query">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
-      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>      
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
-  
- <!-- END FIELDTYPES  -->
+
  
  
- 
-    <!-- START COPYFIELD  -->
-   
-    <!-- Exact  spelling of author gives high ranking  -->
-    <copyField source="creator_full_name" dest="creator_full_name_strict"/> 
-    
-   
-    <copyField source="creator_name" dest="freetext"/> 
-    <copyField source="creator_full_name" dest="freetext"/>   
-    <copyField source="creator_given_name" dest="freetext"/>
-    <copyField source="creator_terms_of_address" dest="freetext"/>
-    <copyField source="area" dest="freetext"/>
-    <copyField source="subject_name" dest="freetext"/>
-    <copyField source="subject_full_name" dest="freetext"/>
-    <copyField source="subject_family_name" dest="freetext"/>
-    <copyField source="subject_given_name" dest="freetext"/>
-    <copyField source="categories" dest="freetext"/>
-    <copyField source="catalog_name" dest="freetext"/>
-    <copyField source="collection" dest="freetext"/>
-    <copyField source="type_of_resource" dest="freetext"/>
-    <copyField source="content" dest="freetext"/>
-    <copyField source="shelf_location" dest="freetext"/>
-    <copyField source="title" dest="freetext"/>
-    <copyField source="subtitle" dest="freetext"/>
-    <copyField source="alternative_title" dest="freetext"/>
-        
+  <!-- START COPYFIELD  -->
+
+  <?description copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
+  <?example A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
+  <copyField source="creator_full_name" dest="creator_full_name_strict"/>
+
+  <copyField source="titles" dest="titles_strict"/>
+
+
+  <copyField source="creator_name" dest="freetext"/>
+  <copyField source="creator_full_name" dest="freetext"/>
+  <copyField source="creator_given_name" dest="freetext"/>
+  <copyField source="creator_terms_of_address" dest="freetext"/>
+  <copyField source="area" dest="freetext"/>
+  <copyField source="subject_name" dest="freetext"/>
+  <copyField source="subject_full_name" dest="freetext"/>
+  <copyField source="subject_family_name" dest="freetext"/>
+  <copyField source="subject_given_name" dest="freetext"/>
+  <copyField source="categories" dest="freetext"/>
+  <copyField source="catalog_name" dest="freetext"/>
+  <copyField source="collection" dest="freetext"/>
+  <copyField source="type_of_resource" dest="freetext"/>
+  <copyField source="content" dest="freetext"/>
+  <copyField source="shelf_location" dest="freetext"/>
+  <copyField source="titles" dest="freetext"/>
+  <copyField source="subtitle" dest="freetext"/>
+  <copyField source="alternative_title" dest="freetext"/>
+
     
   <!-- END COPYFIELD  -->    
      

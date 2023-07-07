@@ -140,7 +140,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testTitleExtraction() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_770379f0);
-		assertTrue(solrString.contains("\"title\":\"Romeo og Julie\""));
+		assertTrue(solrString.contains("\"titles\":[\"Romeo og Julie\"]"));
 	}
 
 	@Test

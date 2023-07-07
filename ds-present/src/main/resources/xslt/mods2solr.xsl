@@ -198,11 +198,20 @@
             </f:array>
           </xsl:if>
           <!-- Some metadata records contains multiple titles with no language indication. Therefore this part extracts the first one. -->
+          <!-- TODO: Consider extracting all, as multiple other Cultural Heritage Institutions as Rijksmuseum and National Gallery of Denmark does -->
           <!-- Extract title if present.-->
           <xsl:if test="m:titleInfo/m:title">
-            <f:string key="title">
+            <f:array key="titles">
+              <xsl:for-each select="m:titleInfo/m:title">
+                <f:string>
+                  <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+                </f:string>
+              </xsl:for-each>
+            </f:array>
+            <!--
+            <f:string key="titles">
               <xsl:value-of select="f:replace(m:titleInfo/m:title[1], 'zh\|', '')"/>
-            </f:string>
+            </f:string> -->
           </xsl:if>
           <!-- Extract subtitle if present.-->
           <xsl:if test="m:titleInfo/m:subTitle">
