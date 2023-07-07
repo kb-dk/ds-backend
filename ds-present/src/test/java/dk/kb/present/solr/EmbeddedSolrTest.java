@@ -101,7 +101,7 @@ public class EmbeddedSolrTest {
 
 
         //Single value field
-        assertEquals("000332.tif",record.getFieldValue("identifier_local"));
+        assertEquals("000332.tif",record.getFieldValue("filename_local"));
 
         //multivalue field
         assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
@@ -225,7 +225,7 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("aaf3b130-e6e7-11e6-bdbe-00505688346e");
 
         //Single value field
-        assertEquals("DT005031.tif",record.getFieldValue("identifier_local"));
+        assertEquals("DT005031.tif",record.getFieldValue("filename_local"));
 
 		//multivalue field
 		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Tegning" );
@@ -242,7 +242,7 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
 
         //Single value field
-        assertEquals("ANSK_11614.tif",record.getFieldValue("identifier_local"));
+        assertEquals("ANSK_11614.tif",record.getFieldValue("filename_local"));
 
 		//multivalue field
 		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Anskuelsesbillede" );
@@ -258,7 +258,7 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("54b34b50-2ce6-11ed-81b4-005056882ec3");
 
         //Single value field
-        assertEquals("SKF_f_0137.tif",record.getFieldValue("identifier_local"));
+        assertEquals("SKF_f_0137.tif",record.getFieldValue("filename_local"));
 
 		//multivalue field
 		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Fotografi" );
@@ -274,7 +274,7 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("8e608940-d6db-11e3-8d2e-0016357f605f");
 
         //Single value field
-        assertEquals("KHP0001-049.tif",record.getFieldValue("identifier_local"));
+        assertEquals("KHP0001-049.tif",record.getFieldValue("filename_local"));
 
         //multivalue field
         assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Dia" );
@@ -294,7 +294,7 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("e2519ce0-9fb0-11e8-8891-00505688346e");
 
         //Single value field
-        assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("identifier_local"));
+        assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("filename_local"));
 
         // Title field
         assertMultivalueField(record, "titles", "Foborg, Foburgum");
@@ -453,11 +453,11 @@ public class EmbeddedSolrTest {
 
     }
 
-    private void assertContentAllSingleValues(SolrDocument record, String identifierLocal, String catalogingLanguage, String shelfLocation,
+    private void assertContentAllSingleValues(SolrDocument record, String filenameLocal, String catalogingLanguage, String shelfLocation,
             String categories, String catalogName, String collection,
             Long filesize, int imgHeight, int imgWidth) throws Exception {
 
-        assertEquals(identifierLocal,record.getFieldValue("identifier_local"));
+        assertEquals(filenameLocal,record.getFieldValue("filename_local"));
         assertEquals(catalogingLanguage,record.getFieldValue("cataloging_language"));
         assertEquals(shelfLocation,record.getFieldValue("shelf_location"));
         assertEquals(categories,record.getFieldValue("categories"));

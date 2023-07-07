@@ -7,11 +7,9 @@ Read about this bug: https://issues.apache.org/jira/browse/SOLR-16203
 In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>  
 -->
 <?documentation-description Fields in this schema should be described with two metatags.
-        ?Description should contain a description of the following field, while
-        ?Example should contain an example of how to use the field. If providing multiple
-        examples for a field, please encapsulate each example in a ?Example tag.
-
-        Furthermore the metatag ?schema-description is used to describe different schema fields.?>
+                            ?Description should contain a description of the following field, while
+                            ?Example should contain an example of how to use the field. If providing multiple
+                            examples for a field, please encapsulate each example in a ?Example tag.?>
 
 
 <schema name="example" version="1.6">
@@ -23,17 +21,42 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
    <!-- Default solr field -->
   <field name="_version_" type="plong" indexed="false" stored="false"/>
 
-  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
-  <field name="identifier_local" type="string"  stored="true"/>
+  <?description The ID derived from UUID in database.?>
+  <?example     770379f0-8a0d-11e1-805f-0016357f605f?>
+  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+
+  <?description The name of the file, which this document contains metadata about.?>
+  <?examaple    JB000132_114.tif?>
+  <field name="filename_local" type="string"  stored="true"/>
+
+  <?description TODO:?>
   <field name="accession_number" type="string" stored="true"/>
+
+  <?description TODO:?>
   <field name="cataloging_language" type="string"  stored="true"/>
+
+  <?description TODO:?>
   <field name="shelf_location" type="string"  stored="true"/>
+
+  <?description TODO:?>
   <field name="physical_location" type="text_general"/> <!--  May not be in data -->
+
+  <?description TODO:?>
   <field name="categories" type="string" docValues="true" stored="true"/>
+
+  <?description TODO:?>
   <field name="list_of_categories" type="string"  multiValued="true" docValues="true" stored="true"/>
+
+  <?description TODO:?>
   <field name="collection" type="string" docValues="true" stored="true"/>
+
+  <?description TODO:?>
   <field name="published_in" type="string" docValues="true" stored="true"/>
+
+  <?description TODO:?>
   <field name="resource_description" type="string" multiValued="false"  docValues="true"/>
+
+  <?description TODO:?>
   <field name="type_of_resource" type="string" multiValued="true"  docValues="true"/>
 
 
@@ -41,60 +64,125 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <?description The object title ?>
   <?example     Den grimme ælling?>
   <field name="titles" type="text_general" multiValued="true"/> <!-- Currently only present in maps collection-->
+
+  <?description TODO:?>
   <field name="subtitle" type="text_general"/> <!--  May not be in data -->
+
+  <?description TODO:?>
   <field name="alternative_title" type="text_general"/> <!--  May not be in data -->
 
   <!-- Fields on creator -->
+  <?description TODO:?>
   <field name="creator_name" type="text_strict" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="creator_full_name" type="string" multiValued="true"  docValues="true"/>
+
+  <?description TODO:?>
   <field name="creator_full_name_strict" type="text_strict" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="creator_family_name" type="text_strict" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="creator_given_name" type="text_strict" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="creator_affiliation" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="creator_description" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="creator_date_of_birth" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="creator_date_of_death" type="text_general" multiValued="true"/>
 
-
+  <?description TODO:?>
   <field name="area" type="text_general" multiValued="false"/>
     
   <!-- This has been split into several fields such as topic 
    <field name="subject" type="text_general" multiValued="true"/>
    -->
 
+  <?description TODO:?>
   <field name="topic" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="description" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="content" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="internal_note" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="catalog_name" type="string" stored="true" docValues="true"/>
 
 
 
   <!-- Fields on production of physical and digital object. -->
+  <?description TODO:?>
   <field name="date_created" type="string" stored="true"/>
+
+  <?description TODO:?>
   <field name="production_date_start" type="string" stored="true" />
+
+  <?description TODO:?>
   <field name="place_of_production" type="string" stored="true" />
+
+  <?description TODO:?>
   <field name="production_date_end" type="string" stored="true"/>
+
+  <?description TODO:?>
   <field name="digital_surrogate_production_date" type="string" stored="true"/>
 
   <!-- Fields on subject -->
+  <?description TODO:?>
   <field name="subject_name" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true"/>
+
+  <?description TODO:?>
   <field name="subject_family_name" type="text_general" multiValued="true"/>
+
+  <?description TODO:?>
   <field name="subject_given_name" type="text_general" multiValued="true" />
+
+  <?description TODO:?>
   <field name="subject_date_of_birth" type="string" multiValued="true" stored="true"/>
+
+  <?description TODO:?>
   <field name="subject_date_of_death" type="string" multiValued="true" stored="true"/>
+
+  <?description TODO:?>
   <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
 
-
+  <?description TODO:?>
   <field name="map_scale" type="string" stored="true"/>
 
+  <?description TODO:?>
   <field name="resource_id" type="string" multiValued="true" stored="true"/>
+
+  <?description TODO:?>
   <field name="file_size" type="plong"/>
+
+  <?description TODO:?>
   <field name="image_height" type="pint"/>
+
+  <?description TODO:?>
   <field name="image_width" type="pint"/>
+
+  <?description TODO:?>
   <field name="image_size_pixels" type="plong"/>
+
+  <?description TODO:?>
   <field name="target_audience" type="string" stored="true"/> <!-- Not in test data. Part of MODS and might be in other collections-->
 
   <!--  Fields related to copyright and access conditions -->
@@ -119,11 +207,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="titles_strict" type="titles_strict" multiValued="true" stored="false"/>
 
   <!-- END FIELDS  -->
-  
-  
 
-  <?schema-description This part of the schema describes how different fields are defined and analysed when documents
-          are indexed or queries are sent to the index.?>
+
   <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
   <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
   <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
@@ -133,7 +218,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <!-- Field is not analysed or tokenized. Used for author names, titles etc. This field is not usefull as search field, but good for docValues  -->
   <fieldType name="string" class="solr.StrField" sortMissingLast="true" indexed="true" required="false" stored="true" multiValued="false" docValues="true"/>
-
 
   <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
     <analyzer>
@@ -155,7 +239,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
           <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
-
 
   <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
     <analyzer type="index">

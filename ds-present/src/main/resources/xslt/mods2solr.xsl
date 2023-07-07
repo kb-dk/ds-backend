@@ -97,11 +97,13 @@
             </f:string>
           </xsl:if>
           <!-- Extracts id and strips if for urn:uuid:-->
+          <!-- TODO: Should 'urn:uuid' be included? -->
           <f:string key="id">
             <xsl:value-of select="substring-after(m:identifier[@type='uri'],'urn:uuid:')"/>
           </f:string>
-          <!-- Extracts local identifier-->
-          <f:string key="identifier_local">
+          <!-- Extracts local identifier,
+               Which in other terms is a local filename. -->
+          <f:string key="filename_local">
             <xsl:value-of select="m:identifier[@type='local']"/>
           </f:string>
           <xsl:if test="m:identifier[@type='accession number']">
