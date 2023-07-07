@@ -6,10 +6,10 @@ Read about this bug: https://issues.apache.org/jira/browse/SOLR-16203
 
 In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>  
 -->
-<?documentation-description Fields in this schema should be described with two metatags.
-                            ?Description should contain a description of the following field, while
-                            ?Example should contain an example of how to use the field. If providing multiple
-                            examples for a field, please encapsulate each example in a ?Example tag.?>
+<?summary Fields in this schema should be described with two metatags.
+          ?Description should contain a description of the field, while
+          ?Example should contain an example of how to use the field. If providing multiple
+          examples for a field, please encapsulate each example in their own ?Example tag.?>
 
 
 <schema name="example" version="1.6">
@@ -35,7 +35,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <?description TODO:?>
   <field name="cataloging_language" type="string"  stored="true"/>
 
-  <?description TODO:?>
+  <?description describes where the physical object is located?>
+  <?example     KBK Depot?>
+  <?example     Billedsamlingen. John R. Johnsen. Balletfotografier?>
   <field name="shelf_location" type="string"  stored="true"/>
 
   <?description TODO:?>
@@ -61,8 +63,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
 
   <!-- Fields on title -->
-  <?description The object title ?>
-  <?example     Den grimme ælling?>
+  <?description The object title.?>
+  <?example     Den grimme ælling.?>
   <field name="titles" type="text_general" multiValued="true"/> <!-- Currently only present in maps collection-->
 
   <?description TODO:?>
@@ -72,22 +74,29 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="alternative_title" type="text_general"/> <!--  May not be in data -->
 
   <!-- Fields on creator -->
-  <?description TODO:?>
+  <?description The name of the creator written as familyName, givenName.?>
+  <?example     Johnsen, John R.?>
   <field name="creator_name" type="text_strict" multiValued="true"/>
 
-  <?description TODO:?>
+  <?description The name of the creator written as givenName familyName.?>
+  <?example     John R. Johnsen?>
   <field name="creator_full_name" type="string" multiValued="true"  docValues="true"/>
 
-  <?description TODO:?>
+  <?description The name of the creator written as givenName familyName. This is a strict field, which produces a better ranking when querying.?>
+  <?example     John R. Johnsen?>
   <field name="creator_full_name_strict" type="text_strict" multiValued="true"/>
 
-  <?description TODO:?>
+  <?description The family name/surname of the creator.?>
+  <?example     Johnsen?>
   <field name="creator_family_name" type="text_strict" multiValued="true"/>
 
-  <?description TODO:?>
+  <?description The given name/firstname of the creator.?>
+  <?example     John?>
   <field name="creator_given_name" type="text_strict" multiValued="true"/>
 
-  <?description TODO:?>
+  <?description The titel or occupation of the creator.?>
+  <?example     King?>
+  <?example     Photographer?>
   <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
 
   <?description TODO:?>
