@@ -118,8 +118,8 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	@Test
 	public void testTitlesStrict() throws SolrServerException, IOException {
-		assertEquals(1, getStrictTitlesForQuery("Romeo\\ og\\ Julie"));
-		assertEquals(1, getStrictTitlesForQuery("Romeo\\ and\\ Juliet"));
+		assertEquals(1, getStrictTitlesForQuery("\"Romeo og Julie\""));
+		assertEquals(1, getStrictTitlesForQuery("\"Romeo and Juliet\""));
 		assertEquals(0, getStrictTitlesForQuery("and"));
 		assertEquals(0, getStrictTitlesForQuery("Julie"));
 
