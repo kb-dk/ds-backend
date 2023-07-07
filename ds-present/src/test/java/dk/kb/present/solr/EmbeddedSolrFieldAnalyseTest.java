@@ -2,12 +2,14 @@ package dk.kb.present.solr;
 
 import java.io.File;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
@@ -21,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.slf4j.Logger;
@@ -75,7 +76,7 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals(1,getCreatorNameStrictResultsForQuery("Thomas Egense"));
         assertEquals(1,getCreatorNameStrictResultsForQuery("Thomas"));
         assertEquals(1,getCreatorNameStrictResultsForQuery("thomas egense")); //lower case        
-        assertEquals(0,getCreatorNameStrictResultsForQuery("Thomas Gunter Grass")); //No match, different multivalue fields.      
+        assertEquals(0,getCreatorNameStrictResultsForQuery("Thomas Gunter Grass")); //No match, different multivalue fields.
         assertEquals(1,getCreatorNameStrictResultsForQuery("Antoine de Saint-Exupéry")); //Excact match
         assertEquals(0,getCreatorNameStrictResultsForQuery("Antoine de Saint Exupéry")); //Even a character '-' must match
         assertEquals(0,getCreatorNameStrictResultsForQuery("Antoine de Saint-Exupery")); //No match without diacritics
@@ -114,7 +115,24 @@ public class EmbeddedSolrFieldAnalyseTest {
 		
 		
 	}
-	
+
+	@Test
+	public void testTitlesStrict() throws SolrServerException, IOException {
+		assertEquals(1, getStrictTitlesForQuery("Romeo\\ og\\ Julie"));
+		assertEquals(1, getStrictTitlesForQuery("Romeo\\ and\\ Juliet"));
+		assertEquals(0, getStrictTitlesForQuery("and"));
+		assertEquals(0, getStrictTitlesForQuery("Julie"));
+
+	}
+
+	@Test
+	public void testAnalysis() throws SolrServerException, IOException {
+		SolrQuery solrQuery = new SolrQuery();
+		solrQuery.setQuery("id:1");
+		solrQuery.setRows(10);
+		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
+		System.out.println(rsp.getResults().get(0).toString());
+	}
 	
 
 	private long getCreatorNameStrictResultsForQuery(String query) throws Exception{	    
@@ -135,6 +153,15 @@ public class EmbeddedSolrFieldAnalyseTest {
 		return rsp.getResults().getNumFound();
 	}
 
+	private long getStrictTitlesForQuery(String query) throws SolrServerException, IOException {
+		SolrQuery solrQuery = new SolrQuery();
+		solrQuery.setQuery("titles_strict:"+query);
+		solrQuery.setRows(10);
+		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
+		return rsp.getResults().getNumFound();
+
+	}
+
 
 	
 	
@@ -153,7 +180,9 @@ public class EmbeddedSolrFieldAnalyseTest {
 				document.addField("creator_full_name", "Günter Grass");
                 document.addField("access_billede_aftale", false); //required field
                 document.addField("access_foto_aftale", false);//required field
-				
+				document.addField("titles", "Romeo og Julie");
+				document.addField("titles", "Romeo and Juliet");
+
 				embeddedServer.add(document);
 				embeddedServer.commit();
 

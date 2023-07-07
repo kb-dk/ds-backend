@@ -297,7 +297,7 @@ public class EmbeddedSolrTest {
         assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("identifier_local"));
 
         // Title field
-        assertEquals("Foborg, Foburgum", record.getFieldValue("title"));
+        assertMultivalueField(record, "titles", "Foborg, Foburgum");
 
 		// Place of production
 		assertEquals("Danmark", record.getFieldValue("place_of_production"));
@@ -332,7 +332,7 @@ public class EmbeddedSolrTest {
     }
 
     @Test
-    void testTitle() throws Exception {
+    void testTitles() throws Exception {
 
         indexRecord(RECORD_770379f0);
         assertEquals(1, getNumberOfTotalDocuments());
@@ -340,8 +340,7 @@ public class EmbeddedSolrTest {
         //Full life cycle test
         SolrDocument record = getRecordById("770379f0-8a0d-11e1-805f-0016357f605f");
 
-        //Single value field
-        assertEquals("Romeo og Julie", record.getFieldValue("title"));
+        assertMultivalueField(record, "titles", "Romeo og Julie");
     }
 
     @Test
