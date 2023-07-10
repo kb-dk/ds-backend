@@ -97,12 +97,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <field name="subtitle" type="text_general"> <!--  May not be in data -->
     <?description A subtitle for the resource?>
-    <!-- TODO: Find example-->
+    <?example     A tale by H.C. Andersen?>
   </field>
 
   <field name="alternative_title" type="text_general"> <!--  May not be in data -->
   <?description An alternative titel for the resource.?>
-  <!-- TODO: Find example-->>
+  <?example     Some other titel?>
   </field>
 
   <!-- Fields on creator -->
@@ -144,10 +144,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Bisson frères?>
   </field>
 
-  <?description A description for a name when necessary,
-                for example, to distinguish between names.?>
-  <!-- TODO: Find example-->
-  <field name="creator_description" type="text_general" multiValued="true"/>
+  <field name="creator_description" type="text_general" multiValued="true">
+    <?description A description for a name when necessary,
+                  for example, to distinguish between names.?>
+    <?example     British?>
+  </field>
 
   <field name="creator_date_of_birth" type="text_general" multiValued="true">
     <?description the date of birth for creators.?>
@@ -174,7 +175,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     O.J.Moltke  1770-1853?>
   </field>
 
-  <field name="physical_description" type="text_general" multiValued="true"> <!-- TODO: might need better name -->
+  <field name="physical_description" type="text_general" multiValued="true">
     <?description Physical description of the resource?>
     <!-- TODO: Add example -->
   </field>
@@ -216,13 +217,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Denmark?>
   </field>
 
-  <field name="production_date_digital_surrogate" type="string" stored="true"> <!-- TODO: Check if implemented in XSLTtoSchema.org -->
+  <field name="production_date_digital_surrogate" type="string" stored="true">
     <?description The date when the digital surrogate of the resource was produced.?>
     <?example     2019-07-03T09:36:17.000+02:00?>
   </field>
 
   <!-- Fields on subject -->
-  <field name="subject_name" type="text_general" multiValued="true"> <!-- TODO: SMK uses content_person, check with others -->
+  <field name="subject_name" type="text_general" multiValued="true"> <!-- TODO: SMK uses content_person and content_person_full, check with others -->
     <?description The name of the subject written as family name, given name.?>
     <?example     Johnsen, John R.?>
   </field>
@@ -232,7 +233,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     John R. Johnsen?>
   </field>
 
-  <field name="subject_full_name_strict" type="text_strict" multiValued="true"> <!-- TODO: create copyField for this field-->
+  <field name="subject_full_name_strict" type="text_strict" multiValued="true">
     <?description The name of the subject written as givenName familyName.
                   This is a strict field, which produces a better ranking when querying.?>
     <?example     John R. Johnsen?>
@@ -271,7 +272,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <field name="resource_id" type="string" multiValued="true" stored="true">
     <?description URI pointing to the digital representation of the resource?><!-- TODO: Handle URL construction in solr XSLT only as is done in schema.org XSLT.-->
-    <?example https://example.com/imageserver/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592?> <!-- TODO: Check link construction in XSLT, something might be off with \ handling. -->
+    <?example https://example.com/imageserver/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592?> <!-- TODO: Check link construction in XSLT, something might be off with \ handling in schema.org XSLT -->
   </field>
 
   <field name="file_size" type="plong">
