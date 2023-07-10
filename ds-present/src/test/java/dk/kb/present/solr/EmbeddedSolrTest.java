@@ -60,6 +60,7 @@ public class EmbeddedSolrTest {
     public static final String RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
     public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
     public static final String RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
+    public static final String RECORD_9c17a440 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
 
 
     @BeforeAll
@@ -241,6 +242,7 @@ public class EmbeddedSolrTest {
         //Full life cycle test
         SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
 
+
         //Single value field
         assertEquals("ANSK_11614.tif",record.getFieldValue("filename_local"));
 
@@ -311,7 +313,6 @@ public class EmbeddedSolrTest {
 
         //Full life cycle test
         SolrDocument record = getRecordById("14f4a700-f9ee-11e7-988a-00505688346e");
-
         //Single value field
         assertEquals("2000-3/7",record.getFieldValue("accession_number"));
     }
@@ -371,6 +372,19 @@ public class EmbeddedSolrTest {
     }
 
 
+    @Test
+    void testSubjectStrict() throws Exception{
+        indexRecord(RECORD_9c17a440);
+        assertEquals(1, getNumberOfTotalDocuments());
+
+        SolrDocument record = getRecordById("9c17a440-fe1a-11e8-9044-00505688346e");
+        String[] testName = Arrays.copyOf(
+                record.getFieldValues("subject_full_name_strict").toArray(),
+                1, String[].class);
+
+        String[] correctResult = new String[]{"Frederik 9"};
+        assertEquals(correctResult[0], testName[0]);
+    }
 
     /*
      * ------- Private helper methods below --------------
