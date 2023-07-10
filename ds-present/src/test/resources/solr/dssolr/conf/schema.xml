@@ -28,14 +28,16 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?examaple    JB000132_114.tif?>
   </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="accession_number" type="string" stored="true"/>
+  <field name="accession_number" type="string" stored="true">
+  <?description the unique number given to each new acquisition
+                as it is entered in the catalog of a library or museum ?>
+  <?example     1911-7507?>
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="cataloging_language" type="string"  stored="true"/>
-
+  <field name="cataloging_language" type="string"  stored="true">
+  <?description The language used for the catalogue entry.?>
+  <?example     da?>
+  </field>
 
   <field name="shelf_location" type="string"  stored="true">
     <?description describes where the physical object is located.?>
@@ -43,10 +45,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Billedsamlingen. John R. Johnsen. Balletfotografier?>
   </field>
 
-  <?description describes the location of the physical object.?>
-  <!-- TODO: Find example -->
-  <field name="physical_location" type="text_general"/> <!--  May not be in data. Maybe this should be combined with shelf_location? -->
-
+  <field name="physical_location" type="text_general"> <!--  May not be in data. Maybe this should be combined with shelf_location? -->
+    <?description describes the location of the physical object.?>
+    <!-- TODO: Find example -->
+  </field>
 
   <field name="categories" type="string" docValues="true" stored="true">
     <?description the categories field can contain many different values.
@@ -98,9 +100,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <!-- TODO: Find example-->
   </field>
 
-  <!-- TODO:--> <?description ?>
-                <?example ?>
-  <field name="alternative_title" type="text_general"/> <!--  May not be in data -->
+  <field name="alternative_title" type="text_general"> <!--  May not be in data -->
+  <?description An alternative titel for the resource.?>
+  <!-- TODO: Find example-->>
+  </field>
 
   <!-- Fields on creator -->
   <field name="creator_name" type="text_strict" multiValued="true">
@@ -156,62 +159,84 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     1831-11-5?>
   </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="area" type="text_general" multiValued="false"/>
+  <field name="area" type="text_general" multiValued="false">
+    <?description A specific type of area?>
+    <?example     Danmark, København, Broderskabsvej?>
+    <?example     Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian?>
+  </field>
 
   <!-- This has been split into several fields such as topic
    <field name="subject" type="text_general" multiValued="true"/>
    -->
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="topic" type="text_general" multiValued="true"/>
+  <field name="topic" type="text_general" multiValued="true">
+    <?description Used as the tag for any topical subjects?>
+    <?example     balletfotos?>
+    <?example     O.J.Moltke  1770-1853?>
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="description" type="text_general" multiValued="true"/>
+  <field name="description" type="text_general" multiValued="true"> <!-- TODO: might need better name -->
+    <?description Physical description of the resource?>
+    <!-- TODO: Add example -->
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="content" type="text_general" multiValued="true"/>
+  <field name="content" type="text_general" multiValued="true">
+    <?description Used to describe the resource in any way possible?>
+    <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
+    <?example     Daguerreotypi, mål: 81 x 70 mm?>
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="internal_note" type="text_general" multiValued="true"/>
+  <field name="internal_note" type="text_general" multiValued="true">
+    <?description Internal notes, which can contain basicly anything. ?>
+    <!-- TODO: Add example -->
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="catalog_name" type="string" stored="true" docValues="true"/>
+  <field name="catalog_name" type="string" stored="true" docValues="true">
+    <?description The name of the catalog, which this resource is a part of.?>
+    <?example     Samlingsbilleder?>
+  </field>
 
   <!-- Fields on production of physical and digital object. -->
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="date_created" type="string" stored="true"/>
+  <field name="date_created" type="string" stored="true"> <!-- TODO: rename to production_date -->
+    <?description The date when the resource was produced.?>
+    <?example     1971?>
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="production_date_start" type="string" stored="true" />
+  <field name="production_date_start" type="string" stored="true">
+    <?description The date when production of the resource started.?>
+    <?example     1850?>
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="place_of_production" type="string" stored="true" />
+  <field name="production_date_end" type="string" stored="true">
+    <?description The date when production of the resource finished.?>
+    <?example     1899?>
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="production_date_end" type="string" stored="true"/>
+  <field name="place_of_production" type="string" stored="true"> <!-- TODO: rename to production_place -->
+    <?description Info about where the resource was produced?>
+    <?example     Denmark?>
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="digital_surrogate_production_date" type="string" stored="true"/>
+  <field name="digital_surrogate_production_date" type="string" stored="true"> <!-- TODO: Field not implemented in XSLTtoSOLR -->
+    <?description The date when the digital surrogate of the resource was produced.?>
+    <?example     2019-07-03T09:36:17.000+02:00?>
+  </field>
 
   <!-- Fields on subject -->
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="subject_name" type="text_general" multiValued="true"/>
+  <field name="subject_name" type="text_general" multiValued="true">
+    <?description The name of the subject written as family name, given name.?>
+    <?example     Johnsen, John R.?>
+  </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
-  <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true"/>
+  <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true">
+    <?description The name of the subject written as given name family name.?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="subject_full_name_strict" type="text_strict" multiValued="true"> <!-- TODO: create copyField for this field-->
+    <?description The name of the subject written as givenName familyName.
+                  This is a strict field, which produces a better ranking when querying.?>
+    <?example     John R. Johnsen?>
+  </field>
 
   <field name="subject_family_name" type="text_general" multiValued="true">
     <?description the family name/surname of the subject.?>
@@ -235,15 +260,18 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <!-- TODO:--> <?description ?>
   <?example ?>
-  <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
+  <field name="subject_terms_of_address" type="text_general" multiValued="true">
+  </field>
 
   <!-- TODO:--> <?description ?>
   <?example ?>
-  <field name="map_scale" type="string" stored="true"/>
+  <field name="map_scale" type="string" stored="true">
+  </field>
 
   <!-- TODO:--> <?description ?>
   <?example ?>
-  <field name="resource_id" type="string" multiValued="true" stored="true"/>
+  <field name="resource_id" type="string" multiValued="true" stored="true">
+  </field>
 
   <field name="file_size" type="plong">
     <?description the size of the file in bytes.?>
@@ -267,7 +295,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <!-- TODO:--> <?description ?>
   <?example ?>
-  <field name="target_audience" type="string" stored="true"/> <!-- Not in test data. Part of MODS and might be in other collections-->
+  <field name="target_audience" type="string" stored="true"> <!-- Not in test data. Part of MODS and might be in other collections-->
+  </field>
 
   <!--  Fields related to copyright and access conditions -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
@@ -285,6 +314,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- Most fields are copied to this field for matching. -->
   <field name="freetext" type="freetext" multiValued="true" stored="false">
     <?description freetext field, which contains text from multiple other fields.?>
+    <!-- TODO: add example-->
   </field>
 
   <field name="titles_strict" type="titles_strict" multiValued="true" stored="false">
