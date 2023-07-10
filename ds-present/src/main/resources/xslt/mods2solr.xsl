@@ -154,7 +154,7 @@
 
           <!-- if note field of type content exists extract it-->
           <xsl:if test="m:note[@type='content']">
-            <f:array key="content">
+            <f:array key="content_description">
               <xsl:for-each select="m:note[@type='content']">
                 <xsl:if test=". != ''">
                   <f:string>
@@ -408,6 +408,11 @@
         <xsl:if test="m:originInfo/m:place">
           <f:string key="production_place">
             <xsl:value-of select="normalize-space(m:originInfo/m:place)"/>
+          </f:string>
+        </xsl:if>
+        <xsl:if test="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured">
+          <f:string key="production_date_digital_surrogate">
+            <xsl:value-of select="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured"/>
           </f:string>
         </xsl:if>
         <!-- The topic of given item gets extracted here, if present-->

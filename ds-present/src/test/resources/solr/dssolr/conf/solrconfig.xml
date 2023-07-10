@@ -761,7 +761,7 @@
         creator_full_name_strict^5.0        
         topic^2.0
         shelf_location
-        content
+        content_description
         collection
         catalog_name
         resource_description
@@ -784,8 +784,8 @@
        <str name="hl">on</str>
        <str name="hl.requireFieldMatch">false</str>
        <str name="hl.encoder">html</str>
-       <str name="f.content.hl.preserveMulti">false</str>        
-       <str name="hl.fl">content</str>     
+       <str name="f.content_description.hl.preserveMulti">false</str>
+       <str name="hl.fl">content_description</str>
         
      </lst>
          

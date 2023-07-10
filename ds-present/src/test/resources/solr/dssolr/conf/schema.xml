@@ -179,7 +179,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <!-- TODO: Add example -->
   </field>
 
-  <field name="content" type="text_general" multiValued="true">
+  <field name="content_description" type="text_general" multiValued="true">
     <?description Used to describe the resource in any way possible?>
     <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
     <?example     Daguerreotypi, mål: 81 x 70 mm?>
@@ -216,7 +216,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Denmark?>
   </field>
 
-  <field name="production_date_digital_surrogate" type="string" stored="true"> <!-- TODO: Field not implemented in XSLTtoSOLR -->
+  <field name="production_date_digital_surrogate" type="string" stored="true"> <!-- TODO: Check if implemented in XSLTtoSchema.org -->
     <?description The date when the digital surrogate of the resource was produced.?>
     <?example     2019-07-03T09:36:17.000+02:00?>
   </field>
@@ -305,7 +305,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_note" type="string"/>
   <field name="access_skabelsesaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/> <!--  TODO is required -->
+  <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/> <!--  TODO: is required -->
   <field name="access_searlige_visningsvilkaar" type="string" stored="true"/>
   <field name="access_materiale_type" type="string"  indexed="true" required="false"   docValues="true" stored="true"/>
   <field name="access_foto_aftale" type="boolean"   indexed="true" required="true"  docValues="true" stored="true"/>
@@ -425,7 +425,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="catalog_name" dest="freetext"/>
   <copyField source="collection" dest="freetext"/>
   <copyField source="type_of_resource" dest="freetext"/>
-  <copyField source="content" dest="freetext"/>
+  <copyField source="content_description" dest="freetext"/>
   <copyField source="shelf_location" dest="freetext"/>
   <copyField source="titles" dest="freetext"/>
   <copyField source="subtitle" dest="freetext"/>

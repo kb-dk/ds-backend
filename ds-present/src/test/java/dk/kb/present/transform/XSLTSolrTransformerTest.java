@@ -149,6 +149,12 @@ class XSLTSolrTransformerTest{
 		assertTrue(solrString.contains("\"resource_id\":[\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
 	}
 
+	@Test
+	void testSurrogateProduction() throws Exception{
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_FM);
+		assertTrue(solrString.contains("\"production_date_digital_surrogate\":\"2018-01-15T12:26:00.000+01:00\""));
+	}
+
 	/**
 	 * Transform the input MODS record with an XSLT and return as pretty JSON
 	 */
