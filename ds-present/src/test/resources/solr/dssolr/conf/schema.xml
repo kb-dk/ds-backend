@@ -217,12 +217,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="digital_surrogate_production_date" type="string" stored="true"> <!-- TODO: Field not implemented in XSLTtoSOLR -->
+    <!-- TODO: rename to production_date_digital_surrogate -->
     <?description The date when the digital surrogate of the resource was produced.?>
     <?example     2019-07-03T09:36:17.000+02:00?>
   </field>
 
   <!-- Fields on subject -->
-  <field name="subject_name" type="text_general" multiValued="true">
+  <field name="subject_name" type="text_general" multiValued="true"> <!-- TODO: SMK uses content_person, check with others -->
     <?description The name of the subject written as family name, given name.?>
     <?example     Johnsen, John R.?>
   </field>
@@ -258,19 +259,20 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     1831-11-5?>
   </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
   <field name="subject_terms_of_address" type="text_general" multiValued="true">
+    <?description The titel or occupation of the subject.?>
+    <?example     King?>
+    <?example     Photographer?>
   </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
   <field name="map_scale" type="string" stored="true">
+    <?description The scale of the resource map.?>
+    <?example     Målestok 1:75 000?>
   </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
   <field name="resource_id" type="string" multiValued="true" stored="true">
+    <?description URI pointing to the digital representation of the resource?><!-- TODO: Handle URL construction in solr XSLT only as is done in schema.org XSLT.-->
+    <?example https://example.com/imageserver/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592?> <!-- TODO: Check link construction in XSLT, something might be off with \ handling. -->
   </field>
 
   <field name="file_size" type="plong">
@@ -293,9 +295,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example 960000?>
   </field>
 
-  <!-- TODO:--> <?description ?>
-  <?example ?>
   <field name="target_audience" type="string" stored="true"> <!-- Not in test data. Part of MODS and might be in other collections-->
+    <?description The target audience for the resource.?>
+    <?example     Children?>
   </field>
 
   <!--  Fields related to copyright and access conditions -->
@@ -398,12 +400,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- START COPYFIELDS  -->
   <copyField source="creator_full_name" dest="creator_full_name_strict">
     <?description copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
-    <?example A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
+    <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
   </copyField>
 
   <copyField source="titles" dest="titles_strict">
   <?description copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
-  <?example A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
+  <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
+  </copyField>
+
+  <copyField source="subject_full_name" dest="subject_full_name_strict">
+    <?description copies the full name of the subject to a strict field, which produces a higher ranking when queried.?>
+    <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
   </copyField>
 
   <copyField source="creator_name" dest="freetext"/>
