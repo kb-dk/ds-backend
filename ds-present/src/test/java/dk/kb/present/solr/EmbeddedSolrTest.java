@@ -302,7 +302,7 @@ public class EmbeddedSolrTest {
         assertMultivalueField(record, "titles", "Foborg, Foburgum");
 
 		// Place of production
-		assertEquals("Danmark", record.getFieldValue("place_of_production"));
+		assertEquals("Danmark", record.getFieldValue("production_place"));
 	}
 
     @Test

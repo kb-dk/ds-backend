@@ -196,7 +196,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <!-- Fields on production of physical and digital object. -->
-  <field name="date_created" type="string" stored="true"> <!-- TODO: rename to production_date -->
+  <field name="production_date" type="string" stored="true"> <!-- TODO: add test -->
     <?description The date when the resource was produced.?>
     <?example     1971?>
   </field>
@@ -211,13 +211,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     1899?>
   </field>
 
-  <field name="place_of_production" type="string" stored="true"> <!-- TODO: rename to production_place -->
+  <field name="production_place" type="string" stored="true"> <!-- TODO: add test -->
     <?description Info about where the resource was produced?>
     <?example     Denmark?>
   </field>
 
-  <field name="digital_surrogate_production_date" type="string" stored="true"> <!-- TODO: Field not implemented in XSLTtoSOLR -->
-    <!-- TODO: rename to production_date_digital_surrogate -->
+  <field name="production_date_digital_surrogate" type="string" stored="true"> <!-- TODO: Field not implemented in XSLTtoSOLR -->
     <?description The date when the digital surrogate of the resource was produced.?>
     <?example     2019-07-03T09:36:17.000+02:00?>
   </field>

@@ -399,14 +399,14 @@
               </f:string>
             </xsl:when>
             <xsl:otherwise>
-              <f:string key="date_created">
+              <f:string key="production_date">
                 <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
               </f:string>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:if>
         <xsl:if test="m:originInfo/m:place">
-          <f:string key="place_of_production">
+          <f:string key="production_place">
             <xsl:value-of select="normalize-space(m:originInfo/m:place)"/>
           </f:string>
         </xsl:if>
