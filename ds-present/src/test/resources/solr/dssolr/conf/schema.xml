@@ -18,13 +18,15 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
    <!-- Default solr field -->
   <field name="_version_" type="plong" indexed="false" stored="false"/>
 
-  <?description The ID derived from UUID in database.?>
-  <?example     770379f0-8a0d-11e1-805f-0016357f605f?>
-  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true">
+    <?description The ID derived from UUID in database.?>
+    <?example     770379f0-8a0d-11e1-805f-0016357f605f?>
+  </field>
 
-  <?description The name of the file, which this document contains metadata about.?>
-  <?examaple    JB000132_114.tif?>
-  <field name="filename_local" type="string"  stored="true"/>
+  <field name="filename_local" type="string"  stored="true">
+    <?description The name of the file, which this document contains metadata about.?>
+    <?examaple    JB000132_114.tif?>
+  </field>
 
   <!-- TODO:--> <?description ?>
   <?example ?>
@@ -34,109 +36,131 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <?example ?>
   <field name="cataloging_language" type="string"  stored="true"/>
 
-  <?description describes where the physical object is located.?>
-  <?example     KBK Depot?>
-  <?example     Billedsamlingen. John R. Johnsen. Balletfotografier?>
-  <field name="shelf_location" type="string"  stored="true"/>
+
+  <field name="shelf_location" type="string"  stored="true">
+    <?description describes where the physical object is located.?>
+    <?example     KBK Depot?>
+    <?example     Billedsamlingen. John R. Johnsen. Balletfotografier?>
+  </field>
 
   <?description describes the location of the physical object.?>
   <!-- TODO: Find example -->
   <field name="physical_location" type="text_general"/> <!--  May not be in data. Maybe this should be combined with shelf_location? -->
 
-  <?description the categories field can contain many different values.
-                metadata in this field are different entries seperated by space and commas.
-                the field list_of_categories contain the same values,
-                but split into unique entities.?>
-  <?example     John R. Johnsen balletfotos, Den Kongelige Ballet ,
-                Hønningen, Mette , Neumeier, John, Kronstam, Henning,
-                Kirk, Mette-Ida, Romeo og Julie, Johnsen, John R., CAR- BLO katagori?>
-  <field name="categories" type="string" docValues="true" stored="true"/>
 
-  <?description the list_of_categories field can contain many different values.
-                this field is multivalued and contains a single category per entry.?>
-  <?example     John R. Johnsen balletfotos?>
-  <?example     Den Kongelige Ballet?>
-  <field name="list_of_categories" type="string"  multiValued="true" docValues="true" stored="true"/>
+  <field name="categories" type="string" docValues="true" stored="true">
+    <?description the categories field can contain many different values.
+                  metadata in this field are different entries seperated by space and commas.
+                  the field list_of_categories contain the same values,
+                  but split into unique entities.?>
+    <?example     John R. Johnsen balletfotos, Den Kongelige Ballet ,
+                  Hønningen, Mette , Neumeier, John, Kronstam, Henning,
+                  Kirk, Mette-Ida, Romeo og Julie, Johnsen, John R., CAR- BLO katagori?>
+  </field>
 
-  <?description the original collection.?>
-  <?example     Billedsamlingen?>
-  <field name="collection" type="string" docValues="true" stored="true"/>
+  <field name="list_of_categories" type="string"  multiValued="true" docValues="true" stored="true">
+    <?description the list_of_categories field can contain many different values.
+                  this field is multivalued and contains a single category per entry.?>
+    <?example     John R. Johnsen balletfotos?>
+    <?example     Den Kongelige Ballet?>
+  </field>
 
-  <?description If the object has been published in a journal, newspaper, book etc.
-                this field contains the name of that publication.?>
-  <?example     Aktuelt?>
-  <field name="published_in" type="string" docValues="true" stored="true"/>
+  <field name="collection" type="string" docValues="true" stored="true">
+    <?description the original collection.?>
+    <?example     Billedsamlingen?>
+  </field>
 
-  <?description General description of the resource/object.?>
-  <?example     Billede, Todimensionalt billedmateriale?>
-  <field name="resource_description" type="string" multiValued="false"  docValues="true"/>
 
-  <?description Specific description of type of resource/object?>
-  <?example     Negativ?>
-  <field name="type_of_resource" type="string" multiValued="true"  docValues="true"/>
+  <field name="published_in" type="string" docValues="true" stored="true">
+    <?description If the object has been published in a journal, newspaper, book etc.
+                  this field contains the name of that publication.?>
+    <?example     Aktuelt?>
+  </field>
+
+  <field name="resource_description" type="string" multiValued="false"  docValues="true">
+    <?description General description of the resource/object.?>
+    <?example     Billede, Todimensionalt billedmateriale?>
+  </field>
+
+  <field name="type_of_resource" type="string" multiValued="true"  docValues="true">
+    <?description Specific description of type of resource/object?>
+    <?example     Negativ?>
+  </field>
 
   <!-- Fields on title -->
-  <?description The object title.?>
-  <?example     Den grimme ælling.?>
-  <field name="titles" type="text_general" multiValued="true"/> <!-- Currently only present in maps collection-->
+  <field name="titles" type="text_general" multiValued="true"> <!-- Currently only present in maps collection-->
+    <?description The object title.?>
+    <?example     Den grimme ælling.?>
+  </field>
 
-  <?description A subtitle for the resource?>
-  <!-- TODO: Find example-->
-  <field name="subtitle" type="text_general"/> <!--  May not be in data -->
+  <field name="subtitle" type="text_general"> <!--  May not be in data -->
+    <?description A subtitle for the resource?>
+    <!-- TODO: Find example-->
+  </field>
 
   <!-- TODO:--> <?description ?>
                 <?example ?>
   <field name="alternative_title" type="text_general"/> <!--  May not be in data -->
 
   <!-- Fields on creator -->
-  <?description The name of the creator written as family name, given name.?>
-  <?example     Johnsen, John R.?>
-  <field name="creator_name" type="text_strict" multiValued="true"/>
+  <field name="creator_name" type="text_strict" multiValued="true">
+    <?description The name of the creator written as family name, given name.?>
+    <?example     Johnsen, John R.?>
+  </field>
 
-  <?description The name of the creator written as given name family name.?>
-  <?example     John R. Johnsen?>
-  <field name="creator_full_name" type="string" multiValued="true"  docValues="true"/>
+  <field name="creator_full_name" type="string" multiValued="true"  docValues="true">
+    <?description The name of the creator written as given name family name.?>
+    <?example     John R. Johnsen?>
+  </field>
 
-  <?description The name of the creator written as givenName familyName. This is a strict field, which produces a better ranking when querying.?>
-  <?example     John R. Johnsen?>
-  <field name="creator_full_name_strict" type="text_strict" multiValued="true"/>
+  <field name="creator_full_name_strict" type="text_strict" multiValued="true">
+    <?description The name of the creator written as givenName familyName.
+                  This is a strict field, which produces a better ranking when querying.?>
+    <?example     John R. Johnsen?>
+  </field>
 
-  <?description The family name/surname of the creator.?>
-  <?example     Johnsen?>
-  <field name="creator_family_name" type="text_strict" multiValued="true"/>
+  <field name="creator_family_name" type="text_strict" multiValued="true">
+    <?description The family name/surname of the creator.?>
+    <?example     Johnsen?>
+  </field>
 
-  <?description The given name/firstname of the creator.?>
-  <?example     John?>
-  <field name="creator_given_name" type="text_strict" multiValued="true"/>
+  <field name="creator_given_name" type="text_strict" multiValued="true">
+    <?description The given name/firstname of the creator.?>
+    <?example     John?>
+  </field>
 
-  <?description The titel or occupation of the creator.?>
-  <?example     King?>
-  <?example     Photographer?>
-  <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
+  <field name="creator_terms_of_address" type="text_general" multiValued="true">
+    <?description The titel or occupation of the creator.?>
+    <?example     King?>
+    <?example     Photographer?>
+  </field>
 
-  <?description The name of an organization, institution, etc. with which
-                the entity was associated at the time that the resource was created.?>
-  <?example     Bisson frères?>
-  <field name="creator_affiliation" type="text_general" multiValued="true"/>
+  <field name="creator_affiliation" type="text_general" multiValued="true">
+    <?description The name of an organization, institution, etc. with which
+                  the entity was associated at the time that the resource was created.?>
+    <?example     Bisson frères?>
+  </field>
 
   <?description A description for a name when necessary,
                 for example, to distinguish between names.?>
   <!-- TODO: Find example-->
   <field name="creator_description" type="text_general" multiValued="true"/>
 
-  <?description the date of birth for creators.?>
-  <?example     1748-11-29?>
-  <field name="creator_date_of_birth" type="text_general" multiValued="true"/>
+  <field name="creator_date_of_birth" type="text_general" multiValued="true">
+    <?description the date of birth for creators.?>
+    <?example     1748-11-29?>
+  </field>
 
-  <?description the date of death for creators?>
-  <?example     1831-11-5?>
-  <field name="creator_date_of_death" type="text_general" multiValued="true"/>
+  <field name="creator_date_of_death" type="text_general" multiValued="true">
+    <?description the date of death for creators?>
+    <?example     1831-11-5?>
+  </field>
 
   <!-- TODO:--> <?description ?>
   <?example ?>
   <field name="area" type="text_general" multiValued="false"/>
-    
-  <!-- This has been split into several fields such as topic 
+
+  <!-- This has been split into several fields such as topic
    <field name="subject" type="text_general" multiValued="true"/>
    -->
   <!-- TODO:--> <?description ?>
@@ -189,21 +213,25 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <?example ?>
   <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true"/>
 
-  <?description the family name/surname of the subject.?>
-  <?example     Hansen?>
-  <field name="subject_family_name" type="text_general" multiValued="true"/>
+  <field name="subject_family_name" type="text_general" multiValued="true">
+    <?description the family name/surname of the subject.?>
+    <?example     Hansen?>
+  </field>
 
-  <?description the given name/firstname of the subject.?>
-  <?example     Hans Christian?>
-  <field name="subject_given_name" type="text_general" multiValued="true" />
+  <field name="subject_given_name" type="text_general" multiValued="true" >
+    <?description the given name/firstname of the subject.?>
+    <?example     Hans Christian?>
+  </field>
 
-  <?description the subjects date of birth?>
-  <?example     1748-11-29?>
-  <field name="subject_date_of_birth" type="string" multiValued="true" stored="true"/>
+  <field name="subject_date_of_birth" type="string" multiValued="true" stored="true">
+    <?description the subjects date of birth?>
+    <?example     1748-11-29?>
+  </field>
 
-  <?description the date of death of the subject.?>
-  <?example     1831-11-5?>
-  <field name="subject_date_of_death" type="string" multiValued="true" stored="true"/>
+  <field name="subject_date_of_death" type="string" multiValued="true" stored="true">
+    <?description the date of death of the subject.?>
+    <?example     1831-11-5?>
+  </field>
 
   <!-- TODO:--> <?description ?>
   <?example ?>
@@ -217,21 +245,25 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <?example ?>
   <field name="resource_id" type="string" multiValued="true" stored="true"/>
 
-  <?description the size of the file in bytes.?>
-  <?example 252000?>
-  <field name="file_size" type="plong"/>
+  <field name="file_size" type="plong">
+    <?description the size of the file in bytes.?>
+    <?example 252000?>
+  </field>
 
-  <?description the height of the digital image in pixels.?>
-  <?example     800?>
-  <field name="image_height" type="pint"/>
+  <field name="image_height" type="pint">
+    <?description the height of the digital image in pixels.?>
+    <?example     800?>
+  </field>
 
-  <?description the width of the digital image in pixels.?>
-  <?example     1200?>
-  <field name="image_width" type="pint"/>
+  <field name="image_width" type="pint">
+    <?description the width of the digital image in pixels.?>
+    <?example     1200?>
+  </field>
 
-  <?description the size of the digital image in pixels.?>
-  <?example 960000?>
-  <field name="image_size_pixels" type="plong"/>
+  <field name="image_size_pixels" type="plong">
+    <?description the size of the digital image in pixels.?>
+    <?example 960000?>
+  </field>
 
   <!-- TODO:--> <?description ?>
   <?example ?>
@@ -241,7 +273,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_note" type="string"/>                 
+  <field name="access_note" type="string"/>
   <field name="access_skabelsesaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/> <!--  TODO is required -->
   <field name="access_searlige_visningsvilkaar" type="string" stored="true"/>
@@ -249,14 +281,16 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="access_foto_aftale" type="boolean"   indexed="true" required="true"  docValues="true" stored="true"/>
   <field name="access_billede_aftale" type="boolean"  indexed="true" required="true" docValues="true" stored="true"/>
   <field name="access_ophavsret_tekst" type="string" indexed="true"  docValues="true" stored="true"/>
-  
-  <!-- Most fields are copied to this field for matching. -->
-  <?description freetext field, which contains text from multiple other fields.?>
-  <field name="freetext" type="freetext" multiValued="true" stored="false"/>
 
-  <?description field for strict title matching. Matches exact titles?>
-  <?example Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
-  <field name="titles_strict" type="titles_strict" multiValued="true" stored="false"/>
+  <!-- Most fields are copied to this field for matching. -->
+  <field name="freetext" type="freetext" multiValued="true" stored="false">
+    <?description freetext field, which contains text from multiple other fields.?>
+  </field>
+
+  <field name="titles_strict" type="titles_strict" multiValued="true" stored="false">
+    <?description field for strict title matching. Matches exact titles?>
+    <?example Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
+  </field>
   <!-- END FIELDS  -->
 
   <!-- START FIELDTYPE DEFINITIONS-->
@@ -331,12 +365,16 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </fieldType>
   <!-- END FIELDTYPE DEFINITIONS-->
 
-  <!-- START COPYFIELD  -->
-  <?description copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
-  <?example A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
-  <copyField source="creator_full_name" dest="creator_full_name_strict"/>
+  <!-- START COPYFIELDS  -->
+  <copyField source="creator_full_name" dest="creator_full_name_strict">
+    <?description copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
+    <?example A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
+  </copyField>
 
-  <copyField source="titles" dest="titles_strict"/>
+  <copyField source="titles" dest="titles_strict">
+  <?description copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
+  <?example A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
+  </copyField>
 
   <copyField source="creator_name" dest="freetext"/>
   <copyField source="creator_full_name" dest="freetext"/>
@@ -356,5 +394,5 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="titles" dest="freetext"/>
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>
-  <!-- END COPYFIELD  -->
+  <!-- END COPYFIELDS  -->
  </schema>
