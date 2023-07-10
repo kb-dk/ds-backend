@@ -180,7 +180,7 @@
           <!--Extracts descriptions from two different fields if at least one of them are present -->
           <!-- Checks all possible variations of physical description from MODS that are not related to page orientation-->
           <xsl:if test="m:note[@displayLabel='Description'] or m:physicalDescription/not(m:note[@displayLabel='Pageorientation'])">
-            <f:array key="description">
+            <f:array key="physical_description">
               <xsl:for-each select="m:note[@displayLabel='Description']">
                 <f:string>
                   <xsl:value-of select="."/>

@@ -174,7 +174,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     O.J.Moltke  1770-1853?>
   </field>
 
-  <field name="description" type="text_general" multiValued="true"> <!-- TODO: might need better name -->
+  <field name="physical_description" type="text_general" multiValued="true"> <!-- TODO: might need better name -->
     <?description Physical description of the resource?>
     <!-- TODO: Add example -->
   </field>
@@ -186,7 +186,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="internal_note" type="text_general" multiValued="true">
-    <?description Internal notes, which can contain basicly anything. ?>
+    <?description Internal notes, which can contain basicly anything. ?> <!-- Should this be combined with content_description? -->
     <!-- TODO: Add example -->
   </field>
 
