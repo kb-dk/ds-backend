@@ -61,6 +61,7 @@ public class EmbeddedSolrTest {
     public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
     public static final String RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
     public static final String RECORD_9c17a440 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
+    public static final String RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
 
 
     @BeforeAll
@@ -384,6 +385,16 @@ public class EmbeddedSolrTest {
 
         String[] correctResult = new String[]{"Frederik 9"};
         assertEquals(correctResult[0], testName[0]);
+    }
+
+    @Test
+    void testSingleProductionDate() throws Exception{
+        indexRecord(RECORD_226d41a0);
+        assertEquals(1, getNumberOfTotalDocuments());
+
+        SolrDocument record = getRecordById("226d41a0-5a83-11e6-8b8d-0016357f605f");
+
+        assertEquals("1971", record.getFieldValue("production_date"));
     }
 
     /*

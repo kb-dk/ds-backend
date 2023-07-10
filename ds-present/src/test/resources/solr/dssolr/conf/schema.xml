@@ -196,7 +196,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <!-- Fields on production of physical and digital object. -->
-  <field name="production_date" type="string" stored="true"> <!-- TODO: add test -->
+  <field name="production_date" type="string" stored="true">
     <?description The date when the resource was produced.?>
     <?example     1971?>
   </field>
@@ -211,7 +211,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     1899?>
   </field>
 
-  <field name="production_place" type="string" stored="true"> <!-- TODO: add test -->
+  <field name="production_place" type="string" stored="true">
     <?description Info about where the resource was produced?>
     <?example     Denmark?>
   </field>
