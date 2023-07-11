@@ -52,7 +52,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
         location field.-->
   <field name="physical_location" type="text_general">
     <?description Describes the location of the physical object.?>
-    <!-- TODO: Find example -->
+    <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept. -->
   </field>
 
   <field name="categories" type="string" docValues="true" stored="true">
@@ -186,7 +186,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
        Maybe these three should be collapsed to content_description? -->
   <field name="physical_description" type="text_general" multiValued="true">
     <?description Physical description of the resource?>
-    <!-- TODO: Add example -->
+    <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept.-->
   </field>
 
   <!-- Field name: For resources that contain persons in the content, these people are described in a field called
@@ -202,7 +202,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- Should this be combined with content_description? -->
   <field name="internal_note" type="text_general" multiValued="true">
     <?description Internal notes, which can contain basicly anything. ?>
-    <!-- TODO: Add example -->
+    <?example     Montering: opklæbet på karton og monteret i passepartout?>
   </field>
 
   <field name="catalog_name" type="string" stored="true" docValues="true">
@@ -334,12 +334,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <!-- Most fields are copied to this field for matching. -->
   <field name="freetext" type="freetext" multiValued="true" stored="false">
-    <?description freetext field, which contains text from multiple other fields.?>
-    <!-- TODO: add example-->
+    <?description Freetext field, which contains text from multiple other fields.?>
+    <?example     If a play with the titel 'Romeo and Juliet' written by the author 'William Shakespeare' is indexed,
+                  then the freetext field  for this play will contain content from multiple other fields, so that the
+                  value of the freetext field could be something like this: "William Shakespeare Romeo and Juliet".?>
   </field>
 
   <field name="titles_strict" type="titles_strict" multiValued="true" stored="false">
-    <?description field for strict title matching. Matches exact titles?>
+    <?description Field for strict title matching. Matches exact titles?>
     <?example     Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
   </field>
   <!-- END FIELDS  -->
