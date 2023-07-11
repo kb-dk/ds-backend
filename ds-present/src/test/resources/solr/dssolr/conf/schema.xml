@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 Important! READ before making changes to the schema.
-Since we are using schema.xml and not managed-schema.xml all filters defined has to be loaded by class and not by name parameter.
+Since we are using schema.xml and not managed-schema.xml all filters defined
+has to be loaded by class and not by name parameter.
 Read about this bug: https://issues.apache.org/jira/browse/SOLR-16203
 
 In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>  
 -->
+
+<!-- TODO: Add query examples where they apply. -->
 <?summary Fields in this schema should be described with two metatags.
           ?Description should contain a description of the field, while
           ?Example should contain an example of how to use the field. If providing multiple
@@ -29,7 +32,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="accession_number" type="string" stored="true">
-  <?description the unique number given to each new acquisition
+  <?description The unique number given to each new acquisition
                 as it is entered in the catalog of a library or museum ?>
   <?example     1911-7507?>
   </field>
@@ -40,20 +43,21 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="shelf_location" type="string"  stored="true">
-    <?description describes where the physical object is located.?>
+    <?description Describes where the physical object is located.?>
     <?example     KBK Depot?>
     <?example     Billedsamlingen. John R. Johnsen. Balletfotografier?>
   </field>
 
-  <field name="physical_location" type="text_general"> <!--  May not be in data. Maybe this should be combined with shelf_location? -->
-    <?description describes the location of the physical object.?>
+  <!--  May not be in data.Maybe this should be combined with shelf_location? -->
+  <field name="physical_location" type="text_general">
+    <?description Describes the location of the physical object.?>
     <!-- TODO: Find example -->
   </field>
 
   <field name="categories" type="string" docValues="true" stored="true">
-    <?description the categories field can contain many different values.
-                  metadata in this field are different entries seperated by space and commas.
-                  the field list_of_categories contain the same values,
+    <?description The categories field can contain many different values.
+                  Metadata in this field are different entries seperated by space and commas.
+                  The field list_of_categories contain the same values,
                   but split into unique entities.?>
     <?example     John R. Johnsen balletfotos, Den Kongelige Ballet ,
                   Hønningen, Mette , Neumeier, John, Kronstam, Henning,
@@ -61,14 +65,15 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="list_of_categories" type="string"  multiValued="true" docValues="true" stored="true">
-    <?description the list_of_categories field can contain many different values.
-                  this field is multivalued and contains a single category per entry.?>
+    <?description The list_of_categories field can contain many different values.
+                  This field is multivalued and contains a single category per
+                  entry in the list.?>
     <?example     John R. Johnsen balletfotos?>
     <?example     Den Kongelige Ballet?>
   </field>
 
   <field name="collection" type="string" docValues="true" stored="true">
-    <?description the original collection.?>
+    <?description The original collection.?>
     <?example     Billedsamlingen?>
   </field>
 
@@ -175,19 +180,27 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     O.J.Moltke  1770-1853?>
   </field>
 
+  <!-- It seems like there is some kind of overlap between metadata delivered in the field content_description,
+       where some of it might have fitted better in this field. The same goes for content in the internal_note field.
+       Maybe these three should be collapsed to content_description? -->
   <field name="physical_description" type="text_general" multiValued="true">
     <?description Physical description of the resource?>
     <!-- TODO: Add example -->
   </field>
 
+  <!-- Field name: For resources that contain persons in the content, these people are described in a field called
+       subject_name. It would be ideal to have this field and these subject fields be named in the same way. This can be
+       done by changing the name of this field to subject/subject_description or the like. However, the metadata entries
+       in this field seems to be describing way more than the subject of the resource. -->
   <field name="content_description" type="text_general" multiValued="true">
     <?description Used to describe the resource in any way possible?>
     <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
     <?example     Daguerreotypi, mål: 81 x 70 mm?>
   </field>
 
+  <!-- Should this be combined with content_description? -->
   <field name="internal_note" type="text_general" multiValued="true">
-    <?description Internal notes, which can contain basicly anything. ?> <!-- Should this be combined with content_description? -->
+    <?description Internal notes, which can contain basicly anything. ?>
     <!-- TODO: Add example -->
   </field>
 
@@ -223,7 +236,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <!-- Fields on subject -->
-  <field name="subject_name" type="text_general" multiValued="true"> <!-- TODO: SMK uses content_person and content_person_full, check with others -->
+  <!-- Note on field name: SMK uess content_person, however standards as Dublin Core and Europeana Data Model don't have
+       this field, they operate with a generic subject field. Furthermore, Schema.org operates with Persons who can be
+       the subjectOf a creative work. I suggest we stick with subject_name, as this comes closest to other descriptive
+       standards used in european cultural heritage institutions. -->
+  <field name="subject_name" type="text_general" multiValued="true">
     <?description The name of the subject written as family name, given name.?>
     <?example     Johnsen, John R.?>
   </field>
@@ -271,13 +288,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="resource_id" type="string" multiValued="true" stored="true">
-    <?description URI pointing to the digital representation of the resource?><!-- TODO: Handle URL construction in solr XSLT only as is done in schema.org XSLT.-->
-    <?example https://example.com/imageserver/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592?> <!-- TODO: Check link construction in XSLT, something might be off with \ handling in schema.org XSLT -->
+    <?description URI pointing to the digital representation of the resource?>
+    <?example     https://example.com/imageserver/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592?>
   </field>
 
   <field name="file_size" type="plong">
     <?description the size of the file in bytes.?>
-    <?example 252000?>
+    <?example     252000?>
   </field>
 
   <field name="image_height" type="pint">
@@ -292,10 +309,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <field name="image_size_pixels" type="plong">
     <?description the size of the digital image in pixels.?>
-    <?example 960000?>
+    <?example     960000?>
   </field>
 
-  <field name="target_audience" type="string" stored="true"> <!-- Not in test data. Part of MODS and might be in other collections-->
+  <!-- Not in test data. Part of MODS and might be in other collections-->
+  <field name="target_audience" type="string" stored="true">
     <?description The target audience for the resource.?>
     <?example     Children?>
   </field>
@@ -321,7 +339,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <field name="titles_strict" type="titles_strict" multiValued="true" stored="false">
     <?description field for strict title matching. Matches exact titles?>
-    <?example Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
+    <?example     Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
   </field>
   <!-- END FIELDS  -->
 
@@ -333,7 +351,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <fieldType name="pint" class="solr.IntPointField" multiValued="false" indexed="true" required="false" stored="true" docValues="false"/>
   <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
 
-  <!-- Field is not analysed or tokenized. Used for author names, titles etc. This field is not usefull as search field, but good for docValues  -->
+  <!-- Field is not analysed or tokenized. Used for author names, titles etc.
+   This field is not usefull as search field, but good for docValues  -->
   <fieldType name="string" class="solr.StrField" sortMissingLast="true" indexed="true" required="false" stored="true" multiValued="false" docValues="true"/>
 
   <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
@@ -399,17 +418,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <!-- START COPYFIELDS  -->
   <copyField source="creator_full_name" dest="creator_full_name_strict">
-    <?description copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
+    <?description Copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
     <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
   </copyField>
 
   <copyField source="titles" dest="titles_strict">
-  <?description copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
+  <?description Copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
   <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
   </copyField>
 
   <copyField source="subject_full_name" dest="subject_full_name_strict">
-    <?description copies the full name of the subject to a strict field, which produces a higher ranking when queried.?>
+    <?description Copies the full name of the subject to a strict field, which produces a higher ranking when queried.?>
     <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
   </copyField>
 
