@@ -42,13 +42,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <?example     da?>
   </field>
 
-  <field name="shelf_location" type="string"  stored="true">
+  <field name="location" type="string"  stored="true">
     <?description Describes where the physical object is located.?>
     <?example     KBK Depot?>
     <?example     Billedsamlingen. John R. Johnsen. Balletfotografier?>
   </field>
 
-  <!--  May not be in data.Maybe this should be combined with shelf_location? -->
+  <!--  May not be in data. Don't know if it has been used at all or all location related metadata is present in
+        location field.-->
   <field name="physical_location" type="text_general">
     <?description Describes the location of the physical object.?>
     <!-- TODO: Find example -->
@@ -446,7 +447,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="collection" dest="freetext"/>
   <copyField source="type_of_resource" dest="freetext"/>
   <copyField source="content_description" dest="freetext"/>
-  <copyField source="shelf_location" dest="freetext"/>
+  <copyField source="location" dest="freetext"/>
   <copyField source="titles" dest="freetext"/>
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>

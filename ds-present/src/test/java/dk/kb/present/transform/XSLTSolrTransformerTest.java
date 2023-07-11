@@ -59,7 +59,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXsltNewDpkItem() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_3956d820);
-		assertTrue(solrString.contains("\"shelf_location\":\"Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort\\/politistation\""));
+		assertTrue(solrString.contains("\"location\":\"Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort\\/politistation\""));
 	}
 
 	@Test

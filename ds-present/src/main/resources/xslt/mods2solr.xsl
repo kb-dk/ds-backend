@@ -85,15 +85,17 @@
               </f:string>
             </xsl:for-each>
           <!-- Extracting physical location if it exists-->
+          <!-- Physical location is part of MODS, but is not present in any of our test files. -->
           </xsl:if>
           <xsl:if test="m:location/m:physicalLocation">
             <f:string key="physical_location">
               <xsl:value-of select="m:location/m:physicalLocation"/>
             </f:string>
           </xsl:if>
-          <!-- Extracting shelf location if it exists-->
+          <!-- Extracting shelf location if it exists. In our test data it seems that metadata which might benefit from
+               being split between physicalLocation and shelfLocator has been combined into the shelfLocator.-->
           <xsl:if test="m:location/m:shelfLocator">
-            <f:string key="shelf_location">
+            <f:string key="location">
               <xsl:value-of select="m:location/m:shelfLocator"/>
             </f:string>
           </xsl:if>

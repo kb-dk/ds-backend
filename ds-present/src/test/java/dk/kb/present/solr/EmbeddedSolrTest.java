@@ -484,7 +484,7 @@ public class EmbeddedSolrTest {
 
         assertEquals(filenameLocal,record.getFieldValue("filename_local"));
         assertEquals(catalogingLanguage,record.getFieldValue("cataloging_language"));
-        assertEquals(shelfLocation,record.getFieldValue("shelf_location"));
+        assertEquals(shelfLocation,record.getFieldValue("location"));
         assertEquals(categories,record.getFieldValue("categories"));
         assertEquals(catalogName, record.getFieldValue("catalog_name"));
         assertEquals(collection, record.getFieldValue("collection"));
