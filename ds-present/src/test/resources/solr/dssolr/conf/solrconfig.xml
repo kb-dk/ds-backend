@@ -779,6 +779,7 @@
        <str name="facet.field">collection</str>
        <str name="facet.field">resource_description</str>
        <str name="facet.field">creator_full_name</str>
+       <str name="facet.field">subject_full_name</str>
                    
         
        <str name="hl">on</str>
