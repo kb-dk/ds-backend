@@ -27,8 +27,9 @@
        <xsl:param name="access_foto_aftale"/>
        <xsl:param name="access_billede_aftale"/>
        <xsl:param name="access_ophavsret_tekst"/>
-              
-              
+       <xsl:param name="imageserver"/>
+
+
   <xsl:template match="/">
   
     <xsl:variable name="json">   
@@ -552,16 +553,26 @@
         </xsl:if>
         <!-- Extract resource id-->
         <xsl:if test="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
+          <xsl:variable name="imageUrl">
+            <xsl:variable name="imageIdentifier">
+              <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
+            </xsl:variable>
+            <xsl:value-of select="concat($imageserver, f:substring-before($imageIdentifier, '.jp'))"/>
+          </xsl:variable>
           <f:array key="resource_id">
+            <f:string>
+              <xsl:value-of select="$imageUrl"/>
+            </f:string>
+            <!--
             <xsl:for-each select="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
               <xsl:variable name="noPrefix">
-                <!-- Replace image server by regex. Afterwards we manually replace the string '/imageServicecumulus-core-01:' which is present in some strings due to poor metadata -->
+                 Replace image server by regex. Afterwards we manually replace the string '/imageServicecumulus-core-01:' which is present in some strings due to poor metadata
                 <xsl:value-of select="f:replace(f:replace(., 'https?://[^:/]*', ''), '/imageServicecumulus-core-01:', '')"/>
               </xsl:variable>
               <f:string>
                 <xsl:value-of select="substring-before($noPrefix, '.jp')"/>
               </f:string>
-            </xsl:for-each>
+            </xsl:for-each> -->
           </f:array>
         </xsl:if>
         <!-- Display label can in theory contain anything.

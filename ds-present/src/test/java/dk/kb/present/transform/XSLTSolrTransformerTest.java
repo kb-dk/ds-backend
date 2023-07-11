@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.*;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -145,8 +147,9 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testImageResource() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_40221e30);
-		assertTrue(solrString.contains("\"resource_id\":[\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
+		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver");
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_40221e30,injections);
+		assertTrue(solrString.contains("\"resource_id\":[\"https:\\/\\/example.com\\/imageserver\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
 	}
 
 	@Test
