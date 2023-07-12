@@ -160,6 +160,7 @@ public class EmbeddedSolrTest {
         //Full life cycle test
         SolrDocument record = getRecordById("096c9090-717f-11e0-82d7-002185371280");
 
+
         assertContentAllSingleValues(record,"000225.tif", "da",
                 "Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",
                 "Danske portrætter, X-langtidsbevaring test - BLO, Diverse, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-02 09:01:13",
@@ -238,6 +239,7 @@ public class EmbeddedSolrTest {
         //Full life cycle test
         SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
 
+        System.out.println(record.getFieldValues("notes"));
 
         //Single value field
         assertEquals("ANSK_11614.tif",record.getFieldValue("filename_local"));
@@ -256,6 +258,12 @@ public class EmbeddedSolrTest {
         //Single value field
         assertEquals("SKF_f_0137.tif",record.getFieldValue("filename_local"));
 		assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
+
+        assertMultivalueField(record, "notes",
+                "Beskrivelse: Den gamle rytterskole i Hørning (Sønder-Hørning). Facadebillede. " +
+                              "Fotografi kopi udført af Rudolph Jørgensen Helsingør (etabi 1897)",
+                              "Topografisk nr: 2156", "Den gamle rytterskole i Hørning (Sønder-Hørning). " +
+                              "Facadebillede. Fotografi kopi udført af Rudolph Jørgensen Helsingør (etabi 1897)"  );
 	}
 
     @Test

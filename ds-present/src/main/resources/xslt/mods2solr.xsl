@@ -183,8 +183,9 @@
 
 
         <!-- if note field of type content exists extract it-->
-        <xsl:if test="m:note[@type='content']">
+        <xsl:if test="m:note[@type='content'] or m:note[@displayLabel='Description']">
           <f:array key="notes">
+            <xsl:if test="m:note[@type='content']">
             <xsl:for-each select="m:note[@type='content']">
               <xsl:if test=". != ''">
                 <f:string>
@@ -192,6 +193,22 @@
                   <xsl:value-of select="f:replace(., 'zh\|', '')"/>
                 </f:string>
               </xsl:if>
+            </xsl:for-each>
+            </xsl:if>
+
+            <xsl:for-each select="m:note[@displayLabel='Description']">
+              <xsl:analyze-string select="." regex="(.*\.)([a-zA-Z].*)">
+                <xsl:matching-substring>
+                  <f:string>
+                    <xsl:value-of select="f:concat(regex-group(1), ' ', f:regex-group(2))"/>
+                  </f:string>
+                </xsl:matching-substring>
+                <xsl:non-matching-substring>
+                  <f:string>
+                    <xsl:value-of select="."/>
+                  </f:string>
+                </xsl:non-matching-substring>
+              </xsl:analyze-string>
             </xsl:for-each>
           </f:array>
         </xsl:if>
@@ -207,9 +224,10 @@
             </xsl:for-each>
           </f:array>
         </xsl:if>
+        <!--TODO: m:note[@displayLabel='Description'] has to become a part of notes, if it isn't already present in one of the m:note[@type='content'] -->
         <!--Extracts descriptions from two different fields if at least one of them are present -->
         <!-- Checks all possible variations of physical description from MODS that are not related to page orientation-->
-        <xsl:if test="m:note[@displayLabel='Description'] or m:physicalDescription/not(m:note[@displayLabel='Pageorientation'])">
+        <xsl:if test="m:physicalDescription/not(m:note[@displayLabel='Pageorientation'])">
           <f:array key="physical_description">
             <xsl:for-each select="m:note[@displayLabel='Description']">
               <f:string>

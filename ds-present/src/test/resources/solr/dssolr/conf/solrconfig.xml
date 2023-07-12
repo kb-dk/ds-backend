@@ -758,6 +758,7 @@
         
         <str name="qf">
         filename_local^5.0
+        titles_strict^5.0
         creator_full_name_strict^5.0        
         topic^2.0
         location

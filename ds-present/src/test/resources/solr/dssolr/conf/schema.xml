@@ -342,7 +342,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="freetext" type="freetext" multiValued="true" stored="false">
     <?description Freetext field, which contains text from multiple other fields.?>
     <?example     If a play with the titel 'Romeo and Juliet' written by the author 'William Shakespeare' is indexed,
-                  then the freetext field  for this play will contain content from multiple other fields, so that the
+                  then the freetext field for this play will contain content from multiple other fields, so that the
                   value of the freetext field could be something like this: "William Shakespeare Romeo and Juliet".?>
   </field>
 

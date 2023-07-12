@@ -100,6 +100,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testNoTermsOfAddress() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK);
+		prettyPrintSolrJsonFromMods(RECORD_ANSK);
 		assertFalse(solrString.contains("creator_terms_of_address"));
 	}
 
@@ -107,6 +108,14 @@ class XSLTSolrTransformerTest{
 	void testXsltSkfF0137() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_54b34b50);
 		assertTrue(solrString.contains("\"list_of_categories\":[\"Rytterskoler x\",\"Skolehistorie\",\"69 testfiler\"]"));
+	}
+
+	@Test
+	void testCombinationOfContentAndDescription() throws Exception {
+		String ansk = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK);
+		String record54b = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_54b34b50);
+		assertTrue(ansk.contains("\"111, 4: Forskellige former for fald. Pap med opklæbet billede. Forestiller træ og mennesker, der vælter og falder. Ingen tekst på billedet.\""));
+		assertTrue(record54b.contains("\"Den gamle rytterskole i Hørning (Sønder-Hørning). Facadebillede. Fotografi kopi udført af Rudolph Jørgensen Helsingør (etabi 1897)\""));
 	}
 
 	@Test
