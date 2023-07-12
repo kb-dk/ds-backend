@@ -27,7 +27,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="filename_local" type="string"  stored="true">
-    <?description The name of the file, which this document contains metadata about.?>
+    <?description The name of the file, which contains the digital resource that this metadata is about.?>
     <?examaple    JB000132_114.tif?>
   </field>
 
@@ -78,7 +78,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Billedsamlingen?>
   </field>
 
-
   <field name="published_in" type="string" docValues="true" stored="true">
     <?description If the object has been published in a journal, newspaper, book etc.
                   this field contains the name of that publication.?>
@@ -96,7 +95,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <!-- Fields on title -->
-  <field name="titles" type="text_general" multiValued="true"> <!-- Currently only present in maps collection-->
+  <field name="titles" type="text_general" multiValued="true"> <!-- Currently only present in maps collection test data-->
     <?description The object title.?>
     <?example     Den grimme ælling.?>
   </field>
@@ -205,8 +204,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Montering: opklæbet på karton og monteret i passepartout?>
   </field>
 
-  <field name="catalog_name" type="string" stored="true" docValues="true">
-    <?description The name of the catalog, which this resource is a part of.?>
+  <field name="catalog" type="string" stored="true" docValues="true">
+    <?description The catalog, which this resource is a part of.?>
     <?example     Samlingsbilleder?>
   </field>
 
@@ -445,7 +444,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="subject_family_name" dest="freetext"/>
   <copyField source="subject_given_name" dest="freetext"/>
   <copyField source="categories" dest="freetext"/>
-  <copyField source="catalog_name" dest="freetext"/>
+  <copyField source="catalog" dest="freetext"/>
   <copyField source="collection" dest="freetext"/>
   <copyField source="type_of_resource" dest="freetext"/>
   <copyField source="content_description" dest="freetext"/>

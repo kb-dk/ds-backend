@@ -65,7 +65,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXslt45dd() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_45dd4830);
-		assertTrue(solrString.contains("\"catalog_name\":\"Samlingsbilleder\",\"collection\":\"Billedsamlingen\""));
+		assertTrue(solrString.contains("\"catalog\":\"Samlingsbilleder\",\"collection\":\"Billedsamlingen\""));
 	}
 
 	/**
@@ -112,7 +112,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testUldall() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_e2519ce0);
-		assertTrue(solrString.contains("\"catalog_name\":\"Maps\""));
+		assertTrue(solrString.contains("\"catalog\":\"Maps\""));
 	}
 
 	@Test

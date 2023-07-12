@@ -136,7 +136,7 @@
           <!-- Different things can be represented in note. -->
           <!-- If catalog name exists, extract it-->
           <xsl:if test="m:note[@displayLabel='Catalog Name']">
-            <f:string key="catalog_name">
+            <f:string key="catalog">
               <xsl:value-of select="m:note[@displayLabel='Catalog Name']"/>
             </f:string>
           </xsl:if>

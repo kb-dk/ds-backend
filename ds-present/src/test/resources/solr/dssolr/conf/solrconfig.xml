@@ -763,7 +763,7 @@
         location
         content_description
         collection
-        catalog_name
+        catalog
         resource_description
         freetext^0.5       
        </str>
@@ -775,7 +775,7 @@
        <str name="facet.mincount">1</str>
        <str name="facet.limit">10</str>
        
-       <str name="facet.field">catalog_name</str>
+       <str name="facet.field">catalog</str>
        <str name="facet.field">collection</str>
        <str name="facet.field">resource_description</str>
        <str name="facet.field">creator_full_name</str>

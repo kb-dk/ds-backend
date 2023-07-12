@@ -15,6 +15,7 @@ public class XSLTDocumentationTransformerTest {
     @Test
     public void testExtractionOfProcessingInstruction() throws IOException {
         String documentation = TestUtil.getTransformed(SCHEMA2DOC, SCHEMA);
+        printDocumentation();
         assertTrue(documentation.contains("Fields in this schema should be described with two metatags. " +
                                             "?Description should contain a description of the field"));
     }
