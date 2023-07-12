@@ -84,13 +84,19 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Aktuelt?>
   </field>
 
-  <field name="resource_description" type="string" multiValued="false"  docValues="true">
+  <field name="genre" type="string" docValues="true">
+    <?description The genre of the resource?>
+    <?example     For a photograph: Portrait?>
+    <?example     For a book: novel?>
+  </field>
+
+  <field name="resource_description" type="string"  docValues="true">
     <?description Specific description of the resource/object.?>
     <?example     Poster?>
     <?example     Photograph?>
   </field>
 
-  <field name="resource_description_general" type="string" multiValued="false"  docValues="true">
+  <field name="resource_description_general" type="string" docValues="true">
     <?description General description of type of resource/object?>
     <?example     Picture, two dimensional imagematerial?>
   </field>
@@ -290,7 +296,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <field name="resource_id" type="string" multiValued="true" stored="true">
     <?description URI pointing to the digital representation of the resource?>
-    <?example     https://example.com/imageserver/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592?>
+    <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
   </field>
 
   <field name="file_size" type="plong">
@@ -447,6 +453,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="categories" dest="freetext"/>
   <copyField source="catalog" dest="freetext"/>
   <copyField source="collection" dest="freetext"/>
+  <copyField source="genre" dest="freetext"/>
   <copyField source="resource_description" dest="freetext"/>
   <copyField source="resource_description_general" dest="freetext"/>
   <copyField source="content_description" dest="freetext"/>

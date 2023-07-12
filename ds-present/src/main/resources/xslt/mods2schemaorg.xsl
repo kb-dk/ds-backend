@@ -55,6 +55,7 @@
         <xsl:variable name="json">
             <f:map>
                 <xsl:for-each select="//mets:dmdSec[@ID='Mods1']//m:mods">
+                    <!-- TODO: Add genre, where it fits-->
 
                     <xsl:variable name="cataloging_language">
                         <xsl:for-each select="m:recordInfo/m:languageOfCataloging/m:languageTerm[1]">

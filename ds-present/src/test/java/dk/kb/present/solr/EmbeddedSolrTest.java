@@ -186,8 +186,6 @@ public class EmbeddedSolrTest {
 
         // creator_terms_of_address
         assertMultivalueField(record,"creator_terms_of_address", "kobberstikker");
-        Collection<Object> creatorTermsOfAddress = record.getFieldValues("creator_terms_of_address");
-
 
         // topic
         assertMultivalueField(record, "topic", "Poul Egede. 1911,7507.", "Billedet befinder sig i Kort- og Billedafdelingen, Det Kongelige Bibliotek" );
@@ -280,7 +278,7 @@ public class EmbeddedSolrTest {
 	}
 
     @Test
-    void testRecordUldallForTitleAndPlaceOfProduction() throws Exception {
+    void testRecordUldallForTitleAndPlaceOfProductionAndGenre() throws Exception {
         indexRecord(RECORD_e2519ce0);
 
         assertEquals(1, getNumberOfTotalDocuments());
@@ -290,6 +288,7 @@ public class EmbeddedSolrTest {
 
         //Single value field
         assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("filename_local"));
+        assertEquals("Topografi",record.getFieldValue("genre"));
 
         // Title field
         assertMultivalueField(record, "titles", "Foborg, Foburgum");

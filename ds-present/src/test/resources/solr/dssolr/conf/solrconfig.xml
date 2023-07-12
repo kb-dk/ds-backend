@@ -777,7 +777,9 @@
        
        <str name="facet.field">catalog</str>
        <str name="facet.field">collection</str>
+       <str name="facet.field">genre</str>
        <str name="facet.field">resource_description</str>
+       <str name="facet.field">resource_description_general</str>
        <str name="facet.field">creator_full_name</str>
        <str name="facet.field">subject_full_name</str>
                    
