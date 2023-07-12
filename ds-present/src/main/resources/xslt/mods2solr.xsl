@@ -159,7 +159,6 @@
             </xsl:for-each>
           </f:array>
         </xsl:if>
-
         <!-- Different things can be represented in note. -->
         <!-- If catalog name exists, extract it-->
         <xsl:if test="m:note[@displayLabel='Catalog Name']">
@@ -173,15 +172,11 @@
             <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Samling'])"/>
           </f:string>
         </xsl:if>
-
         <xsl:if test="m:relatedItem[@type='host' and @displayLabel='Publication']">
           <f:string key="published_in">
             <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Publication'])"/>
           </f:string>
         </xsl:if>
-
-
-
         <!-- if note field of type content exists extract it-->
         <xsl:if test="m:note[@type='content'] or m:note[@displayLabel='Description']">
           <f:array key="notes">
@@ -189,13 +184,15 @@
             <xsl:for-each select="m:note[@type='content']">
               <xsl:if test=". != ''">
                 <f:string>
-                  <!-- First use of replace 'zh|'. This check is done multiple times to remove 'zh|' in front of chinese characters -->
+                  <!-- First use of replace 'zh|'.
+                       This check is done multiple times to remove 'zh|' in front of chinese characters -->
                   <xsl:value-of select="f:replace(., 'zh\|', '')"/>
                 </f:string>
               </xsl:if>
             </xsl:for-each>
             </xsl:if>
-
+            <!-- Ideally this transformation has a check, that the content of m:note[@displayLabel='Description']
+                 isn't present in a string or substring of m:note[@type='content']  -->
             <xsl:for-each select="m:note[@displayLabel='Description']">
               <xsl:analyze-string select="." regex="(.*\.)([a-zA-Z].*)">
                 <xsl:matching-substring>
@@ -224,7 +221,6 @@
             </xsl:for-each>
           </f:array>
         </xsl:if>
-        <!--TODO: m:note[@displayLabel='Description'] has to become a part of notes, if it isn't already present in one of the m:note[@type='content'] -->
         <!--Extracts descriptions from two different fields if at least one of them are present -->
         <!-- Checks all possible variations of physical description from MODS that are not related to page orientation-->
         <xsl:if test="m:physicalDescription/not(m:note[@displayLabel='Pageorientation'])">
@@ -248,8 +244,7 @@
           </f:array>
         </xsl:if>
         <!-- Some metadata records contains multiple titles with no language indication. Therefore this part extracts the first one. -->
-        <!-- TODO: Consider extracting all, as multiple other Cultural Heritage Institutions as Rijksmuseum and National Gallery of Denmark does -->
-        <!-- Extract title if present.-->
+        <!-- Extract titles if present.-->
         <xsl:if test="m:titleInfo/m:title">
           <f:array key="titles">
             <xsl:for-each select="m:titleInfo/m:title">
