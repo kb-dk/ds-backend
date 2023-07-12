@@ -761,7 +761,7 @@
         creator_full_name_strict^5.0        
         topic^2.0
         location
-        content_description
+        notes
         collection
         catalog
         resource_description
@@ -787,8 +787,8 @@
        <str name="hl">on</str>
        <str name="hl.requireFieldMatch">false</str>
        <str name="hl.encoder">html</str>
-       <str name="f.content_description.hl.preserveMulti">false</str>
-       <str name="hl.fl">content_description</str>
+       <str name="f.notes.hl.preserveMulti">false</str>
+       <str name="hl.fl">notes</str>
         
      </lst>
          

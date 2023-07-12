@@ -187,9 +187,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     O.J.Moltke  1770-1853?>
   </field>
 
-  <!-- It seems like there is some kind of overlap between metadata delivered in the field content_description,
+  <!-- It seems like there is some kind of overlap between metadata delivered in the field notes,
        where some of it might have fitted better in this field. The same goes for content in the internal_note field.
-       Maybe these three should be collapsed to content_description? -->
+       Maybe these three should be collapsed to notes? -->
   <field name="physical_description" type="text_general" multiValued="true">
     <?description Physical description of the resource?>
     <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept.-->
@@ -199,13 +199,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
        subject_name. It would be ideal to have this field and these subject fields be named in the same way. This can be
        done by changing the name of this field to subject/subject_description or the like. However, the metadata entries
        in this field seems to be describing way more than the subject of the resource. -->
-  <field name="content_description" type="text_general" multiValued="true">
-    <?description Used to describe the resource in any way possible?>
+  <field name="notes" type="text_general" multiValued="true">
+    <?description Used to describe the resource in any way possible. Contains multiple types of metadata.?>
     <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
     <?example     Daguerreotypi, mål: 81 x 70 mm?>
   </field>
 
-  <!-- Should this be combined with content_description? -->
+  <!-- Should this be combined with notes? What is the difference between internal notes and notes? -->
   <field name="internal_note" type="text_general" multiValued="true">
     <?description Internal notes, which can contain basicly anything. ?>
     <?example     Montering: opklæbet på karton og monteret i passepartout?>
@@ -245,8 +245,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- Fields on subject -->
   <!-- Note on field name: SMK uess content_person, however standards as Dublin Core and Europeana Data Model don't have
        this field, they operate with a generic subject field. Furthermore, Schema.org operates with Persons who can be
-       the subjectOf a creative work. I suggest we stick with subject_name, as this comes closest to other descriptive
-       standards used in european cultural heritage institutions. -->
+       the subjectOf a creative work. I suggest we stick with subject_name, as this comes closest to other standards
+       used in european cultural heritage institutions. -->
   <field name="subject_name" type="text_general" multiValued="true">
     <?description The name of the subject written as family name, given name.?>
     <?example     Johnsen, John R.?>
@@ -456,7 +456,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="genre" dest="freetext"/>
   <copyField source="resource_description" dest="freetext"/>
   <copyField source="resource_description_general" dest="freetext"/>
-  <copyField source="content_description" dest="freetext"/>
+  <copyField source="notes" dest="freetext"/>
   <copyField source="location" dest="freetext"/>
   <copyField source="titles" dest="freetext"/>
   <copyField source="subtitle" dest="freetext"/>

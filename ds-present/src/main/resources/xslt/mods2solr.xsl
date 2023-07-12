@@ -184,7 +184,7 @@
 
         <!-- if note field of type content exists extract it-->
         <xsl:if test="m:note[@type='content']">
-          <f:array key="content_description">
+          <f:array key="notes">
             <xsl:for-each select="m:note[@type='content']">
               <xsl:if test=". != ''">
                 <f:string>
