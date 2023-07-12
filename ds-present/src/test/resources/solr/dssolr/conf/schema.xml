@@ -85,13 +85,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="resource_description" type="string" multiValued="false"  docValues="true">
-    <?description General description of the resource/object.?>
-    <?example     Billede, Todimensionalt billedmateriale?>
+    <?description Specific description of the resource/object.?>
+    <?example     Poster?>
+    <?example     Photograph?>
   </field>
 
   <field name="resource_description_general" type="string" multiValued="false"  docValues="true">
-    <?description Specific description of type of resource/object?>
-    <?example     Negativ?>
+    <?description General description of type of resource/object?>
+    <?example     Picture, two dimensional imagematerial?>
   </field>
 
   <!-- Fields on title -->
