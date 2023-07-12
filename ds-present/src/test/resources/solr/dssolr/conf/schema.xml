@@ -89,7 +89,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Billede, Todimensionalt billedmateriale?>
   </field>
 
-  <field name="type_of_resource" type="string" multiValued="true"  docValues="true">
+  <field name="resource_description_general" type="string" multiValued="false"  docValues="true">
     <?description Specific description of type of resource/object?>
     <?example     Negativ?>
   </field>
@@ -446,7 +446,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="categories" dest="freetext"/>
   <copyField source="catalog" dest="freetext"/>
   <copyField source="collection" dest="freetext"/>
-  <copyField source="type_of_resource" dest="freetext"/>
+  <copyField source="resource_description" dest="freetext"/>
+  <copyField source="resource_description_general" dest="freetext"/>
   <copyField source="content_description" dest="freetext"/>
   <copyField source="location" dest="freetext"/>
   <copyField source="titles" dest="freetext"/>

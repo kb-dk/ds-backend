@@ -104,9 +104,9 @@ public class EmbeddedSolrTest {
 
         //Single value field
         assertEquals("000332.tif",record.getFieldValue("filename_local"));
+        assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
         //multivalue field
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
         // Creator date of death
         assertMultivalueField(record, "creator_date_of_death", "1868-2-14", "1895-6-25", "1865-3-8" );
 
@@ -135,11 +135,10 @@ public class EmbeddedSolrTest {
 
         //Single value fields
         assertEquals("Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian", record.getFieldValue("area"));
+        // type_of_resource
+        assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
         //Multivalue fields
-        // type_of_resource
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Postkort" );
-
         // topic
         assertMultivalueField(record, "topic", "postkort","forter","Dannebrog", "børn", "arkitekturer",
                 "postcards", "forts", "Dannebrog", "children", "architectures" );
@@ -170,6 +169,7 @@ public class EmbeddedSolrTest {
         //Single value field
         assertEquals("1755",record.getFieldValue("production_date_start"));
         assertEquals("1831",record.getFieldValue("production_date_end"));
+        assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
         //multivalue fields
         // creator_name
@@ -188,8 +188,6 @@ public class EmbeddedSolrTest {
         assertMultivalueField(record,"creator_terms_of_address", "kobberstikker");
         Collection<Object> creatorTermsOfAddress = record.getFieldValues("creator_terms_of_address");
 
-        // type_of_resource
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
 
         // topic
         assertMultivalueField(record, "topic", "Poul Egede. 1911,7507.", "Billedet befinder sig i Kort- og Billedafdelingen, Det Kongelige Bibliotek" );
@@ -229,8 +227,7 @@ public class EmbeddedSolrTest {
         //Single value field
         assertEquals("DT005031.tif",record.getFieldValue("filename_local"));
 
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Tegning" );
+		assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 	}
 
     @Test
@@ -246,9 +243,7 @@ public class EmbeddedSolrTest {
 
         //Single value field
         assertEquals("ANSK_11614.tif",record.getFieldValue("filename_local"));
-
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Anskuelsesbillede" );
+		assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 	}
 
     @Test
@@ -262,9 +257,7 @@ public class EmbeddedSolrTest {
 
         //Single value field
         assertEquals("SKF_f_0137.tif",record.getFieldValue("filename_local"));
-
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Fotografi" );
+		assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 	}
 
     @Test
@@ -278,10 +271,9 @@ public class EmbeddedSolrTest {
 
         //Single value field
         assertEquals("KHP0001-049.tif",record.getFieldValue("filename_local"));
+        assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
         //multivalue field
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Dia" );
-
 		assertMultivalueField(record, "list_of_categories", "KHP",
 				"Keld Helmer-Petersen", "1940-1950", "Helmer-Petersen", "Keld",
 				"CAR- BLO katagori", "ikke UA");

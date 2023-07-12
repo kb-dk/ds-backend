@@ -577,23 +577,28 @@
             </xsl:for-each> -->
           </f:array>
         </xsl:if>
-        <!-- Display label can in theory contain anything.
-             Resource Description seems to be the field that contains the most precise description of a given resource. -->
-        <xsl:if test="m:typeOfResource[@displayLabel='Resource Description']">
-          <f:string key="resource_description">
-            <xsl:value-of select="m:typeOfResource[@displayLabel='Resource Description']"/>
-          </f:string>
-        </xsl:if>
+        <!-- resource_type should get data from either typeOfResource[@displayLabel='Resource Description'] or
+             typeOfResource[@displayLabel='Generel Resource Description']. Resource Description contains a specific
+             description of the resource, while Generel Resource Description is a catch-all-description for broader
+             categories. -->
+        <xsl:choose>
+          <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']">
+            <f:string key="resource_description">
+              <xsl:value-of select="m:typeOfResource[@displayLabel='Resource Description']"/>
+            </f:string>
+          </xsl:when>
+          <xsl:otherwise>
+            <f:string key="resource_description">
+              <xsl:value-of select="m:typeOfResource[@displayLabel='Generel Resource Description']"/>
+            </f:string>
+          </xsl:otherwise>
+        </xsl:choose>
+        <!-- TODO: Remove following if statement-->
         <!-- Type of resource gets extracted here if present -->
-        <!-- TODO: Should probably be named something like resource_categories -->
-        <xsl:if test="m:typeOfResource">
-          <f:array key="type_of_resource">
-            <xsl:for-each select="m:typeOfResource">
-              <f:string>
-                <xsl:value-of select="."/>
-              </f:string>
-            </xsl:for-each>
-          </f:array>
+        <xsl:if test="m:typeOfResource[@displayLabel='Generel Resource Description']">
+          <f:string key="resource_description_general">
+            <xsl:value-of select="m:typeOfResource[@displayLabel='Generel Resource Description']"/>
+          </f:string>
         </xsl:if>
         <!-- Create target_audience. This is not in our test files but part of MODS standard.
               Could be used in other collections. -->
