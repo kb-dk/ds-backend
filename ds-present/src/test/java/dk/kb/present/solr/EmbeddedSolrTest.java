@@ -479,7 +479,7 @@ public class EmbeddedSolrTest {
 
     private void assertContentAllSingleValues(SolrDocument record, String filenameLocal, String catalogingLanguage, String shelfLocation,
             String categories, String catalog, String collection,
-            Long filesize, int imgHeight, int imgWidth) throws Exception {
+            Long fileBytesize, int imgHeight, int imgWidth) throws Exception {
 
         assertEquals(filenameLocal,record.getFieldValue("filename_local"));
         assertEquals(catalogingLanguage,record.getFieldValue("cataloging_language"));
@@ -487,7 +487,7 @@ public class EmbeddedSolrTest {
         assertEquals(categories,record.getFieldValue("categories"));
         assertEquals(catalog, record.getFieldValue("catalog"));
         assertEquals(collection, record.getFieldValue("collection"));
-        assertEquals(filesize, record.getFieldValue("file_size"));
+        assertEquals(fileBytesize, record.getFieldValue("file_byte_size"));
         assertEquals(imgHeight, record.getFieldValue("image_height"));
         assertEquals(imgWidth, record.getFieldValue("image_width"));
     }

@@ -299,7 +299,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
   </field>
 
-  <field name="file_size" type="plong">
+  <field name="file_byte_size" type="plong">
     <?description the size of the file in bytes.?>
     <?example     252000?>
   </field>

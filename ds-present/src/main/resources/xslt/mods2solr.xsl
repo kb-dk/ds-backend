@@ -76,7 +76,7 @@
       <!--This is the mets element with the bibliographic metadata.  -->
       <xsl:for-each select="//mets:amdSec/mets:techMD[@ID='PremisObject1']//premis:objectCharacteristics">
         <xsl:if test="premis:size">
-          <f:string key="file_size">
+          <f:string key="file_byte_size">
             <xsl:value-of select="xs:long(premis:size)"/>
           </f:string>
         </xsl:if>
