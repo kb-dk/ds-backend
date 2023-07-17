@@ -163,13 +163,18 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="creator_date_of_birth" type="text_general" multiValued="true">
-    <?description the date of birth for creators.?>
+    <?description The date of birth for creators.?>
     <?example     1748-11-29?>
   </field>
 
   <field name="creator_date_of_death" type="text_general" multiValued="true">
-    <?description the date of death for creators?>
+    <?description The date of death for creators?>
     <?example     1831-11-5?>
+  </field>
+
+  <field name="creator_count" type="pint" stored="true">
+    <?descripiton The amount of creators for this resource.?>
+    <?example     2?>
   </field>
 
   <field name="area" type="text_general" multiValued="false">

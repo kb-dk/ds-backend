@@ -396,6 +396,15 @@ public class EmbeddedSolrTest {
         assertEquals("1971", record.getFieldValue("production_date"));
     }
 
+    @Test
+    void testCreatorCount() throws Exception {
+        indexRecord(RECORD_05fea810);
+        assertEquals(1, getNumberOfTotalDocuments());
+
+        SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
+        assertEquals(3, record.getFieldValue("creator_count"));
+    }
+
     /*
      * ------- Private helper methods below --------------
      */
