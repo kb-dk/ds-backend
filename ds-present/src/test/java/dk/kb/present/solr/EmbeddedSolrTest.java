@@ -16,6 +16,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterAll;
@@ -239,11 +240,10 @@ public class EmbeddedSolrTest {
         //Full life cycle test
         SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
 
-        System.out.println(record.getFieldValues("notes"));
-
         //Single value field
         assertEquals("ANSK_11614.tif",record.getFieldValue("filename_local"));
 		assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
+        assertNull(record.getFieldValue("notes_length"));
 	}
 
     @Test
@@ -409,6 +409,15 @@ public class EmbeddedSolrTest {
         assertEquals(1, record.getFieldValue("subject_count"));
     }
 
+    @Test
+    void testNotesLength() throws Exception {
+        indexRecord(RECORD_DB_hans);
+        assertEquals(1, getNumberOfTotalDocuments());
+
+        SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
+
+        assertEquals(93, record.getFieldValue("notes_length"));
+    }
     /*
      * ------- Private helper methods below --------------
      */

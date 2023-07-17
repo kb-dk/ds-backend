@@ -108,8 +108,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="title_count" type="pint" stored="true">
-    <?description ?>
-    <?example     ?>
+    <?description The number of titles related to the object.?>
+    <?example     2?>
   </field>
 
   <field name="subtitle" type="text_general"> <!--  May not be in data -->
@@ -220,7 +220,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Daguerreotypi, mål: 81 x 70 mm?>
   </field>
 
-  <!-- Should this be combined with notes? What is the difference between internal notes and notes? -->
+  <field name="notes_length" type="pint">
+    <?description The length of content in the notes field measured in characters.?>
+    <?example     120?>
+  </field>
+
+  <!-- Should this be combined with notes? What is the difference between internal notes and notes in a KB context? -->
   <field name="internal_note" type="text_general" multiValued="true">
     <?description Internal notes, which can contain basicly anything. ?>
     <?example     Montering: opklæbet på karton og monteret i passepartout?>

@@ -208,6 +208,17 @@
               </xsl:analyze-string>
             </xsl:for-each>
           </f:array>
+
+          <xsl:if test="m:note[@type='content']">
+            <f:string key="notes_length">
+              <xsl:variable name="noteslength">
+                <xsl:for-each select="m:note[@type='content']">
+                  <xsl:value-of select="f:concat(f:replace(., 'zh\|', ''), ' ')"/>
+                </xsl:for-each>
+              </xsl:variable>
+              <xsl:value-of select="f:string-length($noteslength)"/>
+            </f:string>
+          </xsl:if>
         </xsl:if>
         <!-- if note field of type internal note exist extracts it, but remove empty prefixes for notes-->
         <xsl:if test="m:note[@type='Intern note']">
