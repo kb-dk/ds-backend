@@ -758,7 +758,7 @@
         
         <str name="qf">
         filename_local^5.0
-        titles_strict^5.0
+        title_strict^5.0
         creator_full_name_strict^5.0        
         topic^2.0
         location
@@ -1091,11 +1091,22 @@ via parameters.  The below configuration supports hl.method=original and fastVec
       <str name="source">creator_full_name</str>
       <str name="dest">creator_count</str>
     </processor>
+    <processor class="solr.CloneFieldUpdateProcessorFactory">
+      <str name="source">title</str>
+      <str name="dest">title_count</str>
+    </processor>
     <processor class="solr.CountFieldValuesUpdateProcessorFactory">
       <str name="fieldName">creator_count</str>
     </processor>
+    <processor class="solr.CountFieldValuesUpdateProcessorFactory">
+      <str name="fieldName">title_count</str>
+    </processor>
     <processor class="solr.DefaultValueUpdateProcessorFactory">
       <str name="fieldName">creator_count</str>
+      <int name="value">0</int>
+    </processor>
+    <processor class="solr.DefaultValueUpdateProcessorFactory">
+      <str name="fieldName">title_count</str>
       <int name="value">0</int>
     </processor>
     <processor class="solr.LogUpdateProcessorFactory" />

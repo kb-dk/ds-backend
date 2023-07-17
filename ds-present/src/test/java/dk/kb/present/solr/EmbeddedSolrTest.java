@@ -299,7 +299,7 @@ public class EmbeddedSolrTest {
         assertEquals("Topografi",record.getFieldValue("genre"));
 
         // Title field
-        assertMultivalueField(record, "titles", "Foborg, Foburgum");
+        assertMultivalueField(record, "title", "Foborg, Foburgum");
 
 		// Place of production
 		assertEquals("Danmark", record.getFieldValue("production_place"));
@@ -333,7 +333,7 @@ public class EmbeddedSolrTest {
     }
 
     @Test
-    void testTitles() throws Exception {
+    void testTitle() throws Exception {
 
         indexRecord(RECORD_770379f0);
         assertEquals(1, getNumberOfTotalDocuments());
@@ -341,7 +341,8 @@ public class EmbeddedSolrTest {
         //Full life cycle test
         SolrDocument record = getRecordById("770379f0-8a0d-11e1-805f-0016357f605f");
 
-        assertMultivalueField(record, "titles", "Romeo og Julie");
+        assertMultivalueField(record, "title", "Romeo og Julie");
+        assertEquals(1, record.getFieldValue("title_count"));
     }
 
     @Test
@@ -397,7 +398,7 @@ public class EmbeddedSolrTest {
     }
 
     @Test
-    void testCreatorCount() throws Exception {
+    void testCreatorCounts() throws Exception {
         indexRecord(RECORD_05fea810);
         assertEquals(1, getNumberOfTotalDocuments());
 
@@ -444,7 +445,6 @@ public class EmbeddedSolrTest {
         return document;
     }
 
-
     private void indexRecord(String recordXml) throws Exception{
         String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, recordXml);
 
@@ -458,8 +458,6 @@ public class EmbeddedSolrTest {
         embeddedServer.commit();
 
     }
-
-
 
     private SolrDocument getRecordById(String id) throws Exception{
         SolrQuery solrQuery = new SolrQuery();

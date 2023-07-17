@@ -102,9 +102,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <!-- Fields on title -->
-  <field name="titles" type="text_general" multiValued="true"> <!-- Currently only present in maps collection test data-->
+  <field name="title" type="text_general" multiValued="true"> <!-- Currently only present in maps collection test data-->
     <?description The object title.?>
     <?example     Den grimme ælling.?>
+  </field>
+
+  <field name="title_count" type="pint" stored="true">
+    <?description ?>
+    <?example     ?>
   </field>
 
   <field name="subtitle" type="text_general"> <!--  May not be in data -->
@@ -352,8 +357,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                   value of the freetext field could be something like this: "William Shakespeare Romeo and Juliet".?>
   </field>
 
-  <field name="titles_strict" type="titles_strict" multiValued="true" stored="false">
-    <?description Field for strict title matching. Matches exact titles?>
+  <field name="title_strict" type="title_strict" multiValued="true" stored="false">
+    <?description Field for strict title matching. Matches exact title?>
     <?example     Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
   </field>
   <!-- END FIELDS  -->
@@ -404,7 +409,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
-  <fieldType name="titles_strict" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="true">
+  <fieldType name="title_strict" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="true">
     <analyzer type="index">
       <tokenizer class="solr.KeywordTokenizerFactory"/>
       <filter class="solr.LowerCaseFilterFactory"/>
@@ -437,7 +442,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
   </copyField>
 
-  <copyField source="titles" dest="titles_strict">
+  <copyField source="title" dest="title_strict">
   <?description Copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
   <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
   </copyField>
@@ -464,7 +469,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="resource_description_general" dest="freetext"/>
   <copyField source="notes" dest="freetext"/>
   <copyField source="location" dest="freetext"/>
-  <copyField source="titles" dest="freetext"/>
+  <copyField source="title" dest="freetext"/>
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>
   <!-- END COPYFIELDS  -->

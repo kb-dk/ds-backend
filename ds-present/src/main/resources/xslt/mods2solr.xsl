@@ -243,9 +243,9 @@
             </xsl:for-each>
           </f:array>
         </xsl:if>
-        <!-- Extract titles if present.-->
+        <!-- Extract title if present.-->
         <xsl:if test="m:titleInfo/m:title">
-          <f:array key="titles">
+          <f:array key="title">
             <xsl:for-each select="m:titleInfo/m:title">
               <f:string>
                 <xsl:value-of select="f:replace(., 'zh\|', '')"/>
@@ -253,7 +253,7 @@
             </xsl:for-each>
           </f:array>
           <!-- SINGLE TITEL EXTRACTION -->
-          <!-- <f:string key="titles">
+          <!-- <f:string key="title">
             <xsl:value-of select="f:replace(m:titleInfo/m:title[1], 'zh\|', '')"/>
           </f:string> -->
         </xsl:if>

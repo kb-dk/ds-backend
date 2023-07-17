@@ -117,11 +117,11 @@ public class EmbeddedSolrFieldAnalyseTest {
 	}
 
 	@Test
-	public void testTitlesStrict() throws SolrServerException, IOException {
-		assertEquals(1, getStrictTitlesForQuery("\"Romeo og Julie\""));
-		assertEquals(1, getStrictTitlesForQuery("\"Romeo and Juliet\""));
-		assertEquals(0, getStrictTitlesForQuery("and"));
-		assertEquals(0, getStrictTitlesForQuery("Julie"));
+	public void testTitleStrict() throws SolrServerException, IOException {
+		assertEquals(1, getStrictTitleForQuery("\"Romeo og Julie\""));
+		assertEquals(1, getStrictTitleForQuery("\"Romeo and Juliet\""));
+		assertEquals(0, getStrictTitleForQuery("and"));
+		assertEquals(0, getStrictTitleForQuery("Julie"));
 
 	}
 
@@ -153,9 +153,9 @@ public class EmbeddedSolrFieldAnalyseTest {
 		return rsp.getResults().getNumFound();
 	}
 
-	private long getStrictTitlesForQuery(String query) throws SolrServerException, IOException {
+	private long getStrictTitleForQuery(String query) throws SolrServerException, IOException {
 		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("titles_strict:"+query);
+		solrQuery.setQuery("title_strict:"+query);
 		solrQuery.setRows(10);
 		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
 		return rsp.getResults().getNumFound();
@@ -180,8 +180,8 @@ public class EmbeddedSolrFieldAnalyseTest {
 				document.addField("creator_full_name", "Günter Grass");
                 document.addField("access_billede_aftale", false); //required field
                 document.addField("access_foto_aftale", false);//required field
-				document.addField("titles", "Romeo og Julie");
-				document.addField("titles", "Romeo and Juliet");
+				document.addField("title", "Romeo og Julie");
+				document.addField("title", "Romeo and Juliet");
 
 				embeddedServer.add(document);
 				embeddedServer.commit();
