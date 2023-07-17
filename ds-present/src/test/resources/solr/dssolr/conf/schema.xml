@@ -156,7 +156,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Bisson frères?>
   </field>
 
-  <field name="creator_description" type="text_general" multiValued="true">
+  <field name="creator_affiliation_description" type="text_general" multiValued="true">
     <?description A description for a name when necessary,
                   for example, to distinguish between names.?>
     <?example     British?>
@@ -326,6 +326,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <!--  Fields related to copyright and access conditions -->
+  <!-- TODO: Documentation for access fields. -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
   <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>

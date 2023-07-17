@@ -80,7 +80,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testNoNameButAffiliation() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DNF);
-		assertTrue(solrString.contains("\"creator_affiliation\":[\"Bisson frères\"],\"creator_description\":[\"fransk korporation\"]"));
+		assertTrue(solrString.contains("\"creator_affiliation\":[\"Bisson frères\"],\"creator_affiliation_description\":[\"fransk korporation\"]"));
 		assertFalse(solrString.contains("creator_given_name"));
 	}
 
@@ -139,7 +139,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testMultipleDescriptions() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_3B03);
-		assertTrue(solrString.contains("\"creator_affiliation\":[\"Aftenbladet\",\"Associated Press\"],\"creator_description\":[\"dansk avis\",\"amerikansk nyhedsbureau\"]"));
+		assertTrue(solrString.contains("\"creator_affiliation\":[\"Aftenbladet\",\"Associated Press\"],\"creator_affiliation_description\":[\"dansk avis\",\"amerikansk nyhedsbureau\"]"));
 	}
 
 	@Test

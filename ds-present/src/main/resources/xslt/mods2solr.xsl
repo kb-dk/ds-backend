@@ -420,7 +420,7 @@
             </xsl:if>
             <!-- Description of affiliation, maybe this could have a better field name-->
             <xsl:if test="m:name/m:description">
-              <f:array key="creator_description">
+              <f:array key="creator_affiliation_description">
                 <xsl:for-each select="m:name/m:description">
                   <xsl:if test=". != ''">
                     <f:string>
