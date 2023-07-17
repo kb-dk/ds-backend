@@ -142,7 +142,7 @@
           </f:string>
         </xsl:if>
         <!-- Categories seems to be a collection of multiple categories seperated by commas. -->
-        <!-- According to the MODS standard genre should contain info more specific than typeOfResource -->
+        <!-- According to the MODS standard genre should contain info more specific than typeOfResource. In our case, this is not the case. -->
         <xsl:if test="m:genre[@type='Categories']">
           <f:string key="categories">
             <xsl:value-of select="m:genre[@type='Categories']"/>
@@ -192,7 +192,7 @@
             </xsl:for-each>
             </xsl:if>
             <!-- Ideally this transformation has a check, that the content of m:note[@displayLabel='Description']
-                 isn't present in a string or substring of m:note[@type='content']  -->
+                 isn't present in a string or substring of m:note[@type='content'] as it seems like they could de duplicated there. -->
             <xsl:for-each select="m:note[@displayLabel='Description']">
               <xsl:analyze-string select="." regex="(.*\.)([a-zA-Z].*)">
                 <xsl:matching-substring>
@@ -243,7 +243,6 @@
             </xsl:for-each>
           </f:array>
         </xsl:if>
-        <!-- Some metadata records contains multiple titles with no language indication. Therefore this part extracts the first one. -->
         <!-- Extract titles if present.-->
         <xsl:if test="m:titleInfo/m:title">
           <f:array key="titles">
@@ -253,8 +252,8 @@
               </f:string>
             </xsl:for-each>
           </f:array>
-          <!--
-          <f:string key="titles">
+          <!-- SINGLE TITEL EXTRACTION -->
+          <!-- <f:string key="titles">
             <xsl:value-of select="f:replace(m:titleInfo/m:title[1], 'zh\|', '')"/>
           </f:string> -->
         </xsl:if>
@@ -354,7 +353,7 @@
           <!-- Extract creator date of birth and death if present.
                Complex extraction that saves the first value for a creator and then matches this date
                up against three different patterns to determine which dates are present.
-               This works, but might not return all death dates if the first result doesn't have a death date -->
+               TODO: This works, but might not return all death dates if the first result doesn't have a death date -->
           <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'art' or 'aut'">
             <xsl:if test="m:name/m:namePart[@type='date']">
               <!-- Select single testDate -->
@@ -602,7 +601,8 @@
         <xsl:if test="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
           <xsl:variable name="imageUrl">
             <xsl:variable name="imageIdentifier">
-              <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
+              <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/
+                                    m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
             </xsl:variable>
             <xsl:value-of select="concat($imageserver, f:substring-before($imageIdentifier, '.jp'))"/>
           </xsl:variable>
@@ -610,16 +610,6 @@
             <f:string>
               <xsl:value-of select="$imageUrl"/>
             </f:string>
-            <!--
-            <xsl:for-each select="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
-              <xsl:variable name="noPrefix">
-                 Replace image server by regex. Afterwards we manually replace the string '/imageServicecumulus-core-01:' which is present in some strings due to poor metadata
-                <xsl:value-of select="f:replace(f:replace(., 'https?://[^:/]*', ''), '/imageServicecumulus-core-01:', '')"/>
-              </xsl:variable>
-              <f:string>
-                <xsl:value-of select="substring-before($noPrefix, '.jp')"/>
-              </f:string>
-            </xsl:for-each> -->
           </f:array>
         </xsl:if>
         <xsl:if test="m:genre[not(@*)]">
@@ -649,7 +639,7 @@
           </f:string>
         </xsl:if>
         <!-- Create target_audience. This is not in our test files but part of MODS standard.
-              Could be used in other collections. -->
+              Could be in use in other collections. -->
         <xsl:if test="m:targetInfo">
           <f:string key="target_audience">
             <xsl:value-of select="m:targetInfo"/>
@@ -664,7 +654,6 @@
     <!--
     <xsl:variable name="cleanJson" select="remove($json, 20)"/>
     -->
-
 
     <!-- Define output -->
     <xsl:value-of select="f:xml-to-json($json)"/>
