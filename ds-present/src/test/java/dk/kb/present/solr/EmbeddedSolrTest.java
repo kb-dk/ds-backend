@@ -398,12 +398,15 @@ public class EmbeddedSolrTest {
     }
 
     @Test
-    void testCreatorCounts() throws Exception {
+    void testCountsCreatedBySolr() throws Exception {
         indexRecord(RECORD_05fea810);
         assertEquals(1, getNumberOfTotalDocuments());
 
         SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
+
         assertEquals(3, record.getFieldValue("creator_count"));
+        assertEquals(6, record.getFieldValue("topic_count"));
+        assertEquals(1, record.getFieldValue("subject_count"));
     }
 
     /*

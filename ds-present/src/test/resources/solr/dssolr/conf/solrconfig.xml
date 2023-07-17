@@ -1095,11 +1095,25 @@ via parameters.  The below configuration supports hl.method=original and fastVec
       <str name="source">title</str>
       <str name="dest">title_count</str>
     </processor>
+    <processor class="solr.CloneFieldUpdateProcessorFactory">
+      <str name="source">topic</str>
+      <str name="dest">topic_count</str>
+    </processor>
+    <processor class="solr.CloneFieldUpdateProcessorFactory">
+      <str name="source">subject_full_name</str>
+      <str name="dest">subject_count</str>
+    </processor>
     <processor class="solr.CountFieldValuesUpdateProcessorFactory">
       <str name="fieldName">creator_count</str>
     </processor>
     <processor class="solr.CountFieldValuesUpdateProcessorFactory">
       <str name="fieldName">title_count</str>
+    </processor>
+    <processor class="solr.CountFieldValuesUpdateProcessorFactory">
+      <str name="fieldName">topic_count</str>
+    </processor>
+    <processor class="solr.CountFieldValuesUpdateProcessorFactory">
+      <str name="fieldName">subject_count</str>
     </processor>
     <processor class="solr.DefaultValueUpdateProcessorFactory">
       <str name="fieldName">creator_count</str>
@@ -1107,6 +1121,14 @@ via parameters.  The below configuration supports hl.method=original and fastVec
     </processor>
     <processor class="solr.DefaultValueUpdateProcessorFactory">
       <str name="fieldName">title_count</str>
+      <int name="value">0</int>
+    </processor>
+    <processor class="solr.DefaultValueUpdateProcessorFactory">
+      <str name="fieldName">topic_count</str>
+      <int name="value">0</int>
+    </processor>
+    <processor class="solr.DefaultValueUpdateProcessorFactory">
+      <str name="fieldName">subject_count</str>
       <int name="value">0</int>
     </processor>
     <processor class="solr.LogUpdateProcessorFactory" />

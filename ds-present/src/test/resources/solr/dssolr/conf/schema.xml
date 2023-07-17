@@ -197,6 +197,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     O.J.Moltke  1770-1853?>
   </field>
 
+  <field name="topic_count" type="pint" stored="true">
+    <?description The number of topics given to the ressource?>
+    <?example     12?>
+  </field>
+
   <!-- It seems like there is some kind of overlap between metadata delivered in the field notes,
        where some of it might have fitted better in this field. The same goes for content in the internal_note field.
        Maybe these three should be collapsed to notes? -->
@@ -297,6 +302,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description The titel or occupation of the subject.?>
     <?example     King?>
     <?example     Photographer?>
+  </field>
+
+  <field name="subject_count" type="pint" stored="true">
+    <?description The number of subjects in the ressource?>
+    <?example     3?>
   </field>
 
   <field name="map_scale" type="string" stored="true">
