@@ -110,6 +110,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="title_count" type="pint" stored="true">
     <?description The number of titles related to the object.?>
     <?example     2?>
+    <?query_example title_count:[2 TO *] can be used to query for resources, that have two or more titles.?>
   </field>
 
   <field name="subtitle" type="text_general"> <!--  May not be in data -->
@@ -178,8 +179,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="creator_count" type="pint" stored="true">
-    <?descripiton The amount of creators for this resource.?>
-    <?example     2?>
+    <?descripiton   The amount of creators for this resource.?>
+    <?example       2?>
+    <?query_example creator_count:[2 TO *] can be used to query for resources that have been co-created by more than two people.?>
+    <?query_example creator_count:3 can be used to query for resources that have exactly three creators.?>
   </field>
 
   <field name="area" type="text_general" multiValued="false">
@@ -200,6 +203,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="topic_count" type="pint" stored="true">
     <?description The number of topics given to the ressource?>
     <?example     12?>
+    <?query_example topic_count:[5 TO *] can be used to query for resources
+                    that have had at least five topics added to them.?>
   </field>
 
   <!-- It seems like there is some kind of overlap between metadata delivered in the field notes,
@@ -221,8 +226,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="notes_length" type="pint">
-    <?description The length of content in the notes field measured in characters.?>
-    <?example     120?>
+    <?description   The length of content in the notes field measured in characters.?>
+    <?example       120?>
+    <?query_example notes_length:[10 TO *] returns results,
+                    where there are more than 10 characters written in the note fields.?>
+    <?query_example notes_length:[5 TO 20] returns results,
+                    where there are between 5 and 20 characters written in the note fields.?>
   </field>
 
   <!-- Should this be combined with notes? What is the difference between internal notes and notes in a KB context? -->
@@ -238,18 +247,32 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <!-- Fields on production of physical and digital object. -->
   <field name="production_date" type="string" stored="true">
-    <?description The date when the resource was produced.?>
-    <?example     1971?>
+    <?description   The date when the resource was produced.?>
+    <?example       1971?>
+    <?query_example production_date:[1980 TO 1991] can be used to query for resources that have been produced in the
+                    period 1980-1991. Keep in mind, that this field is only used, when resources are produced during
+                    a single year. Use production_date_start or production_date_end for more complex queries. See their
+                    respective documentation for examples.?>
   </field>
 
   <field name="production_date_start" type="string" stored="true">
-    <?description The date when production of the resource started.?>
-    <?example     1850?>
+    <?description   The date when production of the resource started.?>
+    <?example       1850?>
+    <?query_example production_date_start:[1780 TO 1800] will return resources where production
+                    started during the timespan 1780-1800?>
+    <?query_example If you are interested in resources, where production was started and finished during the years
+                    1780-1800, these can be found by the following query:
+                    production_date_start:[1780 TO 1800] AND production_date_end:[1780 TO 1800]?>
   </field>
 
   <field name="production_date_end" type="string" stored="true">
-    <?description The date when production of the resource finished.?>
-    <?example     1899?>
+    <?description   The date when production of the resource finished.?>
+    <?example       1899?>
+    <?query_example production_date_end:[1780 TO 1800] will return resources where production ended during the
+                    timespan 1780-1800?>
+    <?query_example If you are interested in resources, where production was started and finished during the years
+                    1780-1800, these can be found by the following query:
+                    production_date_start:[1780 TO 1800] AND production_date_end:[1780 TO 1800]?>
   </field>
 
   <field name="production_place" type="string" stored="true">
