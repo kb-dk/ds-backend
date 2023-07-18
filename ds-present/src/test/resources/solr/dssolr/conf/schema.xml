@@ -202,6 +202,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
    <field name="subject" type="text_general" multiValued="true"/>
 
    TODO: Should this be named subject, which it is in Dublin Core.
+         Library of Congress also uses the term subject for topical descriptions.
    -->
   <field name="topic" type="text_general" multiValued="true">
     <?description Used as the tag for any topical subjects?>
