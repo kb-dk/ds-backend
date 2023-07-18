@@ -73,6 +73,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Den Kongelige Ballet?>
   </field>
 
+  <field name="categories_count" type="pint">
+    <?description   ?>
+    <?example       ?>
+    <?query_example ?>
+  </field>
+
   <field name="collection" type="string" docValues="true" stored="true">
     <?description The original collection.?>
     <?example     Billedsamlingen?>
@@ -238,6 +244,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                     where there are more than 10 characters written in the note fields.?>
     <?query_example notes_length:[5 TO 20] returns results,
                     where there are between 5 and 20 characters written in the note fields.?>
+  </field>
+
+  <field name="notes_count" type="pint">
+    <?description   The amount of notes for the given resource?>
+    <?example       8?>
+    <?query_example ?>
   </field>
 
   <!-- Should this be combined with notes? What is the difference between internal notes and notes in a KB context? -->

@@ -407,6 +407,8 @@ public class EmbeddedSolrTest {
         assertEquals(3, record.getFieldValue("creator_count"));
         assertEquals(6, record.getFieldValue("topic_count"));
         assertEquals(1, record.getFieldValue("subject_count"));
+        assertEquals(1, record.getFieldValue("notes_count"));
+        assertEquals(3, record.getFieldValue("categories_count"));
     }
 
     @Test
@@ -418,6 +420,7 @@ public class EmbeddedSolrTest {
 
         assertEquals(93, record.getFieldValue("notes_length"));
     }
+
     /*
      * ------- Private helper methods below --------------
      */
