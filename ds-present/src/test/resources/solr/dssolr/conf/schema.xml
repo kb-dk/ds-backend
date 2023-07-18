@@ -102,7 +102,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <!-- Fields on title -->
-  <field name="title" type="text_general" multiValued="true"> <!-- Currently only present in maps collection test data-->
+  <field name="title" type="text_general" multiValued="true"> <!-- Only present in maps collection test data-->
     <?description The object title.?>
     <?example     Den grimme ælling.?>
   </field>
@@ -181,7 +181,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="creator_count" type="pint" stored="true">
     <?descripiton   The amount of creators for this resource.?>
     <?example       2?>
-    <?query_example creator_count:[2 TO *] can be used to query for resources that have been co-created by more than two people.?>
+    <?query_example creator_count:[2 TO *] can be used to query for
+                    resources that have been co-created by more than two people.?>
     <?query_example creator_count:3 can be used to query for resources that have exactly three creators.?>
   </field>
 
@@ -193,6 +194,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <!-- This has been split into several fields such as topic
    <field name="subject" type="text_general" multiValued="true"/>
+
+   TODO: Should this be named subject, which it is in Dublin Core.
    -->
   <field name="topic" type="text_general" multiValued="true">
     <?description Used as the tag for any topical subjects?>
@@ -218,7 +221,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- Field name: For resources that contain persons in the content, these people are described in a field called
        subject_name. It would be ideal to have this field and these subject fields be named in the same way. This can be
        done by changing the name of this field to subject/subject_description or the like. However, the metadata entries
-       in this field seems to be describing way more than the subject of the resource. -->
+       in this field seems to be describing way more than the subject of the resource.
+
+       TODO: There might be overlaps between notes and topic - maybe they should be combined as one field - subject?
+       -->
   <field name="notes" type="text_general" multiValued="true">
     <?description Used to describe the resource in any way possible. Contains multiple types of metadata.?>
     <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
@@ -226,7 +232,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="notes_length" type="pint">
-    <?description   The length of content in the notes field measured in characters.?>
+    <?description   The length of all content in the notes field measured in characters.?>
     <?example       120?>
     <?query_example notes_length:[10 TO *] returns results,
                     where there are more than 10 characters written in the note fields.?>
@@ -367,25 +373,59 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     960000?>
   </field>
 
-  <!-- Not in test data. Part of MODS and might be in other collections-->
-  <field name="target_audience" type="string" stored="true">
+  <!-- Not in test data. Part of MODS and might be in other collections
+       Called 'Audience' in dublin core.-->
+  <field name="audience" type="string" stored="true">
     <?description The target audience for the resource.?>
     <?example     Children?>
   </field>
 
   <!--  Fields related to copyright and access conditions -->
   <!-- TODO: Documentation for access fields. -->
-  <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_note" type="string"/>
-  <field name="access_skabelsesaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/> <!--  TODO: is required -->
-  <field name="access_searlige_visningsvilkaar" type="string" stored="true"/>
-  <field name="access_materiale_type" type="string"  indexed="true" required="false"   docValues="true" stored="true"/>
-  <field name="access_foto_aftale" type="boolean"   indexed="true" required="true"  docValues="true" stored="true"/>
-  <field name="access_billede_aftale" type="boolean"  indexed="true" required="true" docValues="true" stored="true"/>
-  <field name="access_ophavsret_tekst" type="string" indexed="true"  docValues="true" stored="true"/>
+  <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_note" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_skabelsesaar" type="pint" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"><!--  TODO: is required -->
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_searlige_visningsvilkaar" type="string" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_materiale_type" type="string"  indexed="true" required="false"   docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_foto_aftale" type="boolean"   indexed="true" required="true"  docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_billede_aftale" type="boolean"  indexed="true" required="true" docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_ophavsret_tekst" type="string" indexed="true"  docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
 
   <!-- Most fields are copied to this field for matching. -->
   <field name="freetext" type="freetext" multiValued="true" stored="false">

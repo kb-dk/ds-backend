@@ -649,10 +649,11 @@
             <xsl:value-of select="m:typeOfResource[@displayLabel='Generel Resource Description']"/>
           </f:string>
         </xsl:if>
-        <!-- Create target_audience. This is not in our test files but part of MODS standard.
-              Could be in use in other collections. -->
+        <!-- Create audience. This is not in our test files
+             but part of MODS standard as target_audience and Dublin Core as audience.
+             Could be in use in other collections. -->
         <xsl:if test="m:targetInfo">
-          <f:string key="target_audience">
+          <f:string key="audience">
             <xsl:value-of select="m:targetInfo"/>
           </f:string>
         </xsl:if>

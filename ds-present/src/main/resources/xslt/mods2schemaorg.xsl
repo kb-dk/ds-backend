@@ -605,7 +605,7 @@
                             </f:string>
                         </xsl:if>
                     </xsl:element>
-                    <!-- Create target_audience. This is not in our test files but part of MODS standard.
+                    <!-- Create audience. This is not in our test files but part of MODS standard.
                               Could be used in other collections. -->
                     <xsl:if test="m:targetInfo">
                         <f:map>
