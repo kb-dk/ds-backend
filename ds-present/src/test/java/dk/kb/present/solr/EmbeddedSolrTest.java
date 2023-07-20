@@ -16,6 +16,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterAll;
@@ -60,6 +61,8 @@ public class EmbeddedSolrTest {
     public static final String RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
     public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
     public static final String RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
+    public static final String RECORD_9c17a440 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
+    public static final String RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
 
 
     @BeforeAll
@@ -101,10 +104,10 @@ public class EmbeddedSolrTest {
 
 
         //Single value field
-        assertEquals("000332.tif",record.getFieldValue("identifier_local"));
+        assertEquals("000332.tif",record.getFieldValue("filename_local"));
+        assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
         //multivalue field
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
         // Creator date of death
         assertMultivalueField(record, "creator_date_of_death", "1868-2-14", "1895-6-25", "1865-3-8" );
 
@@ -133,11 +136,10 @@ public class EmbeddedSolrTest {
 
         //Single value fields
         assertEquals("Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian", record.getFieldValue("area"));
+        // type_of_resource
+        assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
         //Multivalue fields
-        // type_of_resource
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Postkort" );
-
         // topic
         assertMultivalueField(record, "topic", "postkort","forter","Dannebrog", "børn", "arkitekturer",
                 "postcards", "forts", "Dannebrog", "children", "architectures" );
@@ -159,6 +161,7 @@ public class EmbeddedSolrTest {
         //Full life cycle test
         SolrDocument record = getRecordById("096c9090-717f-11e0-82d7-002185371280");
 
+
         assertContentAllSingleValues(record,"000225.tif", "da",
                 "Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",
                 "Danske portrætter, X-langtidsbevaring test - BLO, Diverse, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-02 09:01:13",
@@ -168,6 +171,7 @@ public class EmbeddedSolrTest {
         //Single value field
         assertEquals("1755",record.getFieldValue("production_date_start"));
         assertEquals("1831",record.getFieldValue("production_date_end"));
+        assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
         //multivalue fields
         // creator_name
@@ -184,10 +188,6 @@ public class EmbeddedSolrTest {
 
         // creator_terms_of_address
         assertMultivalueField(record,"creator_terms_of_address", "kobberstikker");
-        Collection<Object> creatorTermsOfAddress = record.getFieldValues("creator_terms_of_address");
-
-        // type_of_resource
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Grafik" );
 
         // topic
         assertMultivalueField(record, "topic", "Poul Egede. 1911,7507.", "Billedet befinder sig i Kort- og Billedafdelingen, Det Kongelige Bibliotek" );
@@ -225,10 +225,9 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("aaf3b130-e6e7-11e6-bdbe-00505688346e");
 
         //Single value field
-        assertEquals("DT005031.tif",record.getFieldValue("identifier_local"));
+        assertEquals("DT005031.tif",record.getFieldValue("filename_local"));
 
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Tegning" );
+		assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 	}
 
     @Test
@@ -242,10 +241,9 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
 
         //Single value field
-        assertEquals("ANSK_11614.tif",record.getFieldValue("identifier_local"));
-
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Anskuelsesbillede" );
+        assertEquals("ANSK_11614.tif",record.getFieldValue("filename_local"));
+		assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
+        assertNull(record.getFieldValue("notes_length"));
 	}
 
     @Test
@@ -258,10 +256,14 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("54b34b50-2ce6-11ed-81b4-005056882ec3");
 
         //Single value field
-        assertEquals("SKF_f_0137.tif",record.getFieldValue("identifier_local"));
+        assertEquals("SKF_f_0137.tif",record.getFieldValue("filename_local"));
+		assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
-		//multivalue field
-		assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Fotografi" );
+        assertMultivalueField(record, "notes",
+                "Beskrivelse: Den gamle rytterskole i Hørning (Sønder-Hørning). Facadebillede. " +
+                              "Fotografi kopi udført af Rudolph Jørgensen Helsingør (etabi 1897)",
+                              "Topografisk nr: 2156", "Den gamle rytterskole i Hørning (Sønder-Hørning). " +
+                              "Facadebillede. Fotografi kopi udført af Rudolph Jørgensen Helsingør (etabi 1897)"  );
 	}
 
     @Test
@@ -274,18 +276,17 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("8e608940-d6db-11e3-8d2e-0016357f605f");
 
         //Single value field
-        assertEquals("KHP0001-049.tif",record.getFieldValue("identifier_local"));
+        assertEquals("KHP0001-049.tif",record.getFieldValue("filename_local"));
+        assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
         //multivalue field
-        assertMultivalueField(record, "type_of_resource", "Billede, Todimensionalt billedmateriale", "Dia" );
-
 		assertMultivalueField(record, "list_of_categories", "KHP",
 				"Keld Helmer-Petersen", "1940-1950", "Helmer-Petersen", "Keld",
 				"CAR- BLO katagori", "ikke UA");
 	}
 
     @Test
-    void testRecordUldallForTitleAndPlaceOfProduction() throws Exception {
+    void testRecordUldallForTitleAndPlaceOfProductionAndGenre() throws Exception {
         indexRecord(RECORD_e2519ce0);
 
         assertEquals(1, getNumberOfTotalDocuments());
@@ -294,13 +295,14 @@ public class EmbeddedSolrTest {
         SolrDocument record = getRecordById("e2519ce0-9fb0-11e8-8891-00505688346e");
 
         //Single value field
-        assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("identifier_local"));
+        assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("filename_local"));
+        assertEquals("Topografi",record.getFieldValue("genre"));
 
         // Title field
-        assertEquals("Foborg, Foburgum", record.getFieldValue("title"));
+        assertMultivalueField(record, "title", "Foborg, Foburgum");
 
 		// Place of production
-		assertEquals("Danmark", record.getFieldValue("place_of_production"));
+		assertEquals("Danmark", record.getFieldValue("production_place"));
 	}
 
     @Test
@@ -311,7 +313,6 @@ public class EmbeddedSolrTest {
 
         //Full life cycle test
         SolrDocument record = getRecordById("14f4a700-f9ee-11e7-988a-00505688346e");
-
         //Single value field
         assertEquals("2000-3/7",record.getFieldValue("accession_number"));
     }
@@ -340,8 +341,8 @@ public class EmbeddedSolrTest {
         //Full life cycle test
         SolrDocument record = getRecordById("770379f0-8a0d-11e1-805f-0016357f605f");
 
-        //Single value field
-        assertEquals("Romeo og Julie", record.getFieldValue("title"));
+        assertMultivalueField(record, "title", "Romeo og Julie");
+        assertEquals(1, record.getFieldValue("title_count"));
     }
 
     @Test
@@ -372,6 +373,53 @@ public class EmbeddedSolrTest {
     }
 
 
+    @Test
+    void testSubjectStrict() throws Exception{
+        indexRecord(RECORD_9c17a440);
+        assertEquals(1, getNumberOfTotalDocuments());
+
+        SolrDocument record = getRecordById("9c17a440-fe1a-11e8-9044-00505688346e");
+        String[] testName = Arrays.copyOf(
+                record.getFieldValues("subject_full_name_strict").toArray(),
+                1, String[].class);
+
+        String[] correctResult = new String[]{"Frederik 9"};
+        assertEquals(correctResult[0], testName[0]);
+    }
+
+    @Test
+    void testSingleProductionDate() throws Exception{
+        indexRecord(RECORD_226d41a0);
+        assertEquals(1, getNumberOfTotalDocuments());
+
+        SolrDocument record = getRecordById("226d41a0-5a83-11e6-8b8d-0016357f605f");
+
+        assertEquals("1971", record.getFieldValue("production_date"));
+    }
+
+    @Test
+    void testCountsCreatedBySolr() throws Exception {
+        indexRecord(RECORD_05fea810);
+        assertEquals(1, getNumberOfTotalDocuments());
+
+        SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
+
+        assertEquals(3, record.getFieldValue("creator_count"));
+        assertEquals(6, record.getFieldValue("topic_count"));
+        assertEquals(1, record.getFieldValue("subject_count"));
+        assertEquals(1, record.getFieldValue("notes_count"));
+        assertEquals(3, record.getFieldValue("categories_count"));
+    }
+
+    @Test
+    void testNotesLength() throws Exception {
+        indexRecord(RECORD_DB_hans);
+        assertEquals(1, getNumberOfTotalDocuments());
+
+        SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
+
+        assertEquals(93, record.getFieldValue("notes_length"));
+    }
 
     /*
      * ------- Private helper methods below --------------
@@ -412,7 +460,6 @@ public class EmbeddedSolrTest {
         return document;
     }
 
-
     private void indexRecord(String recordXml) throws Exception{
         String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, recordXml);
 
@@ -426,8 +473,6 @@ public class EmbeddedSolrTest {
         embeddedServer.commit();
 
     }
-
-
 
     private SolrDocument getRecordById(String id) throws Exception{
         SolrQuery solrQuery = new SolrQuery();
@@ -454,17 +499,17 @@ public class EmbeddedSolrTest {
 
     }
 
-    private void assertContentAllSingleValues(SolrDocument record, String identifierLocal, String catalogingLanguage, String shelfLocation,
-            String categories, String catalogName, String collection,
-            Long filesize, int imgHeight, int imgWidth) throws Exception {
+    private void assertContentAllSingleValues(SolrDocument record, String filenameLocal, String catalogingLanguage, String shelfLocation,
+            String categories, String catalog, String collection,
+            Long fileBytesize, int imgHeight, int imgWidth) throws Exception {
 
-        assertEquals(identifierLocal,record.getFieldValue("identifier_local"));
+        assertEquals(filenameLocal,record.getFieldValue("filename_local"));
         assertEquals(catalogingLanguage,record.getFieldValue("cataloging_language"));
-        assertEquals(shelfLocation,record.getFieldValue("shelf_location"));
+        assertEquals(shelfLocation,record.getFieldValue("location"));
         assertEquals(categories,record.getFieldValue("categories"));
-        assertEquals(catalogName, record.getFieldValue("catalog_name"));
+        assertEquals(catalog, record.getFieldValue("catalog"));
         assertEquals(collection, record.getFieldValue("collection"));
-        assertEquals(filesize, record.getFieldValue("file_size"));
+        assertEquals(fileBytesize, record.getFieldValue("file_byte_size"));
         assertEquals(imgHeight, record.getFieldValue("image_height"));
         assertEquals(imgWidth, record.getFieldValue("image_width"));
     }

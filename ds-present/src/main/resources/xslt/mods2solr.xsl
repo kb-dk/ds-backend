@@ -27,8 +27,9 @@
        <xsl:param name="access_foto_aftale"/>
        <xsl:param name="access_billede_aftale"/>
        <xsl:param name="access_ophavsret_tekst"/>
-              
-              
+       <xsl:param name="imageserver"/>
+
+
   <xsl:template match="/">
   
     <xsl:variable name="json">   
@@ -73,231 +74,336 @@
 
 
       <!--This is the mets element with the bibliographic metadata.  -->
+      <xsl:for-each select="//mets:amdSec/mets:techMD[@ID='PremisObject1']//premis:objectCharacteristics">
+        <xsl:if test="premis:size">
+          <f:string key="file_byte_size">
+            <xsl:value-of select="xs:long(premis:size)"/>
+          </f:string>
+        </xsl:if>
+        <!-- Extracts the height of the digital image-->
+        <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight">
+        <f:string key="image_height">
+          <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight)"/>
+        </f:string>
+        </xsl:if>
+        <!-- Extracts the width of the digital image-->
+        <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth">
+        <f:string key="image_width">
+          <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)"/>
+        </f:string>
+        </xsl:if>
+        <!-- Calculates the size of the digital image-->
+        <xsl:if test="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)">
+        <f:string key="image_size_pixels">
+          <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)"/>
+        </f:string>
+        </xsl:if>
+      </xsl:for-each>
+      <!--- This is the METS element with image metadata from the PremisObject
+       This extraction is used to provide information on image size-->
       <xsl:for-each select="//mets:dmdSec[@ID='Mods1']//m:mods">
-       <!-- Start XSLT logic -->
-          <!-- Here can be multiple values -->
-          <!-- Extracting cataloging language if it exists-->
-          <xsl:if test="m:recordInfo/m:languageOfCataloging/m:languageTerm">
-            <xsl:for-each select="m:recordInfo/m:languageOfCataloging/m:languageTerm[1]">
-              <f:string key="cataloging_language">
+        <!-- Start XSLT logic -->
+        <!-- Here can be multiple values -->
+        <!-- Extracting cataloging language if it exists-->
+        <xsl:if test="m:recordInfo/m:languageOfCataloging/m:languageTerm">
+          <xsl:for-each select="m:recordInfo/m:languageOfCataloging/m:languageTerm[1]">
+            <f:string key="cataloging_language">
+              <xsl:value-of select="."/>
+            </f:string>
+          </xsl:for-each>
+          <!-- Extracting physical location if it exists-->
+          <!-- Physical location is part of MODS, but is not present in any of our test files. -->
+        </xsl:if>
+        <xsl:if test="m:location/m:physicalLocation">
+          <f:string key="physical_location">
+            <xsl:value-of select="m:location/m:physicalLocation"/>
+          </f:string>
+        </xsl:if>
+        <!-- Extracting shelf location if it exists. In our test data it seems that metadata which might benefit from
+             being split between physicalLocation and shelfLocator has been combined into the shelfLocator.-->
+        <xsl:if test="m:location/m:shelfLocator">
+          <f:string key="location">
+            <xsl:value-of select="m:location/m:shelfLocator"/>
+          </f:string>
+        </xsl:if>
+        <!-- Extracts id and strips if for urn:uuid:-->
+        <!-- TODO: Should 'urn:uuid' be included? -->
+        <f:string key="id">
+          <xsl:value-of select="substring-after(m:identifier[@type='uri'],'urn:uuid:')"/>
+        </f:string>
+        <!-- Extracts local identifier,
+             Which in other terms is a local filename. -->
+        <f:string key="filename_local">
+          <xsl:value-of select="m:identifier[@type='local']"/>
+        </f:string>
+        <xsl:if test="m:identifier[@type='accession number']">
+          <f:string key="accession_number">
+            <xsl:value-of select="m:identifier[@type='accession number']"/>
+          </f:string>
+        </xsl:if>
+        <!-- Categories seems to be a collection of multiple categories seperated by commas. -->
+        <!-- According to the MODS standard genre should contain info more specific than typeOfResource. In our case, this is not the case. -->
+        <xsl:if test="m:genre[@type='Categories']">
+          <f:string key="categories">
+            <xsl:value-of select="m:genre[@type='Categories']"/>
+          </f:string>
+          <!-- Creates an array of categories split on commas.
+                Regex removes dates from categories-->
+          <f:array key="list_of_categories">
+            <xsl:for-each select="distinct-values(tokenize(m:genre[@type='Categories'], ','))">
+              <xsl:if test=". != '' and not(matches(. , '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'))">
+                <f:string>
+                  <xsl:value-of select="normalize-space(.)"/>
+                </f:string>
+              </xsl:if>
+            </xsl:for-each>
+          </f:array>
+          <xsl:variable name="categories_count">
+            <xsl:for-each select="distinct-values(tokenize(m:genre[@type='Categories'], ','))">
+              <xsl:if test=". != '' and not(matches(. , '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'))">
+                <xsl:text>a</xsl:text>
+              </xsl:if>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="categories_count">
+            <xsl:value-of select="f:string-length($categories_count)"/>
+          </f:string>
+        </xsl:if>
+        <!-- Different things can be represented in note. -->
+        <!-- If catalog name exists, extract it-->
+        <xsl:if test="m:note[@displayLabel='Catalog Name']">
+          <f:string key="catalog">
+            <xsl:value-of select="m:note[@displayLabel='Catalog Name']"/>
+          </f:string>
+        </xsl:if>
+        <!-- If host collection exist, extract it-->
+        <xsl:if test="m:relatedItem[@type='host' and @displayLabel='Samling']">
+          <f:string key="collection">
+            <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Samling'])"/>
+          </f:string>
+        </xsl:if>
+        <xsl:if test="m:relatedItem[@type='host' and @displayLabel='Publication']">
+          <f:string key="published_in">
+            <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Publication'])"/>
+          </f:string>
+        </xsl:if>
+        <!-- if note field of type content exists extract it-->
+        <xsl:if test="m:note[@type='content'] or m:note[@displayLabel='Description']">
+          <f:array key="notes">
+            <xsl:if test="m:note[@type='content']">
+            <xsl:for-each select="m:note[@type='content']">
+              <xsl:if test=". != ''">
+                <f:string>
+                  <!-- First use of replace 'zh|'.
+                       This check is done multiple times to remove 'zh|' in front of chinese characters -->
+                  <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+                </f:string>
+              </xsl:if>
+            </xsl:for-each>
+            </xsl:if>
+            <!-- Ideally this transformation has a check, that the content of m:note[@displayLabel='Description']
+                 isn't present in a string or substring of m:note[@type='content'] as it seems like they could de duplicated there. -->
+            <xsl:for-each select="m:note[@displayLabel='Description']">
+              <xsl:analyze-string select="." regex="(.*\.)([a-zA-Z].*)">
+                <xsl:matching-substring>
+                  <f:string>
+                    <xsl:value-of select="f:concat(regex-group(1), ' ', f:regex-group(2))"/>
+                  </f:string>
+                </xsl:matching-substring>
+                <xsl:non-matching-substring>
+                  <f:string>
+                    <xsl:value-of select="."/>
+                  </f:string>
+                </xsl:non-matching-substring>
+              </xsl:analyze-string>
+            </xsl:for-each>
+          </f:array>
+          <!--Count hack - writing to a variable for each entry,
+              then counting length of variable string to get amount -->
+          <xsl:variable name="notes_count">
+            <xsl:for-each select="m:note[@type='content']">
+              <xsl:if test=". != ''">
+                <xsl:text>a</xsl:text>
+              </xsl:if>
+            </xsl:for-each>
+            <xsl:for-each select="m:note[@displayLabel='Description']">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="notes_count">
+            <xsl:value-of select="f:string-length($notes_count)"/>
+          </f:string>
+
+          <!-- TODO: This only counts from note:type=content and not from note[@displayLabel='Description'] as well  -->
+          <xsl:if test="m:note[@type='content']">
+            <f:string key="notes_length">
+              <xsl:variable name="noteslength">
+                <xsl:for-each select="m:note[@type='content']">
+                  <xsl:value-of select="f:concat(f:replace(., 'zh\|', ''), ' ')"/>
+                </xsl:for-each>
+                <xsl:for-each select="m:note[@displayLabel='Description']">
+                  <xsl:value-of select="f:concat(f:replace(., 'zh\|', ''), ' ')"/>
+                </xsl:for-each>
+              </xsl:variable>
+              <xsl:value-of select="f:string-length($noteslength)"/>
+            </f:string>
+          </xsl:if>
+        </xsl:if>
+        <!-- if note field of type internal note exist extracts it, but remove empty prefixes for notes-->
+        <xsl:if test="m:note[@type='Intern note']">
+          <f:array key="internal_note">
+            <xsl:for-each select="m:note[@type='Intern note']">
+              <xsl:if test=". !='' and . !='Intern note:' and . !='Ekstern note:' and . !='Alt. navn:' and . != 'Kunstnernote:' and . !='Aktiv:'">
+                <f:string>
+                  <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+                </f:string>
+              </xsl:if>
+            </xsl:for-each>
+          </f:array>
+        </xsl:if>
+        <!--Extracts descriptions from two different fields if at least one of them are present -->
+        <!-- Checks all possible variations of physical description from MODS that are not related to page orientation-->
+        <xsl:if test="m:physicalDescription/not(m:note[@displayLabel='Pageorientation'])">
+          <f:array key="physical_description">
+            <xsl:for-each select="m:note[@displayLabel='Description']">
+              <f:string>
                 <xsl:value-of select="."/>
               </f:string>
             </xsl:for-each>
-          <!-- Extracting physical location if it exists-->
-          </xsl:if>
-          <xsl:if test="m:location/m:physicalLocation">
-            <f:string key="physical_location">
-              <xsl:value-of select="m:location/m:physicalLocation"/>
-            </f:string>
-          </xsl:if>
-          <!-- Extracting shelf location if it exists-->
-          <xsl:if test="m:location/m:shelfLocator">
-            <f:string key="shelf_location">
-              <xsl:value-of select="m:location/m:shelfLocator"/>
-            </f:string>
-          </xsl:if>
-          <!-- Extracts id and strips if for urn:uuid:-->
-          <f:string key="id">
-            <xsl:value-of select="substring-after(m:identifier[@type='uri'],'urn:uuid:')"/>
-          </f:string>
-          <!-- Extracts local identifier-->
-          <f:string key="identifier_local">
-            <xsl:value-of select="m:identifier[@type='local']"/>
-          </f:string>
-          <xsl:if test="m:identifier[@type='accession number']">
-            <f:string key="accession_number">
-              <xsl:value-of select="m:identifier[@type='accession number']"/>
-            </f:string>
-          </xsl:if>
-          <!-- Categories seems to be a collection of multiple categories seperated by commas. -->
-          <!-- According to the MODS standard genre should contain info more specific than typeOfResource -->
-          <xsl:if test="m:genre[@type='Categories']">
-            <f:string key="categories">
-              <xsl:value-of select="m:genre[@type='Categories']"/>
-            </f:string>
-            <!-- Creates an array of categories split on commas.
-                  Regex removes dates from categories-->
-            <f:array key="list_of_categories">
-              <xsl:for-each select="distinct-values(tokenize(m:genre[@type='Categories'], ','))">
-                <xsl:if test=". != '' and not(matches(. , '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'))">
-                  <f:string>
-                    <xsl:value-of select="normalize-space(.)"/>
-                  </f:string>
-                </xsl:if>
-              </xsl:for-each>
-            </f:array>
-          </xsl:if>
-
-          <!-- Different things can be represented in note. -->
-          <!-- If catalog name exists, extract it-->
-          <xsl:if test="m:note[@displayLabel='Catalog Name']">
-            <f:string key="catalog_name">
-              <xsl:value-of select="m:note[@displayLabel='Catalog Name']"/>
-            </f:string>
-          </xsl:if>
-          <!-- If host collection exist, extract it-->
-          <xsl:if test="m:relatedItem[@type='host' and @displayLabel='Samling']">
-            <f:string key="collection">
-              <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Samling'])"/>
-            </f:string>
-          </xsl:if>
-
-          <xsl:if test="m:relatedItem[@type='host' and @displayLabel='Publication']">
-            <f:string key="published_in">
-              <xsl:value-of select="normalize-space(m:relatedItem[@type='host' and @displayLabel='Publication'])"/>
-            </f:string>
-          </xsl:if>
-
-
-
-          <!-- if note field of type content exists extract it-->
-          <xsl:if test="m:note[@type='content']">
-            <f:array key="content">
-              <xsl:for-each select="m:note[@type='content']">
-                <xsl:if test=". != ''">
-                  <f:string>
-                    <!-- First use of replace 'zh|'. This check is done multiple times to remove 'zh|' in front of chinese characters -->
-                    <xsl:value-of select="f:replace(., 'zh\|', '')"/>
-                  </f:string>
-                </xsl:if>
-              </xsl:for-each>
-            </f:array>
-          </xsl:if>
-          <!-- if note field of type internal note exist extracts it, but remove empty prefixes for notes-->
-          <xsl:if test="m:note[@type='Intern note']">
-            <f:array key="internal_note">
-              <xsl:for-each select="m:note[@type='Intern note']">
-                <xsl:if test=". !='' and . !='Intern note:' and . !='Ekstern note:' and . !='Alt. navn:' and . != 'Kunstnernote:' and . !='Aktiv:'">
-                  <f:string>
-                    <xsl:value-of select="f:replace(., 'zh\|', '')"/>
-                  </f:string>
-                </xsl:if>
-              </xsl:for-each>
-            </f:array>
-          </xsl:if>
-          <!--Extracts descriptions from two different fields if at least one of them are present -->
-          <!-- Checks all possible variations of physical description from MODS that are not related to page orientation-->
-          <xsl:if test="m:note[@displayLabel='Description'] or m:physicalDescription/not(m:note[@displayLabel='Pageorientation'])">
-            <f:array key="description">
-              <xsl:for-each select="m:note[@displayLabel='Description']">
-                <f:string>
-                  <xsl:value-of select="."/>
-                </f:string>
-              </xsl:for-each>
-              <xsl:for-each select="m:physicalDescription">
-                <!-- Selects all fields on physical description that are not page orientation-->
-                <xsl:for-each select="m:form
+            <xsl:for-each select="m:physicalDescription">
+              <!-- Selects all fields on physical description that are not page orientation-->
+              <xsl:for-each select="m:form
                                       | m:reformattingQuality
                                       | m:internetMediaType
                                       | m:extent
                                       | m:digitalOrigin
                                       | m:note[not(@displayLabel='Pageorientation')]">
-                  <f:string><xsl:value-of select="normalize-space(.)"/></f:string>
-                </xsl:for-each>
+                <f:string><xsl:value-of select="normalize-space(.)"/></f:string>
+              </xsl:for-each>
+            </xsl:for-each>
+          </f:array>
+        </xsl:if>
+        <!-- Extract title if present.-->
+        <xsl:if test="m:titleInfo/m:title">
+          <f:array key="title">
+            <xsl:for-each select="m:titleInfo/m:title">
+              <f:string>
+                <xsl:value-of select="f:replace(., 'zh\|', '')"/>
+              </f:string>
+            </xsl:for-each>
+          </f:array>
+          <!--Count hack - writing to a variable for each entry,
+              then counting length of variable string to get amount -->
+          <xsl:variable name="title_count">
+            <xsl:for-each select="m:titleInfo/m:title">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="title_count">
+            <xsl:value-of select="f:string-length($title_count)"/>
+          </f:string>
+          <!-- SINGLE TITEL EXTRACTION -->
+          <!-- <f:string key="title">
+            <xsl:value-of select="f:replace(m:titleInfo/m:title[1], 'zh\|', '')"/>
+          </f:string> -->
+        </xsl:if>
+        <!-- Extract subtitle if present.-->
+        <xsl:if test="m:titleInfo/m:subTitle">
+          <f:string key="subtitle">
+            <xsl:value-of select="f:replace(m:titleInfo/m:subTitle[1], 'zh\|', '')"/>
+          </f:string>
+        </xsl:if>
+        <!-- Extract alternative title if present.-->
+        <xsl:if test="m:titleInfo[@type='alternative']/m:title">
+          <f:string key="alternative_title">
+            <xsl:value-of select="f:replace(m:titleInfo[@type='alternative']/m:title[1], 'zh\|', '')"/>
+          </f:string>
+        </xsl:if>
+        <!-- Extracts information on creator of item. This comes from one of three roleTerm codes,
+             which are MARC identifiers: https://www.loc.gov/marc/relators/relacode.html-->
+        <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'aut' or 'art'">
+          <xsl:if test="m:name/m:namePart and m:name/m:namePart !=''">
+            <!-- Some creators are represented by only their given or family names.
+            This field contains whatever is present, extracted through an XSLT choose logic -->
+            <f:array key="creator_name">
+              <xsl:for-each select="m:name">
+                <xsl:if test="./m:namePart[@type='family'] or ./m:namePart[@type='given']">
+                  <f:string>
+                    <xsl:choose>
+                      <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given']
+                                        and m:namePart[@type='family'] != '' and m:namePart[@type='given'] != ''">
+                        <xsl:value-of select="normalize-space(concat(f:replace(m:namePart[@type='family'], 'zh\|', '')
+                                                ,', ', f:replace(m:namePart[@type='given'],'zh\|', '')))"/>
+                      </xsl:when>
+                      <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
+                        <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
+                      </xsl:when>
+                      <xsl:when test="m:namePart[@type='given'] and not (m:namePart[@type='family'])">
+                        <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
+                      </xsl:when>
+                    </xsl:choose>
+                  </f:string>
+                </xsl:if>
+              </xsl:for-each>
+            </f:array>
+            <!-- Extracts family and given name and combines into a full name-->
+            <f:array key="creator_full_name">
+              <xsl:for-each select="m:name">
+                <xsl:if test="./m:namePart[@type='family'] or ./m:namePart[@type='given']">
+                  <f:string>
+                    <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='given'], ' ',
+                                                       m:namePart[@type='family'])), 'zh\|', '')"/>
+                  </f:string>
+                </xsl:if>
               </xsl:for-each>
             </f:array>
           </xsl:if>
-          <!-- Some metadata records contains multiple titles with no language indication. Therefore this part extracts the first one. -->
-          <!-- Extract title if present.-->
-          <xsl:if test="m:titleInfo/m:title">
-            <f:string key="title">
-              <xsl:value-of select="f:replace(m:titleInfo/m:title[1], 'zh\|', '')"/>
-            </f:string>
-          </xsl:if>
-          <!-- Extract subtitle if present.-->
-          <xsl:if test="m:titleInfo/m:subTitle">
-            <f:string key="subtitle">
-              <xsl:value-of select="f:replace(m:titleInfo/m:subTitle[1], 'zh\|', '')"/>
-            </f:string>
-          </xsl:if>
-          <!-- Extract alternative title if present.-->
-          <xsl:if test="m:titleInfo[@type='alternative']/m:title">
-            <f:string key="alternative_title">
-              <xsl:value-of select="f:replace(m:titleInfo[@type='alternative']/m:title[1], 'zh\|', '')"/>
-            </f:string>
-          </xsl:if>
-          <!-- Extracts information on creator of item.
-          This comes from one of three roleTerm codes, which are in fact MARC identifiers: https://www.loc.gov/marc/relators/relacode.html-->
+          <!-- Extract family name if present-->
           <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'aut' or 'art'">
-            <xsl:if test="m:name/m:namePart and m:name/m:namePart !=''">
-              <!-- Some creators are represented by only their given or family names.
-              This field contains whatever is present, extracted through an XSLT choose logic -->
-              <f:array key="creator_name">
+            <xsl:if test="m:name/m:namePart[@type='family']">
+              <f:array key="creator_family_name">
                 <xsl:for-each select="m:name">
-                  <xsl:if test="./m:namePart[@type='family'] or ./m:namePart[@type='given']">
+                  <xsl:if test="m:namePart[@type='family']">
                     <f:string>
-                      <xsl:choose>
-                        <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given'] and m:namePart[@type='family'] != '' and m:namePart[@type='given'] != ''">
-                          <xsl:value-of select="normalize-space(concat(f:replace(m:namePart[@type='family'], 'zh\|', ''),', ', f:replace(m:namePart[@type='given'],'zh\|', '')))"/>
-                        </xsl:when>
-                        <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
-                          <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
-                        </xsl:when>
-                        <xsl:when test="m:namePart[@type='given'] and not (m:namePart[@type='family'])">
-                          <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
-                        </xsl:when>
-                      </xsl:choose>
-                    </f:string>
-                  </xsl:if>
-                </xsl:for-each>
-              </f:array>
-              <!-- Extracts family and given name and combines into a full name-->
-              <f:array key="creator_full_name">
-                <xsl:for-each select="m:name">
-                  <xsl:if test="./m:namePart[@type='family'] or ./m:namePart[@type='given']">
-                    <f:string>
-                      <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='given'], ' ',m:namePart[@type='family'])), 'zh\|', '')"/>
+                      <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
                     </f:string>
                   </xsl:if>
                 </xsl:for-each>
               </f:array>
             </xsl:if>
-            <!-- Extract family name if present-->
-            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'aut' or 'art'">
-              <xsl:if test="m:name/m:namePart[@type='family']">
-                <f:array key="creator_family_name">
-                    <xsl:for-each select="m:name">
-                      <xsl:if test="m:namePart[@type='family']">
-                        <f:string>
-                          <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
-                        </f:string>
-                      </xsl:if>
-                    </xsl:for-each>
-                </f:array>
-              </xsl:if>
+          </xsl:if>
+          <!-- Extract given name if present-->
+          <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'aut' or 'art'">
+            <xsl:if test="m:name/m:namePart[@type='given']">
+              <f:array key="creator_given_name">
+                <xsl:for-each select="m:name">
+                  <xsl:if test="m:namePart[@type='given']">
+                    <f:string>
+                      <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
+                    </f:string>
+                  </xsl:if>
+                </xsl:for-each>
+              </f:array>
             </xsl:if>
-            <!-- Extract given name if present-->
-            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'aut' or 'art'">
-              <xsl:if test="m:name/m:namePart[@type='given']">
-                <f:array key="creator_given_name">
-                  <xsl:for-each select="m:name">
-                    <xsl:if test="m:namePart[@type='given']">
-                      <f:string>
-                        <xsl:value-of select="f:replace(m:namePart[@type='given'], 'zh\|', '')"/>
-                      </f:string>
-                    </xsl:if>
-                  </xsl:for-each>
-                </f:array>
-              </xsl:if>
+          </xsl:if>
+          <!-- Extract terms of address if present-->
+          <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'art' or 'aut'">
+            <xsl:if test="m:name/m:namePart[@type='termsOfAddress']">
+              <f:array key="creator_terms_of_address">
+                <xsl:for-each select="m:name">
+                  <xsl:if test="m:namePart[@type='termsOfAddress']">
+                    <f:string>
+                      <xsl:value-of select="f:replace(m:namePart[@type='termsOfAddress'], 'zh\|', '')"/>
+                    </f:string>
+                  </xsl:if>
+                </xsl:for-each>
+              </f:array>
             </xsl:if>
-            <!-- Extract terms of address if present-->
-            <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'art' or 'aut'">
-              <xsl:if test="m:name/m:namePart[@type='termsOfAddress']">
-                <f:array key="creator_terms_of_address">
-                  <xsl:for-each select="m:name">
-                    <xsl:if test="m:namePart[@type='termsOfAddress']">
-                      <f:string>
-                        <xsl:value-of select="f:replace(m:namePart[@type='termsOfAddress'], 'zh\|', '')"/>
-                      </f:string>
-                    </xsl:if>
-                  </xsl:for-each>
-                </f:array>
-              </xsl:if>
-            </xsl:if>
+          </xsl:if>
           <!-- Extract creator date of birth and death if present.
                Complex extraction that saves the first value for a creator and then matches this date
                up against three different patterns to determine which dates are present.
-               This works, but might not return all death dates if the first result doesn't have a death date -->
+               TODO: This works, but might not return all death dates if the first result doesn't have a death date -->
           <xsl:if test="m:name/m:role/m:roleTerm[@type='code']='cre' or 'art' or 'aut'">
             <xsl:if test="m:name/m:namePart[@type='date']">
               <!-- Select single testDate -->
@@ -308,9 +414,9 @@
                   <f:array key="creator_date_of_birth">
                     <xsl:for-each select="m:name">
                       <xsl:if test="substring-before(m:namePart[@type='date'], '/') != ''">
-                      <f:string>
-                        <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
-                      </f:string>
+                        <f:string>
+                          <xsl:value-of select="substring-before(m:namePart[@type='date'], '/')"/>
+                        </f:string>
                       </xsl:if>
                     </xsl:for-each>
                   </f:array>
@@ -364,7 +470,7 @@
             </xsl:if>
             <!-- Description of affiliation, maybe this could have a better field name-->
             <xsl:if test="m:name/m:description">
-              <f:array key="creator_description">
+              <f:array key="creator_affiliation_description">
                 <xsl:for-each select="m:name/m:description">
                   <xsl:if test=". != ''">
                     <f:string>
@@ -375,6 +481,17 @@
               </f:array>
             </xsl:if>
           </xsl:if>
+          <!-- Not ideal workaround for counting number of creators for a resource.
+               For each creator an 'a' char is written to a string, then the length of this string
+               is returned as the amount of creators.-->
+          <xsl:variable name="creator_count">
+            <xsl:for-each select="m:name">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="creator_count">
+            <xsl:value-of select="f:string-length($creator_count)"/>
+          </f:string>
         </xsl:if>
         <!-- Information on the original gets extracted here. Production date primarily-->
         <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
@@ -388,15 +505,20 @@
               </f:string>
             </xsl:when>
             <xsl:otherwise>
-              <f:string key="date_created">
+              <f:string key="production_date">
                 <xsl:value-of select="m:originInfo[@altRepGroup='original']/m:dateCreated"/>
               </f:string>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:if>
         <xsl:if test="m:originInfo/m:place">
-          <f:string key="place_of_production">
+          <f:string key="production_place">
             <xsl:value-of select="normalize-space(m:originInfo/m:place)"/>
+          </f:string>
+        </xsl:if>
+        <xsl:if test="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured">
+          <f:string key="production_date_digital_surrogate">
+            <xsl:value-of select="m:originInfo[@altRepGroup='surrogate']/m:dateCaptured"/>
           </f:string>
         </xsl:if>
         <!-- The topic of given item gets extracted here, if present-->
@@ -412,6 +534,14 @@
               </xsl:for-each>
             </xsl:for-each>
           </f:array>
+          <xsl:variable name="topic_count">
+            <xsl:for-each select="m:subject/m:topic[@lang]">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="topic_count">
+            <xsl:value-of select="f:string-length($topic_count)"/>
+          </f:string>
         </xsl:if>
         <!-- geographical data gets extracted here -->
         <xsl:if test="m:subject/m:hierarchicalGeographic">
@@ -428,7 +558,8 @@
               <f:string>
                 <xsl:choose>
                   <xsl:when test="m:namePart[@type='family'] and m:namePart[@type='given']">
-                    <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='family'],', ', m:namePart[@type='given'])), 'zh\|', '')"/>
+                    <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='family'],', ',
+                                                                    m:namePart[@type='given'])), 'zh\|', '')"/>
                   </xsl:when>
                   <xsl:when test="m:namePart[@type='family'] and not (m:namePart[@type='given'])">
                     <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
@@ -442,16 +573,17 @@
           </f:array>
           <f:array key="subject_full_name">
             <xsl:for-each select="m:subject/m:name">
-            <f:string>
-              <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='given'],' ',m:namePart[@type='family'])), 'zh\|', '')"/>
-            </f:string>
+              <f:string>
+                <xsl:value-of select="f:replace(normalize-space(concat(m:namePart[@type='given'],' ',
+                                                                     m:namePart[@type='family'])), 'zh\|', '')"/>
+              </f:string>
             </xsl:for-each>
           </f:array>
           <xsl:if test="m:subject/m:name/m:namePart[@type='family'] and m:subject/m:name/m:namePart[@type='family'] != ''">
             <f:array key="subject_family_name">
               <xsl:for-each select="m:subject/m:name">
                 <f:string>
-                    <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
+                  <xsl:value-of select="f:replace(m:namePart[@type='family'], 'zh\|', '')"/>
                 </f:string>
               </xsl:for-each>
             </f:array>
@@ -528,6 +660,14 @@
               </xsl:for-each>
             </f:array>
           </xsl:if>
+          <xsl:variable name="subject_count">
+            <xsl:for-each select="m:subject/m:name">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="subject_count">
+            <xsl:value-of select="f:string-length($subject_count)"/>
+          </f:string>
         </xsl:if>
         <xsl:if test="m:subject/m:cartographics/m:scale">
           <f:string key="map_scale">
@@ -536,71 +676,54 @@
         </xsl:if>
         <!-- Extract resource id-->
         <xsl:if test="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
+          <xsl:variable name="imageUrl">
+            <xsl:variable name="imageIdentifier">
+              <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/
+                                    m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
+            </xsl:variable>
+            <xsl:value-of select="concat($imageserver, f:substring-before($imageIdentifier, '.jp'))"/>
+          </xsl:variable>
           <f:array key="resource_id">
-            <xsl:for-each select="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
-              <xsl:variable name="noPrefix">
-                <!-- Replace image server by regex. Afterwards we manually replace the string '/imageServicecumulus-core-01:' which is present in some strings due to poor metadata -->
-                <xsl:value-of select="f:replace(f:replace(., 'https?://[^:/]*', ''), '/imageServicecumulus-core-01:', '')"/>
-              </xsl:variable>
-              <f:string>
-                <xsl:value-of select="substring-before($noPrefix, '.jp')"/>
-              </f:string>
-            </xsl:for-each>
+            <f:string>
+              <xsl:value-of select="$imageUrl"/>
+            </f:string>
           </f:array>
         </xsl:if>
-        <!-- Display label can in theory contain anything.
-             Resource Description seems to be the field that contains the most precise description of a given resource. -->
-        <xsl:if test="m:typeOfResource[@displayLabel='Resource Description']">
-          <f:string key="resource_description">
-            <xsl:value-of select="m:typeOfResource[@displayLabel='Resource Description']"/>
+        <xsl:if test="m:genre[not(@*)]">
+          <f:string key="genre">
+            <xsl:value-of select="m:genre[not(@*)]"/>
           </f:string>
         </xsl:if>
-        <!-- Type of resource gets extracted here if present -->
-        <!-- TODO: Should probably be named something like resource_categories -->
-        <xsl:if test="m:typeOfResource">
-          <f:array key="type_of_resource">
-            <xsl:for-each select="m:typeOfResource">
-              <f:string>
-                <xsl:value-of select="."/>
-              </f:string>
-            </xsl:for-each>
-          </f:array>
+        <!-- resource_type should get data from either typeOfResource[@displayLabel='Resource Description'] or
+             typeOfResource[@displayLabel='Generel Resource Description']. Resource Description contains a specific
+             description of the resource, while Generel Resource Description is a catch-all-description for broader
+             categories. -->
+        <xsl:choose>
+          <xsl:when test="m:typeOfResource[@displayLabel='Resource Description']">
+            <f:string key="resource_description">
+              <xsl:value-of select="m:typeOfResource[@displayLabel='Resource Description']"/>
+            </f:string>
+          </xsl:when>
+          <xsl:otherwise>
+            <f:string key="resource_description">
+              <xsl:value-of select="m:typeOfResource[@displayLabel='Generel Resource Description']"/>
+            </f:string>
+          </xsl:otherwise>
+        </xsl:choose>
+        <xsl:if test="m:typeOfResource[@displayLabel='Generel Resource Description']">
+          <f:string key="resource_description_general">
+            <xsl:value-of select="m:typeOfResource[@displayLabel='Generel Resource Description']"/>
+          </f:string>
         </xsl:if>
-        <!-- Create target_audience. This is not in our test files but part of MODS standard.
-              Could be used in other collections. -->
+        <!-- Create audience. This is not in our test files
+             but part of MODS standard as target_audience and Dublin Core as audience.
+             Could be in use in other collections. -->
         <xsl:if test="m:targetInfo">
-          <f:string key="target_audience">
+          <f:string key="audience">
             <xsl:value-of select="m:targetInfo"/>
           </f:string>
         </xsl:if>
 
-      </xsl:for-each>
-      <!--- This is the METS element with image metadata from the PremisObject
-       This extraction is used to provide information on image size-->
-      <xsl:for-each select="//mets:amdSec/mets:techMD[@ID='PremisObject1']//premis:objectCharacteristics">
-        <xsl:if test="premis:size">
-          <f:string key="file_size">
-            <xsl:value-of select="xs:long(premis:size)"/>
-          </f:string>
-        </xsl:if>
-        <!-- Extracts the height of the digital image-->
-        <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight">
-        <f:string key="image_height">
-          <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight)"/>
-        </f:string>
-        </xsl:if>
-        <!-- Extracts the width of the digital image-->
-        <xsl:if test="premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth">
-        <f:string key="image_width">
-          <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)"/>
-        </f:string>
-        </xsl:if>
-        <!-- Calculates the size of the digital image-->
-        <xsl:if test="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)">
-        <f:string key="image_size_pixels">
-          <xsl:value-of select="xs:long(premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageHeight * premis:objectCharacteristicsExtension/mix:mix/mix:BasicImageInformation/mix:BasicImageCharacteristics/mix:imageWidth)"/>
-        </f:string>
-        </xsl:if>
       </xsl:for-each>
       <!--- End XSLT logic -->
     </f:map>
@@ -609,7 +732,6 @@
     <!--
     <xsl:variable name="cleanJson" select="remove($json, 20)"/>
     -->
-
 
     <!-- Define output -->
     <xsl:value-of select="f:xml-to-json($json)"/>

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.*;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -57,13 +59,13 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXsltNewDpkItem() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_3956d820);
-		assertTrue(solrString.contains("\"shelf_location\":\"Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort\\/politistation\""));
+		assertTrue(solrString.contains("\"location\":\"Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort\\/politistation\""));
 	}
 
 	@Test
 	void testXslt45dd() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_45dd4830);
-		assertTrue(solrString.contains("\"catalog_name\":\"Samlingsbilleder\",\"collection\":\"Billedsamlingen\""));
+		assertTrue(solrString.contains("\"catalog\":\"Samlingsbilleder\",\"collection\":\"Billedsamlingen\""));
 	}
 
 	/**
@@ -78,7 +80,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testNoNameButAffiliation() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DNF);
-		assertTrue(solrString.contains("\"creator_affiliation\":[\"Bisson frères\"],\"creator_description\":[\"fransk korporation\"]"));
+		assertTrue(solrString.contains("\"creator_affiliation\":[\"Bisson frères\"],\"creator_affiliation_description\":[\"fransk korporation\"]"));
 		assertFalse(solrString.contains("creator_given_name"));
 	}
 
@@ -108,9 +110,17 @@ class XSLTSolrTransformerTest{
 	}
 
 	@Test
+	void testCombinationOfContentAndDescription() throws Exception {
+		String ansk = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK);
+		String record54b = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_54b34b50);
+		assertTrue(ansk.contains("\"111, 4: Forskellige former for fald. Pap med opklæbet billede. Forestiller træ og mennesker, der vælter og falder. Ingen tekst på billedet.\""));
+		assertTrue(record54b.contains("\"Den gamle rytterskole i Hørning (Sønder-Hørning). Facadebillede. Fotografi kopi udført af Rudolph Jørgensen Helsingør (etabi 1897)\""));
+	}
+
+	@Test
 	void testUldall() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_e2519ce0);
-		assertTrue(solrString.contains("\"catalog_name\":\"Maps\""));
+		assertTrue(solrString.contains("\"catalog\":\"Maps\""));
 	}
 
 	@Test
@@ -128,7 +138,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testMultipleDescriptions() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_3B03);
-		assertTrue(solrString.contains("\"creator_affiliation\":[\"Aftenbladet\",\"Associated Press\"],\"creator_description\":[\"dansk avis\",\"amerikansk nyhedsbureau\"]"));
+		assertTrue(solrString.contains("\"creator_affiliation\":[\"Aftenbladet\",\"Associated Press\"],\"creator_affiliation_description\":[\"dansk avis\",\"amerikansk nyhedsbureau\"]"));
 	}
 
 	@Test
@@ -140,13 +150,20 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testTitleExtraction() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_770379f0);
-		assertTrue(solrString.contains("\"title\":\"Romeo og Julie\""));
+		assertTrue(solrString.contains("\"title\":[\"Romeo og Julie\"]"));
 	}
 
 	@Test
 	void testImageResource() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_40221e30);
-		assertTrue(solrString.contains("\"resource_id\":[\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
+		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver");
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_40221e30,injections);
+		assertTrue(solrString.contains("\"resource_id\":[\"https:\\/\\/example.com\\/imageserver\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
+	}
+
+	@Test
+	void testSurrogateProduction() throws Exception{
+		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_FM);
+		assertTrue(solrString.contains("\"production_date_digital_surrogate\":\"2018-01-15T12:26:00.000+01:00\""));
 	}
 
 	/**

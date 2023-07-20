@@ -55,6 +55,7 @@
         <xsl:variable name="json">
             <f:map>
                 <xsl:for-each select="//mets:dmdSec[@ID='Mods1']//m:mods">
+                    <!-- TODO: Add genre, where it fits-->
 
                     <xsl:variable name="cataloging_language">
                         <xsl:for-each select="m:recordInfo/m:languageOfCataloging/m:languageTerm[1]">
@@ -604,7 +605,7 @@
                             </f:string>
                         </xsl:if>
                     </xsl:element>
-                    <!-- Create target_audience. This is not in our test files but part of MODS standard.
+                    <!-- Create audience. This is not in our test files but part of MODS standard.
                               Could be used in other collections. -->
                     <xsl:if test="m:targetInfo">
                         <f:map>

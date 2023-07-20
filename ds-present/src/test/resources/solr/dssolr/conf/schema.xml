@@ -1,158 +1,496 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- 
+<!--
 Important! READ before making changes to the schema.
-Since we are using schema.xml and not managed-schema.xml all filters defined has to be loaded by class and not by name parameter.
+Since we are using schema.xml and not managed-schema.xml all filters defined
+has to be loaded by class and not by name parameter.
 Read about this bug: https://issues.apache.org/jira/browse/SOLR-16203
 
 In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>  
 -->
 
+<!-- TODO: Add query examples where they apply. -->
+<?summary Fields in this schema should be described with two metatags.
+          ?Description should contain a description of the field, while
+          ?Example should contain an example of how to use the field. If providing multiple
+          examples for a field, please encapsulate each example in their own ?Example tag.?>
+
 <schema name="example" version="1.6">
   <uniqueKey>id</uniqueKey>
-  
-  
-  
+
    <!-- START FIELDS  -->
    <!-- Default solr field -->
-  <field name="_version_" type="plong" indexed="false" stored="false"/> 
-  
-  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>    
-  <field name="identifier_local" type="string"  stored="true"/>
-  <field name="accession_number" type="string" stored="true"/>
-  <field name="cataloging_language" type="string"  stored="true"/>
-  <field name="shelf_location" type="string"  stored="true"/>
-  <field name="physical_location" type="text_general"/> <!--  May not be in data -->
-  <field name="categories" type="string" docValues="true" stored="true"/>
-  <field name="list_of_categories" type="string"  multiValued="true" docValues="true" stored="true"/>
-  <field name="collection" type="string" docValues="true" stored="true"/>
-  <field name="published_in" type="string" docValues="true" stored="true"/>
-  <field name="resource_description" type="string" multiValued="false"  docValues="true"/>
-  <field name="type_of_resource" type="string" multiValued="true"  docValues="true"/>
+  <field name="_version_" type="plong" indexed="false" stored="false"/>
 
+  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true">
+    <?description The ID derived from UUID in database.?>
+    <?example     770379f0-8a0d-11e1-805f-0016357f605f?>
+  </field>
+
+  <field name="filename_local" type="string"  stored="true">
+    <?description The name of the file, which contains the digital resource that this metadata is about.?>
+    <?examaple    JB000132_114.tif?>
+  </field>
+
+  <field name="accession_number" type="string" stored="true">
+  <?description The unique number given to each new acquisition
+                as it is entered in the catalog of a library or museum ?>
+  <?example     1911-7507?>
+  </field>
+
+  <field name="cataloging_language" type="string"  stored="true">
+  <?description The language used for the catalogue entry.?>
+  <?example     da?>
+  </field>
+
+  <field name="location" type="string"  stored="true">
+    <?description Describes where the physical object is located.?>
+    <?example     KBK Depot?>
+    <?example     Billedsamlingen. John R. Johnsen. Balletfotografier?>
+  </field>
+
+  <!--  May not be in data. Don't know if it has been used at all or all location related metadata is present in
+        location field.-->
+  <field name="physical_location" type="text_general">
+    <?description Describes the location of the physical object.?>
+    <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept. -->
+  </field>
+
+  <field name="categories" type="string" docValues="true" stored="true">
+    <?description The categories field can contain many different values.
+                  Metadata in this field are different entries seperated by space and commas.
+                  The field list_of_categories contain the same values,
+                  but split into unique entities.?>
+    <?example     John R. Johnsen balletfotos, Den Kongelige Ballet ,
+                  Hønningen, Mette , Neumeier, John, Kronstam, Henning,
+                  Kirk, Mette-Ida, Romeo og Julie, Johnsen, John R., CAR- BLO katagori?>
+  </field>
+
+  <field name="list_of_categories" type="string"  multiValued="true" docValues="true" stored="true">
+    <?description The list_of_categories field can contain many different values.
+                  This field is multivalued and contains a single category per
+                  entry in the list.?>
+    <?example     John R. Johnsen balletfotos?>
+    <?example     Den Kongelige Ballet?>
+  </field>
+
+  <field name="categories_count" type="pint">
+    <?description   ?>
+    <?example       ?>
+    <?query_example ?>
+  </field>
+
+  <field name="collection" type="string" docValues="true" stored="true">
+    <?description The original collection.?>
+    <?example     Billedsamlingen?>
+  </field>
+
+  <field name="published_in" type="string" docValues="true" stored="true">
+    <?description If the object has been published in a journal, newspaper, book etc.
+                  this field contains the name of that publication.?>
+    <?example     Aktuelt?>
+  </field>
+
+  <field name="genre" type="string" docValues="true">
+    <?description The genre of the resource?>
+    <?example     For a photograph: Portrait?>
+    <?example     For a book: novel?>
+  </field>
+
+  <field name="resource_description" type="string"  docValues="true">
+    <?description Specific description of the resource/object.?>
+    <?example     Poster?>
+    <?example     Photograph?>
+  </field>
+
+  <field name="resource_description_general" type="string" docValues="true">
+    <?description General description of type of resource/object?>
+    <?example     Picture, two dimensional imagematerial?>
+  </field>
 
   <!-- Fields on title -->
-  <field name="title" type="text_general"/> <!-- Currently only present in maps collection-->
-  <field name="subtitle" type="text_general"/> <!--  May not be in data -->
-  <field name="alternative_title" type="text_general"/> <!--  May not be in data -->
+  <field name="title" type="text_general" multiValued="true"> <!-- Only present in maps collection test data-->
+    <?description The object title.?>
+    <?example     Den grimme ælling.?>
+  </field>
+
+  <field name="title_count" type="pint" stored="true">
+    <?description The number of titles related to the object.?>
+    <?example     2?>
+    <?query_example title_count:[2 TO *] can be used to query for resources, that have two or more titles.?>
+  </field>
+
+  <field name="subtitle" type="text_general"> <!--  May not be in data -->
+    <?description A subtitle for the resource?>
+    <?example     A tale by H.C. Andersen?>
+  </field>
+
+  <field name="alternative_title" type="text_general"> <!--  May not be in data -->
+  <?description An alternative titel for the resource.?>
+  <?example     Some other titel?>
+  </field>
 
   <!-- Fields on creator -->
-  <field name="creator_name" type="text_strict" multiValued="true"/>
-  <field name="creator_full_name" type="string" multiValued="true"  docValues="true"/>
-  <field name="creator_full_name_strict" type="text_strict" multiValued="true"/>
-  <field name="creator_family_name" type="text_strict" multiValued="true"/>
-  <field name="creator_given_name" type="text_strict" multiValued="true"/>
-  <field name="creator_terms_of_address" type="text_general" multiValued="true"/>
-  <field name="creator_affiliation" type="text_general" multiValued="true"/>
-  <field name="creator_description" type="text_general" multiValued="true"/>
-  <field name="creator_date_of_birth" type="text_general" multiValued="true"/>
-  <field name="creator_date_of_death" type="text_general" multiValued="true"/>
+  <field name="creator_name" type="text_strict" multiValued="true">
+    <?description The name of the creator written as family name, given name.?>
+    <?example     Johnsen, John R.?>
+  </field>
 
+  <field name="creator_full_name" type="string" multiValued="true"  docValues="true">
+    <?description The name of the creator written as given name family name.?>
+    <?example     John R. Johnsen?>
+  </field>
 
-  <field name="area" type="text_general" multiValued="false"/>
-    
-  <!-- This has been split into several fields such as topic 
+  <field name="creator_full_name_strict" type="text_strict" multiValued="true">
+    <?description The name of the creator written as givenName familyName.
+                  This is a strict field, which produces a better ranking when querying.?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="creator_family_name" type="text_strict" multiValued="true">
+    <?description The family name/surname of the creator.?>
+    <?example     Johnsen?>
+  </field>
+
+  <field name="creator_given_name" type="text_strict" multiValued="true">
+    <?description The given name/firstname of the creator.?>
+    <?example     John?>
+  </field>
+
+  <field name="creator_terms_of_address" type="text_general" multiValued="true">
+    <?description The titel or occupation of the creator.?>
+    <?example     King?>
+    <?example     Photographer?>
+  </field>
+
+  <field name="creator_affiliation" type="text_general" multiValued="true">
+    <?description The name of an organization, institution, etc. with which
+                  the entity was associated at the time that the resource was created.?>
+    <?example     Bisson frères?>
+  </field>
+
+  <field name="creator_affiliation_description" type="text_general" multiValued="true">
+    <?description A description for a name when necessary,
+                  for example, to distinguish between names.?>
+    <?example     British?>
+  </field>
+
+  <field name="creator_date_of_birth" type="text_general" multiValued="true">
+    <?description The date of birth for creators.?>
+    <?example     1748-11-29?>
+  </field>
+
+  <field name="creator_date_of_death" type="text_general" multiValued="true">
+    <?description The date of death for creators?>
+    <?example     1831-11-5?>
+  </field>
+
+  <field name="creator_count" type="pint" stored="true">
+    <?descripiton   The amount of creators for this resource.?>
+    <?example       2?>
+    <?query_example creator_count:[2 TO *] can be used to query for
+                    resources that have been co-created by more than two people.?>
+    <?query_example creator_count:3 can be used to query for resources that have exactly three creators.?>
+  </field>
+
+  <field name="area" type="text_general" multiValued="false">
+    <?description A specific type of area?>
+    <?example     Danmark, København, Broderskabsvej?>
+    <?example     Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian?>
+  </field>
+
+  <!-- This has been split into several fields such as topic
    <field name="subject" type="text_general" multiValued="true"/>
+
+   TODO: Should this be named subject, which it is in Dublin Core.
+         Library of Congress also uses the term subject for topical descriptions.
    -->
+  <field name="topic" type="text_general" multiValued="true">
+    <?description Used as the tag for any topical subjects?>
+    <?example     balletfotos?>
+    <?example     O.J.Moltke  1770-1853?>
+  </field>
 
-  <field name="topic" type="text_general" multiValued="true"/>
-  <field name="description" type="text_general" multiValued="true"/>
-  <field name="content" type="text_general" multiValued="true"/>
-  <field name="internal_note" type="text_general" multiValued="true"/>
-  <field name="catalog_name" type="string" stored="true" docValues="true"/>
+  <field name="topic_count" type="pint" stored="true">
+    <?description The number of topics given to the ressource?>
+    <?example     12?>
+    <?query_example topic_count:[5 TO *] can be used to query for resources
+                    that have had at least five topics added to them.?>
+  </field>
 
-  <field name="subject_name" type="text_general" multiValued="true"/>
-  <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true"/>
-  <field name="subject_family_name" type="text_general" multiValued="true"/>
-  <field name="subject_given_name" type="text_general" multiValued="true" />
+  <!-- It seems like there is some kind of overlap between metadata delivered in the field notes,
+       where some of it might have fitted better in this field. The same goes for content in the internal_note field.
+       Maybe these three should be collapsed to notes? -->
+  <field name="physical_description" type="text_general" multiValued="true">
+    <?description Physical description of the resource?>
+    <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept.-->
+  </field>
 
+  <!-- Field name: For resources that contain persons in the content, these people are described in a field called
+       subject_name. It would be ideal to have this field and these subject fields be named in the same way. This can be
+       done by changing the name of this field to subject/subject_description or the like. However, the metadata entries
+       in this field seems to be describing way more than the subject of the resource.
 
-  
+       TODO: There might be overlaps between notes and topic - maybe they should be combined as one field - subject?
+       -->
+  <field name="notes" type="text_general" multiValued="true">
+    <?description Used to describe the resource in any way possible. Contains multiple types of metadata.?>
+    <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
+    <?example     Daguerreotypi, mål: 81 x 70 mm?>
+  </field>
+
+  <field name="notes_length" type="pint">
+    <?description   The length of all content in the notes field measured in characters.?>
+    <?example       120?>
+    <?query_example notes_length:[10 TO *] returns results,
+                    where there are more than 10 characters written in the note fields.?>
+    <?query_example notes_length:[5 TO 20] returns results,
+                    where there are between 5 and 20 characters written in the note fields.?>
+  </field>
+
+  <field name="notes_count" type="pint">
+    <?description   The amount of notes for the given resource?>
+    <?example       8?>
+    <?query_example ?>
+  </field>
+
+  <!-- Should this be combined with notes? What is the difference between internal notes and notes in a KB context? -->
+  <field name="internal_note" type="text_general" multiValued="true">
+    <?description Internal notes, which can contain basicly anything. ?>
+    <?example     Montering: opklæbet på karton og monteret i passepartout?>
+  </field>
+
+  <field name="catalog" type="string" stored="true" docValues="true">
+    <?description The catalog, which this resource is a part of.?>
+    <?example     Samlingsbilleder?>
+  </field>
 
   <!-- Fields on production of physical and digital object. -->
-  <!-- TODO: Format as date -->
-  <field name="date_created" type="string" stored="true"/>
-  <field name="production_date_start" type="string" stored="true" />
-  <field name="place_of_production" type="string" stored="true" />
-  <field name="production_date_end" type="string" stored="true"/>
-  <field name="digital_surrogate_production_date" type="string" stored="true"/>
+  <field name="production_date" type="string" stored="true">
+    <?description   The date when the resource was produced.?>
+    <?example       1971?>
+    <?query_example production_date:[1980 TO 1991] can be used to query for resources that have been produced in the
+                    period 1980-1991. Keep in mind, that this field is only used, when resources are produced during
+                    a single year. Use production_date_start or production_date_end for more complex queries. See their
+                    respective documentation for examples.?>
+  </field>
+
+  <field name="production_date_start" type="string" stored="true">
+    <?description   The date when production of the resource started.?>
+    <?example       1850?>
+    <?query_example production_date_start:[1780 TO 1800] will return resources where production
+                    started during the timespan 1780-1800?>
+    <?query_example If you are interested in resources, where production was started and finished during the years
+                    1780-1800, these can be found by the following query:
+                    production_date_start:[1780 TO 1800] AND production_date_end:[1780 TO 1800]?>
+  </field>
+
+  <field name="production_date_end" type="string" stored="true">
+    <?description   The date when production of the resource finished.?>
+    <?example       1899?>
+    <?query_example production_date_end:[1780 TO 1800] will return resources where production ended during the
+                    timespan 1780-1800?>
+    <?query_example If you are interested in resources, where production was started and finished during the years
+                    1780-1800, these can be found by the following query:
+                    production_date_start:[1780 TO 1800] AND production_date_end:[1780 TO 1800]?>
+  </field>
+
+  <field name="production_place" type="string" stored="true">
+    <?description Info about where the resource was produced?>
+    <?example     Denmark?>
+  </field>
+
+  <field name="production_date_digital_surrogate" type="string" stored="true">
+    <?description The date when the digital surrogate of the resource was produced.?>
+    <?example     2019-07-03T09:36:17.000+02:00?>
+  </field>
 
   <!-- Fields on subject -->
-  
-  <field name="subject_date_of_birth" type="string" multiValued="true" stored="true"/>
-  <field name="subject_date_of_death" type="string" multiValued="true" stored="true"/>
-  <field name="subject_terms_of_address" type="text_general" multiValued="true"/>
-  <field name="map_scale" type="string" stored="true"/>
+  <!-- Note on field name: SMK uess content_person, however standards as Dublin Core and Europeana Data Model don't have
+       this field, they operate with a generic subject field. Furthermore, Schema.org operates with Persons who can be
+       the subjectOf a creative work. I suggest we stick with subject_name, as this comes closest to other standards
+       used in european cultural heritage institutions. -->
+  <field name="subject_name" type="text_general" multiValued="true">
+    <?description The name of the subject written as family name, given name.?>
+    <?example     Johnsen, John R.?>
+  </field>
 
-  <field name="resource_id" type="string" multiValued="true" stored="true"/>
-  <field name="file_size" type="plong"/>
-  <field name="image_height" type="pint"/>
-  <field name="image_width" type="pint"/>
-  <field name="image_size_pixels" type="plong"/>
-  <field name="target_audience" type="string" stored="true"/> <!-- Not in test data. Part of MODS and might be in other collections-->
+  <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true">
+    <?description The name of the subject written as given name family name.?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="subject_full_name_strict" type="text_strict" multiValued="true">
+    <?description The name of the subject written as givenName familyName.
+                  This is a strict field, which produces a better ranking when querying.?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="subject_family_name" type="text_general" multiValued="true">
+    <?description the family name/surname of the subject.?>
+    <?example     Hansen?>
+  </field>
+
+  <field name="subject_given_name" type="text_general" multiValued="true" >
+    <?description the given name/firstname of the subject.?>
+    <?example     Hans Christian?>
+  </field>
+
+  <field name="subject_date_of_birth" type="string" multiValued="true" stored="true">
+    <?description the subjects date of birth?>
+    <?example     1748-11-29?>
+  </field>
+
+  <field name="subject_date_of_death" type="string" multiValued="true" stored="true">
+    <?description the date of death of the subject.?>
+    <?example     1831-11-5?>
+  </field>
+
+  <field name="subject_terms_of_address" type="text_general" multiValued="true">
+    <?description The titel or occupation of the subject.?>
+    <?example     King?>
+    <?example     Photographer?>
+  </field>
+
+  <field name="subject_count" type="pint" stored="true">
+    <?description The number of subjects in the ressource?>
+    <?example     3?>
+  </field>
+
+  <field name="map_scale" type="string" stored="true">
+    <?description The scale of the resource map.?>
+    <?example     Målestok 1:75 000?>
+  </field>
+
+  <field name="resource_id" type="string" multiValued="true" stored="true">
+    <?description URI pointing to the digital representation of the resource?>
+    <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
+  </field>
+
+  <field name="file_byte_size" type="plong">
+    <?description the size of the file in bytes.?>
+    <?example     252000?>
+  </field>
+
+  <field name="image_height" type="pint">
+    <?description the height of the digital image in pixels.?>
+    <?example     800?>
+  </field>
+
+  <field name="image_width" type="pint">
+    <?description the width of the digital image in pixels.?>
+    <?example     1200?>
+  </field>
+
+  <field name="image_size_pixels" type="plong">
+    <?description the size of the digital image in pixels.?>
+    <?example     960000?>
+  </field>
+
+  <!-- Not in test data. Part of MODS and might be in other collections
+       Called 'Audience' in dublin core.-->
+  <field name="audience" type="string" stored="true">
+    <?description The target audience for the resource.?>
+    <?example     Children?>
+  </field>
 
   <!--  Fields related to copyright and access conditions -->
-  <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_note" type="string"/>                 
-  <field name="access_skabelsesaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/>
-  <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"/> <!--  TODO is required -->
-  <field name="access_searlige_visningsvilkaar" type="string" stored="true"/>
-  <field name="access_materiale_type" type="string"  indexed="true" required="false"   docValues="true" stored="true"/>
-  <field name="access_foto_aftale" type="boolean"   indexed="true" required="true"  docValues="true" stored="true"/>
-  <field name="access_billede_aftale" type="boolean"  indexed="true" required="true" docValues="true" stored="true"/>
-  <field name="access_ophavsret_tekst" type="string" indexed="true"  docValues="true" stored="true"/>
-  
-  <!-- Most fields are copied to this field for matching. -->
-  <field name="freetext" type="freetext" multiValued="true" stored="false"/>
+  <!-- TODO: Documentation for access fields. -->
+  <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_note" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_skabelsesaar" type="pint" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"><!--  TODO: is required -->
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_searlige_visningsvilkaar" type="string" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_materiale_type" type="string"  indexed="true" required="false"   docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_foto_aftale" type="boolean"   indexed="true" required="true"  docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_billede_aftale" type="boolean"  indexed="true" required="true" docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_ophavsret_tekst" type="string" indexed="true"  docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
 
+  <!-- Most fields are copied to this field for matching. -->
+  <field name="freetext" type="freetext" multiValued="true" stored="false">
+    <?description Freetext field, which contains text from multiple other fields.?>
+    <?example     If a play with the titel 'Romeo and Juliet' written by the author 'William Shakespeare' is indexed,
+                  then the freetext field for this play will contain content from multiple other fields, so that the
+                  value of the freetext field could be something like this: "William Shakespeare Romeo and Juliet".?>
+  </field>
+
+  <field name="title_strict" type="title_strict" multiValued="true" stored="false">
+    <?description Field for strict title matching. Matches exact title?>
+    <?example     Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
+  </field>
   <!-- END FIELDS  -->
-  
-  
-  <!-- START FIELDTYPES  -->
-  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>   
-  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>  
-  <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>  
-  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>  
+
+  <!-- START FIELDTYPE DEFINITIONS-->
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+  <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
+  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
   <fieldType name="pint" class="solr.IntPointField" multiValued="false" indexed="true" required="false" stored="true" docValues="false"/>
   <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
-  
-  <!-- Field is not analysed or tokenized. Used for author names, titles etc. This field is not usefull as search field, but good for docValues  -->
+
+  <!-- Field is not analysed or tokenized. Used for author names, titles etc.
+   This field is not usefull as search field, but good for docValues  -->
   <fieldType name="string" class="solr.StrField" sortMissingLast="true" indexed="true" required="false" stored="true" multiValued="false" docValues="true"/>
-  
-  
+
   <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
     <analyzer>
       <tokenizer class="solr.StandardTokenizerFactory"/>
-      <filter class="solr.LowerCaseFilterFactory"/>      
-      <filter class="solr.StopFilterFactory"  format="snowball" ignoreCase="true" words="lang/stopwords_da.txt"/>      
-      <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>     
-    </analyzer>
-  </fieldType>    <copyField source="creator_name" dest="freetext"/>
-  
-  
-
-  
-     
-     
-   <!-- Very string field matching. Only lower case. diacritics  must match.  No matching cross multifields-->  
-  <fieldType name="text_strict" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="0">
-    <analyzer type="index">
-          <tokenizer class="solr.WhitespaceTokenizerFactory"/>                 
-          <filter class="solr.LowerCaseFilterFactory"/>               
-    </analyzer>
-    <analyzer type="query">
-          <tokenizer class="solr.WhitespaceTokenizerFactory"/>      
-          <filter class="solr.LowerCaseFilterFactory"/> 
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory"  format="snowball" ignoreCase="true" words="lang/stopwords_da.txt"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>
     </analyzer>
   </fieldType>
-     
-     
+
+   <!-- Very string field matching. Only lower case. diacritics  must match.  No matching cross multifields-->
+  <fieldType name="text_strict" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="0">
+    <analyzer type="index">
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+          <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+          <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+          <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
   <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
-    <analyzer type="index">          
+    <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
-       <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt"/>      
+       <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt"/>
        <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
     <analyzer type="query">
@@ -161,53 +499,69 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
-  
+
+  <fieldType name="title_strict" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="true">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
    <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory"/>
-      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>    
-      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>      
+      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
     <analyzer type="query">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
-      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>      
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt"/>
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
-  
- <!-- END FIELDTYPES  -->
- 
- 
- 
-    <!-- START COPYFIELD  -->
-   
-    <!-- Exact  spelling of author gives high ranking  -->
-    <copyField source="creator_full_name" dest="creator_full_name_strict"/> 
-    
-   
-    <copyField source="creator_name" dest="freetext"/> 
-    <copyField source="creator_full_name" dest="freetext"/>   
-    <copyField source="creator_given_name" dest="freetext"/>
-    <copyField source="creator_terms_of_address" dest="freetext"/>
-    <copyField source="area" dest="freetext"/>
-    <copyField source="subject_name" dest="freetext"/>
-    <copyField source="subject_full_name" dest="freetext"/>
-    <copyField source="subject_family_name" dest="freetext"/>
-    <copyField source="subject_given_name" dest="freetext"/>
-    <copyField source="categories" dest="freetext"/>
-    <copyField source="catalog_name" dest="freetext"/>
-    <copyField source="collection" dest="freetext"/>
-    <copyField source="type_of_resource" dest="freetext"/>
-    <copyField source="content" dest="freetext"/>
-    <copyField source="shelf_location" dest="freetext"/>
-    <copyField source="title" dest="freetext"/>
-    <copyField source="subtitle" dest="freetext"/>
-    <copyField source="alternative_title" dest="freetext"/>
-        
-    
-  <!-- END COPYFIELD  -->    
-     
-    
+  <!-- END FIELDTYPE DEFINITIONS-->
+
+  <!-- START COPYFIELDS  -->
+  <copyField source="creator_full_name" dest="creator_full_name_strict">
+    <?description Copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
+    <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
+  </copyField>
+
+  <copyField source="title" dest="title_strict">
+  <?description Copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
+  <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
+  </copyField>
+
+  <copyField source="subject_full_name" dest="subject_full_name_strict">
+    <?description Copies the full name of the subject to a strict field, which produces a higher ranking when queried.?>
+    <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
+  </copyField>
+
+  <copyField source="creator_name" dest="freetext"/>
+  <copyField source="creator_full_name" dest="freetext"/>
+  <copyField source="creator_given_name" dest="freetext"/>
+  <copyField source="creator_terms_of_address" dest="freetext"/>
+  <copyField source="area" dest="freetext"/>
+  <copyField source="subject_name" dest="freetext"/>
+  <copyField source="subject_full_name" dest="freetext"/>
+  <copyField source="subject_family_name" dest="freetext"/>
+  <copyField source="subject_given_name" dest="freetext"/>
+  <copyField source="categories" dest="freetext"/>
+  <copyField source="catalog" dest="freetext"/>
+  <copyField source="collection" dest="freetext"/>
+  <copyField source="genre" dest="freetext"/>
+  <copyField source="resource_description" dest="freetext"/>
+  <copyField source="resource_description_general" dest="freetext"/>
+  <copyField source="notes" dest="freetext"/>
+  <copyField source="location" dest="freetext"/>
+  <copyField source="title" dest="freetext"/>
+  <copyField source="subtitle" dest="freetext"/>
+  <copyField source="alternative_title" dest="freetext"/>
+  <!-- END COPYFIELDS  -->
  </schema>
