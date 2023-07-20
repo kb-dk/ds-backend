@@ -100,7 +100,6 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testNoTermsOfAddress() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK);
-		prettyPrintSolrJsonFromMods(RECORD_ANSK);
 		assertFalse(solrString.contains("creator_terms_of_address"));
 	}
 

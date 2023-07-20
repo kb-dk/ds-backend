@@ -158,6 +158,16 @@
               </xsl:if>
             </xsl:for-each>
           </f:array>
+          <xsl:variable name="categories_count">
+            <xsl:for-each select="distinct-values(tokenize(m:genre[@type='Categories'], ','))">
+              <xsl:if test=". != '' and not(matches(. , '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'))">
+                <xsl:text>a</xsl:text>
+              </xsl:if>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="categories_count">
+            <xsl:value-of select="f:string-length($categories_count)"/>
+          </f:string>
         </xsl:if>
         <!-- Different things can be represented in note. -->
         <!-- If catalog name exists, extract it-->
@@ -208,7 +218,23 @@
               </xsl:analyze-string>
             </xsl:for-each>
           </f:array>
+          <!--Count hack - writing to a variable for each entry,
+              then counting length of variable string to get amount -->
+          <xsl:variable name="notes_count">
+            <xsl:for-each select="m:note[@type='content']">
+              <xsl:if test=". != ''">
+                <xsl:text>a</xsl:text>
+              </xsl:if>
+            </xsl:for-each>
+            <xsl:for-each select="m:note[@displayLabel='Description']">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="notes_count">
+            <xsl:value-of select="f:string-length($notes_count)"/>
+          </f:string>
 
+          <!-- TODO: This only counts from note:type=content and not from note[@displayLabel='Description'] as well  -->
           <xsl:if test="m:note[@type='content']">
             <f:string key="notes_length">
               <xsl:variable name="noteslength">
@@ -263,6 +289,16 @@
               </f:string>
             </xsl:for-each>
           </f:array>
+          <!--Count hack - writing to a variable for each entry,
+              then counting length of variable string to get amount -->
+          <xsl:variable name="title_count">
+            <xsl:for-each select="m:titleInfo/m:title">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="title_count">
+            <xsl:value-of select="f:string-length($title_count)"/>
+          </f:string>
           <!-- SINGLE TITEL EXTRACTION -->
           <!-- <f:string key="title">
             <xsl:value-of select="f:replace(m:titleInfo/m:title[1], 'zh\|', '')"/>
@@ -442,6 +478,17 @@
               </f:array>
             </xsl:if>
           </xsl:if>
+          <!-- Not ideal workaround for counting number of creators for a resource.
+               For each creator an 'a' char is written to a string, then the length of this string
+               is returned as the amount of creators.-->
+          <xsl:variable name="creator_count">
+            <xsl:for-each select="m:name">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="creator_count">
+            <xsl:value-of select="f:string-length($creator_count)"/>
+          </f:string>
         </xsl:if>
         <!-- Information on the original gets extracted here. Production date primarily-->
         <xsl:if test="m:originInfo[@altRepGroup='original']/m:dateCreated">
@@ -484,6 +531,14 @@
               </xsl:for-each>
             </xsl:for-each>
           </f:array>
+          <xsl:variable name="topic_count">
+            <xsl:for-each select="m:subject/m:topic[@lang]">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="topic_count">
+            <xsl:value-of select="f:string-length($topic_count)"/>
+          </f:string>
         </xsl:if>
         <!-- geographical data gets extracted here -->
         <xsl:if test="m:subject/m:hierarchicalGeographic">
@@ -602,6 +657,14 @@
               </xsl:for-each>
             </f:array>
           </xsl:if>
+          <xsl:variable name="subject_count">
+            <xsl:for-each select="m:subject/m:name">
+              <xsl:text>a</xsl:text>
+            </xsl:for-each>
+          </xsl:variable>
+          <f:string key="subject_count">
+            <xsl:value-of select="f:string-length($subject_count)"/>
+          </f:string>
         </xsl:if>
         <xsl:if test="m:subject/m:cartographics/m:scale">
           <f:string key="map_scale">
