@@ -241,6 +241,9 @@
                 <xsl:for-each select="m:note[@type='content']">
                   <xsl:value-of select="f:concat(f:replace(., 'zh\|', ''), ' ')"/>
                 </xsl:for-each>
+                <xsl:for-each select="m:note[@displayLabel='Description']">
+                  <xsl:value-of select="f:concat(f:replace(., 'zh\|', ''), ' ')"/>
+                </xsl:for-each>
               </xsl:variable>
               <xsl:value-of select="f:string-length($noteslength)"/>
             </f:string>
