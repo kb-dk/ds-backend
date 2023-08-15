@@ -69,66 +69,67 @@ config:
       # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
       pattern: '[a-z0-9.]+'
 
-  # The collections available for this instance of ds-present 
-  collections:
+  # Collections are to be set in ds-present-kb-collections-yaml if possible, as that file overwrites the collections defined here
+  # The collections available for this instance of ds-present
+  #collections:
     # General note: All collections are expected to support at least the views raw, mods, jsonld and solrjson.
     # If any of those are not supported, the transformer 'fail' should be used with a telling message.
 
     # Straight forward collection with the core format being MODS
     # Uses the default storage, which connects to a running ds-storage instance
-    - remote: # ds-present internal
-        prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
-        description: 'Images from the collections at the Royal Danish Library'
-        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
-        views:
-          - raw:
-              mime: 'text/plain'
-              transformers:
-                - identity:
-          - MODS:
-              mime: 'application/xml'
-              transformers:
-                - identity: # No transformation steps as mods is the core format for images-dsfl
-          - JSON-LD:
-              mime: 'application/json'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2schemaorg.xsl'
-                    injections:
-                      - imageserver: 'https://example.com/imageserver'
-          - SolrJSON:
-              mime: 'application/json'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2solr.xsl'
-                    injections:
-                      - imageserver: 'https://example.com/imageserver'
+  #  - remote: # ds-present internal
+  #      prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
+  #      description: 'Images from the collections at the Royal Danish Library'
+      #   Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+  #      views:
+  #        - raw:
+  #            mime: 'text/plain'
+  #            transformers:
+  #              - identity:
+  #        - MODS:
+  #            mime: 'application/xml'
+  #            transformers:
+  #             - identity: # No transformation steps as mods is the core format for images-dsfl
+  #        - JSON-LD:
+  #            mime: 'application/json'
+  #            transformers:
+  #              - xslt:
+  #                  stylesheet: 'xslt/mods2schemaorg.xsl'
+  #                  injections:
+  #                    - imageserver: 'https://example.com/imageserver'
+  #        - SolrJSON:
+  #            mime: 'application/json'
+  #            transformers:
+  #              - xslt:
+  #                  stylesheet: 'xslt/mods2solr.xsl'
+  #                  injections:
+  #                    - imageserver: 'https://example.com/imageserver'
 
     # Straight forward collection with the core format being MODS, using test data
-    - local: # ds-present internal
-        prefix: 'local.test' # The prefix to match on incoming IDs
-        description: 'Selected image data from the collections at the Royal Danish Library'
-        storage: 'test' # Not production here
-        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
-        views:
-          - raw:
-              mime: 'text/plain'
-              transformers:
-                - identity:
-          - MODS:
-              mime: 'application/xml'
-              transformers:
-                - identity: # No transformation steps as mods is the core format for images-dsfl
-          - JSON-LD:
-              mime: 'application/json'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2schemaorg.xsl'
-          - SolrJSON:
-              mime: 'application/json'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2solr.xsl'
+    #- local: # ds-present internal
+    #    prefix: 'local.test' # The prefix to match on incoming IDs
+    #    description: 'Selected image data from the collections at the Royal Danish Library'
+    #    storage: 'test' # Not production here
+    #    # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+    #    views:
+    #      - raw:
+    #          mime: 'text/plain'
+    #          transformers:
+    #            - identity:
+    #      - MODS:
+    #          mime: 'application/xml'
+    #          transformers:
+    #            - identity: # No transformation steps as mods is the core format for images-dsfl
+    #      - JSON-LD:
+    #          mime: 'application/json'
+    #          transformers:
+    #            - xslt:
+    #                stylesheet: 'xslt/mods2schemaorg.xsl'
+    #      - SolrJSON:
+    #          mime: 'application/json'
+    #          transformers:
+    #            - xslt:
+    #                stylesheet: 'xslt/mods2solr.xsl'
 
   # Imageserver to be used when constructing URLs to be shown in Schema.org XSLT transformation
   # This has to be set before image URLs are working. imageserver has to be set without trailing slash as this is currently handled by the XSLT transformation
