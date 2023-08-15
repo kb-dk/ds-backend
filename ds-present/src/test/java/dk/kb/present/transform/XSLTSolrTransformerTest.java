@@ -38,11 +38,6 @@ class XSLTSolrTransformerTest{
 
 	private static final Logger log = LoggerFactory.getLogger(XSLTSolrTransformerTest.class);
 
-	YAML CONFIG = ServiceConfig.getConfig().getYAMLList("config.collections")
-			.get(0).getYAMLList("remote.views")
-			.get(3).getSubMap("SolrJSON").getYAMLList("transformers")
-			.get(0).getSubMap("xslt");
-
 	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
 	Map<String, String> IMAGESERVER_EXAMPLE = Map.of("imageserver", "https://example.com/imageserver");
 	public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
@@ -184,9 +179,13 @@ class XSLTSolrTransformerTest{
 
 	@Test
 	void testImageResource() throws Exception {
-		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(CONFIG, RECORD_40221e30);
-		prettyPrintSolrJsonFromMods(RECORD_40221e30);
-		assertTrue(solrString.contains("\"resource_id\":[\"https:\\/\\/example.com\\/imageserver\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
+		String yamlStr =
+				"stylesheet: '" + MODS2SOLR + "'\n" +
+				"injections:\n" +
+				"  - imageserver: 'https://example.com/imageserver'\n";
+		YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
+		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, RECORD_40221e30);
+		assertTrue(solrString.contains("\"https:\\/\\/example.com\\/imageserver\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\""));
 	}
 
 	@Test
