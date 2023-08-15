@@ -167,8 +167,6 @@ public class XSLTSchemaDotOrgTransformerTest {
                 "  - imageserver: 'https://example.com/imageserver'\n";
         YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
         String transformedJSON = TestUtil.getTransformedFromConfigWithAccessFields(yaml, xml);
-        System.out.println(transformedJSON);
-
         assertJSON(expectedJSONFile, transformedJSON);
     }
 
