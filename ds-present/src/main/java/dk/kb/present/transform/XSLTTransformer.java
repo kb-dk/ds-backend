@@ -104,7 +104,7 @@ public class XSLTTransformer extends DSTransformer {
 
     @Override
     public String toString() {
-        return "XSLTTransformer(stylesheet='" + stylesheet + "')";
+        return "XSLTTransformer(stylesheet='" + stylesheet + "', fixedInjections='" + fixedInjections + "'.)";
     }
 
 }
