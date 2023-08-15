@@ -59,8 +59,8 @@ config:
         views: *MODS_IMAGE_VIEWS
     - samlingsbilleder:
         description: 'Diverse images from image collections at the Royal Danish Library'
-        prefix: 'dk.samlingsbilleder'
-        base: 'dk.samlingsbilleder'
+        prefix: 'ds.samlingsbilleder'
+        base: 'ds.samlingsbilleder'
         views: *MODS_IMAGE_VIEWS
 
     # Straight forward collection with the core format being MODS

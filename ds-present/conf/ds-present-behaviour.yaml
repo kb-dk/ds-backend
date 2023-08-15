@@ -95,14 +95,14 @@ config:
                 - xslt:
                     stylesheet: 'xslt/mods2schemaorg.xsl'
                     injections:
-                        # Imageserver to be used when constructing URLs to be shown in Schema.org XSLT transformation
-                        # This has to be set before image URLs are working.
-                      - imageserver: 'http:/example/imageserver'
+                      - imageserver: 'https://example.com/imageserver'
           - SolrJSON:
               mime: 'application/json'
               transformers:
                 - xslt:
                     stylesheet: 'xslt/mods2solr.xsl'
+                    injections:
+                      - imageserver: 'https://example.com/imageserver'
 
     # Straight forward collection with the core format being MODS, using test data
     - local: # ds-present internal
