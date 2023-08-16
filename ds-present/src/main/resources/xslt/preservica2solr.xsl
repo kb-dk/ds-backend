@@ -9,6 +9,7 @@
                xmlns:my="urn:my"
                xmlns:premis="http://www.loc.gov/premis/v3"
                xmlns:mix="http://www.loc.gov/mix/v20"
+               xmlns:xip="http://example.com/"
                version="3.0">
 
   <xsl:output method="text" />
@@ -31,19 +32,23 @@
     <xsl:variable name="json">
       <f:map>
         <!--This is where transformations happen -->
-        <xsl:if test="Metadata/pbcoreTitle/pbcoreTitleType = 'originaltitel'">
+
+
+
+        <xsl:if test="DeliverableUnit/Metadata/pbcoreTitle/pbcoreTitleType = 'originaltitel'">
           <f:string key="titel">
-            <xsl:value-of select="Metadata/pbcoreTitle/title"/>
+            <xsl:value-of select="xip:DeliverableUnit/Metadata/pbcoreTitle/title"/>
           </f:string>
         </xsl:if>
 
         <f:string key="test">
-          <xsl:value-of select="CatalogueReference"/>
+          <xsl:value-of select="DeliverableUnit/CatalogueReference"/>
         </f:string>
+
+
+
       </f:map>
     </xsl:variable>
-
-
     <xsl:value-of select="f:xml-to-json($json)"/>
   </xsl:template>
 
