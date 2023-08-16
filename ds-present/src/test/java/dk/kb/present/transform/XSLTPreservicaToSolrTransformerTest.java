@@ -11,8 +11,12 @@ public class XSLTPreservicaToSolrTransformerTest {
 
     @Test
     public void testSetup() throws Exception {
+        TestUtil.prettyPrintSolrJsonFromMods(PRESERVICA2SOLR, PRESERVICA_TEST_RECORD);
+        /*
         String solrString = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, PRESERVICA_TEST_RECORD);
         System.out.println(solrString);
-
+         */
     }
+
+
 }
