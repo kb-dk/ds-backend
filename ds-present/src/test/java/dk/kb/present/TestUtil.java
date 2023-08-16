@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import dk.kb.present.copyright.XsltCopyrightMapper;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.XSLTFactory;
@@ -74,4 +78,14 @@ public class TestUtil {
 		return transformer.apply(mods, accessFields);
 	}
 
+	/**
+	 * Transform the input MODS record with an XSLT and return as pretty JSON
+	 */
+	public static void prettyPrintSolrJsonFromMods(String xslt, String record) throws Exception {
+		String solrString = getTransformedWithAccessFieldsAdded(xslt, record);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(solrString);
+		String prettyJsonString = gson.toJson(je);
+		System.out.println(prettyJsonString);
+	}
 }

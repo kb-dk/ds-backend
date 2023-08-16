@@ -4,8 +4,6 @@ import dk.kb.present.TestUtil;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.*;
-
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -164,17 +162,6 @@ class XSLTSolrTransformerTest{
 	void testSurrogateProduction() throws Exception{
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_FM);
 		assertTrue(solrString.contains("\"production_date_digital_surrogate\":\"2018-01-15T12:26:00.000+01:00\""));
-	}
-
-	/**
-	 * Transform the input MODS record with an XSLT and return as pretty JSON
-	 */
-	private void prettyPrintSolrJsonFromMods(String record) throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, record);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString);
 	}
 
 
