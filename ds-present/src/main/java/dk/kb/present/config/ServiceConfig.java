@@ -18,14 +18,15 @@ public class ServiceConfig {
     private static YAML serviceConfig;
 
     /**
-     * Initialized the configuration from the provided configFile.
+     * Initialized the configuration from the provided configFiles.
      * This should normally be called from {@link dk.kb.present.webservice.ContextListener} as
      * part of web server initialization of the container.
-     * @param configFile the configuration to load.
-     * @throws IOException if the configuration could not be loaded or parsed.
+     * @param configFiles globs for the configurations to load.
+     * @throws IOException if the configurations could not be loaded or parsed.
      */
-    public static synchronized void initialize(String configFile) throws IOException {
-        serviceConfig = YAML.resolveLayeredConfigs(configFile);
+    public static synchronized void initialize(String... configFiles) throws IOException {
+        serviceConfig = YAML.resolveLayeredConfigs(configFiles);
+        serviceConfig.setExtrapolate(true);
     }
 
     /**
