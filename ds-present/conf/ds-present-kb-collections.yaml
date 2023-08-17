@@ -24,7 +24,7 @@ config:
           - xslt:
               stylesheet: 'xslt/mods2schemaorg.xsl'
               injections:
-                - imageserver: 'https://example.com/imageserver'
+                - imageserver: ${path:config.imageservers[default=true].url}
     - SolrJSON:
         mime: 'application/json'
         transformers:
@@ -32,7 +32,7 @@ config:
           - xslt:
               stylesheet: 'xslt/mods2solr.xsl'
               injections:
-                - imageserver: 'https://example.com/imageserver'
+                - imageserver: ${path:config.imageservers[default=true].url}
   # The collections available for this instance of ds-present
   collections:
     # General note: All collections are expected to support at least the views raw, mods, jsonld and solrjson.
@@ -87,14 +87,14 @@ config:
                 - xslt:
                     stylesheet: 'xslt/mods2schemaorg.xsl'
                     injections:
-                      - imageserver: 'https://example.com/imageserver'
+                      - imageserver: ${path:config.imageservers[default=true].url}
           - SolrJSON:
               mime: 'application/json'
               transformers:
                 - xslt:
                     stylesheet: 'xslt/mods2solr.xsl'
                     injections:
-                      - imageserver: 'https://example.com/imageserver'
+                      - imageserver: ${path:config.imageservers[default=true].url}
 
     # Straight forward collection with the core format being MODS, using test data
     - local: # ds-present internal
@@ -117,11 +117,11 @@ config:
                 - xslt:
                     stylesheet: 'xslt/mods2schemaorg.xsl'
                     injections:
-                      - imageserver: 'https://example.com/imageserver'
+                      - imageserver: ${path:config.imageservers[default=true].url}
           - SolrJSON:
               mime: 'application/json'
               transformers:
                 - xslt:
                     stylesheet: 'xslt/mods2solr.xsl'
                     injections:
-                      - imageserver: 'https://example.com/imageserver'
+                      - imageserver: ${path:config.imageservers[default=true].url}

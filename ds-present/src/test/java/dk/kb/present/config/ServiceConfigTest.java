@@ -1,6 +1,7 @@
 package dk.kb.present.config;
 
 import dk.kb.util.Resolver;
+import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -49,5 +50,27 @@ class ServiceConfigTest {
 
         // Real value in environment
         assertEquals("real_dbpassword", ServiceConfig.getConfig().getString("config.backend.password"));
+    }
+
+    @Test
+    void testImageserver() throws IOException {
+        Path knownFile = Path.of(Resolver.resolveURL("logback-test.xml").getPath());
+        String projectRoot = knownFile.getParent().getParent().getParent().toString();
+
+        Path behaviour = Path.of(projectRoot, "conf/ds-present-behaviour.yaml");
+        Path collections = Path.of(projectRoot, "conf/ds-present-kb-collections.yaml");
+
+        ServiceConfig.initialize(behaviour.toString(), collections.toString());
+        YAML yaml = ServiceConfig.getConfig();
+
+        assertEquals("true", yaml.getString("config.imageservers.invalid.default"),
+                "The imageserver 'invalid' should have 'default: true'");
+
+        assertEquals("invalid://url", yaml.getString("config.imageservers[default=true].url"),
+                "The correct URL should be extracted from the default imageserver using yaml.get with conditional");
+
+        assertEquals("invalid://url",
+                yaml.getString("config.collections[4].samlingsbilleder.views[3].SolrJSON.transformers[1].xslt.injections[0].imageserver"),
+                "The correct URL should be substitution-extracted from the 'samlingsbilleder' view SolrJSON injection");
     }
 }
