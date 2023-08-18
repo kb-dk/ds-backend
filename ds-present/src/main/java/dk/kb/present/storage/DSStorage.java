@@ -138,6 +138,7 @@ public class DSStorage implements Storage {
                             "Exception making remote call to ds-storage client " +
                             "getRecordsModifiedAfter(base='%s', mTime=%d, maxRecords=%d)",
                             finalRecordBase, mTime, maxRecords);
+                    log.warn(message, e);
                     throw new InternalServiceException(message, e);
                 }
                 pending -= records.size();

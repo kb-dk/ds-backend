@@ -47,8 +47,9 @@ public class XSLTFactory implements DSTransformerFactory {
                             "Expected a single entry (key-value pair) in injection '" + yInjection +
                             "' but got " + yInjection.size());
                 }
-                Map.Entry<String, Object> entry = yInjection.entrySet().stream().findFirst().get();
-                injections.put(entry.getKey(), entry.getValue().toString());
+                // TODO: Move away from the strange "listed maps with one entry" way of stating injections
+                String firstKey = yInjection.keySet().stream().findFirst().get();
+                injections.put(firstKey, yInjection.getString(firstKey));
             }
         }
         return new XSLTTransformer(conf.getString(STYLESHEET_KEY), injections);
