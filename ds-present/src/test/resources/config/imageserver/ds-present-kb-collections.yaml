@@ -1,0 +1,127 @@
+#
+# This config contains definitions for image collections at the Royal Danish Library.
+#
+# If used by another institution the collections should be overwritten by another config sorted alphanumerically
+# later than "ds-present-kb-collections.yaml". Optionally this config file should also be deleted.
+#
+config:
+
+  # Generic views for images represented as MODS, used for multiple collections
+  baseviews: &MODS_IMAGE_VIEWS
+    # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+    - raw:
+        mime: 'text/plain'
+        transformers:
+          - identity:
+    - MODS:
+        mime: 'application/xml'
+        transformers:
+          - identity: # No transformation steps as mods is the core format for images-dsfl
+    - JSON-LD:
+        mime: 'application/json'
+        transformers:
+          - imagerights: # KB specific rules for image rights stated in MODS
+          - xslt:
+              stylesheet: 'xslt/mods2schemaorg.xsl'
+              injections:
+                - imageserver: ${path:config.imageservers[default=true].url}
+    - SolrJSON:
+        mime: 'application/json'
+        transformers:
+          - imagerights: # KB specific rules for image rights stated in MODS
+          - xslt:
+              stylesheet: 'xslt/mods2solr.xsl'
+              injections:
+                - imageserver: ${path:config.imageservers[default=true].url}
+  # The collections available for this instance of ds-present
+  collections:
+    # General note: All collections are expected to support at least the views raw, mods, jsonld and solrjson.
+    # If any of those are not supported, the transformer 'fail' should be used with a telling message.
+
+    # Royal Danish Library image collection with the core format being MODS
+    # Uses the default storage, which connects to a running ds-storage instance
+    - imageshca:
+        description: 'Hans Christian Andersen images from the collections at the Royal Danish Library'
+        prefix: 'kb.images.billed.hca' # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
+        base: 'kb.images.billed.hca' # Overrides the default base for the storage
+        views: *MODS_IMAGE_VIEWS
+    - imagesjsmss:
+        description: 'Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library'
+        prefix: 'kb.image.judsam.jsmss'
+        base: 'kb.image.judsam.jsmss'
+        views: *MODS_IMAGE_VIEWS
+    - imagesluftfoto:
+        description: 'Luftfoto (arial photographs) images from the collections at the Royal Danish Library'
+        prefix: 'kb.image.luftfo.luftfoto'
+        base: 'kb.images.luftfo.luftfoto'
+        views: *MODS_IMAGE_VIEWS
+    - imagessmaatryk:
+        description: 'Småtryk images from the collections at the Royal Danish Library'
+        prefix: 'kb.pamphlets.dasmaa.smaatryk'
+        base: 'kb.pamphlets.dasmaa.smaatryk'
+        views: *MODS_IMAGE_VIEWS
+    - samlingsbilleder:
+        description: 'Diverse images from image collections at the Royal Danish Library'
+        prefix: 'ds.samlingsbilleder'
+        base: 'ds.samlingsbilleder'
+        views: *MODS_IMAGE_VIEWS
+
+    # Straight forward collection with the core format being MODS
+    # Uses the default storage, which connects to a running ds-storage instance
+    - remote: # ds-present internal
+        prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
+        description: 'Images from the collections at the Royal Danish Library'
+        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+        views:
+          - raw:
+              mime: 'text/plain'
+              transformers:
+                - identity:
+          - MODS:
+              mime: 'application/xml'
+              transformers:
+                - identity: # No transformation steps as mods is the core format for images-dsfl
+          - JSON-LD:
+              mime: 'application/json'
+              transformers:
+                - xslt:
+                    stylesheet: 'xslt/mods2schemaorg.xsl'
+                    injections:
+                      - imageserver: ${path:config.imageservers[default=true].url}
+          - SolrJSON:
+              mime: 'application/json'
+              transformers:
+                - xslt:
+                    stylesheet: 'xslt/mods2solr.xsl'
+                    injections:
+                      - imageserver: ${path:config.imageservers[default=true].url}
+
+    # Straight forward collection with the core format being MODS, using test data
+    - local: # ds-present internal
+        prefix: 'local.test' # The prefix to match on incoming IDs
+        description: 'Selected image data from the collections at the Royal Danish Library'
+        storage: 'test' # Not production here
+        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+        views:
+          - raw:
+              mime: 'text/plain'
+              transformers:
+                - identity:
+          - MODS:
+              mime: 'application/xml'
+              transformers:
+                - identity: # No transformation steps as mods is the core format for images-dsfl
+          - JSON-LD:
+              mime: 'application/json'
+              transformers:
+                - xslt:
+                    stylesheet: 'xslt/mods2schemaorg.xsl'
+                    injections:
+                      - imageserver: ${path:config.imageservers[default=true].url}
+          - SolrJSON:
+              mime: 'application/json'
+              transformers:
+                - xslt:
+                    stylesheet: 'xslt/mods2solr.xsl'
+                    injections:
+                      - imageserver: ${path:config.imageservers[default=true].url}

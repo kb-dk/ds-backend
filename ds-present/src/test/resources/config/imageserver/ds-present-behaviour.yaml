@@ -1,0 +1,154 @@
+#
+# This config contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
+#
+# The behaviour config is normally controlled by developers and is part of the code repository.
+# Sensitive information such as machine names and user/passwords should not be part of this config.
+#
+# It will be automatically merged with the environment config when accessed through the
+# application config system.
+#
+#
+config:
+
+  # Image server URLs are injected into transformations.
+  # These should be overridden in environment specific config files for all environments, meaning local test,
+  # shared devel, stage and production
+  #
+  # Sample override:
+  #
+  # config:
+  #   imageservers:
+  #     devel:
+  #       url: "https://example.com/devel/iipimage"
+  #       default: true
+  #
+  # Note: The server marked with "default: true" is used in the base configuration ds-present-kb-collections.yaml
+  imageservers:
+    example:
+      url: "https://example.com"
+
+    invalid:
+      url: "invalid://url"
+      default: true
+
+  # List of backing storages. This information should be overridden in ds-present-environment.yaml
+
+  # The storages defined in this file are
+  # * ds-storage, expecting https://github.com/kb-dk/ds-storage/ to be running locally with the default port
+  # * folder, serving sample files
+  storages:
+    # There can be multiple defined storages. The outer YAML key is used as the ID for the storage.
+    - main:
+        # If default is true, this will be the default storage for collections.
+        # The default storage choice can be overridden in a collection with the 'storage' property
+        default: true
+        # Backends contains a list of one or more implementations and their configuration, with the primary key being
+        # the implementation (aka type) of the backend
+        #
+        # Available backends are
+        # ds-storage: A local instance of https://github.com/kb-dk/ds-storage/
+        # folder:     Local files under the stated folder. Use only for test as the implementation in unsecure
+        backends:
+          # The ds-storage backend connects to a running https://github.com/kb-dk/ds-storage/ instance
+          - ds-storage:
+              # The name of the machine running the service. Mandatory
+              dbserverurl: 'http://localhost:9072/ds-storage/v1/'                            
+                            
+    - test:
+        # If there is more that one backend implementation, the property 'order' controls how they are queried:
+        # * parallel:   All backends are queried in parallel. Whoever answers with a record first wins.
+        # * sequential: All backends are queried one at a time in the order in this configuration.
+        #               When a backend responds with a record, itertaion is stopped and the record is returned
+        # Optional, default value is 'sequential'
+        order: sequential
+        backends:
+          # The folder backend expects content to be stored in a local folder. The ID is used as the file name.
+          # WARNING: Insecure implementation (files outside of the folder can be read). Do not use for production!
+          # The src/test/resources/xml/corpus contains a small sample corpus. this is only likely to work when
+          # running with `mvn jetty:run` and even the we're unsure of the current folder, so we se up alternatives.
+          - folder:
+              root: 'src/test/resources/xml/corpus' # Expected
+              # Whether or not remove ID-prefix (the part from the beginning to the first `:` (inclusive) of the ID)
+              # from the ID when perforaing the lookup. Optional, default is true.
+              stripprefix: true
+          - folder:
+              root: '../src/test/resources/xml/corpus' # Maybe PWD is target/
+          - folder:
+              root: 'ds-present/src/test/resources/xml/corpus' # Maybe PWD is outsid eof the checkout (unlikely)
+
+  # Settings for handling at the record level
+  record:
+    id:
+      # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the collection prefix
+      # and the second being the collection specific par of the ID
+      # Mandatory. Suggested value: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)', e.g. 'images.dsfl:Image1234:2_3-b'
+      pattern: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)'
+  collection:
+    prefix:
+      # Pattern for acceptable collection prefixes. This will practically always be a mirror of the first capturing
+      # group for record.id.pattern.
+      # Primarily used for verifying configuration.
+      # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
+      pattern: '[a-z0-9.]+'
+
+  # Collections are to be set in ds-present-kb-collections-yaml if possible, as that file overwrites the collections defined here
+  # The collections available for this instance of ds-present
+  #collections:
+    # General note: All collections are expected to support at least the views raw, mods, jsonld and solrjson.
+    # If any of those are not supported, the transformer 'fail' should be used with a telling message.
+
+    # Straight forward collection with the core format being MODS
+    # Uses the default storage, which connects to a running ds-storage instance
+  #  - remote: # ds-present internal
+  #      prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
+  #      description: 'Images from the collections at the Royal Danish Library'
+      #   Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+  #      views:
+  #        - raw:
+  #            mime: 'text/plain'
+  #            transformers:
+  #              - identity:
+  #        - MODS:
+  #            mime: 'application/xml'
+  #            transformers:
+  #             - identity: # No transformation steps as mods is the core format for images-dsfl
+  #        - JSON-LD:
+  #            mime: 'application/json'
+  #            transformers:
+  #              - xslt:
+  #                  stylesheet: 'xslt/mods2schemaorg.xsl'
+  #                  injections:
+  #                    - imageserver: 'https://example.com/imageserver'
+  #        - SolrJSON:
+  #            mime: 'application/json'
+  #            transformers:
+  #              - xslt:
+  #                  stylesheet: 'xslt/mods2solr.xsl'
+  #                  injections:
+  #                    - imageserver: 'https://example.com/imageserver'
+
+    # Straight forward collection with the core format being MODS, using test data
+    #- local: # ds-present internal
+    #    prefix: 'local.test' # The prefix to match on incoming IDs
+    #    description: 'Selected image data from the collections at the Royal Danish Library'
+    #    storage: 'test' # Not production here
+    #    # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+    #    views:
+    #      - raw:
+    #          mime: 'text/plain'
+    #          transformers:
+    #            - identity:
+    #      - MODS:
+    #          mime: 'application/xml'
+    #          transformers:
+    #            - identity: # No transformation steps as mods is the core format for images-dsfl
+    #      - JSON-LD:
+    #          mime: 'application/json'
+    #          transformers:
+    #            - xslt:
+    #                stylesheet: 'xslt/mods2schemaorg.xsl'
+    #      - SolrJSON:
+    #          mime: 'application/json'
+    #          transformers:
+    #            - xslt:
+    #                stylesheet: 'xslt/mods2solr.xsl'

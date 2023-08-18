@@ -57,8 +57,9 @@ class ServiceConfigTest {
         Path knownFile = Path.of(Resolver.resolveURL("logback-test.xml").getPath());
         String projectRoot = knownFile.getParent().getParent().getParent().toString();
 
-        Path behaviour = Path.of(projectRoot, "conf/ds-present-behaviour.yaml");
-        Path collections = Path.of(projectRoot, "conf/ds-present-kb-collections.yaml");
+        // Note: These are test configs to avoid locking the structure of the real configs
+        Path behaviour = Resolver.getPathFromClasspath("config/imageserver/ds-present-behaviour.yaml");
+        Path collections = Resolver.getPathFromClasspath("config/imageserver/ds-present-kb-collections.yaml");
 
         ServiceConfig.initialize(behaviour.toString(), collections.toString());
         YAML yaml = ServiceConfig.getConfig();
