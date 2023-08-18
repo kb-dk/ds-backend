@@ -53,7 +53,7 @@ class ServiceConfigTest {
     }
 
     @Test
-    void testImageserver() throws IOException {
+    void testImageserverAbstraction2() throws IOException {
         Path knownFile = Path.of(Resolver.resolveURL("logback-test.xml").getPath());
         String projectRoot = knownFile.getParent().getParent().getParent().toString();
 
@@ -72,5 +72,19 @@ class ServiceConfigTest {
         assertEquals("invalid://url",
                 yaml.getString("config.collections[4].samlingsbilleder.views[3].SolrJSON.transformers[1].xslt.injections[0].imageserver"),
                 "The correct URL should be substitution-extracted from the 'samlingsbilleder' view SolrJSON injection");
+
+        assertEquals("invalid://url",
+                yaml.getSubMap("config.collections[4].samlingsbilleder.views[3].SolrJSON").
+                        getString("transformers[1].xslt.injections[0].imageserver"),
+                "Requesting path substituted values from a sub map should work");
+
+        // Reset the YAML structure to ensure clean test of submap
+        ServiceConfig.initialize(behaviour.toString(), collections.toString());
+        yaml = ServiceConfig.getConfig();
+
+        assertEquals("invalid://url",
+                yaml.getSubMap("config.collections[4].samlingsbilleder.views[3].SolrJSON").
+                        getString("transformers[1].xslt.injections[0].imageserver"),
+                "Requesting path substituted values from a sub map should work on a newly loaded config");
     }
 }
