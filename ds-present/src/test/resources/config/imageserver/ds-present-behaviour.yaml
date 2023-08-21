@@ -28,6 +28,10 @@ config:
       url: "https://example.com"
 
     invalid:
+      # Important:
+      # Maps are merged, not overwritten, when using multiple YAMLs (not sure this is the best behaviour)
+      # so the "invalid" imageserver needs to be marked as no longer being the default when specifying the
+      # real map with imageservers
       url: "invalid://url"
       default: true
 

@@ -1,0 +1,25 @@
+config:
+
+  # Image server URLs are injected into transformations.
+  # These should be overridden in environment specific config files for all environments, meaning local test,
+  # shared devel, stage and production
+  #
+  # Sample override:
+  #
+  # config:
+  #   imageservers:
+  #     devel:
+  #       url: "https://example.com/devel/iipimage"
+  #       default: true
+  #
+  # Note: The server marked with "default: true" is used in the base configuration ds-present-kb-collections.yaml
+  imageservers:
+    invalid:
+      # Maps are merged, not overwritten, when using multiple YAMLs (not sure this is the best behaviour)
+      # so the "invalid" imageserver from behaviour needs to be marked as no longer being the default
+      default: false
+    local:
+      # This overrides the one in ds-present-behavious
+      url: "the_right_url"
+      default: true
+
