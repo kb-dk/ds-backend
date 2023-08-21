@@ -1,6 +1,7 @@
 package dk.kb.present;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,21 +14,12 @@ import dk.kb.util.yaml.YAML;
 
 public class TestUtil {
 
-
 	public static String getTransformed(String xsltResource, String xmlResource) throws IOException {
-		XSLTTransformer transformer = new XSLTTransformer(xsltResource, null);
-		String mods = Resolver.resolveUTF8String(xmlResource);
-		return transformer.apply(mods, new HashMap<String,String>());
-	}	
-
+        return getTransformed(xsltResource, xmlResource, null, null);
+	}
 
 	public static String getTransformed(String xsltResource, String xmlResource, Map<String,String> metadata) throws IOException {
-		XSLTTransformer transformer = new XSLTTransformer(xsltResource, null);
-		String mods = Resolver.resolveUTF8String(xmlResource);
-		if (metadata == null) {
-			metadata = new HashMap<String,String>();
-		}        
-		return transformer.apply(mods, metadata);
+        return getTransformed(xsltResource, xmlResource, null, metadata);
 	}
 
 	public static String getTransformed(String xsltResource, String xmlResource, Map<String,String> fixedInjections,
@@ -35,19 +27,14 @@ public class TestUtil {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource, fixedInjections);
 		String mods = Resolver.resolveUTF8String(xmlResource);
 		if (metadata == null) {
-			metadata = new HashMap<String,String>();
+			metadata = new HashMap<>();
 		}
+        metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		return transformer.apply(mods, metadata);
 	}
 
-
-
 	public static String getTransformedWithAccessFieldsAdded(String xsltResource, String xmlResource) throws Exception {
-		XSLTTransformer transformer = new XSLTTransformer(xsltResource, null);
-		String mods = Resolver.resolveUTF8String(xmlResource);
-		HashMap<String, String> accessFields = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);		        
-		//System.out.println("access fields:"+accessFields);
-		return transformer.apply(mods, accessFields);
+        return getTransformedWithAccessFieldsAdded(xsltResource, xmlResource, null);
 	}
 
 	public static String getTransformedWithAccessFieldsAdded(
@@ -55,6 +42,7 @@ public class TestUtil {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
 		String mods = Resolver.resolveUTF8String(xmlResource);
 		HashMap<String, String> accessFields = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);
+        accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		//System.out.println("access fields:"+accessFields);
 		return transformer.apply(mods, accessFields);
 	}
@@ -70,6 +58,7 @@ public class TestUtil {
 		DSTransformer transformer = new XSLTFactory().createTransformer(config);
 		String mods = Resolver.resolveUTF8String(xmlResource);
 		HashMap<String, String> accessFields = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);
+        accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		//System.out.println("access fields:"+accessFields);
 		return transformer.apply(mods, accessFields);
 	}
