@@ -24,12 +24,13 @@ config:
   #
   # Note: The server marked with "default: true" is used in the base configuration ds-present-kb-collections.yaml
   imageservers:
-    example:
-      url: "https://example.com"
+    # Note: The servers are in a list to ensure the full list of servers can be fully overwritten in subsequent configs
+    - example:
+        url: "https://example.com"
 
-    invalid:
-      url: "invalid://url"
-      default: true
+    - invalid:
+        url: "invalid://url"
+        default: true
 
   # List of backing storages. This information should be overridden in ds-present-environment.yaml
 

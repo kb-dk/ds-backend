@@ -24,16 +24,12 @@ config:
   #
   # Note: The server marked with "default: true" is used in the base configuration ds-present-kb-collections.yaml
   imageservers:
-    example:
-      url: "https://example.com"
+    - example:
+        url: "https://example.com"
 
-    invalid:
-      # Important:
-      # Maps are merged, not overwritten, when using multiple YAMLs (not sure this is the best behaviour)
-      # so the "invalid" imageserver needs to be marked as no longer being the default when specifying the
-      # real map with imageservers
-      url: "invalid://url"
-      default: true
+    - invalid:
+        url: "invalid://url"
+        default: true
 
   # List of backing storages. This information should be overridden in ds-present-environment.yaml
 

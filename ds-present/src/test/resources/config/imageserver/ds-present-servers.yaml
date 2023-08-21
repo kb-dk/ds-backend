@@ -14,12 +14,8 @@ config:
   #
   # Note: The server marked with "default: true" is used in the base configuration ds-present-kb-collections.yaml
   imageservers:
-    invalid:
-      # Maps are merged, not overwritten, when using multiple YAMLs (not sure this is the best behaviour)
-      # so the "invalid" imageserver from behaviour needs to be marked as no longer being the default
-      default: false
-    local:
-      # This overrides the one in ds-present-behavious
-      url: "the_right_url"
-      default: true
+    - local:
+        # This overrides the one in ds-present-behaviour
+        url: "the_right_url"
+        default: true
 
