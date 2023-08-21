@@ -31,7 +31,6 @@
   <xsl:param name="imageserver"/>
 
   <xsl:template match="/" >
-
     <xsl:variable name="solrjson">
       <f:map>
 
@@ -80,14 +79,11 @@
               <xsl:value-of select="publisher"/>
             </f:string>
           </xsl:if>
-
         </xsl:for-each>
-
 
         <f:string key="notes">
           <xsl:value-of select="normalize-space(/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreDescription/description)"/>
         </f:string>
-
 
         <!-- Video specific transformations -->
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreIdentifier">
@@ -104,10 +100,32 @@
           </xsl:if>
         </xsl:for-each>
 
-        <!--TODO: Figure if this duration is to be trusted.-->
-        <f:string key="duration">
-          <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatDuration"/>
-        </f:string>
+        <!--Some docs have this duration field. Others doesn't. Then we need to extract the duration from pbcoreDateAvailable-->
+        <xsl:choose>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatDuration">
+            <f:string key="duration">
+              <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatDuration"/>
+            </f:string>
+          </xsl:when>
+          <xsl:otherwise>
+
+            <xsl:variable name="startTime">
+              <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart"/>
+            </xsl:variable>
+            <xsl:variable name="endTime">
+              <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd"/>
+            </xsl:variable>
+            <xsl:variable name="durationInMilliseconds">
+              <xsl:value-of select="my:toMilliseconds($startTime, $endTime)"/>
+            </xsl:variable>
+
+            <f:string key="duration">
+              <xsl:value-of select="$durationInMilliseconds"/>
+            </f:string>
+          </xsl:otherwise>
+        </xsl:choose>
+
+
 
         <xsl:if test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
           <f:string key="color">true</f:string>
@@ -115,6 +133,26 @@
         <xsl:if test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors != 'farve'">
           <f:string key="color">false</f:string>
         </xsl:if>
+
+        <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+          <xsl:if test="f:starts-with(., 'premiere:') and f:contains(., 'ikke premiere')">
+            <f:string key="premiere">
+              <xsl:value-of select="false()"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="f:starts-with(., 'premiere:') and f:contains(., ':premiere')">
+            <f:string key="premiere">
+              <xsl:value-of select="true()"/>
+            </f:string>
+          </xsl:if>
+        </xsl:for-each>
+
+        <xsl:if test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio">
+          <f:string key="aspect_ratio">
+            <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
+          </f:string>
+        </xsl:if>
+
 
 
 
@@ -125,9 +163,13 @@
 
 
     <xsl:value-of select="f:xml-to-json($solrjson)"/>
-
-
-
   </xsl:template>
 
+  <!-- FUNCTIONS -->
+  <!-- Get milliseconds between two dates. -->
+  <xsl:function name="my:toMilliseconds" as="xs:integer">
+    <xsl:param name="startDate" as="xs:dateTime"/>
+    <xsl:param name="endDate" as="xs:dateTime"/>
+    <xsl:value-of select="($endDate - $startDate) div xs:dayTimeDuration('PT0.001S')"/>
+  </xsl:function>
 </xsl:transform>

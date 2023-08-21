@@ -25,6 +25,17 @@ public class XSLTPreservicaToSolrTransformerTest {
         assertTrue(secondDoc.contains("\"title\":\"Dr. Pimple Popper: Before The Pop\""));
     }
 
+    @Test
+    public void testDirectDuration() throws Exception {
+        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_44979f67);
+        assertTrue(doc.contains("\"duration\":\"950000\""));
+    }
+    @Test
+    public void testCalculatedDuration() throws Exception {
+        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
+        assertTrue(doc.contains("\"duration\":\"1800000\""));
+    }
+
     //TODO: Add tests for different fields, when we've got multiple correct test records
 
     @Test
