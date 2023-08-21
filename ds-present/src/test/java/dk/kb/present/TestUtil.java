@@ -81,7 +81,7 @@ public class TestUtil {
 	/**
 	 * Transform the input MODS record with an XSLT and return as pretty JSON
 	 */
-	public static void prettyPrintSolrJsonFromMods(String xslt, String record) throws Exception {
+	public static void prettyPrintSolrJsonFromMetadata(String xslt, String record) throws Exception {
 		String solrString = getTransformedWithAccessFieldsAdded(xslt, record);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement je = JsonParser.parseString(solrString);
