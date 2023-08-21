@@ -100,7 +100,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
+        //SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
+        SolrDocument record = getRecordByDerivedId(RECORD_05fea810);
 
 
         //Single value field
@@ -127,7 +128,8 @@ public class EmbeddedSolrTest {
 
 
         //Full life cycle test
-        SolrDocument record = getRecordById("3956d820-7b7d-11e6-b2b3-0016357f605f");
+        //SolrDocument record = getRecordById("3956d820-7b7d-11e6-b2b3-0016357f605f");
+        SolrDocument record = getRecordByDerivedId(RECORD_3956d820);
 
         assertContentAllSingleValues(record, "DPK000107.tif", "da",
                 "Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort/politistation",
@@ -159,7 +161,8 @@ public class EmbeddedSolrTest {
 
 
         //Full life cycle test
-        SolrDocument record = getRecordById("096c9090-717f-11e0-82d7-002185371280");
+        //SolrDocument record = getRecordById("096c9090-717f-11e0-82d7-002185371280");
+        SolrDocument record = getRecordByDerivedId(RECORD_096c9090);
 
 
         assertContentAllSingleValues(record,"000225.tif", "da",
@@ -222,7 +225,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("aaf3b130-e6e7-11e6-bdbe-00505688346e");
+        //SolrDocument record = getRecordById("aaf3b130-e6e7-11e6-bdbe-00505688346e");
+        SolrDocument record = getRecordByDerivedId(RECORD_aaf3b130);
 
         //Single value field
         assertEquals("DT005031.tif",record.getFieldValue("filename_local"));
@@ -238,7 +242,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
+        //SolrDocument record = getRecordById("652b8260-9d78-11ed-92f5-005056882ec3");
+        SolrDocument record = getRecordByDerivedId(RECORD_ANSK);
 
         //Single value field
         assertEquals("ANSK_11614.tif",record.getFieldValue("filename_local"));
@@ -253,7 +258,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("54b34b50-2ce6-11ed-81b4-005056882ec3");
+        //SolrDocument record = getRecordById("54b34b50-2ce6-11ed-81b4-005056882ec3");
+        SolrDocument record = getRecordByDerivedId(RECORD_54b34b50);
 
         //Single value field
         assertEquals("SKF_f_0137.tif",record.getFieldValue("filename_local"));
@@ -273,7 +279,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("8e608940-d6db-11e3-8d2e-0016357f605f");
+        //SolrDocument record = getRecordById("8e608940-d6db-11e3-8d2e-0016357f605f");
+        SolrDocument record = getRecordByDerivedId(RECORD_8e608940);
 
         //Single value field
         assertEquals("KHP0001-049.tif",record.getFieldValue("filename_local"));
@@ -292,7 +299,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("e2519ce0-9fb0-11e8-8891-00505688346e");
+        //SolrDocument record = getRecordById("e2519ce0-9fb0-11e8-8891-00505688346e");
+        SolrDocument record = getRecordByDerivedId(RECORD_e2519ce0);
 
         //Single value field
         assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("filename_local"));
@@ -312,7 +320,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("14f4a700-f9ee-11e7-988a-00505688346e");
+        //SolrDocument record = getRecordById("14f4a700-f9ee-11e7-988a-00505688346e");
+        SolrDocument record = getRecordByDerivedId(RECORD_FM);
         //Single value field
         assertEquals("2000-3/7",record.getFieldValue("accession_number"));
     }
@@ -325,7 +334,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
+        //SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
+        SolrDocument record = getRecordByDerivedId(RECORD_DB_hans);
 
         //Single value field
         assertEquals("Bladtegnersamlingen",record.getFieldValue("collection"));
@@ -339,7 +349,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("770379f0-8a0d-11e1-805f-0016357f605f");
+        //SolrDocument record = getRecordById("770379f0-8a0d-11e1-805f-0016357f605f");
+        SolrDocument record = getRecordByDerivedId(RECORD_770379f0);
 
         assertMultivalueField(record, "title", "Romeo og Julie");
         assertEquals(1, record.getFieldValue("title_count"));
@@ -352,7 +363,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("40221e30-1414-11e9-8fb8-00505688346e");
+        //SolrDocument record = getRecordById("40221e30-1414-11e9-8fb8-00505688346e");
+        SolrDocument record = getRecordByDerivedId(RECORD_40221e30);
 
         //Single value field
         assertMultivalueField(record, "resource_id", "/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592");
@@ -366,7 +378,8 @@ public class EmbeddedSolrTest {
         assertEquals(1, getNumberOfTotalDocuments());
 
         //Full life cycle test
-        SolrDocument record = getRecordById("0c02aa10-b657-11e6-aedf-00505688346e");
+        //SolrDocument record = getRecordById("0c02aa10-b657-11e6-aedf-00505688346e");
+        SolrDocument record = getRecordByDerivedId(RECORD_0c02aa10);
 
         //Single value field
         assertEquals("Målestok 1:75 000",record.getFieldValue("map_scale"));
@@ -378,7 +391,8 @@ public class EmbeddedSolrTest {
         indexRecord(RECORD_9c17a440);
         assertEquals(1, getNumberOfTotalDocuments());
 
-        SolrDocument record = getRecordById("9c17a440-fe1a-11e8-9044-00505688346e");
+        //SolrDocument record = getRecordById("9c17a440-fe1a-11e8-9044-00505688346e");
+        SolrDocument record = getRecordByDerivedId(RECORD_9c17a440);
         String[] testName = Arrays.copyOf(
                 record.getFieldValues("subject_full_name_strict").toArray(),
                 1, String[].class);
@@ -392,7 +406,8 @@ public class EmbeddedSolrTest {
         indexRecord(RECORD_226d41a0);
         assertEquals(1, getNumberOfTotalDocuments());
 
-        SolrDocument record = getRecordById("226d41a0-5a83-11e6-8b8d-0016357f605f");
+        //SolrDocument record = getRecordById("226d41a0-5a83-11e6-8b8d-0016357f605f");
+        SolrDocument record = getRecordByDerivedId(RECORD_226d41a0);
 
         assertEquals("1971", record.getFieldValue("production_date"));
     }
@@ -402,7 +417,8 @@ public class EmbeddedSolrTest {
         indexRecord(RECORD_05fea810);
         assertEquals(1, getNumberOfTotalDocuments());
 
-        SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
+        //SolrDocument record = getRecordById("05fea810-7181-11e0-82d7-002185371280");
+        SolrDocument record = getRecordByDerivedId(RECORD_05fea810);
 
         assertEquals(3, record.getFieldValue("creator_count"));
         assertEquals(6, record.getFieldValue("topic_count"));
@@ -416,7 +432,8 @@ public class EmbeddedSolrTest {
         indexRecord(RECORD_DB_hans);
         assertEquals(1, getNumberOfTotalDocuments());
 
-        SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
+        //SolrDocument record = getRecordById("25461fb0-f664-11e0-9d29-0016357f605f");
+        SolrDocument record = getRecordByDerivedId(RECORD_DB_hans);
 
         assertEquals(93, record.getFieldValue("notes_length"));
     }
@@ -520,6 +537,12 @@ public class EmbeddedSolrTest {
         for (String s : contentsInField) {
             assertTrue(fieldValues.contains(s));
         }
+    }
+
+    // The test setup sets recordID to "ds.test:" + filename
+    private SolrDocument getRecordByDerivedId(String recordFile) throws Exception {
+        String recordID = "ds.test:" + Path.of(recordFile).getFileName().toString();
+        return getRecordById(recordID);
     }
 
 
