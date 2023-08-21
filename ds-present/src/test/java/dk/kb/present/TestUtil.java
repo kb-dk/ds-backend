@@ -26,9 +26,8 @@ public class TestUtil {
                                         Map<String,String> metadata) throws IOException {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource, fixedInjections);
 		String mods = Resolver.resolveUTF8String(xmlResource);
-		if (metadata == null) {
-			metadata = new HashMap<>();
-		}
+        // Ensure metadata is defined and that it is mutable
+        metadata = metadata == null ? new HashMap<>() : new HashMap<>(metadata);
         metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		return transformer.apply(mods, metadata);
 	}
