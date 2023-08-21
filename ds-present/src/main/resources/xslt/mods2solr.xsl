@@ -28,6 +28,7 @@
        <xsl:param name="access_billede_aftale"/>
        <xsl:param name="access_ophavsret_tekst"/>
        <xsl:param name="imageserver"/>
+       <xsl:param name="recordID"/> <!-- Guaranteed to be set -->
 
 
   <xsl:template match="/">
@@ -129,7 +130,9 @@
         <!-- Extracts id and strips if for urn:uuid:-->
         <!-- TODO: Should 'urn:uuid' be included? -->
         <f:string key="id">
-          <xsl:value-of select="substring-after(m:identifier[@type='uri'],'urn:uuid:')"/>
+            <!-- TODO: We should store the original ID in some field, e.g. origin_id or source_id -->
+          <!-- <xsl:value-of select="substring-after(m:identifier[@type='uri'],'urn:uuid:')"/>-->
+          <xsl:value-of select="$recordID"/>
         </f:string>
         <!-- Extracts local identifier,
              Which in other terms is a local filename. -->
