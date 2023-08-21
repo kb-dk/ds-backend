@@ -4,6 +4,7 @@ import dk.kb.present.TestUtil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class XSLTPreservicaToSolrTransformerTest {
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
@@ -30,10 +31,23 @@ public class XSLTPreservicaToSolrTransformerTest {
         String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_44979f67);
         assertTrue(doc.contains("\"duration\":\"950000\""));
     }
+
     @Test
     public void testCalculatedDuration() throws Exception {
         String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
         assertTrue(doc.contains("\"duration\":\"1800000\""));
+    }
+
+    @Test
+    public void testGenrePresent() throws Exception {
+        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_44979f67);
+        assertTrue(doc.contains("\"genre\":[\""));
+    }
+
+    @Test
+    public void testNoGenre() throws Exception {
+        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
+        assertFalse(doc.contains("\"genre\":[\""));
     }
 
     //TODO: Add tests for different fields, when we've got multiple correct test records

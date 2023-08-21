@@ -46,13 +46,15 @@
         </f:string>
 
         <!-- TODO: Check how genre is specified in mods2solr transformation  -->
-        <f:array key="genre">
-          <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre">
-            <f:string>
-              <xsl:value-of select="normalize-space(.)"/>
-            </f:string>
-          </xsl:for-each>
-        </f:array>
+        <xsl:if test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre">
+          <f:array key="genre">
+            <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre">
+              <f:string>
+                <xsl:value-of select="normalize-space(.)"/>
+              </f:string>
+            </xsl:for-each>
+          </f:array>
+        </xsl:if>
 
         <f:string key="resource_description">
           <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType"/>
