@@ -97,11 +97,17 @@
                         <xsl:value-of select="$record-id"/>
                     </f:string>
 
-                    <xsl:variable name="imageUrl">
+                    <xsl:variable name="imageIdentifierNoExtension">
                         <xsl:variable name="imageIdentifier">
-                            <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
+                            <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk/')"/>
                         </xsl:variable>
-                        <xsl:value-of select="concat($imageserver, f:substring-before($imageIdentifier, '.jp'))"/>
+                        <xsl:value-of select="f:substring-before($imageIdentifier, '.jp')"/>
+                    </xsl:variable>
+                    <xsl:variable name="imageIdentifierDoubleEncoded">
+                        <xsl:value-of select="f:replace($imageIdentifierNoExtension, '/', f:string('%252F'))"/>
+                    </xsl:variable>
+                    <xsl:variable name="imageUrl">
+                        <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, '/full/400%2C/0/default.jpg')"/>
                     </xsl:variable>
 
                     <f:string key="url">
