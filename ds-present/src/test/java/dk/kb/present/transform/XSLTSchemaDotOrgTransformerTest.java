@@ -106,7 +106,7 @@ public class XSLTSchemaDotOrgTransformerTest {
     }
     private void createTestFiles(String... records) throws Exception {
         for (String record : records) {
-            Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver");
+            Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/");
             String schemaOrgString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SCHEMAORG, record, injections);
             String filename = record.replaceAll("xml/copyright_extraction/", "schemaOrg_");
             String completeFilename = filename.replaceAll("\\..+", ".json");
@@ -142,7 +142,7 @@ public class XSLTSchemaDotOrgTransformerTest {
      * @param expectedJSONFile the expected result, relative to {@code src/test/resources/schemaOrgJsonTestFiles/}.
      */
     private void assertJSONTransformation(String xslt, String xml, String expectedJSONFile) throws Exception {
-        Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver");
+        Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/");
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(xslt, xml, injections);
 
         assertJSON(expectedJSONFile, transformedJSON);
@@ -164,7 +164,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         String yamlStr =
                 "stylesheet: '" + xslt + "'\n" +
                 "injections:\n" +
-                "  - imageserver: 'https://example.com/imageserver'\n";
+                "  - imageserver: 'https://example.com/imageserver/'\n";
         YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
         String transformedJSON = TestUtil.getTransformedFromConfigWithAccessFields(yaml, xml);
         assertJSON(expectedJSONFile, transformedJSON);

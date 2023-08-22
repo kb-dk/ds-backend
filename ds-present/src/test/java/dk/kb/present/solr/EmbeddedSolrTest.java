@@ -276,7 +276,7 @@ public class EmbeddedSolrTest {
         SolrDocument record = singleMODSIndex(RECORD_40221e30);
 
         //Single value field
-        assertMultivalueField(record, "resource_id", "/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592");
+        assertMultivalueField(record, "resource_id", "DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592");
     }
 
     @Test
