@@ -16,6 +16,7 @@
     <xsl:param name="sep_string" select="'/'"/>
     <!--Properties injected from config -->
     <xsl:param name="imageserver"/>
+    <xsl:param name="recordID"/> <!-- Guaranteed to be set -->
 
     <!--Used to escape single quotes from config-->
     <xsl:variable name="singlequote"><xsl:text>'</xsl:text></xsl:variable>
@@ -62,9 +63,11 @@
                             <xsl:value-of select="."/>
                         </xsl:for-each>
                     </xsl:variable>
-                    <xsl:variable name="record-id">
+
+                    <!-- TODO: We should store the original ID in some field, e.g. origin_id or source_id -->
+<!--                    <xsl:variable name="record-id">
                         <xsl:value-of select="substring-after(m:identifier[@type='uri'], 'urn:uuid:')"/>
-                    </xsl:variable>
+                    </xsl:variable>-->
                     <!-- save the entire mods in a variable -->
                     <xsl:variable name="mods" select="."/>
 
@@ -94,7 +97,7 @@
                         </xsl:choose>
                     </f:string>
                     <f:string key="id">
-                        <xsl:value-of select="$record-id"/>
+                        <xsl:value-of select="$recordID"/>
                     </f:string>
 
                     <xsl:variable name="imageIdentifierNoExtension">
@@ -164,7 +167,7 @@
                     </f:map>
                     <xsl:if test="m:titleInfo/m:title">
                         <xsl:call-template name="get-title">
-                            <xsl:with-param name="record_identifier" select="$record-id" />
+                            <xsl:with-param name="record_identifier" select="$recordID" />
                             <xsl:with-param name="cataloging_language" select="$cataloging_language" />
                             <xsl:with-param name="mods" select="$mods" />
                         </xsl:call-template>
@@ -177,7 +180,7 @@
                                 <xsl:attribute name="key"><xsl:value-of select="$roles/roles/role[@key=$term]"/></xsl:attribute>
                                 <xsl:for-each select="$mods//m:name[m:role/m:roleTerm = $term]">
                                     <xsl:call-template name="get-names">
-                                        <xsl:with-param name="record_identifier" select="$record-id"/>
+                                        <xsl:with-param name="record_identifier" select="$recordID"/>
                                         <xsl:with-param name="cataloging_language" select="$cataloging_language" />
                                     </xsl:call-template>
                                 </xsl:for-each>
@@ -264,7 +267,7 @@
                         <xsl:if test="m:subject/m:name[@type='personal']">
                             <xsl:for-each select="$mods/m:subject/m:name[@type='personal']">
                                     <xsl:call-template name="get-names">
-                                        <xsl:with-param name="record_identifier" select="$record-id"/>
+                                        <xsl:with-param name="record_identifier" select="$recordID"/>
                                         <xsl:with-param name="cataloging_language" select="$cataloging_language" />
                                     </xsl:call-template>
                             </xsl:for-each>

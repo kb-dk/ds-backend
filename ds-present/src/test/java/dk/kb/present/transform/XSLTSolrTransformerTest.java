@@ -74,7 +74,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testSolrNew() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_05fea810, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"id\":\"05fea810-7181-11e0-82d7-002185371280\""));
+		assertTrue(solrString.contains("\"id\":\"ds.test:05fea810-7181-11e0-82d7-002185371280.xml\""));
 	}
 
 	/**
@@ -98,7 +98,7 @@ class XSLTSolrTransformerTest{
 	@Test
 	void testXslt096() throws Exception {
 		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"id\":\"096c9090-717f-11e0-82d7-002185371280\""));
+		assertTrue(solrString.contains("\"id\":\"ds.test:096c9090-717f-11e0-82d7-002185371280.xml\""));
 	}
 
 	@Test
