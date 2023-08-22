@@ -18,7 +18,8 @@ public class TestUtil {
         return getTransformed(xsltResource, xmlResource, null, null);
 	}
 
-	public static String getTransformed(String xsltResource, String xmlResource, Map<String,String> metadata) throws IOException {
+	public static String getTransformed(String xsltResource, String xmlResource, Map<String,String> metadata)
+            throws IOException {
         return getTransformed(xsltResource, xmlResource, null, metadata);
 	}
 
@@ -32,12 +33,13 @@ public class TestUtil {
 		return transformer.apply(mods, metadata);
 	}
 
-	public static String getTransformedWithAccessFieldsAdded(String xsltResource, String xmlResource) throws Exception {
+	public static String getTransformedWithAccessFieldsAdded(
+            String xsltResource, String xmlResource) throws IOException {
         return getTransformedWithAccessFieldsAdded(xsltResource, xmlResource, null);
 	}
 
 	public static String getTransformedWithAccessFieldsAdded(
-            String xsltResource, String xmlResource, Map<String, String> injections) throws Exception {
+            String xsltResource, String xmlResource, Map<String, String> injections) throws IOException {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
 		String mods = Resolver.resolveUTF8String(xmlResource);
 		HashMap<String, String> accessFields = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);

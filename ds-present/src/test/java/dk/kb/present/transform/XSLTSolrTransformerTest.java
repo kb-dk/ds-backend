@@ -75,7 +75,6 @@ class XSLTSolrTransformerTest{
     @Test
     void testSolrNew() throws Exception {
         String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_05fea810, IMAGESERVER_EXAMPLE);
-        //assertTrue(solrString.contains("\"id\":\"05fea810-7181-11e0-82d7-002185371280\""));
         String expectedID = "ds.test:" + Path.of(RECORD_05fea810).getFileName().toString();
         assertTrue(solrString.contains("\"id\":\"" + expectedID + "\""));
     }
