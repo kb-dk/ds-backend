@@ -184,7 +184,7 @@ public class XSLTSchemaDotOrgTransformerTest {
         String expectedJSON = importTestFile(JSON_ROOT + expectedJSONFile);
         String expectedPrettyJSON = gson.toJson(JsonParser.parseString(expectedJSON));
 
-        System.out.println(transformedPrettyJSON);
+        //System.out.println(transformedPrettyJSON);
         //System.out.println(expectedPrettyJSON);
 
         Assertions.assertEquals(expectedPrettyJSON, transformedPrettyJSON);
