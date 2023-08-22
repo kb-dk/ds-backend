@@ -376,6 +376,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     252000?>
   </field>
 
+  <field name="image_iiif_id" type="string">
+    <?description URI pointing to the IIIF base URI of the resource.?>
+    <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
+  </field>
+
   <field name="image_height" type="pint">
     <?description the height of the digital image in pixels.?>
     <?example     800?>

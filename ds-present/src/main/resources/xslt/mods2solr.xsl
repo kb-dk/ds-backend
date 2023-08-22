@@ -699,6 +699,9 @@
               <xsl:value-of select="$imageIdentifierNoExtension"/>
             </f:string>
           </f:array>
+          <f:string key="image_iiif_id">
+            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
+          </f:string>
           <f:string key="thumbnail">
             <xsl:value-of select="$imageUrl"/>
           </f:string>

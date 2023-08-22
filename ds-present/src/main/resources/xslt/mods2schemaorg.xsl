@@ -586,6 +586,9 @@
                             </f:string>
                         </xsl:if>
                         <f:string key="contentURL">
+                            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
+                        </f:string>
+                        <f:string key="thumbnail">
                             <xsl:value-of select="$imageUrl"/>
                         </f:string>
                         <!-- Extracts the height of the digital image-->
