@@ -39,7 +39,7 @@ class XSLTSolrTransformerTest{
 	private static final Logger log = LoggerFactory.getLogger(XSLTSolrTransformerTest.class);
 
 	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-	Map<String, String> IMAGESERVER_EXAMPLE = Map.of("imageserver", "https://example.com/imageserver");
+	Map<String, String> IMAGESERVER_EXAMPLE = Map.of("imageserver", "https://example.com/imageserver/");
 	public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
 	public static final String RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
 	public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
@@ -182,10 +182,11 @@ class XSLTSolrTransformerTest{
 		String yamlStr =
 				"stylesheet: '" + MODS2SOLR + "'\n" +
 				"injections:\n" +
-				"  - imageserver: 'https://example.com/imageserver'\n";
+				"  - imageserver: 'https://example.com/imageserver/'\n";
 		YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
 		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, RECORD_40221e30);
-		assertTrue(solrString.contains("\"https:\\/\\/example.com\\/imageserver\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\""));
+		assertTrue(solrString.contains("\"resource_id\":[\"DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
+		assertTrue(solrString.contains("\"url\":\"https:\\/\\/example.com\\/imageserver\\/DAMJP2%252FDAM%252FSamlingsbilleder%252F0000%252F624%252F420%252FKE070592\\/full\\/150%2C\\/0\\/default.jpg\""));
 	}
 
 	@Test

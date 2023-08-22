@@ -362,8 +362,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="resource_id" type="string" multiValued="true" stored="true">
-    <?description URI pointing to the digital representation of the resource?>
-    <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
+    <?description ID used to construct URI for resource.?>
+    <?example     exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
+  </field>
+
+  <field name="url" type="string" stored="true">
+    <?description URI pointing to the digital representation of the resource.?>
+    <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456/full/400%2C/0/default.jpg?>
   </field>
 
   <field name="file_byte_size" type="plong">

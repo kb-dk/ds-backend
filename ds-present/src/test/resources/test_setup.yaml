@@ -67,14 +67,14 @@ config:
                 - xslt:
                     stylesheet: 'xslt/mods2schemaorg.xsl'
                     injections:
-                    - imageserver: 'https://example.com/imageserver'
+                    - imageserver: 'https://example.com/imageserver/'
           - solrjson:
               mime: 'application/json'
               transformers:
                 - xslt:
                     stylesheet: 'xslt/mods2solr.xsl'
                     injections:
-                    - imageserver: 'https://example.com/imageserver'
+                    - imageserver: 'https://example.com/imageserver/'
           - raw:
               mime: 'text/plain'
               transformers:
