@@ -688,10 +688,10 @@
             <xsl:value-of select="f:substring-before($imageIdentifier, '.jp')"/>
           </xsl:variable>
           <xsl:variable name="imageIdentifierDoubleEncoded">
-            <xsl:value-of select="f:replace($imageIdentifierNoExtension, '/', f:string('%252F'))"/>
+            <xsl:value-of select="f:encode-for-uri(f:encode-for-uri($imageIdentifierNoExtension))"/>
           </xsl:variable>
           <xsl:variable name="imageUrl">
-            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, '/full/150%2C/0/default.jpg')"/>
+            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, concat('/full/', f:encode-for-uri('!150,150'), '/0/default.jpg'))"/>
           </xsl:variable>
 
           <f:array key="resource_id">
