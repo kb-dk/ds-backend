@@ -699,7 +699,7 @@
               <xsl:value-of select="$imageIdentifierNoExtension"/>
             </f:string>
           </f:array>
-          <f:string key="url">
+          <f:string key="thumbnail">
             <xsl:value-of select="$imageUrl"/>
           </f:string>
         </xsl:if>
