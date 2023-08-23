@@ -21,3 +21,8 @@ setup_project.sh
 cloud
 bin/cache
 /.editorconfig
+
+
+# Contains KB-internal information for testing
+src/test/resources/internal-test-setup.yaml
+internal_test_files/
