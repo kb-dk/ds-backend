@@ -65,6 +65,42 @@ config:
         prefix: 'ds.samlingsbilleder'
         base: 'ds.samlingsbilleder'
         views: *MODS_IMAGE_VIEWS
+    - radiotv:
+
+        # Temporary hack to make the Preservica XML block well-formed (it is missing a namespace declaration)
+        testdatahack: &TEST_DATA_HACK
+          regexp: '<xip:DeliverableUnit +status="([^"]+)" *>'
+          replacement: '<xip:DeliverableUnit status="$1" xmlns:xip="http://example.com/">'
+          replaceall: false
+
+        description: 'Radio and television records from the Preservica system at the Royal Danish Library'
+        prefix: 'ds.radiotv'
+        base: 'pvica.devel'
+        views:
+          - raw:
+              mime: 'text/plain'
+              transformers:
+                - identity:
+          - JSON-LD:
+              mime: 'application/json'
+              transformers:
+                - replace: *TEST_DATA_HACK
+                - xslt:
+                    stylesheet: 'xslt/preservica2schemaorg.xsl'
+                    injections:
+                      #- imageserver: ${path:config.imageservers[default=true].url}
+                      - streamingserver: "here_should_be_a_wowza_url"
+          - SolrJSON:
+              mime: 'application/json'
+              transformers:
+                - replace: *TEST_DATA_HACK
+                - xslt:
+                    stylesheet: 'xslt/preservica2solr.xsl'
+                    injections:
+                      # - imageserver: ${path:config.imageservers[default=true].url}
+                      - streamingserver: "here_should_be_a_wowza_url"
+
+
 
     # Straight forward collection with the core format being MODS
     # Uses the default storage, which connects to a running ds-storage instance
