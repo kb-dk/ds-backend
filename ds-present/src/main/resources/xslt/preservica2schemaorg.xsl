@@ -116,10 +116,46 @@
         <xsl:value-of select="$end-date"/>
       </f:string>
 
-      <!-- TODO: Format time as something actually readable-->
+      <!-- Schema.org refers to the wiki page for ISO8601 and actually wants the duration in the format PT12M50S
+           for a duration of 12 minutes and 50 seconds -->
       <f:string key="duration">
         <xsl:value-of select="xs:dateTime($end-date) - xs:dateTime($start-date)"/>
       </f:string>
+
+      <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.-->
+      <xsl:if test="pbcoreGenre">
+        <xsl:variable name="keywords">
+          <xsl:for-each select="pbcoreGenre">
+            <xsl:value-of select="remove(concat(normalize-space(f:substring-after(., ': ')), ', '), 2)"/>
+          </xsl:for-each>
+        </xsl:variable>
+        <!-- Length used to delete last comma from keyword list.-->
+        <xsl:variable name="keywords-length" select="string-length($keywords)"/>
+
+        <f:string key="keywords">
+          <xsl:value-of select="substring($keywords, 1, $keywords-length - 2)"/>
+        </f:string>
+      </xsl:if>
+
+      <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
+      <xsl:if test="pbcoreIdentifier">
+        <f:array key="identifier">
+          <!-- TODO: Filter away empty identifiers -->
+          <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
+          <xsl:for-each select="pbcoreIdentifier">
+            <f:map>
+              <f:string key="@type">PropertyValue</f:string>
+              <f:string key="PropertyID">
+                <xsl:value-of select="./identifierSource"/>
+              </f:string>
+              <f:string key="value">
+                <xsl:value-of select="./identifier"/>
+              </f:string>
+            </f:map>
+          </xsl:for-each>
+        </f:array>
+      </xsl:if>
+
 
     </xsl:if>
 
