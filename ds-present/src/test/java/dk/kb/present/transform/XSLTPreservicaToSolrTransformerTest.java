@@ -6,19 +6,22 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-//TODO: Rewrite tests to use ds-internal-tests service.
-//TODO: No tests works without testdata
-/*
+
+/**
+ *
+ *  To run these tests, the test metadata has to be fetched from the internal aegis project.
+ *  With aegis running this can be done by running 'kb init' in this repository.
+ */
 public class XSLTPreservicaToSolrTransformerTest {
 
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
-    public static final String RECORD_44979f67 = "videoMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
-    public static final String RECORD_5a5357be = "videoMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
+    public static final String RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
+    public static final String RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
 
     @Test
     public void testExtraction() throws Exception {
         String solrString = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_44979f67);
-        assertTrue(solrString.contains("\"id\":\"44979f67-b563-462e-9bf1-c970167a5c5f\""));
+        assertTrue(solrString.contains("\"id\":\"ds.test:44979f67-b563-462e-9bf1-c970167a5c5f.xml\""));
     }
 
     @Test
@@ -63,4 +66,4 @@ public class XSLTPreservicaToSolrTransformerTest {
 
 }
 
- */
+

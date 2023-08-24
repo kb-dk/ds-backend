@@ -29,13 +29,14 @@
   <xsl:param name="access_billede_aftale"/>
   <xsl:param name="access_ophavsret_tekst"/>
   <xsl:param name="imageserver"/>
+  <xsl:param name="recordID"/>
 
   <xsl:template match="/" >
     <xsl:variable name="solrjson">
       <f:map>
 
         <f:string key="id">
-          <xsl:value-of select="xip:DeliverableUnit/DeliverableUnitRef"/>
+          <xsl:value-of select="$recordID"/>
         </f:string>
         <!-- Not sure if this accession ref is correctly understood-->
         <f:string key="accession_number">
