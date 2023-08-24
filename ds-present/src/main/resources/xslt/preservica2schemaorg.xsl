@@ -90,6 +90,40 @@
       </xsl:if>
     </xsl:for-each>
 
+    <!-- Create about field from langomtale1 -->
+    <!-- TODO: Investigate relation between langomtale1, langomtale2 and kortomtale -->
+    <xsl:for-each select="pbcoreDescription">
+      <xsl:if test="./descriptionType = 'langomtale1'">
+        <f:string key="description">
+          <xsl:value-of select="normalize-space(./description)"/>
+        </f:string>
+      </xsl:if>
+    </xsl:for-each>
+
+    <!-- Extract start and end times for broadcast  and calculate duration -->
+
+    <xsl:if test="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
+      <xsl:variable name="start-date">
+        <xsl:value-of select="xs:dateTime(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart)"/>
+      </xsl:variable>
+      <xsl:variable name="end-date">
+        <xsl:value-of select="xs:dateTime(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd)"/>
+      </xsl:variable>
+      <f:string key="startDate">
+        <xsl:value-of select="$start-date"/>
+      </f:string>
+      <f:string key="endDate">
+        <xsl:value-of select="$end-date"/>
+      </f:string>
+
+      <!-- TODO: Format time as something actually readable-->
+      <f:string key="duration">
+        <xsl:value-of select="xs:dateTime($end-date) - xs:dateTime($start-date)"/>
+      </f:string>
+
+    </xsl:if>
+
+
 
 
 
