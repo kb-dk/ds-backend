@@ -16,6 +16,7 @@
     <xsl:param name="sep_string" select="'/'"/>
     <!--Properties injected from config -->
     <xsl:param name="imageserver"/>
+    <xsl:param name="recordID"/> <!-- Guaranteed to be set -->
 
     <!--Used to escape single quotes from config-->
     <xsl:variable name="singlequote"><xsl:text>'</xsl:text></xsl:variable>
@@ -62,9 +63,11 @@
                             <xsl:value-of select="."/>
                         </xsl:for-each>
                     </xsl:variable>
-                    <xsl:variable name="record-id">
+
+                    <!-- TODO: We should store the original ID in some field, e.g. origin_id or source_id -->
+<!--                    <xsl:variable name="record-id">
                         <xsl:value-of select="substring-after(m:identifier[@type='uri'], 'urn:uuid:')"/>
-                    </xsl:variable>
+                    </xsl:variable>-->
                     <!-- save the entire mods in a variable -->
                     <xsl:variable name="mods" select="."/>
 
@@ -94,14 +97,19 @@
                         </xsl:choose>
                     </f:string>
                     <f:string key="id">
-                        <xsl:value-of select="$record-id"/>
+                        <xsl:value-of select="$recordID"/>
                     </f:string>
 
+                    <xsl:variable name="imageIdentifierNoExtension">
+                        <xsl:value-of select="substring-before(substring-after(
+                                              m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'],
+                                              'http://kb-images.kb.dk/'), '.jp')"/>
+                    </xsl:variable>
+                    <xsl:variable name="imageIdentifierDoubleEncoded">
+                        <xsl:value-of select="f:encode-for-uri(f:encode-for-uri($imageIdentifierNoExtension))"/>
+                    </xsl:variable>
                     <xsl:variable name="imageUrl">
-                        <xsl:variable name="imageIdentifier">
-                            <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
-                        </xsl:variable>
-                        <xsl:value-of select="concat($imageserver, f:substring-before($imageIdentifier, '.jp'))"/>
+                        <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, concat('/full/', f:encode-for-uri('!150,150'), '/0/default.jpg'))"/>
                     </xsl:variable>
 
                     <f:string key="url">
@@ -158,7 +166,7 @@
                     </f:map>
                     <xsl:if test="m:titleInfo/m:title">
                         <xsl:call-template name="get-title">
-                            <xsl:with-param name="record_identifier" select="$record-id" />
+                            <xsl:with-param name="record_identifier" select="$recordID" />
                             <xsl:with-param name="cataloging_language" select="$cataloging_language" />
                             <xsl:with-param name="mods" select="$mods" />
                         </xsl:call-template>
@@ -171,7 +179,7 @@
                                 <xsl:attribute name="key"><xsl:value-of select="$roles/roles/role[@key=$term]"/></xsl:attribute>
                                 <xsl:for-each select="$mods//m:name[m:role/m:roleTerm = $term]">
                                     <xsl:call-template name="get-names">
-                                        <xsl:with-param name="record_identifier" select="$record-id"/>
+                                        <xsl:with-param name="record_identifier" select="$recordID"/>
                                         <xsl:with-param name="cataloging_language" select="$cataloging_language" />
                                     </xsl:call-template>
                                 </xsl:for-each>
@@ -258,7 +266,7 @@
                         <xsl:if test="m:subject/m:name[@type='personal']">
                             <xsl:for-each select="$mods/m:subject/m:name[@type='personal']">
                                     <xsl:call-template name="get-names">
-                                        <xsl:with-param name="record_identifier" select="$record-id"/>
+                                        <xsl:with-param name="record_identifier" select="$recordID"/>
                                         <xsl:with-param name="cataloging_language" select="$cataloging_language" />
                                     </xsl:call-template>
                             </xsl:for-each>
@@ -578,6 +586,9 @@
                             </f:string>
                         </xsl:if>
                         <f:string key="contentURL">
+                            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
+                        </f:string>
+                        <f:string key="thumbnail">
                             <xsl:value-of select="$imageUrl"/>
                         </f:string>
                         <!-- Extracts the height of the digital image-->

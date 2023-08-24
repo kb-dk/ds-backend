@@ -24,7 +24,6 @@ config:
   #
   # Note: The server marked with "default: true" is used in the base configuration ds-present-kb-collections.yaml
   imageservers:
-    # Note: The servers are in a list to ensure the full list of servers can be fully overwritten in subsequent configs
     - example:
         url: "https://example.com"
 

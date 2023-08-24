@@ -42,5 +42,17 @@ class ViewTest {
         assertTrue(jsonld.contains("\"headline\":[{\"value\":\"Christian VIII\",\"@language\":\"da\"}]"));
     }
 
+    @Test
+    void solrJson() throws Exception {
+        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
+        YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
+        View solrView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2));
+        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
+        String solrJson = solrView.apply("40221e30-1414-11e9-8fb8-00505688346e", mods);
+        assertTrue(solrJson.contains("\"resource_id\":[\"DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"), "SolrJSON does not contain correct resource_id");
+        assertTrue(solrJson.contains("\"thumbnail\":\"https:\\/\\/example.com\\/imageserver\\/DAMJP2%252FDAM%252FSamlingsbilleder%252F0000%252F624%252F420%252FKE070592\\/full\\/%21150%2C150\\/0\\/default.jpg\"")
+                , "SolrJson does not contain correct thumbnail");
+    }
+
 
 }

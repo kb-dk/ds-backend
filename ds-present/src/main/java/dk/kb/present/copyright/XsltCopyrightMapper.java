@@ -58,7 +58,7 @@ public class XsltCopyrightMapper {
      * @throws Exception
      */
     
-    public static HashMap<String,String> applyXsltCopyrightTransformer (String modMedsXML) throws Exception{
+    public static HashMap<String,String> applyXsltCopyrightTransformer (String modMedsXML) {
                         
         HashMap<String,String> solrFieldsMap = new HashMap<String,String>(); 
         CopyrightAccessDto copyrightAccessDto = null;

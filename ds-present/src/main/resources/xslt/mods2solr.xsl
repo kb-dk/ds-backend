@@ -28,6 +28,7 @@
        <xsl:param name="access_billede_aftale"/>
        <xsl:param name="access_ophavsret_tekst"/>
        <xsl:param name="imageserver"/>
+       <xsl:param name="recordID"/> <!-- Guaranteed to be set -->
 
 
   <xsl:template match="/">
@@ -129,7 +130,9 @@
         <!-- Extracts id and strips if for urn:uuid:-->
         <!-- TODO: Should 'urn:uuid' be included? -->
         <f:string key="id">
-          <xsl:value-of select="substring-after(m:identifier[@type='uri'],'urn:uuid:')"/>
+            <!-- TODO: We should store the original ID in some field, e.g. origin_id or source_id -->
+          <!-- <xsl:value-of select="substring-after(m:identifier[@type='uri'],'urn:uuid:')"/>-->
+          <xsl:value-of select="$recordID"/>
         </f:string>
         <!-- Extracts local identifier,
              Which in other terms is a local filename. -->
@@ -676,18 +679,32 @@
         </xsl:if>
         <!-- Extract resource id-->
         <xsl:if test="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
-          <xsl:variable name="imageUrl">
-            <xsl:variable name="imageIdentifier">
-              <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/
-                                    m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
-            </xsl:variable>
-            <xsl:value-of select="concat($imageserver, f:substring-before($imageIdentifier, '.jp'))"/>
+
+          <xsl:variable name="imageIdentifier">
+            <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/
+                                  m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk/')"/>
           </xsl:variable>
+          <xsl:variable name="imageIdentifierNoExtension">
+            <xsl:value-of select="f:substring-before($imageIdentifier, '.jp')"/>
+          </xsl:variable>
+          <xsl:variable name="imageIdentifierDoubleEncoded">
+            <xsl:value-of select="f:encode-for-uri(f:encode-for-uri($imageIdentifierNoExtension))"/>
+          </xsl:variable>
+          <xsl:variable name="imageUrl">
+            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, concat('/full/', f:encode-for-uri('!150,150'), '/0/default.jpg'))"/>
+          </xsl:variable>
+
           <f:array key="resource_id">
             <f:string>
-              <xsl:value-of select="$imageUrl"/>
+              <xsl:value-of select="$imageIdentifierNoExtension"/>
             </f:string>
           </f:array>
+          <f:string key="image_iiif_id">
+            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
+          </f:string>
+          <f:string key="thumbnail">
+            <xsl:value-of select="$imageUrl"/>
+          </f:string>
         </xsl:if>
         <xsl:if test="m:genre[not(@*)]">
           <f:string key="genre">
