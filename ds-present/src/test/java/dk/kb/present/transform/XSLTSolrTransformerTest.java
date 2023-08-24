@@ -1,25 +1,3 @@
-package dk.kb.present.transform;
-
-import dk.kb.present.TestUtil;
-
-import dk.kb.present.config.ServiceConfig;
-import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import com.google.gson.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,7 +12,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *  limitations under the License.
  *
  */
-class XSLTSolrTransformerTest{
+package dk.kb.present.transform;
+
+import dk.kb.present.TestUtil;
+
+import dk.kb.present.config.ServiceConfig;
+import dk.kb.util.Resolver;
+import dk.kb.util.yaml.YAML;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class XSLTSolrTransformerTest extends XSLTTransformerTestBase {
 
 	private static final Logger log = LoggerFactory.getLogger(XSLTSolrTransformerTest.class);
 
@@ -60,7 +58,17 @@ class XSLTSolrTransformerTest{
 	public static final String RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
 	public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
 
-	@BeforeAll
+    @Override
+    String getXSLT() {
+        return MODS2SOLR;
+    }
+
+    @Override
+    public Map<String, String> getInjections() {
+        return IMAGESERVER_EXAMPLE;
+    }
+
+    @BeforeAll
 	public static void fixConfiguration() throws IOException {
 		String CONFIG = Resolver.resolveGlob("conf/ds-present-behaviour.yaml").get(0).toString();
 		if ("[]".equals(CONFIG)) {
@@ -72,109 +80,100 @@ class XSLTSolrTransformerTest{
 	}
 
 	@Test
-	void testSolrNew() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_05fea810, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"id\":\"ds.test:05fea810-7181-11e0-82d7-002185371280.xml\""));
+	void testSolrNew() {
+        assertContains(RECORD_05fea810, "\"id\":\"ds.test:05fea810-7181-11e0-82d7-002185371280.xml\"");
 	}
 
 	/**
 	 * This record is tested thoroughly in EmbeddedSolrTest.testRecordDPK()
 	 */
 	@Test
-	void testXsltNewDpkItem() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_3956d820, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"location\":\"Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort\\/politistation\""));
+	void testXsltNewDpkItem() {
+		assertContains(RECORD_3956d820, "\"location\":\"Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas," +
+                " Charlotte Amalie, Det gamle fort\\/politistation\"");
 	}
 
 	@Test
-	void testXslt45dd() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_45dd4830);
-		assertTrue(solrString.contains("\"catalog\":\"Samlingsbilleder\",\"collection\":\"Billedsamlingen\""));
+	void testXslt45dd() {
+        assertContains(RECORD_45dd4830, "\"catalog\":\"Samlingsbilleder\",\"collection\":\"Billedsamlingen\"");
 	}
 
 	/**
 	 * This record is fully tested in EmbeddedSolrTest.testRecord096c9090()
 	 */
 	@Test
-	void testXslt096() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_096c9090, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"id\":\"ds.test:096c9090-717f-11e0-82d7-002185371280.xml\""));
+	void testXslt096() {
+		assertContains(RECORD_096c9090, 
+		"\"id\":\"ds.test:096c9090-717f-11e0-82d7-002185371280.xml\"");
 	}
 
 	@Test
-	void testNoNameButAffiliation() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DNF, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"creator_affiliation\":[\"Bisson frères\"],\"creator_affiliation_description\":[\"fransk korporation\"]"));
-		assertFalse(solrString.contains("creator_given_name"));
+	void testNoNameButAffiliation() {
+		assertContains(RECORD_DNF, 
+		"\"creator_affiliation\":[\"Bisson frères\"],\"creator_affiliation_description\":[\"fransk korporation\"]");
+		assertNotContains(RECORD_DNF, "creator_given_name");
 	}
 
 	@Test
-	void testNoNameMultipleNames() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_5cc1bea0, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"creator_given_name\":[\"Chen\"]"));
-		assertTrue(solrString.contains("\"creator_date_of_birth\":[\"1945-0-0\",\"1945-0-0\"]"));
+	void testNoNameMultipleNames() {
+		assertContains(RECORD_5cc1bea0, "\"creator_given_name\":[\"Chen\"]");
+		assertContains(RECORD_5cc1bea0, "\"creator_date_of_birth\":[\"1945-0-0\",\"1945-0-0\"]");
 	}
 
 	@Test
-	void testEmptyCollection() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_Elf, IMAGESERVER_EXAMPLE);
-		assertFalse(solrString.contains("collection"));
+	void testEmptyCollection() {
+		assertNotContains(RECORD_Elf, "collection");
 	}
 
 	@Test
-	void testNoTermsOfAddress() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK, IMAGESERVER_EXAMPLE);
-		assertFalse(solrString.contains("creator_terms_of_address"));
+	void testNoTermsOfAddress() {
+		assertNotContains(RECORD_ANSK, "creator_terms_of_address");
 	}
 
 	@Test
-	void testXsltSkfF0137() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_54b34b50, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"list_of_categories\":[\"Rytterskoler x\",\"Skolehistorie\",\"69 testfiler\"]"));
+	void testXsltSkfF0137() {
+		assertContains(RECORD_54b34b50,
+                "\"list_of_categories\":[\"Rytterskoler x\",\"Skolehistorie\",\"69 testfiler\"]");
 	}
 
 	@Test
-	void testCombinationOfContentAndDescription() throws Exception {
-		String ansk = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_ANSK, IMAGESERVER_EXAMPLE);
-		String record54b = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_54b34b50, IMAGESERVER_EXAMPLE);
-		assertTrue(ansk.contains("\"111, 4: Forskellige former for fald. Pap med opklæbet billede. Forestiller træ og mennesker, der vælter og falder. Ingen tekst på billedet.\""));
-		assertTrue(record54b.contains("\"Den gamle rytterskole i Hørning (Sønder-Hørning). Facadebillede. Fotografi kopi udført af Rudolph Jørgensen Helsingør (etabi 1897)\""));
+	void testCombinationOfContentAndDescription() {
+        assertContains(RECORD_ANSK, "\"111, 4: Forskellige former for fald. Pap med opklæbet billede. " +
+                "Forestiller træ og mennesker, der vælter og falder. Ingen tekst på billedet.\"");
+		assertContains(RECORD_54b34b50,"\"Den gamle rytterskole i Hørning (Sønder-Hørning). Facadebillede. " +
+                "Fotografi kopi udført af Rudolph Jørgensen Helsingør (etabi 1897)\"");
 	}
 
 	@Test
-	void testUldall() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_e2519ce0, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"catalog\":\"Maps\""));
+	void testUldall() {
+		assertContains(RECORD_e2519ce0, "\"catalog\":\"Maps\"");
 	}
 
 	@Test
-	void testChineseTitels() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_26d4dd60, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"creator_affiliation\":[\"Haidian Yangfang dian jiedao zhongxin xiaoxue (海淀区羊坊店街道中心小学)\"]"));
+	void testChineseTitels() {
+		assertContains(RECORD_26d4dd60, 
+                "\"creator_affiliation\":[\"Haidian Yangfang dian jiedao zhongxin xiaoxue (海淀区羊坊店街道中心小学)\"]");
 	}
 
 	@Test
-	void testMultipleAffiliations() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_9C, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"creator_affiliation\":[\"Billedbladet\",\"Nordisk Pressefoto\"]"));
+	void testMultipleAffiliations() {
+		assertContains( RECORD_9C, "\"creator_affiliation\":[\"Billedbladet\",\"Nordisk Pressefoto\"]");
 	}
 
 	@Test
-	void testMultipleDescriptions() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR,  RECORD_3B03, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"creator_affiliation\":[\"Aftenbladet\",\"Associated Press\"],\"creator_affiliation_description\":[\"dansk avis\",\"amerikansk nyhedsbureau\"]"));
+	void testMultipleDescriptions() {
+		assertContains( RECORD_3B03, "\"creator_affiliation\":[\"Aftenbladet\",\"Associated Press\"]," +
+                "\"creator_affiliation_description\":[\"dansk avis\",\"amerikansk nyhedsbureau\"]");
 	}
 
 	@Test
-	void testDifferentRelatedItems() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_DB_hans, IMAGESERVER_EXAMPLE);
-		assertTrue(solrString.contains("\"collection\":\"Bladtegnersamlingen\",\"published_in\":\"Aktuelt\""));
+	void testDifferentRelatedItems() {
+		assertContains(RECORD_DB_hans, "\"collection\":\"Bladtegnersamlingen\",\"published_in\":\"Aktuelt\"");
 	}
 
 	@Test
-	void testTitleExtraction() throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_770379f0);
-		assertTrue(solrString.contains("\"title\":[\"Romeo og Julie\"]"));
+	void testTitleExtraction() {
+		assertContains(RECORD_770379f0, "\"title\":[\"Romeo og Julie\"]");
 	}
 
 	@Test
@@ -190,10 +189,8 @@ class XSLTSolrTransformerTest{
 	}
 
 	@Test
-	void testSurrogateProduction() throws Exception{
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, RECORD_FM, IMAGESERVER_EXAMPLE);
-		System.out.println(solrString);
-		assertTrue(solrString.contains("\"production_date_digital_surrogate\":\"2018-01-15T12:26:00.000+01:00\""));
+	void testSurrogateProduction() {
+		assertContains(RECORD_FM, "\"production_date_digital_surrogate\":\"2018-01-15T12:26:00.000+01:00\"");
 	}
 
 
