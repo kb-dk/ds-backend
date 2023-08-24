@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Constructs {@link IdentityTransformer}s.
+ * Constructs {@link XSLTTransformer}s.
  */
 public class XSLTFactory implements DSTransformerFactory {
     public static final String STYLESHEET_KEY = "stylesheet";
@@ -34,10 +34,8 @@ public class XSLTFactory implements DSTransformerFactory {
 
     @Override
     public DSTransformer createTransformer(YAML conf) throws IOException {
-        if (!conf.containsKey(STYLESHEET_KEY)) {
-            throw new IllegalArgumentException(
-                    "Expected the property '" + STYLESHEET_KEY + "' to be present in the config");
-        }
+        assertConfigKeys(conf, STYLESHEET_KEY);
+
         Map<String, String> injections = null;
         if (conf.containsKey(INJECTIONS_KEY)) {
             injections = new HashMap<>();
