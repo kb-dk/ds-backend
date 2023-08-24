@@ -1,7 +1,12 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
+import dk.kb.present.util.TestFileProvider;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,67 +24,78 @@ public class XSLTPreservicaToSolrTransformerTest {
     public static final String RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
 
     @Test
-    public void testExtraction() throws Exception {
-        String solrString = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_44979f67);
-        assertTrue(solrString.contains("\"id\":\"ds.test:44979f67-b563-462e-9bf1-c970167a5c5f.xml\""));
+    public void testExtraction() {
+        testPreservica(RECORD_44979f67,
+                solrDoc -> assertTrue(solrDoc.contains("\"id\":\"ds.test:44979f67-b563-462e-9bf1-c970167a5c5f.xml\""))
+        );
     }
 
     @Test
-    public void testTitles() throws Exception {
-        String firstDoc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_44979f67);
-        assertTrue(firstDoc.contains("\"title\":\"Backstage II\""));
+    public void testTitles() {
+        testPreservica(RECORD_44979f67,
+                solrDoc -> assertTrue(solrDoc.contains("\"title\":\"Backstage II\""))
+        );
 
-        String secondDoc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
-        assertTrue(secondDoc.contains("\"title\":\"Dr. Pimple Popper: Before The Pop\""));
+        testPreservica(RECORD_5a5357be,
+                solrDoc -> assertTrue(solrDoc.contains("\"title\":\"Dr. Pimple Popper: Before The Pop\""))
+        );
     }
 
     @Test
-    public void testDirectDuration() throws Exception {
-        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_44979f67);
-        assertTrue(doc.contains("\"duration\":\"950000\""));
+    public void testDirectDuration() {
+        testPreservica(RECORD_44979f67,
+                solrDoc -> assertTrue(solrDoc.contains("\"duration\":\"950000\""))
+        );
     }
 
     @Test
-    public void testCalculatedDuration() throws Exception {
-        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
-        assertTrue(doc.contains("\"duration\":\"1800000\""));
+    public void testCalculatedDuration() {
+        testPreservica(RECORD_5a5357be,
+                solrDoc -> assertTrue(solrDoc.contains("\"duration\":\"1800000\""))
+        );
     }
 
     @Test
-    public void testGenrePresent() throws Exception {
-        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_44979f67);
-        assertTrue(doc.contains("\"genre\":[\""));
+    public void testGenrePresent() {
+        testPreservica(RECORD_44979f67,
+                solrDoc ->  assertTrue(solrDoc.contains("\"genre\":[\""))
+        );
     }
 
     @Test
-    public void testNoGenre() throws Exception {
-        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
-        assertFalse(doc.contains("\"genre\":[\""));
+    public void testNoGenre() {
+        testPreservica(RECORD_5a5357be,
+                solrDoc -> assertFalse(solrDoc.contains("\"genre\":[\""))
+        );
     }
 
     @Test
-    public void testResourceDescription() throws Exception {
-        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
-        assertFalse(doc.contains("\"resource_description\": \"Moving Image\""));
+    public void testResourceDescription() {
+        testPreservica(RECORD_5a5357be,
+                solrDoc -> assertFalse(solrDoc.contains("\"resource_description\": \"Moving Image\""))
+        );
     }
 
     @Test
-    public void testCollection() throws Exception {
-        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
-        assertFalse(doc.contains("\"collection\": \"Det Kgl. Bibliotek; Radio/TV-Samlingen\""));
+    public void testCollection() {
+        testPreservica(RECORD_5a5357be,
+                solrDoc -> assertFalse(solrDoc.contains("\"collection\": \"Det Kgl. Bibliotek; Radio/TV-Samlingen\""))
+        );
     }
 
     @Test
-    public void testCreatorAffiliation() throws Exception {
-        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
-        assertFalse(doc.contains("\"creator_affiliation\": \"DR Ultra\""));
+    public void testCreatorAffiliation() {
+        testPreservica(RECORD_5a5357be,
+                solrDoc -> assertFalse(solrDoc.contains("\"creator_affiliation\": \"DR Ultra\""))
+        );
     }
 
     @Test
-    public void testNotes() throws Exception {
-        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
-        assertFalse(doc.contains("\"notes\": \"Backstage er en børne-sitcom som foregår bag kulisserne " +
-                                              "på sæbeoperaen Skadestuen, hvor"));
+    public void testNotes() {
+        testPreservica(RECORD_5a5357be,
+                solrDoc -> assertFalse(solrDoc.contains("\"notes\": " +
+                        "\"Backstage er en børne-sitcom som foregår bag kulisserne på sæbeoperaen Skadestuen, hvor"))
+        );
     }
 
 
@@ -88,6 +104,28 @@ public class XSLTPreservicaToSolrTransformerTest {
         TestUtil.prettyPrintSolrJsonFromMetadata(PRESERVICA2SOLR, RECORD_5a5357be);
     }
 
+    /**
+     * Checks that internal test files are available and if not, logs a warning and returns.
+     * <p>
+     * If the check passes, the content of the file {@code record} is transformed using XSLT {@link #PRESERVICA2SOLR}
+     * and the given tests are performed on the result.
+     * @param record file with a record that is to be transformed using {@link #PRESERVICA2SOLR}.
+     * @param tests Zero or more tests to perform on the transformed record.
+     */
+    @SafeVarargs
+    private void testPreservica(String record, Consumer<String>... tests) {
+        if (!TestFileProvider.hasSomeTestFiles()) {
+            return;  // ensureTestFiles takes care of logging is there are no internal test files
+        }
+        String solrString;
+        try {
+            solrString = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, record);
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Unable to fetch and transform '" + record + "' using XSLT '" + PRESERVICA2SOLR + "'", e);
+        }
+
+        Arrays.stream(tests).forEach(test -> test.accept(solrString));
+    }
+
 }
-
-

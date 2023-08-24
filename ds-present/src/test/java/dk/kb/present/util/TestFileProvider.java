@@ -38,6 +38,10 @@ import java.util.stream.Stream;
  * <p>
  * This will only work on the developer network at the Royal Danish Library,
  * but the resulting files will be cached for future use.
+ *
+ * As of 2023-08-24, the recommended way to retrieve internal tets files is to run the aegis command 'kb init'
+ * in the project checkout. This will copy the test files to the expected location. The aegis project is available at
+ * <a href="https://github.com/kb-dk/aegis/">github.com/kb-dk/aegis</a> (KB Developer access only).
  */
 public class TestFileProvider {
     private static final Logger log = LoggerFactory.getLogger(TestFileProvider.class);
@@ -172,10 +176,10 @@ public class TestFileProvider {
      * Checks if at least one test file is available.
      * @return true if at least 1 test file is avalable.
      */
-    private static boolean hasSomeTestFiles() {
+    public static boolean hasSomeTestFiles() {
         log.debug("Checking for locally cached test files in '{}'", TEST_FOLDER);
         if (!Files.isDirectory(TEST_FOLDER)) {
-            log.warn("No test files available");
+            log.warn("No test files available. Please read the JavaDoc for TestFileProvider on how to get them");
             return false;
         }
         return hasAnyFile(TEST_FOLDER);
@@ -198,4 +202,5 @@ public class TestFileProvider {
             return false;
         }
     }
+
 }
