@@ -57,7 +57,31 @@ public class XSLTPreservicaToSolrTransformerTest {
         assertFalse(doc.contains("\"genre\":[\""));
     }
 
-    //TODO: Add tests for different fields, when we've got multiple correct test records
+    @Test
+    public void testResourceDescription() throws Exception {
+        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
+        assertFalse(doc.contains("\"resource_description\": \"Moving Image\""));
+    }
+
+    @Test
+    public void testCollection() throws Exception {
+        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
+        assertFalse(doc.contains("\"collection\": \"Det Kgl. Bibliotek; Radio/TV-Samlingen\""));
+    }
+
+    @Test
+    public void testCreatorAffiliation() throws Exception {
+        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
+        assertFalse(doc.contains("\"creator_affiliation\": \"DR Ultra\""));
+    }
+
+    @Test
+    public void testNotes() throws Exception {
+        String doc = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, RECORD_5a5357be);
+        assertFalse(doc.contains("\"notes\": \"Backstage er en børne-sitcom som foregår bag kulisserne " +
+                                              "på sæbeoperaen Skadestuen, hvor"));
+    }
+
 
     @Test
     public void prettyPrintTransformation() throws Exception {
