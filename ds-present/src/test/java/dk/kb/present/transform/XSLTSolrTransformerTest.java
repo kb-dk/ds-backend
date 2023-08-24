@@ -196,21 +196,5 @@ class XSLTSolrTransformerTest{
 		assertTrue(solrString.contains("\"production_date_digital_surrogate\":\"2018-01-15T12:26:00.000+01:00\""));
 	}
 
-	@Test
-	void prettyPrinter() throws Exception {
-		prettyPrintSolrJsonFromMods(RECORD_aaf3b130);
-	}
-
-	/**
-	 * Transform the input MODS record with an XSLT and return as pretty JSON
-	 */
-	private void prettyPrintSolrJsonFromMods(String record) throws Exception {
-		String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, record);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement je = JsonParser.parseString(solrString);
-		String prettyJsonString = gson.toJson(je);
-		System.out.println(prettyJsonString);
-	}
-
 
 }
