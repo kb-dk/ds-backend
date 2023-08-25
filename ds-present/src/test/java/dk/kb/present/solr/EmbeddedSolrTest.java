@@ -39,22 +39,23 @@ public class EmbeddedSolrTest {
     private static EmbeddedSolrServer embeddedServer = null;
 
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-    public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
-    public static final String RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
-    public static final String RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
-    public static final String RECORD_aaf3b130 = "xml/copyright_extraction/aaf3b130-e6e7-11e6-bdbe-00505688346e.xml";
-    public static final String RECORD_54b34b50 = "xml/copyright_extraction/54b34b50-2ce6-11ed-81b4-005056882ec3.xml";
-    public static final String RECORD_8e608940 = "xml/copyright_extraction/8e608940-d6db-11e3-8d2e-0016357f605f.xml";
-    public static final String RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
-    public static final String RECORD_e2519ce0 = "xml/copyright_extraction/e2519ce0-9fb0-11e8-8891-00505688346e.xml";
-    public static final String RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
-    public static final String RECORD_DB_hans = "xml/copyright_extraction/25461fb0-f664-11e0-9d29-0016357f605f.xml";
-    public static final String RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
-    public static final String RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
-    public static final String RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
-    public static final String RECORD_9c17a440 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
-    public static final String RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
-
+    public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
+    public static final String MODS_RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
+    public static final String MODS_RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
+    public static final String MODS_RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
+    public static final String MODS_RECORD_aaf3b130 = "xml/copyright_extraction/aaf3b130-e6e7-11e6-bdbe-00505688346e.xml";
+    public static final String MODS_RECORD_54b34b50 = "xml/copyright_extraction/54b34b50-2ce6-11ed-81b4-005056882ec3.xml";
+    public static final String MODS_RECORD_8e608940 = "xml/copyright_extraction/8e608940-d6db-11e3-8d2e-0016357f605f.xml";
+    public static final String MODS_RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
+    public static final String MODS_RECORD_e2519ce0 = "xml/copyright_extraction/e2519ce0-9fb0-11e8-8891-00505688346e.xml";
+    public static final String MODS_RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
+    public static final String MODS_RECORD_DB_hans = "xml/copyright_extraction/25461fb0-f664-11e0-9d29-0016357f605f.xml";
+    public static final String MODS_RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
+    public static final String MODS_RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
+    public static final String MODS_RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
+    public static final String MODS_RECORD_9c17a440 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
+    public static final String MODS_RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
+    public static final String PRESERVICA_RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
     @BeforeAll
     public static void startEmbeddedSolrServer() {
 
@@ -86,7 +87,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecord000332() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_05fea810);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_05fea810);
 
         //Single value field
         assertEquals("000332.tif",record.getFieldValue("filename_local"));
@@ -103,7 +104,7 @@ public class EmbeddedSolrTest {
      */
     @Test
     void testRecordDPK() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_3956d820);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_3956d820);
 
         assertContentAllSingleValues(record, "DPK000107.tif", "da",
                 "Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort/politistation",
@@ -128,7 +129,7 @@ public class EmbeddedSolrTest {
      */
     @Test
     void testRecord096c9090() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_096c9090);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_096c9090);
 
         assertContentAllSingleValues(record,"000225.tif", "da",
                 "Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",
@@ -184,7 +185,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordDt005031() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_aaf3b130);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_aaf3b130);
 
         //Single value field
         assertEquals("DT005031.tif",record.getFieldValue("filename_local"));
@@ -194,7 +195,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordANSK() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_ANSK);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_ANSK);
 
         //Single value field
         assertEquals("ANSK_11614.tif",record.getFieldValue("filename_local"));
@@ -204,7 +205,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordSkfF0137() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_54b34b50);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_54b34b50);
 
         //Single value field
         assertEquals("SKF_f_0137.tif",record.getFieldValue("filename_local"));
@@ -219,7 +220,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordKhp() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_8e608940);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_8e608940);
 
         //Single value field
         assertEquals("KHP0001-049.tif",record.getFieldValue("filename_local"));
@@ -233,7 +234,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordUldallForTitleAndPlaceOfProductionAndGenre() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_e2519ce0);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_e2519ce0);
 
         //Single value field
         assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("filename_local"));
@@ -248,7 +249,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testAccessionNumberExtraction() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_FM);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_FM);
 
         //Single value field
         assertEquals("2000-3/7",record.getFieldValue("accession_number"));
@@ -256,7 +257,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testPublishedInAndCollection() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_DB_hans);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_DB_hans);
 
         //Single value field
         assertEquals("Bladtegnersamlingen",record.getFieldValue("collection"));
@@ -265,7 +266,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testTitle() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_770379f0);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_770379f0);
 
         assertMultivalueField(record, "title", "Romeo og Julie");
         assertEquals(1, record.getFieldValue("title_count"));
@@ -273,7 +274,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testResourceId() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_40221e30);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_40221e30);
 
         //Single value field
         assertMultivalueField(record, "resource_id", "DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592");
@@ -281,7 +282,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testMapScale() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_0c02aa10);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_0c02aa10);
 
         //Single value field
         assertEquals("Målestok 1:75 000",record.getFieldValue("map_scale"));
@@ -289,7 +290,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testSubjectStrict() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_9c17a440);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_9c17a440);
 
         String[] testName = Arrays.copyOf(
                 record.getFieldValues("subject_full_name_strict").toArray(),
@@ -301,14 +302,14 @@ public class EmbeddedSolrTest {
 
     @Test
     void testSingleProductionDate() throws IOException{
-        SolrDocument record = singleMODSIndex(RECORD_226d41a0);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_226d41a0);
 
         assertEquals("1971", record.getFieldValue("production_date"));
     }
 
     @Test
     void testCountsCreatedBySolr() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_05fea810);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_05fea810);
 
         assertEquals(3, record.getFieldValue("creator_count"));
         assertEquals(6, record.getFieldValue("topic_count"));
@@ -319,9 +320,15 @@ public class EmbeddedSolrTest {
 
     @Test
     void testNotesLength() throws IOException {
-        SolrDocument record = singleMODSIndex(RECORD_DB_hans);
+        SolrDocument record = singleMODSIndex(MODS_RECORD_DB_hans);
 
         assertEquals(93, record.getFieldValue("notes_length"));
+    }
+
+    @Test
+    void firstPreservicaTest() throws IOException {
+        SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_5a5357be);
+        System.out.println(record);
     }
 
     /*
@@ -374,15 +381,37 @@ public class EmbeddedSolrTest {
      * @return the indexed record.
      */
     private SolrDocument singleMODSIndex(String modsFile) throws IOException {
-        indexRecord(modsFile);
+        indexModsRecord(modsFile);
         assertEquals(1, getNumberOfTotalDocuments(),
                 "After indexing '" + modsFile + "' the index should only hold a single record");
         return getRecordByDerivedId(modsFile);
     }
 
-    private void indexRecord(String recordXml) throws IOException {
+    private SolrDocument singlePreservicaIndex(String preservicaFile) throws IOException {
+        indexPreservicaRecord(preservicaFile);
+        assertEquals(1, getNumberOfTotalDocuments(),
+                "After indexing '" + preservicaFile + "' the index should only hold a single record");
+        return getRecordByDerivedId(preservicaFile);
+    }
+
+    private void indexModsRecord(String recordXml) throws IOException {
         String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, recordXml);
 
+        addRecordToEmbeddedServer(recordXml, solrString);
+    }
+
+    private void indexPreservicaRecord(String preservicaRecord) throws IOException{
+        String solrString = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, preservicaRecord);
+
+        addRecordToEmbeddedServer(preservicaRecord, solrString);
+    }
+
+    /**
+     * Adds a SolrJSON document to the embedded solr server.
+     * @param recordXml     that the solrJson has been created from.
+     * @param solrString    containing the solr json representation of the record.
+     */
+    private void addRecordToEmbeddedServer(String recordXml, String solrString) throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
         String prettyJsonString = gson.toJson(je);

@@ -403,6 +403,39 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Children?>
   </field>
 
+  <!-- Fields that only apply to tv metadata -->
+
+  <field name="original_title" type="string" indexed="true" stored="true">
+    <?description The original title of the resource.?>
+    <?example     TV-Avisen?>
+  </field>
+
+  <field name="ritzau_id" type="string" indexed="true">
+    <?description Identifier from ritzau?>
+    <?example     7f42b813-690e-4897-9553-f6eefe9c4070?>
+  </field>
+
+  <field name="tvmeter_id" type="string" indexed="true">
+    <?description Identifier from tvmeter?>
+    <?example     78e74634-bec1-4cea-a984-20192c97b743?>
+  </field>
+
+  <field name="duration" type="plong" indexed="true" stored="true">
+    <?description The duration of the broadcast in milliseconds.?>
+    <?example     950000?>
+  </field>
+
+  <field name="color" type="boolean">
+    <?description Describes wether or not the broadcast is in color. color=true, greytone=false?>
+    <?example     true?>
+  </field>
+
+  <field name="premiere" type="boolean">
+    <?description Boolean that tells if this record is the first showing of the broadcast.?>
+    <?example     false?>
+  </field>
+
+
   <!--  Fields related to copyright and access conditions -->
   <!-- TODO: Documentation for access fields. -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
