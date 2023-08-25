@@ -69,8 +69,8 @@ config:
 
         # Temporary hack to make the Preservica XML block well-formed (it is missing a namespace declaration)
         testdatahack: &TEST_DATA_HACK
-          regexp: '<xip:DeliverableUnit +status="([^"]+)" *>'
-          replacement: '<xip:DeliverableUnit status="$1" xmlns:xip="http://example.com/">'
+          regexp: '<xip:(DeliverableUnit|Collection|Manifestation) +status="([^"]+)" *>'
+          replacement: '<xip:$1 status="$2" xmlns:xip="http://example.com/">'
           replaceall: false
 
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
