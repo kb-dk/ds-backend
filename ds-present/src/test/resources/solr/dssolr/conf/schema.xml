@@ -470,11 +470,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description ?>
     <?example     ?>
   </field>
-  <field name="access_foto_aftale" type="boolean"   indexed="true" required="true"  docValues="true" stored="true">
+  <field name="access_foto_aftale" type="boolean"   indexed="true" required="false"  docValues="true" stored="true">
     <?description ?>
     <?example     ?>
   </field>
-  <field name="access_billede_aftale" type="boolean"  indexed="true" required="true" docValues="true" stored="true">
+  <field name="access_billede_aftale" type="boolean"  indexed="true" required="false" docValues="true" stored="true">
     <?description ?>
     <?example     ?>
   </field>
