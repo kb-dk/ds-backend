@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsl:transform xmlns:t="http://www.test.com/"
-               xmlns:m="http://www.loc.gov/mods/v3"
-               xmlns:mets="http://www.loc.gov/METS/"
-               xmlns:tei="http://www.tei-c.org/ns/1.0"
                xmlns:f="http://www.w3.org/2005/xpath-functions"
                xmlns:h="http://www.w3.org/1999/xhtml"
                xmlns:xs="http://www.w3.org/2001/XMLSchema"
                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                xmlns:my="urn:my"
-               xmlns:premis="http://www.loc.gov/premis/v3"
-               xmlns:mix="http://www.loc.gov/mix/v20"
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
                xmlns:xip="http://example.com/"
                version="3.0">
@@ -27,7 +22,7 @@
         <f:string key="id">
           <xsl:value-of select="$recordID"/>
         </f:string>
-        <!-- Not sure if this accession ref is correctly understood-->
+        <!-- TODO: Not sure if this accession ref is correctly understood-->
         <f:string key="accession_number">
           <xsl:value-of select="/xip:DeliverableUnit/AccessionRef"/>
         </f:string>
@@ -35,15 +30,13 @@
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
           <xsl:call-template name="pbc-metadata"/>
         </xsl:for-each>
-
-
       </f:map>
     </xsl:variable>
-
 
     <xsl:value-of select="f:xml-to-json($solrjson)"/>
   </xsl:template>
 
+  <!-- TEMPLATE FOR ACCESSING PBC METADATA. CALLED ABOVE-->
   <xsl:template name="pbc-metadata">
     <f:string key="collection">
       <xsl:value-of select="pbcoreInstantiation/formatLocation"/>
@@ -128,26 +121,28 @@
       </xsl:otherwise>
     </xsl:choose>
 
-    <!-- TODO: Rewrite as choose -->
-    <xsl:if test="pbcoreInstantiation/formatColors = 'farve'">
-      <f:string key="color">true</f:string>
-    </xsl:if>
-    <xsl:if test="pbcoreInstantiation/formatColors != 'farve'">
-      <f:string key="color">false</f:string>
-    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="pbcoreInstantiation/formatColors = 'farve'">
+        <f:string key="color">true</f:string>
+      </xsl:when>
+      <xsl:otherwise>
+        <f:string key="color">false</f:string>
+      </xsl:otherwise>
+    </xsl:choose>
 
-    <!-- TODO: Rewrite as choose -->
     <xsl:for-each select="pbcoreExtension/extension">
-      <xsl:if test="f:starts-with(., 'premiere:') and f:contains(., 'ikke premiere')">
-        <f:string key="premiere">
-          <xsl:value-of select="false()"/>
-        </f:string>
-      </xsl:if>
-      <xsl:if test="f:starts-with(., 'premiere:') and f:contains(., ':premiere')">
-        <f:string key="premiere">
-          <xsl:value-of select="true()"/>
-        </f:string>
-      </xsl:if>
+      <xsl:choose>
+        <xsl:when test="f:starts-with(., 'premiere:') and f:contains(., 'ikke premiere')">
+          <f:string key="premiere">
+            <xsl:value-of select="false()"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test="f:starts-with(., 'premiere:') and f:contains(., ':premiere')">
+          <f:string key="premiere">
+            <xsl:value-of select="true()"/>
+          </f:string>
+        </xsl:when>
+      </xsl:choose>
     </xsl:for-each>
 
     <xsl:if test="pbcoreInstantiation/formatAspectRatio">

@@ -11,6 +11,7 @@
 
   <xsl:output method="text"/>
 
+  <xsl:param name="streamingserver"/>
   <xsl:param name="recordID"/>
 
   <xsl:template match="/">
@@ -32,9 +33,8 @@
     <xsl:value-of select="f:xml-to-json($json)"/>
   </xsl:template>
 
+  <!-- TEMPLATE FOR ACCESSING PBC METADATA. CALLED ABOVE-->
   <xsl:template name="pbc-metadata">
-
-
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
@@ -75,7 +75,6 @@
       </xsl:otherwise>
     </xsl:choose>
 
-
     <!-- TODO: Ellaborate this as specified in https://schema.org/BroadcastEvent -->
     <!-- Publisher extraction. Some metadata has two pbcorePublisher/publisher/publisherRole.
          We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
@@ -101,7 +100,6 @@
     </xsl:for-each>
 
     <!-- Extract start and end times for broadcast  and calculate duration -->
-
     <xsl:if test="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
       <xsl:variable name="start-date">
         <xsl:value-of select="xs:dateTime(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart)"/>
@@ -155,13 +153,7 @@
           </xsl:for-each>
         </f:array>
       </xsl:if>
-
-
     </xsl:if>
-
-
-
-
 
   </xsl:template>
 
