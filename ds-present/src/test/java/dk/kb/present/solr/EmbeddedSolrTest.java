@@ -238,7 +238,9 @@ public class EmbeddedSolrTest {
 
         //Single value field
         assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("filename_local"));
-        assertEquals("Topografi",record.getFieldValue("genre"));
+
+        //assertEquals("Topografi",record.getFieldValue("genre"));
+        assertMultivalueField(record, "genre", "Topografi");
 
         // Title field
         assertMultivalueField(record, "title", "Foborg, Foburgum");
@@ -334,7 +336,7 @@ public class EmbeddedSolrTest {
     @Test
     void testPreservicaDuration() throws Exception {
         SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
-        assertEquals(950000L,  record.getFieldValue("duration"));
+        assertEquals(950000L,  record.getFieldValue("duration_ms"));
     }
 
     /*

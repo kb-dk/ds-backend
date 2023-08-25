@@ -106,7 +106,7 @@
         <!--Some docs have this duration field. Others doesn't. Then we need to extract the duration from pbcoreDateAvailable-->
         <xsl:choose>
           <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatDuration">
-            <f:string key="duration">
+            <f:string key="duration_ms">
               <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatDuration"/>
             </f:string>
           </xsl:when>
@@ -122,7 +122,7 @@
               <xsl:value-of select="my:toMilliseconds($startTime, $endTime)"/>
             </xsl:variable>
 
-            <f:string key="duration">
+            <f:string key="duration_ms">
               <xsl:value-of select="$durationInMilliseconds"/>
             </f:string>
           </xsl:otherwise>

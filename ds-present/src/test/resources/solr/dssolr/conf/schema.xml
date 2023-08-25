@@ -421,7 +421,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     78e74634-bec1-4cea-a984-20192c97b743?>
   </field>
 
-  <field name="duration" type="plong" indexed="true" stored="true">
+  <field name="duration_ms" type="plong" indexed="true" stored="true">
     <?description The duration of the broadcast in milliseconds.?>
     <?example     950000?>
   </field>
