@@ -33,12 +33,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void testDirectDuration() {
-        assertContains(RECORD_44979f67,"\"duration\":\"950000\"");
+        assertContains(RECORD_44979f67,"\"duration_ms\":\"950000\"");
     }
 
     @Test
     public void testCalculatedDuration() {
-        assertContains(RECORD_5a5357be,"\"duration\":\"1800000\"");
+        assertContains(RECORD_5a5357be,"\"duration_ms\":\"1800000\"");
     }
 
     @Test

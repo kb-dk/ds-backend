@@ -21,28 +21,28 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
    <!-- Default solr field -->
   <field name="_version_" type="plong" indexed="false" stored="false"/>
 
-  <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true">
+  <field name="id" type="string" multiValued="false" required="true">
     <?description The ID derived from UUID in database.?>
     <?example     770379f0-8a0d-11e1-805f-0016357f605f?>
   </field>
 
-  <field name="filename_local" type="string"  stored="true">
+  <field name="filename_local" type="string" >
     <?description The name of the file, which contains the digital resource that this metadata is about.?>
     <?examaple    JB000132_114.tif?>
   </field>
 
-  <field name="accession_number" type="string" stored="true">
+  <field name="accession_number" type="string">
   <?description The unique number given to each new acquisition
                 as it is entered in the catalog of a library or museum ?>
   <?example     1911-7507?>
   </field>
 
-  <field name="cataloging_language" type="string"  stored="true">
+  <field name="cataloging_language" type="string">
   <?description The language used for the catalogue entry.?>
   <?example     da?>
   </field>
 
-  <field name="location" type="string"  stored="true">
+  <field name="location" type="string">
     <?description Describes where the physical object is located.?>
     <?example     KBK Depot?>
     <?example     Billedsamlingen. John R. Johnsen. Balletfotografier?>
@@ -55,7 +55,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept. -->
   </field>
 
-  <field name="categories" type="string" docValues="true" stored="true">
+  <field name="categories" type="string" docValues="true">
     <?description The categories field can contain many different values.
                   Metadata in this field are different entries seperated by space and commas.
                   The field list_of_categories contain the same values,
@@ -65,7 +65,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                   Kirk, Mette-Ida, Romeo og Julie, Johnsen, John R., CAR- BLO katagori?>
   </field>
 
-  <field name="list_of_categories" type="string"  multiValued="true" docValues="true" stored="true">
+  <field name="list_of_categories" type="string"  multiValued="true" docValues="true">
     <?description The list_of_categories field can contain many different values.
                   This field is multivalued and contains a single category per
                   entry in the list.?>
@@ -79,18 +79,19 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?query_example ?>
   </field>
 
-  <field name="collection" type="string" docValues="true" stored="true">
+  <field name="collection" type="string" docValues="true">
     <?description The original collection.?>
     <?example     Billedsamlingen?>
   </field>
 
-  <field name="published_in" type="string" docValues="true" stored="true">
+  <field name="published_in" type="string" docValues="true">
     <?description If the object has been published in a journal, newspaper, book etc.
                   this field contains the name of that publication.?>
     <?example     Aktuelt?>
   </field>
 
-  <field name="genre" type="string" docValues="true">
+  <!-- TODO: Extract main genre from preservica to this field and make single valued. Collect other genres in a new multivalued field-->
+  <field name="genre" type="string" docValues="true" multiValued="true">
     <?description The genre of the resource?>
     <?example     For a photograph: Portrait?>
     <?example     For a book: novel?>
@@ -259,13 +260,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Montering: opklæbet på karton og monteret i passepartout?>
   </field>
 
-  <field name="catalog" type="string" stored="true" docValues="true">
+  <field name="catalog" type="string" docValues="true">
     <?description The catalog, which this resource is a part of.?>
     <?example     Samlingsbilleder?>
   </field>
 
   <!-- Fields on production of physical and digital object. -->
-  <field name="production_date" type="string" stored="true">
+  <field name="production_date" type="string">
     <?description   The date when the resource was produced.?>
     <?example       1971?>
     <?query_example production_date:[1980 TO 1991] can be used to query for resources that have been produced in the
@@ -274,7 +275,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                     respective documentation for examples.?>
   </field>
 
-  <field name="production_date_start" type="string" stored="true">
+  <field name="production_date_start" type="string">
     <?description   The date when production of the resource started.?>
     <?example       1850?>
     <?query_example production_date_start:[1780 TO 1800] will return resources where production
@@ -284,7 +285,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                     production_date_start:[1780 TO 1800] AND production_date_end:[1780 TO 1800]?>
   </field>
 
-  <field name="production_date_end" type="string" stored="true">
+  <field name="production_date_end" type="string">
     <?description   The date when production of the resource finished.?>
     <?example       1899?>
     <?query_example production_date_end:[1780 TO 1800] will return resources where production ended during the
@@ -294,12 +295,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                     production_date_start:[1780 TO 1800] AND production_date_end:[1780 TO 1800]?>
   </field>
 
-  <field name="production_place" type="string" stored="true">
+  <field name="production_place" type="string">
     <?description Info about where the resource was produced?>
     <?example     Denmark?>
   </field>
 
-  <field name="production_date_digital_surrogate" type="string" stored="true">
+  <field name="production_date_digital_surrogate" type="string">
     <?description The date when the digital surrogate of the resource was produced.?>
     <?example     2019-07-03T09:36:17.000+02:00?>
   </field>
@@ -314,7 +315,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Johnsen, John R.?>
   </field>
 
-  <field name="subject_full_name" type="string" multiValued="true" stored="true" docValues="true">
+  <field name="subject_full_name" type="string" multiValued="true" docValues="true">
     <?description The name of the subject written as given name family name.?>
     <?example     John R. Johnsen?>
   </field>
@@ -335,12 +336,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Hans Christian?>
   </field>
 
-  <field name="subject_date_of_birth" type="string" multiValued="true" stored="true">
+  <field name="subject_date_of_birth" type="string" multiValued="true">
     <?description the subjects date of birth?>
     <?example     1748-11-29?>
   </field>
 
-  <field name="subject_date_of_death" type="string" multiValued="true" stored="true">
+  <field name="subject_date_of_death" type="string" multiValued="true">
     <?description the date of death of the subject.?>
     <?example     1831-11-5?>
   </field>
@@ -356,17 +357,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     3?>
   </field>
 
-  <field name="map_scale" type="string" stored="true">
+  <field name="map_scale" type="string" >
     <?description The scale of the resource map.?>
     <?example     Målestok 1:75 000?>
   </field>
 
-  <field name="resource_id" type="string" multiValued="true" stored="true">
+  <field name="resource_id" type="string" multiValued="true" >
     <?description ID used to construct URI for resource.?>
     <?example     exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
   </field>
 
-  <field name="thumbnail" type="string" stored="true">
+  <field name="thumbnail" type="string">
     <?description URI pointing to the thumbnail representation of the resource.?>
     <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456/full/400%2C/0/default.jpg?>
   </field>
@@ -398,10 +399,48 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <!-- Not in test data. Part of MODS and might be in other collections
        Called 'Audience' in dublin core.-->
-  <field name="audience" type="string" stored="true">
+  <field name="audience" type="string">
     <?description The target audience for the resource.?>
     <?example     Children?>
   </field>
+
+  <!-- Fields that only apply to tv metadata -->
+
+  <field name="original_title" type="string">
+    <?description The original title of the resource.?>
+    <?example     TV-Avisen?>
+  </field>
+
+  <field name="ritzau_id" type="string">
+    <?description Identifier from ritzau?>
+    <?example     7f42b813-690e-4897-9553-f6eefe9c4070?>
+  </field>
+
+  <field name="tvmeter_id" type="string">
+    <?description Identifier from tvmeter?>
+    <?example     78e74634-bec1-4cea-a984-20192c97b743?>
+  </field>
+
+  <field name="duration_ms" type="plong" indexed="true" stored="true">
+    <?description The duration of the broadcast in milliseconds.?>
+    <?example     950000?>
+  </field>
+
+  <field name="color" type="boolean">
+    <?description Describes wether or not the broadcast is in color. color=true, greytone=false?>
+    <?example     true?>
+  </field>
+
+  <field name="premiere" type="boolean">
+    <?description Boolean that tells if this record is the first showing of the broadcast.?>
+    <?example     false?>
+  </field>
+
+  <field name="aspect_ratio" type="string">
+    <?description The aspect ratio of the video?>
+    <?example     16:9?>
+  </field>
+
 
   <!--  Fields related to copyright and access conditions -->
   <!-- TODO: Documentation for access fields. -->
@@ -437,11 +476,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description ?>
     <?example     ?>
   </field>
-  <field name="access_foto_aftale" type="boolean"   indexed="true" required="true"  docValues="true" stored="true">
+  <field name="access_foto_aftale" type="boolean"   indexed="true" required="false"  docValues="true" stored="true">
     <?description ?>
     <?example     ?>
   </field>
-  <field name="access_billede_aftale" type="boolean"  indexed="true" required="true" docValues="true" stored="true">
+  <field name="access_billede_aftale" type="boolean"  indexed="true" required="false" docValues="true" stored="true">
     <?description ?>
     <?example     ?>
   </field>
@@ -573,5 +612,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="title" dest="freetext"/>
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>
+  <copyField source="original_title" dest="freetext"/>
+
   <!-- END COPYFIELDS  -->
  </schema>
