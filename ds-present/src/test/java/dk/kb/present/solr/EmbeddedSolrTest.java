@@ -55,7 +55,7 @@ public class EmbeddedSolrTest {
     public static final String MODS_RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
     public static final String MODS_RECORD_9c17a440 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
     public static final String MODS_RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
-    public static final String PRESERVICA_RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
+    public static final String PRESERVICA_RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
     @BeforeAll
     public static void startEmbeddedSolrServer() {
 
@@ -326,9 +326,15 @@ public class EmbeddedSolrTest {
     }
 
     @Test
-    void firstPreservicaTest() throws IOException {
-        SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_5a5357be);
-        System.out.println(record);
+    void testPreservicaPremiere() throws Exception {
+        SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
+        assertFalse((Boolean) record.getFieldValue("premiere"));
+    }
+
+    @Test
+    void testPreservicaDuration() throws Exception {
+        SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
+        assertEquals(950000L,  record.getFieldValue("duration"));
     }
 
     /*
@@ -387,7 +393,7 @@ public class EmbeddedSolrTest {
         return getRecordByDerivedId(modsFile);
     }
 
-    private SolrDocument singlePreservicaIndex(String preservicaFile) throws IOException {
+    private SolrDocument singlePreservicaIndex(String preservicaFile) throws Exception {
         indexPreservicaRecord(preservicaFile);
         assertEquals(1, getNumberOfTotalDocuments(),
                 "After indexing '" + preservicaFile + "' the index should only hold a single record");
@@ -400,9 +406,9 @@ public class EmbeddedSolrTest {
         addRecordToEmbeddedServer(recordXml, solrString);
     }
 
-    private void indexPreservicaRecord(String preservicaRecord) throws IOException{
+    private void indexPreservicaRecord(String preservicaRecord) throws Exception {
         String solrString = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, preservicaRecord);
-
+        //TestUtil.prettyPrintSolrJsonFromMetadata(PRESERVICA2SOLR, preservicaRecord);
         addRecordToEmbeddedServer(preservicaRecord, solrString);
     }
 

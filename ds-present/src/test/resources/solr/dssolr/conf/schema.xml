@@ -90,7 +90,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Aktuelt?>
   </field>
 
-  <field name="genre" type="string" docValues="true">
+  <!-- TODO: Extract main genre from preservica to this field and make single valued. Collect other genres in a new multivalued field-->
+  <field name="genre" type="string" docValues="true" multiValued="true">
     <?description The genre of the resource?>
     <?example     For a photograph: Portrait?>
     <?example     For a book: novel?>
@@ -433,6 +434,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="premiere" type="boolean">
     <?description Boolean that tells if this record is the first showing of the broadcast.?>
     <?example     false?>
+  </field>
+
+  <field name="aspect_ratio" type="string">
+    <?description The aspect ratio of the video?>
+    <?example     16:9?>
   </field>
 
 
