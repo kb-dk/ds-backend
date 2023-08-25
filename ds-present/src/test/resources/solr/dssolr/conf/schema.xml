@@ -606,5 +606,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="title" dest="freetext"/>
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>
+  <copyField source="original_title" dest="freetext"/>
+
   <!-- END COPYFIELDS  -->
  </schema>
