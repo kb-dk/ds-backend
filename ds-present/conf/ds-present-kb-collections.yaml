@@ -75,7 +75,7 @@ config:
 
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
         prefix: 'ds.radiotv'
-        base: 'pvica.devel'
+        base: 'ds.radiotv'
         views:
           - raw:
               mime: 'text/plain'
