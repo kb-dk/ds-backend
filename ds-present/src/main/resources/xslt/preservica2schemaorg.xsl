@@ -21,7 +21,7 @@
         <!-- TODO: Add logic for selecting more specific type -->
         <f:string key="@type">BroadcastEvent</f:string>
         <f:string key="id">
-          <xsl:value-of select="/xip:DeliverableUnit/DeliverableUnitRef"/>
+            <xsl:value-of select="$recordID"/>
         </f:string>
 
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
