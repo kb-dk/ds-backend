@@ -1,5 +1,5 @@
 #
-# This imageservers.oldimageserver.url contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
+# This contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
 #
 # The behaviour config is normally controlled by developers and is part of the code repository.
 # Sensitive information such as machine names and user/passwords should not be part of this config.
