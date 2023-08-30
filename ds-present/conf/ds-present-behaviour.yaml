@@ -1,5 +1,5 @@
 #
-# This config contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
+# This imageservers.oldimageserver.url contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
 #
 # The behaviour config is normally controlled by developers and is part of the code repository.
 # Sensitive information such as machine names and user/passwords should not be part of this config.
@@ -32,8 +32,9 @@ config:
         url: "invalid://url"
         default: true
 
-    - oldimageserver:
-        url: "http://kb-images.kb.dk"
+  # The oldimageserver is special as that is used for imageIdentifier rather that bitmap delivery
+  oldimageserver:
+    url: "http://kb-images.kb.dk"
 
   # List of backing storages. This information should be overridden in ds-present-environment.yaml
 
