@@ -184,8 +184,9 @@ class XSLTSolrTransformerTest extends XSLTTransformerTestBase {
 				"  - imageserver: 'https://example.com/imageserver/'\n";
 		YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
 		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, RECORD_40221e30);
+		System.out.println(solrString);
 		assertTrue(solrString.contains("\"resource_id\":[\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
-		assertTrue(solrString.contains("\"thumbnail\":\"https:\\/\\/example.com\\/imageserver\\/DAMJP2%252FDAM%252FSamlingsbilleder%252F0000%252F624%252F420%252FKE070592\\/full\\/%21150%2C150\\/0\\/default.jpg\""));
+		assertTrue(solrString.contains("\"thumbnail\":\"https:\\/\\/example.com\\/imageserver\\/%252FDAMJP2%252FDAM%252FSamlingsbilleder%252F0000%252F624%252F420%252FKE070592\\/full\\/%21150%2C150\\/0\\/default.jpg\""));
 	}
 
 	@Test

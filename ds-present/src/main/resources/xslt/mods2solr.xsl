@@ -697,14 +697,7 @@
             <xsl:value-of select="f:encode-for-uri(f:encode-for-uri($imageIdentifierNoExtension))"/>
           </xsl:variable>
           <xsl:variable name="thumbnailUrl">
-            <xsl:choose>
-              <xsl:when test="substring($imageIdentifierDoubleEncoded,1,5) =  '%252F'">
-                <xsl:value-of select="concat($imageserver, substring($imageIdentifierDoubleEncoded, 6), '/full/', f:encode-for-uri('!150,150'), '/0/default.jpg')"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, '/full/', f:encode-for-uri('!150,150'), '/0/default.jpg')"/>
-              </xsl:otherwise>
-            </xsl:choose>
+            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, '/full/', f:encode-for-uri('!150,150'), '/0/default.jpg')"/>
           </xsl:variable>
           <f:array key="resource_id">
             <f:string>
@@ -712,14 +705,7 @@
             </f:string>
           </f:array>
           <f:string key="image_iiif_id">
-            <xsl:choose>
-              <xsl:when test="substring($imageIdentifierDoubleEncoded,1,6) =  '%252F'">
-                <xsl:value-of select="concat($imageserver, substring($imageIdentifierDoubleEncoded, 6))"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
-              </xsl:otherwise>
-            </xsl:choose>
+            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
           </f:string>
           <f:string key="thumbnail">
             <xsl:value-of select="$thumbnailUrl"/>
