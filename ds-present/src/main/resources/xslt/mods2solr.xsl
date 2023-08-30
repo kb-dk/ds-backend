@@ -9,6 +9,7 @@
                xmlns:my="urn:my"
                xmlns:premis="http://www.loc.gov/premis/v3"
                xmlns:mix="http://www.loc.gov/mix/v20"
+               xmlns:functx="http://www.functx.com"
                version="3.0">
 
     
@@ -678,11 +679,16 @@
           </f:string>
         </xsl:if>
         <!-- Extract resource id-->
+        <!-- For IIP request to work, the resource ID needs to start with a slash.
+             This same slash cannot go through the double encoding needed in IIIF, then that endpoint stops working.
+             The fix here is to extract the resource id without the prefix slash and then add it to the variables
+             afterwards. The slash will be added to both variables in the XSLT. Which alse means that the serverUrl in
+             config for IIIF, is to be specified without the trailing slash.-->
         <xsl:if test="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
 
           <xsl:variable name="imageIdentifier">
             <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/
-                                  m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk/')"/>
+                                  m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
           </xsl:variable>
           <xsl:variable name="imageIdentifierNoExtension">
             <xsl:value-of select="f:substring-before($imageIdentifier, '.jp')"/>
@@ -690,20 +696,33 @@
           <xsl:variable name="imageIdentifierDoubleEncoded">
             <xsl:value-of select="f:encode-for-uri(f:encode-for-uri($imageIdentifierNoExtension))"/>
           </xsl:variable>
-          <xsl:variable name="imageUrl">
-            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, concat('/full/', f:encode-for-uri('!150,150'), '/0/default.jpg'))"/>
+          <xsl:variable name="thumbnailUrl">
+            <xsl:choose>
+              <xsl:when test="substring($imageIdentifierDoubleEncoded,1,5) =  '%252F'">
+                <xsl:value-of select="concat($imageserver, substring($imageIdentifierDoubleEncoded, 6), '/full/', f:encode-for-uri('!150,150'), '/0/default.jpg')"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, '/full/', f:encode-for-uri('!150,150'), '/0/default.jpg')"/>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:variable>
-
           <f:array key="resource_id">
             <f:string>
               <xsl:value-of select="$imageIdentifierNoExtension"/>
             </f:string>
           </f:array>
           <f:string key="image_iiif_id">
-            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
+            <xsl:choose>
+              <xsl:when test="substring($imageIdentifierDoubleEncoded,1,6) =  '%252F'">
+                <xsl:value-of select="concat($imageserver, substring($imageIdentifierDoubleEncoded, 6))"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
+              </xsl:otherwise>
+            </xsl:choose>
           </f:string>
           <f:string key="thumbnail">
-            <xsl:value-of select="$imageUrl"/>
+            <xsl:value-of select="$thumbnailUrl"/>
           </f:string>
         </xsl:if>
         <xsl:if test="m:genre[not(@*)]">
