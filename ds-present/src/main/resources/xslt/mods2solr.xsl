@@ -29,6 +29,7 @@
        <xsl:param name="access_billede_aftale"/>
        <xsl:param name="access_ophavsret_tekst"/>
        <xsl:param name="imageserver"/>
+       <xsl:param name="old_imageserver"/>
        <xsl:param name="recordID"/> <!-- Guaranteed to be set -->
 
 
@@ -679,16 +680,11 @@
           </f:string>
         </xsl:if>
         <!-- Extract resource id-->
-        <!-- For IIP request to work, the resource ID needs to start with a slash.
-             This same slash cannot go through the double encoding needed in IIIF, then that endpoint stops working.
-             The fix here is to extract the resource id without the prefix slash and then add it to the variables
-             afterwards. The slash will be added to both variables in the XSLT. Which alse means that the serverUrl in
-             config for IIIF, is to be specified without the trailing slash.-->
         <xsl:if test="m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri']">
 
           <xsl:variable name="imageIdentifier">
             <xsl:value-of select="substring-after(m:relatedItem[@type='otherFormat']/
-                                  m:identifier[@displayLabel='image'][@type='uri'], 'http://kb-images.kb.dk')"/>
+                                  m:identifier[@displayLabel='image'][@type='uri'], $old_imageserver)"/>
           </xsl:variable>
           <xsl:variable name="imageIdentifierNoExtension">
             <xsl:value-of select="f:substring-before($imageIdentifier, '.jp')"/>
