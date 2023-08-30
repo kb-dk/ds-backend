@@ -68,6 +68,7 @@ config:
                     stylesheet: 'xslt/mods2schemaorg.xsl'
                     injections:
                     - imageserver: 'https://example.com/imageserver/'
+                    - old_imageserver: 'http://kb-images.kb.dk'
           - solrjson:
               mime: 'application/json'
               transformers:
@@ -75,6 +76,7 @@ config:
                     stylesheet: 'xslt/mods2solr.xsl'
                     injections:
                     - imageserver: 'https://example.com/imageserver/'
+                    - old_imageserver: 'http://kb-images.kb.dk'
           - raw:
               mime: 'text/plain'
               transformers:

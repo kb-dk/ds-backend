@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
+import dk.kb.util.yaml.YAML;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -22,8 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -277,8 +280,6 @@ public class EmbeddedSolrTest {
     @Test
     void testResourceId() throws IOException {
         SolrDocument record = singleMODSIndex(MODS_RECORD_40221e30);
-
-        //Single value field
         assertMultivalueField(record, "resource_id", "/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592");
     }
 
@@ -389,7 +390,11 @@ public class EmbeddedSolrTest {
      * @return the indexed record.
      */
     private SolrDocument singleMODSIndex(String modsFile) throws IOException {
-        indexModsRecord(modsFile);
+        try {
+            indexModsRecord(modsFile);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         assertEquals(1, getNumberOfTotalDocuments(),
                 "After indexing '" + modsFile + "' the index should only hold a single record");
         return getRecordByDerivedId(modsFile);
@@ -402,8 +407,15 @@ public class EmbeddedSolrTest {
         return getRecordByDerivedId(preservicaFile);
     }
 
-    private void indexModsRecord(String recordXml) throws IOException {
-        String solrString = TestUtil.getTransformedWithAccessFieldsAdded(MODS2SOLR, recordXml);
+    private void indexModsRecord(String recordXml) throws Exception {
+        String yamlStr =
+                "stylesheet: '" + MODS2SOLR + "'\n" +
+                        "injections:\n" +
+                        "  - imageserver: 'https://example.com/imageserver/'\n" +
+                        "  - old_imageserver: 'http://kb-images.kb.dk'\n";
+        YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
+
+        String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, recordXml);
 
         addRecordToEmbeddedServer(recordXml, solrString);
     }
