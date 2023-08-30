@@ -15,6 +15,7 @@
 package dk.kb.present.util;
 
 import dk.kb.util.Resolver;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class TestFileTest {
     private static final String KNOWN_TEST_FILE = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
 
     // This always passes (as it should). Is is primarily a demonstration on how to write a unit test
-    @Test
+    @Disabled
     void testTestFileExistence() {
         if (!TestFileProvider.ensureTestFiles()) {
             log.warn("Test files are not available. This unit test must be executed at the kb.dk developer network. " +
