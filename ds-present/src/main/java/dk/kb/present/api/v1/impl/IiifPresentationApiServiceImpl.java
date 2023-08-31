@@ -64,10 +64,6 @@ import java.util.regex.Pattern;
 public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPresentationApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
 
-    // foo/bar/manifest instead of foo%2B2Fbar/manifest
-    private final Pattern NONESCAPED_MANIFEST_PATH = Pattern.compile("(.*)/manifest");
-
-
     /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
 
     @Context
@@ -161,6 +157,21 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
         return rawGetPresentationManifest(identifier.replace("%2F", "/"));
     }
 
+    /*
+     * Manually specified handler for IIIF IDs containing non-escaped slashes.
+     * This will always preceed the OpenAPI-generated handler, but that should not be a problem.
+     */
+    @GET
+    @Path("/IIIF/{nonescaped:.*}/manifest")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "IIIF Presentation manifest fallback", tags={ "IIIFPresentation" })
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK", response = ManifestDto.class) })
+    public ManifestDto getPresentationManifestNonescaped(@PathParam("nonescaped") String nonescaped)
+            throws ServiceException {
+        log.debug("Re-routing nonescaped IIIF Manifest request for '" + nonescaped + "'");
+        return rawGetPresentationManifest(nonescaped.replace("%2F", "/"));
+    }
     /**
      * The implementation of {@link #getPresentationManifest(String)}.
      * They need to be two different methods as {@link #getPresentationManifest(String)} is Apache CXF annotated and
@@ -368,23 +379,4 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
     
     }
 
-    /*
-     * Hand held handler for IIIF IDs containing non-escaped slashes
-     */
-    @GET
-    @Path("/IIIF/{nonescaped:.*}")
-    @Produces({ "application/json" })
-    @ApiOperation(value = "IIIF Presentation manifest fallback", tags={ "IIIFPresentation" })
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK", response = ManifestDto.class) })
-    public ManifestDto getPresentationManifestNonescaped(@PathParam("nonescaped") String nonescaped)
-            throws ServiceException {
-        Matcher m = NONESCAPED_MANIFEST_PATH.matcher(nonescaped);
-        if (!m.matches()) {
-            throw new InvalidArgumentServiceException(
-                    "The endpoint IIIF/ expected an input of the form 'foo/manifest' but got '" + nonescaped + "'");
-        }
-        log.debug("Re-routing nonescaped IIIF Manifest request '" + nonescaped + "'");
-        return rawGetPresentationManifest(m.group(1));
-    }
 }
