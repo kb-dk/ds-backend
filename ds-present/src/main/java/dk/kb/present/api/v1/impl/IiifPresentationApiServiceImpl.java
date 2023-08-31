@@ -169,7 +169,7 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
      * @return a Manifest for the image.
      * @throws ServiceException if lookup failed.
      */
-    public ManifestDto rawGetPresentationManifest(String identifier) throws ServiceException {
+    private ManifestDto rawGetPresentationManifest(String identifier) throws ServiceException {
         // TODO: Implement...
         log.debug("rawGetPresentationManifest(identifier='{}') called with call details: {}",
                   identifier, getCallDetails());
