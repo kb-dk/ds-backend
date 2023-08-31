@@ -6,12 +6,20 @@ import dk.kb.image.api.v1.AccessApi;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.File;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * ds-image
@@ -21,6 +29,7 @@ import java.util.List;
  */
 public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private static final Logger log = LoggerFactory.getLogger(AccessApiServiceImpl.class);
+
 
     /**
      * DeepZoom Image information
@@ -176,7 +185,40 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     public javax.ws.rs.core.StreamingOutput iIIFImageRequest(
             String identifier, String region, String size, String rotation, String quality, String format)
             throws ServiceException {
+        return rawIIIFImageRequest(identifier, region, size, rotation, quality, format);
+    }
+
+    
+    /*
+     * Manually specified handler for IIIF IDs containing non-escaped slashes.
+     * This will always preceed the OpenAPI-generated handler, but that should not be a problem.
+     */
+    @GET
+    @Path("/IIIF/{identifier:.*}/{region}/{size}/{rotation}/{quality}.{format}")
+    @Produces({ "image/_*", "application/pdf" })
+    @ApiOperation(value = "IIIF Image Request Nonescaped", tags={ "Access",  })
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Succes!", response = File.class),
+        @ApiResponse(code = 400, message = "Bad Request. Please check the formating of the parameters: region, size and rotation.  Check if the requested region’s height or width is zero, or if the region is entirely outside the bounds of the reported dimensions  Requests for sizes not prefixed with ^ that result in a scaled region with pixel dimensions greater than the pixel dimensions of the extracted region are errors that should result in a 400 (Bad Request) status code.  Check for syntax errors in size parameter  A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.") })
+    public javax.ws.rs.core.StreamingOutput iIIFImageRequestNonescaped(
+            @PathParam("identifier") String identifier, @PathParam("region") String region,
+            @PathParam("size") String size, @PathParam("rotation") String rotation,
+            @PathParam("quality") String quality, @PathParam("format") String format) {
+        return rawIIIFImageRequest(identifier, region, size, rotation, quality, format);
+    }
+
+    /**
+     * The implementation of {@link #iIIFImageRequest(String, String, String, String, String, String)}.
+     * They need to be two different methods as {@link #iIIFImageRequest(String, String, String, String, String, String)}
+     * is Apache CXF annotated and cannot be called directly from 
+     * {@link #iIIFImageRequestNonescaped(String, String, String, String, String, String)}
+     */
+    private javax.ws.rs.core.StreamingOutput rawIIIFImageRequest(
+            String identifier, String region, String size, String rotation, String quality, String format)
+            throws ServiceException {
         try {
+            // This replace handles double encoding (%252F) of '/' being single-decoded to '%2F'
+            identifier = identifier.replace("%2F", "/");
             log.debug("iIIFImageRequest(identifier='{}', region='{}', size='{}', rotation='{}', quality='{}', " +
                       "format='{}') called with call details: {}",
                       identifier, region, size, rotation, quality, format, getCallDetails());
@@ -193,6 +235,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             throw handleException(e);
         }
     }
+
 
     /**
      * Internet Imaging Protocol 
