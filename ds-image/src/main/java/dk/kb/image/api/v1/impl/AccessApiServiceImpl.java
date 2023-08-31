@@ -3,6 +3,7 @@ package dk.kb.image.api.v1.impl;
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
 import dk.kb.image.api.v1.AccessApi;
+import dk.kb.image.model.v1.IIIFInfoDto;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -142,8 +143,30 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      */
     @Override
     public javax.ws.rs.core.StreamingOutput getImageInformation(String identifier, String format) throws ServiceException {
+        return rawGetImageInformation(identifier, format);
+    }
+
+    /*
+     * Manually specified handler for IIIF IDs containing non-escaped slashes.
+     * This will always preceed the OpenAPI-generated handler, but that should not be a problem.
+     */
+    @GET
+    @Path("/IIIF/{identifier:.*}/info.{format}")
+    @Produces({ "application/ld+json", "application/xml" })
+    @ApiOperation(value = "IIIF Image Information Nonescaped", tags={ "Access",  })
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Succes!", response = IIIFInfoDto.class) })
+    public javax.ws.rs.core.StreamingOutput getImageInformationNonescaped(@PathParam("identifier") String identifier, @PathParam("format") String format) throws ServiceException {
+        return rawGetImageInformation(identifier, format);
+    }
+
+    /**
+     * The implementation of {@link #getImageInformation(String, String)}.
+     * They need to be two different methods as {@link #getImageInformationNonescaped(String, String)}
+     * is Apache CXF annotated and cannot be called directly from {@link #getImageInformationNonescaped(String, String)}
+     */
+    private javax.ws.rs.core.StreamingOutput rawGetImageInformation(String identifier, String format) throws ServiceException {
         try {
-            log.debug("getImageInformation(identifier='{}'m format='{}') called with call details: {}",
+            log.debug("getImageInformation(identifier='{}' format='{}') called with call details: {}",
                       identifier, format, getCallDetails());
             String[] elements = identifier.split("[/\\\\]");
             String filename = "info_" + elements[elements.length - 1] + "." + format;

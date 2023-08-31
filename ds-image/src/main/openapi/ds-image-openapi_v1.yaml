@@ -25,7 +25,9 @@ servers:
     description: 'Version 1'
 
 paths:
-# IIIF Image request
+  # IIIF Image request
+  # Note: If the signature of this endpoint is changed, AccessApiServiceImpl.iIIFRequestNonescaped must
+  #       be manually adjusted to match the new AccessApiServiceImpl.iIIFRequest annotations
   /IIIF/{identifier}/{region}/{size}/{rotation}/{quality}.{format}:
     get:
       tags:
@@ -180,7 +182,9 @@ paths:
             
             A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.
             
-  # IIIF Image Information          
+  # IIIF Image Information
+  # Note: If the signature of this endpoint is changed, AccessApiServiceImpl.getImageInformationNonescaped must
+  #       be manually adjusted to match the new AccessApiServiceImpl.getImageInformation annotations
   /IIIF/{identifier}/info.{format}:
     get:
       tags:
