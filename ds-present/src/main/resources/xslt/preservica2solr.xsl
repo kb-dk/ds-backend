@@ -64,7 +64,7 @@
           <xsl:value-of select="title"/>
         </f:string>
       </xsl:if>
-      <xsl:if test="titleType = 'originaltitel'">
+      <xsl:if test="titleType = 'originaltitel' and title != ''">
         <f:string key="original_title">
           <xsl:value-of select="title"/>
         </f:string>
@@ -80,9 +80,11 @@
       </xsl:if>
     </xsl:for-each>
 
+    <xsl:if test="pbcoreDescription/description != ''">
     <f:string key="notes">
       <xsl:value-of select="normalize-space(pbcoreDescription/description)"/>
     </f:string>
+    </xsl:if>
 
     <!-- Video specific transformations -->
     <xsl:for-each select="pbcoreIdentifier">
