@@ -73,6 +73,11 @@ config:
           replacement: '<xip:$1 status="$2" xmlns:xip="http://example.com/">'
           replaceall: false
 
+        testdatahack2: &TEST_DATA_HACK2
+          regexp: '(xsi:schemaLocation="http://www.pbcore.org/PBCore/PBCoreNamespace.html")>'
+          replacement: '$1 xmlns:xsi="http://example.com/">'
+          replaceall: false
+
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
         prefix: 'ds.radiotv'
         base: 'ds.radiotv'
@@ -85,6 +90,7 @@ config:
               mime: 'application/json'
               transformers:
                 - replace: *TEST_DATA_HACK
+                - replace: *TEST_DATA_HACK2
                 - xslt:
                     stylesheet: 'xslt/preservica2schemaorg.xsl'
                     injections:
@@ -95,6 +101,7 @@ config:
               mime: 'application/json'
               transformers:
                 - replace: *TEST_DATA_HACK
+                - replace: *TEST_DATA_HACK2
                 - xslt:
                     stylesheet: 'xslt/preservica2solr.xsl'
                     injections:

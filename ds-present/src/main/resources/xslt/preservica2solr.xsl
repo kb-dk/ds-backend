@@ -7,6 +7,7 @@
                xmlns:my="urn:my"
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
                xmlns:xip="http://example.com/"
+               xmlns:xsi="http://example.com/"
                version="3.0">
 
   <xsl:output method="text" />

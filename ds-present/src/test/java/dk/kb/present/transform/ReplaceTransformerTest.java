@@ -66,6 +66,18 @@ class ReplaceTransformerTest {
                 replacer.apply("<xip:Selfmade status=\"foo\">", null),
                 "Namespace injection should NOT work for element 'Selfmade'");
     }
+
+    @Test
+    void testXSI() {
+        DSTransformer replacer = new ReplaceTransformer(
+                "(xsi:schemaLocation=\"http://www.pbcore.org/PBCore/PBCoreNamespace.html\")>",
+                "$1 xmlns:xsi=\"http://example.com/\">", false);
+
+        assertEquals("xsi:schemaLocation=\"http://www.pbcore.org/PBCore/PBCoreNamespace.html\" xmlns:xsi=\"http://example.com/\">",
+                replacer.apply("xsi:schemaLocation=\"http://www.pbcore.org/PBCore/PBCoreNamespace.html\">", null),
+                "Namespace injection should work for XSI'");
+
+    }
     
     /**
      * Use the {@link ReplaceFactory} to create a {@link ReplaceTransformer} with config taken from {@code yamlString}.
