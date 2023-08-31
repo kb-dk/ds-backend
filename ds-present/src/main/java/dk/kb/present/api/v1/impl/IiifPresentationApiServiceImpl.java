@@ -1,12 +1,9 @@
 package dk.kb.present.api.v1.impl;
 
-import dk.kb.present.api.v1.*;
+import dk.kb.present.api.v1.IiifPresentationApi;
 import dk.kb.present.model.v1.AnnotationsBodyDto;
 import dk.kb.present.model.v1.AnnotationsDto;
 import dk.kb.present.model.v1.AnnotationsItemsDto;
-
-import java.util.*;
-
 import dk.kb.present.model.v1.CanvasDto;
 import dk.kb.present.model.v1.CanvasItemsDto;
 import dk.kb.present.model.v1.CanvasLabelDto;
@@ -28,42 +25,35 @@ import dk.kb.present.model.v1.ManifestThumbnailDto;
 import dk.kb.present.model.v1.RangeDto;
 import dk.kb.present.model.v1.RangeLabelDto;
 import dk.kb.present.model.v1.ViewDto;
-
 import dk.kb.util.webservice.ImplBase;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
-import dk.kb.util.webservice.exception.InternalServiceException;
-
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
-import java.io.File;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
-import javax.ws.rs.core.MediaType;
-import org.apache.cxf.jaxrs.model.wadl.Description;
-import org.apache.cxf.jaxrs.model.wadl.DocTarget;
-import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.apache.cxf.jaxrs.ext.multipart.*;
-
-import io.swagger.annotations.Api;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * ds-present
@@ -74,6 +64,8 @@ import io.swagger.annotations.Api;
 public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPresentationApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
 
+    // foo/bar/manifest instead of foo%2B2Fbar/manifest
+    private final Pattern NONESCAPED_MANIFEST_PATH = Pattern.compile("(.*)/manifest");
 
 
     /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
@@ -165,8 +157,21 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
      */
     @Override
     public ManifestDto getPresentationManifest(String identifier) throws ServiceException {
+        // Note the replace that handles double encoding (%252F) of '/' being single-decoded to '%2F'
+        return rawGetPresentationManifest(identifier.replace("%2F", "/"));
+    }
+
+    /**
+     * The implementation of {@link #getPresentationManifest(String)}.
+     * They need to be two different methods as {@link #getPresentationManifest(String)} is Apache CXF annotated and
+     * cannot be called directly from {@link #getPresentationManifestNonescaped}.
+     * @param identifier the IIIF image identifier.
+     * @return a Manifest for the image.
+     * @throws ServiceException if lookup failed.
+     */
+    public ManifestDto rawGetPresentationManifest(String identifier) throws ServiceException {
         // TODO: Implement...
-        log.debug("getPresentationManifest(identifier='{}') called with call details: {}",
+        log.debug("rawGetPresentationManifest(identifier='{}') called with call details: {}",
                   identifier, getCallDetails());
 
         try { 
@@ -361,5 +366,25 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
             throw handleException(e);
         }
     
+    }
+
+    /*
+     * Hand held handler for IIIF IDs containing non-escaped slashes
+     */
+    @GET
+    @Path("/IIIF/{nonescaped:.*}")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "IIIF Presentation manifest fallback", tags={ "IIIFPresentation" })
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK", response = ManifestDto.class) })
+    public ManifestDto getPresentationManifestNonescaped(@PathParam("nonescaped") String nonescaped)
+            throws ServiceException {
+        Matcher m = NONESCAPED_MANIFEST_PATH.matcher(nonescaped);
+        if (!m.matches()) {
+            throw new InvalidArgumentServiceException(
+                    "The endpoint IIIF/ expected an input of the form 'foo/manifest' but got '" + nonescaped + "'");
+        }
+        log.debug("Re-routing nonescaped IIIF Manifest request '" + nonescaped + "'");
+        return rawGetPresentationManifest(m.group(1));
     }
 }
