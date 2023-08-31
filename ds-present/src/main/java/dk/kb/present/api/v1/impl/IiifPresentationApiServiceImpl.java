@@ -153,8 +153,7 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
      */
     @Override
     public ManifestDto getPresentationManifest(String identifier) throws ServiceException {
-        // Note the replace that handles double encoding (%252F) of '/' being single-decoded to '%2F'
-        return rawGetPresentationManifest(identifier.replace("%2F", "/"));
+        return rawGetPresentationManifest(identifier);
     }
 
     /*
@@ -169,8 +168,7 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
         @ApiResponse(code = 200, message = "OK", response = ManifestDto.class) })
     public ManifestDto getPresentationManifestNonescaped(@PathParam("nonescaped") String nonescaped)
             throws ServiceException {
-        log.debug("Re-routing nonescaped IIIF Manifest request for '" + nonescaped + "'");
-        return rawGetPresentationManifest(nonescaped.replace("%2F", "/"));
+        return rawGetPresentationManifest(nonescaped);
     }
     /**
      * The implementation of {@link #getPresentationManifest(String)}.
@@ -181,9 +179,11 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
      * @throws ServiceException if lookup failed.
      */
     private ManifestDto rawGetPresentationManifest(String identifier) throws ServiceException {
-        // TODO: Implement...
+        // This replace handles double encoding (%252F) of '/' being single-decoded to '%2F'
+        identifier = identifier.replace("%2F", "/");
         log.debug("rawGetPresentationManifest(identifier='{}') called with call details: {}",
                   identifier, getCallDetails());
+        // TODO: Implement...
 
         try { 
             ManifestDto response = new ManifestDto();
