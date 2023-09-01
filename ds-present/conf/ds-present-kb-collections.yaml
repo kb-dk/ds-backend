@@ -26,7 +26,6 @@ config:
               injections:
                 - imageserver: ${path:config.imageservers[default=true].url}
                 - old_imageserver: ${path:config.oldimageserver.url}
-                - origin: ${path:config.collections[4].samlingsbilleder.base}
 
     - SolrJSON:
         mime: 'application/json'
@@ -37,7 +36,6 @@ config:
               injections:
                 - imageserver: ${path:config.imageservers[default=true].url}
                 - old_imageserver: ${path:config.oldimageserver.url}
-                - origin: ${path:config.collections[4].samlingsbilleder.base}
 
   # The collections available for this instance of ds-present
   collections:
@@ -49,27 +47,27 @@ config:
     - imageshca:
         description: 'Hans Christian Andersen images from the collections at the Royal Danish Library'
         prefix: 'kb.images.billed.hca' # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
-        base: 'kb.images.billed.hca' # Overrides the default base for the storage
+        origin: 'kb.images.billed.hca' # Overrides the default base for the storage
         views: *MODS_IMAGE_VIEWS
     - imagesjsmss:
         description: 'Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library'
         prefix: 'kb.image.judsam.jsmss'
-        base: 'kb.image.judsam.jsmss'
+        origin: 'kb.image.judsam.jsmss'
         views: *MODS_IMAGE_VIEWS
     - imagesluftfoto:
         description: 'Luftfoto (arial photographs) images from the collections at the Royal Danish Library'
         prefix: 'kb.image.luftfo.luftfoto'
-        base: 'kb.images.luftfo.luftfoto'
+        origin: 'kb.images.luftfo.luftfoto'
         views: *MODS_IMAGE_VIEWS
     - imagessmaatryk:
         description: 'Småtryk images from the collections at the Royal Danish Library'
         prefix: 'kb.pamphlets.dasmaa.smaatryk'
-        base: 'kb.pamphlets.dasmaa.smaatryk'
+        origin: 'kb.pamphlets.dasmaa.smaatryk'
         views: *MODS_IMAGE_VIEWS
     - samlingsbilleder:
         description: 'Diverse images from image collections at the Royal Danish Library'
         prefix: 'ds.samlingsbilleder'
-        base: 'ds.samlingsbilleder'
+        origin: 'ds.samlingsbilleder'
         views: *MODS_IMAGE_VIEWS
     - radiotv:
 
@@ -86,7 +84,7 @@ config:
 
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
         prefix: 'ds.radiotv'
-        base: 'ds.radiotv'
+        origin: 'ds.radiotv'
         views:
           - raw:
               mime: 'text/plain'
@@ -103,7 +101,6 @@ config:
                       #- imageserver: ${path:config.imageservers[default=true].url}
                       - streamingserver: "here_should_be_a_wowza_url"
                       - old_imageserver: ${path:config.oldimageserver.url}
-                      - origin: ${path:config.collections[5].radiotv.base}
           - SolrJSON:
               mime: 'application/json'
               transformers:
@@ -115,7 +112,6 @@ config:
                       # - imageserver: ${path:config.imageservers[default=true].url}
                       - streamingserver: "here_should_be_a_wowza_url"
                       - old_imageserver: ${path:config.oldimageserver.url}
-                      - origin: ${path:config.collections[5].radiotv.base}
 
 
 

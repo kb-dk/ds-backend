@@ -40,6 +40,7 @@ public class View extends ArrayList<DSTransformer> implements BiFunction<String,
     private static final String TRANSFORMERS_KEY = "transformers";
 
     private final String id;
+    private final String origin;
     private final MediaType mime;
 
     /**
@@ -47,7 +48,7 @@ public class View extends ArrayList<DSTransformer> implements BiFunction<String,
      * where the key is the ID for the view and the value is the configuration of the view.
      * @param conf the configuration for this specific view.
      */
-    public View(YAML conf) {
+    public View(YAML conf, String originFromCollection) {
         super();
         if (conf.size() != 1) {
             throw new IllegalArgumentException
@@ -55,6 +56,8 @@ public class View extends ArrayList<DSTransformer> implements BiFunction<String,
                      ". Maybe indenting was not correct in the config file?");
         }
         id = conf.keySet().stream().findFirst().orElseThrow();
+        origin = originFromCollection;
+        //TODO: Set origin injection here and also do renaming of base to origin in DSCollection
         conf = conf.getSubMap(id);
         String[] mimeTokens = conf.getString(MIME_KEY).split("/", 2);
         mime = new MediaType(mimeTokens[0], mimeTokens[1]);
@@ -83,6 +86,7 @@ public class View extends ArrayList<DSTransformer> implements BiFunction<String,
     public String apply(String recordID, String content) {
         final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", recordID);
+        metadata.put("origin", origin);
         for (DSTransformer transformer: this) {
             try {
                 content = transformer.apply(content, metadata);
@@ -102,6 +106,7 @@ public class View extends ArrayList<DSTransformer> implements BiFunction<String,
         return "View(" +
                "id='" + id + '\'' +
                ", mime=" + mime +
+               ", origin=" + origin +
                ", transformers=" + super.toString() +
                ')';
     }

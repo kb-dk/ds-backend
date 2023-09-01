@@ -26,7 +26,7 @@ class ViewTest {
     void identity() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
-        View view = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(0));
+        View view = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(0), dsflConf.getSubMap("dsfl").getString("origin"));
         assertEquals("SameAsInput", view.apply("someID", "SameAsInput")); // Identity view
     }
 
@@ -36,7 +36,7 @@ class ViewTest {
     void jsonld() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
-        View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1));
+        View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
         String jsonld = jsonldView.apply("40221e30-1414-11e9-8fb8-00505688346e", mods);
         assertTrue(jsonld.contains("\"headline\":[{\"value\":\"Christian VIII\",\"@language\":\"da\"}]"));
@@ -46,9 +46,10 @@ class ViewTest {
     void solrJson() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
-        View solrView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2));
+        View solrView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
         String solrJson = solrView.apply("40221e30-1414-11e9-8fb8-00505688346e", mods);
+        assertTrue(solrJson.contains("\"origin\":\"ds.test\""));
         assertTrue(solrJson.contains("\"resource_id\":[\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"), "SolrJSON does not contain correct resource_id");
         assertTrue(solrJson.contains("\"thumbnail\":\"https:\\/\\/example.com\\/imageserver\\/%252FDAMJP2%252FDAM%252FSamlingsbilleder%252F0000%252F624%252F420%252FKE070592\\/full\\/%21150%2C150\\/0\\/default.jpg\"")
                 , "SolrJson does not contain correct thumbnail");

@@ -54,6 +54,7 @@ config:
     # Straight forward collection with the core format being MODS
     - dsfl: # ds-present internal
         prefix: 'local' # The prefix to match on incoming IDs
+        origin: 'ds.test'
         description: 'Local records, mostly biographical'
         # Temporary hack to make the Preservica XML block well-formed (it is missing a namespace declaration)
         testdatahack: &TEST_DATA_HACK

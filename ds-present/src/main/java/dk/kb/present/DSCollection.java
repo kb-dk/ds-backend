@@ -44,7 +44,7 @@ public class DSCollection {
     private static final String PREFIX_KEY = "prefix"; // IDs for this collection starts with <prefix>_ (note the underscore)
     private static final String DESCRIPTION_KEY = "description";
     private static final String STORAGE_KEY = "storage";
-    private static final String BASE_KEY = "base";
+    private static final String ORIGIN_KEY = "origin";
     private static final String VIEWS_KEY = "views";
 
     /**
@@ -70,10 +70,10 @@ public class DSCollection {
     private final Storage storage;
 
     /**
-     * Optional recordBase, with fallback to the default recordBase for {@link Storage}.
+     * Optional origin, with fallback to the default origin for {@link Storage}.
      * Used when {@link #getDSRecords(Long, Long, String)} is called.
      */
-    private final String recordBase;
+    private final String origin;
 
     /**
      * Map from format -> view. A view is at the core an array of transformations and responsible for transforming
@@ -89,15 +89,15 @@ public class DSCollection {
      * @param storageHandler previously initialized pool of storages.
      */
     public DSCollection(YAML conf, StorageHandler storageHandler) {
-
         id = conf.keySet().stream().findFirst().orElseThrow();
+        origin =  conf.getSubMap(id).getString("origin");
         conf = conf.getSubMap(id); // There must be some properties for a storage
         prefix = conf.getString(PREFIX_KEY);
         description = conf.getString(DESCRIPTION_KEY, null);
         storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
-        recordBase = conf.getString(BASE_KEY, null);
-        views = conf.getYAMLList(VIEWS_KEY).stream()
-                .map(View::new)
+        views = conf.getYAMLList(VIEWS_KEY)
+                .stream()
+                .map(yaml -> new View(yaml, origin))
                 .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
         log.info("Created " + this);
     }
@@ -138,9 +138,9 @@ public class DSCollection {
     public Stream<DsRecordDto> getDSRecords(Long mTime, Long maxRecords, String format) {
         View view = getView(format);
         log.debug("Calling storage.getDSRecords(recordBase='{}', mTime={}, maxRecords={})",
-                  recordBase, mTime, maxRecords);
+                origin, mTime, maxRecords);
         try {
-            return storage.getDSRecords(recordBase, mTime, maxRecords)
+            return storage.getDSRecords(origin, mTime, maxRecords)
                     .peek(record -> {
                         try {
                             record.data(view.apply(record.getId(), record.getData()));
@@ -221,7 +221,7 @@ public class DSCollection {
                ", prefix='" + prefix + '\'' +
                ", description='" + description + '\'' +
                ", storage=" + storage +
-               ", recordBase=" + recordBase +
+               ", origin=" + origin +
                ", views=" + views +
                ')';
     }

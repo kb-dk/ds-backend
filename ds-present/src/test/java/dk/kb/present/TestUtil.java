@@ -69,6 +69,7 @@ public class TestUtil {
 		String mods = Resolver.resolveUTF8String(xmlResource);
 		HashMap<String, String> accessFields = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);
         accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		accessFields.put("origin", "ds.test");
 		//System.out.println("access fields:"+accessFields);
 		return transformer.apply(mods, accessFields);
 	}
