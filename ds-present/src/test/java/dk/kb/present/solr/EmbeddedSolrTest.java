@@ -340,6 +340,18 @@ public class EmbeddedSolrTest {
         assertEquals(950000L,  record.getFieldValue("duration_ms"));
     }
 
+    @Test
+    void testOriginMods() throws Exception {
+        SolrDocument record = singleMODSIndex(MODS_RECORD_40221e30);
+        assertEquals("ds.test", record.getFieldValue("origin"));
+    }
+    @Test
+    void testOriginPreservica() throws Exception {
+        SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
+        assertEquals("ds.test", record.getFieldValue("origin"));
+    }
+
+
     /*
      * ------- Private helper methods below --------------
      */
@@ -412,7 +424,8 @@ public class EmbeddedSolrTest {
                 "stylesheet: '" + MODS2SOLR + "'\n" +
                         "injections:\n" +
                         "  - imageserver: 'https://example.com/imageserver/'\n" +
-                        "  - old_imageserver: 'http://kb-images.kb.dk'\n";
+                        "  - old_imageserver: 'http://kb-images.kb.dk'\n" +
+                        "  - origin: 'ds.test'\n";
         YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
 
         String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, recordXml);
@@ -421,8 +434,14 @@ public class EmbeddedSolrTest {
     }
 
     private void indexPreservicaRecord(String preservicaRecord) throws Exception {
-        String solrString = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SOLR, preservicaRecord);
-        //TestUtil.prettyPrintSolrJsonFromMetadata(PRESERVICA2SOLR, preservicaRecord);
+        String yamlStr =
+                "stylesheet: '" + PRESERVICA2SOLR + "'\n" +
+                        "injections:\n" +
+                        "  - streamingserver: 'https://example.com/streamingserver/'\n" +
+                        "  - origin: 'ds.test'\n";
+        YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
+
+        String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, preservicaRecord);
         addRecordToEmbeddedServer(preservicaRecord, solrString);
     }
 

@@ -170,6 +170,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 	try {
 				SolrInputDocument document = new SolrInputDocument();
 				document.addField("id", 1);
+				document.addField("origin", "ds.test");
 				document.addField("creator_full_name", "Thomas Egense");
 				document.addField("creator_full_name", "Antoine de Saint-Exupéry");
 				document.addField("creator_full_name", "Honoré de Balzac"); 
