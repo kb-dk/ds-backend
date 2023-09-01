@@ -7,6 +7,7 @@
                xmlns:my="urn:my"
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
                xmlns:xip="http://example.com/"
+               xmlns:xsi="http://example.com/"
                version="3.0">
 
   <xsl:output method="text" />
@@ -64,7 +65,7 @@
           <xsl:value-of select="title"/>
         </f:string>
       </xsl:if>
-      <xsl:if test="titleType = 'originaltitel'">
+      <xsl:if test="titleType = 'originaltitel' and title != ''">
         <f:string key="original_title">
           <xsl:value-of select="title"/>
         </f:string>
@@ -80,9 +81,19 @@
       </xsl:if>
     </xsl:for-each>
 
-    <f:string key="notes">
-      <xsl:value-of select="normalize-space(pbcoreDescription/description)"/>
-    </f:string>
+    <!-- TODO: is notes really the right name?-->
+    <!-- TODO: currently only extracts from langomtale 1, figure out  the relationship between kortomtale og langomtale1-->
+    <xsl:for-each select="pbcoreDescription">
+      <xsl:choose>
+        <xsl:when test="descriptionType = 'langomtale1' and description != ''">
+          <f:string key="notes">
+            <xsl:value-of select="normalize-space(description)"/>
+          </f:string>
+        </xsl:when>
+      </xsl:choose>
+      <xsl:if test="description != '' ">
+      </xsl:if>
+    </xsl:for-each>
 
     <!-- Video specific transformations -->
     <xsl:for-each select="pbcoreIdentifier">

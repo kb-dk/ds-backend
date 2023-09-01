@@ -25,6 +25,8 @@ config:
               stylesheet: 'xslt/mods2schemaorg.xsl'
               injections:
                 - imageserver: ${path:config.imageservers[default=true].url}
+                - old_imageserver: ${path:config.oldimageserver.url}
+
     - SolrJSON:
         mime: 'application/json'
         transformers:
@@ -33,6 +35,8 @@ config:
               stylesheet: 'xslt/mods2solr.xsl'
               injections:
                 - imageserver: ${path:config.imageservers[default=true].url}
+                - old_imageserver: ${path:config.oldimageserver.url}
+
   # The collections available for this instance of ds-present
   collections:
     # General note: All collections are expected to support at least the views raw, mods, jsonld and solrjson.
@@ -68,9 +72,14 @@ config:
     - radiotv:
 
         # Temporary hack to make the Preservica XML block well-formed (it is missing a namespace declaration)
-        testdatahack: &TEST_DATA_HACK
+        testdatahack_xip: &TEST_DATA_HACK_XIP
           regexp: '<xip:(DeliverableUnit|Collection|Manifestation) +status="([^"]+)" *>'
           replacement: '<xip:$1 status="$2" xmlns:xip="http://example.com/">'
+          replaceall: false
+
+        testdatahack_xsi: &TEST_DATA_HACK_XSI
+          regexp: '(xsi:schemaLocation="http://www.pbcore.org/PBCore/PBCoreNamespace.html")>'
+          replacement: '$1 xmlns:xsi="http://example.com/">'
           replaceall: false
 
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
@@ -84,7 +93,8 @@ config:
           - JSON-LD:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK
+                - replace: *TEST_DATA_HACK_XIP
+                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/preservica2schemaorg.xsl'
                     injections:
@@ -94,7 +104,8 @@ config:
           - SolrJSON:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK
+                - replace: *TEST_DATA_HACK_XIP
+                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/preservica2solr.xsl'
                     injections:
