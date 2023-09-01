@@ -99,7 +99,7 @@ public class LicenseValidator {
 		output.setPresentationType(input.getPresentationType());
 		output.setQuery(query.getQuery());
 
-		ArrayList<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
+		List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
 	
 		  // merge (union) results.   
         Set<String> filteredIdsSet = new HashSet<String>();
@@ -143,7 +143,7 @@ public class LicenseValidator {
         output.setPresentationType(input.getPresentationType());
         output.setQuery(query.getQuery());
 
-        ArrayList<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
+        List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
     
           // merge (union) results.   
         Set<String> filteredIdsSet = new HashSet<String>();
