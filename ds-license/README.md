@@ -96,8 +96,8 @@ It is not possible to delete a configuration value if it is used in a license.
 ## Configuration of the Ds-license
      
 ### Property: license_solr_servers
-The configuration requires at least one Solr server for the property 'license_solr_servers'. Several Solr servers must be 
-seperated by commas. When filtering IDs all Solr servers will be called for filtering and each will be called with all IDs.
+The configuration requires at least one Solr server for the property 'license_solr_servers'.
+When filtering IDs all Solr servers will be called for filtering and each will be called with all IDs.
             
 ### Property: license_solr_filter_field
 The Solr field used for filtering. Multivalued fields allowed. This field must exist in the schema for the Solr servers.

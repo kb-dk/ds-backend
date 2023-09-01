@@ -110,8 +110,8 @@
     ## Configuration of the Ds-license
      
     ### Property: license_solr_servers
-    The configuration requires at least one Solr server for the property 'license_solr_servers'. Several Solr servers must be 
-    seperated by commas. When filtering IDs all Solr servers will be called for filtering and each will be called with all IDs.
+    The configuration requires at least one Solr server for the property 'license_solr_servers'.
+    When filtering IDs all Solr servers will be called for filtering and each will be called with all IDs.
             
     ### Property: license_solr_filter_field
     The Solr field used for filtering. Multivalued fields allowed. This field must exist in the schema for the Solr servers.
@@ -190,7 +190,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.4.12</version>
+            <version>1.4.14</version>
             <exclusions>
                 <exclusion>
                     <!-- kb-util has 2.3.3, but transitive resolving has 2.4.0 somewhere-->
@@ -417,7 +417,7 @@
             <version>5.3.0</version>
             <exclusions>
                 <exclusion>
-                    <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
+                    <!-- The slf4j-simple logs to stderr and stdout, ignoring ds-license.ds-license.ds-license.logback.xml -->
                     <artifactId>slf4j-simple</artifactId>
                     <groupId>org.slf4j</groupId>
                 </exclusion>

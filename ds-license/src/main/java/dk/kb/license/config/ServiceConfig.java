@@ -2,7 +2,9 @@ package dk.kb.license.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,7 @@ public class ServiceConfig {
     
     public static String SOLR_FILTER_ID_FIELD = null;
     public static String SOLR_FILTER_RESOURCE_ID_FIELD = null;
-    public static ArrayList<SolrServerClient> SOLR_SERVERS = null;
+    public static List<SolrServerClient> SOLR_SERVERS = null;
     
     /**
      * Besides parsing of YAML files using SnakeYAML, the YAML helper class provides convenience
@@ -37,20 +39,14 @@ public class ServiceConfig {
      */
     public static synchronized void initialize(String configFile) throws IOException {
         serviceConfig = YAML.resolveLayeredConfigs(configFile);
+        serviceConfig.setExtrapolate(true);
     
-        String solr_servers= serviceConfig.getString("config.license_solr_servers");
+        List<String> solr_servers = serviceConfig.getList("config.license_solr_servers");
         SOLR_FILTER_ID_FIELD = serviceConfig.getString("config.license_solr_filter_field");
         SOLR_FILTER_RESOURCE_ID_FIELD = serviceConfig.getString("config.license_solr_resource_filter_field");
         
-        
-        StringTokenizer tokens = new StringTokenizer(solr_servers, ",");  
-        SOLR_SERVERS  = new ArrayList<SolrServerClient>(); 
-        
-        while (tokens.hasMoreTokens()){
-          SOLR_SERVERS.add(new SolrServerClient(tokens.nextToken().trim()));               
-        }       
-            
-    
+        SOLR_SERVERS = solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
+
         log.info("Loaded solr-servers:"+solr_servers);
         log.info("Loaded solr id filter field:"+SOLR_FILTER_ID_FIELD);
         log.info("Loaded solr resourceId filter field:"+SOLR_FILTER_RESOURCE_ID_FIELD);
@@ -62,9 +58,6 @@ public class ServiceConfig {
         SOLR_FILTER_ID_FIELD = sOLR_FILTER_FIELD;
     }
 
-    
-
-    
     
     /**
      * Direct access to the backing YAML-class is used for configurations with more flexible content

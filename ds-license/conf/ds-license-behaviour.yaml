@@ -8,23 +8,24 @@
 # application config system.
 #
 #
-config:         
-  license_solr_servers: http://XXXX:50001/solr/doms.1.devel , http://XXXX:50001/solr/aviser.2.devel
-  license_solr_filter_field: identifier_local
+config:
+  # Backing Solr servers must be "true" Solr servers to avoid endless looping
+  # The servers are represented as a list as there can be more than one
+  license_solr_servers:
+    - http://localhost:10007/solr/ds
+  license_solr_filter_field: id
   license_solr_resource_filter_field: resource_id
     
     
   #change URL path to local h2 storage for unittest   
   db:  
-   url: jdbc:h2:/home/XXX/workspace/ds-license/target/h2/ds_license;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
-   driver: org.h2.Driver
-   username: ''
-   password: ''
+    url: jdbc:h2:${env:TMPDIR:-/tmp}/h2_ds_license;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    driver: org.h2.Driver
+    username: ''
+    password: ''
    
    # Example for postgres
    #url: jdbc:postgresql://localhost:5432/ds-storage
    #driver: org.postgresql.Driver
    #username: username
    #password: password
-   
-   
