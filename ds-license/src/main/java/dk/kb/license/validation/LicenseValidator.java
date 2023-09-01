@@ -164,7 +164,8 @@ public class LicenseValidator {
             throw new InvalidArgumentServiceException("Security problem: More Id's in output than input. Check for query injection.");
         }
         
-        log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size() +" using resourceId field:"+ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD);
+        //log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size() +" using resourceId field:"+ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD);
+        log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size() +" using resourceId field:"+ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD + " for input IDs:"+input.getAccessIds());
         return output;      
     }
 
