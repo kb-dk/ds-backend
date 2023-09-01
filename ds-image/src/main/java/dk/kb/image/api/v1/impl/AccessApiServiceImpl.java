@@ -3,6 +3,7 @@ package dk.kb.image.api.v1.impl;
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
 import dk.kb.image.api.v1.AccessApi;
+import dk.kb.image.model.v1.DeepzoomDZIDto;
 import dk.kb.image.model.v1.IIIFInfoDto;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -13,10 +14,12 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.DecimalMin;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.File;
 import java.util.List;
@@ -48,7 +51,32 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      */
     @Override
     public StreamingOutput getDeepzoomDZI(String imageid) throws ServiceException {
+        return rawGetDeepzoomDZI(imageid);
+    }
+
+    /*
+     * Manually specified handler for IIIF IDs containing non-escaped slashes.
+     * This will always preceed the OpenAPI-generated handler, but that should not be a problem.
+     */
+    @GET
+    @Path("/deepzoom/{imageid:.*}.dzi")
+    @Produces({ "application/json", "application/xml" })
+    @ApiOperation(value = "DeepZoom Image information Nonescaped", tags={ "Access",  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Succes!", response = DeepzoomDZIDto.class) })
+    public StreamingOutput getDeepzoomDZINonescaped(@PathParam("imageid") String imageid)
+            throws ServiceException {
+        return rawGetDeepzoomDZI(imageid);
+    }
+
+    /**
+     * Concrete implementation of the endpoint. This must be in a non-annotated method in order to be callable from
+     * {@link #getDeepzoomDZI(String)} and {@link #getDeepzoomDZINonescaped(String)}.
+     */
+    private StreamingOutput rawGetDeepzoomDZI(String imageid) throws ServiceException {
         try {
+            // This replace handles double encoding (%252F) of '/' being single-decoded to '%2F'
+            imageid = imageid.replace("%2F", "/");
             log.debug("getDeepzoomDZI(imageid='{}') called with call details: {}", imageid, getCallDetails());
             // MIME-TYPE has to be set in proxy helper
             httpServletResponse.setContentType(getMIME("xml"));
@@ -60,21 +88,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         } catch (Exception e){
             throw handleException(e);
         }
-
-        /*try {
-            DeepzoomDZIDto response = new DeepzoomDZIDto();
-        response.setTileSize(17467352);
-        response.setOverlap(-1859027536);
-        response.setFormat("k35O02");
-        DeepzoomDZISizeDto size = new DeepzoomDZISizeDto();
-        size.setWidth(-5436086360946841600L);
-        size.setHeight(3285390032067405824L);
-        response.setSize(size);
-        return response;
-        } catch (Exception e){
-            throw handleException(e);
-        } */
-
     }
 
     /**
@@ -110,7 +123,36 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public javax.ws.rs.core.StreamingOutput getDeepzoomTile(String imageid, Integer layer, String tiles, String format, Float CNT, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
+    public StreamingOutput getDeepzoomTile(
+            String imageid, Integer layer, String tiles, String format,
+            Float CNT, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
+        return rawGetDeepzoomTile(imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
+    }
+
+    /*
+     * Manually specified handler for IDs containing non-escaped slashes.
+     * This will always preceed the OpenAPI-generated handler, but that should not be a problem.
+     */
+    @GET
+    @Path("/deepzoom/{imageid:.*}_files/{layer}/{tiles}.{format}")
+    @Produces({ "image/_*" })
+    @ApiOperation(value = "DeepZoom Tile Nonescaped", tags={ "Access",  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Succes!", response = File.class) })
+    public javax.ws.rs.core.StreamingOutput getDeepzoomTileNonescaped(
+            @PathParam("imageid") String imageid, @PathParam("layer") Integer layer, @PathParam("tiles") String tiles,
+            @PathParam("format") String format, @QueryParam("CNT") @DecimalMin("0") Float CNT,
+            @QueryParam("GAM") Float GAM, @QueryParam("CMP")  String CMP, @QueryParam("CTW")  String CTW,
+            @QueryParam("INV")  Boolean INV, @QueryParam("COL")  String COL) throws ServiceException {
+        return rawGetDeepzoomTile(imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
+    }
+
+
+    /**
+     * Concrete implementation of the endpoint. This must be in a non-annotated method in order to be callable from
+     * {@link #getDeepzoomTile} {@link #getDeepzoomTileNonescaped}.
+     */
+    private StreamingOutput rawGetDeepzoomTile(String imageid, Integer layer, String tiles, String format, Float CNT, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
         try {
             log.debug("getDeepzoomTile(imageid='{}', layer={}, tiles='{}', format='{}', " +
                       "CNT={}, GAM={}, CMP='{}', CTW='{}', INV={}, COL='{}') called with call details: {}",
@@ -166,6 +208,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      */
     private javax.ws.rs.core.StreamingOutput rawGetImageInformation(String identifier, String format) throws ServiceException {
         try {
+            // This replace handles double encoding (%252F) of '/' being single-decoded to '%2F'
+            identifier = identifier.replace("%2F", "/");
             log.debug("getImageInformation(identifier='{}' format='{}') called with call details: {}",
                       identifier, format, getCallDetails());
             String[] elements = identifier.split("[/\\\\]");
