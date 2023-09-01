@@ -15,6 +15,7 @@
   <!-- Provided by the Java code that calls the Transformer. (Key,Value) pairs are given in a map -->
   <xsl:param name="streamingserver"/>
   <xsl:param name="recordID"/>
+  <xsl:param name="origin"/>
 
   <xsl:template match="/" >
     <xsl:variable name="solrjson">
@@ -22,6 +23,9 @@
 
         <f:string key="id">
           <xsl:value-of select="$recordID"/>
+        </f:string>
+        <f:string key="origin">
+          <xsl:value-of select="$origin"/>
         </f:string>
         <!-- TODO: Not sure if this accession ref is correctly understood-->
         <f:string key="accession_number">

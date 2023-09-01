@@ -194,5 +194,18 @@ class XSLTSolrTransformerTest extends XSLTTransformerTestBase {
 		assertContains(RECORD_FM, "\"production_date_digital_surrogate\":\"2018-01-15T12:26:00.000+01:00\"");
 	}
 
+	@Test
+	void testOrigin() throws Exception {
+		String yamlStr =
+				"stylesheet: '" + MODS2SOLR + "'\n" +
+						"injections:\n" +
+						"  - imageserver: 'https://example.com/imageserver/'\n" +
+						"  - old_imageserver: 'http://kb-images.kb.dk'\n" +
+						"  - origin: 'ds.test'\n";
+		YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
+		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, RECORD_40221e30);
+		assertTrue(solrString.contains("\"origin\":\"ds.test\""));
+	}
+
 
 }

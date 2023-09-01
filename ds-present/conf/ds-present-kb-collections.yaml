@@ -26,6 +26,7 @@ config:
               injections:
                 - imageserver: ${path:config.imageservers[default=true].url}
                 - old_imageserver: ${path:config.oldimageserver.url}
+                - origin: ${path:config.collections[4].samlingsbilleder.base}
 
     - SolrJSON:
         mime: 'application/json'
@@ -36,6 +37,7 @@ config:
               injections:
                 - imageserver: ${path:config.imageservers[default=true].url}
                 - old_imageserver: ${path:config.oldimageserver.url}
+                - origin: ${path:config.collections[4].samlingsbilleder.base}
 
   # The collections available for this instance of ds-present
   collections:
@@ -101,6 +103,7 @@ config:
                       #- imageserver: ${path:config.imageservers[default=true].url}
                       - streamingserver: "here_should_be_a_wowza_url"
                       - old_imageserver: ${path:config.oldimageserver.url}
+                      - origin: ${path:config.collections[5].radiotv.base}
           - SolrJSON:
               mime: 'application/json'
               transformers:
@@ -112,6 +115,7 @@ config:
                       # - imageserver: ${path:config.imageservers[default=true].url}
                       - streamingserver: "here_should_be_a_wowza_url"
                       - old_imageserver: ${path:config.oldimageserver.url}
+                      - origin: ${path:config.collections[5].radiotv.base}
 
 
 

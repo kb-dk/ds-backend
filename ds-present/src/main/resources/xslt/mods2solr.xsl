@@ -30,6 +30,7 @@
        <xsl:param name="access_ophavsret_tekst"/>
        <xsl:param name="imageserver"/>
        <xsl:param name="old_imageserver"/>
+       <xsl:param name="origin"/>
        <xsl:param name="recordID"/> <!-- Guaranteed to be set -->
 
 
@@ -135,6 +136,9 @@
             <!-- TODO: We should store the original ID in some field, e.g. origin_id or source_id -->
           <!-- <xsl:value-of select="substring-after(m:identifier[@type='uri'],'urn:uuid:')"/>-->
           <xsl:value-of select="$recordID"/>
+        </f:string>
+        <f:string key="origin">
+          <xsl:value-of select="$origin"/>
         </f:string>
         <!-- Extracts local identifier,
              Which in other terms is a local filename. -->

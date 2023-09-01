@@ -74,8 +74,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
 
     @Test
+    public void testOrigin(){
+        assertContains(RECORD_5a5357be, "\"origin\":\"ds.test\"");
+    }
+    @Test
     public void prettyPrintTransformation() throws Exception {
-        TestUtil.prettyPrintSolrJsonFromMetadata(PRESERVICA2SOLR, RECORD_5a5357be);
+        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_5a5357be);
     }
 
 

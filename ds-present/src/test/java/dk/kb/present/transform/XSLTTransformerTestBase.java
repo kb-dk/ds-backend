@@ -16,15 +16,19 @@ package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
 import dk.kb.present.util.TestFileProvider;
+import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static dk.kb.present.solr.EmbeddedSolrTest.PRESERVICA2SOLR;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -112,8 +116,14 @@ public abstract class XSLTTransformerTestBase {
         }
         String solrString;
         try {
-            solrString = TestUtil.getTransformedWithAccessFieldsAdded(getXSLT(), record);
-        } catch (IOException e) {
+            String yamlStr =
+                    "stylesheet: '" + getXSLT() + "'\n" +
+                            "injections:\n" +
+                            "  - streamingserver: 'example.com/streaming'\n" +
+                            "  - origin: 'ds.test'\n";
+            YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
+            solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, record);
+        } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
         }
