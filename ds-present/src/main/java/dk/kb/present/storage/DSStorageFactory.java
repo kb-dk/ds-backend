@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 public class DSStorageFactory implements StorageFactory {
     private static final Logger log = LoggerFactory.getLogger(DSStorageFactory.class);
 
-    private static final String RECORD_BASE_KEY = "base";
+    private static final String RECORD_ORIGIN_KEY = "origin";
     private static final String DBSERVERURL_KEY = "dbserverurl";
     public static final String BATCH_COUNT_KEY = "batch.count";
     public static final int BATCH_COUNT_DEFAULT = 100;
@@ -36,7 +36,7 @@ public class DSStorageFactory implements StorageFactory {
 
     @Override
     public Storage createStorage(String id, YAML conf, boolean isDefault) throws Exception {
-        String origin = conf.getString(RECORD_BASE_KEY, null);
+        String origin = conf.getString(RECORD_ORIGIN_KEY, null);
         if (origin == null) {
             log.warn("For the DSStorage '" + id + "', the origin==null, calls to getRecords will fail");
         }

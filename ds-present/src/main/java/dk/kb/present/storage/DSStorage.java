@@ -55,7 +55,7 @@ public class DSStorage implements Storage {
     /**
      * Create a Storage connection to a ds-storage server.
      * @param id the ID for the storage, used for connecting collections to storages.
-     * @param origin the base used for requests to {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
+     * @param origin the origin used for requests to {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
      * @param storageUrl The full url to the service. Example: http://localhost:9072/ds-storage/v1/
      * @param batchCount the number of records to request in one call when paging using
      *                   {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
@@ -136,7 +136,7 @@ public class DSStorage implements Storage {
                     String message = String.format(
                             Locale.ROOT,
                             "Exception making remote call to ds-storage client " +
-                            "getRecordsModifiedAfter(base='%s', mTime=%d, maxRecords=%d)",
+                            "getRecordsModifiedAfter(origin='%s', mTime=%d, maxRecords=%d)",
                             finalOrigin, mTime, maxRecords);
                     log.warn(message, e);
                     throw new InternalServiceException(message, e);
