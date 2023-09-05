@@ -102,9 +102,9 @@ public class DSStorage implements Storage {
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecords(final String recordBase, long mTime, long maxRecords) {
-        log.debug("getDSRecords(recordBase='{}', mTime={}, maxRecords={}) called", recordBase, mTime, maxRecords);
-        String finalRecordBase = recordBase == null ? this.recordBase : recordBase;
+    public Stream<DsRecordDto> getDSRecords(final String origin, long mTime, long maxRecords) {
+        log.debug("getDSRecords(recordBase='{}', mTime={}, maxRecords={}) called", origin, mTime, maxRecords);
+        String finalRecordBase = origin == null ? this.recordBase : origin;
 
         if (finalRecordBase == null || finalRecordBase.isEmpty()) {
             throw new InternalServiceException(

@@ -131,9 +131,9 @@ public class MultiStorage implements Storage {
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecords(String recordBase, long mTime, long maxRecords) {
+    public Stream<DsRecordDto> getDSRecords(String origin, long mTime, long maxRecords) {
         List<Stream<DsRecordDto>> providers = getStorages()
-                .map(storage -> storage.getDSRecords(recordBase, mTime, maxRecords))
+                .map(storage -> storage.getDSRecords(origin, mTime, maxRecords))
                 .collect(Collectors.toList());
 
         return Combiner.mergeStreams(providers, Comparator.comparingLong(DsRecordDto::getmTime))

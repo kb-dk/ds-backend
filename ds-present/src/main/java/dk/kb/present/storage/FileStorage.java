@@ -241,7 +241,7 @@ public class FileStorage implements Storage {
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecords(String recordBase, long mTime, long maxRecords) {
+    public Stream<DsRecordDto> getDSRecords(String origin, long mTime, long maxRecords) {
         // To keep memory usage down we create shallow DsRecordDtos (aka without data) and only
         // populate them when delivering the next stream element
 
