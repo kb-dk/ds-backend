@@ -12,6 +12,7 @@
   <xsl:output method="text"/>
 
   <xsl:param name="streamingserver"/>
+  <xsl:param name="origin"/>
   <xsl:param name="recordID"/>
 
   <xsl:template match="/">
@@ -138,6 +139,11 @@
       <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
       <xsl:if test="pbcoreIdentifier">
         <f:array key="identifier">
+          <f:map>
+            <f:string key="@type">PropertyValue</f:string>
+            <f:string key="PropertyID">Origin</f:string>
+            <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+          </f:map>
           <!-- TODO: Filter away empty identifiers -->
           <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
           <xsl:for-each select="pbcoreIdentifier">

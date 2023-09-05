@@ -16,6 +16,7 @@
     <xsl:param name="sep_string" select="'/'"/>
     <!--Properties injected from config -->
     <xsl:param name="imageserver"/>
+    <xsl:param name="origin"/>
     <xsl:param name="recordID"/> <!-- Guaranteed to be set -->
 
     <!--Used to escape single quotes from config-->
@@ -493,6 +494,11 @@
                     </xsl:if>
                     <!--Extracts all possible identifiers-->
                     <f:array key="identifier">
+                        <f:map>
+                            <f:string key="@type">PropertyValue</f:string>
+                            <f:string key="PropertyID">Origin</f:string>
+                            <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+                        </f:map>
                         <xsl:for-each select="m:identifier[@type='uri']">
                             <f:map>
                                 <f:string key="@type">PropertyValue</f:string>

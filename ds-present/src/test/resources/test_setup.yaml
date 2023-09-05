@@ -57,12 +57,12 @@ config:
         origin: 'ds.test'
         description: 'Local records, mostly biographical'
         # Temporary hack to make the Preservica XML block well-formed (it is missing a namespace declaration)
-        testdatahack: &TEST_DATA_HACK
+        testdatahack: &TEST_DATA_HACK_XIP
           regexp: '<xip:(DeliverableUnit|Collection|Manifestation) +status="([^"]+)" *>'
           replacement: '<xip:$1 status="$2" xmlns:xip="http://example.com/">'
           replaceall: false
 
-        testdatahack2: &TEST_DATA_HACK2
+        testdatahack2: &TEST_DATA_HACK_XSI
           regexp: '(xsi:schemaLocation="http://www.pbcore.org/PBCore/PBCoreNamespace.html")>'
           replacement: '$1 xmlns:xsi="http://example.com/">'
           replaceall: false
@@ -75,8 +75,8 @@ config:
           - json-ld:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK
-                - replace: *TEST_DATA_HACK2
+                - replace: *TEST_DATA_HACK_XIP
+                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/mods2schemaorg.xsl'
                     injections:
@@ -85,8 +85,8 @@ config:
           - solrjson:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK
-                - replace: *TEST_DATA_HACK2
+                - replace: *TEST_DATA_HACK_XIP
+                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/mods2solr.xsl'
                     injections:
