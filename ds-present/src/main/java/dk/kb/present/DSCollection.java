@@ -23,6 +23,7 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 
+import dk.kb.util.yaml.NotFoundException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,15 +91,20 @@ public class DSCollection {
      */
     public DSCollection(YAML conf, StorageHandler storageHandler) {
         id = conf.keySet().stream().findFirst().orElseThrow();
-        origin =  conf.getSubMap(id).getString("origin");
-        conf = conf.getSubMap(id); // There must be some properties for a storage
-        prefix = conf.getString(PREFIX_KEY);
-        description = conf.getString(DESCRIPTION_KEY, null);
-        storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
-        views = conf.getYAMLList(VIEWS_KEY)
-                .stream()
-                .map(yaml -> new View(yaml, origin))
-                .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
+        try {
+            origin = conf.getSubMap(id).getString("origin");
+            conf = conf.getSubMap(id); // There must be some properties for a storage
+            prefix = conf.getString(PREFIX_KEY);
+            description = conf.getString(DESCRIPTION_KEY, null);
+            storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
+            views = conf.getYAMLList(VIEWS_KEY)
+                    .stream()
+                    .map(yaml -> new View(yaml, origin))
+                    .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
+        } catch (NotFoundException e) {
+            throw new IllegalArgumentException(
+                    "Mandatory property '" + e.getPath() + "' not present for Collection '" + id + "'");
+        }
         log.info("Created " + this);
     }
 
