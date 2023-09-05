@@ -693,11 +693,11 @@
           <xsl:variable name="imageIdentifierNoExtension">
             <xsl:value-of select="f:substring-before($imageIdentifier, '.jp')"/>
           </xsl:variable>
-          <xsl:variable name="imageIdentifierDoubleEncoded">
-            <xsl:value-of select="f:encode-for-uri(f:encode-for-uri($imageIdentifierNoExtension))"/>
+          <xsl:variable name="imageIdentifierEncoded">
+            <xsl:value-of select="f:encode-for-uri($imageIdentifierNoExtension)"/>
           </xsl:variable>
           <xsl:variable name="thumbnailUrl">
-            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, '/full/', f:encode-for-uri('!150,150'), '/0/default.jpg')"/>
+            <xsl:value-of select="concat($imageserver, $imageIdentifierEncoded, '/full/', f:encode-for-uri('!150,150'), '/0/default.jpg')"/>
           </xsl:variable>
           <f:array key="resource_id">
             <f:string>
@@ -705,7 +705,7 @@
             </f:string>
           </f:array>
           <f:string key="image_iiif_id">
-            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
+            <xsl:value-of select="concat($imageserver, $imageIdentifierEncoded)"/>
           </f:string>
           <f:string key="thumbnail">
             <xsl:value-of select="$thumbnailUrl"/>

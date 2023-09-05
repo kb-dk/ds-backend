@@ -106,11 +106,11 @@
                                               m:relatedItem[@type='otherFormat']/m:identifier[@displayLabel='image'][@type='uri'],
                                               'http://kb-images.kb.dk/'), '.jp')"/>
                     </xsl:variable>
-                    <xsl:variable name="imageIdentifierDoubleEncoded">
-                        <xsl:value-of select="f:encode-for-uri(f:encode-for-uri($imageIdentifierNoExtension))"/>
+                    <xsl:variable name="imageIdentifierEncoded">
+                        <xsl:value-of select="f:encode-for-uri($imageIdentifierNoExtension)"/>
                     </xsl:variable>
                     <xsl:variable name="imageUrl">
-                        <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded, concat('/full/', f:encode-for-uri('!150,150'), '/0/default.jpg'))"/>
+                        <xsl:value-of select="concat($imageserver, $imageIdentifierEncoded, concat('/full/', f:encode-for-uri('!150,150'), '/0/default.jpg'))"/>
                     </xsl:variable>
 
                     <f:string key="url">
@@ -592,7 +592,7 @@
                             </f:string>
                         </xsl:if>
                         <f:string key="contentURL">
-                            <xsl:value-of select="concat($imageserver, $imageIdentifierDoubleEncoded)"/>
+                            <xsl:value-of select="concat($imageserver, $imageIdentifierEncoded)"/>
                         </f:string>
                         <f:string key="thumbnail">
                             <xsl:value-of select="$imageUrl"/>
