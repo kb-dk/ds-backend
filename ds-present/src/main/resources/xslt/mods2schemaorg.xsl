@@ -110,7 +110,7 @@
                         <xsl:value-of select="f:encode-for-uri($imageIdentifierNoExtension)"/>
                     </xsl:variable>
                     <xsl:variable name="imageUrl">
-                        <xsl:value-of select="concat($imageserver, $imageIdentifierEncoded, concat('/full/', f:encode-for-uri('!150,150'), '/0/default.jpg'))"/>
+                        <xsl:value-of select="concat($imageserver, $imageIdentifierEncoded, '/full/', f:encode-for-uri('!150,150'), '/0/default.jpg')"/>
                     </xsl:variable>
 
                     <f:string key="url">
