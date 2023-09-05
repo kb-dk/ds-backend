@@ -119,6 +119,7 @@ config:
     # Uses the default storage, which connects to a running ds-storage instance
     - remote: # ds-present internal
         prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
+        origin: "old.doms.radio"
         description: 'Images from the collections at the Royal Danish Library'
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
         views:
@@ -148,6 +149,7 @@ config:
     # Straight forward collection with the core format being MODS, using test data
     - local: # ds-present internal
         prefix: 'local.test' # The prefix to match on incoming IDs
+        origin: 'ds.local'
         description: 'Selected image data from the collections at the Royal Danish Library'
         storage: 'test' # Not production here
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
