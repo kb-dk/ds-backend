@@ -137,7 +137,7 @@ public class DSCollection {
      */
     public Stream<DsRecordDto> getDSRecords(Long mTime, Long maxRecords, String format) {
         View view = getView(format);
-        log.debug("Calling storage.getDSRecords(recordBase='{}', mTime={}, maxRecords={})",
+        log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
             return storage.getDSRecords(origin, mTime, maxRecords)

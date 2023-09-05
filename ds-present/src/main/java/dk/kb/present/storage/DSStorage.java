@@ -42,7 +42,7 @@ public class DSStorage implements Storage {
     public static final String TYPE = "ds-storage";
 
     private final String id;
-    private final String recordBase;
+    private final String origin;
 
     private final String storageUrl;
     private final int batchCount;
@@ -55,26 +55,26 @@ public class DSStorage implements Storage {
     /**
      * Create a Storage connection to a ds-storage server.
      * @param id the ID for the storage, used for connecting collections to storages.
-     * @param recordBase the base used for requests to {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}. 
+     * @param origin the base used for requests to {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
      * @param storageUrl The full url to the service. Example: http://localhost:9072/ds-storage/v1/
      * @param batchCount the number of records to request in one call when paging using
      *                   {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
      * @param isDefault if true, this is the default storage for collections.
      */
-    public DSStorage(String id, String recordBase,
+    public DSStorage(String id, String origin,
                      String storageUrl,
                      int batchCount, boolean isDefault) {
         this.id = id;
         
         this.storageUrl = storageUrl;
         this.batchCount = batchCount;
-        this.recordBase = recordBase;
+        this.origin = origin;
 
         this.isDefault = isDefault;
        
 
         storageClient = getDsStorageApiClient(storageUrl);
-//        if (isEmpty(id) || isEmpty(scheme) || isEmpty(host) || isEmpty(basepath) || isEmpty(recordBase)) {
+//        if (isEmpty(id) || isEmpty(scheme) || isEmpty(host) || isEmpty(basepath) || isEmpty(origin)) {
 //            throw new IllegalArgumentException("All parameters must be specified for " + this);
 //        }
         log.info("Created " + this);
@@ -103,12 +103,12 @@ public class DSStorage implements Storage {
 
     @Override
     public Stream<DsRecordDto> getDSRecords(final String origin, long mTime, long maxRecords) {
-        log.debug("getDSRecords(recordBase='{}', mTime={}, maxRecords={}) called", origin, mTime, maxRecords);
-        String finalRecordBase = origin == null ? this.recordBase : origin;
+        log.debug("getDSRecords(origin='{}', mTime={}, maxRecords={}) called", origin, mTime, maxRecords);
+        String finalOrigin = origin == null ? this.origin : origin;
 
-        if (finalRecordBase == null || finalRecordBase.isEmpty()) {
+        if (finalOrigin == null || finalOrigin.isEmpty()) {
             throw new InternalServiceException(
-                    "recordBase not defined for DSStorage '" + getID() + "'. Only single record lookups are possible");
+                    "origin not defined for DSStorage '" + getID() + "'. Only single record lookups are possible");
         }
 
         // Unfortunately the OpenAPI generator creates a client which requests all records as a list in a single call
@@ -131,13 +131,13 @@ public class DSStorage implements Storage {
 
                 long request = pending < batchCount ? (int) pending : batchCount;
                 try {
-                    records = storageClient.getRecordsModifiedAfter(finalRecordBase, lastMTime.get(), request);
+                    records = storageClient.getRecordsModifiedAfter(finalOrigin, lastMTime.get(), request);
                 } catch (ApiException e) {
                     String message = String.format(
                             Locale.ROOT,
                             "Exception making remote call to ds-storage client " +
                             "getRecordsModifiedAfter(base='%s', mTime=%d, maxRecords=%d)",
-                            finalRecordBase, mTime, maxRecords);
+                            finalOrigin, mTime, maxRecords);
                     log.warn(message, e);
                     throw new InternalServiceException(message, e);
                 }
@@ -203,7 +203,7 @@ public class DSStorage implements Storage {
                "id='" + id + '\'' +               
                ", storageUrl='" + storageUrl + '\'' +
                ", batchCount='" + batchCount + '\'' +
-               ", recordBase='" + recordBase + '\'' +
+               ", origin='" + origin + '\'' +
                ", isDefault=" + isDefault +
                ')';
     }

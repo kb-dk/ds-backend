@@ -36,14 +36,14 @@ public class DSStorageFactory implements StorageFactory {
 
     @Override
     public Storage createStorage(String id, YAML conf, boolean isDefault) throws Exception {
-        String recordBase = conf.getString(RECORD_BASE_KEY, null);
-        if (recordBase == null) {
-            log.warn("For the DSStorage '" + id + "', the recordBase==null, calls to getRecords will fail");
+        String origin = conf.getString(RECORD_BASE_KEY, null);
+        if (origin == null) {
+            log.warn("For the DSStorage '" + id + "', the origin==null, calls to getRecords will fail");
         }
         String  dbServerUrl= conf.getString(DBSERVERURL_KEY);
         
         int batchCount = conf.getInteger(BATCH_COUNT_KEY, BATCH_COUNT_DEFAULT);
 
-        return new DSStorage(id, recordBase, dbServerUrl, batchCount, isDefault);
+        return new DSStorage(id, origin, dbServerUrl, batchCount, isDefault);
     }
 }

@@ -46,12 +46,12 @@ public class ExportWriterFactory {
      * Wrap the given OutputStream and return an ExportWriter, serializing to the export format derived from httpHeaders
      * and format. Sample usage from ServiceImpl:
      * <pre>
-     public StreamingOutput getRecordsModifiedAfter(String recordBase, Long mTime, Long maxRecords, String format) {
+     public StreamingOutput getRecordsModifiedAfter(String origin, Long mTime, Long maxRecords, String format) {
          return output -> {
              try (ExportWriter writer = ExportWriterFactory.wrap(
                      output, httpServletResponse, httpHeaders,
                      format, ExportWriterFactory.FORMAT.jsonl, false, "records")) {
-             Stream<RecordDto> records = Store.getRecordStream(recordBase, mTime, maxRecords);
+             Stream<RecordDto> records = Store.getRecordStream(origin, mTime, maxRecords);
              records.forEach(record -> writer.write(record);
          }
         };
@@ -98,11 +98,11 @@ public class ExportWriterFactory {
      * CSV, JSON, JSONL as well as XML as export formats.
      * Sample usage from ServiceImpl:
      * <pre>
-     public StreamingOutput getRecordsModifiedAfter(String recordBase, Long mTime, Long maxRecords) {
+     public StreamingOutput getRecordsModifiedAfter(String origin, Long mTime, Long maxRecords) {
          return output -> {
              try (ExportWriter writer = ExportWriterFactory.wrap(
                      output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records")) {
-                 Stream<RecordDto> records = Store.getRecordStream(recordBase, mTime, maxRecords);
+                 Stream<RecordDto> records = Store.getRecordStream(origin, mTime, maxRecords);
                  records.forEach(record -> writer.write(record);
              }
          };
