@@ -47,7 +47,7 @@ config:
     - imageshca:
         description: 'Hans Christian Andersen images from the collections at the Royal Danish Library'
         prefix: 'kb.images.billed.hca' # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
-        origin: 'kb.images.billed.hca' # Overrides the default base for the storage
+        origin: 'kb.images.billed.hca' # Overrides the default origin for the storage
         views: *MODS_IMAGE_VIEWS
     - imagesjsmss:
         description: 'Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library'
