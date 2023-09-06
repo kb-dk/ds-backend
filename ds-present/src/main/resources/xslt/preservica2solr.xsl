@@ -6,8 +6,8 @@
                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                xmlns:my="urn:my"
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
-               xmlns:xip="http://example.com/"
-               xmlns:xsi="http://example.com/"
+               xmlns:xip="http://www.tessella.com/XIP/v4"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                version="3.0">
 
   <xsl:output method="text" />

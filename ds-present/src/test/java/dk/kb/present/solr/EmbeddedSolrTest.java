@@ -337,6 +337,7 @@ public class EmbeddedSolrTest {
     @Test
     void testPreservicaDuration() throws Exception {
         SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
+        System.out.println(record);
         assertEquals(950000L,  record.getFieldValue("duration_ms"));
     }
 
