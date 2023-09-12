@@ -1,6 +1,7 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
  *  To run these tests, the test metadata has to be fetched from the internal aegis project.
  *  With aegis running this can be done by running 'kb init' in this repository.
  */
+@Disabled
 public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase {
 
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";

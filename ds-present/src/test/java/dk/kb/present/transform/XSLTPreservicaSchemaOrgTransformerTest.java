@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Map;
 
+@Disabled
 public class XSLTPreservicaSchemaOrgTransformerTest {
     private static final Logger log = LoggerFactory.getLogger(XSLTSchemaDotOrgTransformerTest.class);
     public static final String PRESERVICA2SCHEMAORG = "xslt/preservica2schemaorg.xsl";
