@@ -1,7 +1,14 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
+import dk.kb.util.Resolver;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  *
@@ -17,6 +24,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Override
     String getXSLT() {
         return PRESERVICA2SOLR;
+    }
+
+    @BeforeAll
+    public static void beforeMethod() {
+        Assumptions.assumeTrue(Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null);
     }
 
     @Test
