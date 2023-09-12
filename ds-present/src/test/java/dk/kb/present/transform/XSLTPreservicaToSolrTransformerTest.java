@@ -1,15 +1,20 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
-import org.junit.jupiter.api.Disabled;
+import dk.kb.util.Resolver;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  *
  *  To run these tests, the test metadata has to be fetched from the internal aegis project.
  *  With aegis running this can be done by running 'kb init' in this repository.
  */
-@Disabled
 public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase {
 
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
@@ -19,6 +24,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Override
     String getXSLT() {
         return PRESERVICA2SOLR;
+    }
+
+    @BeforeAll
+    public static void beforeMethod() {
+        Assumptions.assumeTrue(Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null);
     }
 
     @Test

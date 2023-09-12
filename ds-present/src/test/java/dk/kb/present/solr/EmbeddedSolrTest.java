@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
+import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
@@ -17,6 +18,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.CoreContainer;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -330,15 +332,22 @@ public class EmbeddedSolrTest {
 
     @Test
     void testPreservicaPremiere() throws Exception {
-        SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
-        assertFalse((Boolean) record.getFieldValue("premiere"));
+        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null) {
+            SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
+            assertFalse((Boolean) record.getFieldValue("premiere"));
+        } else {
+            log.info("Preservica test files are not present. Embedded Solr tests for preservica metadata are not run.");
+        }
     }
 
     @Test
     void testPreservicaDuration() throws Exception {
-        SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
-        System.out.println(record);
-        assertEquals(950000L,  record.getFieldValue("duration_ms"));
+        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null) {
+            SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
+            assertEquals(950000L, record.getFieldValue("duration_ms"));
+        } else {
+            log.info("Preservica test files are not present. Embedded Solr tests for preservica metadata are not run.");
+        }
     }
 
     @Test
@@ -348,8 +357,13 @@ public class EmbeddedSolrTest {
     }
     @Test
     void testOriginPreservica() throws Exception {
-        SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
-        assertEquals("ds.test", record.getFieldValue("origin"));
+        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null){
+            SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
+            assertEquals("ds.test", record.getFieldValue("origin"));
+        } else {
+          log.info("Preservica test files are not present. Embedded Solr tests for preservica metadata are not run.");
+        }
+
     }
 
 
