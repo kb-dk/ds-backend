@@ -29,6 +29,9 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
     @BeforeAll
     public static void beforeMethod() {
+        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") == null){
+            log.warn("Internal test files are not present. Unittest 'XSLTPreservicaSchemaOrgTransformerTest' is therefore not run.");
+        }
         Assumptions.assumeTrue(Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null);
     }
 
