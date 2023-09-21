@@ -28,6 +28,8 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -117,8 +119,10 @@ public class DSCollection {
      */
     public String getRecord(String recordID, String format) throws ServiceException {
         View view = getView(format);
-        String record = storage.getRecord(recordID);
-        return view.apply(recordID, record);
+        DsRecordDto record = storage.getDSRecord(recordID);
+        String relation = getRelation(record);
+        String recordData = record.getData();
+        return view.apply(recordID, recordData, relation);
     }
 
     /**
@@ -149,7 +153,8 @@ public class DSCollection {
             return storage.getDSRecords(origin, mTime, maxRecords)
                     .peek(record -> {
                         try {
-                            record.data(view.apply(record.getId(), record.getData()));
+                            // TODO: Make this method work with relations as well
+                            record.data(view.apply(record.getId(), record.getData(), ""));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(
                                     "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
@@ -161,6 +166,29 @@ public class DSCollection {
                      getId(), mTime, maxRecords, e);
             throw new InternalServiceException(
                     "Internal exception requesting records from collection '" + getId() + "' in format " + format);
+        }
+    }
+
+    /**
+     * Extract related records from storage if present in input record.
+     * @param record     to extract relations for.
+     * @return the string value of the related record for the input record.
+     */
+    private String getRelation(DsRecordDto record) {
+        String parentId = record.getParentId();
+        List<String> childrenIds = record.getChildrenIds();
+
+        if (parentId != null){
+            String parent = "";
+            parent = storage.getRecord(record.getParentId());
+            return parent;
+        } else if (childrenIds != null && !childrenIds.isEmpty()){
+            List<String> children = new ArrayList<>();
+            childrenIds.stream().map(id -> children.add(storage.getRecord(id)));
+            // TODO: Make method return correctly for children
+            return children.toString();
+        } else {
+            return "";
         }
     }
 
