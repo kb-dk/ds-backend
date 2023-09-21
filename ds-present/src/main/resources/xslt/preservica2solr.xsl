@@ -16,11 +16,15 @@
   <xsl:param name="streamingserver"/>
   <xsl:param name="recordID"/>
   <xsl:param name="origin"/>
+  <xsl:param name="relation"/>
 
   <xsl:template match="/" >
     <xsl:variable name="solrjson">
       <f:map>
 
+        <f:string key="relation_test">
+          <xsl:value-of select="$relation"/>
+        </f:string>
         <f:string key="id">
           <xsl:value-of select="$recordID"/>
         </f:string>

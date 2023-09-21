@@ -18,6 +18,7 @@ import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
+import org.apache.commons.lang3.function.TriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ import java.util.function.BiFunction;
  * A view is at the core a list of {@link dk.kb.present.transform.DSTransformer}s.
  * It takes a pair of {@code recordID, recordContent} and return transformed recordContent.
  */
-public class View extends ArrayList<DSTransformer> implements BiFunction<String, String, String> {
+public class View extends ArrayList<DSTransformer> implements TriFunction<String, String, String, String> {
     private static final Logger log = LoggerFactory.getLogger(View.class);
 
     private static final String MIME_KEY = "mime";
@@ -84,10 +85,11 @@ public class View extends ArrayList<DSTransformer> implements BiFunction<String,
     }
 
     @Override
-    public String apply(String recordID, String content) {
+    public String apply(String recordID, String content, String relation) {
         final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", recordID);
         metadata.put("origin", origin);
+        metadata.put("relation", relation);
         for (DSTransformer transformer: this) {
             try {
                 content = transformer.apply(content, metadata);
