@@ -126,7 +126,7 @@ public class DSCollection {
     public String getRecord(String recordID, String format) throws ServiceException {
         View view = getView(format);
         DsRecordDto record = storage.getDSRecord(recordID);
-        String relation = getRelation(record);
+        String relation = getChildRecord(record);
         String recordData = record.getData();
         return view.apply(recordID, recordData, relation);
     }
@@ -180,27 +180,31 @@ public class DSCollection {
      * @param record     to extract children for.
      * @return the string value of the related record for the input record.
      */
-    private String getRelation(DsRecordDto record) {
+    private String getChildRecord(DsRecordDto record) {
 
         List<String> childrenIds = record.getChildrenIds();
-        log.warn("ChildrenIds is of length '{}' and has the following values: '{}'", childrenIds.size(), childrenIds);
         List<String> children = new ArrayList<>();
 
         if (childrenIds != null && !childrenIds.isEmpty()){
-            childrenIds.stream().map(id -> children.add(getChildUri(id)));
-            // TODO: Make method return correctly for children
+            childrenIds.forEach(id -> children.add(getRawUri(id)));
+            // TODO: Figure how to choose correct manifestation for record, if more than one is present
+            // Return first child record, but if there are multiple presentation manifestations,
+            // the rest are currently not added to the transformation
             return children.get(0);
         } else {
             return "";
         }
     }
 
-    private static String getChildUri(String id) {
-        String childId = URLEncoder.encode(id, StandardCharsets.UTF_8);
-
-        String childURI = getchildendpoint  + childId + "?format=raw";
-        log.info("ChildURI is: " + childURI);
-        return childURI;
+    /**
+     * Construct a URI for child records pointing towards the raw representation of the child record in ds-present.
+     * @param id id of record to construct URI for.
+     * @return   the URI for the input record.
+     */
+    private static String getRawUri(String id) {
+        String encodedId = URLEncoder.encode(id, StandardCharsets.UTF_8);
+        String rawRecordUri = getchildendpoint  + encodedId + "?format=raw";
+        return rawRecordUri;
     }
 
     /**
