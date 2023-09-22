@@ -159,8 +159,8 @@ public class DSCollection {
             return storage.getDSRecords(origin, mTime, maxRecords)
                     .peek(record -> {
                         try {
-                            // TODO: Make this method work with relations as well
-                            record.data(view.apply(record.getId(), record.getData(), ""));
+                            String relation = getChildRecord(record);
+                            record.data(view.apply(record.getId(), record.getData(), relation));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(
                                     "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
