@@ -51,7 +51,7 @@ public class DSCollection {
     private static final String STORAGE_KEY = "storage";
     private static final String ORIGIN_KEY = "origin";
     private static final String VIEWS_KEY = "views";
-    private static final String GET_CHILD_KEY = "getchildendpoint";
+    private static final String GET_RECORD_ENDPOINT_KEY = "getrecordendpoint";
 
     /**
      * The ID of the collection, primarily used for debugging and configuration.
@@ -87,7 +87,7 @@ public class DSCollection {
      */
     private final Map<String, View> views; // keys are lowercase
 
-    private static String getchildendpoint;
+    private static String getRecordEndpoint;
 
     /**
      * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
@@ -104,7 +104,7 @@ public class DSCollection {
             prefix = conf.getString(PREFIX_KEY);
             description = conf.getString(DESCRIPTION_KEY, null);
             storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
-            getchildendpoint = conf.getString(GET_CHILD_KEY);
+            getRecordEndpoint = conf.getString(GET_RECORD_ENDPOINT_KEY);
             views = conf.getYAMLList(VIEWS_KEY)
                     .stream()
                     .map(yaml -> new View(yaml, origin))
@@ -203,7 +203,7 @@ public class DSCollection {
      */
     private static String getRawUri(String id) {
         String encodedId = URLEncoder.encode(id, StandardCharsets.UTF_8);
-        String rawRecordUri = getchildendpoint  + encodedId + "?format=raw";
+        String rawRecordUri = getRecordEndpoint + encodedId + "?format=raw";
         return rawRecordUri;
     }
 
