@@ -14,9 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 
 
@@ -37,7 +34,15 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
     @Test
     public void testSetup() throws IOException {
-        printSchemaOrgJson(RECORD_44979f67);
+        printSchemaOrgJson(RECORD_5a5357be);
+    }
+
+
+
+    @Test
+    void testContentUrl() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
+        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/2f23c516-0657-4a5a-825e-2368e27b2c4d\""));
     }
 
 

@@ -52,7 +52,11 @@ public class TestUtil {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
 		String mods = Resolver.resolveUTF8String(xmlResource);
 		HashMap<String, String> accessFields = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);
-        accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		String childURI = String.valueOf(Resolver.getPathFromClasspath("internal_test_files/tvMetadata/53bf323c-5a8a-48b9-a29a-0b1616a58af9.xml"));
+
+		accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		accessFields.put("origin", "ds.test");
+		accessFields.put("relation", childURI);
 		//System.out.println("access fields:"+accessFields);
 		return transformer.apply(mods, accessFields);
 	}
