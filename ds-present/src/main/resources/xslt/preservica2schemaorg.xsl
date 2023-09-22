@@ -47,7 +47,7 @@
       <xsl:value-of select="pbcoreTitle[2]/title"/>
     </xsl:variable>
     <xsl:choose>
-      <xsl:when test="$title = $original-title">
+      <xsl:when test="$title = $original-title or ($title != '' and $original-title = '')">
         <f:array key="name">
           <f:map>
             <f:string key="value">
