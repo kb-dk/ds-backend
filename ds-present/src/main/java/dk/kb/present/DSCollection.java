@@ -28,6 +28,8 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -49,6 +51,7 @@ public class DSCollection {
     private static final String STORAGE_KEY = "storage";
     private static final String ORIGIN_KEY = "origin";
     private static final String VIEWS_KEY = "views";
+    private static final String GET_CHILD_KEY = "getchildendpoint";
 
     /**
      * The ID of the collection, primarily used for debugging and configuration.
@@ -84,6 +87,8 @@ public class DSCollection {
      */
     private final Map<String, View> views; // keys are lowercase
 
+    private static String getchildendpoint;
+
     /**
      * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
      * the storage specified for the collection.
@@ -99,6 +104,7 @@ public class DSCollection {
             prefix = conf.getString(PREFIX_KEY);
             description = conf.getString(DESCRIPTION_KEY, null);
             storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
+            getchildendpoint = conf.getString(GET_CHILD_KEY);
             views = conf.getYAMLList(VIEWS_KEY)
                     .stream()
                     .map(yaml -> new View(yaml, origin))
@@ -170,26 +176,29 @@ public class DSCollection {
     }
 
     /**
-     * Extract related records from storage if present in input record.
-     * @param record     to extract relations for.
+     * Extract children records from storage if present in input record.
+     * @param record     to extract children for.
      * @return the string value of the related record for the input record.
      */
     private String getRelation(DsRecordDto record) {
-        String parentId = record.getParentId();
         List<String> childrenIds = record.getChildrenIds();
+        List<String> children = new ArrayList<>();
 
-        if (parentId != null){
-            String parent = "";
-            parent = storage.getRecord(record.getParentId());
-            return parent;
-        } else if (childrenIds != null && !childrenIds.isEmpty()){
-            List<String> children = new ArrayList<>();
-            childrenIds.stream().map(id -> children.add(storage.getRecord(id)));
+        if (childrenIds != null && !childrenIds.isEmpty()){
+            childrenIds.stream().map(id -> children.add(getChildUri(id)));
             // TODO: Make method return correctly for children
-            return children.toString();
+            return children.get(0);
         } else {
             return "";
         }
+    }
+
+    private static String getChildUri(String id) {
+        String childId = URLEncoder.encode(id, StandardCharsets.UTF_8);
+
+        String childURI = getchildendpoint  + childId + "?format=raw";
+        log.info("ChildURI is: " + childURI);
+        return childURI;
     }
 
     /**

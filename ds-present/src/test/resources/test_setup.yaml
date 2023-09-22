@@ -56,6 +56,7 @@ config:
         prefix: 'local' # The prefix to match on incoming IDs
         origin: 'ds.test'
         description: 'Local records, mostly biographical'
+        getchildendpoint: 'http://example.com/ds-present/v1/record/'
         # Temporary hack to make the Preservica XML block well-formed (it is missing a namespace declaration)
         testdatahack: &TEST_DATA_HACK_XIP
           regexp: '<xip:(DeliverableUnit|Collection|Manifestation) +status="([^"]+)" *>'
