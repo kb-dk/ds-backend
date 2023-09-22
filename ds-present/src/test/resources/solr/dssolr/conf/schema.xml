@@ -21,8 +21,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
    <!-- Default solr field -->
   <field name="_version_" type="plong" indexed="false" stored="false"/>
 
-  <field name="relation_test" type="text_general"/>
-
   <field name="id" type="string" multiValued="false" required="true">
     <?description The ID derived from UUID in database.?>
     <?example     770379f0-8a0d-11e1-805f-0016357f605f?>
@@ -445,6 +443,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="aspect_ratio" type="string">
     <?description The aspect ratio of the video?>
     <?example     16:9?>
+  </field>
+
+  <field name="manifestation_type" type="string">
+    <?description the type of manifestation?>
+    <?example     Video?>
   </field>
 
 

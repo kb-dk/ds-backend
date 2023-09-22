@@ -22,9 +22,6 @@
     <xsl:variable name="solrjson">
       <f:map>
 
-        <f:string key="relation_test">
-          <xsl:value-of select="$relation"/>
-        </f:string>
         <f:string key="id">
           <xsl:value-of select="$recordID"/>
         </f:string>
@@ -39,6 +36,22 @@
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
           <xsl:call-template name="pbc-metadata"/>
         </xsl:for-each>
+
+
+
+        <!-- Manifestations are extracted here. I would like to create a template for this.
+             However, this is quite tricky when using the document() function -->
+        <f:array key="resource_id">
+          <xsl:for-each select="document($relation)/xip:Manifestation/ComponentManifestation/FileRef">
+            <f:string>
+              <xsl:value-of select="document($relation)/xip:Manifestation/ComponentManifestation/FileRef"/>
+            </f:string>
+          </xsl:for-each>
+        </f:array>
+        <f:string key="manifestation_type">
+          <xsl:value-of select="document($relation)/xip:Manifestation/ComponentManifestation/ComponentType"/>
+        </f:string>
+
       </f:map>
     </xsl:variable>
 
