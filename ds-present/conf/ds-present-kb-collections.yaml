@@ -48,31 +48,31 @@ config:
         description: 'Hans Christian Andersen images from the collections at the Royal Danish Library'
         prefix: 'kb.images.billed.hca' # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
         origin: 'kb.images.billed.hca' # Overrides the default origin for the storage
-        getchildendpoint: ${path:config.relations[default=true].url}
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         views: *MODS_IMAGE_VIEWS
     - imagesjsmss:
         description: 'Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library'
         prefix: 'kb.image.judsam.jsmss'
         origin: 'kb.image.judsam.jsmss'
-        getchildendpoint: ${path:config.relations[default=true].url}
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         views: *MODS_IMAGE_VIEWS
     - imagesluftfoto:
         description: 'Luftfoto (arial photographs) images from the collections at the Royal Danish Library'
         prefix: 'kb.image.luftfo.luftfoto'
         origin: 'kb.images.luftfo.luftfoto'
-        getchildendpoint: ${path:config.relations[default=true].url}
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         views: *MODS_IMAGE_VIEWS
     - imagessmaatryk:
         description: 'Småtryk images from the collections at the Royal Danish Library'
         prefix: 'kb.pamphlets.dasmaa.smaatryk'
         origin: 'kb.pamphlets.dasmaa.smaatryk'
-        getchildendpoint: ${path:config.relations[default=true].url}
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         views: *MODS_IMAGE_VIEWS
     - samlingsbilleder:
         description: 'Diverse images from image collections at the Royal Danish Library'
         prefix: 'ds.samlingsbilleder'
         origin: 'ds.samlingsbilleder'
-        getchildendpoint: ${path:config.relations[default=true].url}
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         views: *MODS_IMAGE_VIEWS
     - radiotv:
 
@@ -90,7 +90,7 @@ config:
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
         prefix: 'ds.radiotv'
         origin: 'ds.radiotv'
-        getchildendpoint: ${path:config.relations[default=true].url}
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         views:
           - raw:
               mime: 'text/plain'
@@ -127,7 +127,7 @@ config:
         prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
         origin: "old.doms.radio"
         description: 'Images from the collections at the Royal Danish Library'
-        getchildendpoint: ${path:config.relations[default=true].url}
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
         views:
           - raw:
@@ -159,7 +159,7 @@ config:
         origin: 'ds.local'
         description: 'Selected image data from the collections at the Royal Danish Library'
         storage: 'test' # Not production here
-        getchildendpoint: ${path:config.relations[default=true].url}
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
         views:
           - raw:
