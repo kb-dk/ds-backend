@@ -78,7 +78,7 @@ class ViewTest {
         String localChildUri = String.valueOf(Resolver.getPathFromClasspath("internal_test_files/tvMetadata/53bf323c-5a8a-48b9-a29a-0b1616a58af9.xml"));
 
         // Getting child remote
-        String childEndpoint = radiotvConf.getSubMap("dsfl").getString("getchildendpoint");
+        String childEndpoint = radiotvConf.getSubMap("dsfl").getString("getrecordendpoint");
         String childId = URLEncoder.encode("ds.radiotv:oai:man:53bf323c-5a8a-48b9-a29a-0b1616a58af9", StandardCharsets.UTF_8);
         String childURI = childEndpoint + childId + "?format=raw";
 
