@@ -181,7 +181,9 @@ public class DSCollection {
      * @return the string value of the related record for the input record.
      */
     private String getRelation(DsRecordDto record) {
+
         List<String> childrenIds = record.getChildrenIds();
+        log.warn("ChildrenIds is of length '{}' and has the following values: '{}'", childrenIds.size(), childrenIds);
         List<String> children = new ArrayList<>();
 
         if (childrenIds != null && !childrenIds.isEmpty()){
