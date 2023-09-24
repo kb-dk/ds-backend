@@ -87,7 +87,7 @@ public class DSCollection {
      */
     private final Map<String, View> views; // keys are lowercase
 
-    private final String getRecordEndpoint;
+    private String getRecordEndpoint;
 
     /**
      * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
@@ -104,7 +104,12 @@ public class DSCollection {
             prefix = conf.getString(PREFIX_KEY);
             description = conf.getString(DESCRIPTION_KEY, null);
             storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
-            getRecordEndpoint = conf.getString(GET_RECORD_ENDPOINT_KEY);
+
+            if (conf.containsKey(GET_RECORD_ENDPOINT_KEY)){
+                getRecordEndpoint = conf.getString(GET_RECORD_ENDPOINT_KEY);
+
+            }
+
             views = conf.getYAMLList(VIEWS_KEY)
                     .stream()
                     .map(yaml -> new View(yaml, origin))
