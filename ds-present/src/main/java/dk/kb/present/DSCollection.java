@@ -187,6 +187,9 @@ public class DSCollection {
      */
     private String getChildRecord(DsRecordDto record) {
 
+        // TODO: Figure how to choose correct manifestation for record, if more than one is present
+        // Return first child record, but if there are multiple presentation manifestations,
+        // the rest are currently not added to the transformation
         return record.getChildrenIds() == null ? "" :
                 record.getChildrenIds().stream()
                         .map(id -> getRawUri(id, getRecordEndpoint))
