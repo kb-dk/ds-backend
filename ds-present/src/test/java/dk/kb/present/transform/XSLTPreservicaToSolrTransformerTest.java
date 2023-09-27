@@ -22,6 +22,9 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
     public static final String RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
     public static final String RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
+    public static final String RECORD_a8aafb121 = "internal_test_files/tvMetadata/a8afb121-e8b8-467a-8704-10dc42356ac4.xml";
+    public static final String RECORD_1f3a6a66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
+    public static final String RECORD_74e22fd8 = "internal_test_files/tvMetadata/74e22fd8-1268-4bcf-8a9f-22ca25379ea4.xml";
     private static final Logger log = LoggerFactory.getLogger(XSLTPreservicaToSolrTransformerTest.class);
 
 
@@ -96,9 +99,35 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     public void testOrigin(){
         assertContains(RECORD_5a5357be, "\"origin\":\"ds.test\"");
     }
+
+    @Test
+    void testEpisode(){
+        assertContains(RECORD_a8aafb121, "\"episode\":");
+        assertNotContains(RECORD_1f3a6a66, "\"episode\":");
+    }
+
+    @Test
+    void testNumberOfEpisodes(){
+        assertContains(RECORD_a8aafb121, "\"number_of_episodes\":");
+        assertNotContains(RECORD_5a5357be, "\"number_of_episodes\":");
+        assertNotContains(RECORD_1f3a6a66, "\"number_of_episodes\":");
+    }
+
+    @Test
+    void testEpisodeButNoTotalNumberOfEpisodes(){
+        assertContains(RECORD_44979f67, "\"episode\"");
+        assertNotContains(RECORD_44979f67, "\"number_of_episode\"");
+    }
+
+    @Test
+    void testLive(){
+        assertContains(RECORD_74e22fd8, "\"live\":\"true\"");
+        assertContains(RECORD_a8aafb121, "\"live\":\"false\"");
+    }
+
     @Test
     public void prettyPrintTransformation() throws Exception {
-        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_5a5357be);
+        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_74e22fd8);
     }
 
 
