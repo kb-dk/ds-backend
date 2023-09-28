@@ -47,7 +47,7 @@
       <xsl:value-of select="pbcoreTitle[2]/title"/>
     </xsl:variable>
     <xsl:choose>
-      <xsl:when test="$title = $original-title">
+      <xsl:when test="$title = $original-title or ($title != '' and $original-title = '')">
         <f:array key="name">
           <f:map>
             <f:string key="value">
@@ -138,28 +138,33 @@
       </xsl:if>
 
       <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
-      <xsl:if test="pbcoreIdentifier">
-        <f:array key="identifier">
-          <f:map>
-            <f:string key="@type">PropertyValue</f:string>
-            <f:string key="PropertyID">Origin</f:string>
-            <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-          </f:map>
-          <!-- TODO: Filter away empty identifiers -->
-          <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
+      <f:array key="identifier">
+        <f:map>
+          <f:string key="@type">PropertyValue</f:string>
+          <f:string key="PropertyID">Origin</f:string>
+          <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+        </f:map>
+        <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
+        <xsl:if test="pbcoreIdentifier">
           <xsl:for-each select="pbcoreIdentifier">
-            <f:map>
-              <f:string key="@type">PropertyValue</f:string>
-              <f:string key="PropertyID">
-                <xsl:value-of select="./identifierSource"/>
-              </f:string>
-              <f:string key="value">
-                <xsl:value-of select="./identifier"/>
-              </f:string>
-            </f:map>
+            <xsl:choose>
+              <xsl:when test="identifierSource = ''">
+              </xsl:when>
+              <xsl:otherwise>
+                <f:map>
+                  <f:string key="@type">PropertyValue</f:string>
+                  <f:string key="PropertyID">
+                    <xsl:value-of select="./identifierSource"/>
+                  </f:string>
+                  <f:string key="value">
+                    <xsl:value-of select="./identifier"/>
+                  </f:string>
+                </f:map>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:for-each>
-        </f:array>
-      </xsl:if>
+        </xsl:if>
+      </f:array>
     </xsl:if>
 
   </xsl:template>
