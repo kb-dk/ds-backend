@@ -45,7 +45,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     void testContentUrl() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
-        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/2f23c516-0657-4a5a-825e-2368e27b2c4d\""));
+        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\""));
     }
 
     @Test
