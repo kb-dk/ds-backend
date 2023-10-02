@@ -50,7 +50,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     void testName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_44979f67);
-        System.out.println(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"name\":[{\"value\":\"Backstage II\"}]"));
     }
 
