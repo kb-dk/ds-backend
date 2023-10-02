@@ -15,13 +15,13 @@
   <xsl:param name="streamingserver"/>
   <xsl:param name="origin"/>
   <xsl:param name="recordID"/>
-  <xsl:param name="relation"/>
+  <xsl:param name="childID"/>
 
   <xsl:template match="/">
     <xsl:variable name="type">
       <xsl:choose>
-        <xsl:when test="document($relation)/xip:Manifestation/ComponentManifestation/ComponentType = 'Audio'">AudioObject</xsl:when>
-        <xsl:when test="document($relation)/xip:Manifestation/ComponentManifestation/ComponentType = 'Video'">VideoObject</xsl:when>
+        <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Audio'">AudioObject</xsl:when>
+        <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Video'">VideoObject</xsl:when>
       </xsl:choose>
     </xsl:variable>
 
@@ -36,10 +36,10 @@
 
         <!-- Manifestations are extracted here. I would like to create a template for this.
             However, this is quite tricky when using the document() function -->
-        <xsl:if test="$relation != ''">
+        <xsl:if test="$childID != ''">
           <f:string key="contentUrl">
             <!-- TODO: Add full url to content when possible-->
-            <xsl:value-of select="f:concat('www.example.com/streaming/',document($relation)/xip:Manifestation/ComponentManifestation/FileRef)"/>
+            <xsl:value-of select="f:concat('www.example.com/streaming/',document($childID)/xip:Manifestation/ComponentManifestation/FileRef)"/>
           </f:string>
         </xsl:if>
 

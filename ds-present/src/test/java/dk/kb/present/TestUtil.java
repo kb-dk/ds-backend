@@ -56,7 +56,7 @@ public class TestUtil {
 
 		accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		accessFields.put("origin", "ds.test");
-		accessFields.put("relation", childURI);
+		accessFields.put("childID", childURI);
 		//System.out.println("access fields:"+accessFields);
 		return transformer.apply(mods, accessFields);
 	}
@@ -76,7 +76,7 @@ public class TestUtil {
 
         accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		accessFields.put("origin", "ds.test");
-		accessFields.put("relation", childURI);
+		accessFields.put("childID", childURI);
 		//System.out.println("access fields:"+accessFields);
 		return transformer.apply(mods, accessFields);
 	}
