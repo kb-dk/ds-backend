@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
 import dk.kb.util.Resolver;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,6 +24,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     public static final String PRESERVICA2SCHEMAORG = "xslt/preservica2schemaorg.xsl";
     public static final String RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
     public static final String RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
+    public static final String RECORD_1F3A6A66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
 
     @BeforeAll
     public static void beforeMethod() {
@@ -45,8 +47,46 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/2f23c516-0657-4a5a-825e-2368e27b2c4d\""));
     }
 
+    @Test
+    void testName() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_44979f67);
+        System.out.println(transformedJSON);
+        Assertions.assertTrue(transformedJSON.contains("\"name\":[{\"value\":\"Backstage II\"}]"));
+    }
 
+    @Test
+    void testBroadcastDisplayName() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_44979f67);
+        System.out.println(transformedJSON);
+        Assertions.assertTrue(transformedJSON.contains("\"broadcastDisplayName\":\"DR Ultra\"}"));
+    }
 
+    @Test
+    void testStartAndEndDates() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
+        Assertions.assertTrue(transformedJSON.contains("\"startDate\":\"2021-01-18T00:00:00Z\"") &&
+                                       transformedJSON.contains("\"endDate\":\"2021-01-18T00:30:00Z\""));
+    }
+
+    @Test
+    void testDuration() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
+        // TODO: Fix the time format delivered by the XSLT even though this format is compliant with schema.org as it is part of ISO 8601.
+        Assertions.assertTrue(transformedJSON.contains("\"duration\":\"PT30M\""));
+    }
+
+    @Test
+    void testIdentifiers() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_1F3A6A66);
+        Assertions.assertTrue(transformedJSON.contains("\"identifier\":[{\"@type\":\"PropertyValue\",\"PropertyID\":\"Origin\",\"value\":\"ds.test\"}")
+                && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"kuanaId\",\"value\":\"1f3a6a66-5f5a-48e6-abbf-452552320176\"}]"));
+    }
+
+    @Test
+    void noAlternateName() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_1F3A6A66);
+        Assertions.assertFalse(transformedJSON.contains("alternateName"));
+    }
 
 
 

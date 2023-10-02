@@ -75,18 +75,6 @@ config:
         getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         views: *MODS_IMAGE_VIEWS
     - radiotv:
-
-        # Temporary hack to make the Preservica XML block well-formed (it is missing a namespace declaration)
-        testdatahack_xip: &TEST_DATA_HACK_XIP
-          regexp: '<xip:(DeliverableUnit|Collection|Manifestation) +status="([^"]+)" *>'
-          replacement: '<xip:$1 status="$2" xmlns:xip="http://www.tessella.com/XIP/v4">'
-          replaceall: false
-
-        testdatahack_xsi: &TEST_DATA_HACK_XSI
-          regexp: '(xsi:schemaLocation="http://www.pbcore.org/PBCore/PBCoreNamespace.html")>'
-          replacement: '$1 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
-          replaceall: false
-
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
         prefix: 'ds.radiotv'
         origin: 'ds.radiotv'
@@ -99,8 +87,6 @@ config:
           - JSON-LD:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK_XIP
-                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/preservica2schemaorg.xsl'
                     injections:
@@ -110,8 +96,6 @@ config:
           - SolrJSON:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK_XIP
-                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/preservica2solr.xsl'
                     injections:

@@ -87,7 +87,7 @@ public class DSCollection {
      */
     private final Map<String, View> views; // keys are lowercase
 
-    private static String getRecordEndpoint;
+    private String getRecordEndpoint;
 
     /**
      * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
@@ -104,7 +104,12 @@ public class DSCollection {
             prefix = conf.getString(PREFIX_KEY);
             description = conf.getString(DESCRIPTION_KEY, null);
             storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
-            getRecordEndpoint = conf.getString(GET_RECORD_ENDPOINT_KEY);
+
+            if (conf.containsKey(GET_RECORD_ENDPOINT_KEY)){
+                getRecordEndpoint = conf.getString(GET_RECORD_ENDPOINT_KEY);
+
+            }
+
             views = conf.getYAMLList(VIEWS_KEY)
                     .stream()
                     .map(yaml -> new View(yaml, origin))
@@ -126,9 +131,9 @@ public class DSCollection {
     public String getRecord(String recordID, String format) throws ServiceException {
         View view = getView(format);
         DsRecordDto record = storage.getDSRecord(recordID);
-        String relation = getChildRecord(record);
+        String child = getChildRecord(record);
         String recordData = record.getData();
-        return view.apply(recordID, recordData, relation);
+        return view.apply(recordID, recordData, child);
     }
 
     /**
@@ -176,24 +181,19 @@ public class DSCollection {
     }
 
     /**
-     * Extract children records from storage if present in input record.
+     * Extract the first child record from storage if present in input record.
      * @param record     to extract children for.
-     * @return the string value of the related record for the input record.
+     * @return the URI value of the related raw record for the input record.
      */
     private String getChildRecord(DsRecordDto record) {
 
-        List<String> childrenIds = record.getChildrenIds();
-        List<String> children = new ArrayList<>();
-
-        if (childrenIds != null && !childrenIds.isEmpty()){
-            childrenIds.forEach(id -> children.add(getRawUri(id)));
-            // TODO: Figure how to choose correct manifestation for record, if more than one is present
-            // Return first child record, but if there are multiple presentation manifestations,
-            // the rest are currently not added to the transformation
-            return children.get(0);
-        } else {
-            return "";
-        }
+        // TODO: Figure how to choose correct manifestation for record, if more than one is present
+        // Return first child record, but if there are multiple presentation manifestations,
+        // the rest are currently not added to the transformation
+        return record.getChildrenIds() == null ? "" :
+                record.getChildrenIds().stream()
+                        .map(id -> getRawUri(id, getRecordEndpoint))
+                        .findFirst().orElse("");
     }
 
     /**
@@ -201,7 +201,7 @@ public class DSCollection {
      * @param id id of record to construct URI for.
      * @return   the URI for the input record.
      */
-    private static String getRawUri(String id) {
+    private static String getRawUri(String id, String getRecordEndpoint) {
         String encodedId = URLEncoder.encode(id, StandardCharsets.UTF_8);
         String rawRecordUri = getRecordEndpoint + encodedId + "?format=raw";
         return rawRecordUri;

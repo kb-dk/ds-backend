@@ -32,7 +32,7 @@ import java.util.function.BiFunction;
 
 /**
  * A view is at the core a list of {@link dk.kb.present.transform.DSTransformer}s.
- * It takes a pair of {@code recordID, recordContent} and return transformed recordContent.
+ * It takes three values of {@code recordID, recordContent, childRecord} and return transformed recordContent.
  */
 public class View extends ArrayList<DSTransformer> implements TriFunction<String, String, String, String> {
     private static final Logger log = LoggerFactory.getLogger(View.class);
@@ -85,11 +85,11 @@ public class View extends ArrayList<DSTransformer> implements TriFunction<String
     }
 
     @Override
-    public String apply(String recordID, String content, String relation) {
+    public String apply(String recordID, String content, String child) {
         final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", recordID);
         metadata.put("origin", origin);
-        metadata.put("relation", relation);
+        metadata.put("relation", child);
         for (DSTransformer transformer: this) {
             try {
                 content = transformer.apply(content, metadata);

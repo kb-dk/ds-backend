@@ -446,7 +446,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="manifestation_type" type="string">
-    <?description the type of manifestation?>
+    <?description A manifestation describes the technical metadata related to a document.
+                  The manifestation type describes what type of content the related file contains.?>
     <?example     Video?>
   </field>
 
