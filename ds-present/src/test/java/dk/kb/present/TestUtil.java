@@ -55,6 +55,7 @@ public class TestUtil {
 		String childURI = String.valueOf(Resolver.getPathFromClasspath("internal_test_files/tvMetadata/53bf323c-5a8a-48b9-a29a-0b1616a58af9.xml"));
 
 		accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		accessFields.put("streamingserver", "www.example.com/streaming/");
 		accessFields.put("origin", "ds.test");
 		accessFields.put("childID", childURI);
 		//System.out.println("access fields:"+accessFields);
@@ -75,6 +76,7 @@ public class TestUtil {
 		String childURI = String.valueOf(Resolver.getPathFromClasspath("internal_test_files/tvMetadata/53bf323c-5a8a-48b9-a29a-0b1616a58af9.xml"));
 
         accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		accessFields.put("streamingserver", "www.example.com/streaming/");
 		accessFields.put("origin", "ds.test");
 		accessFields.put("childID", childURI);
 		//System.out.println("access fields:"+accessFields);

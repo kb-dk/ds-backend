@@ -22,8 +22,8 @@
       <xsl:choose>
         <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Audio'">AudioObject</xsl:when>
         <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Video'">VideoObject</xsl:when>
+        <xsl:otherwise>MediaObject</xsl:otherwise>
       </xsl:choose>
-      <xsl:otherwise>MediaObject</xsl:otherwise>
     </xsl:variable>
 
     <xsl:variable name="json">
@@ -40,7 +40,7 @@
         <xsl:if test="$childID != ''">
           <f:string key="contentUrl">
             <!-- TODO: Add full url to content when possible-->
-            <xsl:value-of select="f:concat('www.example.com/streaming/',document($childID)/xip:Manifestation/ComponentManifestation/FileRef)"/>
+            <xsl:value-of select="f:concat($streamingserver,document($childID)/xip:Manifestation/ComponentManifestation/FileRef)"/>
           </f:string>
         </xsl:if>
 
