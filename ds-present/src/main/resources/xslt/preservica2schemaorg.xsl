@@ -21,7 +21,8 @@
     <xsl:variable name="json">
       <f:map>
         <!-- TODO: Add logic for selecting more specific type -->
-        <f:string key="@type">BroadcastEvent</f:string>
+        <!-- TODO: Change default to VideoObject and create About field with broadcast information -->
+        <f:string key="@type">VideoObject</f:string>
         <f:string key="id">
             <xsl:value-of select="$recordID"/>
         </f:string>

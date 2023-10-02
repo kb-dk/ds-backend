@@ -25,6 +25,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     public static final String RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
     public static final String RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
     public static final String RECORD_1F3A6A66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
+    public static final String RECORD_74e22fd8 = "internal_test_files/tvMetadata/74e22fd8-1268-4bcf-8a9f-22ca25379ea4.xml";
 
     @BeforeAll
     public static void beforeMethod() {
@@ -36,7 +37,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
     @Test
     public void testSetup() throws IOException {
-        printSchemaOrgJson(RECORD_44979f67);
+        printSchemaOrgJson(RECORD_74e22fd8);
     }
 
     @Test
