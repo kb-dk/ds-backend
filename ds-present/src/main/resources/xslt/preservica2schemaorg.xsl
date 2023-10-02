@@ -23,12 +23,13 @@
         <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Audio'">AudioObject</xsl:when>
         <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Video'">VideoObject</xsl:when>
       </xsl:choose>
+      <xsl:otherwise>MediaObject</xsl:otherwise>
     </xsl:variable>
 
     <xsl:variable name="json">
       <f:map>
         <!-- TODO: Add logic for selecting more specific type -->
-        <f:string key="@type">VideoObject</f:string>
+        <f:string key="@type"><xsl:value-of select="$type"/></f:string>
 
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
           <xsl:call-template name="pbc-metadata"/>
