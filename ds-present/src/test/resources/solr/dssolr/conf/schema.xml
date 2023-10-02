@@ -451,6 +451,21 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Video?>
   </field>
 
+  <field name="episode" type="pint">
+    <?description A number determining the placement of a given episode in a ordered list of related episodes.?>
+    <?example     1?>
+  </field>
+
+  <field name="number_of_episodes" type="pint">
+    <?description The total number of episodes that are part of the same series as the given video.?>
+    <?example     24?>
+  </field>
+
+  <field name="live" type="boolean">
+    <?descrition A boolean value for showing wether or not i video has been broadcasted live?>
+    <?example    true?>
+  </field>
+
 
   <!--  Fields related to copyright and access conditions -->
   <!-- TODO: Documentation for access fields. -->
