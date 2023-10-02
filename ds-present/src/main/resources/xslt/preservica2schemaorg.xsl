@@ -169,11 +169,6 @@
           <f:string key="PropertyID">RecordID</f:string>
           <f:string key="value"><xsl:value-of select="$recordID"/></f:string>
         </f:map>
-        <f:map>
-          <f:string key="@type">PropertyValue</f:string>
-          <f:string key="PropertyID">Origin</f:string>
-          <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-        </f:map>
           <!-- TODO: Filter away empty identifiers -->
           <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
         <xsl:if test="pbcoreIdentifier">
