@@ -36,6 +36,11 @@ config:
   oldimageserver:
     url: "http://kb-images.kb.dk"
 
+  endpoints:
+    - example:
+        getrecord: 'http://example.com/ds-present/v1/record/'
+        default: true
+
   # List of backing storages. This information should be overridden in ds-present-environment.yaml
 
   # The storages defined in this file are

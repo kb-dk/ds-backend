@@ -56,16 +56,8 @@ config:
         prefix: 'local' # The prefix to match on incoming IDs
         origin: 'ds.test'
         description: 'Local records, mostly biographical'
-        # Temporary hack to make the Preservica XML block well-formed (it is missing a namespace declaration)
-        testdatahack: &TEST_DATA_HACK_XIP
-          regexp: '<xip:(DeliverableUnit|Collection|Manifestation) +status="([^"]+)" *>'
-          replacement: '<xip:$1 status="$2" xmlns:xip="http://www.w3.org/2001/XMLSchema-instance">'
-          replaceall: false
+        getrecordendpoint: 'http://example.com/ds-present/v1/record/'
 
-        testdatahack2: &TEST_DATA_HACK_XSI
-          regexp: '(xsi:schemaLocation="http://www.pbcore.org/PBCore/PBCoreNamespace.html")>'
-          replacement: '$1 xmlns:xsi="http://www.tessella.com/XIP/v4">'
-          replaceall: false
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
         views:
           - mods:
@@ -75,8 +67,6 @@ config:
           - json-ld:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK_XIP
-                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/mods2schemaorg.xsl'
                     injections:
@@ -85,8 +75,6 @@ config:
           - solrjson:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK_XIP
-                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/mods2solr.xsl'
                     injections:

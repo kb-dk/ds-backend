@@ -123,6 +123,7 @@ public abstract class XSLTTransformerTestBase {
                             "  - origin: 'ds.test'\n";
             YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
             solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, record);
+            //TestUtil.prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);

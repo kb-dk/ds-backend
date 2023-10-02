@@ -28,6 +28,10 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,6 +51,7 @@ public class DSCollection {
     private static final String STORAGE_KEY = "storage";
     private static final String ORIGIN_KEY = "origin";
     private static final String VIEWS_KEY = "views";
+    private static final String GET_RECORD_ENDPOINT_KEY = "getrecordendpoint";
 
     /**
      * The ID of the collection, primarily used for debugging and configuration.
@@ -82,6 +87,8 @@ public class DSCollection {
      */
     private final Map<String, View> views; // keys are lowercase
 
+    private String getRecordEndpoint;
+
     /**
      * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
      * the storage specified for the collection.
@@ -97,6 +104,12 @@ public class DSCollection {
             prefix = conf.getString(PREFIX_KEY);
             description = conf.getString(DESCRIPTION_KEY, null);
             storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
+
+            if (conf.containsKey(GET_RECORD_ENDPOINT_KEY)){
+                getRecordEndpoint = conf.getString(GET_RECORD_ENDPOINT_KEY);
+
+            }
+
             views = conf.getYAMLList(VIEWS_KEY)
                     .stream()
                     .map(yaml -> new View(yaml, origin))
@@ -117,8 +130,10 @@ public class DSCollection {
      */
     public String getRecord(String recordID, String format) throws ServiceException {
         View view = getView(format);
-        String record = storage.getRecord(recordID);
-        return view.apply(recordID, record);
+        DsRecordDto record = storage.getDSRecord(recordID);
+        String child = getChildRecord(record);
+        String recordData = record.getData();
+        return view.apply(recordID, recordData, child);
     }
 
     /**
@@ -149,7 +164,8 @@ public class DSCollection {
             return storage.getDSRecords(origin, mTime, maxRecords)
                     .peek(record -> {
                         try {
-                            record.data(view.apply(record.getId(), record.getData()));
+                            String relation = getChildRecord(record);
+                            record.data(view.apply(record.getId(), record.getData(), relation));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(
                                     "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
@@ -162,6 +178,33 @@ public class DSCollection {
             throw new InternalServiceException(
                     "Internal exception requesting records from collection '" + getId() + "' in format " + format);
         }
+    }
+
+    /**
+     * Extract the first child record from storage if present in input record.
+     * @param record     to extract children for.
+     * @return the URI value of the related raw record for the input record.
+     */
+    private String getChildRecord(DsRecordDto record) {
+
+        // TODO: Figure how to choose correct manifestation for record, if more than one is present
+        // Return first child record, but if there are multiple presentation manifestations,
+        // the rest are currently not added to the transformation
+        return record.getChildrenIds() == null ? "" :
+                record.getChildrenIds().stream()
+                        .map(id -> getRawUri(id, getRecordEndpoint))
+                        .findFirst().orElse("");
+    }
+
+    /**
+     * Construct a URI for child records pointing towards the raw representation of the child record in ds-present.
+     * @param id id of record to construct URI for.
+     * @return   the URI for the input record.
+     */
+    private static String getRawUri(String id, String getRecordEndpoint) {
+        String encodedId = URLEncoder.encode(id, StandardCharsets.UTF_8);
+        String rawRecordUri = getRecordEndpoint + encodedId + "?format=raw";
+        return rawRecordUri;
     }
 
     /**

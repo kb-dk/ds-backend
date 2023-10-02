@@ -70,21 +70,10 @@ config:
         origin: 'ds.samlingsbilleder'
         views: *MODS_IMAGE_VIEWS
     - radiotv:
-
-        # Temporary hack to make the Preservica XML block well-formed (it is missing a namespace declaration)
-        testdatahack_xip: &TEST_DATA_HACK_XIP
-          regexp: '<xip:(DeliverableUnit|Collection|Manifestation) +status="([^"]+)" *>'
-          replacement: '<xip:$1 status="$2" xmlns:xip="http://www.tessella.com/XIP/v4">'
-          replaceall: false
-
-        testdatahack_xsi: &TEST_DATA_HACK_XSI
-          regexp: '(xsi:schemaLocation="http://www.pbcore.org/PBCore/PBCoreNamespace.html")>'
-          replacement: '$1 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
-          replaceall: false
-
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
         prefix: 'ds.radiotv'
         origin: 'ds.radiotv'
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         views:
           - raw:
               mime: 'text/plain'
@@ -93,8 +82,6 @@ config:
           - JSON-LD:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK_XIP
-                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/preservica2schemaorg.xsl'
                     injections:
@@ -104,8 +91,6 @@ config:
           - SolrJSON:
               mime: 'application/json'
               transformers:
-                - replace: *TEST_DATA_HACK_XIP
-                - replace: *TEST_DATA_HACK_XSI
                 - xslt:
                     stylesheet: 'xslt/preservica2solr.xsl'
                     injections:
@@ -152,6 +137,7 @@ config:
         origin: 'ds.local'
         description: 'Selected image data from the collections at the Royal Danish Library'
         storage: 'test' # Not production here
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
         views:
           - raw:

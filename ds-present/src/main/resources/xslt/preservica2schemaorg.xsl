@@ -15,14 +15,22 @@
   <xsl:param name="streamingserver"/>
   <xsl:param name="origin"/>
   <xsl:param name="recordID"/>
+  <xsl:param name="childID"/>
 
   <xsl:template match="/">
+    <xsl:variable name="type">
+      <xsl:choose>
+        <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Audio'">AudioObject</xsl:when>
+        <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Video'">VideoObject</xsl:when>
+        <xsl:otherwise>MediaObject</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
 
     <xsl:variable name="json">
       <f:map>
         <!-- TODO: Add logic for selecting more specific type -->
         <!-- TODO: Change default to VideoObject and create About field with broadcast information -->
-        <f:string key="@type">VideoObject</f:string>
+        <f:string key="@type"><xsl:value-of select="$type"/></f:string>
         <f:string key="id">
             <xsl:value-of select="$recordID"/>
         </f:string>
@@ -30,6 +38,15 @@
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
           <xsl:call-template name="pbc-metadata"/>
         </xsl:for-each>
+
+        <!-- Manifestations are extracted here. I would like to create a template for this.
+            However, this is quite tricky when using the document() function -->
+        <xsl:if test="$childID != ''">
+          <f:string key="contentUrl">
+            <!-- TODO: Add full url to content when possible-->
+            <xsl:value-of select="f:concat($streamingserver,document($childID)/xip:Manifestation/ComponentManifestation/FileRef)"/>
+          </f:string>
+        </xsl:if>
 
       </f:map>
     </xsl:variable>
@@ -83,6 +100,7 @@
          We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
     <xsl:for-each select="pbcorePublisher">
       <xsl:if test="./publisherRole = 'kanalnavn'">
+        <!-- TODO: This field is not present for videoObjects it should be encapsulated in a PublicationEvent-->
         <f:map key="publishedOn">
           <f:string key="@type">BroadcastService</f:string>
           <f:string key="broadcastDisplayName">
@@ -146,6 +164,18 @@
           <f:string key="value"><xsl:value-of select="$origin"/></f:string>
         </f:map>
         <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
+        <f:map>
+          <f:string key="@type">PropertyValue</f:string>
+          <f:string key="PropertyID">RecordID</f:string>
+          <f:string key="value"><xsl:value-of select="$recordID"/></f:string>
+        </f:map>
+        <f:map>
+          <f:string key="@type">PropertyValue</f:string>
+          <f:string key="PropertyID">Origin</f:string>
+          <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+        </f:map>
+          <!-- TODO: Filter away empty identifiers -->
+          <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
         <xsl:if test="pbcoreIdentifier">
           <xsl:for-each select="pbcoreIdentifier">
             <xsl:choose>

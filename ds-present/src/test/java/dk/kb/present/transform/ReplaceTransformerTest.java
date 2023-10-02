@@ -50,34 +50,6 @@ class ReplaceTransformerTest {
         DSTransformer replacer = new ReplaceTransformer("id=\"([0-9]+)-([a-z]+)\"", "id=\"$2-$1\"", false);
         assertEquals("<mystructure id=\"foo-123\">...", replacer.apply("<mystructure id=\"123-foo\">...", null));
     }
-
-    @Test
-    void testXIP() {
-        DSTransformer replacer = new ReplaceTransformer(
-                "<xip:(DeliverableUnit|Collection|Manifestation) +status=\"([^\"]+)\" *>",
-                "<xip:$1 status=\"$2\" xmlns:xip=\"http://example.com/\">", false);
-
-        for (String element : new String[]{"DeliverableUnit", "Collection", "Manifestation"}) {
-            assertEquals("<xip:" + element + " status=\"foo\" xmlns:xip=\"http://example.com/\">",
-                    replacer.apply("<xip:" + element + " status=\"foo\">", null),
-                    "Namespace injection should work for element '" + element + "'");
-        }
-        assertNotEquals("<xip:Selfmade status=\"foo\" xmlns:xip=\"http://example.com/\">",
-                replacer.apply("<xip:Selfmade status=\"foo\">", null),
-                "Namespace injection should NOT work for element 'Selfmade'");
-    }
-
-    @Test
-    void testXSI() {
-        DSTransformer replacer = new ReplaceTransformer(
-                "(xsi:schemaLocation=\"http://www.pbcore.org/PBCore/PBCoreNamespace.html\")>",
-                "$1 xmlns:xsi=\"http://example.com/\">", false);
-
-        assertEquals("xsi:schemaLocation=\"http://www.pbcore.org/PBCore/PBCoreNamespace.html\" xmlns:xsi=\"http://example.com/\">",
-                replacer.apply("xsi:schemaLocation=\"http://www.pbcore.org/PBCore/PBCoreNamespace.html\">", null),
-                "Namespace injection should work for XSI'");
-
-    }
     
     /**
      * Use the {@link ReplaceFactory} to create a {@link ReplaceTransformer} with config taken from {@code yamlString}.
