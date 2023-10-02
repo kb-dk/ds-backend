@@ -20,16 +20,10 @@
   <xsl:template match="/">
       <xsl:variable name="type">
         <xsl:choose>
-          <xsl:when test="doc-available($childID)">
-            <xsl:choose>
-              <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Audio'">AudioObject</xsl:when>
-              <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Video'">VideoObject</xsl:when>
-              <xsl:otherwise>MediaObject</xsl:otherwise>
-            </xsl:choose>
-          </xsl:when>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc/pbcoreInstantiation/formatMediaType = 'Sound'">VideoObject</xsl:when>
           <xsl:otherwise>MediaObject</xsl:otherwise>
         </xsl:choose>
-
     </xsl:variable>
 
     <xsl:variable name="json">
