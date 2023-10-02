@@ -36,13 +36,20 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
     @Test
     public void testSetup() throws IOException {
-        printSchemaOrgJson(RECORD_44979f67);
+        printSchemaOrgJson(RECORD_5a5357be);
+    }
+
+
+
+    @Test
+    void testContentUrl() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
+        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/2f23c516-0657-4a5a-825e-2368e27b2c4d\""));
     }
 
     @Test
     void testName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_44979f67);
-        System.out.println(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"name\":[{\"value\":\"Backstage II\"}]"));
     }
 

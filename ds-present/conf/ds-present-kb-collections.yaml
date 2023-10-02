@@ -137,6 +137,7 @@ config:
         origin: 'ds.local'
         description: 'Selected image data from the collections at the Royal Danish Library'
         storage: 'test' # Not production here
+        getrecordendpoint: ${path:config.endpoints[default=true].getrecord}
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
         views:
           - raw:
