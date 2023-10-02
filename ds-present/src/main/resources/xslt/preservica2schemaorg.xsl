@@ -21,7 +21,7 @@
       <xsl:variable name="type">
         <xsl:choose>
           <xsl:when test="/xip:DeliverableUnit/Metadata/pbc/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
-          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc/pbcoreInstantiation/formatMediaType = 'Sound'">VideoObject</xsl:when>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
           <xsl:otherwise>MediaObject</xsl:otherwise>
         </xsl:choose>
     </xsl:variable>
