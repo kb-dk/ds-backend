@@ -18,12 +18,12 @@
   <xsl:param name="childID"/>
 
   <xsl:template match="/">
-    <xsl:variable name="type">
-      <xsl:choose>
-        <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Audio'">AudioObject</xsl:when>
-        <xsl:when test="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType = 'Video'">VideoObject</xsl:when>
-        <xsl:otherwise>MediaObject</xsl:otherwise>
-      </xsl:choose>
+      <xsl:variable name="type">
+        <xsl:choose>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
+          <xsl:otherwise>MediaObject</xsl:otherwise>
+        </xsl:choose>
     </xsl:variable>
 
     <xsl:variable name="json">
@@ -41,7 +41,7 @@
 
         <!-- Manifestations are extracted here. I would like to create a template for this.
             However, this is quite tricky when using the document() function -->
-        <xsl:if test="$childID != ''">
+        <xsl:if test="$childID != '' and doc-available($childID)">
           <f:string key="contentUrl">
             <!-- TODO: Add full url to content when possible-->
             <xsl:value-of select="f:concat($streamingserver,document($childID)/xip:Manifestation/ComponentManifestation/FileRef)"/>

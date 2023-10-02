@@ -41,7 +41,7 @@
 
         <!-- Manifestations are extracted here. I would like to create a template for this.
              However, this is quite tricky when using the document() function -->
-        <xsl:if test="$childID != ''">
+        <xsl:if test="$childID != '' and doc-available($childID)">
           <f:array key="resource_id">
             <xsl:for-each select="document($childID)/xip:Manifestation/ComponentManifestation/FileRef">
               <f:string>
