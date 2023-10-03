@@ -100,12 +100,29 @@
          We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
     <xsl:for-each select="pbcorePublisher">
       <xsl:if test="./publisherRole = 'kanalnavn'">
-        <!-- TODO: This field is not present for videoObjects it should be encapsulated in a PublicationEvent-->
-        <f:map key="publishedOn">
-          <f:string key="@type">BroadcastService</f:string>
-          <f:string key="broadcastDisplayName">
-            <xsl:value-of select="./publisher"/>
-          </f:string>
+        <f:map key="publication">
+          <f:string key="@type">BroadcastEvent</f:string>
+          <!-- Define isLiveBroadcast from live extension field -->
+          <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
+          <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+            <xsl:if test="f:contains(., 'live:')">
+              <f:string key="isLiveBroadcast">
+                <xsl:choose>
+                  <xsl:when test="contains(., 'live:live')"><xsl:value-of select="f:true()"/></xsl:when>
+                  <xsl:when test="contains(., 'live:ikke live')"><xsl:value-of select="false()"/></xsl:when>
+                </xsl:choose>
+              </f:string>
+            </xsl:if>
+          </xsl:for-each>
+          <f:map key="publishedOn">
+            <f:string key="@type">BroadcastService</f:string>
+            <f:string key="broadcastDisplayName">
+              <xsl:value-of select="./publisher"/>
+            </f:string>
+          </f:map>
+          <!-- TODO: Figure if it is possible to extract broadcaster in any meaningful way for the field 'broadcaster',
+                maybe from hovedgenre_id or kanalid. Otherwise it could be defined as 'Danmarks Radio'
+                for the first part of the project. -->
         </f:map>
       </xsl:if>
     </xsl:for-each>

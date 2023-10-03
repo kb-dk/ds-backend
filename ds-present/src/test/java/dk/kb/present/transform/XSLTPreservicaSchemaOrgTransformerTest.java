@@ -88,6 +88,15 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         Assertions.assertFalse(transformedJSON.contains("alternateName"));
     }
 
+    @Test
+    void testLiveStatus() throws IOException {
+        String isLive = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
+        Assertions.assertTrue(isLive.contains("\"isLiveBroadcast\":\"true\""));
+
+        String notLive = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
+        Assertions.assertTrue(notLive.contains("\"isLiveBroadcast\":\"false\""));
+    }
+
 
 
 
