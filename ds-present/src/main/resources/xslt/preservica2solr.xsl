@@ -69,7 +69,7 @@
     <!-- TODO: Check how genre is specified in mods2solr transformation  -->
     <xsl:if test="pbcoreGenre">
       <f:array key="genre">
-        <xsl:for-each select="pbcoreGenre">
+        <xsl:for-each select="pbcoreGenre/genre">
           <f:string>
             <xsl:value-of select="normalize-space(.)"/>
           </f:string>
