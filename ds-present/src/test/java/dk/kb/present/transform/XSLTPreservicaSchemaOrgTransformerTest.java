@@ -25,6 +25,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     public static final String RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
     public static final String RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
     public static final String RECORD_1F3A6A66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
+    public static final String RECORD_74e22fd8 = "internal_test_files/tvMetadata/74e22fd8-1268-4bcf-8a9f-22ca25379ea4.xml";
+    public static final String RECORD_a8afb121 = "internal_test_files/tvMetadata/a8afb121-e8b8-467a-8704-10dc42356ac4.xml";
 
     @BeforeAll
     public static void beforeMethod() {
@@ -36,15 +38,16 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
     @Test
     public void testSetup() throws IOException {
-        printSchemaOrgJson(RECORD_5a5357be);
+        //printSchemaOrgJson(RECORD_74e22fd8);
+        printSchemaOrgJson(RECORD_a8afb121);
+        //printSchemaOrgJson(RECORD_1F3A6A66);
+        //printSchemaOrgJson(RECORD_44979f67);
     }
-
-
 
     @Test
     void testContentUrl() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
-        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/2f23c516-0657-4a5a-825e-2368e27b2c4d\""));
+        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\""));
     }
 
     @Test
@@ -81,10 +84,48 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                 && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"kuanaId\",\"value\":\"1f3a6a66-5f5a-48e6-abbf-452552320176\"}]"));
     }
 
+
     @Test
     void noAlternateName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_1F3A6A66);
         Assertions.assertFalse(transformedJSON.contains("alternateName"));
+    }
+
+    @Test
+    void testLiveStatus() throws IOException {
+        String isLive = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
+        Assertions.assertTrue(isLive.contains("\"isLiveBroadcast\":\"true\""));
+
+        String notLive = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
+        printSchemaOrgJson(RECORD_5a5357be);
+        Assertions.assertTrue(notLive.contains("\"isLiveBroadcast\":\"false\""));
+    }
+
+    @Test
+    void testEpisodeNumberAndSeriesLength() throws IOException{
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_a8afb121);
+        Assertions.assertTrue(transformedJSON.contains("\"episodeNumber\":4"));
+        Assertions.assertTrue(transformedJSON.contains("\"numberOfEpisodes\":6"));
+    }
+
+    @Test
+    void testEpisodeNumberNoSeries() throws IOException{
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_44979f67);
+        Assertions.assertTrue(transformedJSON.contains("\"episodeNumber\":3"));
+        Assertions.assertFalse(transformedJSON.contains("numberOfEpisodes"));
+    }
+
+    @Test
+    void testNoEpisodeInfo() throws  IOException{
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
+        Assertions.assertFalse(transformedJSON.contains("episodeNumber"));
+        Assertions.assertFalse(transformedJSON.contains("numberOfEpisodes"));
+    }
+
+    @Test
+    void testTypeExtraction() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
+        Assertions.assertTrue(transformedJSON.startsWith("{\"@type\":\"VideoObject\""));
     }
 
 
