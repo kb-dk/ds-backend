@@ -461,8 +461,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     24?>
   </field>
 
-  <field name="live" type="boolean">
-    <?descrition A boolean value for showing wether or not i video has been broadcasted live?>
+  <field name="live_broadcast" type="boolean">
+    <?descrition A boolean value for showing wether or not a video has been broadcasted live?>
     <?example    true?>
   </field>
 

@@ -97,13 +97,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         Assertions.assertTrue(isLive.contains("\"isLiveBroadcast\":\"true\""));
 
         String notLive = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
+        printSchemaOrgJson(RECORD_5a5357be);
         Assertions.assertTrue(notLive.contains("\"isLiveBroadcast\":\"false\""));
     }
 
     @Test
     void testEpisodeNumberAndSeriesLength() throws IOException{
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_a8afb121);
-        System.out.println(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"episodeNumber\":4"));
         Assertions.assertTrue(transformedJSON.contains("\"numberOfEpisodes\":6"));
     }

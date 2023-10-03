@@ -121,8 +121,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testLive(){
-        assertContains(RECORD_74e22fd8, "\"live\":\"true\"");
-        assertContains(RECORD_a8aafb121, "\"live\":\"false\"");
+        assertContains(RECORD_74e22fd8, "\"live_broadcast\":\"true\"");
+        assertContains(RECORD_a8aafb121, "\"live_broadcast\":\"false\"");
     }
 
     @Test

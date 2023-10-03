@@ -178,12 +178,12 @@
           </f:string>
         </xsl:when>
         <xsl:when test="f:starts-with(., 'live:') and f:contains(., 'ikke live')">
-          <f:string key="live">
+          <f:string key="live_broadcast">
             <xsl:value-of select="false()"/>
           </f:string>
         </xsl:when>
         <xsl:when test="f:starts-with(., 'live:') and f:contains(., ':live')">
-          <f:string key="live">
+          <f:string key="live_broadcast">
             <xsl:value-of select="true()"/>
           </f:string>
         </xsl:when>
