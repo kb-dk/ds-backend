@@ -67,6 +67,7 @@
     </f:string>
 
     <!-- TODO: Check how genre is specified in mods2solr transformation  -->
+    <!-- TODO: Fix genre extraction. dont extract genreAuthorityUsed -->
     <xsl:if test="pbcoreGenre">
       <f:array key="genre">
         <xsl:for-each select="pbcoreGenre">
@@ -174,6 +175,26 @@
         <xsl:when test="f:starts-with(., 'premiere:') and f:contains(., ':premiere')">
           <f:string key="premiere">
             <xsl:value-of select="true()"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test="f:starts-with(., 'live:') and f:contains(., 'ikke live')">
+          <f:string key="live_broadcast">
+            <xsl:value-of select="false()"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test="f:starts-with(., 'live:') and f:contains(., ':live')">
+          <f:string key="live_broadcast">
+            <xsl:value-of select="true()"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test="f:starts-with(., 'episodenr:') and substring-after(., ':') != ''">
+          <f:string key="episode">
+            <xsl:value-of select="substring-after(., ':')"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test="f:starts-with(., 'antalepisoder:') and . != 'antalepisoder:0' and substring-after(., ':') != ''">
+          <f:string key="number_of_episodes">
+            <xsl:value-of select="substring-after(., ':')"/>
           </f:string>
         </xsl:when>
       </xsl:choose>
