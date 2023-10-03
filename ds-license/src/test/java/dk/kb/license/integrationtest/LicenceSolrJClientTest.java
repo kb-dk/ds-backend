@@ -28,7 +28,7 @@ public class LicenceSolrJClientTest {
 
 		
 		String queryPartAccess="title:doms_radioTVCollection";
-		List<String> filteredIds =solrServer.filterIds(ids, queryPartAccess);		
+		List<String> filteredIds =solrServer.filterIds(ids, queryPartAccess, "id");		
 		System.out.println("Size:"+filteredIds.size());
 	    System.out.println(filteredIds);		
 	}

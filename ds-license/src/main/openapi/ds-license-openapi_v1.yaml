@@ -77,7 +77,7 @@ paths:
     
       responses:
         '200':
-          description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used.'
+          description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. IDs that exists but with no access will be return in nonAccessId field' 
           content:
             application/json:
               schema:
@@ -297,7 +297,11 @@ components:
         accessIds:     
            type: array
            items:
-             type: string       
+             type: string
+        nonAccessIds:     
+           type: array
+           items:
+             type: string        
 
 
     ValidateAccessInput:

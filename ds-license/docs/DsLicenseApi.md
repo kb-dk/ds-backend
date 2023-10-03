@@ -132,7 +132,7 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. |  -  |
+**200** | Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. IDs that exists but with no access will be return in nonAccessId field |  -  |
 
 <a name="getGreeting"></a>
 # **getGreeting**

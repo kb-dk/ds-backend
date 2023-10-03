@@ -179,9 +179,8 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 
 	public  GetUsersFilterQueryOutputDto getUserLicenseQuery(@NotNull GetUserQueryInputDto input) {
 		log.debug("getUserLicenseQuery(...) called with call details: {}", getCallDetails());
-
-		//MonitorCache.registerNewRestMethodCall("getUserLicenseQuery");
-		log.info("getUserLicenseQuery called");
+		
+		//MonitorCache.registerNewRestMethodCall("getUserLicenseQuery");		
 		try {
 			GetUserQueryOutputDto output = LicenseValidator.getUserQuery(input);   
 
@@ -193,7 +192,6 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 
 			GetUsersFilterQueryOutputDto filterQuery= new GetUsersFilterQueryOutputDto();
 			filterQuery.setFilterQuery(output.getQuery());
-
 			return filterQuery;
 		} catch (Exception e) {
 			throw handleException(e);

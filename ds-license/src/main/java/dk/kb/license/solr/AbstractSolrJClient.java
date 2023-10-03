@@ -19,8 +19,6 @@ import dk.kb.license.config.ServiceConfig;
 
 public class AbstractSolrJClient {
     private static final Logger log = LoggerFactory.getLogger(AbstractSolrJClient.class);
-    private static String filterIdField;
-    private static String filterResourceIdField;
     
     protected HttpSolrClient solrServer; 
     static{ 
@@ -31,70 +29,49 @@ public class AbstractSolrJClient {
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "ERROR"); 
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "ERROR");        
         java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.OFF); 
-        java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.OFF);
-   
-        filterIdField=ServiceConfig.SOLR_FILTER_ID_FIELD;
-        filterResourceIdField= ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD;
+        java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.OFF);   
     }
 
-  
+    
+    
     /**
-     * Filter ID using the primary ID field 
-     *  
-     */      
-    public List<String> filterIds(List<String> ids, String queryPartAccess) throws Exception{
-
-        if (ids == null || ids.size() == 0){
-            return new ArrayList<String>();
-        }
-
-        String queryStr= makeAuthIdPart(ids,filterIdField); 
-        System.out.println("query:"+queryStr);
-        
-        SolrQuery query = new SolrQuery( queryStr);        
-        
-        query.setFilterQueries(queryPartAccess);
-        log.debug("filter:"+queryPartAccess);
-        
-        query.setFields(filterIdField); //only this field is used from resultset
-        query.setRows(Math.min(10000, ids.size()*200)); // Powerrating... each page can have max 200 segments (rare).. with 20 pages query this is 4000..               
-        query.set("facet", "false"); //  Must be parameter set, because this java method does NOT work: query.setFacet(false);          
-        QueryResponse response = solrServer.query(query);        
-        ArrayList<String> filteredIds = getIdsFromResponse(response,ServiceConfig.SOLR_FILTER_ID_FIELD);
-
-        return filteredIds;
-
-    }
-     
-    /**
-     * Filter resourceIDs from the resourceid field (multifield in solr)
+     * Filter ID for a given ID field. Both id and resource_id are used as id's
      * This method is used for record resources such as images 
      *  
      */
-    public List<String> filterResourceIds(List<String> ids, String queryPartAccess) throws Exception{
+    public List<String> filterIds(List<String> ids, String queryPartAccess, String solrIdField) throws Exception{
 
         if (ids == null || ids.size() == 0){
             return new ArrayList<String>();
         }
 
-        String queryStr= makeAuthIdPart(ids, ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD); 
-        System.out.println("query:"+queryStr);
+        String queryStr= makeAuthIdPart(ids, solrIdField); 
+
         
         SolrQuery query = new SolrQuery( queryStr);        
         
-        query.setFilterQueries(queryPartAccess);
-        log.debug("filter:"+queryPartAccess);
+        if (queryPartAccess != null) { //Can be used without filter
+          query.setFilterQueries(queryPartAccess);
+          log.debug("filter:"+queryPartAccess);
+        }
         
-        query.setFields(filterResourceIdField); //only this field is used from resultset
+        query.setFields(solrIdField); //only this field is used from resultset
         query.setRows(Math.min(10000, ids.size()*200)); // Powerrating... each page can have max 200 segments (rare).. with 20 pages query this is 4000..               
         query.set("facet", "false"); //  Must be parameter set, because this java method does NOT work: query.setFacet(false);          
         QueryResponse response = solrServer.query(query); 
         log.info("response:"+response);
-        ArrayList<String> filteredIds = getIdsFromResponse(response, ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD);
-
+        ArrayList<String> filteredIds = getIdsFromResponse(response, solrIdField);
+               
+        
         return filteredIds;
 
     }
+     
+    
+  
+  
+     
+   
      
     
     
