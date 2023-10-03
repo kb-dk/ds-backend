@@ -122,6 +122,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         Assertions.assertFalse(transformedJSON.contains("numberOfEpisodes"));
     }
 
+    @Test
+    void testTypeExtraction() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
+        Assertions.assertTrue(transformedJSON.startsWith("{\"@type\":\"VideoObject\""));
+    }
+
 
 
 
