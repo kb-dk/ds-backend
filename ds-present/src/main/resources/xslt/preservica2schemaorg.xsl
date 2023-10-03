@@ -20,16 +20,14 @@
   <xsl:template match="/">
     <xsl:variable name="json">
       <xsl:variable name="type">
-      <xsl:choose>
+        <xsl:choose>
         <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
         <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
         <xsl:otherwise>MediaObject</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
+        </xsl:choose>
+      </xsl:variable>
 
       <f:map>
-        <!-- TODO: Add logic for selecting more specific type -->
-        <!-- TODO: Change default to VideoObject and create About field with broadcast information -->
         <f:string key="@type"><xsl:value-of select="$type"/></f:string>
         <f:string key="id">
             <xsl:value-of select="$recordID"/>
