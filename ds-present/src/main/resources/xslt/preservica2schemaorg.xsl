@@ -18,15 +18,15 @@
   <xsl:param name="childID"/>
 
   <xsl:template match="/">
+    <xsl:variable name="json">
       <xsl:variable name="type">
-        <xsl:choose>
-          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
-          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
-          <xsl:otherwise>MediaObject</xsl:otherwise>
-        </xsl:choose>
+      <xsl:choose>
+        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
+        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
+        <xsl:otherwise>MediaObject</xsl:otherwise>
+      </xsl:choose>
     </xsl:variable>
 
-    <xsl:variable name="json">
       <f:map>
         <!-- TODO: Add logic for selecting more specific type -->
         <!-- TODO: Change default to VideoObject and create About field with broadcast information -->
@@ -36,7 +36,9 @@
         </f:string>
 
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
-          <xsl:call-template name="pbc-metadata"/>
+          <xsl:call-template name="pbc-metadata">
+            <xsl:with-param name="type" select="$type"/>
+          </xsl:call-template>
         </xsl:for-each>
 
         <!-- Manifestations are extracted here. I would like to create a template for this.
@@ -53,8 +55,9 @@
     <xsl:value-of select="f:xml-to-json($json)"/>
   </xsl:template>
 
-  <!-- TEMPLATE FOR ACCESSING PBC METADATA. CALLED ABOVE-->
+  <!-- TEMPLATE FOR ACCESSING PBC METADATA.-->
   <xsl:template name="pbc-metadata">
+    <xsl:param name="type"/>
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
@@ -102,11 +105,12 @@
       <xsl:if test="./publisherRole = 'kanalnavn'">
         <f:map key="publication">
           <f:string key="@type">BroadcastEvent</f:string>
-          <!-- Define isLiveBroadcast from live extension field -->
+          <!-- Define isLiveBroadcast from live extension field.  -->
           <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
           <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
             <xsl:if test="f:contains(., 'live:')">
               <f:string key="isLiveBroadcast">
+                <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
                 <xsl:choose>
                   <xsl:when test="contains(., 'live:live')"><xsl:value-of select="f:true()"/></xsl:when>
                   <xsl:when test="contains(., 'live:ikke live')"><xsl:value-of select="false()"/></xsl:when>
@@ -126,6 +130,50 @@
         </f:map>
       </xsl:if>
     </xsl:for-each>
+
+    <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them. -->
+    <xsl:variable name="pbcExtensions" select="./pbcoreExtension/extension"/>
+    <!-- Checks if PBC extensions contain metadata about episodes and creates the field encodesCreativeWork if true. -->
+    <xsl:if test="$pbcExtensions[f:contains(.,'episodenr:') and f:string-length(substring-after(., 'episodenr:')) or
+                  (f:contains(., 'antalepisoder:') and not(f:contains(., 'antalepisoder:0')))]">
+      <f:map key="encodesCreativeWork">
+        <!-- Determine the type of episode based on the general type of the metadata record.-->
+        <f:string key="@type">
+          <xsl:choose>
+            <xsl:when test="$type = 'VideoObject'">TVEpisode</xsl:when>
+            <xsl:when test="$type = 'AudioObject'">RadioEpisode</xsl:when>
+            <xsl:otherwise>Episode</xsl:otherwise>
+          </xsl:choose>
+        </f:string>
+
+        <!-- Extract metadata from different PBC extensions related to episodes -->
+        <xsl:for-each select="./pbcoreExtension/extension">
+          <!-- Extract episode number if present.
+             Checks for episodenr in PBC extension and checks that there is a substring after the key.-->
+          <xsl:if test="f:contains(., 'episodenr:') and f:string-length(substring-after(., 'episodenr:')) > 0">
+            <f:number key="episodeNumber">
+              <xsl:value-of select="substring-after(., 'episodenr:')"/>
+            </f:number>
+          </xsl:if>
+          <!-- Create partOfSeason field, if any metadata is present.
+               The field is used to eliver information on the total number of episodes in a series. -->
+          <xsl:if test="f:contains(., 'antalepisoder:') and not(f:contains(., 'antalepisoder:0'))">
+            <f:map key="partOfSeason">
+              <f:string key="@type">
+                <xsl:choose>
+                  <xsl:when test="$type = 'VideoObject'">TVSeason</xsl:when>
+                  <xsl:when test="$type = 'AudioObject'">RadioSeason</xsl:when>
+                  <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
+                </xsl:choose>
+              </f:string>
+              <f:number key="numberOfEpisodes">
+                <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
+              </f:number>
+            </f:map>
+          </xsl:if>
+        </xsl:for-each>
+      </f:map>
+    </xsl:if>
 
     <!-- Create about field from langomtale1 -->
     <!-- TODO: Investigate relation between langomtale1, langomtale2 and kortomtale -->
