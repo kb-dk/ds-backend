@@ -84,6 +84,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                 && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"kuanaId\",\"value\":\"1f3a6a66-5f5a-48e6-abbf-452552320176\"}]"));
     }
 
+
     @Test
     void noAlternateName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_1F3A6A66);

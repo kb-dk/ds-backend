@@ -131,11 +131,18 @@
       </xsl:if>
     </xsl:for-each>
 
-    <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them. -->
+    <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
+         This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
     <xsl:variable name="pbcExtensions" select="./pbcoreExtension/extension"/>
-    <!-- Checks if PBC extensions contain metadata about episodes and creates the field encodesCreativeWork if true. -->
-    <xsl:if test="$pbcExtensions[f:contains(.,'episodenr:') and f:string-length(substring-after(., 'episodenr:')) or
-                  (f:contains(., 'antalepisoder:') and not(f:contains(., 'antalepisoder:0')))]">
+
+    <!-- Checks if PBC extensions contain metadata about episodes and season lengths
+         and creates the field encodesCreativeWork if true.
+         This if-statements checks that the PBC extensions 'episodenr' and 'antalepisoder' have actual values.-->
+    <xsl:if test="$pbcExtensions[f:contains(.,'episodenr:') and
+                  f:string-length(substring-after(., 'episodenr:')) or
+                  (f:contains(., 'antalepisoder:') and
+                  not(f:contains(., 'antalepisoder:0')) and
+                  f:string-length(substring-after(., 'antalepisoder:')) > 0)]">
       <f:map key="encodesCreativeWork">
         <!-- Determine the type of episode based on the general type of the metadata record.-->
         <f:string key="@type">
@@ -146,18 +153,28 @@
           </xsl:choose>
         </f:string>
 
-        <!-- Extract metadata from different PBC extensions related to episodes -->
+        <!-- Extract metadata from PBC extensions related to episodes -->
         <xsl:for-each select="./pbcoreExtension/extension">
           <!-- Extract episode number if present.
-             Checks for episodenr in PBC extension and checks that there is a substring after the key.-->
+               Checks for 'episodenr' in PBC extension and checks that there is a substring after the key.-->
           <xsl:if test="f:contains(., 'episodenr:') and f:string-length(substring-after(., 'episodenr:')) > 0">
             <f:number key="episodeNumber">
               <xsl:value-of select="substring-after(., 'episodenr:')"/>
             </f:number>
           </xsl:if>
-          <!-- Create partOfSeason field, if any metadata is present.
-               The field is used to eliver information on the total number of episodes in a series. -->
-          <xsl:if test="f:contains(., 'antalepisoder:') and not(f:contains(., 'antalepisoder:0'))">
+        </xsl:for-each>
+
+        <!-- Extract metadata from PBC extensions related to season length. -->
+        <xsl:for-each select="./pbcoreExtension/extension">
+          <!-- Extract number of episodes in a season, if present.
+               Checks for 'antalepisoder' in PBC extension and checks that the value is not an empty string or 0.
+               Create partOfSeason field, if any metadata is present. -->
+          <xsl:if test="f:contains(., 'antalepisoder:') and
+                        not(f:contains(., 'antalepisoder:0')) and
+                        f:string-length(substring-after(., 'antalepisoder:')) > 0">
+            <!-- TODO: Figure if  there is a difference between no value and 0.
+                 Could one mean that a series is related but no data on it and
+                 the other means individual program with no series? -->
             <f:map key="partOfSeason">
               <f:string key="@type">
                 <xsl:choose>
@@ -166,9 +183,9 @@
                   <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
                 </xsl:choose>
               </f:string>
-              <f:number key="numberOfEpisodes">
-                <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
-              </f:number>
+                <f:number key="numberOfEpisodes">
+                  <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
+                </f:number>
             </f:map>
           </xsl:if>
         </xsl:for-each>
