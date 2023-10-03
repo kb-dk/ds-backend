@@ -106,7 +106,7 @@
           <!-- Define isLiveBroadcast from live extension field.  -->
           <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
           <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
-            <xsl:if test="f:contains(., 'live:')">
+            <xsl:if test="f:contains(., 'live:live') or f:contains(., 'live: ikke live')">
               <f:string key="isLiveBroadcast">
                 <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
                 <xsl:choose>
