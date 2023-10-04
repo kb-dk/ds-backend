@@ -96,7 +96,6 @@
       </xsl:otherwise>
     </xsl:choose>
 
-    <!-- TODO: Ellaborate this as specified in https://schema.org/BroadcastEvent -->
     <!-- Publisher extraction. Some metadata has two pbcorePublisher/publisher/publisherRole.
          We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
     <xsl:for-each select="pbcorePublisher">
@@ -249,8 +248,6 @@
           <f:string key="PropertyID">RecordID</f:string>
           <f:string key="value"><xsl:value-of select="$recordID"/></f:string>
         </f:map>
-          <!-- TODO: Filter away empty identifiers -->
-          <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
         <xsl:if test="pbcoreIdentifier">
           <xsl:for-each select="pbcoreIdentifier">
             <xsl:choose>

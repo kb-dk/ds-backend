@@ -66,9 +66,8 @@
       <xsl:value-of select="pbcoreInstantiation/formatLocation"/>
     </f:string>
 
-    <!-- TODO: Check how genre is specified in mods2solr transformation  -->
     <xsl:if test="pbcoreGenre">
-      <f:array key="genre">
+      <f:array key="list_of_categories">
         <xsl:for-each select="pbcoreGenre/genre">
           <f:string>
             <xsl:value-of select="normalize-space(.)"/>
@@ -79,7 +78,7 @@
       <xsl:for-each select="pbcoreGenre/genre">
         <xsl:choose>
           <xsl:when test="f:contains(., 'hovedgenre:')">
-            <f:string key="genre_main">
+            <f:string key="genre">
               <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
             </f:string>
           </xsl:when>
