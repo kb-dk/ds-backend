@@ -65,7 +65,23 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void testGenrePresent() {
-        assertContains(RECORD_44979f67, "\"genre\":[\"");
+        assertContains(RECORD_44979f67, "\"genre\":\"");
+    }
+
+    @Test
+    void testGenreContent() {
+        assertContains(RECORD_a8aafb121,"\"categories\":[\"Serier\",\"Krimiserie\"");
+        assertNotContains(RECORD_a8aafb121, "\"categories\":[\"hovedgenre: Serier ritzau\",\"undergenre: Krimiserie ritzau\"");
+    }
+
+    @Test
+    void testMainGenre() throws Exception {
+        assertContains(RECORD_a8aafb121,"\"genre\":\"Serier\"");
+    }
+
+    @Test
+    void testSubGenre() {
+        assertContains(RECORD_a8aafb121, "\"genre_sub\":\"Krimiserie\"");
     }
 
     @Test

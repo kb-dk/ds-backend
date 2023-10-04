@@ -113,7 +113,6 @@ public class EmbeddedSolrTest {
 
         assertContentAllSingleValues(record, "DPK000107.tif", "da",
                 "Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort/politistation",
-                "Postkortsamlingen, Vestindien, Postkort, Vestindien, CAR- BLO katagori, Postkortsamlingen, 2022-09-01 15:06:39, 2022-09-01 15:11:09",
                 "Samlingsbilleder", "Billedsamlingen", 9657172L, 1429,2247);
 
         //Single value fields
@@ -138,7 +137,6 @@ public class EmbeddedSolrTest {
 
         assertContentAllSingleValues(record,"000225.tif", "da",
                 "Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",
-                "Danske portrætter, X-langtidsbevaring test - BLO, Diverse, 2022-09-01 15:06:39, 2022-09-01 15:11:09, 2022-09-02 09:01:13",
                 "Samlingsbilleder","Billedsamlingen",6691996L,1812,1227);
 
 
@@ -232,7 +230,7 @@ public class EmbeddedSolrTest {
         assertEquals("Billede, Todimensionalt billedmateriale", record.getFieldValue("resource_description_general"));
 
         //multivalue field
-		assertMultivalueField(record, "list_of_categories", "KHP",
+		assertMultivalueField(record, "categories", "KHP",
 				"Keld Helmer-Petersen", "1940-1950", "Helmer-Petersen", "Keld",
 				"CAR- BLO katagori", "ikke UA");
 	}
@@ -512,14 +510,13 @@ public class EmbeddedSolrTest {
     }
 
     private void assertContentAllSingleValues(
-            SolrDocument record, String filenameLocal, String catalogingLanguage, String shelfLocation,
-            String categories, String catalog, String collection,
+            SolrDocument record, String filenameLocal, String catalogingLanguage,
+            String shelfLocation, String catalog, String collection,
             Long fileBytesize, int imgHeight, int imgWidth) {
 
         assertEquals(filenameLocal,record.getFieldValue("filename_local"));
         assertEquals(catalogingLanguage,record.getFieldValue("cataloging_language"));
         assertEquals(shelfLocation,record.getFieldValue("location"));
-        assertEquals(categories,record.getFieldValue("categories"));
         assertEquals(catalog, record.getFieldValue("catalog"));
         assertEquals(collection, record.getFieldValue("collection"));
         assertEquals(fileBytesize, record.getFieldValue("file_byte_size"));

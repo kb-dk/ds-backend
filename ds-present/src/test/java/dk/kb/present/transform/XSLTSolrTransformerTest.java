@@ -133,7 +133,7 @@ class XSLTSolrTransformerTest extends XSLTTransformerTestBase {
 	@Test
 	void testXsltSkfF0137() {
 		assertContains(RECORD_54b34b50,
-                "\"list_of_categories\":[\"Rytterskoler x\",\"Skolehistorie\",\"69 testfiler\"]");
+                "\"categories\":[\"Rytterskoler x\",\"Skolehistorie\",\"69 testfiler\"]");
 	}
 
 	@Test
