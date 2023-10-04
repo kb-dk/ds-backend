@@ -65,15 +65,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void testGenrePresent() throws Exception {
-        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_44979f67);
         assertContains(RECORD_44979f67, "\"genre\":[\"");
     }
 
-    // TODO: Fix XLST to not include 'ritzau' in output below."
     @Test
     void testGenreContent() throws Exception {
-        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_a8aafb121);
         assertContains(RECORD_a8aafb121,"\"genre\":[\"hovedgenre: Serier\",\"undergenre: Krimiserie\"");
+        assertNotContains(RECORD_a8aafb121, "\"genre\":[\"hovedgenre: Serier ritzau\",\"undergenre: Krimiserie ritzau\"");
     }
 
     @Test
