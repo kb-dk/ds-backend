@@ -189,8 +189,7 @@
       </f:map>
     </xsl:if>
 
-    <!-- Create about field from langomtale1 -->
-    <!-- TODO: Investigate relation between langomtale1, langomtale2 and kortomtale -->
+    <!-- Create description field from 'langomtale1' and abstract field from 'kortomtale' -->
     <!-- From the metadata it is clear, that 'kortomtale' and 'langomtale' can contain completely different values.
          'kortomtale' is therefore not just a shorter form of 'langomtale'.
          'kortomtale' maps to the schema.org value abstract, while 'langomtale' maps to description-->

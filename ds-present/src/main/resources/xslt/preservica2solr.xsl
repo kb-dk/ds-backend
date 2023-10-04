@@ -66,7 +66,6 @@
       <xsl:value-of select="pbcoreInstantiation/formatLocation"/>
     </f:string>
 
-    <!-- TODO: Remove prefix from categories -->
     <xsl:if test="pbcoreGenre">
       <f:array key="categories">
         <xsl:for-each select="pbcoreGenre/genre">
