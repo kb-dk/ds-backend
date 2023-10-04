@@ -59,6 +59,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept. -->
   </field>
 
+  <!-- TODO: remove comma seperated list of categories and rename list_of_categories to categories  -->
+  <!--
   <field name="categories" type="string" docValues="true">
     <?description The categories field can contain many different values.
                   Metadata in this field are different entries seperated by space and commas.
@@ -68,9 +70,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                   Hønningen, Mette , Neumeier, John, Kronstam, Henning,
                   Kirk, Mette-Ida, Romeo og Julie, Johnsen, John R., CAR- BLO katagori?>
   </field>
+  -->
 
-  <field name="list_of_categories" type="string"  multiValued="true" docValues="true">
-    <?description The list_of_categories field can contain many different values.
+  <field name="categories" type="string"  multiValued="true" docValues="true">
+    <?description The categories field can contain many different values.
                   This field is multivalued and contains a single category per
                   entry in the list.?>
     <?example     John R. Johnsen balletfotos?>

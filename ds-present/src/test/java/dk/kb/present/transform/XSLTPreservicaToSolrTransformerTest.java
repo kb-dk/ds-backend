@@ -70,8 +70,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testGenreContent() {
-        assertContains(RECORD_a8aafb121,"\"list_of_categories\":[\"hovedgenre: Serier\",\"undergenre: Krimiserie\"");
-        assertNotContains(RECORD_a8aafb121, "\"list_of_categories\":[\"hovedgenre: Serier ritzau\",\"undergenre: Krimiserie ritzau\"");
+        assertContains(RECORD_a8aafb121,"\"categories\":[\"Serier\",\"Krimiserie\"");
+        assertNotContains(RECORD_a8aafb121, "\"categories\":[\"hovedgenre: Serier ritzau\",\"undergenre: Krimiserie ritzau\"");
     }
 
     @Test

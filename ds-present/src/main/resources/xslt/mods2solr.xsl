@@ -153,12 +153,14 @@
         <!-- Categories seems to be a collection of multiple categories seperated by commas. -->
         <!-- According to the MODS standard genre should contain info more specific than typeOfResource. In our case, this is not the case. -->
         <xsl:if test="m:genre[@type='Categories']">
+          <!--
           <f:string key="categories">
             <xsl:value-of select="m:genre[@type='Categories']"/>
           </f:string>
+          -->
           <!-- Creates an array of categories split on commas.
                 Regex removes dates from categories-->
-          <f:array key="list_of_categories">
+          <f:array key="categories">
             <xsl:for-each select="distinct-values(tokenize(m:genre[@type='Categories'], ','))">
               <xsl:if test=". != '' and not(matches(. , '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'))">
                 <f:string>

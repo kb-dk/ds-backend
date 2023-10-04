@@ -66,11 +66,12 @@
       <xsl:value-of select="pbcoreInstantiation/formatLocation"/>
     </f:string>
 
+    <!-- TODO: Remove prefix from categories -->
     <xsl:if test="pbcoreGenre">
-      <f:array key="list_of_categories">
+      <f:array key="categories">
         <xsl:for-each select="pbcoreGenre/genre">
           <f:string>
-            <xsl:value-of select="normalize-space(.)"/>
+            <xsl:value-of select="normalize-space(substring-after(., ':'))"/>
           </f:string>
         </xsl:for-each>
       </f:array>
