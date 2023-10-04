@@ -410,7 +410,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Children?>
   </field>
 
-  <!-- Fields that only apply to tv metadata -->
+  <!-- ====================================================-->
+  <!-- ====== Fields that only apply to tv metadata  ===== -->
+  <!-- ====================================================-->
 
   <field name="original_title" type="string">
     <?description The original title of the resource.?>
@@ -468,12 +470,26 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example    true?>
   </field>
 
+  <field name="description_short" type="text_general">
+    <?description A short and general description of the resource.?>
+    <?example     A danish commedy show.?>
+  </field>
+
+  <field name="description" type="text_general">
+    <?description A description of the resource. For videos this description is often quite extensive?>
+    <?example     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis consequat libero, quis ornare mi.?>
+  </field>
+
+
   <field name="genre_sub" type="string" docValues="true">
     <?description A sub genre for the resource. This is a more specific category than the one specified in the field genre?>
     <?example     Comedy series?>
   </field>
 
-  <!--  Fields related to copyright and access conditions -->
+
+  <!-- ================================================================ -->
+  <!-- ====== Fields related to copyright and access conditions   ===== -->
+  <!-- ================================================================ -->
   <!-- TODO: Documentation for access fields. -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
     <?description ?>

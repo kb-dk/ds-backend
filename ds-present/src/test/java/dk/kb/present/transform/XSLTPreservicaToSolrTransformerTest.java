@@ -106,8 +106,17 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void testNotes() {
-        assertNotContains(RECORD_5a5357be, "\"notes\": " +
-                        "\"Backstage er en børne-sitcom som foregår bag kulisserne på sæbeoperaen Skadestuen, hvor");
+        assertContains(RECORD_a8aafb121, "\"notes\":[\"Eng. krimiserie\",\"To begravelser er planlagt.");
+    }
+
+    @Test
+    void testDescription() {
+        assertContains(RECORD_a8aafb121, "\"description\":\"To begravelser er planlagt. Den ene for Sir Magnus Pye, den anden for Alan Conway.");
+    }
+
+    @Test
+    void testShortDescription(){
+        assertContains(RECORD_a8aafb121, "\"description_short\":\"Eng. krimiserie\",");
     }
 
 
