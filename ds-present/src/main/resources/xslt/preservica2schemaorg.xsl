@@ -224,7 +224,7 @@
       <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.-->
       <xsl:if test="pbcoreGenre">
         <xsl:variable name="keywords">
-          <xsl:for-each select="pbcoreGenre">
+          <xsl:for-each select="pbcoreGenre/genre">
             <xsl:value-of select="remove(concat(normalize-space(f:substring-after(., ': ')), ', '), 2)"/>
           </xsl:for-each>
         </xsl:variable>

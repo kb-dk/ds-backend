@@ -67,7 +67,7 @@
     </f:string>
 
     <!-- TODO: Check how genre is specified in mods2solr transformation  -->
-    <!-- TODO: Fix genre extraction. dont extract genreAuthorityUsed -->
+    <!-- TODO: It might be nice to consider extracting 'hovedgenre' and 'undergenre' as two different fields, which could be used for faceting. -->
     <xsl:if test="pbcoreGenre">
       <f:array key="genre">
         <xsl:for-each select="pbcoreGenre/genre">

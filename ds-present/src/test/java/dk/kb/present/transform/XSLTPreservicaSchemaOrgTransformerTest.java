@@ -128,6 +128,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         Assertions.assertTrue(transformedJSON.startsWith("{\"@type\":\"VideoObject\""));
     }
 
+    @Test
+    void testKeywords() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_a8afb121);
+        printSchemaOrgJson(RECORD_a8afb121);
+        Assertions.assertFalse(transformedJSON.contains("\"keywords\":\"Serier,Krimiserie\","));
+    }
+
 
 
 
