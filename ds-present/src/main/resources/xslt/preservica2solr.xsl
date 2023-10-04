@@ -107,6 +107,9 @@
 
     <!-- TODO: is notes really the right name?-->
     <!-- TODO: currently only extracts from langomtale 1, figure out  the relationship between kortomtale og langomtale1-->
+    <!-- From the metadata it is clear, that 'kortomtale' and 'langomtale' can contain completely different values.
+         'kortomtale' is therefore not just a shorter form of 'langomtale'.
+         'kortomtale' maps to the schema.org value abstract, while 'langomtale' maps to description-->
     <xsl:for-each select="pbcoreDescription">
       <xsl:choose>
         <xsl:when test="descriptionType = 'langomtale1' and description != ''">
