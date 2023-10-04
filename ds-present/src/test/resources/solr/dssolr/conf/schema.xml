@@ -466,6 +466,15 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example    true?>
   </field>
 
+  <field name="genre_main" type="string" docValues="true">
+    <?description The main genre of the resource. This is a broader categorial term.?>
+    <?example     TV series?>
+  </field>
+
+  <field name="genre_sub" type="string" docValues="true">
+    <?description A sub genre for the resource. This is a more specific category than the one specified in the field genre_main?>
+    <?example     Comedy series?>
+  </field>
 
   <!--  Fields related to copyright and access conditions -->
   <!-- TODO: Documentation for access fields. -->

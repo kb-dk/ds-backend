@@ -67,7 +67,6 @@
     </f:string>
 
     <!-- TODO: Check how genre is specified in mods2solr transformation  -->
-    <!-- TODO: It might be nice to consider extracting 'hovedgenre' and 'undergenre' as two different fields, which could be used for faceting. -->
     <xsl:if test="pbcoreGenre">
       <f:array key="genre">
         <xsl:for-each select="pbcoreGenre/genre">
@@ -76,6 +75,22 @@
           </f:string>
         </xsl:for-each>
       </f:array>
+
+      <xsl:for-each select="pbcoreGenre/genre">
+        <xsl:choose>
+          <xsl:when test="f:contains(., 'hovedgenre:')">
+            <f:string key="genre_main">
+              <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
+            </f:string>
+          </xsl:when>
+          <xsl:when test="f:contains(., 'undergenre:')">
+            <f:string key="genre_sub">
+              <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
+            </f:string>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:for-each>
+
     </xsl:if>
 
     <f:string key="resource_description">
