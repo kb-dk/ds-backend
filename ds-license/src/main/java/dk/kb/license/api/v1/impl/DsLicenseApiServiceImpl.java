@@ -2,6 +2,7 @@ package dk.kb.license.api.v1.impl;
 
 
 import dk.kb.license.api.v1.DsLicenseApi;
+import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.GetUserGroupsAndLicensesInputDto;
@@ -87,7 +88,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 		}
 
 		try {      
-			CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForIds(input);      
+			CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForIds(input,ServiceConfig.SOLR_FILTER_ID_FIELD);      
 			return output;
 		} catch (Exception e) {
 			log.error("Error in checkAccessForIds:",e);
@@ -113,8 +114,8 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
             return output;
         }
 
-        try {      
-            CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForResourceIds(input);      
+        try {          
+            CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForIds(input,ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD);      
             return output;
         } catch (Exception e) {
             log.error("Error in checkAccessForResourceIds:",e);
