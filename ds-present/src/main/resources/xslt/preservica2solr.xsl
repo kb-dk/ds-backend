@@ -66,16 +66,31 @@
       <xsl:value-of select="pbcoreInstantiation/formatLocation"/>
     </f:string>
 
-    <!-- TODO: Check how genre is specified in mods2solr transformation  -->
-    <!-- TODO: Fix genre extraction. dont extract genreAuthorityUsed -->
+    <!-- TODO: Remove prefix from categories -->
     <xsl:if test="pbcoreGenre">
-      <f:array key="genre">
-        <xsl:for-each select="pbcoreGenre">
+      <f:array key="categories">
+        <xsl:for-each select="pbcoreGenre/genre">
           <f:string>
-            <xsl:value-of select="normalize-space(.)"/>
+            <xsl:value-of select="normalize-space(substring-after(., ':'))"/>
           </f:string>
         </xsl:for-each>
       </f:array>
+
+      <xsl:for-each select="pbcoreGenre/genre">
+        <xsl:choose>
+          <xsl:when test="f:contains(., 'hovedgenre:')">
+            <f:string key="genre">
+              <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
+            </f:string>
+          </xsl:when>
+          <xsl:when test="f:contains(., 'undergenre:')">
+            <f:string key="genre_sub">
+              <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
+            </f:string>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:for-each>
+
     </xsl:if>
 
     <f:string key="resource_description">

@@ -96,7 +96,6 @@
       </xsl:otherwise>
     </xsl:choose>
 
-    <!-- TODO: Ellaborate this as specified in https://schema.org/BroadcastEvent -->
     <!-- Publisher extraction. Some metadata has two pbcorePublisher/publisher/publisherRole.
          We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
     <xsl:for-each select="pbcorePublisher">
@@ -224,8 +223,8 @@
       <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.-->
       <xsl:if test="pbcoreGenre">
         <xsl:variable name="keywords">
-          <xsl:for-each select="pbcoreGenre">
-            <xsl:value-of select="remove(concat(normalize-space(f:substring-after(., ': ')), ', '), 2)"/>
+          <xsl:for-each select="pbcoreGenre/genre">
+            <xsl:value-of select="concat(normalize-space(f:substring-after(., ': ')), ', ')"/>
           </xsl:for-each>
         </xsl:variable>
         <!-- Length used to delete last comma from keyword list.-->
@@ -249,8 +248,6 @@
           <f:string key="PropertyID">RecordID</f:string>
           <f:string key="value"><xsl:value-of select="$recordID"/></f:string>
         </f:map>
-          <!-- TODO: Filter away empty identifiers -->
-          <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
         <xsl:if test="pbcoreIdentifier">
           <xsl:for-each select="pbcoreIdentifier">
             <xsl:choose>
