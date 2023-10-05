@@ -81,7 +81,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     void testIdentifiers() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_1F3A6A66);
         Assertions.assertTrue(transformedJSON.contains("\"identifier\":[{\"@type\":\"PropertyValue\",\"PropertyID\":\"Origin\",\"value\":\"ds.test\"}")
-                && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"kuanaId\",\"value\":\"1f3a6a66-5f5a-48e6-abbf-452552320176\"}]"));
+                && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"kuanaId\",\"value\":\"1f3a6a66-5f5a-48e6-abbf-452552320176\"}")
+                && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"InternalAccessionRef\",\"value\":\"c4aa8cf0-3473-4e0f-8738-16b548bc1e34\"}"));
     }
 
 
