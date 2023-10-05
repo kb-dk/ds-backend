@@ -94,7 +94,7 @@ public class LicenseValidator {
         if  (input.getAccessIds() == null || input.getAccessIds().size() == 0){
             throw new InvalidArgumentServiceException("No ID's in input");          
         }
-        log.info("checkAccessForResourceID callled for presentationtype:"+input.getPresentationType());
+        log.debug("checkAccessForResourceID callled for presentationtype:"+input.getPresentationType());
 
         //Get the query. This also validates the input 
         GetUserQueryInputDto inputQuery = new GetUserQueryInputDto();       
@@ -113,7 +113,7 @@ public class LicenseValidator {
         //Next step: use Future's to make multithreaded when we get more servers. 
         //But currently these requests are less 10 ms
         for (SolrServerClient server: servers){
-            log.info("filtering ID and using query:"+query.getQuery());
+            //log.debug("filtering ID and using query:"+query.getQuery());
             List<String> filteredIds =server.filterIds(input.getAccessIds(), query.getQuery(),solrIdField);
             log.info("#filtered id for server ("+input.getPresentationType()+") "+ server.getServerUrl() +" : "+filteredIds.size());
             filteredIdsSet.addAll(filteredIds);
@@ -122,11 +122,12 @@ public class LicenseValidator {
         output.setAccessIds(new ArrayList<String>(filteredIdsSet));
         //Sanity check!
         if (output.getAccessIds().size() > input.getAccessIds().size()){
+            log.warn("Security problem::More ID's in output than input. Input ids:"+input.getAccessIds() +" output IDs:"+output.getAccessIds());
             throw new InvalidArgumentServiceException("Security problem: More Id's in output than input. Check for query injection.");
         }
 
         //Set IDs that exists but with no access
-        ArrayList<String> existingResourceIds = filterResourceIDsThatExists(input.getAccessIds());         
+        ArrayList<String> existingResourceIds = filterIDsThatExists(input.getAccessIds(), solrIdField);         
         existingResourceIds.removeAll(output.getAccessIds());             
         output.setNonAccessIds(existingResourceIds);
 
@@ -630,7 +631,7 @@ public class LicenseValidator {
     }
 
     //Check ID's and return only those that exists.
-    private static ArrayList<String> filterResourceIDsThatExists(List<String> noAccessIdList) throws Exception{
+    private static ArrayList<String> filterIDsThatExists(List<String> noAccessIdList, String solrIdField) throws Exception{
         List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
 
         //TODO solr lookup
@@ -638,7 +639,7 @@ public class LicenseValidator {
         if (noAccessIdList.size() >0) {
             for (SolrServerClient server: servers){
                 //Call with no filter so results are not restriced by access
-                List<String> noAccessfilteredIds =server.filterIds(noAccessIdList, null, ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD);
+                List<String> noAccessfilteredIds =server.filterIds(noAccessIdList, null, solrIdField);
                 //log.info("#filtered id for server ("+input.getPresentationType()+") "+ server.getServerUrl() +" : "+filteredIds.size());
                 noAccessfilteredIdsSet.addAll(noAccessfilteredIds);
             }
