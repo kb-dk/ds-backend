@@ -138,7 +138,7 @@
     <xsl:for-each select="pbcoreDescription">
       <xsl:choose>
         <xsl:when test="descriptionType = 'kortomtale' and description != ''">
-          <f:string key="description_short">
+          <f:string key="abstract">
             <xsl:value-of select="normalize-space(description)"/>
           </f:string>
         </xsl:when>

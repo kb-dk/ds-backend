@@ -116,7 +116,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testShortDescription(){
-        assertContains(RECORD_a8aafb121, "\"description_short\":\"Eng. krimiserie\",");
+        assertContains(RECORD_a8aafb121, "\"abstract\":\"Eng. krimiserie\",");
     }
 
 
