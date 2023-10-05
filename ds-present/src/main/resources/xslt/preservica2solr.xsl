@@ -68,7 +68,6 @@
       <xsl:value-of select="pbcoreInstantiation/formatLocation"/>
     </f:string>
 
-    <!-- TODO: Remove prefix from categories -->
     <xsl:if test="pbcoreGenre">
       <f:array key="categories">
         <xsl:for-each select="pbcoreGenre/genre">
@@ -122,12 +121,31 @@
       </xsl:if>
     </xsl:for-each>
 
-    <!-- TODO: is notes really the right name?-->
-    <!-- TODO: currently only extracts from langomtale 1, figure out  the relationship between kortomtale og langomtale1-->
+    <!-- When looking at the mods2solr XSLT the field 'notes' is an array of different notes and metadata.
+         It works like a "you can define your metadata here if you don't know where else it fits" field.
+         The same type of notes array is created here, however I believe that these descriptions deserves
+         a more specific field as well, as they are quite well-structured.-->
+    <xsl:if test="pbcoreDescription">
+      <f:array key="notes">
+        <xsl:for-each select="pbcoreDescription">
+          <f:string>
+            <xsl:value-of select="normalize-space(description)"/>
+          </f:string>
+        </xsl:for-each>
+      </f:array>
+    </xsl:if>
+
+    <!-- From the metadata it is clear, that 'kortomtale' and 'langomtale1' can contain completely different values.
+         'kortomtale' is therefore not just a shorter form of 'langomtale1'.-->
     <xsl:for-each select="pbcoreDescription">
       <xsl:choose>
+        <xsl:when test="descriptionType = 'kortomtale' and description != ''">
+          <f:string key="abstract">
+            <xsl:value-of select="normalize-space(description)"/>
+          </f:string>
+        </xsl:when>
         <xsl:when test="descriptionType = 'langomtale1' and description != ''">
-          <f:string key="notes">
+          <f:string key="description">
             <xsl:value-of select="normalize-space(description)"/>
           </f:string>
         </xsl:when>
