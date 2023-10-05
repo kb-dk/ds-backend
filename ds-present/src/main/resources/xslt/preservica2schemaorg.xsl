@@ -229,56 +229,62 @@
       <f:string key="duration">
         <xsl:value-of select="xs:dateTime($end-date) - xs:dateTime($start-date)"/>
       </f:string>
-
-      <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.-->
-      <xsl:if test="pbcoreGenre">
-        <xsl:variable name="keywords">
-          <xsl:for-each select="pbcoreGenre/genre">
-            <xsl:value-of select="concat(normalize-space(f:substring-after(., ': ')), ', ')"/>
-          </xsl:for-each>
-        </xsl:variable>
-        <!-- Length used to delete last comma from keyword list.-->
-        <xsl:variable name="keywords-length" select="string-length($keywords)"/>
-
-        <f:string key="keywords">
-          <xsl:value-of select="substring($keywords, 1, $keywords-length - 2)"/>
-        </f:string>
-      </xsl:if>
-
-      <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
-      <f:array key="identifier">
-        <f:map>
-          <f:string key="@type">PropertyValue</f:string>
-          <f:string key="PropertyID">Origin</f:string>
-          <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-        </f:map>
-        <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
-        <f:map>
-          <f:string key="@type">PropertyValue</f:string>
-          <f:string key="PropertyID">RecordID</f:string>
-          <f:string key="value"><xsl:value-of select="$recordID"/></f:string>
-        </f:map>
-        <xsl:if test="pbcoreIdentifier">
-          <xsl:for-each select="pbcoreIdentifier">
-            <xsl:choose>
-              <xsl:when test="identifierSource = ''">
-              </xsl:when>
-              <xsl:otherwise>
-                <f:map>
-                  <f:string key="@type">PropertyValue</f:string>
-                  <f:string key="PropertyID">
-                    <xsl:value-of select="./identifierSource"/>
-                  </f:string>
-                  <f:string key="value">
-                    <xsl:value-of select="./identifier"/>
-                  </f:string>
-                </f:map>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:for-each>
-        </xsl:if>
-      </f:array>
     </xsl:if>
+
+    <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.-->
+    <xsl:if test="pbcoreGenre">
+      <xsl:variable name="keywords">
+        <xsl:for-each select="pbcoreGenre/genre">
+          <xsl:value-of select="concat(normalize-space(f:substring-after(., ': ')), ', ')"/>
+        </xsl:for-each>
+      </xsl:variable>
+      <!-- Length used to delete last comma from keyword list.-->
+      <xsl:variable name="keywords-length" select="string-length($keywords)"/>
+
+      <f:string key="keywords">
+        <xsl:value-of select="substring($keywords, 1, $keywords-length - 2)"/>
+      </f:string>
+    </xsl:if>
+
+    <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
+    <f:array key="identifier">
+      <f:map>
+        <f:string key="@type">PropertyValue</f:string>
+        <f:string key="PropertyID">Origin</f:string>
+        <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+      </f:map>
+      <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
+      <f:map>
+        <f:string key="@type">PropertyValue</f:string>
+        <f:string key="PropertyID">RecordID</f:string>
+        <f:string key="value"><xsl:value-of select="$recordID"/></f:string>
+      </f:map>
+      <xsl:if test="pbcoreIdentifier">
+        <xsl:for-each select="pbcoreIdentifier">
+          <xsl:choose>
+            <xsl:when test="identifierSource = ''">
+            </xsl:when>
+            <xsl:otherwise>
+              <f:map>
+                <f:string key="@type">PropertyValue</f:string>
+                <f:string key="PropertyID">
+                  <xsl:value-of select="./identifierSource"/>
+                </f:string>
+                <f:string key="value">
+                  <xsl:value-of select="./identifier"/>
+                </f:string>
+              </f:map>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:for-each>
+      </xsl:if>
+      <f:map>
+        <f:string key="@type">PropertyValue</f:string>
+        <f:string key="PropertyID">InternalAccessionRef</f:string>
+        <f:string key="value"><xsl:value-of select="/xip:DeliverableUnit/AccessionRef"/></f:string>
+      </f:map>
+    </f:array>
+
 
   </xsl:template>
 

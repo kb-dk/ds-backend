@@ -490,6 +490,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Comedy series?>
   </field>
 
+  <!-- Internal fields for radio/tv. Primarily used by the Royal Danish Library. -->
+  <!-- All fields for internal use are to be prefixed with internal_ -->
+  <field name="internal_accession_ref" type="string">
+    <?description Accession reference for preservica data. This reference points to the accession, where this resource
+                  was ingested to preservica.?>
+    <?example     4ad76681-9459-49a3-954c-64048ae36b16?>
+  </field>
 
   <!-- ================================================================ -->
   <!-- ====== Fields related to copyright and access conditions   ===== -->
