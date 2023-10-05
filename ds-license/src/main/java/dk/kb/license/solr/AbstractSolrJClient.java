@@ -37,7 +37,11 @@ public class AbstractSolrJClient {
     /**
      * Filter ID for a given ID field. Both id and resource_id are used as id's
      * This method is used for record resources such as images 
+     * Will only return ID's that is part of the query request. Due to multi fields, Solr can return values that was not in the request
      *  
+     *  @param ids List of id's that will be matched againg the solrIdField param
+     *  @param queryPartAccess A filter query used to filter the ID's. If null there is no filter used
+     *  @param solrIdField So far only options are id or resource_id field in Solr.
      */
     public List<String> filterIds(List<String> ids, String queryPartAccess, String solrIdField) throws Exception{
 
@@ -52,29 +56,19 @@ public class AbstractSolrJClient {
         
         if (queryPartAccess != null) { //Can be used without filter
           query.setFilterQueries(queryPartAccess);
-          log.debug("filter:"+queryPartAccess);
         }
         
         query.setFields(solrIdField); //only this field is used from resultset
         query.setRows(Math.min(10000, ids.size()*200)); // Powerrating... each page can have max 200 segments (rare).. with 20 pages query this is 4000..               
         query.set("facet", "false"); //  Must be parameter set, because this java method does NOT work: query.setFacet(false);          
         QueryResponse response = solrServer.query(query); 
-        log.info("response:"+response);
         ArrayList<String> filteredIds = getIdsFromResponse(response, solrIdField);
-               
-        
+        //Due to multivalue fields, Solr can return ID's that was not in the  query request list
+        filteredIds.retainAll(ids);               
         return filteredIds;
 
     }
-     
-    
-  
-  
-     
-   
-     
-    
-    
+       
     //Will also remove " from all ids to prevent Query-injection
     public static String makeAuthIdPart (List<String> ids, String filterField){
         StringBuilder queryIdPart = new StringBuilder();

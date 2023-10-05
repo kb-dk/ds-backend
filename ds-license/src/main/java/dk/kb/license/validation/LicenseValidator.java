@@ -82,8 +82,13 @@ public class LicenseValidator {
         return filteredGroups;
     }
 
+   /** Takes an input of ID's, which can be for different ID fields in solr and filter them according to call access rights
+    * 
+    * 
+    * @param input The object containing the information about the caller and list of IDs to be filtered 
+    * @param solrIdField The ID field in Solr used for filtering. So far only 'id' and 'resource_id' are suitable fields
+    */
 
-    //TODO shitload of javadoc
     public static CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto input, String solrIdField) throws Exception{
 
         if  (input.getAccessIds() == null || input.getAccessIds().size() == 0){
@@ -96,7 +101,6 @@ public class LicenseValidator {
         inputQuery.setAttributes(input.getAttributes());
         inputQuery.setPresentationType(input.getPresentationType());
         GetUserQueryOutputDto query = getUserQuery(inputQuery);
-        log.info("QUERY MUST BE CORRECT HERE:"+query);
         CheckAccessForIdsOutputDto output = new  CheckAccessForIdsOutputDto();
         output.setPresentationType(input.getPresentationType());
         output.setQuery(query.getQuery());
@@ -114,21 +118,31 @@ public class LicenseValidator {
             log.info("#filtered id for server ("+input.getPresentationType()+") "+ server.getServerUrl() +" : "+filteredIds.size());
             filteredIdsSet.addAll(filteredIds);
         }
-        //Now we have to remove remove ID's not asked for that are here because of multivalue field. (set intersection)
-        filteredIdsSet.retainAll(input.getAccessIds());
+        
         output.setAccessIds(new ArrayList<String>(filteredIdsSet));
         //Sanity check!
         if (output.getAccessIds().size() > input.getAccessIds().size()){
             throw new InvalidArgumentServiceException("Security problem: More Id's in output than input. Check for query injection.");
         }
 
-        ArrayList<String> existingResourceIds = filterResourceIDsThatExists(input.getAccessIds());
-        //TODO remove those that already was in access list (due to multi field in solr)
-        existingResourceIds.removeAll(output.getAccessIds());
-             
+        //Set IDs that exists but with no access
+        ArrayList<String> existingResourceIds = filterResourceIDsThatExists(input.getAccessIds());         
+        existingResourceIds.removeAll(output.getAccessIds());             
         output.setNonAccessIds(existingResourceIds);
 
-        log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size() +" using resourceId field:"+ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD + " for input IDs:"+input.getAccessIds() +" non-access IDS:"+output.getNonAccessIds());
+        //Set non existing ID's from input, but not found in Solr.        
+        ArrayList<String> nonExistingIds = new ArrayList<String>();
+        nonExistingIds.addAll(input.getAccessIds());
+        nonExistingIds.removeAll(output.getAccessIds());//Remove those with access
+        nonExistingIds.removeAll(existingResourceIds); //Remove those without accesss        
+        output.setNonExistingIds(nonExistingIds);
+          
+        //This should not happen, so better log it until we know if there is a usecase that it can happen
+        if (nonExistingIds.size() > 0) {
+            log.warn(" Filter ID called with non existing IDs:"+nonExistingIds);
+        }
+        
+        log.debug("#query IDs="+input.getAccessIds().size() + " returned #filtered IDs="+output.getAccessIds().size() +" using resourceId field:"+ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD + " for input IDs:"+input.getAccessIds() +" non-access IDs:"+output.getNonAccessIds() + " non-existing IDs:"+nonExistingIds);
         return output;      
     }
 
@@ -616,7 +630,6 @@ public class LicenseValidator {
     }
 
     //Check ID's and return only those that exists.
-    //TODO resource o
     private static ArrayList<String> filterResourceIDsThatExists(List<String> noAccessIdList) throws Exception{
         List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
 
@@ -624,13 +637,11 @@ public class LicenseValidator {
         Set<String> noAccessfilteredIdsSet = new HashSet<String>();
         if (noAccessIdList.size() >0) {
             for (SolrServerClient server: servers){
+                //Call with no filter so results are not restriced by access
                 List<String> noAccessfilteredIds =server.filterIds(noAccessIdList, null, ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD);
                 //log.info("#filtered id for server ("+input.getPresentationType()+") "+ server.getServerUrl() +" : "+filteredIds.size());
                 noAccessfilteredIdsSet.addAll(noAccessfilteredIds);
             }
-
-            //Now we have to remove remove ID's not asked for that are here because of multivalue field. (set intersection)
-            noAccessfilteredIdsSet.retainAll(noAccessIdList);            
         }
 
         ArrayList<String> noAccessfilteredIdsList = new ArrayList<String>();

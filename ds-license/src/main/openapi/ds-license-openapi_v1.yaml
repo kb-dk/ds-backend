@@ -302,6 +302,10 @@ components:
            type: array
            items:
              type: string        
+        nonExistingIds:     
+           type: array
+           items:
+             type: string             
 
 
     ValidateAccessInput:

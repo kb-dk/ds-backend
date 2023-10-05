@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **query** | **String** | Solr query |  [optional]
 **accessIds** | **List&lt;String&gt;** |  |  [optional]
 **nonAccessIds** | **List&lt;String&gt;** |  |  [optional]
+**nonExistingIds** | **List&lt;String&gt;** |  |  [optional]
 
 
 
