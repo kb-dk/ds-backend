@@ -189,14 +189,24 @@
       </f:map>
     </xsl:if>
 
-    <!-- Create about field from langomtale1 -->
-    <!-- TODO: Investigate relation between langomtale1, langomtale2 and kortomtale -->
+    <!-- Create description field from 'langomtale1' and abstract field from 'kortomtale' -->
+    <!-- From the metadata it is clear, that 'kortomtale' and 'langomtale' can contain completely different values.
+         'kortomtale' is therefore not just a shorter form of 'langomtale'.
+         'kortomtale' maps to the schema.org value abstract, while 'langomtale' maps to description-->
     <xsl:for-each select="pbcoreDescription">
-      <xsl:if test="./descriptionType = 'langomtale1'">
-        <f:string key="description">
-          <xsl:value-of select="normalize-space(./description)"/>
-        </f:string>
-      </xsl:if>
+      <xsl:choose>
+        <!-- Extract 'kortomtale' as abstract. -->
+        <xsl:when test="./descriptionType = 'kortomtale'">
+          <f:string key="abstract">
+            <xsl:value-of select="normalize-space(./description)"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test="./descriptionType = 'langomtale1'">
+          <f:string key="description">
+            <xsl:value-of select="normalize-space(./description)"/>
+          </f:string>
+        </xsl:when>
+      </xsl:choose>
     </xsl:for-each>
 
     <!-- Extract start and end times for broadcast  and calculate duration -->

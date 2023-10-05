@@ -240,7 +240,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
        TODO: There might be overlaps between notes and topic - maybe they should be combined as one field - subject?
        -->
   <field name="notes" type="text_general" multiValued="true">
-    <?description Used to describe the resource in any way possible. Contains multiple types of metadata.?>
+    <?description Used to describe the resource in any way possible. Contains multiple types of metadata. Notes works
+                  like a catch-all field. In general the metadata in this field is messy and can contain multiple forms
+                  of metadata ranging from dates over material types to specific descriptions. For radio and TV the
+                  fields description and abstract are defined as well. These fields contain specific and precise
+                  descriptions for radio and TV metadata.?>
     <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
     <?example     Daguerreotypi, mål: 81 x 70 mm?>
   </field>
@@ -410,7 +414,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Children?>
   </field>
 
-  <!-- Fields that only apply to tv metadata -->
+  <!-- ====================================================-->
+  <!-- ====== Fields that only apply to tv metadata  ===== -->
+  <!-- ====================================================-->
 
   <field name="original_title" type="string">
     <?description The original title of the resource.?>
@@ -468,12 +474,26 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example    true?>
   </field>
 
+  <field name="abstract" type="text_general">
+    <?description A short, precise and general description of the resource not to be confused with the field description.?>
+    <?example     A danish commedy show.?>
+  </field>
+
+  <field name="description" type="text_general">
+    <?description A description of the resource. For videos this description is often quite extensive.?>
+    <?example     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis consequat libero, quis ornare mi.?>
+  </field>
+
+
   <field name="genre_sub" type="string" docValues="true">
     <?description A sub genre for the resource. This is a more specific category than the one specified in the field genre?>
     <?example     Comedy series?>
   </field>
 
-  <!--  Fields related to copyright and access conditions -->
+
+  <!-- ================================================================ -->
+  <!-- ====== Fields related to copyright and access conditions   ===== -->
+  <!-- ================================================================ -->
   <!-- TODO: Documentation for access fields. -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
     <?description ?>
