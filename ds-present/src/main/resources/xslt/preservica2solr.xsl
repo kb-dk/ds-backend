@@ -28,8 +28,10 @@
         <f:string key="origin">
           <xsl:value-of select="$origin"/>
         </f:string>
-        <!-- TODO: Not sure if this accession ref is correctly understood-->
-        <f:string key="accession_number">
+        <!-- TODO: Add extraction for all internal fields. -->
+        <!-- Accession ref is != accession number from the collection 'samlingsbilleder' this is to be saved as an
+             internal value, which is always prefixed with internal_-->
+        <f:string key="internal_accession_ref">
           <xsl:value-of select="/xip:DeliverableUnit/AccessionRef"/>
         </f:string>
 

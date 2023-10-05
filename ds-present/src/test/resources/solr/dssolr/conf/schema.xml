@@ -473,6 +473,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Comedy series?>
   </field>
 
+  <!-- Internal fields for radio/tv -->
+  <!-- All fields for internal use are to be prefixed with internal_ -->
+  <field name="internal_accession_ref" type="string">
+    <?description Accession reference for preservica data. This reference links resources that have been injected to
+                  Preservica through the same accession.?>
+    <?example     4ad76681-9459-49a3-954c-64048ae36b16?>
+  </field>
+
   <!--  Fields related to copyright and access conditions -->
   <!-- TODO: Documentation for access fields. -->
   <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
