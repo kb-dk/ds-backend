@@ -175,6 +175,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         Assertions.assertFalse(notSpeficied.contains("\"videoQuality\":"));
     }
 
+    @Test
+    void testKBInternalMap() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
+        Assertions.assertTrue(transformedJSON.contains("\"kb:internal\":{" +
+                                                        "\"kb:aspect_ratio\":\"16:9\"" +
+                                                        "}"));
+    }
+
 
     private static void printSchemaOrgJson(String xml) throws IOException {
         Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/");

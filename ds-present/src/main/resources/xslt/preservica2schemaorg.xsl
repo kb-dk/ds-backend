@@ -30,6 +30,7 @@
       </xsl:variable>
 
       <f:map>
+        <f:string key="@context">http://schema.org/</f:string>
         <f:string key="@type"><xsl:value-of select="$type"/></f:string>
         <f:string key="id">
             <xsl:value-of select="$recordID"/>
@@ -49,6 +50,14 @@
             <xsl:value-of select="f:concat($streamingserver,document($childID)/xip:Manifestation/ComponentManifestation/FileRef)"/>
           </f:string>
         </xsl:if>
+
+      <!-- This kb:internal map was how we've handled internal values in the past, see line 109 in this file:
+           https://github.com/kb-dk/ds-present/blob/spolorm-now-works/src/main/resources/xslt/mods2schemaorg.xsl -->
+      <f:map key="kb:internal">
+        <f:string key="kb:aspect_ratio">
+          <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
+        </f:string>
+      </f:map>
 
       </f:map>
     </xsl:variable>
