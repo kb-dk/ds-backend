@@ -423,6 +423,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     TV-Avisen?>
   </field>
 
+  <field name="episode_title" type="string">
+    <?description The name of a single episode.?>
+    <?example     Kagerester?>
+  </field>
+
   <field name="ritzau_id" type="string">
     <?description Identifier from ritzau?>
     <?example     7f42b813-690e-4897-9553-f6eefe9c4070?>
@@ -490,8 +495,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Comedy series?>
   </field>
 
+
+  <!-- =========================================================================== -->
+  <!-- ====== Internal fields, primarily used by the Royal Danish Library   ====== -->
+  <!-- ====== All fields for internal use are to be prefixed with internal_ ====== -->
+  <!-- =========================================================================== -->
+
   <!-- Internal fields for radio/tv. Primarily used by the Royal Danish Library. -->
-  <!-- All fields for internal use are to be prefixed with internal_ -->
   <field name="internal_accession_ref" type="string">
     <?description Accession reference for preservica data. This reference points to the accession, where this resource
                   was ingested to preservica.?>

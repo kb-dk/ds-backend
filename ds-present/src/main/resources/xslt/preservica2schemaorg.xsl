@@ -19,6 +19,8 @@
 
   <xsl:template match="/">
     <xsl:variable name="json">
+      <!-- TODO: Generel todo: Figure how to determine language for the strings "@language" that can be used throughout the schema.-->
+
       <xsl:variable name="type">
         <xsl:choose>
         <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
@@ -59,6 +61,7 @@
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
+    <!-- TODO: Do some validation of titles - check with metadata schema when they are set.    -->
     <xsl:variable name="title">
       <xsl:value-of select="pbcoreTitle[1]/title"/>
     </xsl:variable>
@@ -72,7 +75,6 @@
             <f:string key="value">
               <xsl:value-of select="$title"/>
             </f:string>
-            <!-- TODO: Figure how to determine language for the string "@language"-->
           </f:map>
         </f:array>
       </xsl:when>
@@ -82,7 +84,6 @@
             <f:string key="value">
               <xsl:value-of select="$title"/>
             </f:string>
-            <!-- TODO: Figure how to determine language for the string "@language"-->
           </f:map>
         </f:array>
         <f:array key="alternateName">
@@ -90,7 +91,6 @@
             <f:string key="value">
               <xsl:value-of select="$original-title"/>
             </f:string>
-            <!-- TODO: Figure how to determine language for the string "@language"-->
           </f:map>
         </f:array>
       </xsl:otherwise>
@@ -149,6 +149,13 @@
             <xsl:otherwise>Episode</xsl:otherwise>
           </xsl:choose>
         </f:string>
+
+        <!-- If episode titel is defined it is extracted here. -->
+        <xsl:for-each select="pbcoreTitle">
+          <xsl:if test="titleType = 'episodetitel'">
+            <f:string key="name"><xsl:value-of select="title"/></f:string>
+          </xsl:if>
+        </xsl:for-each>
 
         <!-- Extract metadata from PBC extensions related to episodes -->
         <xsl:for-each select="./pbcoreExtension/extension">

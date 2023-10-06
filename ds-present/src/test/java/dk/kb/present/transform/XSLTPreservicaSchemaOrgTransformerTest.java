@@ -27,6 +27,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     public static final String RECORD_1F3A6A66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
     public static final String RECORD_74e22fd8 = "internal_test_files/tvMetadata/74e22fd8-1268-4bcf-8a9f-22ca25379ea4.xml";
     public static final String RECORD_a8afb121 = "internal_test_files/tvMetadata/a8afb121-e8b8-467a-8704-10dc42356ac4.xml";
+    public static final String RECORD_3945e2d1 = "internal_test_files/tvMetadata/3945e2d1-83a2-40d8-af1c-30f7b3b94390.xml";
 
     @BeforeAll
     public static void beforeMethod() {
@@ -39,9 +40,9 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     public void testSetup() throws IOException {
         //printSchemaOrgJson(RECORD_74e22fd8);
-        printSchemaOrgJson(RECORD_a8afb121);
+        //printSchemaOrgJson(RECORD_3945e2d1);
         //printSchemaOrgJson(RECORD_1F3A6A66);
-        //printSchemaOrgJson(RECORD_44979f67);
+        printSchemaOrgJson(RECORD_44979f67);
     }
 
     @Test
@@ -124,6 +125,22 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     }
 
     @Test
+    void testEpisodeName() throws IOException{
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_3945e2d1);
+        Assertions.assertTrue(transformedJSON.contains("\"encodesCreativeWork\":{" +
+                                                        "\"@type\":\"TVEpisode\"," +
+                                                        "\"name\":\"Kagerester\","));
+    }
+
+    @Test
+    void testNoEpisodeName() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_44979f67);
+        Assertions.assertTrue(transformedJSON.contains("\"encodesCreativeWork\":{" +
+                                                        "\"@type\":\"TVEpisode\"," +
+                                                        "\"episodeNumber\":3"));
+    }
+
+    @Test
     void testTypeExtraction() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
         Assertions.assertTrue(transformedJSON.startsWith("{\"@type\":\"VideoObject\""));
@@ -141,7 +158,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_a8afb121);
         Assertions.assertTrue(transformedJSON.contains("\"abstract\":\"Eng. krimiserie\""));
     }
-
 
 
     private static void printSchemaOrgJson(String xml) throws IOException {

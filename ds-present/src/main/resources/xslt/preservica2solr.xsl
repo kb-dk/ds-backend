@@ -100,13 +100,18 @@
 
 
     <xsl:for-each select="pbcoreTitle">
-      <xsl:if test="titleType = 'titel'">
+      <xsl:if test="titleType = 'titel' and title != ''">
         <f:string key="title">
           <xsl:value-of select="title"/>
         </f:string>
       </xsl:if>
       <xsl:if test="titleType = 'originaltitel' and title != ''">
         <f:string key="original_title">
+          <xsl:value-of select="title"/>
+        </f:string>
+      </xsl:if>
+      <xsl:if test="titleType = 'episodetitel' and title != ''">
+        <f:string key="episode_title">
           <xsl:value-of select="title"/>
         </f:string>
       </xsl:if>

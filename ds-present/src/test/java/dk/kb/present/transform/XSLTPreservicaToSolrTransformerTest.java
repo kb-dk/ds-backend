@@ -25,6 +25,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     public static final String RECORD_a8aafb121 = "internal_test_files/tvMetadata/a8afb121-e8b8-467a-8704-10dc42356ac4.xml";
     public static final String RECORD_1f3a6a66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
     public static final String RECORD_74e22fd8 = "internal_test_files/tvMetadata/74e22fd8-1268-4bcf-8a9f-22ca25379ea4.xml";
+    public static final String RECORD_3945e2d1 = "internal_test_files/tvMetadata/3945e2d1-83a2-40d8-af1c-30f7b3b94390.xml";
     private static final Logger log = LoggerFactory.getLogger(XSLTPreservicaToSolrTransformerTest.class);
 
 
@@ -151,9 +152,16 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    public void prettyPrintTransformation() throws Exception {
-        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_74e22fd8);
+    void testEpisodeTitle(){
+        assertContains(RECORD_3945e2d1, "\"episode_title\":\"Kagerester\"");
+        assertNotContains(RECORD_74e22fd8, "\"episode_title\"");
     }
+
+    @Test
+    public void prettyPrintTransformation() throws Exception {
+        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
+    }
+
 
 
 }
