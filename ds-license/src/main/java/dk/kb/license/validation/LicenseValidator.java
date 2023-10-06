@@ -105,21 +105,10 @@ public class LicenseValidator {
         output.setPresentationType(input.getPresentationType());
         output.setQuery(query.getQuery());
 
-        List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
+        List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;          
+        ArrayList<String> filteredIdsSet = filterIDs(input.getAccessIds(), query.getQuery(),solrIdField); 
+        output.setAccessIds(filteredIdsSet);
 
-        // merge (union) results.   
-        Set<String> filteredIdsSet = new HashSet<String>();
-
-        //Next step: use Future's to make multithreaded when we get more servers. 
-        //But currently these requests are less 10 ms
-        for (SolrServerClient server: servers){
-            //log.debug("filtering ID and using query:"+query.getQuery());
-            List<String> filteredIds =server.filterIds(input.getAccessIds(), query.getQuery(),solrIdField);
-            log.info("#filtered id for server ("+input.getPresentationType()+") "+ server.getServerUrl() +" : "+filteredIds.size());
-            filteredIdsSet.addAll(filteredIds);
-        }
-        
-        output.setAccessIds(new ArrayList<String>(filteredIdsSet));
         //Sanity check!
         if (output.getAccessIds().size() > input.getAccessIds().size()){
             log.warn("Security problem::More ID's in output than input. Input ids:"+input.getAccessIds() +" output IDs:"+output.getAccessIds());
@@ -127,7 +116,7 @@ public class LicenseValidator {
         }
 
         //Set IDs that exists but with no access
-        ArrayList<String> existingResourceIds = filterIDsThatExists(input.getAccessIds(), solrIdField);         
+        ArrayList<String> existingResourceIds = filterIDs(input.getAccessIds(), null, solrIdField);         
         existingResourceIds.removeAll(output.getAccessIds());             
         output.setNonAccessIds(existingResourceIds);
 
@@ -630,16 +619,14 @@ public class LicenseValidator {
         }		  
     }
 
-    //Check ID's and return only those that exists.
-    private static ArrayList<String> filterIDsThatExists(List<String> noAccessIdList, String solrIdField) throws Exception{
+    private static ArrayList<String> filterIDs(List<String> noAccessIdList, String filterQuery, String solrIdField) throws Exception{
         List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
 
-        //TODO solr lookup
         Set<String> noAccessfilteredIdsSet = new HashSet<String>();
         if (noAccessIdList.size() >0) {
             for (SolrServerClient server: servers){
                 //Call with no filter so results are not restriced by access
-                List<String> noAccessfilteredIds =server.filterIds(noAccessIdList, null, solrIdField);
+                List<String> noAccessfilteredIds =server.filterIds(noAccessIdList, filterQuery, solrIdField);
                 //log.info("#filtered id for server ("+input.getPresentationType()+") "+ server.getServerUrl() +" : "+filteredIds.size());
                 noAccessfilteredIdsSet.addAll(noAccessfilteredIds);
             }
