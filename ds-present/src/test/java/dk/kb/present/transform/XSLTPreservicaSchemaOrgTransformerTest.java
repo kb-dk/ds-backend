@@ -166,6 +166,15 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         Assertions.assertTrue(transformedJSON.contains("\"abstract\":\"Eng. krimiserie\""));
     }
 
+    @Test
+    void testVideoQuality() throws IOException {
+        String ikkeHD = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_a8afb121);
+        Assertions.assertTrue(ikkeHD.contains("\"videoQuality\":\"ikke hd\""));
+
+        String notSpeficied = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_1F3A6A66);
+        Assertions.assertFalse(notSpeficied.contains("\"videoQuality\":"));
+    }
+
 
     private static void printSchemaOrgJson(String xml) throws IOException {
         Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/");

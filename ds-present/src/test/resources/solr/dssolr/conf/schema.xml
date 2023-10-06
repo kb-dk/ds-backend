@@ -448,6 +448,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     true?>
   </field>
 
+  <field name="video_quality" type="string">
+    <?description Describes the quality of the video. Values are 'hd' and 'ikke hd'?>
+    <?example     hd?>
+  </field>
+
   <field name="premiere" type="boolean">
     <?description Boolean that tells if this record is the first showing of the broadcast.?>
     <?example     false?>

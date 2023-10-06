@@ -158,6 +158,15 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testVideoQuality(){
+        //ikke hd
+        assertContains(RECORD_5a5357be, "\"video_quality\":\"ikke hd\"");
+        //Not defined
+        assertNotContains(RECORD_1f3a6a66, "\"video_quality\":");
+        //TODO: We dont have any test files that are HD=true. Either find one when more data is available or create a mock
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }

@@ -68,6 +68,8 @@
     <xsl:variable name="original-title">
       <xsl:value-of select="pbcoreTitle[2]/title"/>
     </xsl:variable>
+
+<!--    TODO: name and alternate name does not require the value map - they are to be specified as strings-->
     <xsl:choose>
       <xsl:when test="$title = $original-title or ($title != '' and $original-title = '')">
         <f:array key="name">
@@ -297,6 +299,10 @@
         <f:string key="@type">Collection</f:string>
         <f:string key="name"><xsl:value-of select="pbcoreInstantiation/formatLocation"/></f:string>
       </f:map>
+    </xsl:if>
+
+    <xsl:if test="pbcoreInstantiation/formatStandard">
+      <f:string key="videoQuality"><xsl:value-of select="pbcoreInstantiation/formatStandard"/></f:string>
     </xsl:if>
 
 

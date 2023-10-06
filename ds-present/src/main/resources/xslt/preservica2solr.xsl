@@ -196,6 +196,15 @@
       </xsl:otherwise>
     </xsl:choose>
 
+
+      <xsl:if test="pbcoreInstantiation/formatStandard">
+        <f:string key="video_quality">
+          <xsl:value-of select="pbcoreInstantiation/formatStandard"/>
+        </f:string>
+      </xsl:if>
+
+
+
     <xsl:choose>
       <xsl:when test="pbcoreInstantiation/formatColors = 'farve'">
         <f:string key="color">true</f:string>
