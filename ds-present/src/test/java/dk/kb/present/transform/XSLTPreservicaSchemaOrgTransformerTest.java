@@ -46,6 +46,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     }
 
     @Test
+    void testCollection() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_44979f67);
+        Assertions.assertTrue(transformedJSON.contains("\"isPartOf\":" +
+                                                        "{\"@type\":\"Collection\"," +
+                                                        "\"name\":\"Det Kgl. Bibliotek; Radio\\/TV-Samlingen\"}"));
+    }
+    @Test
     void testContentUrl() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
         Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\""));

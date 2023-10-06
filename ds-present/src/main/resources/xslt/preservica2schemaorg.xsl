@@ -292,6 +292,13 @@
       </f:map>
     </f:array>
 
+    <xsl:if test="pbcoreInstantiation/formatLocation">
+      <f:map key="isPartOf">
+        <f:string key="@type">Collection</f:string>
+        <f:string key="name"><xsl:value-of select="pbcoreInstantiation/formatLocation"/></f:string>
+      </f:map>
+    </xsl:if>
+
 
   </xsl:template>
 
