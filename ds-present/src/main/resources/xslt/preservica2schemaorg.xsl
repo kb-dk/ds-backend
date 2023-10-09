@@ -166,6 +166,13 @@
          This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
     <xsl:variable name="pbcExtensions" select="./pbcoreExtension/extension"/>
 
+    <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
+    <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')]">
+      <f:string key="datePublished">
+        <xsl:value-of select="f:substring-before(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart, 'T')"/>
+      </f:string>
+    </xsl:if>
+
     <!-- Checks if PBC extensions contain metadata about episodes and season lengths
          and creates the field encodesCreativeWork if true.
          This if-statements checks that the PBC extensions 'episodenr' and 'antalepisoder' have actual values.-->
@@ -252,23 +259,23 @@
 
     <!-- Extract start and end times for broadcast  and calculate duration -->
     <xsl:if test="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
-      <xsl:variable name="start-date">
+      <xsl:variable name="start-time">
         <xsl:value-of select="xs:dateTime(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart)"/>
       </xsl:variable>
-      <xsl:variable name="end-date">
+      <xsl:variable name="end-time">
         <xsl:value-of select="xs:dateTime(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd)"/>
       </xsl:variable>
-      <f:string key="startDate">
-        <xsl:value-of select="$start-date"/>
+      <f:string key="startTime">
+        <xsl:value-of select="$start-time"/>
       </f:string>
-      <f:string key="endDate">
-        <xsl:value-of select="$end-date"/>
+      <f:string key="endTime">
+        <xsl:value-of select="$end-time"/>
       </f:string>
 
       <!-- Schema.org refers to the wiki page for ISO8601 and actually wants the duration in the format PT12M50S
            for a duration of 12 minutes and 50 seconds -->
       <f:string key="duration">
-        <xsl:value-of select="xs:dateTime($end-date) - xs:dateTime($start-date)"/>
+        <xsl:value-of select="xs:dateTime($end-time) - xs:dateTime($start-time)"/>
       </f:string>
     </xsl:if>
 

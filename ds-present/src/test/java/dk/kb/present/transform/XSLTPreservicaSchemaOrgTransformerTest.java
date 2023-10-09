@@ -74,8 +74,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     void testStartAndEndDates() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
-        Assertions.assertTrue(transformedJSON.contains("\"startDate\":\"2021-01-18T00:00:00Z\"") &&
-                                       transformedJSON.contains("\"endDate\":\"2021-01-18T00:30:00Z\""));
+        Assertions.assertTrue(transformedJSON.contains("\"startTime\":\"2021-01-18T00:00:00Z\"") &&
+                                       transformedJSON.contains("\"endTime\":\"2021-01-18T00:30:00Z\""));
     }
 
     @Test
@@ -176,6 +176,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     }
 
     @Test
+    void testDatePublished() throws IOException {
+        String notPremiere = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_a8afb121);
+        Assertions.assertFalse(notPremiere.contains("\"datePublished\":"));
+        // TODO: Add test for datePublished. where the value is present, either by creating a test record with premiere:premiere or by finding a record with that value
+
+    }
+
+    @Test
     void testKBInternalMap() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:internal\":{" +
@@ -185,6 +193,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                                                         "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"" +
                                                         "}"));
     }
+
+
 
 
 
