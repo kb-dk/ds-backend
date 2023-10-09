@@ -256,6 +256,11 @@
             <xsl:value-of select="true()"/>
           </f:string>
         </xsl:when>
+        <xsl:when test="f:starts-with(. , 'hovedgenre_id:')">
+          <f:string key="internal_hovedgenre_id">
+            <xsl:value-of select="f:substring-after(. , 'hovedgenre_id:')"/>
+          </f:string>
+        </xsl:when>
       </xsl:choose>
     </xsl:for-each>
 

@@ -186,6 +186,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testHovedgenreId() {
+        assertContains(RECORD_3945e2d1,"\"internal_hovedgenre_id\":\"10\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }
