@@ -65,6 +65,21 @@
             <f:string key="kb:surround_sound"><xsl:value-of select="false()"/></f:string>
           </xsl:when>
         </xsl:choose>
+        <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID">
+          <xsl:choose>
+            <xsl:when test="formatIdentifierSource = 'ritzau'">
+              <f:string key="kb:format_identifier_ritzau">
+                <xsl:value-of select="formatIdentifier"/>
+              </f:string>
+            </xsl:when>
+            <xsl:when test="formatIdentifierSource = 'nielsen'">
+              <f:string key="kb:format_identifier_nielsen">
+                <xsl:value-of select="formatIdentifier"/>
+              </f:string>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:for-each>
+
       </f:map>
 
       </f:map>

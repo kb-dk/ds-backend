@@ -251,7 +251,7 @@
 
     <xsl:if test="pbcoreInstantiation/formatAspectRatio">
       <f:string key="aspect_ratio">
-        <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
+        <xsl:value-of select="pbcoreInstantiation/formatAspectRatio"/>
       </f:string>
     </xsl:if>
 
@@ -263,6 +263,22 @@
         <f:string key="surround_sound"><xsl:value-of select="false()"/></f:string>
       </xsl:when>
     </xsl:choose>
+
+    <xsl:for-each select="pbcoreInstantiation/pbcoreFormatID">
+      <xsl:choose>
+        <xsl:when test="formatIdentifierSource = 'ritzau'">
+          <f:string key="internal_format_identifier_ritzau">
+            <xsl:value-of select="formatIdentifier"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test="formatIdentifierSource = 'nielsen'">
+          <f:string key="internal_format_identifier_nielsen">
+            <xsl:value-of select="formatIdentifier"/>
+          </f:string>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:for-each>
+
 
   </xsl:template>
 

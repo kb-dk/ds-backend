@@ -175,6 +175,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testInternalFormatIdentifier(){
+        assertContains(RECORD_3945e2d1, "\"internal_format_identifier_ritzau\":\"81318588\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }

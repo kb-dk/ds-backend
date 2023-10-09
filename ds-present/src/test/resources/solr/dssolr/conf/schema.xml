@@ -518,6 +518,16 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     4ad76681-9459-49a3-954c-64048ae36b16?>
   </field>
 
+  <field name="internal_format_identifier_ritzau" type="string">
+    <?description ?> <!-- TODO: figure what this value represents -->
+    <?example     81318588?>
+  </field>
+
+  <field name="internal_format_identifier_nielsen" type="string">
+    <?description ?> <!-- TODO: figure what this value represents -->
+    <?example     101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69?>
+  </field>
+
   <!-- ================================================================ -->
   <!-- ====== Fields related to copyright and access conditions   ===== -->
   <!-- ================================================================ -->
