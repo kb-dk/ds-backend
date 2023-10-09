@@ -18,6 +18,10 @@
   <xsl:param name="childID"/>
 
   <xsl:template match="/">
+    <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
+         This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
+    <xsl:variable name="pbcExtensions" select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension"/>
+
     <xsl:variable name="json">
       <!-- TODO: Generel todo: Figure how to determine language for the strings "@language" that can be used throughout the schema.-->
 
@@ -39,6 +43,7 @@
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
           <xsl:call-template name="pbc-metadata">
             <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
           </xsl:call-template>
         </xsl:for-each>
 
@@ -51,6 +56,7 @@
           </f:string>
         </xsl:if>
 
+      <!-- TODO: Extract kb:internal map to own template, to clean up the XSLT. -->
       <!-- This kb:internal map was how we've handled internal values in the past, see line 109 in this file:
            https://github.com/kb-dk/ds-present/blob/spolorm-now-works/src/main/resources/xslt/mods2schemaorg.xsl -->
       <f:map key="kb:internal">
@@ -79,6 +85,19 @@
             </xsl:when>
           </xsl:choose>
         </xsl:for-each>
+        <!--TODO: Figure if retransmission can fit into real schema.org -->
+        <xsl:choose>
+          <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:ikke genudsendelse')]">
+            <f:string key="kb:retransmission">
+              <xsl:value-of select="false()"/>
+            </f:string>
+          </xsl:when>
+          <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:genudsendelse')]">
+            <f:string key="kb:retransmission">
+              <xsl:value-of select="true()"/>
+            </f:string>
+          </xsl:when>
+        </xsl:choose>
 
       </f:map>
 
@@ -90,6 +109,7 @@
   <!-- TEMPLATE FOR ACCESSING PBC METADATA.-->
   <xsl:template name="pbc-metadata">
     <xsl:param name="type"/>
+    <xsl:param name="pbcExtensions"/>
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
@@ -161,11 +181,8 @@
         </f:map>
       </xsl:if>
     </xsl:for-each>
-
-    <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
-         This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
-    <xsl:variable name="pbcExtensions" select="./pbcoreExtension/extension"/>
-
+    
+    
     <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
     <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')]">
       <f:string key="datePublished">

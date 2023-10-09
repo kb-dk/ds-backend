@@ -246,6 +246,16 @@
             <xsl:value-of select="substring-after(., ':')"/>
           </f:string>
         </xsl:when>
+        <xsl:when test=". = 'genudsendelse:ikke genudsendelse'">
+          <f:string key="retransmission">
+            <xsl:value-of select="false()"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test=". = 'genudsendelse:genudsendelse'">
+          <f:string key="retransmission">
+            <xsl:value-of select="true()"/>
+          </f:string>
+        </xsl:when>
       </xsl:choose>
     </xsl:for-each>
 

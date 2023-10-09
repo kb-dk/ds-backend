@@ -180,6 +180,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testRetransmission(){
+        assertContains(RECORD_44979f67, "\"retransmission\":\"true\"");
+        assertContains(RECORD_4b18d02d, "\"retransmission\":\"false\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }

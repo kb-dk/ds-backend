@@ -489,6 +489,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example    true?>
   </field>
 
+  <field name="retransmission" type="boolean">
+    <?description   A boolean value for showing wether or not a video is a retransmission of something else.?>
+    <?example       False?>
+    <?query_example "'horse AND retransmission:false' to query for resources about horses that aren't retransmissions.?>
+  </field>
+
   <field name="abstract" type="text_general">
     <?description A short, precise and general description of the resource not to be confused with the field description.?>
     <?example     A danish commedy show.?>
