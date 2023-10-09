@@ -25,7 +25,9 @@ servers:
     description: 'Version 1'
 
 paths:
-# IIIF Image request
+  # IIIF Image request
+  # Note: If the signature of this endpoint is changed, AccessApiServiceImpl.iIIFRequestNonescaped must
+  #       be manually adjusted to match the new AccessApiServiceImpl.iIIFRequest annotations
   /IIIF/{identifier}/{region}/{size}/{rotation}/{quality}.{format}:
     get:
       tags:
@@ -180,7 +182,9 @@ paths:
             
             A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.
             
-  # IIIF Image Information          
+  # IIIF Image Information
+  # Note: If the signature of this endpoint is changed, AccessApiServiceImpl.getImageInformationNonescaped must
+  #       be manually adjusted to match the new AccessApiServiceImpl.getImageInformation annotations
   /IIIF/{identifier}/info.{format}:
     get:
       tags:
@@ -266,6 +270,11 @@ paths:
             Define a region of interest starting at relative coordinates x,y with width w and height h.
             
             For use with CVT requests. All values should be ratios in the range 0 – 1.0
+            
+            When using the RGN parameter, please note that the WID parameter is **NOT** automatically adjusted. 
+            If WID is not adjusted accordingly you will receive an upscale version of the region requested. 
+            WID defaults to the original image width in pixels.
+            The original width of the image, can be obtained through the ```/IIIF/{identifier}/info.{format}```-endpoint.  
               
             **RGN has to be defined as x,y,w,h and requires CVT, WID & HEI** 
           schema: 
@@ -397,6 +406,8 @@ paths:
           description: An image with the provided FIF was not found.
   
   # DeepZoom
+  # Note: If the signature of this endpoint is changed, AccessApiServiceImpl.getDeepzoomDZINonescaped must
+  #       be manually adjusted to match the new AccessApiServiceImpl.getDeepzoomDZI annotations
   /deepzoom/{imageid}.dzi:
     get:
       tags:
@@ -432,6 +443,8 @@ paths:
                 schema:
                   $ref: '#/components/schemas/DeepzoomDZI'
                   
+  # Note: If the signature of this endpoint is changed, AccessApiServiceImpl.getDeepzoomTileNonescaped must
+  #       be manually adjusted to match the new AccessApiServiceImpl.getDeepzoomTile annotations
   /deepzoom/{imageid}_files/{layer}/{tiles}.{format}:
     get:
       tags:

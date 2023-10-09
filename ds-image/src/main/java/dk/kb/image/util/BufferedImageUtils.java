@@ -37,10 +37,17 @@ public class BufferedImageUtils {
 
     public static  BufferedImage getNoAccessImage() {
         final BufferedImage im = new BufferedImage(300, 200, BufferedImage.TYPE_INT_RGB);
-        drawTextInImg(im, "Visning kun på stedet", 10, 100);
+        drawTextInImg(im, "Not sufficient access", 10, 100);
         return im;
     }   
 
+    public static  BufferedImage getImageNotExist() {
+        final BufferedImage im = new BufferedImage(300, 200, BufferedImage.TYPE_INT_RGB);
+        drawTextInImg(im, "Image ID not found.", 10, 100);
+        return im;
+    }   
+    
+    
     private static void drawTextInImg(BufferedImage baseImage, String textToWrite, int x, int y) {
         Graphics2D g2D = (Graphics2D) baseImage.getGraphics();
         g2D.setColor(new Color(167, 136, 69));
