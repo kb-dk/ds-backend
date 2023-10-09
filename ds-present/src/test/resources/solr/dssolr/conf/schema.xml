@@ -453,6 +453,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     hd?>
   </field>
 
+  <field name="surround_sound" type="boolean">
+    <?description A boolean value for the type of sound. If true then the sound is surround sound. If false it is not?>
+    <?example     true?>
+  </field>
+
   <field name="premiere" type="boolean">
     <?description Boolean that tells if this record is the first showing of the broadcast.?>
     <?example     false?>

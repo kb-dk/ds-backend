@@ -26,6 +26,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     public static final String RECORD_1f3a6a66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
     public static final String RECORD_74e22fd8 = "internal_test_files/tvMetadata/74e22fd8-1268-4bcf-8a9f-22ca25379ea4.xml";
     public static final String RECORD_3945e2d1 = "internal_test_files/tvMetadata/3945e2d1-83a2-40d8-af1c-30f7b3b94390.xml";
+    public static final String RECORD_4b18d02d = "internal_test_files/tvMetadata/4b18d02d-a421-4026-b522-66436a56bc0a.xml";
     private static final Logger log = LoggerFactory.getLogger(XSLTPreservicaToSolrTransformerTest.class);
 
 
@@ -164,6 +165,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         //Not defined
         assertNotContains(RECORD_1f3a6a66, "\"video_quality\":");
         //TODO: We dont have any test files that are HD=true. Either find one when more data is available or create a mock
+    }
+
+    @Test
+    void testSurround(){
+        assertContains(RECORD_5a5357be, "\"surround_sound\":\"false\"");
+        assertContains(RECORD_4b18d02d, "\"surround_sound\":\"true\"");
+
     }
 
     @Test

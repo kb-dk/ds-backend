@@ -254,6 +254,16 @@
         <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
       </f:string>
     </xsl:if>
+
+    <xsl:choose>
+      <xsl:when test="pbcoreInstantiation/formatChannelConfiguration = 'surround'">
+        <f:string key="surround_sound"><xsl:value-of select="true()"/></f:string>
+      </xsl:when>
+      <xsl:when test="pbcoreInstantiation/formatChannelConfiguration = 'ikke surround'">
+        <f:string key="surround_sound"><xsl:value-of select="false()"/></f:string>
+      </xsl:when>
+    </xsl:choose>
+
   </xsl:template>
 
   <!-- FUNCTIONS -->

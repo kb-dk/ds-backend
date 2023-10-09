@@ -150,7 +150,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     void testTypeExtraction() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
-        Assertions.assertTrue(transformedJSON.startsWith("{\"@type\":\"VideoObject\""));
+        Assertions.assertTrue(transformedJSON.startsWith("{\"@context\":\"http:\\/\\/schema.org\\/\",\"@type\":\"VideoObject\""));
     }
 
     @Test
@@ -179,9 +179,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     void testKBInternalMap() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:internal\":{" +
-                                                        "\"kb:aspect_ratio\":\"16:9\"" +
+                                                        "\"kb:aspect_ratio\":\"16:9\"," +
+                                                        "\"kb:surround_sound\":\"false\"" +
                                                         "}"));
     }
+
+
 
 
     private static void printSchemaOrgJson(String xml) throws IOException {

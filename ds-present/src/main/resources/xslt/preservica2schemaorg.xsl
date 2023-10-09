@@ -57,6 +57,14 @@
         <f:string key="kb:aspect_ratio">
           <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
         </f:string>
+        <xsl:choose>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'surround'">
+            <f:string key="kb:surround_sound"><xsl:value-of select="true()"/></f:string>
+          </xsl:when>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'ikke surround'">
+            <f:string key="kb:surround_sound"><xsl:value-of select="false()"/></f:string>
+          </xsl:when>
+        </xsl:choose>
       </f:map>
 
       </f:map>
