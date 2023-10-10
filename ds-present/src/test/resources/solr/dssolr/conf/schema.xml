@@ -584,12 +584,15 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     174278?>
   </field>
 
-
-
-
   <field name="internal_program_ophold" type="boolean">
     <?description A value that indicates if there has been a break in the resource.?>
     <?example     true?>
+  </field>
+
+  <!-- TODO: does this need to be internal? -->
+  <field name="internal_is_teletext" type="boolean">
+    <?description A boolean value that tells if the resource is teletext?>
+    <?example     false?>
   </field>
 
   <!-- ================================================================ -->

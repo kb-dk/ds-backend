@@ -341,6 +341,21 @@
             </xsl:when>
           </xsl:choose>
         </xsl:when>
+        <xsl:when test="f:starts-with(. , 'ttv:')">
+          <!-- Inner XSLT  choose to determine value of boolean -->
+          <xsl:choose>
+            <xsl:when test=". = 'ttv:ikke tekst-tv'">
+              <f:string key="internal_is_teletext">
+                <xsl:value-of select="false()"/>
+              </f:string>
+            </xsl:when>
+            <xsl:when test=". = 'ttv:tekst-tv'">
+              <f:string key="internal_is_teletext">
+                <xsl:value-of select="true()"/>
+              </f:string>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:when>
       </xsl:choose>
     </xsl:for-each>
 

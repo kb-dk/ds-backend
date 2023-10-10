@@ -240,6 +240,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertContains(RECORD_3945e2d1, "\"has_subtitles_for_hearing_impaired\":\"false\"");
         // TODO: Create test for has_subtitles_for_hearing_impaired:true, with custom test file
     }
+    @Test
+    void testTeletext(){
+        assertContains(RECORD_3945e2d1, "\"internal_is_teletext\":\"false\"");
+        // TODO: Create test for internal_is_teletext:true, with custom test file
+    }
 
     @Test
     public void prettyPrintTransformation() throws Exception {
