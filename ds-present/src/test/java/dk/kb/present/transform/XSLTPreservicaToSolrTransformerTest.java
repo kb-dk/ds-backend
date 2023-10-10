@@ -235,7 +235,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         // TODO: Create test for has_subtitles:true, with custom test file
     }
 
-
+    @Test
+    void testSubtitlesHearingImpaired(){
+        assertContains(RECORD_3945e2d1, "\"has_subtitles_for_hearing_impaired\":\"false\"");
+        // TODO: Create test for has_subtitles_for_hearing_impaired:true, with custom test file
+    }
 
     @Test
     public void prettyPrintTransformation() throws Exception {

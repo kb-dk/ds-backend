@@ -171,6 +171,22 @@
                 </xsl:when>
               </xsl:choose>
             </xsl:when>
+            <!-- TODO: Check if subtitles for hearing impaired can be described in schema.org-->
+            <xsl:when test="f:starts-with(. , 'th:')">
+              <!-- Inner XSLT  choose to determine value of boolean -->
+              <xsl:choose>
+                <xsl:when test=". = 'th:ikke tekstet for hørehæmmede'">
+                  <f:string key="kb:has_subtitles_for_hearing_impaired">
+                    <xsl:value-of select="false()"/>
+                  </f:string>
+                </xsl:when>
+                <xsl:when test=". = 'th:tekstet for hørehæmmede'">
+                  <f:string key="kb:has_subtitles_for_hearing_impaired">
+                    <xsl:value-of select="true()"/>
+                  </f:string>
+                </xsl:when>
+              </xsl:choose>
+            </xsl:when>
           </xsl:choose>
 
         </xsl:for-each>

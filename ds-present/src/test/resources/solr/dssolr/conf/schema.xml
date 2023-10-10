@@ -515,6 +515,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     true?>
   </field>
 
+  <field name="has_subtitles_for_hearing_impaired" type="boolean">
+    <?description A boolean value for subtitles for hearing impaired. If true, then the resource contains subtitles.?>
+    <?example     true?>
+  </field>
+
+
 
   <!-- =========================================================================== -->
   <!-- ====== Internal fields, primarily used by the Royal Danish Library   ====== -->
