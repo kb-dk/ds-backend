@@ -41,7 +41,7 @@ public class ImageAccessValidation {
            checkAccessForIds = licenseClient.checkAccessForResourceIds(licenseQueryDto); // Use
         }
         catch(Exception e) {
-            log.error("Error calling licensemodule",e);
+            log.error("Error calling licensemodule with resource ID '" + resource_id + "'",e);
             throw new InternalServiceException("Error calling licensemodule");            
         }
         
