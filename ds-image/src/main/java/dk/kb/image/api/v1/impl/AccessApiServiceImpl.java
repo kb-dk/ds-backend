@@ -3,15 +3,9 @@ package dk.kb.image.api.v1.impl;
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
 import dk.kb.image.api.v1.AccessApi;
-
 import dk.kb.image.model.v1.DeepzoomDZIDto;
 import dk.kb.image.model.v1.IIIFInfoDto;
-import dk.kb.image.util.BufferedImageUtils;
-import dk.kb.license.client.v1.DsLicenseApi;
-import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
-import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
-import dk.kb.license.model.v1.UserObjAttributeDto;
-import dk.kb.license.util.DsLicenseClient;
+import dk.kb.image.util.ImageAccessValidation;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -21,7 +15,6 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import javax.validation.constraints.DecimalMin;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,10 +23,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.StreamingOutput;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +39,6 @@ import java.util.regex.Pattern;
  */
 public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private static final Logger log = LoggerFactory.getLogger(AccessApiServiceImpl.class);
-    private static DsLicenseApi licenseClient;
-    
-    private static enum ACCESS_TYPE {
-        ACCESS, NO_ACCESS, ID_NON_EXISTING
-    };
-
     
 
     /**
@@ -313,13 +299,12 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String filename = elements[elements.length - 1] + "." + format;
             // Show download link in Swagger UI, inline when opened directly in browser
             
-            StreamingOutput handleNoAccessOrNoImage = handleNoAccessOrNoImage(identifier);
-            if (handleNoAccessOrNoImage != null) {
-                httpServletResponse.setContentType("image/png");
+            //Will return null if there is access to the image.
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse);
+            if (handleNoAccessOrNoImage != null) {                
                 return handleNoAccessOrNoImage;
             }
-            
-            
+                        
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(format));
 
@@ -390,9 +375,9 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String[] elements = FIF.split("[/\\\\]");
             String filename = elements[elements.length - 1] + "." + CVT;
          
-            StreamingOutput handleNoAccessOrNoImage = handleNoAccessOrNoImage(FIF);
-            if (handleNoAccessOrNoImage != null) {
-                httpServletResponse.setContentType("image/png");
+            //Will return null if there is access to the image.
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(FIF, httpServletResponse);
+            if (handleNoAccessOrNoImage != null) {                 
                 return handleNoAccessOrNoImage;
             }
             
@@ -407,122 +392,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             throw handleException(e);
         }
     }
-
-    
-    protected StreamingOutput createStreamingOutput(final byte[] data) {
-        return new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException {
-                output.write(data);
-            }
-        };
-    }
-
-    private StreamingOutput getImageForbidden() throws Exception {
-        BufferedImage image = BufferedImageUtils.getNoAccessImage();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", baos);
-        byte[] bytes = baos.toByteArray();
-
-        return createStreamingOutput(bytes);
-
-    }
-
-    private StreamingOutput getImageNotExist() throws Exception {
-        BufferedImage image = BufferedImageUtils.getImageNotExist();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", baos);
-        byte[] bytes = baos.toByteArray();
-        return createStreamingOutput(bytes);
-    }
-    
-    private StreamingOutput handleNoAccessOrNoImage(String resource_id)  throws Exception{
-        ACCESS_TYPE type = accessTypeToImage( resource_id);
-
-        log.debug("Access type:" + type + " for resource_id:" +  resource_id);
-
-        switch (type) {
-        case NO_ACCESS:
-            // Maybe http 403 (forbidden) also?
-            return getImageForbidden();
-        case ID_NON_EXISTING:
-            //Maybe  404  also?
-            return getImageNotExist();
-        case ACCESS: 
-          //Do nothing
-        }
-        
-        return null;
-    }
-    
-    private ACCESS_TYPE accessTypeToImage(String resource_id) throws Exception {
-
-        // Add filter query from license module.
-        DsLicenseApi licenseClient = getDsLicenseApiClient();
-        CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(resource_id);
-        CheckAccessForIdsOutputDto checkAccessForIds = licenseClient.checkAccessForResourceIds(licenseQueryDto); // Use
-        // the
-        // resource
-        // field
-
-        List<String> access_ids = checkAccessForIds.getAccessIds();
-        List<String> non_access_ids = checkAccessForIds.getNonAccessIds();
-        List<String> non_existing_ids = checkAccessForIds.getNonExistingIds();
-
-        // Check in other that happens most frequent.
-        if (access_ids.contains(resource_id)) {
-            return ACCESS_TYPE.ACCESS;
-        } else if (non_access_ids.contains(resource_id)) {
-            log.info("no access to resource_id:" + resource_id);
-            return ACCESS_TYPE.NO_ACCESS;
-        } else if (non_existing_ids.contains(resource_id)) {
-            log.info("none existing image resource_id:" + resource_id);
-            return ACCESS_TYPE.ID_NON_EXISTING;
-        } else { // Sanity check, should not happen
-            log.error("Could not match resource_id to access,no_access,non_existing: " + resource_id);
-            throw new InternalServiceException(
-                    "Could not match resource_id to access,no_access,non_existing: " + resource_id);
-        }
-
-    }
-
-    private static CheckAccessForIdsInputDto getCheckAccessForIdsInputDto(String resource_id) {
-
-        CheckAccessForIdsInputDto idsDto = new CheckAccessForIdsInputDto();
-        // TODO these attributes must come from Keycloak
-        UserObjAttributeDto everybodyUserAttribute = new UserObjAttributeDto();
-        everybodyUserAttribute.setAttribute("everybody");
-        ArrayList<String> values = new ArrayList<String>();
-        values.add("yes");
-        everybodyUserAttribute.setValues(values);
-
-        List<UserObjAttributeDto> allAttributes = new ArrayList<UserObjAttributeDto>();
-        allAttributes.add(everybodyUserAttribute);
-        idsDto.setPresentationType("Thumbnails");
-        idsDto.setAttributes(allAttributes);
-
-        List<String> ids = new ArrayList<String>();
-        ids.add(resource_id);
-        idsDto.setAccessIds(ids);
-        return idsDto;
-
-    }
-
-    private static DsLicenseApi getDsLicenseApiClient() {
-        if (licenseClient != null) {
-            return licenseClient;
-        }
-
-        // String dsLicenseUrl =
-        // ServiceConfig.getConfig().getString("config.licensemodule.url");
-        // TODO in YAML
-        String dsLicenseUrl = "http://localhost:10001/ds-license/v1/";
-        licenseClient = new DsLicenseClient(dsLicenseUrl);
-        return licenseClient;
-    }
-
-    
-    
+     
     /**
      * Derives the MIME type for replies. Only supports formats from IIIF Image and IIP protocols.
      * @param format simple form, e.g. {@code jpeg}, {@code pdf}...
