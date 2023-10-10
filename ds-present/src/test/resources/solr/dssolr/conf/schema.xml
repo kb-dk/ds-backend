@@ -554,6 +554,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     25101143?>
   </field>
 
+  <field name="internal_program_ophold" type="boolean">
+    <?description A value that indicates if there has been a break in the resource.?>
+    <?example     true?>
+  </field>
   <!-- ================================================================ -->
   <!-- ====== Fields related to copyright and access conditions   ===== -->
   <!-- ================================================================ -->

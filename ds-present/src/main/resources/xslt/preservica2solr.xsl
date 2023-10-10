@@ -276,6 +276,21 @@
             <xsl:value-of select="f:substring-after(. , 'program_id:')"/>
           </f:string>
         </xsl:when>
+        <xsl:when test="f:starts-with(. , 'program_ophold:')">
+          <!-- inner XSLT Choose which determines if program_ophold is false or true -->
+          <xsl:choose>
+            <xsl:when test=". = 'program_ophold:ikke program ophold'">
+              <f:string key="internal_program_ophold">
+                <xsl:value-of select="false()"/>
+              </f:string>
+            </xsl:when>
+            <xsl:when test=". = 'program_ophold:program ophold'">
+              <f:string key="internal_program_ophold">
+                <xsl:value-of select="true()"/>
+              </f:string>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:when>
       </xsl:choose>
     </xsl:for-each>
 

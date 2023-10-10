@@ -206,6 +206,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testProgramOphold(){
+        assertContains(RECORD_3945e2d1, "\"internal_program_ophold\":\"false\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }
