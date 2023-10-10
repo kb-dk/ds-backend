@@ -187,17 +187,19 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     void testKBInternalMap() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:internal\":{" +
-                                                        "\"kb:aspect_ratio\":\"16:9\"," +
-                                                        "\"kb:surround_sound\":\"false\"," +
-                                                        "\"kb:format_identifier_ritzau\":\"81213310\"," +
-                                                        "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," +
-                                                        "\"kb:retransmission\":\"false\"," +
-                                                        "\"kb:maingenre_id\":\"1\"," +
-                                                        "\"kb:channel_id\":\"3\"," +
-                                                        "\"kb:country_of_origin_id\":\"0\"," +
-                                                        "\"kb:ritzau_program_id\":\"25101114\"," +
-                                                        "\"kb:program_ophold\":\"false\"" +
-                                                        "}"));
+                                                "\"kb:aspect_ratio\":\"16:9\"," +
+                                                "\"kb:surround_sound\":\"false\"," +
+                                                "\"kb:format_identifier_ritzau\":\"81213310\"," +
+                                                "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," +
+                                                "\"kb:retransmission\":\"false\"," +
+                                                "\"kb:maingenre_id\":\"1\"," +
+                                                "\"kb:channel_id\":\"3\"," +
+                                                "\"kb:country_of_origin_id\":\"0\"," +
+                                                "\"kb:ritzau_program_id\":\"25101114\"," +
+                                                "\"kb:program_ophold\":\"false\"," +
+                                                "\"kb:subgenre_id\":\"708\"" +
+                                                "}")
+        );
     }
 
 

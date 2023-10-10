@@ -276,6 +276,11 @@
             <xsl:value-of select="f:substring-after(. , 'program_id:')"/>
           </f:string>
         </xsl:when>
+        <xsl:when test="f:starts-with(. , 'undergenre_id:')">
+          <f:string key="internal_subgenre_id">
+            <xsl:value-of select="f:substring-after(. , 'undergenre_id:')"/>
+          </f:string>
+        </xsl:when>
         <xsl:when test="f:starts-with(. , 'program_ophold:')">
           <!-- inner XSLT Choose which determines if program_ophold is false or true -->
           <xsl:choose>

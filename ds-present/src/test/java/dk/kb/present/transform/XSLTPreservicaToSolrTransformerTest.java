@@ -211,6 +211,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testSubGenreId(){
+        assertContains(RECORD_3945e2d1, "\"internal_subgenre_id\":\"736\"");
+    }
+
+
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }
