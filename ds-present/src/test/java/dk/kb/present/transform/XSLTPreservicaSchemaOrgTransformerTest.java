@@ -185,6 +185,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
     @Test
     void testKBInternalMap() throws IOException {
+        // TODO: Add individual tests for all params
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:internal\":{" +
                                                 "\"kb:aspect_ratio\":\"16:9\"," +
@@ -198,7 +199,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                                                 "\"kb:ritzau_program_id\":\"25101114\"," +
                                                 "\"kb:program_ophold\":\"false\"," +
                                                 "\"kb:subgenre_id\":\"708\"," +
-                                                "\"kb:episode_id\":\"0\"" +
+                                                "\"kb:episode_id\":\"0\"," +
+                                                "\"kb:season_id\":\"0\"" +
                                                 "}")
         );
     }

@@ -208,6 +208,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testProgramOphold(){
         assertContains(RECORD_3945e2d1, "\"internal_program_ophold\":\"false\"");
+        //TODO: Test true value with test file which contains program_ophold:program_ophold
     }
 
     @Test
@@ -218,6 +219,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testEpisodeId(){
         assertContains(RECORD_3945e2d1, "\"internal_episode_id\":\"0\"");
+    }
+
+    @Test
+    void testSeasonId(){
+        assertContains(RECORD_3945e2d1, "\"internal_season_id\":\"174278\"");
     }
 
 
