@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
+import dk.kb.license.invoker.v1.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class ImageAccessValidation {
 
     
     
-    public static ACCESS_TYPE accessTypForImage(String resource_id) throws Exception {
+    public static ACCESS_TYPE accessTypForImage(String resource_id) throws ApiException {
 
         // Add filter query from license module.
         DsLicenseApi licenseClient = getDsLicenseApiClient();
@@ -92,7 +93,7 @@ public class ImageAccessValidation {
      * @throws Exception in case of exception from license module client
      */
     
-    public static StreamingOutput handleNoAccessOrNoImage(String resource_id , HttpServletResponse httpServletResponse)  throws Exception{
+    public static StreamingOutput handleNoAccessOrNoImage(String resource_id , HttpServletResponse httpServletResponse) throws ApiException {
         ACCESS_TYPE type = accessTypForImage( resource_id);
 
         log.debug("Access type:" + type + " for resource_id:" +  resource_id);
