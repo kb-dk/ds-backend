@@ -30,5 +30,5 @@ config:
     
   # Default images returned if there is no access to image or image(id) does not exist
   images:
-    no_access: no_access.png
-    non_existing: non_existing.png
+    no_access: no_access.jpg
+    non_existing: non_existing.jpg
