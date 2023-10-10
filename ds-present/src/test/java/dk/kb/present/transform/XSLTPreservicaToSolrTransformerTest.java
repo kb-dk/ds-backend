@@ -253,6 +253,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testPaddingSeconds(){
+        assertContains(RECORD_3945e2d1, "\"internal_padding_seconds\":\"15\"");
+        // TODO: Create test for internal_is_teletext:true, with custom test file
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }

@@ -7,6 +7,7 @@
                xmlns:my="urn:my"
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
                xmlns:xip="http://www.tessella.com/XIP/v4"
+               xmlns:padding="http://kuana.kb.dk/types/padding/0/1/#"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                version="3.0">
 
@@ -55,6 +56,10 @@
             <xsl:value-of select="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType"/>
           </f:string>
         </xsl:if>
+
+        <f:string key="internal_padding_seconds">
+          <xsl:value-of select="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds"/>
+        </f:string>
 
       </f:map>
     </xsl:variable>

@@ -7,6 +7,7 @@
                xmlns:xip="http://www.tessella.com/XIP/v4"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
+               xmlns:padding="http://kuana.kb.dk/types/padding/0/1/#"
                version="3.0">
 
 
@@ -211,6 +212,11 @@
 
         </xsl:for-each>
 
+        <xsl:if test="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds">
+          <f:string key="kb:padding_seconds">
+            <xsl:value-of select="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds"/>
+          </f:string>
+        </xsl:if>
       </f:map>
 
       </f:map>
