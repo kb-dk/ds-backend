@@ -225,6 +225,10 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testSeasonId(){
         assertContains(RECORD_3945e2d1, "\"internal_season_id\":\"174278\"");
     }
+    @Test
+    void testSeriesId(){
+        assertContains(RECORD_3945e2d1, "\"internal_series_id\":\"146180\"");
+    }
 
 
 

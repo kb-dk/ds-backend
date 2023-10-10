@@ -569,6 +569,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     174278?>
   </field>
 
+  <field name="internal_series_id" type="string">
+    <?description An ID for the specific series which the resource is part of.?>
+    <?example     174278?>
+  </field>
+
 
 
   <field name="internal_program_ophold" type="boolean">
