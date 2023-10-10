@@ -559,6 +559,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     736?>
   </field>
 
+  <field name="internal_episode_id" type="string">
+    <?description An ID for the specific episode.?>
+    <?example     2?>
+  </field>
+
+
+
   <field name="internal_program_ophold" type="boolean">
     <?description A value that indicates if there has been a break in the resource.?>
     <?example     true?>

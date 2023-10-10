@@ -215,6 +215,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertContains(RECORD_3945e2d1, "\"internal_subgenre_id\":\"736\"");
     }
 
+    @Test
+    void testEpisodeId(){
+        assertContains(RECORD_3945e2d1, "\"internal_episode_id\":\"0\"");
+    }
+
 
 
     @Test
