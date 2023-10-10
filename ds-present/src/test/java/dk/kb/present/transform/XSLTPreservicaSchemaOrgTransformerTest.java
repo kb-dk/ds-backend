@@ -204,7 +204,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                                                 "\"kb:series_id\":\"0\"," +
                                                 "\"kb:has_subtitles\":\"false\"," +
                                                 "\"kb:has_subtitles_for_hearing_impaired\":\"false\"," +
-                                                "\"kb:is_teletext\":\"false\"" +
+                                                "\"kb:is_teletext\":\"false\"," +
+                                                "\"kb:showviewcode\":\"0\"" +
                                                 "}")
         );
     }

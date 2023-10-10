@@ -140,6 +140,11 @@
                 <xsl:value-of select="f:substring-after(. , 'serie_id:')"/>
               </f:string>
             </xsl:when>
+            <xsl:when test="f:starts-with(. , 'showviewcode:')">
+              <f:string key="kb:showviewcode">
+                <xsl:value-of select="f:substring-after(. , 'showviewcode:')"/>
+              </f:string>
+            </xsl:when>
             <xsl:when test="f:starts-with(. , 'program_ophold:')">
               <!-- inner XSLT Choose which determines if program_ophold is false or true -->
               <xsl:choose>

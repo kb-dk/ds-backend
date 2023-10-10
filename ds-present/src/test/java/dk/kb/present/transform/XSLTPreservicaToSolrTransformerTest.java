@@ -247,6 +247,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testShowviewcode(){
+        assertContains(RECORD_3945e2d1, "\"internal_showviewcode\":\"0\"");
+        // TODO: Create test for internal_is_teletext:true, with custom test file
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }

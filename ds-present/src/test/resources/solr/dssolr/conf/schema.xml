@@ -595,6 +595,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     false?>
   </field>
 
+  <field name="internal_showviewcode" type="string">
+    <?description ?> <!-- TODO: what is this?-->
+    <?example     ?> <!-- TODO: what is this?-->
+  </field>
+
   <!-- ================================================================ -->
   <!-- ====== Fields related to copyright and access conditions   ===== -->
   <!-- ================================================================ -->
