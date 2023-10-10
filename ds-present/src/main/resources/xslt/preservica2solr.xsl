@@ -266,6 +266,11 @@
             <xsl:value-of select="f:substring-after(. , 'kanalid:')"/>
           </f:string>
         </xsl:when>
+        <xsl:when test="f:starts-with(. , 'produktionsland_id:')">
+          <f:string key="internal_country_of_origin_id">
+            <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
+          </f:string>
+        </xsl:when>
       </xsl:choose>
     </xsl:for-each>
 

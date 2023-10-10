@@ -193,7 +193,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                                                         "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," +
                                                         "\"kb:retransmission\":\"false\"," +
                                                         "\"kb:maingenre_id\":\"1\"," +
-                                                        "\"kb:channel_id\":\"3\"" +
+                                                        "\"kb:channel_id\":\"3\"," +
+                                                        "\"kb:country_of_origin_id\":\"0\"" +
                                                         "}"));
     }
 

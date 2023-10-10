@@ -196,6 +196,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testCountryOfOriginId(){
+        assertContains(RECORD_3945e2d1, "\"internal_country_of_origin_id\":\"0\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }
