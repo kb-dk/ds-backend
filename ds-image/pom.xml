@@ -78,6 +78,22 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Client for ds-license. This will also require the org.openapitools dependency-->
+      <dependency>
+        <groupId>dk.kb.license</groupId>
+        <artifactId>ds-license</artifactId>
+          <version>1.1</version>
+          <type>jar</type>
+          <classifier>classes</classifier>
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+        </exclusions>
+      </dependency>
+
+
 
         <!-- Apache CXF and servlet stuff -->
         <dependency>
@@ -337,11 +353,7 @@
             <artifactId>gson</artifactId>
             <version>2.8.9</version>
         </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider -->
-
-
+        
     </dependencies>
 
     <build>

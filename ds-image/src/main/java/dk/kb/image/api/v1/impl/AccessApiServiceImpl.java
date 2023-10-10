@@ -5,6 +5,7 @@ import dk.kb.image.IIPFacade;
 import dk.kb.image.api.v1.AccessApi;
 import dk.kb.image.model.v1.DeepzoomDZIDto;
 import dk.kb.image.model.v1.IIIFInfoDto;
+import dk.kb.image.util.ImageAccessValidation;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -21,7 +22,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.StreamingOutput;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -33,7 +39,7 @@ import java.util.regex.Pattern;
  */
 public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private static final Logger log = LoggerFactory.getLogger(AccessApiServiceImpl.class);
-
+    
 
     /**
      * DeepZoom Image information
@@ -292,6 +298,13 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String[] elements = identifier.split("[/\\\\]");
             String filename = elements[elements.length - 1] + "." + format;
             // Show download link in Swagger UI, inline when opened directly in browser
+            
+            //Will return null if there is access to the image.
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse);
+            if (handleNoAccessOrNoImage != null) {                
+                return handleNoAccessOrNoImage;
+            }
+                        
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(format));
 
@@ -301,6 +314,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         } catch (Exception e) {
             throw handleException(e);
         }
+        
     }
 
 
@@ -361,6 +375,13 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
                       JTL, PTL, CVT, getCallDetails());
             String[] elements = FIF.split("[/\\\\]");
             String filename = elements[elements.length - 1] + "." + CVT;
+         
+            //Will return null if there is access to the image.
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(FIF, httpServletResponse);
+            if (handleNoAccessOrNoImage != null) {                 
+                return handleNoAccessOrNoImage;
+            }
+            
             // Show download link in Swagger UI, inline when opened directly in browser
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(CVT));
@@ -372,12 +393,12 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             throw handleException(e);
         }
     }
-
+     
     /**
      * Derives the MIME type for replies. Only supports formats from IIIF Image and IIP protocols.
      * @param format simple form, e.g. {@code jpeg}, {@code pdf}...
      */
-    private String getMIME(String format) {
+    public static String getMIME(String format) {
         switch (format) {
             // IIIF
             case "jpg":
