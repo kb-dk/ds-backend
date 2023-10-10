@@ -187,7 +187,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testHovedgenreId() {
-        assertContains(RECORD_3945e2d1,"\"internal_hovedgenre_id\":\"10\"");
+        assertContains(RECORD_3945e2d1,"\"internal_maingenre_id\":\"10\"");
+    }
+
+    @Test
+    void testChannelId(){
+        assertContains(RECORD_3945e2d1, "\"internal_channel_id\":\"3\"");
     }
 
     @Test

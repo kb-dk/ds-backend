@@ -257,8 +257,13 @@
           </f:string>
         </xsl:when>
         <xsl:when test="f:starts-with(. , 'hovedgenre_id:')">
-          <f:string key="internal_hovedgenre_id">
+          <f:string key="internal_maingenre_id">
             <xsl:value-of select="f:substring-after(. , 'hovedgenre_id:')"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test="f:starts-with(. , 'kanalid:')">
+          <f:string key="internal_channel_id">
+            <xsl:value-of select="f:substring-after(. , 'kanalid:')"/>
           </f:string>
         </xsl:when>
       </xsl:choose>

@@ -192,7 +192,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                                                         "\"kb:format_identifier_ritzau\":\"81213310\"," +
                                                         "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," +
                                                         "\"kb:retransmission\":\"false\"," +
-                                                        "\"kb:hovedgenre_id\":\"1\"" +
+                                                        "\"kb:maingenre_id\":\"1\"," +
+                                                        "\"kb:channel_id\":\"3\"" +
                                                         "}"));
     }
 

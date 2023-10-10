@@ -534,7 +534,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69?>
   </field>
 
-  <field name="internal_hovedgenre_id" type="string">
+  <field name="internal_maingenre_id" type="string">
+    <?description ?> <!-- TODO: figure what this value represents -->
+    <?example     ?> <!-- TODO: figure if these IDs are always integers -->
+  </field>
+
+  <field name="internal_channel_id" type="string">
     <?description ?> <!-- TODO: figure what this value represents -->
     <?example     ?> <!-- TODO: figure if these IDs are always integers -->
   </field>

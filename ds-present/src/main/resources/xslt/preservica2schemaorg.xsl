@@ -99,11 +99,20 @@
           </xsl:when>
         </xsl:choose>
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
-          <xsl:if test="f:starts-with(. , 'hovedgenre_id:')">
-            <f:string key="kb:hovedgenre_id">
-              <xsl:value-of select="substring-after(. , 'hovedgenre_id:')"/>
-            </f:string>
-          </xsl:if>
+          <xsl:choose>
+            <xsl:when test="f:starts-with(. , 'hovedgenre_id:')">
+              <f:string key="kb:maingenre_id">
+                <xsl:value-of select="substring-after(. , 'hovedgenre_id:')"/>
+              </f:string>
+            </xsl:when>
+            <xsl:when test="f:starts-with(. , 'kanalid:')">
+              <f:string key="kb:channel_id">
+                <xsl:value-of select="substring-after(. , 'kanalid:')"/>
+              </f:string>
+            </xsl:when>
+
+          </xsl:choose>
+
         </xsl:for-each>
 
       </f:map>
