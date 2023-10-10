@@ -12,6 +12,7 @@ import dk.kb.license.invoker.v1.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.image.api.v1.impl.AccessApiServiceImpl;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.license.client.v1.DsLicenseApi;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
@@ -30,16 +31,20 @@ public class ImageAccessValidation {
     };
 
         
-    public static ACCESS_TYPE accessTypForImage(String resource_id) throws ApiException {
+    public static ACCESS_TYPE accessTypeForImage(String resource_id) throws ApiException {
 
         // Add filter query from license module.
         DsLicenseApi licenseClient = getDsLicenseApiClient();
         CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(resource_id);
-        CheckAccessForIdsOutputDto checkAccessForIds = licenseClient.checkAccessForResourceIds(licenseQueryDto); // Use
-        // the
-        // resource
-        // field
-
+        CheckAccessForIdsOutputDto checkAccessForIds;
+        try {
+           checkAccessForIds = licenseClient.checkAccessForResourceIds(licenseQueryDto); // Use
+        }
+        catch(Exception e) {
+            log.error("Error calling licensemodule",e);
+            throw new InternalServiceException("Error calling licensemodule");            
+        }
+        
         List<String> access_ids = checkAccessForIds.getAccessIds();
         List<String> non_access_ids = checkAccessForIds.getNonAccessIds();
         List<String> non_existing_ids = checkAccessForIds.getNonExistingIds();
@@ -95,18 +100,18 @@ public class ImageAccessValidation {
 
     
     public static StreamingOutput handleNoAccessOrNoImage(String resource_id , HttpServletResponse httpServletResponse) throws ApiException, IOException {
-        ACCESS_TYPE type = accessTypForImage( resource_id);
+        ACCESS_TYPE type = accessTypeForImage( resource_id);
 
         log.debug("Access type:" + type + " for resource_id:" +  resource_id);
 
         switch (type) {
         case NO_ACCESS:                        
             httpServletResponse.setStatus(403);
-            httpServletResponse.setContentType("image/png");
+            httpServletResponse.setContentType(AccessApiServiceImpl.getMIME("jpg"));
             return getImageForbidden();
         case ID_NON_EXISTING:
             httpServletResponse.setStatus(404);
-            httpServletResponse.setContentType("image/png");
+            httpServletResponse.setContentType(AccessApiServiceImpl.getMIME("jpg"));
             return getImageNotExist();
         case ACCESS:           
             return null; //this is the contract if no image is returned                

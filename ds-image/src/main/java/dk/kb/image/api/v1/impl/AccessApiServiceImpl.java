@@ -398,7 +398,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      * Derives the MIME type for replies. Only supports formats from IIIF Image and IIP protocols.
      * @param format simple form, e.g. {@code jpeg}, {@code pdf}...
      */
-    private String getMIME(String format) {
+    public static String getMIME(String format) {
         switch (format) {
             // IIIF
             case "jpg":
