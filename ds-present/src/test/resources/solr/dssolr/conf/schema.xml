@@ -505,10 +505,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis consequat libero, quis ornare mi.?>
   </field>
 
-
   <field name="genre_sub" type="string" docValues="true">
     <?description A sub genre for the resource. This is a more specific category than the one specified in the field genre?>
     <?example     Comedy series?>
+  </field>
+
+  <field name="has_subtitles" type="boolean">
+    <?description A boolean value for subtitles. If true, then the resource contains subtitles.?>
+    <?example     true?>
   </field>
 
 
@@ -573,6 +577,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description An ID for the specific series which the resource is part of.?>
     <?example     174278?>
   </field>
+
 
 
 

@@ -229,6 +229,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testSeriesId(){
         assertContains(RECORD_3945e2d1, "\"internal_series_id\":\"146180\"");
     }
+    @Test
+    void testSubtitles(){
+        assertContains(RECORD_3945e2d1, "\"has_subtitles\":\"false\"");
+        // TODO: Create test for has_subtitles:true, with custom test file
+    }
 
 
 

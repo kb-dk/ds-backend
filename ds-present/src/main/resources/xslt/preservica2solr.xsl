@@ -311,6 +311,21 @@
             </xsl:when>
           </xsl:choose>
         </xsl:when>
+        <xsl:when test="f:starts-with(. , 'tekstet')">
+          <!-- Inner XSLT  choose to determine value of boolean -->
+          <xsl:choose>
+            <xsl:when test=". = 'tekstet:ikke tekstet'">
+              <f:string key="has_subtitles">
+                <xsl:value-of select="false()"/>
+              </f:string>
+            </xsl:when>
+            <xsl:when test=". = 'tekstet:tekstet'">
+              <f:string key="has_subtitles">
+                <xsl:value-of select="true()"/>
+              </f:string>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:when>
       </xsl:choose>
     </xsl:for-each>
 

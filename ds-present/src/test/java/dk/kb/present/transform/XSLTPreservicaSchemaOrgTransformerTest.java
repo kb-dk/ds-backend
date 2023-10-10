@@ -201,7 +201,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                                                 "\"kb:subgenre_id\":\"708\"," +
                                                 "\"kb:episode_id\":\"0\"," +
                                                 "\"kb:season_id\":\"0\"," +
-                                                "\"kb:series_id\":\"0\"" +
+                                                "\"kb:series_id\":\"0\"," +
+                                                "\"kb:has_subtitles\":\"false\"" +
                                                 "}")
         );
     }
