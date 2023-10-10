@@ -1,5 +1,6 @@
 package dk.kb.image.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +23,13 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 public class ImageAccessValidation {
     private static final Logger log = LoggerFactory.getLogger(ImageAccessValidation.class);
     private static DsLicenseApi licenseClient;
-    
+
     public static enum ACCESS_TYPE {
         ACCESS, NO_ACCESS, ID_NON_EXISTING
     };
 
-    
-    
+
+
     public static ACCESS_TYPE accessTypForImage(String resource_id) throws Exception {
 
         // Add filter query from license module.
@@ -81,7 +82,7 @@ public class ImageAccessValidation {
         return idsDto;
 
     }
-    
+
     /**
      * Will return a default image with propery HTTP status code if there is no access to the image.
      * If there is access to the image, return null.
@@ -91,7 +92,7 @@ public class ImageAccessValidation {
      * @return a streamed image or null
      * @throws Exception in case of exception from license module client
      */
-    
+
     public static StreamingOutput handleNoAccessOrNoImage(String resource_id , HttpServletResponse httpServletResponse)  throws Exception{
         ACCESS_TYPE type = accessTypForImage( resource_id);
 
@@ -111,33 +112,36 @@ public class ImageAccessValidation {
         default :
             throw new UnsupportedOperationException("Unknown Access type:"+type);
         }            
-        
+
     }
-    
+
     private static DsLicenseApi getDsLicenseApiClient() {
         if (licenseClient != null) {
             return licenseClient;
         }
-       
+
         String dsLicenseUrl = ServiceConfig.getConfig().getString("config.licensemodule.url");
         log.info("license module url:"+dsLicenseUrl);
         licenseClient = new DsLicenseClient(dsLicenseUrl);
         return licenseClient;
     }
 
-    private static StreamingOutput getImageForbidden()  {
+    private static StreamingOutput getImageForbidden() throws IOException {
         String img=ServiceConfig.getConfig().getString("config.images.no_access");       
-        InputStream forbiddenImage= Resolver.resolveStream(img);                                       
-        StreamingOutput result= output -> output.write(forbiddenImage.readAllBytes()); 
-        return result; 
+        try (InputStream nonExisting= Resolver.resolveStream(img)){                                       
+            StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
+            return result; 
+        }
     }
 
-    private static StreamingOutput getImageNotExist()  {
+
+    private static StreamingOutput getImageNotExist() throws IOException {
         String img=ServiceConfig.getConfig().getString("config.images.non_existing");
-        InputStream nonExisting= Resolver.resolveStream(img);                        
-        StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
-        return result;                
+        try (InputStream nonExisting= Resolver.resolveStream(img)){                        
+            StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
+            return result;                
+        }
     }
-    
-    
+
+
 }
