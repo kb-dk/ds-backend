@@ -201,6 +201,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testRitzauProgramID(){
+        assertContains(RECORD_3945e2d1, "\"internal_ritzau_program_id\":\"25101143\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }

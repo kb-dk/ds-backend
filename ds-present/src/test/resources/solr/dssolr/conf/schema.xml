@@ -549,6 +549,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     0?>
   </field>
 
+  <field name="internal_ritzau_program_id" type="string">
+    <?description An ID for a resource from ritzau.?>
+    <?example     25101143?>
+  </field>
+
   <!-- ================================================================ -->
   <!-- ====== Fields related to copyright and access conditions   ===== -->
   <!-- ================================================================ -->

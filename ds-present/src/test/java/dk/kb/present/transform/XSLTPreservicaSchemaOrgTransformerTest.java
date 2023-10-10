@@ -194,7 +194,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                                                         "\"kb:retransmission\":\"false\"," +
                                                         "\"kb:maingenre_id\":\"1\"," +
                                                         "\"kb:channel_id\":\"3\"," +
-                                                        "\"kb:country_of_origin_id\":\"0\"" +
+                                                        "\"kb:country_of_origin_id\":\"0\"," +
+                                                        "\"kb:ritzau_program_id\":\"25101114\"" +
                                                         "}"));
     }
 
