@@ -259,6 +259,14 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testAccessMetadata(){
+        assertContains(RECORD_3945e2d1, "\"internal_access_individual_prohibition\":\"Nej\"," +
+                                                 "\"internal_access_claused\":\"Nej\"," +
+                                                 "\"internal_access_malfunction\":\"Nej\"");
+        //TODO: Add test that contains internal_access_comments
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
     }

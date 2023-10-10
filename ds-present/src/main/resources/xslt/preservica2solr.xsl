@@ -8,6 +8,7 @@
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
                xmlns:xip="http://www.tessella.com/XIP/v4"
                xmlns:padding="http://kuana.kb.dk/types/padding/0/1/#"
+               xmlns:access="http://doms.statsbiblioteket.dk/types/access/0/1/#"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                version="3.0">
 
@@ -61,10 +62,38 @@
           <xsl:value-of select="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds"/>
         </f:string>
 
+        <xsl:for-each select="/xip:DeliverableUnit/Metadata/access:access">
+          <xsl:call-template name="access-template"/>
+        </xsl:for-each>
+
       </f:map>
     </xsl:variable>
 
     <xsl:value-of select="f:xml-to-json($solrjson)"/>
+  </xsl:template>
+
+  <!-- TEMPLATE FOR ACCESSING ACCESS METADATA -->
+  <xsl:template name="access-template">
+    <xsl:if test="individuelt_forbud">
+      <f:string key="internal_access_individual_prohibition">
+        <xsl:value-of select="individuelt_forbud"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="klausuleret">
+      <f:string key="internal_access_claused">
+        <xsl:value-of select="klausuleret"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="defekt">
+      <f:string key="internal_access_malfunction">
+        <xsl:value-of select="defekt"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="kommentarer and kommentarer != ''">
+      <f:string key="internal_access_comments">
+        <xsl:value-of select="kommentarer"/>
+      </f:string>
+    </xsl:if>
   </xsl:template>
 
   <!-- TEMPLATE FOR ACCESSING PBC METADATA. CALLED ABOVE-->

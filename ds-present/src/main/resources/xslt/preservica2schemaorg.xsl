@@ -8,6 +8,7 @@
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
                xmlns:padding="http://kuana.kb.dk/types/padding/0/1/#"
+               xmlns:access="http://doms.statsbiblioteket.dk/types/access/0/1/#"
                version="3.0">
 
 
@@ -217,6 +218,10 @@
             <xsl:value-of select="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds"/>
           </f:string>
         </xsl:if>
+
+        <xsl:for-each select="/xip:DeliverableUnit/Metadata/access:access">
+          <xsl:call-template name="access-template"/>
+        </xsl:for-each>
       </f:map>
 
       </f:map>
@@ -480,6 +485,30 @@
     </xsl:if>
 
 
+  </xsl:template>
+
+  <!-- TEMPLATE FOR ACCESSING ACCESS METADATA.-->
+  <xsl:template name="access-template">
+    <xsl:if test="individuelt_forbud">
+      <f:string key="kb:access_individual_prohibition">
+        <xsl:value-of select="individuelt_forbud"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="klausuleret">
+      <f:string key="kb:access_claused">
+        <xsl:value-of select="klausuleret"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="defekt">
+      <f:string key="kb:access_malfunction">
+        <xsl:value-of select="defekt"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="kommentarer and kommentarer != ''">
+      <f:string key="kb:access_comments">
+        <xsl:value-of select="kommentarer"/>
+      </f:string>
+    </xsl:if>
   </xsl:template>
 
 </xsl:transform>

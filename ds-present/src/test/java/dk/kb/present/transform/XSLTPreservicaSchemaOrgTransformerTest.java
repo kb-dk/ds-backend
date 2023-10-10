@@ -39,10 +39,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
     @Test
     public void testSetup() throws IOException {
-        //printSchemaOrgJson(RECORD_74e22fd8);
+        printSchemaOrgJson(RECORD_74e22fd8);
         //printSchemaOrgJson(RECORD_3945e2d1);
         //printSchemaOrgJson(RECORD_1F3A6A66);
-        printSchemaOrgJson(RECORD_44979f67);
+        //printSchemaOrgJson(RECORD_44979f67);
     }
 
     @Test
@@ -206,7 +206,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                                                 "\"kb:has_subtitles_for_hearing_impaired\":\"false\"," +
                                                 "\"kb:is_teletext\":\"false\"," +
                                                 "\"kb:showviewcode\":\"0\"," +
-                                                "\"kb:padding_seconds\":\"15\"" +
+                                                "\"kb:padding_seconds\":\"15\"," +
+                                                "\"kb:access_individual_prohibition\":\"Nej\"," +
+                                                "\"kb:access_claused\":\"Nej\"," +
+                                                "\"kb:access_malfunction\":\"Nej\"" +
                                                 "}")
         );
     }

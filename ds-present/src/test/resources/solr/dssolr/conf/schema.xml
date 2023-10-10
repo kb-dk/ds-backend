@@ -605,6 +605,28 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     ?> <!-- TODO: what is this?-->
   </field>
 
+  <field name="internal_access_individual_prohibition" type="string">
+    <?description ?> <!-- TODO: what is this?-->
+    <?example     ?> <!-- TODO: what is this?-->
+  </field>
+
+  <field name="internal_access_claused" type="string">
+    <?description ?> <!-- TODO: what is this?-->
+    <?example     ?> <!-- TODO: what is this?-->
+  </field>
+
+  <field name="internal_access_malfunction" type="string">
+    <?description ?> <!-- TODO: what is this?-->
+    <?example     ?> <!-- TODO: what is this?-->
+  </field>
+
+  <field name="internal_access_comments" type="string">
+    <?description ?> <!-- TODO: what is this?-->
+    <?example     ?> <!-- TODO: what is this?-->
+  </field>
+
+
+
   <!-- ================================================================ -->
   <!-- ====== Fields related to copyright and access conditions   ===== -->
   <!-- ================================================================ -->
