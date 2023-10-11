@@ -9,6 +9,7 @@
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
                xmlns:padding="http://kuana.kb.dk/types/padding/0/1/#"
                xmlns:access="http://doms.statsbiblioteket.dk/types/access/0/1/#"
+               xmlns:pidhandle="http://kuana.kb.dk/types/pidhandle/0/1/#"
                version="3.0">
 
 
@@ -466,6 +467,17 @@
           </xsl:choose>
         </xsl:for-each>
       </xsl:if>
+      <!-- Extracts PID as identifier if present.-->
+      <xsl:if test="/xip:DeliverableUnit/Metadata/pidhandle:pidhandle/handle">
+        <f:map>
+          <f:string key="@type">PropertyValue</f:string>
+          <f:string key="PropertyID">PID</f:string>
+          <f:string key="value">
+            <xsl:value-of select="substring-after(/xip:DeliverableUnit/Metadata/pidhandle:pidhandle/handle, 'hdl:')"/>
+          </f:string>
+        </f:map>
+      </xsl:if>
+
       <f:map>
         <f:string key="@type">PropertyValue</f:string>
         <f:string key="PropertyID">InternalAccessionRef</f:string>

@@ -520,6 +520,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     true?>
   </field>
 
+  <field name="pid" type="string">
+    <?description A percistent identifier (PID) is a long lasting reference to the resource.?>
+    <?example     109.1.4/3945e2d1-83a2-40d8-af1c-30f7b3b94390?>
+  </field>
+
 
 
   <!-- =========================================================================== -->

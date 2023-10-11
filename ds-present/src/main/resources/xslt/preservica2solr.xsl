@@ -9,6 +9,7 @@
                xmlns:xip="http://www.tessella.com/XIP/v4"
                xmlns:padding="http://kuana.kb.dk/types/padding/0/1/#"
                xmlns:access="http://doms.statsbiblioteket.dk/types/access/0/1/#"
+               xmlns:pidhandle="http://kuana.kb.dk/types/pidhandle/0/1/#"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                version="3.0">
 
@@ -65,6 +66,12 @@
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/access:access">
           <xsl:call-template name="access-template"/>
         </xsl:for-each>
+
+        <xsl:if test="/xip:DeliverableUnit/Metadata/pidhandle:pidhandle/handle">
+          <f:string key="pid">
+            <xsl:value-of select="substring-after(/xip:DeliverableUnit/Metadata/pidhandle:pidhandle/handle, 'hdl:')"/>
+          </f:string>
+        </xsl:if>
 
       </f:map>
     </xsl:variable>
