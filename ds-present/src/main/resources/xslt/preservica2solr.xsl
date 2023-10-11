@@ -10,6 +10,7 @@
                xmlns:padding="http://kuana.kb.dk/types/padding/0/1/#"
                xmlns:access="http://doms.statsbiblioteket.dk/types/access/0/1/#"
                xmlns:pidhandle="http://kuana.kb.dk/types/pidhandle/0/1/#"
+               xmlns:program_structure="http://doms.statsbiblioteket.dk/types/program_structure/0/1/#"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                version="3.0">
 
@@ -67,6 +68,10 @@
           <xsl:call-template name="access-template"/>
         </xsl:for-each>
 
+        <xsl:for-each select="/xip:DeliverableUnit/Metadata/program_structure:program_structure">
+          <xsl:call-template name="program-structure"/>
+        </xsl:for-each>
+
         <xsl:if test="/xip:DeliverableUnit/Metadata/pidhandle:pidhandle/handle">
           <f:string key="pid">
             <xsl:value-of select="substring-after(/xip:DeliverableUnit/Metadata/pidhandle:pidhandle/handle, 'hdl:')"/>
@@ -79,7 +84,32 @@
     <xsl:value-of select="f:xml-to-json($solrjson)"/>
   </xsl:template>
 
-  <!-- TEMPLATE FOR ACCESSING ACCESS METADATA -->
+  <!--TEMPLATE ON PROGRAM STRUCTURE. This template extracts metadata on the structure of the program. e.g.
+      Is anything missing, if yes, how manyb seconds are missing in the beginning or the end of the resource etc.-->
+  <xsl:template name="program-structure">
+    <xsl:if test="missingStart/missingSeconds != ''">
+      <f:string key="internal_program_structure_missing_seconds_start">
+        <xsl:value-of select="missingStart/missingSeconds"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="missingEnd/missingSeconds != ''">
+      <f:string key="internal_program_structure_missing_seconds_end">
+        <xsl:value-of select="missingEnd/missingSeconds"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="holes != ''">
+      <f:string key="internal_program_structure_holes">
+        <xsl:value-of select="holes"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="overlaps != ''">
+      <f:string key="internal_program_structure_overlaps">
+        <xsl:value-of select="holes"/>
+      </f:string>
+    </xsl:if>
+  </xsl:template>
+
+  <!-- TEMPLATE FOR ACCESSING ACCESS METADATA. This template extracts metadata on how the resource can be accessed. -->
   <xsl:template name="access-template">
     <xsl:if test="individuelt_forbud">
       <f:string key="internal_access_individual_prohibition">
@@ -103,7 +133,8 @@
     </xsl:if>
   </xsl:template>
 
-  <!-- TEMPLATE FOR ACCESSING PBC METADATA. CALLED ABOVE-->
+  <!-- TEMPLATE FOR ACCESSING PBC METADATA. This template primarily extracts metadata about the content of the resource.
+       e.g. titel, producer, genre etc. -->
   <xsl:template name="pbc-metadata">
     <f:string key="collection">
       <xsl:value-of select="pbcoreInstantiation/formatLocation"/>

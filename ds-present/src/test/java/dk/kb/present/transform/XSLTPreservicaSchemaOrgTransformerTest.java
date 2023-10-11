@@ -185,6 +185,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     }
 
     @Test
+    void testProgramStructure() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_1F3A6A66);
+        Assertions.assertTrue(transformedJSON.contains("\"kb:program_structure_missing_seconds_start\":\"0\"")
+                                    && transformedJSON.contains("\"kb:program_structure_missing_seconds_end\":\"0\""));
+        //TODO: add tests for fields 'holes' and 'overlaps' with a constructed test file.
+    }
+
+    @Test
     void testKBInternalMap() throws IOException {
         // TODO: Add individual tests for all params
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);

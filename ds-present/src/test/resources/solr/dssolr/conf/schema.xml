@@ -599,38 +599,56 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description A boolean value that tells if the resource is teletext?>
     <?example     false?>
   </field>
-
+  <!--TODO: Figure out what this field can contain-->
   <field name="internal_showviewcode" type="string">
-    <?description ?> <!-- TODO: what is this?-->
-    <?example     ?> <!-- TODO: what is this?-->
+    <?description ?>
+    <?example     ?>
   </field>
-
+  <!--TODO: Figure out what this field can contain-->
   <field name="internal_padding_seconds" type="string">
-    <?description ?> <!-- TODO: what is this?-->
-    <?example     ?> <!-- TODO: what is this?-->
+    <?description ?>
+    <?example     ?>
   </field>
-
+  <!--TODO: Figure out what this field can contain-->
   <field name="internal_access_individual_prohibition" type="string">
-    <?description ?> <!-- TODO: what is this?-->
-    <?example     ?> <!-- TODO: what is this?-->
+    <?description ?>
+    <?example     ?>
   </field>
-
+  <!--TODO: Figure out what this field can contain-->
   <field name="internal_access_claused" type="string">
-    <?description ?> <!-- TODO: what is this?-->
-    <?example     ?> <!-- TODO: what is this?-->
+    <?description ?>
+    <?example     ?>
   </field>
-
+  <!--TODO: Figure out what this field can contain-->
   <field name="internal_access_malfunction" type="string">
-    <?description ?> <!-- TODO: what is this?-->
-    <?example     ?> <!-- TODO: what is this?-->
+    <?description ?>
+    <?example     ?>
   </field>
-
+  <!--TODO: Figure out what this field can contain-->
   <field name="internal_access_comments" type="string">
-    <?description ?> <!-- TODO: what is this?-->
-    <?example     ?> <!-- TODO: what is this?-->
+    <?description ?>
+    <?example     ?>
   </field>
 
+  <field name="internal_program_structure_missing_seconds_start" type="pint">
+    <?description A value in seconds that shows if the resource is missing content at the beginning of the file.?>
+    <?example     12?>
+  </field>
 
+  <field name="internal_program_structure_missing_seconds_end" type="pint">
+    <?description A value in seconds that shows if the resource is missing content at the end of the file. ?>
+    <?example     15?>
+  </field>
+  <!--TODO: Figure out what this field can contain-->
+  <field name="internal_program_structure_holes" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <!--TODO: Figure out what this field can contain-->
+  <field name="internal_program_structure_overlaps" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
 
   <!-- ================================================================ -->
   <!-- ====== Fields related to copyright and access conditions   ===== -->

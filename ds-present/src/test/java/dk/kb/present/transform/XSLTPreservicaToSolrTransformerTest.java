@@ -272,8 +272,16 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testProgramStructure(){
+        assertContains(RECORD_1f3a6a66, "\"internal_program_structure_missing_seconds_start\":\"0\"," +
+                                                 "\"internal_program_structure_missing_seconds_end\":\"0\"");
+
+        //TODO: add tests for fields 'holes' and 'overlaps' with a constructed test file.
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
-        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_3945e2d1);
+        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_1f3a6a66);
     }
 
 
