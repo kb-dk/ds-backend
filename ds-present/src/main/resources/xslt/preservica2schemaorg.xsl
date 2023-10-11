@@ -29,6 +29,7 @@
     <xsl:variable name="json">
       <!-- TODO: Generel todo: Figure how to determine language for the strings "@language" that can be used throughout the schema.-->
 
+      <!-- Determine the type of schema.org object in hand.-->
       <xsl:variable name="type">
         <xsl:choose>
         <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
@@ -44,6 +45,7 @@
             <xsl:value-of select="$recordID"/>
         </f:string>
 
+        <!-- Extract PBCore metadata -->
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
           <xsl:call-template name="pbc-metadata">
             <xsl:with-param name="type" select="$type"/>
@@ -318,7 +320,7 @@
           </f:string>
         </f:map>
       </xsl:if>
-
+      <!-- Extract accession ref as schema.org identifier --> <!-- TODO: This could properbly be done with loads of the identifiers in the kb:internal map.-->
       <f:map>
         <f:string key="@type">PropertyValue</f:string>
         <f:string key="PropertyID">InternalAccessionRef</f:string>
@@ -326,6 +328,7 @@
       </f:map>
     </f:array>
 
+    <!-- Extracts collection -->
     <xsl:if test="pbcoreInstantiation/formatLocation">
       <f:map key="isPartOf">
         <f:string key="@type">Collection</f:string>
@@ -333,6 +336,7 @@
       </f:map>
     </xsl:if>
 
+    <!-- Is the resource hd? or do we know anything about the video quality=? -->
     <xsl:if test="pbcoreInstantiation/formatStandard">
       <f:string key="videoQuality"><xsl:value-of select="pbcoreInstantiation/formatStandard"/></f:string>
     </xsl:if>
@@ -343,9 +347,13 @@
   <xsl:template name="kb-internal">
     <xsl:param name="pbcExtensions"/>
     <f:map key="kb:internal">
-      <f:string key="kb:aspect_ratio">
-        <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
-      </f:string>
+      <!-- Extract aspect ratio-->
+      <xsl:if test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio">
+        <f:string key="kb:aspect_ratio">
+          <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
+        </f:string>
+      </xsl:if>
+      <!-- Create boolean for surround-->
       <xsl:choose>
         <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'surround'">
           <f:string key="kb:surround_sound"><xsl:value-of select="true()"/></f:string>
@@ -354,6 +362,7 @@
           <f:string key="kb:surround_sound"><xsl:value-of select="false()"/></f:string>
         </xsl:when>
       </xsl:choose>
+      <!-- Extract format identifiers -->
       <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID">
         <xsl:choose>
           <xsl:when test="formatIdentifierSource = 'ritzau'">
@@ -369,6 +378,7 @@
         </xsl:choose>
       </xsl:for-each>
       <!--TODO: Figure if retransmission can fit into real schema.org -->
+      <!-- Create boolean for retransmission-->
       <xsl:choose>
         <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:ikke genudsendelse')]">
           <f:string key="kb:retransmission">
@@ -381,133 +391,150 @@
           </f:string>
         </xsl:when>
       </xsl:choose>
+      <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
+           Some have external value, while others primarily are for internal usage.-->
       <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
-        <xsl:choose>
-          <xsl:when test="f:starts-with(. , 'hovedgenre_id:')">
-            <f:string key="kb:maingenre_id">
-              <xsl:value-of select="substring-after(. , 'hovedgenre_id:')"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'kanalid:')">
-            <f:string key="kb:channel_id">
-              <xsl:value-of select="substring-after(. , 'kanalid:')"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'produktionsland_id:')">
-            <f:string key="kb:country_of_origin_id">
-              <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'program_id:')">
-            <f:string key="kb:ritzau_program_id">
-              <xsl:value-of select="f:substring-after(. , 'program_id:')"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'undergenre_id:')">
-            <f:string key="kb:subgenre_id">
-              <xsl:value-of select="f:substring-after(. , 'undergenre_id:')"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'afsnit_id:')">
-            <f:string key="kb:episode_id">
-              <xsl:value-of select="f:substring-after(. , 'afsnit_id:')"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'saeson_id:')">
-            <f:string key="kb:season_id">
-              <xsl:value-of select="f:substring-after(. , 'saeson_id:')"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'serie_id:')">
-            <f:string key="kb:series_id">
-              <xsl:value-of select="f:substring-after(. , 'serie_id:')"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'showviewcode:')">
-            <f:string key="kb:showviewcode">
-              <xsl:value-of select="f:substring-after(. , 'showviewcode:')"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'program_ophold:')">
-            <!-- inner XSLT Choose which determines if program_ophold is false or true -->
-            <xsl:choose>
-              <xsl:when test=". = 'program_ophold:ikke program ophold'">
-                <f:string key="kb:program_ophold">
-                  <xsl:value-of select="false()"/>
-                </f:string>
-              </xsl:when>
-              <xsl:when test=". = 'program_ophold:program ophold'">
-                <f:string key="kb:program_ophold">
-                  <xsl:value-of select="true()"/>
-                </f:string>
-              </xsl:when>
-            </xsl:choose>
-          </xsl:when>
-          <!-- TODO: Check if has_subtitles fits in schema.org-->
-          <xsl:when test="f:starts-with(. , 'tekstet')">
-            <!-- Inner XSLT  choose to determine value of boolean -->
-            <xsl:choose>
-              <xsl:when test=". = 'tekstet:ikke tekstet'">
-                <f:string key="kb:has_subtitles">
-                  <xsl:value-of select="false()"/>
-                </f:string>
-              </xsl:when>
-              <xsl:when test=". = 'tekstet:tekstet'">
-                <f:string key="kb:has_subtitles">
-                  <xsl:value-of select="true()"/>
-                </f:string>
-              </xsl:when>
-            </xsl:choose>
-          </xsl:when>
-          <!-- TODO: Check if subtitles for hearing impaired can be described in schema.org-->
-          <xsl:when test="f:starts-with(. , 'th:')">
-            <!-- Inner XSLT  choose to determine value of boolean -->
-            <xsl:choose>
-              <xsl:when test=". = 'th:ikke tekstet for hørehæmmede'">
-                <f:string key="kb:has_subtitles_for_hearing_impaired">
-                  <xsl:value-of select="false()"/>
-                </f:string>
-              </xsl:when>
-              <xsl:when test=". = 'th:tekstet for hørehæmmede'">
-                <f:string key="kb:has_subtitles_for_hearing_impaired">
-                  <xsl:value-of select="true()"/>
-                </f:string>
-              </xsl:when>
-            </xsl:choose>
-          </xsl:when>
-          <xsl:when test="f:starts-with(. , 'ttv:')">
-            <!-- Inner XSLT  choose to determine value of boolean -->
-            <xsl:choose>
-              <xsl:when test=". = 'ttv:ikke tekst-tv'">
-                <f:string key="kb:is_teletext">
-                  <xsl:value-of select="false()"/>
-                </f:string>
-              </xsl:when>
-              <xsl:when test=". = 'ttv:tekst-tv'">
-                <f:string key="kb:is_teletext">
-                  <xsl:value-of select="true()"/>
-                </f:string>
-              </xsl:when>
-            </xsl:choose>
-          </xsl:when>
-        </xsl:choose>
+        <xsl:call-template name="extension-extractor"/>
       </xsl:for-each>
 
+      <!-- Extracts information on video padding. -->
       <xsl:if test="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds">
         <f:string key="kb:padding_seconds">
           <xsl:value-of select="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds"/>
         </f:string>
       </xsl:if>
 
+      <!-- Extracts access metadata to the internal kb map -->
       <xsl:for-each select="/xip:DeliverableUnit/Metadata/access:access">
         <xsl:call-template name="access-template"/>
       </xsl:for-each>
     </f:map>
 
+    <!-- Extracts information on the structure of the video component. -->
     <xsl:for-each select="/xip:DeliverableUnit/Metadata/program_structure:program_structure">
       <xsl:call-template name="program-structure"/>
     </xsl:for-each>
 
+  </xsl:template>
+
+  <!-- EXTRACT VALUES FROM PBCORE EXTENSIONS TO KB:INTERNAL MAP. These extensions can contain many different values.
+       Some might be relevant in relation to schema.org and can be elevated to the correct structure.-->
+  <xsl:template name="extension-extractor">
+    <!-- Extracts multiple internal ids. -->
+    <xsl:choose>
+      <xsl:when test="f:starts-with(. , 'hovedgenre_id:')">
+        <f:string key="kb:maingenre_id">
+          <xsl:value-of select="substring-after(. , 'hovedgenre_id:')"/>
+        </f:string>
+      </xsl:when>
+      <xsl:when test="f:starts-with(. , 'kanalid:')">
+        <f:string key="kb:channel_id">
+          <xsl:value-of select="substring-after(. , 'kanalid:')"/>
+        </f:string>
+      </xsl:when>
+      <xsl:when test="f:starts-with(. , 'produktionsland_id:')">
+        <f:string key="kb:country_of_origin_id">
+          <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
+        </f:string>
+      </xsl:when>
+      <xsl:when test="f:starts-with(. , 'program_id:')">
+        <f:string key="kb:ritzau_program_id">
+          <xsl:value-of select="f:substring-after(. , 'program_id:')"/>
+        </f:string>
+      </xsl:when>
+      <xsl:when test="f:starts-with(. , 'undergenre_id:')">
+        <f:string key="kb:subgenre_id">
+          <xsl:value-of select="f:substring-after(. , 'undergenre_id:')"/>
+        </f:string>
+      </xsl:when>
+      <xsl:when test="f:starts-with(. , 'afsnit_id:')">
+        <f:string key="kb:episode_id">
+          <xsl:value-of select="f:substring-after(. , 'afsnit_id:')"/>
+        </f:string>
+      </xsl:when>
+      <xsl:when test="f:starts-with(. , 'saeson_id:')">
+        <f:string key="kb:season_id">
+          <xsl:value-of select="f:substring-after(. , 'saeson_id:')"/>
+        </f:string>
+      </xsl:when>
+      <xsl:when test="f:starts-with(. , 'serie_id:')">
+        <f:string key="kb:series_id">
+          <xsl:value-of select="f:substring-after(. , 'serie_id:')"/>
+        </f:string>
+      </xsl:when>
+      <!--Extract internal showviewcode -->
+      <xsl:when test="f:starts-with(. , 'showviewcode:')">
+        <f:string key="kb:showviewcode">
+          <xsl:value-of select="f:substring-after(. , 'showviewcode:')"/>
+        </f:string>
+      </xsl:when>
+      <!-- Check if there has been a stop in the transmission-->
+      <xsl:when test="f:starts-with(. , 'program_ophold:')">
+        <!-- inner XSLT Choose which determines if program_ophold is false or true -->
+        <xsl:choose>
+          <xsl:when test=". = 'program_ophold:ikke program ophold'">
+            <f:string key="kb:program_ophold">
+              <xsl:value-of select="false()"/>
+            </f:string>
+          </xsl:when>
+          <xsl:when test=". = 'program_ophold:program ophold'">
+            <f:string key="kb:program_ophold">
+              <xsl:value-of select="true()"/>
+            </f:string>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:when>
+      <!-- TODO: Check if has_subtitles fits in schema.org-->
+      <!-- Boolean for if the program contains subtitles.-->
+      <xsl:when test="f:starts-with(. , 'tekstet:')">
+        <!-- Inner XSLT  choose to determine value of boolean -->
+        <xsl:choose>
+          <xsl:when test=". = 'tekstet:ikke tekstet'">
+            <f:string key="kb:has_subtitles">
+              <xsl:value-of select="false()"/>
+            </f:string>
+          </xsl:when>
+          <xsl:when test=". = 'tekstet:tekstet'">
+            <f:string key="kb:has_subtitles">
+              <xsl:value-of select="true()"/>
+            </f:string>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:when>
+      <!--TODO: Check if subtitles for hearing impaired can be described in schema.org'-->
+      <!-- Boolean value - does the resource contain subtitles for hearing impaired?-->
+      <xsl:when test="f:starts-with(. , 'th:')">
+        <!-- Inner XSLT  choose to determine value of boolean -->
+        <xsl:choose>
+          <xsl:when test=". = 'th:ikke tekstet for hørehæmmede'">
+            <f:string key="kb:has_subtitles_for_hearing_impaired">
+              <xsl:value-of select="false()"/>
+            </f:string>
+          </xsl:when>
+          <xsl:when test=". = 'th:tekstet for hørehæmmede'">
+            <f:string key="kb:has_subtitles_for_hearing_impaired">
+              <xsl:value-of select="true()"/>
+            </f:string>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:when>
+      <!-- Is the resource teletext?-->
+      <xsl:when test="f:starts-with(. , 'ttv:')">
+        <!-- Inner XSLT  choose to determine value of boolean -->
+        <xsl:choose>
+          <xsl:when test=". = 'ttv:ikke tekst-tv'">
+            <f:string key="kb:is_teletext">
+              <xsl:value-of select="false()"/>
+            </f:string>
+          </xsl:when>
+          <xsl:when test=". = 'ttv:tekst-tv'">
+            <f:string key="kb:is_teletext">
+              <xsl:value-of select="true()"/>
+            </f:string>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:when>
+    </xsl:choose>
   </xsl:template>
 
   <!-- TEMPLATE FOR ACCESSING ACCESS METADATA.-->
