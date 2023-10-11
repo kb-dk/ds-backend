@@ -14,9 +14,9 @@
  */
 package dk.kb.discover;
 
+import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-import dk.kb.util.other.StringListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +40,7 @@ public class SolrService {
     private static final Logger log = LoggerFactory.getLogger(SolrService.class);
 
     public static final String SELECT = "select";
+    public static final String MLT = "mlt";
 
     public static final String Q = "q";
     public static final String FQ = "fq";
@@ -54,6 +55,17 @@ public class SolrService {
     public static final String INDENT = "indent";
     public static final String DEBUG = "debug";
     public static final String DEBUG_EXPLAIN_STRUCTURED = "debug.explain.structured";
+
+    public static final String MLT_FL = "mlt.fl";
+    public static final String MLT_MINTF = "mlt.mintf";
+    public static final String MLT_MINDF = "mlt.mindf";
+    public static final String MLT_MAXDF = "mlt.maxdf";
+    public static final String MLT_MAXDFPCT = "mlt.maxdfpct";
+    public static final String MLT_MINWL = "mlt.minwl";
+    public static final String MLT_MAXWL = "mlt.maxwl";
+    public static final String MLT_MAXQT = "mlt.maxqt";
+    public static final String MLT_BOOST = "mlt.boost";
+    public static final String MLT_INTERESTING_TERMS = "mlt.interestingTerms";
 
     private final String id; // Abstract collection
 
@@ -113,6 +125,20 @@ public class SolrService {
             }
         }
     }
+    public enum MLT_INTERESTING_TERMS_ENUM {list, none, details;
+        static MLT_INTERESTING_TERMS_ENUM safeParse(String interestingTerms) {
+            if (interestingTerms == null) {
+                return null;
+            }
+            try {
+                return MLT_INTERESTING_TERMS_ENUM.valueOf(interestingTerms);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidArgumentServiceException(
+                        "Unsupported mlt.interestingTerms='" + interestingTerms + "'. Supported values are " +
+                                Arrays.toString(MLT_INTERESTING_TERMS_ENUM.values()));
+            }
+        }
+    }
 
     public SolrService(String id, String server, String path, String solrCollection) {
         this.id = id;
@@ -120,6 +146,49 @@ public class SolrService {
         this.path = path;
         this.solrCollection = solrCollection;
         log.info("Created " + this);
+    }
+
+    /**
+     * Issue a Solr More Like This request. All parameters from standard Solr.
+     * @return solr More Like This response.
+     */
+    public String mlt(String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt,
+                      String mltFl, Integer mltMintf, Integer mltMindf, Integer mltMaxdf, Integer mltMaxdfpct,
+                      Integer mltMinwl, Integer mltMaxwl, Integer mltMaxqt, Boolean mltBoost,
+                      String mltInterestingTerms) {
+        if (q == null) {
+            throw new InvalidArgumentServiceException("q is mandatory but was missing");
+        }
+        // TODO: Catch extra arguments and throw "not supported"
+        UriBuilder builder = UriBuilder.fromUri(server)
+                .path(path)
+                .path(solrCollection)
+                .path(MLT)
+                .queryParam(Q, sanitiseQuery(q))
+                .queryParam(QOP, QOP_ENUM.safeParse(qOp))
+                .queryParam(WT, WT_ENUM.safeParse(wt));
+        // TODO: Add role based filters
+        if (fq != null) {
+            fq.forEach(fqs -> builder.queryParam(FQ, fqs));
+        }
+        addParamIfAvailable(builder, ROWS, rows);
+        addParamIfAvailable(builder, START, start);
+        addParamIfAvailable(builder, FL, fl);
+        addParamIfAvailable(builder, MLT_FL, mltFl);
+        addParamIfAvailable(builder, MLT_MINTF, mltMintf);
+        addParamIfAvailable(builder, MLT_MINDF, mltMindf);
+        addParamIfAvailable(builder, MLT_MAXDF, mltMaxdf);
+        addParamIfAvailable(builder, MLT_MAXDFPCT, mltMaxdfpct);
+        addParamIfAvailable(builder, MLT_MINWL, mltMinwl);
+        addParamIfAvailable(builder, MLT_MAXWL, mltMaxwl);
+        addParamIfAvailable(builder, MLT_MAXQT, mltMaxqt);
+        addParamIfAvailable(builder, MLT_BOOST, mltBoost);
+        if (mltInterestingTerms != null) {
+            builder.queryParam(MLT_INTERESTING_TERMS, MLT_INTERESTING_TERMS_ENUM.safeParse(mltInterestingTerms));
+        }
+
+        return performCall(q, builder, "mlt");
+
     }
 
     /**
@@ -153,28 +222,18 @@ public class SolrService {
         if (fq != null) {
             fq.forEach(fqs -> builder.queryParam(FQ, fqs));
         }
-        if (rows != null) {
-            builder.queryParam(ROWS, rows);
-        }
-        if (start != null ) {
-            builder.queryParam(START, start);            
-        }        
-        if (fl != null) {
-            builder.queryParam(FL, fl);
-        }
+        addParamIfAvailable(builder, ROWS, rows);
+        addParamIfAvailable(builder, START, start);
+        addParamIfAvailable(builder, FL, fl);
         if (facet != null) {
             builder.queryParam(FACET, Boolean.parseBoolean(facet));
         }
         if (facetField != null) {
             facetField.forEach(ff -> builder.queryParam(FACET_FIELD, ff));
         }
-        if (version != null) {
-            builder.queryParam(VERSION, version);
-        }
+        addParamIfAvailable(builder, VERSION, version);
+        addParamIfAvailable(builder, INDENT, indent);
 
-        if (indent != null) {
-            builder.queryParam(INDENT, indent);
-        }
         if (debug != null) {
             builder.queryParam(DEBUG, DEBUG_ENUM.safeParse(debug));
         }
@@ -182,6 +241,10 @@ public class SolrService {
             builder.queryParam(DEBUG_EXPLAIN_STRUCTURED, Boolean.parseBoolean(debugExplainStructured));
         }
 
+        return performCall(q, builder, "search");
+    }
+
+    private String performCall(String q, UriBuilder builder, String callType) {
         URI solrCall = builder.build();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -194,16 +257,19 @@ public class SolrService {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             log.warn(String.format(
-                    Locale.ROOT, "Unable to perform remote call for collection '%s', query '%s'", getID(), q), e);
-            throw new InternalServiceException("Unable to perform remote call for query '" +
-                                               StringListUtils.truncateMiddle(q, 100) +
-                                               "'. Remote service might not be responding");
+                    Locale.ROOT, "Unable to perform remote %s call for collection '%s', query '%s'",
+                    callType, getID(), q), e);
+            throw new InternalServiceException(String.format(
+                    Locale.ROOT, "Unable to perform remote %s call for query '%s'." +
+                            "Remote service might not be responding",
+                    callType, StringListUtils.truncateMiddle(q, 100)));
         }
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
-            log.warn("Got HTTP {} from remote call for collection '{}', query '{}'", response.statusCode(), getID(), q);
+            log.warn("Got HTTP {} from remote {} call for collection '{}', query '{}'",
+                    response.statusCode(), callType, getID(), q);
             throw new InternalServiceException(String.format(
-                    Locale.ROOT, "Got HTTP %d performing remote call for query '%s'",
-                    response.statusCode(), StringListUtils.truncateMiddle(q, 100)));
+                    Locale.ROOT, "Got HTTP %d performing remote %s call for query '%s'",
+                    response.statusCode(), callType, StringListUtils.truncateMiddle(q, 100)));
         }
 
         return response.body();
@@ -247,6 +313,19 @@ public class SolrService {
         log.info("Shutting down " + this);
         // Currently does nothing as there is no locked resources between calls
     }
+
+    /**
+     * If {@code value} is not null, {@code key=value} is added as a param to the builder.
+     * @param builder builder for a Solr query.
+     * @param key     key for the param to add if a value is present.
+     * @param value   value for the key.
+     */
+    private void addParamIfAvailable(UriBuilder builder, String key, Object value) {
+        if (value != null) {
+            builder.queryParam(key, value);
+        }
+    }
+
 
     @Override
     public String toString() {

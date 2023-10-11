@@ -287,6 +287,277 @@ paths:
                   Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
                 type: string
 
+  /solr/{collection}/mlt:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Perform a Solr-compatible More Like This (MLT) request in the stated collection. See https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#request-handler-configuration for details'
+      operationId: solrMLT
+      parameters:
+
+        - name: collection
+          in: path
+          description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections'
+          required: true
+          schema:
+            type: string
+            default: 'ds'
+            example: 'ds'
+
+        - name: q
+          in: query
+          description: 'Solr query param [q](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)'
+          required: true
+          schema:
+            type: string
+            default: '*:*'
+          examples:
+            all:
+              value: '*:*'
+              summary: 'All documents in the collection'
+            free:
+              value: 'jens hansen'
+              summary: 'Free text query'
+            qualified:
+              value: 'author:andersen'
+              summary: 'Qualified query'
+
+        - name: mlt.fl
+          in: query
+          description: | 
+            MLT param [mlt.fl](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies the fields to use for similarity as a comma separated list.
+            If not specified, a default list of relevant fields are used.
+
+          required: false
+          schema:
+            type: string
+
+        - name: mlt.mintf
+          in: query
+          description: | 
+            MLT param [mlt.mintf](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+
+            Specifies the minimum frequency below which terms will be ignored in the source document.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 2
+            default: 2
+
+        - name: mlt.mindf
+          in: query
+          description: | 
+            MLT param [mlt.mindf](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies the minimum frequency below which terms will be ignored which do not occur in at least this many documents.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 5
+            default: 5
+
+        - name: mlt.maxdf
+          in: query
+          description: | 
+            MLT param [mlt.maxdf](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies the maximum frequency above which terms will be ignored which occur in more than this many documents.
+          required: false
+          schema:
+            type: integer
+            format: int32
+
+        - name: mlt.maxdfpct
+          in: query
+          description: | 
+            MLT param [mlt.maxdfpct](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies the maximum document frequency using a ratio relative to the number of documents in the index. 
+            The value provided must be an integer between `0` and `100`. 
+            For example, `mlt.maxdfpct=75` means the word will be ignored if it occurs in more than 75 percent of the documents in the index.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 75
+            default: 75
+
+        - name: mlt.minwl
+          in: query
+          description: | 
+            MLT param [mlt.minwl](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Sets the minimum word length below which words will be ignored.
+          required: false
+          schema:
+            type: integer
+            format: int32
+
+        - name: mlt.maxwl
+          in: query
+          description: | 
+            MLT param [mlt.maxwl](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Sets the maximum word length above which words will be ignored.
+          required: false
+          schema:
+            type: integer
+            format: int32
+
+        - name: mlt.maxqt
+          in: query
+          description: | 
+            MLT param [mlt.maxqt](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Sets the maximum number of query terms that will be included in any generated query.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 25
+            default: 25
+
+        - name: mlt.boost
+          in: query
+          description: | 
+            MLT param [mlt.boost](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies if the query will be boosted by the interesting term relevance.
+          required: false
+          schema:
+            type: boolean
+            example: false
+            default: false
+
+        - name: mlt.interestingTerms
+          in: query
+          description: | 
+            MLT param [mlt.interestingTerms](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Adds a section in the response that shows the top terms (based on TF/IDF) used for the MoreLikeThis query.
+            It supports three possible values:
+
+            * list lists the terms.
+            * none lists no terms (the default).
+            * details lists the terms along with the boost value used for each term. Unless mlt.boost=true, all terms will have boost=1.0.
+          required: false
+          schema:
+            enum: ['list', 'none', 'detailed']
+            default: 'none'
+            example: 'none'
+
+        - name: fq
+          in: query
+          description: | 
+            Solr filter query param [fq](https://solr.apache.org/guide/8_10/common-query-parameters.html#fq-filter-query-parameter)
+            
+            Standard query syntax, but all terms must be qualified. Does not affect scoring.
+            If multiple filter queries are provided, the result set is the intersection of the filters.
+
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+
+        - name: rows
+          in: query
+          description: | 
+            Solr rows param [rows](https://solr.apache.org/guide/8_10/common-query-parameters.html#rows-parameter)
+            
+            The number of documents to return. The default depends on the backing Solr setup, but is typically 10.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+
+        - name: start
+          in: query
+          description: | 
+            For pagination. Only return documents in the resultset from position start and forward. Next page typical start from 20
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          examples:
+            from0:
+              value: 0
+              summary: 'from start. First document is document number 0 so returning documents 0,1,2,..,(rows-parameter)'
+            from20:
+              value: 20
+              summary: 'from document 21 and forwards. So returning document 21,22,.., 21+(rows-parameter)'
+
+        - name: fl
+          in: query
+          description: | 
+            Solr field list param [fl](https://solr.apache.org/guide/8_10/common-query-parameters.html#fl-field-list-parameter)            
+            Solr fields to return in the response. `*` means all available standard fields.
+            It is recommended to include the pseudo-field [[child]](https://solr.apache.org/guide/8_0/transforming-result-documents.html#child-childdoctransformerfactory)
+            to include nested documents.
+          required: false
+          schema:
+            type: string
+            example: '*'
+            default: '*'
+
+        - name: q.op
+          in: query
+          description: | 
+            Solr default operator param [q.op](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)
+            
+            Controls whether the implicit boolean operator is `OR` or `AND`.
+          required: false
+          schema:
+            type: string
+            enum:  ['OR', 'AND']
+            default: 'AND'
+            example: 'AND'
+
+        - name: wt
+          in: query
+          description: | 
+            Solr response writer [wt](https://solr.apache.org/guide/8_10/response-writers.html)
+
+            Controls whether the response delivery format. Common values (non exhaustive list) are
+            
+            * [json](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer) (default)
+            * [csv](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+            * [xml](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+          required: false
+          schema:
+            type: string
+            default: 'json'
+            example: 'json'
+
+      # In principle this could many more params, such as facet or grouping, but this seems out of scope for MLT
+
+      responses:
+        '200':
+          description: 'Structured Solr response'
+          content:
+            application/json:
+              schema:
+                description: |
+                  Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
+                type: string
+            application/xml:
+              schema:
+                description: |
+                  Output compatible with [Solr XML response](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+                type: string
+            text/csv:
+              schema:
+                description: |
+                  Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+                type: string
+
   /solr/admin/collections:
     get:
       tags:

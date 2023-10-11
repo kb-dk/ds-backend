@@ -16,6 +16,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
+import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
 import org.apache.cxf.jaxrs.model.Parameter;
@@ -147,6 +148,43 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     }
 
 
+    @Override
+    public String solrMLT(String collection, String q, String mltFl, Integer mltMintf, Integer mltMindf, Integer mltMaxdf, Integer mltMaxdfpct, Integer mltMinwl, Integer mltMaxwl, Integer mltMaxqt, Boolean mltBoost, String mltInterestingTerms, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
+        try {
+
+            log.debug("solrMLT(collection='{}', q='{}', ...) called with call details: {}",
+                      collection, q, getCallDetails());
+            Map<String, String[]> extra = getExtraParams();
+            if (!extra.isEmpty()) {
+                throw new InvalidArgumentServiceException("Unsupported parameters: " + extra.keySet());
+            }
+            SolrService solr = SolrManager.getSolrService(collection);
+            // TODO: Pass the map of request parameters instead of all parameters as first class
+            httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
+
+             //Add filter query from license module.
+            DsLicenseApi licenseClient = getDsLicenseApiClient();
+            GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
+            GetUsersFilterQueryOutputDto filterQuery;
+            try {
+                filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
+            } catch (Exception e) {
+                log.warn("Unable to get response from ds-license at URL '" +
+                        ServiceConfig.getConfig().getString("config.licensemodule.url") + "'", e);
+                throw new InternalServiceException("Unable to contact license server");
+            }
+
+            log.debug("solrMLT: Using filter query='{}'  for user attributes='{}' ",filterQuery.getFilterQuery(), getLicenseQueryDto()) ;
+            fq.add(filterQuery.getFilterQuery()); //Add the additional filter query
+
+            return solr.mlt(q, fq, rows, start, fl, qOp, wt,
+                    mltFl, mltMintf, mltMindf, mltMaxdf, mltMaxdfpct, mltMinwl, mltMaxwl, mltMaxqt,
+                    mltBoost, mltInterestingTerms);
+        } catch (Exception e){
+            throw handleException(e);
+        }
+    }
+
     /**
      * Perform a Solr-compatible search in the stated collection
      * 
@@ -162,7 +200,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-
     public String solrSearch(String collection, String q, List<String> fq, Integer rows, Integer start, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
     
         try {
@@ -180,9 +217,16 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
              //Add filter query from license module.
             DsLicenseApi licenseClient = getDsLicenseApiClient();
             GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
-            GetUsersFilterQueryOutputDto filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
-                        
-            log.info("Using filter query='{}'  for user attributes='{}' ",filterQuery.getFilterQuery(), getLicenseQueryDto()) ;
+            GetUsersFilterQueryOutputDto filterQuery;
+            try {
+                filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
+            } catch (Exception e) {
+                log.warn("Unable to get response from ds-license at URL '" +
+                        ServiceConfig.getConfig().getString("config.licensemodule.url") + "'", e);
+                throw new InternalServiceException("Unable to contact license server");
+            }
+
+            log.debug("solrSearch: Using filter query='{}'  for user attributes='{}' ",filterQuery.getFilterQuery(), getLicenseQueryDto()) ;
             fq.add(filterQuery.getFilterQuery()); //Add the additional filter query
                         
             return solr.query(q, fq, rows, start, fl, facet, facetField, qOp, wt, version, indent, debug, debugExplainStructured);
