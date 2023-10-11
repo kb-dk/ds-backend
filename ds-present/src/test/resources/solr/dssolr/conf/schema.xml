@@ -547,9 +547,16 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     ?>
   </field>
 
+  <field name="text" type="text_general" multiValued="true" stored="true" >
+    <?description Content text field for newspaper article main text, book full text, television subtitles, radio transcriptions etc.?>
+    <?example     If a television recording with subtitles is indexed, this field will hold the subtitles and only the subtitles.?>
+  </field>
+
   <!-- Most fields are copied to this field for matching. -->
   <field name="freetext" type="freetext" multiValued="true" stored="false">
-    <?description Freetext field, which contains text from multiple other fields.?>
+    <?description Freetext field, which contains text from multiple other fields.
+                  Note: If the indexed material has 'body text', such as the main content of a book, a newspaper
+                  article or subtitles for a TV-recording, it will be indexed in the 'text' field.?>
     <?example     If a play with the titel 'Romeo and Juliet' written by the author 'William Shakespeare' is indexed,
                   then the freetext field for this play will contain content from multiple other fields, so that the
                   value of the freetext field could be something like this: "William Shakespeare Romeo and Juliet".?>
@@ -594,7 +601,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
-  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
+    <!-- termVectors=true & storeTermVectors=true to get better MoreLikeThis and support the Unified Highlighter -->
+  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
     <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
        <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt"/>

@@ -755,7 +755,7 @@
        <str name="df">freetext</str>
        <str name="q.op">AND</str>
        <str name="defType">edismax</str>
-        
+        <!-- Update qf for /mlt above when changing this -->
         <str name="qf">
         filename_local^5.0
         title_strict^5.0
@@ -766,7 +766,8 @@
         collection
         catalog
         resource_description
-        freetext^0.5       
+        text^0.75
+        freetext^0.5
        </str>
        
         <str name="pf">
@@ -890,6 +891,51 @@
     <arr name="last-components">
       <str>tvComponent</str>
     </arr>
+  </requestHandler>
+
+  <!-- https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#request-handler-configuration -->
+  <!-- Must be a handler (as opposed to search component) for distribution support -->
+  <requestHandler name="/mlt" class="solr.MoreLikeThisHandler">
+    <!-- mlt-parameteres probably needs to be tweaked. This is just a semi-loose first attempt -->
+    <lst name="defaults">
+      <str name="mlt.fl">title,subtitle,alternative_title,creator_full_name,area,topic,notes,catalog,production_place,subject_full_name,audience,text</str>
+      <str name="mlt.mintf">2</str>
+      <str name="mlt.mindf">2</str>
+      <str name="mlt.boost">true</str>
+      <str name="mlt.maxntp">5000</str>
+      <!-- mlt.qf synchronized with edismax qf -->
+      <str name="mlt.qf">
+        filename_local^5.0
+        title_strict^5.0
+        creator_full_name_strict^5.0
+        topic^2.0
+        location
+        notes
+        collection
+        catalog
+        resource_description
+        text^0.75
+        freetext^0.5
+      </str>
+      <str name="mlt.maxqt">25</str>
+      <str name="mlt.maxdfpct">75</str>
+
+      <!-- Poorly understood hacking to get edismax-support for MLT -->
+      <str name="defType">edismax</str>
+      <str name="qf">
+          filename_local^5.0
+          title_strict^5.0
+          creator_full_name_strict^5.0
+          topic^2.0
+          location
+          notes
+          collection
+          catalog
+          resource_description
+          text^0.75
+          freetext^0.5
+        </str>
+    </lst>
   </requestHandler>
 
   <!-- Search results clustering component
