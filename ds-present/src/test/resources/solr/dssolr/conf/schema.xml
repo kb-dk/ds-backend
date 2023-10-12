@@ -600,10 +600,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description A boolean value that tells if the resource is teletext?>
     <?example     false?>
   </field>
-  <!--TODO: Figure out what this field can contain-->
   <field name="internal_showviewcode" type="string">
-    <?description ?>
-    <?example     ?>
+    <?description ShowView codes were codes used on videorecords before the advent of on-screen displays. These codes
+                  were printed and distributed in magazines and newspapers and were input into a video recorder, which
+                  would then record the correct channel at the correct time.?>
+    <?example     23122123?>
   </field>
   <!--TODO: Figure out what this field can contain-->
   <field name="internal_padding_seconds" type="string">
