@@ -150,6 +150,8 @@
           </f:string>
         </xsl:for-each>
       </f:array>
+      <!-- In preservica there can only be a single 'hovedgenre' and a single 'undergenre'. However, these are
+           represented in the same pbcoreGenre/genre tag and are therefore extracted through a for-each. -->
       <xsl:for-each select="pbcoreGenre/genre">
         <xsl:choose>
           <xsl:when test="f:contains(., 'hovedgenre:')">

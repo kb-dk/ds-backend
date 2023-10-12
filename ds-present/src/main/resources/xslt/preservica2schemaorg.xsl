@@ -151,7 +151,7 @@
     
     
     <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
-    <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')]">
+    <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
       <f:string key="datePublished">
         <xsl:value-of select="f:substring-before(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart, 'T')"/>
       </f:string>
