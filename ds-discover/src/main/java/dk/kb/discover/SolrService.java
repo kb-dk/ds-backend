@@ -149,7 +149,15 @@ public class SolrService {
     }
 
     /**
-     * Issue a Solr More Like This request. All parameters from standard Solr.
+     * Issue a Solr More Like This (MLT) request. All parameters from standard Solr.
+     * <p>
+     * A Solr MLT works internally in Solr by issuing a search for the given query ({code q} with the given
+     * filter queries {@code fq}. The significant terms from the first hit from the search are then used for
+     * a new search, where the resulting documents are returned. The end result of this indirect search should
+     * be documents that are similar in terms (aka content) to the first hit in the original search result.
+     * <p>
+     * A common way of using MLT is to issue a query for a specific document: {@code q=id:"ds.radiotv:oai:man:123..."}.
+     * @see <a href="https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html">Solr MLT</a>.
      * @return solr More Like This response.
      */
     public String mlt(String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt,
@@ -160,20 +168,8 @@ public class SolrService {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
         // TODO: Catch extra arguments and throw "not supported"
-        UriBuilder builder = UriBuilder.fromUri(server)
-                .path(path)
-                .path(solrCollection)
-                .path(MLT)
-                .queryParam(Q, sanitiseQuery(q))
-                .queryParam(QOP, QOP_ENUM.safeParse(qOp))
-                .queryParam(WT, WT_ENUM.safeParse(wt));
-        // TODO: Add role based filters
-        if (fq != null) {
-            fq.forEach(fqs -> builder.queryParam(FQ, fqs));
-        }
-        addParamIfAvailable(builder, ROWS, rows);
-        addParamIfAvailable(builder, START, start);
-        addParamIfAvailable(builder, FL, fl);
+        UriBuilder builder = createBaseRequestBuilder(q, fq, rows, start, fl, qOp, wt);
+
         addParamIfAvailable(builder, MLT_FL, mltFl);
         addParamIfAvailable(builder, MLT_MINTF, mltMintf);
         addParamIfAvailable(builder, MLT_MINDF, mltMindf);
@@ -211,20 +207,8 @@ public class SolrService {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
         // TODO: Catch extra arguments and throw "not supported"
-        UriBuilder builder = UriBuilder.fromUri(server)
-                .path(path)
-                .path(solrCollection)
-                .path(SELECT)
-                .queryParam(Q, sanitiseQuery(q))
-                .queryParam(QOP, QOP_ENUM.safeParse(qOp))
-                .queryParam(WT, WT_ENUM.safeParse(wt));
-        // TODO: Add role based filters
-        if (fq != null) {
-            fq.forEach(fqs -> builder.queryParam(FQ, fqs));
-        }
-        addParamIfAvailable(builder, ROWS, rows);
-        addParamIfAvailable(builder, START, start);
-        addParamIfAvailable(builder, FL, fl);
+        UriBuilder builder = createBaseRequestBuilder(q, fq, rows, start, fl, qOp, wt);
+
         if (facet != null) {
             builder.queryParam(FACET, Boolean.parseBoolean(facet));
         }
@@ -243,6 +227,30 @@ public class SolrService {
 
         return performCall(q, builder, "search");
     }
+
+    /**
+     * Creates a Solr oriented URI builder with basic parameters shared by standard search and More Like This requests.
+     * @return a pre-filled builder ready to be extended with caller specific parameters.
+     */
+    private UriBuilder createBaseRequestBuilder(
+            String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
+        UriBuilder builder = UriBuilder.fromUri(server)
+                .path(path)
+                .path(solrCollection)
+                .path(MLT)
+                .queryParam(Q, sanitiseQuery(q))
+                .queryParam(QOP, QOP_ENUM.safeParse(qOp))
+                .queryParam(WT, WT_ENUM.safeParse(wt));
+        // TODO: Add role based filters
+        if (fq != null) {
+            fq.forEach(fqs -> builder.queryParam(FQ, fqs));
+        }
+        addParamIfAvailable(builder, ROWS, rows);
+        addParamIfAvailable(builder, START, start);
+        addParamIfAvailable(builder, FL, fl);
+        return builder;
+    }
+
 
     private String performCall(String q, UriBuilder builder, String callType) {
         URI solrCall = builder.build();
