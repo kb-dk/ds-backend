@@ -26,8 +26,9 @@
  * 	<tr>
  * 		<td></td>
  * 		<td>id</td>
- * 		<td></td>
- * 		<td>This ID is created from the name of the record in the preservica OAI-PMH harvest.</td>
+ * 		<td>id</td>
+ * 		<td>This ID is a DS-id, which is not present in preservica and is created from the name of the record in the
+ * 	       	preservica OAI-PMH harvest.</td>
  * 	</tr>
  * 	<tr>
  * 		<td></td>
@@ -58,7 +59,7 @@
  * 		<td>pbcoreInstantiation/<br/>formatMediaType</td>
  * 		<td>resource_description</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>A description of what the resource is, not what it represents or contains. e.g. video or image.</td>
  * 	</tr>
  * 	<tr>
  * 		<td>pbcoreTitle/title</td>
@@ -113,6 +114,18 @@
  * 		<td>Extracted from pbcoreIdentifier where identifierSource = 'tvmeterId'</td>
  * 	</tr>
  * 	<tr>
+ * 	    <td>pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart</td>
+ * 	    <td></td>
+ * 	    <td>startTime</td>
+ * 	    <td></td>
+ * 	</tr>
+ * 	<tr>
+ * 	    <td>pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd</td>
+ * 	    <td></td>
+ * 	    <td>endTime</td>
+ * 	    <td></td>
+ * 	</tr>
+ * 	<tr>
  * 		<td>pbcoreInstantiation/formatDuration <br/> or calculated from <br/>
  * 	       	pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and
  * 	       	pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd</td>
@@ -129,13 +142,13 @@
  * 		<td>Boolean value for colors. Resource in colors = true,  resource in greytones = false.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreInstantiation/formatStandard</td>
  * 		<td>video_quality</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Quality of the video. Preservica can contain values 'hd' and 'ikke hd'</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreInstantiation/formatChannelConfiguration</td>
  * 		<td>surround_sound</td>
  * 		<td></td>
  * 		<td></td>
@@ -147,211 +160,211 @@
  * 		<td>Extracted when the extension field starts with 'premiere:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreInstantiation/formatAspectRatio</td>
  * 		<td>aspect_ratio</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>xip:Manifestation/ComponentManifestation/ComponentType</td>
  * 		<td>manifestation_type</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Is extracted from a presentation manifestation related to the DeliverableUnit.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>episode</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'episodenr:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>number_of_episodes</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'antalepisoder:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>live_broadcast</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'live:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>retransmission</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'genudsendelse:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreDescription</td>
  * 		<td>abstract</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Is extracted when ./descriptionType = 'kortomtale'</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreDescription</td>
  * 		<td>description</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>is extracted when ./descriptionType = 'langomtale1' </td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreGenre/genre</td>
  * 		<td>genre_sub</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when pbcoreGenre/genre contains undergenre:</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>has_subtitles</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'tekstet:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>has_subtitles_for_hearing_impaired</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'th:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pidhandle:pidhandle/handle</td>
  * 		<td>pid</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>A long lasting reference to the resource.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>xip:DeliverableUnit/AccessionRef</td>
  * 		<td>internal_accession_ref</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>"pbcoreInstantiation/pbcoreFormatID</td>
  * 		<td>internal_format_identifier_ritzau</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Is extracted when ./formatIdentifierSource = 'ritzau'</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreInstantiation/pbcoreFormatID</td>
  * 		<td>internal_format_identifier_nielsen</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Is extracted when ./formatIdentifierSource = 'nielsen'</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_maingenre_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'hovedgenre_id:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_channel_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'kanalid:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_country_of_origin_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'produktionsland_id:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_ritzau_program_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'program_id:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_subgenre_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'undergenre_id:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_episode_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'afsnit_id:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_season_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'saeson_id:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_series_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'serie_id:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_program_ophold</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'program_indhold:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_is_teletext</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'ttv:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>internal_showviewcode</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'showviewcode:'.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>padding:padding/paddingSeconds</td>
  * 		<td>internal_padding_seconds</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>Metadata/access:access/individuelt_forbud</td>
  * 		<td>internal_access_individual_prohibition</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>Metadata/access:access/klausuleret</td>
  * 		<td>internal_access_claused</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>Metadata/access:access/defekt</td>
  * 		<td>internal_access_malfunction</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>Metadata/access:access/kommentarer</td>
  * 		<td>internal_access_comments</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>Metadata/program_structure:program_structure/missingStart/missingSeconds</td>
  * 		<td>internal_program_structure_missing_seconds_start</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>Metadata/program_structure:program_structure/missingEnd/missingSeconds</td>
  * 		<td>internal_program_structure_missing_seconds_end</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>Metadata/program_structure:program_structure/holes</td>
  * 		<td>internal_program_structure_holes</td>
  * 		<td></td>
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>Metadata/program_structure:program_structure/overlaps</td>
  * 		<td>internal_program_structure_holes</td>
  * 		<td></td>
  * 		<td></td>
