@@ -359,13 +359,13 @@
       <!-- Extract episode number if present.-->
       <xsl:when test="f:starts-with(., 'episodenr:') and substring-after(., ':') != ''">
         <f:string key="episode">
-          <xsl:value-of select="substring-after(., ':')"/>
+          <xsl:value-of select="normalize-space(substring-after(., ':'))"/>
         </f:string>
       </xsl:when>
       <!-- Extract total number of episodes if present. -->
       <xsl:when test="f:starts-with(., 'antalepisoder:') and . != 'antalepisoder:0' and substring-after(., ':') != ''">
         <f:string key="number_of_episodes">
-          <xsl:value-of select="substring-after(., ':')"/>
+          <xsl:value-of select="normalize-space(substring-after(., ':'))"/>
         </f:string>
       </xsl:when>
       <!-- Boolean for whether the transmission is a retransmission -->
