@@ -755,7 +755,7 @@
        <str name="df">freetext</str>
        <str name="q.op">AND</str>
        <str name="defType">edismax</str>
-        <!-- Update qf for /mlt above when changing this -->
+        <!-- Update qf for /mlt handler further down in the solrconfig.xml when changing this -->
         <str name="qf">
         filename_local^5.0
         title_strict^5.0
