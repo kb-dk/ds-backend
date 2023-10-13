@@ -90,10 +90,12 @@
  * 	<tr>
  * 		<td>xip:Manifestation/<br/>ComponentManifestation/<br/>FileRef</td>
  * 		<td>resource_id</td>
- * 		<td></td>
+ * 		<td>contentUrl</td>
  * 		<td>This id is not directly available in the DeliverableUnit from preservica, but originates from a manifestation.
  * 	       	It is the ID of a presentation manifestation related to the DeliverableUnit. The connection between them is
- * 	       	created in the backing DS-storage. Then the XSLT looks for the child and accesses it through its URI. </td>
+ * 	       	created in the backing DS-storage. Then the XSLT looks for the child and accesses it through its URI.
+ * 	       	Furthermore there is a difference between the solr resource_id and the schema.org contentUrl. The first is
+ * 	       	just the ID, while the second is a full URL, to where the content can be accessed.</td>
  * 	</tr>
  * 	<tr>
  * 		<td>pbcoreTitle/title</td>
