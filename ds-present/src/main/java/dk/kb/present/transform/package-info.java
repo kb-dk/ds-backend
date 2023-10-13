@@ -43,7 +43,7 @@
  * 		<td>All types of genres from preservica are present here.</td>
  * 	</tr>
  * 	<tr>
- * 		<td>pbcoreInstantiation/formatLocation</td>
+ * 		<td>pbcoreInstantiation/<br/>formatLocation</td>
  * 		<td>collection</td>
  * 		<td></td>
  * 		<td></td>
@@ -55,7 +55,7 @@
  * 		<td>Extracted from the field which contains 'hovedgenre:'</td>
  * 	</tr>
  * 	<tr>
- * 		<td>pbcoreInstantiation/formatMediaType</td>
+ * 		<td>pbcoreInstantiation/<br/>formatMediaType</td>
  * 		<td>resource_description</td>
  * 		<td></td>
  * 		<td></td>
@@ -73,22 +73,26 @@
  * 		<td>Is extracted when pbcoreTitle/titleType = 'originaltitel'</td>
  * 	</tr>
  * 	<tr>
- * 		<td>pbcorePublisher/publisherRole</td>
+ * 		<td>pbcorePublisher/<br/>publisherRole</td>
  * 		<td>creator_affiliation</td>
  * 		<td></td>
  * 		<td>The solr field has the same name across collections.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreDescription</td>
  * 		<td>notes</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>The notes field originates from the mods2solr XSLT and combines different metadata, which didn't have their
+ * 	        own field in the MODS standard. Descriptions from preservica are cramped into this field, however, they are
+ * 	        also extracted to their own fields 'abstract' for short description and 'description' for longer descriptions</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>xip:Manifestation/<br/>ComponentManifestation/<br/>FileRef</td>
  * 		<td>resource_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>This id is not directly available in the DeliverableUnit from preservica, but originates from a manifestation.
+ * 	       	It is the ID of a presentation manifestation related to the DeliverableUnit. The connection between them is
+ * 	       	created in the backing DS-storage. Then the XSLT looks for the child and accesses it through its URI. </td>
  * 	</tr>
  * 	<tr>
  * 		<td>pbcoreTitle/title</td>
@@ -97,28 +101,32 @@
  * 		<td>Is extracted when pbcoreTitle/titleType = 'episodetitel'</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreIdentifier</td>
  * 		<td>ritzau_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted from pbcoreIdentifier where identifierSource = 'ritzauId'</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreIdentifier</td>
  * 		<td>tvmeter_id</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted from pbcoreIdentifier where identifierSource = 'tvmeterId'</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreInstantiation/formatDuration <br/> or calculated from <br/>
+ * 	       	pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and
+ * 	       	pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd</td>
  * 		<td>duration_ms</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Resources from preservica can contain the duration in miliseconds, however not all resources does. Therefore,
+ * 	        the XSLT looks for this field and if it isn't present, the duration is calculated from the available fields.
+ * 	        Time is UTC.</td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreInstantiation/formatColors</td>
  * 		<td>color</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Boolean value for colors. Resource in colors = true,  resource in greytones = false.</td>
  * 	</tr>
  * 	<tr>
  * 		<td></td>
@@ -133,10 +141,10 @@
  * 		<td></td>
  * 	</tr>
  * 	<tr>
- * 		<td></td>
+ * 		<td>pbcoreExtension/extension</td>
  * 		<td>premiere</td>
  * 		<td></td>
- * 		<td></td>
+ * 		<td>Extracted when the extension field starts with 'premiere:'.</td>
  * 	</tr>
  * 	<tr>
  * 		<td></td>
