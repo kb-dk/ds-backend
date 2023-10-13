@@ -168,7 +168,7 @@ public class SolrService {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
         // TODO: Catch extra arguments and throw "not supported"
-        UriBuilder builder = createBaseRequestBuilder(q, fq, rows, start, fl, qOp, wt);
+        UriBuilder builder = createBaseRequestBuilder(MLT, q, fq, rows, start, fl, qOp, wt);
 
         addParamIfAvailable(builder, MLT_FL, mltFl);
         addParamIfAvailable(builder, MLT_MINTF, mltMintf);
@@ -207,7 +207,7 @@ public class SolrService {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
         // TODO: Catch extra arguments and throw "not supported"
-        UriBuilder builder = createBaseRequestBuilder(q, fq, rows, start, fl, qOp, wt);
+        UriBuilder builder = createBaseRequestBuilder(SELECT, q, fq, rows, start, fl, qOp, wt);
 
         if (facet != null) {
             builder.queryParam(FACET, Boolean.parseBoolean(facet));
@@ -233,11 +233,11 @@ public class SolrService {
      * @return a pre-filled builder ready to be extended with caller specific parameters.
      */
     private UriBuilder createBaseRequestBuilder(
-            String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
+            String handler, String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
         UriBuilder builder = UriBuilder.fromUri(server)
                 .path(path)
                 .path(solrCollection)
-                .path(MLT)
+                .path(handler)
                 .queryParam(Q, sanitiseQuery(q))
                 .queryParam(QOP, QOP_ENUM.safeParse(qOp))
                 .queryParam(WT, WT_ENUM.safeParse(wt));
