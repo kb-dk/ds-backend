@@ -13,7 +13,7 @@
  * The XSLT Transformers created by the {@link dk.kb.present.transform.XSLTFactory} using XSLTs related to preservica
  * metadata are connected in the following way:
  * <table>
- * 	<caption>Mapping between preservica fields</caption>
+ * 	<caption><b>Mapping between preservica fields</b></caption>
  * 	<thead>
  * 	<tr>
  * 		<th>Preservica OAI-PMH XML</th>
