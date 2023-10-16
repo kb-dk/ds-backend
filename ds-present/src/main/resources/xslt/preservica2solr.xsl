@@ -267,6 +267,18 @@
       </xsl:choose>
     </xsl:for-each>
 
+    <!-- Extract start and endtime-->
+    <xsl:if test="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
+      <f:string key="startTime">
+        <xsl:value-of select="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
+      <f:string key="endTime">
+        <xsl:value-of select="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd"/>
+      </f:string>
+    </xsl:if>
+
     <!-- Duration extraction or calculation -->
     <!--Some docs have this duration field. Others doesn't. Then we need to extract the duration from pbcoreDateAvailable-->
     <xsl:choose>

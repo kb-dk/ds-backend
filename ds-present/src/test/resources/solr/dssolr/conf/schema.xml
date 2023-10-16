@@ -438,6 +438,18 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     78e74634-bec1-4cea-a984-20192c97b743?>
   </field>
 
+  <field name="startTime" type="pdate">
+    <?description The point in time when, the broadcast of a resource started.
+                  The timestamp in this field is in UTC time.?>
+    <?example     2012-04-28T16:15:00Z?>
+  </field>
+
+  <field name="endTime" type="pdate">
+    <?description The point in time when, the broadcast of a resource ended.
+                  The timestamp in this field is in UTC time.?>
+    <?example     2012-04-28T16:15:00Z?>
+  </field>
+
   <field name="duration_ms" type="plong" indexed="true" stored="true">
     <?description The duration of the broadcast in milliseconds.?>
     <?example     950000?>

@@ -280,6 +280,16 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testStartTime(){
+        assertContains(RECORD_1f3a6a66, "\"startTime\":\"2012-04-28T16:15:00Z\"");
+    }
+    @Test
+    void testEndTime(){
+        assertContains(RECORD_1f3a6a66, "\"endTime\":\"2012-04-28T16:40:00Z\"");
+    }
+
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_1f3a6a66);
     }
