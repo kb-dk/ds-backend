@@ -21,14 +21,86 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
    <!-- Default solr field -->
   <field name="_version_" type="plong" indexed="false" stored="false"/>
 
+  <!-- ====================================================-->
+  <!-- ====== FIELDS THAT APPLY TO ALL COLLECTIONS ======== -->
+  <!-- ====================================================-->
   <field name="id" type="string" multiValued="false" required="true">
     <?description The ID derived from UUID in database.?>
     <?example     770379f0-8a0d-11e1-805f-0016357f605f?>
   </field>
+
+  <field name="resource_id" type="string" multiValued="true" >
+    <?description ID used to construct URI for resource.?>
+    <?example     exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
+  </field>
+
   <field name="origin" type="string" required="true">
     <?description The origin of the record. Defines which collection the record originates from?>
     <?example     ds.samlingsbilleder?>
   </field>
+
+  <field name="collection" type="string" docValues="true">
+    <?description The original collection.?>
+    <?example     Billedsamlingen?>
+  </field>
+
+  <field name="genre" type="string" docValues="true">
+    <?description The genre of the resource?>
+    <?example     For a photograph: Portrait?>
+    <?example     For a book: novel?>
+  </field>
+
+  <field name="resource_description" type="string"  docValues="true">
+    <?description Specific description of the resource/object.?>
+    <?example     Poster?>
+    <?example     Photograph?>
+  </field>
+
+  <field name="categories" type="string"  multiValued="true" docValues="true">
+    <?description The categories field can contain many different values.
+            This field is multivalued and contains a single category per
+            entry in the list.?>
+    <?example     John R. Johnsen balletfotos?>
+    <?example     Den Kongelige Ballet?>
+  </field>
+
+  <field name="categories_count" type="pint">
+    <?description   ?>
+    <?example       ?>
+    <?query_example ?>
+  </field>
+
+  <field name="title" type="text_general" multiValued="true"> <!-- Only present in maps collection test data-->
+    <?description The object title.?>
+    <?example     Den grimme ælling.?>
+  </field>
+
+  <field name="creator_affiliation" type="text_general" multiValued="true">
+    <?description The name of an organization, institution, etc. with which
+            the entity was associated at the time that the resource was created.?>
+    <?example     Bisson frères?>
+  </field>
+
+  <!-- Field name: For resources that contain persons in the content, these people are described in a field called
+       subject_name. It would be ideal to have this field and these subject fields be named in the same way. This can be
+       done by changing the name of this field to subject/subject_description or the like. However, the metadata entries
+       in this field seems to be describing way more than the subject of the resource.
+
+       TODO: There might be overlaps between notes and topic - maybe they should be combined as one field - subject?
+       -->
+  <field name="notes" type="text_general" multiValued="true">
+    <?description Used to describe the resource in any way possible. Contains multiple types of metadata. Notes works
+            like a catch-all field. In general the metadata in this field is messy and can contain multiple forms
+            of metadata ranging from dates over material types to specific descriptions. For radio and TV the
+            fields description and abstract are defined as well. These fields contain specific and precise
+            descriptions for radio and TV metadata.?>
+    <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
+    <?example     Daguerreotypi, mål: 81 x 70 mm?>
+  </field>
+
+  <!-- =======================================================-->
+  <!-- ====== Fields that only apply to billedesamlingen ===== -->
+  <!-- =======================================================-->
 
   <field name="filename_local" type="string" >
     <?description The name of the file, which contains the digital resource that this metadata is about.?>
@@ -36,14 +108,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="accession_number" type="string">
-  <?description The unique number given to each new acquisition
-                as it is entered in the catalog of a library or museum ?>
-  <?example     1911-7507?>
+    <?description The unique number given to each new acquisition
+                  as it is entered in the catalog of a library or museum ?>
+    <?example     1911-7507?>
   </field>
 
   <field name="cataloging_language" type="string">
-  <?description The language used for the catalogue entry.?>
-  <?example     da?>
+    <?description The language used for the catalogue entry.?>
+    <?example     da?>
   </field>
 
   <field name="location" type="string">
@@ -59,54 +131,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept. -->
   </field>
 
-  <!-- TODO: remove comma seperated list of categories and rename list_of_categories to categories  -->
-  <!--
-  <field name="categories" type="string" docValues="true">
-    <?description The categories field can contain many different values.
-                  Metadata in this field are different entries seperated by space and commas.
-                  The field list_of_categories contain the same values,
-                  but split into unique entities.?>
-    <?example     John R. Johnsen balletfotos, Den Kongelige Ballet ,
-                  Hønningen, Mette , Neumeier, John, Kronstam, Henning,
-                  Kirk, Mette-Ida, Romeo og Julie, Johnsen, John R., CAR- BLO katagori?>
-  </field>
-  -->
-
-  <field name="categories" type="string"  multiValued="true" docValues="true">
-    <?description The categories field can contain many different values.
-                  This field is multivalued and contains a single category per
-                  entry in the list.?>
-    <?example     John R. Johnsen balletfotos?>
-    <?example     Den Kongelige Ballet?>
-  </field>
-
-  <field name="categories_count" type="pint">
-    <?description   ?>
-    <?example       ?>
-    <?query_example ?>
-  </field>
-
-  <field name="collection" type="string" docValues="true">
-    <?description The original collection.?>
-    <?example     Billedsamlingen?>
-  </field>
-
   <field name="published_in" type="string" docValues="true">
     <?description If the object has been published in a journal, newspaper, book etc.
                   this field contains the name of that publication.?>
     <?example     Aktuelt?>
-  </field>
-
-  <field name="genre" type="string" docValues="true">
-    <?description The genre of the resource?>
-    <?example     For a photograph: Portrait?>
-    <?example     For a book: novel?>
-  </field>
-
-  <field name="resource_description" type="string"  docValues="true">
-    <?description Specific description of the resource/object.?>
-    <?example     Poster?>
-    <?example     Photograph?>
   </field>
 
   <field name="resource_description_general" type="string" docValues="true">
@@ -115,11 +143,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <!-- Fields on title -->
-  <field name="title" type="text_general" multiValued="true"> <!-- Only present in maps collection test data-->
-    <?description The object title.?>
-    <?example     Den grimme ælling.?>
-  </field>
-
   <field name="title_count" type="pint" stored="true">
     <?description The number of titles related to the object.?>
     <?example     2?>
@@ -167,12 +190,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description The titel or occupation of the creator.?>
     <?example     King?>
     <?example     Photographer?>
-  </field>
-
-  <field name="creator_affiliation" type="text_general" multiValued="true">
-    <?description The name of an organization, institution, etc. with which
-                  the entity was associated at the time that the resource was created.?>
-    <?example     Bisson frères?>
   </field>
 
   <field name="creator_affiliation_description" type="text_general" multiValued="true">
@@ -230,23 +247,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="physical_description" type="text_general" multiValued="true">
     <?description Physical description of the resource?>
     <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept.-->
-  </field>
-
-  <!-- Field name: For resources that contain persons in the content, these people are described in a field called
-       subject_name. It would be ideal to have this field and these subject fields be named in the same way. This can be
-       done by changing the name of this field to subject/subject_description or the like. However, the metadata entries
-       in this field seems to be describing way more than the subject of the resource.
-
-       TODO: There might be overlaps between notes and topic - maybe they should be combined as one field - subject?
-       -->
-  <field name="notes" type="text_general" multiValued="true">
-    <?description Used to describe the resource in any way possible. Contains multiple types of metadata. Notes works
-                  like a catch-all field. In general the metadata in this field is messy and can contain multiple forms
-                  of metadata ranging from dates over material types to specific descriptions. For radio and TV the
-                  fields description and abstract are defined as well. These fields contain specific and precise
-                  descriptions for radio and TV metadata.?>
-    <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
-    <?example     Daguerreotypi, mål: 81 x 70 mm?>
   </field>
 
   <field name="notes_length" type="pint">
@@ -372,15 +372,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Målestok 1:75 000?>
   </field>
 
-  <field name="resource_id" type="string" multiValued="true" >
-    <?description ID used to construct URI for resource.?>
-    <?example     exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
-  </field>
-
+  <!-- TODO: Thumbnails should be available for all collections and not just billedesamlingen -->
   <field name="thumbnail" type="string">
     <?description URI pointing to the thumbnail representation of the resource.?>
     <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456/full/400%2C/0/default.jpg?>
   </field>
+
 
   <field name="file_byte_size" type="plong">
     <?description the size of the file in bytes.?>
