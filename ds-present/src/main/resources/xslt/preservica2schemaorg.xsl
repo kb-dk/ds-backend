@@ -90,32 +90,19 @@
       <xsl:value-of select="pbcoreTitle[2]/title"/>
     </xsl:variable>
 
-<!--    TODO: name and alternate name does not require the value map - they are to be specified as strings-->
     <xsl:choose>
       <xsl:when test="$title = $original-title or ($title != '' and $original-title = '')">
-        <f:array key="name">
-          <f:map>
-            <f:string key="value">
-              <xsl:value-of select="$title"/>
-            </f:string>
-          </f:map>
-        </f:array>
+        <f:string key="name">
+          <xsl:value-of select="$title"/>
+        </f:string>
       </xsl:when>
       <xsl:otherwise>
-        <f:array key="name">
-          <f:map>
-            <f:string key="value">
-              <xsl:value-of select="$title"/>
-            </f:string>
-          </f:map>
-        </f:array>
-        <f:array key="alternateName">
-          <f:map>
-            <f:string key="value">
-              <xsl:value-of select="$original-title"/>
-            </f:string>
-          </f:map>
-        </f:array>
+        <f:string key="name">
+          <xsl:value-of select="$title"/>
+        </f:string>
+        <f:string key="alternateName">
+          <xsl:value-of select="$original-title"/>
+        </f:string>
       </xsl:otherwise>
     </xsl:choose>
 
