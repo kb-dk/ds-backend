@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- When changes are made to this XSLT, please update the general description of the mapping which is available
+     in the file: src/main/webapp/mappings_radiotv.html  -->
 <xsl:transform xmlns:f="http://www.w3.org/2005/xpath-functions"
                xmlns:h="http://www.w3.org/1999/xhtml"
                xmlns:xs="http://www.w3.org/2001/XMLSchema"
