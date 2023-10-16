@@ -265,7 +265,8 @@
       </f:string>
     </xsl:if>
 
-    <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.-->
+    <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.
+         Also extracts maingenre to the schema.org field 'genre'-->
     <xsl:if test="pbcoreGenre">
       <xsl:variable name="keywords">
         <xsl:for-each select="pbcoreGenre/genre">
@@ -278,6 +279,14 @@
       <f:string key="keywords">
         <xsl:value-of select="substring($keywords, 1, $keywords-length - 2)"/>
       </f:string>
+
+      <xsl:for-each select="pbcoreGenre/genre">
+        <xsl:if test="f:contains(., 'hovedgenre:')">
+          <f:string key="genre">
+            <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
+          </f:string>
+        </xsl:if>
+      </xsl:for-each>
     </xsl:if>
 
     <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
@@ -349,6 +358,14 @@
   <xsl:template name="kb-internal">
     <xsl:param name="pbcExtensions"/>
     <f:map key="kb:internal">
+      <!-- Extract subgenre if present -->
+      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
+        <xsl:if test="contains(., 'undergenre:')">
+          <f:string key="kb:genre_sub">
+            <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
+          </f:string>
+        </xsl:if>
+      </xsl:for-each>
       <!-- Extract aspect ratio-->
       <xsl:if test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio">
         <f:string key="kb:aspect_ratio">

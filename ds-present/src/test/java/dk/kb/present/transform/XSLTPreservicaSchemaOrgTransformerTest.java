@@ -39,8 +39,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
     @Test
     public void testSetup() throws IOException {
-        printSchemaOrgJson(RECORD_74e22fd8);
-        //printSchemaOrgJson(RECORD_3945e2d1);
+        //printSchemaOrgJson(RECORD_74e22fd8);
+        printSchemaOrgJson(RECORD_3945e2d1);
         //printSchemaOrgJson(RECORD_1F3A6A66);
         //printSchemaOrgJson(RECORD_44979f67);
     }
@@ -193,10 +193,21 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     }
 
     @Test
+    void testGenre() throws IOException {
+        String hasGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_3945e2d1);
+        System.out.println(hasGenre);
+        Assertions.assertTrue(hasGenre.contains("\"genre\":\"Underholdning\""));
+
+        String noGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_1F3A6A66);
+        Assertions.assertFalse(noGenre.contains("\"genre\":"));
+    }
+
+    @Test
     void testKBInternalMap() throws IOException {
         // TODO: Add individual tests for all params
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:internal\":{" +
+                                                "\"kb:genre_sub\":\"Alle\"," +
                                                 "\"kb:aspect_ratio\":\"16:9\"," +
                                                 "\"kb:surround_sound\":\"false\"," +
                                                 "\"kb:format_identifier_ritzau\":\"81213310\"," +
