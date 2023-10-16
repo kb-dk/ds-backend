@@ -129,13 +129,13 @@
           <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
           <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
             <xsl:if test="f:contains(., 'live:live') or f:contains(., 'live:ikke live')">
-              <f:string key="isLiveBroadcast">
+              <f:boolean key="isLiveBroadcast">
                 <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
                 <xsl:choose>
                   <xsl:when test="contains(., 'live:live')"><xsl:value-of select="f:true()"/></xsl:when>
                   <xsl:when test="contains(., 'live:ikke live')"><xsl:value-of select="false()"/></xsl:when>
                 </xsl:choose>
-              </f:string>
+              </f:boolean>
             </xsl:if>
           </xsl:for-each>
           <f:map key="publishedOn">
@@ -375,32 +375,32 @@
       <!-- Create boolean for surround-->
       <xsl:choose>
         <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'surround'">
-          <f:string key="kb:surround_sound"><xsl:value-of select="true()"/></f:string>
+          <f:boolean key="kb:surround_sound"><xsl:value-of select="true()"/></f:boolean>
         </xsl:when>
         <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'ikke surround'">
-          <f:string key="kb:surround_sound"><xsl:value-of select="false()"/></f:string>
+          <f:boolean key="kb:surround_sound"><xsl:value-of select="false()"/></f:boolean>
         </xsl:when>
       </xsl:choose>
       <!-- Create boolean for color-->
       <xsl:choose>
         <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
-          <f:string key="kb:color">true</f:string>
+          <f:boolean key="kb:color">true</f:boolean>
         </xsl:when>
         <xsl:otherwise>
-          <f:string key="kb:color">false</f:string>
+          <f:boolean key="kb:color">false</f:boolean>
         </xsl:otherwise>
       </xsl:choose>
       <!-- Create boolean for premiere-->
       <xsl:choose>
         <xsl:when test="$pbcExtensions[f:contains(., 'premiere:ikke premiere')]">
-          <f:string key="kb:premiere">
+          <f:boolean key="kb:premiere">
             <xsl:value-of select="false()"/>
-          </f:string>
+          </f:boolean>
         </xsl:when>
         <xsl:when test="$pbcExtensions[f:contains(., 'premiere:premiere')]">
-          <f:string key="kb:premiere">
+          <f:boolean key="kb:premiere">
             <xsl:value-of select="true()"/>
-          </f:string>
+          </f:boolean>
         </xsl:when>
       </xsl:choose>
       <!-- Extract format identifiers -->
@@ -422,14 +422,14 @@
       <!-- Create boolean for retransmission-->
       <xsl:choose>
         <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:ikke genudsendelse')]">
-          <f:string key="kb:retransmission">
+          <f:boolean key="kb:retransmission">
             <xsl:value-of select="false()"/>
-          </f:string>
+          </f:boolean>
         </xsl:when>
         <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:genudsendelse')]">
-          <f:string key="kb:retransmission">
+          <f:boolean key="kb:retransmission">
             <xsl:value-of select="true()"/>
-          </f:string>
+          </f:boolean>
         </xsl:when>
       </xsl:choose>
       <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
@@ -440,9 +440,9 @@
 
       <!-- Extracts information on video padding. -->
       <xsl:if test="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds">
-        <f:string key="kb:padding_seconds">
+        <f:number key="kb:padding_seconds">
           <xsl:value-of select="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds"/>
-        </f:string>
+        </f:number>
       </xsl:if>
 
       <!-- Extracts access metadata to the internal kb map -->
@@ -469,9 +469,9 @@
         </f:string>
       </xsl:when>
       <xsl:when test="f:starts-with(. , 'kanalid:')">
-        <f:string key="kb:channel_id">
+        <f:number key="kb:channel_id">
           <xsl:value-of select="substring-after(. , 'kanalid:')"/>
-        </f:string>
+        </f:number>
       </xsl:when>
       <xsl:when test="f:starts-with(. , 'produktionsland_id:')">
         <f:string key="kb:country_of_origin_id">
@@ -514,14 +514,14 @@
         <!-- inner XSLT Choose which determines if program_ophold is false or true -->
         <xsl:choose>
           <xsl:when test=". = 'program_ophold:ikke program ophold'">
-            <f:string key="kb:program_ophold">
+            <f:boolean key="kb:program_ophold">
               <xsl:value-of select="false()"/>
-            </f:string>
+            </f:boolean>
           </xsl:when>
           <xsl:when test=". = 'program_ophold:program ophold'">
-            <f:string key="kb:program_ophold">
+            <f:boolean key="kb:program_ophold">
               <xsl:value-of select="true()"/>
-            </f:string>
+            </f:boolean>
           </xsl:when>
         </xsl:choose>
       </xsl:when>
@@ -531,14 +531,14 @@
         <!-- Inner XSLT  choose to determine value of boolean -->
         <xsl:choose>
           <xsl:when test=". = 'tekstet:ikke tekstet'">
-            <f:string key="kb:has_subtitles">
+            <f:boolean key="kb:has_subtitles">
               <xsl:value-of select="false()"/>
-            </f:string>
+            </f:boolean>
           </xsl:when>
           <xsl:when test=". = 'tekstet:tekstet'">
-            <f:string key="kb:has_subtitles">
+            <f:boolean key="kb:has_subtitles">
               <xsl:value-of select="true()"/>
-            </f:string>
+            </f:boolean>
           </xsl:when>
         </xsl:choose>
       </xsl:when>
@@ -548,14 +548,14 @@
         <!-- Inner XSLT  choose to determine value of boolean -->
         <xsl:choose>
           <xsl:when test=". = 'th:ikke tekstet for hørehæmmede'">
-            <f:string key="kb:has_subtitles_for_hearing_impaired">
+            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
               <xsl:value-of select="false()"/>
-            </f:string>
+            </f:boolean>
           </xsl:when>
           <xsl:when test=". = 'th:tekstet for hørehæmmede'">
-            <f:string key="kb:has_subtitles_for_hearing_impaired">
+            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
               <xsl:value-of select="true()"/>
-            </f:string>
+            </f:boolean>
           </xsl:when>
         </xsl:choose>
       </xsl:when>
@@ -564,14 +564,14 @@
         <!-- Inner XSLT  choose to determine value of boolean -->
         <xsl:choose>
           <xsl:when test=". = 'ttv:ikke tekst-tv'">
-            <f:string key="kb:is_teletext">
+            <f:boolean key="kb:is_teletext">
               <xsl:value-of select="false()"/>
-            </f:string>
+            </f:boolean>
           </xsl:when>
           <xsl:when test=". = 'ttv:tekst-tv'">
-            <f:string key="kb:is_teletext">
+            <f:boolean key="kb:is_teletext">
               <xsl:value-of select="true()"/>
-            </f:string>
+            </f:boolean>
           </xsl:when>
         </xsl:choose>
       </xsl:when>

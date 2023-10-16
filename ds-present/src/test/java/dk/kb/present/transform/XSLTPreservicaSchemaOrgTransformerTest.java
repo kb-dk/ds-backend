@@ -104,11 +104,11 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     void testLiveStatus() throws IOException {
         String isLive = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_74e22fd8);
-        Assertions.assertTrue(isLive.contains("\"isLiveBroadcast\":\"true\""));
+        Assertions.assertTrue(isLive.contains("\"isLiveBroadcast\":true"));
 
         String notLive = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be);
         printSchemaOrgJson(RECORD_5a5357be);
-        Assertions.assertTrue(notLive.contains("\"isLiveBroadcast\":\"false\""));
+        Assertions.assertTrue(notLive.contains("\"isLiveBroadcast\":false"));
     }
 
     @Test
@@ -209,26 +209,26 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         Assertions.assertTrue(transformedJSON.contains("\"kb:internal\":{" +
                                                 "\"kb:genre_sub\":\"Alle\"," +
                                                 "\"kb:aspect_ratio\":\"16:9\"," +
-                                                "\"kb:surround_sound\":\"false\"," +
-                                                "\"kb:color\":\"true\"," +
-                                                "\"kb:premiere\":\"false\"," +
+                                                "\"kb:surround_sound\":false," +
+                                                "\"kb:color\":true," +
+                                                "\"kb:premiere\":false," +
                                                 "\"kb:format_identifier_ritzau\":\"81213310\"," +
                                                 "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," +
-                                                "\"kb:retransmission\":\"false\"," +
+                                                "\"kb:retransmission\":false," +
                                                 "\"kb:maingenre_id\":\"1\"," +
-                                                "\"kb:channel_id\":\"3\"," +
+                                                "\"kb:channel_id\":3," +
                                                 "\"kb:country_of_origin_id\":\"0\"," +
                                                 "\"kb:ritzau_program_id\":\"25101114\"," +
-                                                "\"kb:program_ophold\":\"false\"," +
+                                                "\"kb:program_ophold\":false," +
                                                 "\"kb:subgenre_id\":\"708\"," +
                                                 "\"kb:episode_id\":\"0\"," +
                                                 "\"kb:season_id\":\"0\"," +
                                                 "\"kb:series_id\":\"0\"," +
-                                                "\"kb:has_subtitles\":\"false\"," +
-                                                "\"kb:has_subtitles_for_hearing_impaired\":\"false\"," +
-                                                "\"kb:is_teletext\":\"false\"," +
+                                                "\"kb:has_subtitles\":false," +
+                                                "\"kb:has_subtitles_for_hearing_impaired\":false," +
+                                                "\"kb:is_teletext\":false," +
                                                 "\"kb:showviewcode\":\"0\"," +
-                                                "\"kb:padding_seconds\":\"15\"," +
+                                                "\"kb:padding_seconds\":15," +
                                                 "\"kb:access_individual_prohibition\":\"Nej\"," +
                                                 "\"kb:access_claused\":\"Nej\"," +
                                                 "\"kb:access_malfunction\":\"Nej\"" +
