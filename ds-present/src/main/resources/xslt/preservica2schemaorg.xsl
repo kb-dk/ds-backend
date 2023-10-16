@@ -381,6 +381,28 @@
           <f:string key="kb:surround_sound"><xsl:value-of select="false()"/></f:string>
         </xsl:when>
       </xsl:choose>
+      <!-- Create boolean for color-->
+      <xsl:choose>
+        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
+          <f:string key="kb:color">true</f:string>
+        </xsl:when>
+        <xsl:otherwise>
+          <f:string key="kb:color">false</f:string>
+        </xsl:otherwise>
+      </xsl:choose>
+      <!-- Create boolean for premiere-->
+      <xsl:choose>
+        <xsl:when test="$pbcExtensions[f:contains(., 'premiere:ikke premiere')]">
+          <f:string key="kb:premiere">
+            <xsl:value-of select="false()"/>
+          </f:string>
+        </xsl:when>
+        <xsl:when test="$pbcExtensions[f:contains(., 'premiere:premiere')]">
+          <f:string key="kb:premiere">
+            <xsl:value-of select="true()"/>
+          </f:string>
+        </xsl:when>
+      </xsl:choose>
       <!-- Extract format identifiers -->
       <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID">
         <xsl:choose>

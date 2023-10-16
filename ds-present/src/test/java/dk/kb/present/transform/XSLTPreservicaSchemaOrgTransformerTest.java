@@ -210,6 +210,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
                                                 "\"kb:genre_sub\":\"Alle\"," +
                                                 "\"kb:aspect_ratio\":\"16:9\"," +
                                                 "\"kb:surround_sound\":\"false\"," +
+                                                "\"kb:color\":\"true\"," +
+                                                "\"kb:premiere\":\"false\"," +
                                                 "\"kb:format_identifier_ritzau\":\"81213310\"," +
                                                 "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," +
                                                 "\"kb:retransmission\":\"false\"," +
