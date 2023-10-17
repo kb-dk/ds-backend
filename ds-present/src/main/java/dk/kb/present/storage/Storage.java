@@ -57,6 +57,14 @@ public interface Storage {
     DsRecordDto getDSRecord(String id);
 
     /**
+     * Return the record as a ds-storage record where parent and children are populated for this current record.
+     * This is "best effort", as some element such as {@link DsRecordDto#getcTime()} might not be available.
+     * @param id the ID for a record.
+     * @return the record with the given ID, if available.
+     */
+    DsRecordDto getDSRecordTreeLocal(String id);
+
+    /**
      * Return records in mTime order, where all record.mTimes are > the given mTime.
      * @param origin optional (can be null) origin.
      * @param mTime point in time (epoch * 1000) for the records to deliver, exclusive.

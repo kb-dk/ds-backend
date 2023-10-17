@@ -67,6 +67,11 @@ public class MultiStorage implements Storage {
     }
 
     @Override
+    public DsRecordDto getDSRecordTreeLocal(String id) {
+        return getDSRecord(getStorages(), id);
+    }
+
+    @Override
     public String getID() {
         return id;
     }

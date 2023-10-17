@@ -102,6 +102,18 @@ public class DSStorage implements Storage {
     }
 
     @Override
+    public DsRecordDto getDSRecordTreeLocal(String id) {
+        log.debug("getDSRecordTreeLocal(id='{}') called", id);
+        try {
+            return storageClient.getRecordTreeLocal(id);
+        } catch (ApiException e){
+            log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
+            throw new NotFoundServiceException("Unable to retrieve record '" + id + "'", e);
+        }
+    }
+
+
+    @Override
     public Stream<DsRecordDto> getDSRecords(final String origin, long mTime, long maxRecords) {
         log.debug("getDSRecords(origin='{}', mTime={}, maxRecords={}) called", origin, mTime, maxRecords);
         String finalOrigin = origin == null ? this.origin : origin;

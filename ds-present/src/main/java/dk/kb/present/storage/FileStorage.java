@@ -126,6 +126,21 @@ public class FileStorage implements Storage {
      */
     @Override
     public DsRecordDto getDSRecord(String recordID) {
+        return getDsRecordDto(recordID);
+    }
+
+    /**
+     * Locate a file where the name is the recordID and deliver the content. Works with sub-folders.
+     * @param id the ID (aka file name) for a record.
+     * @return the content of the file with the given name.
+     * @throws IOException if the file could not be located or the content not delivered.
+     */
+    @Override
+    public DsRecordDto getDSRecordTreeLocal(String id){
+        return getDsRecordDto(id);
+    }
+
+    private DsRecordDto getDsRecordDto(String recordID) {
         if (!isAllowed(recordID)) {
             throw new ForbiddenServiceException("Access to rhe record with ID '" + recordID + "' is forbidden");
         }
