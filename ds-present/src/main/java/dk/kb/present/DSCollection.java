@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -131,6 +132,15 @@ public class DSCollection {
     public String getRecord(String recordID, String format) throws ServiceException {
         View view = getView(format);
         DsRecordDto record = storage.getDSRecord(recordID);
+
+
+        if (record.getChildrenIds() != null || !record.getChildrenIds().isEmpty()){
+            DsRecordDto recordWithChild = storage.getDSRecordTreeLocal(recordID);
+            log.warn("Record has child value: '{}' ", Objects.requireNonNull(recordWithChild.getChildren()).get(0).getData());
+        }
+
+
+
         String child = getChildRecord(record);
         String recordData = record.getData();
         return view.apply(recordID, recordData, child);
