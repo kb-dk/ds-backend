@@ -91,9 +91,14 @@
     </xsl:variable>
 
     <xsl:choose>
-      <xsl:when test="$title = $original-title or ($title != '' and $original-title = '')">
+      <xsl:when test="$title = $original-title and $title != '' or ($title != '' and $original-title = '')">
         <f:string key="name">
           <xsl:value-of select="$title"/>
+        </f:string>
+      </xsl:when>
+      <xsl:when test="$title = '' and $original-title != ''">
+        <f:string key="name">
+          <xsl:value-of select="$original-title"/>
         </f:string>
       </xsl:when>
       <xsl:otherwise>
