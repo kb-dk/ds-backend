@@ -22,7 +22,7 @@
   <xsl:param name="streamingserver"/>
   <xsl:param name="recordID"/>
   <xsl:param name="origin"/>
-  <xsl:param name="childID"/>
+  <xsl:param name="childRecord"/>
 
   <xsl:template match="/" >
     <xsl:variable name="solrjson">
@@ -41,16 +41,16 @@
 
         <!-- Manifestations are extracted here. I would like to create a template for this.
              However, this is quite tricky when using the document() function -->
-        <xsl:if test="$childID != '' and doc-available($childID)">
+        <xsl:if test="$childRecord != ''">
           <f:array key="resource_id">
-            <xsl:for-each select="document($childID)/xip:Manifestation/ComponentManifestation/FileRef">
+            <xsl:for-each select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/FileRef">
               <f:string>
-                <xsl:value-of select="document($childID)/xip:Manifestation/ComponentManifestation/FileRef"/>
+                <xsl:value-of select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/FileRef"/>
               </f:string>
             </xsl:for-each>
           </f:array>
           <f:string key="manifestation_type">
-            <xsl:value-of select="document($childID)/xip:Manifestation/ComponentManifestation/ComponentType"/>
+            <xsl:value-of select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/ComponentType"/>
           </f:string>
         </xsl:if>
 
