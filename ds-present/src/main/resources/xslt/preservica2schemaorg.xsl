@@ -376,10 +376,10 @@
       <!-- Create boolean for color-->
       <xsl:choose>
         <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
-          <f:boolean key="kb:color">true</f:boolean>
+          <f:boolean key="kb:color"><xsl:value-of select="true()"/></f:boolean>
         </xsl:when>
         <xsl:otherwise>
-          <f:boolean key="kb:color">false</f:boolean>
+          <f:boolean key="kb:color"><xsl:value-of select="false()"/></f:boolean>
         </xsl:otherwise>
       </xsl:choose>
       <!-- Create boolean for premiere-->
