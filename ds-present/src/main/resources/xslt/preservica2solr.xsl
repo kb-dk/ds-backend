@@ -144,24 +144,34 @@
       <xsl:value-of select="pbcoreInstantiation/formatLocation"/>
     </f:string>
 
-    <xsl:if test="pbcoreGenre">
+    <xsl:variable name="categories-has-content">
+      <xsl:for-each select="pbcoreGenre/genre">
+        <xsl:if test="substring-after(. , ':') != ''">
+          a
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:if test="pbcoreGenre and $categories-has-content != ''">
       <f:array key="categories">
         <xsl:for-each select="pbcoreGenre/genre">
-          <f:string>
-            <xsl:value-of select="normalize-space(substring-after(., ':'))"/>
-          </f:string>
+          <xsl:if test="substring-after(., ':') != ''">
+            <f:string>
+              <xsl:value-of select="normalize-space(substring-after(., ':'))"/>
+            </f:string>
+          </xsl:if>
         </xsl:for-each>
       </f:array>
       <!-- In preservica there can only be a single 'hovedgenre' and a single 'undergenre'. However, these are
            represented in the same pbcoreGenre/genre tag and are therefore extracted through a for-each. -->
       <xsl:for-each select="pbcoreGenre/genre">
         <xsl:choose>
-          <xsl:when test="f:contains(., 'hovedgenre:')">
+          <xsl:when test="f:contains(., 'hovedgenre:') and substring-after(., 'hovedgenre:') != ''">
             <f:string key="genre">
               <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
             </f:string>
           </xsl:when>
-          <xsl:when test="f:contains(., 'undergenre:')">
+          <xsl:when test="f:contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">
             <f:string key="genre_sub">
               <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
             </f:string>

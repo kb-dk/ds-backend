@@ -263,18 +263,22 @@
     <xsl:if test="pbcoreGenre">
       <xsl:variable name="keywords">
         <xsl:for-each select="pbcoreGenre/genre">
-          <xsl:value-of select="concat(normalize-space(f:substring-after(., ': ')), ', ')"/>
+          <xsl:if test="substring-after(., ':') != ''">
+            <xsl:value-of select="concat(normalize-space(f:substring-after(., ':')), ', ')"/>
+          </xsl:if>
         </xsl:for-each>
       </xsl:variable>
       <!-- Length used to delete last comma from keyword list.-->
       <xsl:variable name="keywords-length" select="string-length($keywords)"/>
 
-      <f:string key="keywords">
-        <xsl:value-of select="substring($keywords, 1, $keywords-length - 2)"/>
-      </f:string>
+      <xsl:if test="$keywords != ''">
+        <f:string key="keywords">
+          <xsl:value-of select="substring($keywords, 1, $keywords-length - 2)"/>
+        </f:string>
+      </xsl:if>
 
       <xsl:for-each select="pbcoreGenre/genre">
-        <xsl:if test="f:contains(., 'hovedgenre:')">
+        <xsl:if test="f:contains(., 'hovedgenre:') and substring-after(., 'hovedgenre:') != ''">
           <f:string key="genre">
             <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
           </f:string>

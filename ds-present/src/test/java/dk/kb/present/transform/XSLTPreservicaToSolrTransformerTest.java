@@ -27,6 +27,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     public static final String RECORD_74e22fd8 = "internal_test_files/tvMetadata/74e22fd8-1268-4bcf-8a9f-22ca25379ea4.xml";
     public static final String RECORD_3945e2d1 = "internal_test_files/tvMetadata/3945e2d1-83a2-40d8-af1c-30f7b3b94390.xml";
     public static final String RECORD_4b18d02d = "internal_test_files/tvMetadata/4b18d02d-a421-4026-b522-66436a56bc0a.xml";
+    public static final String RECORD_68b233c3 = "internal_test_files/tvMetadata/68b233c3-f234-4546-914e-dc912f6001ae.xml";
+
     private static final Logger log = LoggerFactory.getLogger(XSLTPreservicaToSolrTransformerTest.class);
 
 
@@ -74,6 +76,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testGenreContent() {
         assertContains(RECORD_a8aafb121,"\"categories\":[\"Serier\",\"Krimiserie\"");
         assertNotContains(RECORD_a8aafb121, "\"categories\":[\"hovedgenre: Serier ritzau\",\"undergenre: Krimiserie ritzau\"");
+    }
+
+    @Test
+    void testEmptyGenre(){
+        assertNotContains(RECORD_68b233c3, "\"categories\":");
+        assertNotContains(RECORD_68b233c3, "\"genre\":");
     }
 
     @Test

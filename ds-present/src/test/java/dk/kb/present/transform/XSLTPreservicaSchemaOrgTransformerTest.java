@@ -30,6 +30,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     public static final String RECORD_3945e2d1 = "internal_test_files/tvMetadata/3945e2d1-83a2-40d8-af1c-30f7b3b94390.xml";
     public static final String RECORD_9d9785a8 = "internal_test_files/tvMetadata/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml";
     public static final String RECORD_c6fde2f4 = "internal_test_files/tvMetadata/c6fde2f4-036a-4e04-b83a-39a92021460b.xml";
+    public static final String RECORD_68b233c3 = "internal_test_files/tvMetadata/68b233c3-f234-4546-914e-dc912f6001ae.xml";
+
 
     @BeforeAll
     public static void beforeMethod() {
@@ -42,7 +44,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     public void testSetup() throws IOException {
         //printSchemaOrgJson(RECORD_74e22fd8);
-        printSchemaOrgJson(RECORD_3945e2d1);
+        printSchemaOrgJson(RECORD_68b233c3);
         //printSchemaOrgJson(RECORD_1F3A6A66);
         //printSchemaOrgJson(RECORD_44979f67);
     }
@@ -166,8 +168,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     void testKeywords() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_a8afb121);
-        printSchemaOrgJson(RECORD_a8afb121);
         Assertions.assertFalse(transformedJSON.contains("\"keywords\":\"Serier,Krimiserie\","));
+    }
+
+    @Test
+    void testNoKeywords() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_68b233c3);
+        Assertions.assertFalse(transformedJSON.contains("\"keywords\":"));
     }
 
     @Test
@@ -216,6 +223,9 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
         String noGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_1F3A6A66);
         Assertions.assertFalse(noGenre.contains("\"genre\":"));
+
+        String emptyGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_68b233c3);
+        Assertions.assertFalse(emptyGenre.contains("\"genre\":"));
     }
 
     @Test
