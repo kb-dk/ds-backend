@@ -2,7 +2,6 @@ package dk.kb.present;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -15,23 +14,14 @@ import com.google.gson.JsonParser;
 import dk.kb.present.copyright.XsltCopyrightMapper;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.XSLTFactory;
-import dk.kb.present.transform.XSLTSchemaDotOrgTransformerTest;
 import dk.kb.present.transform.XSLTTransformer;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import static dk.kb.present.solr.EmbeddedSolrTest.MODS2SOLR;
 import static dk.kb.present.solr.EmbeddedSolrTest.PRESERVICA2SOLR;
 
 public class TestUtil {
-	private static final Logger log = LoggerFactory.getLogger(TestUtil.class);
 
 
 	public static String getTransformed(String xsltResource, String xmlResource) throws IOException {

@@ -43,7 +43,6 @@ class PresentFacadeTest {
     }
 
 
-
     @Test
     void getRecord() {
         // Throws an Exception if not found
@@ -51,8 +50,6 @@ class PresentFacadeTest {
     }
 
 
-
-  
 
     @Test
     void getRecordsMODS() throws IOException {
