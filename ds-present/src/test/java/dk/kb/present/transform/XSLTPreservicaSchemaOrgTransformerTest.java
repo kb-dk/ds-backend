@@ -28,6 +28,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     public static final String RECORD_74e22fd8 = "internal_test_files/tvMetadata/74e22fd8-1268-4bcf-8a9f-22ca25379ea4.xml";
     public static final String RECORD_a8afb121 = "internal_test_files/tvMetadata/a8afb121-e8b8-467a-8704-10dc42356ac4.xml";
     public static final String RECORD_3945e2d1 = "internal_test_files/tvMetadata/3945e2d1-83a2-40d8-af1c-30f7b3b94390.xml";
+    public static final String RECORD_9d9785a8 = "internal_test_files/tvMetadata/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml";
 
     @BeforeAll
     public static void beforeMethod() {
@@ -145,6 +146,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
         Assertions.assertTrue(transformedJSON.contains("\"encodesCreativeWork\":{" +
                                                         "\"@type\":\"TVEpisode\"," +
                                                         "\"episodeNumber\":3"));
+    }
+
+    @Test
+    void testEmptyEpisodeName() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_9d9785a8);
+        Assertions.assertTrue(transformedJSON.contains("\"encodesCreativeWork\":{" +
+                "\"@type\":\"TVEpisode\"," +
+                "\"episodeNumber\":4"));
     }
 
     @Test

@@ -172,7 +172,7 @@
 
         <!-- If episode titel is defined it is extracted here. -->
         <xsl:for-each select="pbcoreTitle">
-          <xsl:if test="titleType = 'episodetitel'">
+          <xsl:if test="titleType = 'episodetitel' and title != ''">
             <f:string key="name"><xsl:value-of select="title"/></f:string>
           </xsl:if>
         </xsl:for-each>
