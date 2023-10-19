@@ -67,7 +67,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     void testBroadcastDisplayName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_44979f67);
-        System.out.println(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"broadcastDisplayName\":\"DR Ultra\"}"));
     }
 

@@ -21,7 +21,7 @@
   <xsl:param name="streamingserver"/>
   <xsl:param name="origin"/>
   <xsl:param name="recordID"/>
-  <xsl:param name="childID"/>
+  <xsl:param name="childRecord"/>
 
   <xsl:template match="/">
     <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
@@ -57,10 +57,11 @@
 
         <!-- Manifestations are extracted here. I would like to create a template for this.
             However, this is quite tricky when using the document() function -->
-        <xsl:if test="$childID != '' and doc-available($childID)">
+        <xsl:if test="$childRecord != ''">
           <f:string key="contentUrl">
             <!-- TODO: Add full url to content when possible-->
-            <xsl:value-of select="f:concat($streamingserver,document($childID)/xip:Manifestation/ComponentManifestation/FileRef)"/>
+            <xsl:value-of select="f:concat($streamingserver,
+                                           f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/FileRef)"/>
           </f:string>
         </xsl:if>
 

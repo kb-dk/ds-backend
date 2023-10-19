@@ -58,6 +58,11 @@ public class FailStorage implements Storage {
     }
 
     @Override
+    public DsRecordDto getDSRecordTreeLocal(String id) {
+        throw new NotFoundServiceException("Unable to locate record '" + id + "': " + message);
+    }
+
+    @Override
     public Stream<DsRecordDto> getDSRecords(String origin, long mTime, long maxRecords) {
         throw new NotFoundServiceException("Unable to locate any records after mTime " + mTime);
     }

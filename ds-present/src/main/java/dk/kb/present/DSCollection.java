@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -130,10 +129,34 @@ public class DSCollection {
      */
     public String getRecord(String recordID, String format) throws ServiceException {
         View view = getView(format);
-        DsRecordDto record = storage.getDSRecord(recordID);
-        String child = getChildRecord(record);
+        DsRecordDto record = storage.getDSRecordTreeLocal(recordID);
+
         String recordData = record.getData();
-        return view.apply(recordID, recordData, child);
+        String childData = getNewestChild(record);
+        return view.apply(recordID, recordData, childData);
+    }
+
+    /**
+     * If record has children, the child which has been modified the latest is returned.
+     * @param record to extract the newest child from.
+     * @return  the data from the newest child related to the input record.
+     */
+    private String getNewestChild(DsRecordDto record) {
+        // TODO: Figure how to choose correct manifestation for record, if more than one is present
+        List<DsRecordDto> children = record.getChildren();
+        DsRecordDto newestChild = new DsRecordDto();
+        if (children == null || children.isEmpty()){
+            return null;
+        } else if (children.size() == 1) {
+            return children.get(0).getData();
+        } else {
+            for (DsRecordDto child: children) {
+                if (child.getmTime() > newestChild.getmTime()){
+                    newestChild = child;
+                }
+            }
+            return newestChild.getData();
+        }
     }
 
     /**

@@ -23,6 +23,7 @@ import static dk.kb.present.solr.EmbeddedSolrTest.PRESERVICA2SOLR;
 
 public class TestUtil {
 
+
 	public static String getTransformed(String xsltResource, String xmlResource) throws IOException {
         return getTransformed(xsltResource, xmlResource, null, null);
 	}
@@ -50,16 +51,16 @@ public class TestUtil {
 	public static String getTransformedWithAccessFieldsAdded(
             String xsltResource, String xmlResource, Map<String, String> injections) throws IOException {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
-		String mods = Resolver.resolveUTF8String(xmlResource);
-		HashMap<String, String> accessFields = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);
-		String childURI = String.valueOf(Resolver.getPathFromClasspath("internal_test_files/tvMetadata/33e30aa9-d216-4216-aabf-b28d2b465215.xml"));
+		String xml = Resolver.resolveUTF8String(xmlResource);
+		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
+		String childData = Resolver.resolveUTF8String("internal_test_files/tvMetadata/33e30aa9-d216-4216-aabf-b28d2b465215.xml");
 
-		accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
-		accessFields.put("streamingserver", "www.example.com/streaming/");
-		accessFields.put("origin", "ds.test");
-		accessFields.put("childID", childURI);
-		//System.out.println("access fields:"+accessFields);
-		return transformer.apply(mods, accessFields);
+		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		metadata.put("streamingserver", "www.example.com/streaming/");
+		metadata.put("origin", "ds.test");
+		metadata.put("childRecord", childData);
+		//System.out.println("access fields:"+metadata);
+		return transformer.apply(xml, metadata);
 	}
 
     /**
@@ -71,16 +72,16 @@ public class TestUtil {
      */
 	public static String getTransformedFromConfigWithAccessFields(YAML config, String xmlResource) throws Exception {
 		DSTransformer transformer = new XSLTFactory().createTransformer(config);
-		String mods = Resolver.resolveUTF8String(xmlResource);
-		HashMap<String, String> accessFields = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);
-		String childURI = String.valueOf(Resolver.getPathFromClasspath("internal_test_files/tvMetadata/53bf323c-5a8a-48b9-a29a-0b1616a58af9.xml"));
+		String xml = Resolver.resolveUTF8String(xmlResource);
+		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
+		String childURI = Resolver.resolveUTF8String("internal_test_files/tvMetadata/53bf323c-5a8a-48b9-a29a-0b1616a58af9.xml");
 
-        accessFields.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
-		accessFields.put("streamingserver", "www.example.com/streaming/");
-		accessFields.put("origin", "ds.test");
-		accessFields.put("childID", childURI);
-		//System.out.println("access fields:"+accessFields);
-		return transformer.apply(mods, accessFields);
+        metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		metadata.put("streamingserver", "www.example.com/streaming/");
+		metadata.put("origin", "ds.test");
+		metadata.put("childRecord", childURI);
+		//System.out.println("access fields:"+metadata);
+		return transformer.apply(xml, metadata);
 	}
 
 	/**
