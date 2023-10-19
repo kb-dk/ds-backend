@@ -223,12 +223,12 @@
     <xsl:for-each select="pbcoreDescription">
       <xsl:choose>
         <!-- Extract 'kortomtale' as abstract. -->
-        <xsl:when test="./descriptionType = 'kortomtale'">
+        <xsl:when test="./descriptionType = 'kortomtale' and description != ''">
           <f:string key="abstract">
             <xsl:value-of select="normalize-space(./description)"/>
           </f:string>
         </xsl:when>
-        <xsl:when test="./descriptionType = 'langomtale1'">
+        <xsl:when test="./descriptionType = 'langomtale1' and description != ''">
           <f:string key="description">
             <xsl:value-of select="normalize-space(./description)"/>
           </f:string>
