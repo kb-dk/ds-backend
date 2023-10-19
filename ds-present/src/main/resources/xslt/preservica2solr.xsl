@@ -144,6 +144,8 @@
       <xsl:value-of select="pbcoreInstantiation/formatLocation"/>
     </f:string>
 
+    <!-- Variable used to determine if there is any content in any of the delivered genres. The genre field contains
+         a string on the format 'prefix:value' where prefix is either 'hovedgenre' or 'undergenre'. -->
     <xsl:variable name="categories-has-content">
       <xsl:for-each select="pbcoreGenre/genre">
         <xsl:if test="substring-after(. , ':') != ''">
@@ -207,7 +209,7 @@
 
     <!--TODO: Figure out what the difference is between kanalnavn and channel_name in the metadata. -->
     <xsl:for-each select="pbcorePublisher">
-      <xsl:if test="publisherRole = 'kanalnavn'">
+      <xsl:if test="publisherRole = 'kanalnavn' and publisher != ''">
         <f:string key="creator_affiliation">
           <xsl:value-of select="publisher"/>
         </f:string>
@@ -249,12 +251,12 @@
 
     <!-- Extracts different identifiers for the resource. -->
     <xsl:for-each select="pbcoreIdentifier">
-      <xsl:if test="identifierSource = 'ritzauId'">
+      <xsl:if test="identifierSource = 'ritzauId' and identifier != ''">
         <f:string key="ritzau_id">
           <xsl:value-of select="identifier"/>
         </f:string>
       </xsl:if>
-      <xsl:if test="identifierSource = 'tvmeterId'">
+      <xsl:if test="identifierSource = 'tvmeterId' and identifier != ''">
         <f:string key="tvmeter_id">
           <xsl:value-of select="identifier"/>
         </f:string>
@@ -264,12 +266,12 @@
     <!-- Extracts internal ids. -->
     <xsl:for-each select="pbcoreInstantiation/pbcoreFormatID">
       <xsl:choose>
-        <xsl:when test="formatIdentifierSource = 'ritzau'">
+        <xsl:when test="formatIdentifierSource = 'ritzau' and formatIdentifier != ''">
           <f:string key="internal_format_identifier_ritzau">
             <xsl:value-of select="formatIdentifier"/>
           </f:string>
         </xsl:when>
-        <xsl:when test="formatIdentifierSource = 'nielsen'">
+        <xsl:when test="formatIdentifierSource = 'nielsen' and formatIdentifier != ''">
           <f:string key="internal_format_identifier_nielsen">
             <xsl:value-of select="formatIdentifier"/>
           </f:string>
@@ -280,12 +282,12 @@
     <!-- Extract start and endtime-->
     <xsl:if test="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
       <f:string key="startTime">
-        <xsl:value-of select="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart"/>
+        <xsl:value-of select="normalize-space(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart)"/>
       </f:string>
     </xsl:if>
     <xsl:if test="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
       <f:string key="endTime">
-        <xsl:value-of select="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd"/>
+        <xsl:value-of select="normalize-space(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd)"/>
       </f:string>
     </xsl:if>
 
@@ -299,10 +301,10 @@
       </xsl:when>
       <xsl:otherwise>
         <xsl:variable name="startTime">
-          <xsl:value-of select="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart"/>
+          <xsl:value-of select="normalize-space(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart)"/>
         </xsl:variable>
         <xsl:variable name="endTime">
-          <xsl:value-of select="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd"/>
+          <xsl:value-of select="normalize-space(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd)"/>
         </xsl:variable>
         <xsl:variable name="durationInMilliseconds">
           <xsl:value-of select="my:toMilliseconds($startTime, $endTime)"/>
@@ -322,7 +324,7 @@
 
     <!-- Creates a boolean for color/gray-tone -->
     <xsl:choose>
-      <xsl:when test="pbcoreInstantiation/formatColors = 'farve'">
+      <xsl:when test="normalize-space(pbcoreInstantiation/formatColors) = 'farve'">
         <f:string key="color">true</f:string>
       </xsl:when>
       <xsl:otherwise>
