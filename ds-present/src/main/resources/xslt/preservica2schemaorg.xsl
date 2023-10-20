@@ -131,12 +131,14 @@
               </f:boolean>
             </xsl:if>
           </xsl:for-each>
-          <f:map key="publishedOn">
-            <f:string key="@type">BroadcastService</f:string>
-            <f:string key="broadcastDisplayName">
-              <xsl:value-of select="./publisher"/>
-            </f:string>
-          </f:map>
+          <xsl:if test="publisher != ''">
+            <f:map key="publishedOn">
+              <f:string key="@type">BroadcastService</f:string>
+              <f:string key="broadcastDisplayName">
+                <xsl:value-of select="./publisher"/>
+              </f:string>
+            </f:map>
+          </xsl:if>
           <!-- TODO: Figure if it is possible to extract broadcaster in any meaningful way for the field 'broadcaster',
                 maybe from hovedgenre_id or kanalid. Otherwise it could be defined as 'Danmarks Radio'
                 for the first part of the project. -->
@@ -156,7 +158,7 @@
          and creates the field encodesCreativeWork if true.
          This if-statements checks that the PBC extensions 'episodenr' and 'antalepisoder' have actual values.-->
     <xsl:if test="$pbcExtensions[f:contains(.,'episodenr:') and
-                  f:string-length(substring-after(., 'episodenr:')) or
+                  f:string-length(substring-after(., 'episodenr:')) > 0 or
                   (f:contains(., 'antalepisoder:') and
                   not(f:contains(., 'antalepisoder:0')) and
                   f:string-length(substring-after(., 'antalepisoder:')) > 0)]">
@@ -172,7 +174,7 @@
 
         <!-- If episode titel is defined it is extracted here. -->
         <xsl:for-each select="pbcoreTitle">
-          <xsl:if test="titleType = 'episodetitel'">
+          <xsl:if test="titleType = 'episodetitel' and title != ''">
             <f:string key="name"><xsl:value-of select="title"/></f:string>
           </xsl:if>
         </xsl:for-each>
@@ -223,12 +225,12 @@
     <xsl:for-each select="pbcoreDescription">
       <xsl:choose>
         <!-- Extract 'kortomtale' as abstract. -->
-        <xsl:when test="./descriptionType = 'kortomtale'">
+        <xsl:when test="./descriptionType = 'kortomtale' and description != ''">
           <f:string key="abstract">
             <xsl:value-of select="normalize-space(./description)"/>
           </f:string>
         </xsl:when>
-        <xsl:when test="./descriptionType = 'langomtale1'">
+        <xsl:when test="./descriptionType = 'langomtale1' and description != ''">
           <f:string key="description">
             <xsl:value-of select="normalize-space(./description)"/>
           </f:string>
@@ -239,10 +241,10 @@
     <!-- Extract start and end times for broadcast  and calculate duration -->
     <xsl:if test="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
       <xsl:variable name="start-time">
-        <xsl:value-of select="xs:dateTime(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart)"/>
+        <xsl:value-of select="xs:dateTime(normalize-space(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart))"/>
       </xsl:variable>
       <xsl:variable name="end-time">
-        <xsl:value-of select="xs:dateTime(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd)"/>
+        <xsl:value-of select="xs:dateTime(normalize-space(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd))"/>
       </xsl:variable>
       <f:string key="startTime">
         <xsl:value-of select="$start-time"/>
@@ -263,18 +265,22 @@
     <xsl:if test="pbcoreGenre">
       <xsl:variable name="keywords">
         <xsl:for-each select="pbcoreGenre/genre">
-          <xsl:value-of select="concat(normalize-space(f:substring-after(., ': ')), ', ')"/>
+          <xsl:if test="substring-after(., ':') != ''">
+            <xsl:value-of select="concat(normalize-space(f:substring-after(., ':')), ', ')"/>
+          </xsl:if>
         </xsl:for-each>
       </xsl:variable>
       <!-- Length used to delete last comma from keyword list.-->
       <xsl:variable name="keywords-length" select="string-length($keywords)"/>
 
-      <f:string key="keywords">
-        <xsl:value-of select="substring($keywords, 1, $keywords-length - 2)"/>
-      </f:string>
+      <xsl:if test="$keywords != ''">
+        <f:string key="keywords">
+          <xsl:value-of select="substring($keywords, 1, $keywords-length - 2)"/>
+        </f:string>
+      </xsl:if>
 
       <xsl:for-each select="pbcoreGenre/genre">
-        <xsl:if test="f:contains(., 'hovedgenre:')">
+        <xsl:if test="f:contains(., 'hovedgenre:') and substring-after(., 'hovedgenre:') != ''">
           <f:string key="genre">
             <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
           </f:string>
@@ -289,7 +295,7 @@
         <f:string key="PropertyID">Origin</f:string>
         <f:string key="value"><xsl:value-of select="$origin"/></f:string>
       </f:map>
-      <!-- TODO: Update template to require parameters containing identifers from the xip level of the metadata -->
+      <!-- TODO: Update template to require parameters containing identifiers from the xip level of the metadata -->
       <f:map>
         <f:string key="@type">PropertyValue</f:string>
         <f:string key="PropertyID">RecordID</f:string>
@@ -298,7 +304,10 @@
       <xsl:if test="pbcoreIdentifier">
         <xsl:for-each select="pbcoreIdentifier">
           <xsl:choose>
+            <!-- Do nothing when identifierSource or identifier is empty. -->
             <xsl:when test="identifierSource = ''">
+            </xsl:when>
+            <xsl:when test="identifier = ''">
             </xsl:when>
             <xsl:otherwise>
               <f:map>
@@ -324,7 +333,7 @@
           </f:string>
         </f:map>
       </xsl:if>
-      <!-- Extract accession ref as schema.org identifier --> <!-- TODO: This could properbly be done with loads of the identifiers in the kb:internal map.-->
+      <!-- Extract accession ref as schema.org identifier --> <!-- TODO: This could properly be done with loads of the identifiers in the kb:internal map.-->
       <f:map>
         <f:string key="@type">PropertyValue</f:string>
         <f:string key="PropertyID">InternalAccessionRef</f:string>
@@ -333,7 +342,7 @@
     </f:array>
 
     <!-- Extracts collection -->
-    <xsl:if test="pbcoreInstantiation/formatLocation">
+    <xsl:if test="pbcoreInstantiation/formatLocation != ''">
       <f:map key="isPartOf">
         <f:string key="@type">Collection</f:string>
         <f:string key="name"><xsl:value-of select="pbcoreInstantiation/formatLocation"/></f:string>
@@ -341,7 +350,7 @@
     </xsl:if>
 
     <!-- Is the resource hd? or do we know anything about the video quality=? -->
-    <xsl:if test="pbcoreInstantiation/formatStandard">
+    <xsl:if test="pbcoreInstantiation/formatStandard != ''">
       <f:string key="videoQuality"><xsl:value-of select="pbcoreInstantiation/formatStandard"/></f:string>
     </xsl:if>
   </xsl:template>
@@ -353,7 +362,7 @@
     <f:map key="kb:internal">
       <!-- Extract subgenre if present -->
       <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
-        <xsl:if test="contains(., 'undergenre:')">
+        <xsl:if test="contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">
           <f:string key="kb:genre_sub">
             <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
           </f:string>
