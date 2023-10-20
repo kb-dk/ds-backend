@@ -364,6 +364,31 @@ public class EmbeddedSolrTest {
 
     }
 
+    /*
+    TODO:
+    original_title
+    episode_title
+    ritzau_id
+    tvmeter_id
+    startTime
+    endTime
+    duration_ms
+    color
+    video_quality
+    surround_sound
+    aspect_ratio
+    manifestation_type
+    episode
+    number_of_episodes
+    live_broadcast
+    retransmisison
+    abstract
+    description
+    genre_sub
+    has_subtitles
+    has_subtitles_for_hearing_impaired
+    pid
+     */
 
     /*
      * ------- Private helper methods below --------------
