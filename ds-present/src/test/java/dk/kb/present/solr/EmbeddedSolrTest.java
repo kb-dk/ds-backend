@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -377,21 +379,23 @@ public class EmbeddedSolrTest {
                 "78e74634-bec1-4cea-a984-20192c97b743");
     }
 
-    /*
-    TODO: Figure how to test date fields
+
+    //The embedded solr is returning timestamps in CEST time, which is 2 hours in front of UTC, which is the indexed
+    //format and the one available in the metadata
     @Test
     void testPvicaStartTime() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "startTime",
-                "2018-07-11T18:06:33Z");
+        // Epoch value of 2018-07-11T18-06-33Z
+        Date startTime = new Date(1531332393000L);
+        testDateValuePreservicaField(PRESERVICA_RECORD_44979f67, "startTime", startTime);
     }
+
 
     @Test
     void testPvicaEndTime() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "startTime",
-                "2018-07-11T18:22:23Z");
+        // Epoch value of 2018-07-11T18-22-23Z
+        Date endTime = new Date(1531333343000L);
+        testDateValuePreservicaField(PRESERVICA_RECORD_44979f67, "endTime", endTime);
     }
-
-     */
 
     @Test
     void testColor() throws Exception {
@@ -727,6 +731,16 @@ public class EmbeddedSolrTest {
     }
 
     private void testStringValuePreservicaField(String preservicaRecord, String solrField, String fieldValue) throws Exception {
+        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
+            SolrDocument record = singlePreservicaIndex(preservicaRecord);
+            assertEquals(fieldValue, record.getFieldValue(solrField));
+        } else {
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
+                    preservicaRecord, solrField);
+        }
+    }
+
+    private void testDateValuePreservicaField(String preservicaRecord, String solrField, Date fieldValue) throws Exception {
         if (Resolver.getPathFromClasspath(preservicaRecord) != null){
             SolrDocument record = singlePreservicaIndex(preservicaRecord);
             assertEquals(fieldValue, record.getFieldValue(solrField));
