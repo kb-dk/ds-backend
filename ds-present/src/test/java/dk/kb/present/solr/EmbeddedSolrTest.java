@@ -731,52 +731,51 @@ public class EmbeddedSolrTest {
     }
 
     private void testStringValuePreservicaField(String preservicaRecord, String solrField, String fieldValue) throws Exception {
-        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
-            SolrDocument record = singlePreservicaIndex(preservicaRecord);
-            assertEquals(fieldValue, record.getFieldValue(solrField));
-        } else {
+        if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
         }
+        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        assertEquals(fieldValue, record.getFieldValue(solrField));
+
     }
 
     private void testDateValuePreservicaField(String preservicaRecord, String solrField, Date fieldValue) throws Exception {
-        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
-            SolrDocument record = singlePreservicaIndex(preservicaRecord);
-            assertEquals(fieldValue, record.getFieldValue(solrField));
-        } else {
+        if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
         }
+        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        assertEquals(fieldValue, record.getFieldValue(solrField));
     }
 
     private void testLongValuePreservicaField(String preservicaRecord, String solrField, Long fieldValue) throws Exception {
-        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
-            SolrDocument record = singlePreservicaIndex(preservicaRecord);
-            assertEquals(fieldValue, record.getFieldValue(solrField));
-        } else {
+        if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
         }
+        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        assertEquals(fieldValue, record.getFieldValue(solrField));
     }
+
     private void testIntValuePreservicaField(String preservicaRecord, String solrField, Integer fieldValue) throws Exception {
-        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
-            SolrDocument record = singlePreservicaIndex(preservicaRecord);
-            assertEquals(fieldValue, record.getFieldValue(solrField));
-        } else {
+        if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
         }
+
+        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        assertEquals(fieldValue, record.getFieldValue(solrField));
     }
 
     private void testBooleanValuePreservicaField(String preservicaRecord, String solrField, boolean fieldValue) throws Exception {
-        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
-            SolrDocument record = singlePreservicaIndex(preservicaRecord);
-            assertEquals(fieldValue, record.getFieldValue(solrField));
-        } else {
+        if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
         }
+
+        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        assertEquals(fieldValue, record.getFieldValue(solrField));
     }
 
 }
