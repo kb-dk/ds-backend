@@ -61,6 +61,9 @@ public class EmbeddedSolrTest {
     public static final String MODS_RECORD_9c17a440 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
     public static final String MODS_RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
     public static final String PRESERVICA_RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
+    public static final String PRESERVICA_RECORD_3945e2d1 = "internal_test_files/tvMetadata/3945e2d1-83a2-40d8-af1c-30f7b3b94390.xml";
+    public static final String PRESERVICA_RECORD_9d9785a8 = "internal_test_files/tvMetadata/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml";
+
     @BeforeAll
     public static void startEmbeddedSolrServer() {
 
@@ -340,12 +343,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testPreservicaDuration() throws Exception {
-        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null) {
-            SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
-            assertEquals(950000L, record.getFieldValue("duration_ms"));
-        } else {
-            log.info("Preservica test files are not present. Embedded Solr tests for preservica metadata are not run.");
-        }
+        testLongValuePreservicaField(PRESERVICA_RECORD_44979f67, "duration_ms", 950000L);
     }
 
     @Test
@@ -355,39 +353,189 @@ public class EmbeddedSolrTest {
     }
     @Test
     void testOriginPreservica() throws Exception {
-        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null){
-            SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
-            assertEquals("ds.test", record.getFieldValue("origin"));
-        } else {
-          log.info("Preservica test files are not present. Embedded Solr tests for preservica metadata are not run.");
-        }
+        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "origin", "ds.test");
+    }
 
+    @Test
+    void testOriginalTitle() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "original_title", "Backstage II");
+    }
+
+    @Test
+    void testEpisodeTitel() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "episode_title", "Kagerester");
+    }
+    @Test
+    void testRitzauId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "ritzau_id",
+                "4aa3482b-a149-44d1-8715-f789e69f1a1e");
+    }
+
+    @Test
+    void testTvmeterId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "tvmeter_id",
+                "78e74634-bec1-4cea-a984-20192c97b743");
     }
 
     /*
+    TODO: Figure how to test date fields
+    @Test
+    void testPvicaStartTime() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "startTime",
+                "2018-07-11T18:06:33Z");
+    }
+
+    @Test
+    void testPvicaEndTime() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "startTime",
+                "2018-07-11T18:22:23Z");
+    }
+
+     */
+
+    @Test
+    void testColor() throws Exception {
+        testBooleanValuePreservicaField(PRESERVICA_RECORD_44979f67, "color", true );
+    }
+
+    @Test
+    void testVideoQuality() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "video_quality", "ikke hd" );
+    }
+
+    @Test
+    void testSurroundSound() throws Exception {
+        testBooleanValuePreservicaField(PRESERVICA_RECORD_44979f67, "surround_sound", false);
+    }
+
+    @Test
+    void testAspectRation() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "aspect_ratio", "16:9");
+    }
+
+    // TODO: Why are these not cast correctly.
+    @Test
+    void testEpisodeNumber() throws Exception {
+        testLongValuePreservicaField(PRESERVICA_RECORD_44979f67, "episode", 3L);
+    }
+
+    @Test
+    void testNumberOfEpisodes() throws Exception {
+        testLongValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "number_of_episodes", 8L);
+    }
+
+    @Test
+    void testLive() throws Exception {
+        testBooleanValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "live_broadcast", false);
+    }
+
+    @Test
+    void testRetransmission() throws Exception {
+        testBooleanValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "retransmission", false);
+    }
+
+
+    @Test
+    void testAbstract() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "abstract", "Dan. dok.-serie");
+    }
+
+    @Test
+    void testSubtitles() throws Exception {
+        testBooleanValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "has_subtitles", false);
+    }
+
+    @Test
+    void testSubtitlesForImpaired() throws Exception {
+        testBooleanValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "has_subtitles_for_hearing_impaired", false);
+    }
+
+    @Test
+    void testPreservicaPid() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "pid",
+                "109.1.4/9d9785a8-71f4-4b34-9a0e-1c99c13b001b");
+    }
+
+    @Test
+    void testGenreSub() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "genre_sub", "Alle");
+    }
+
+    @Test
+    void testInternalAccesssionRef() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_accession_ref",
+                "4eb00536-5efa-4346-9165-b13997b0ffd2");
+    }
+
+    @Test
+    void testInternalFormatIdentiferRitzau() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_format_identifier_ritzau",
+                "81318588");
+    }
+    @Test
+    void testInternalFormatIdentiferNielsen() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "internal_format_identifier_nielsen",
+                "101|20220227|252839|255705|0|4d3a94a4-1ff0-4598-b593-034eacf1c77d|98");
+    }
+
+    @Test
+    void testInternalMaingenreId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "internal_maingenre_id", "13");
+    }
+
+    @Test
+    void testInternalChannelId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "internal_channel_id", "3");
+    }
+
+    @Test
+    void testInternalCountryOfOriginId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "internal_country_of_origin_id", "0");
+    }
+    @Test
+    void testInternalRitzauProgramId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_ritzau_program_id", "25101143");
+    }
+
+    @Test
+    void testSubgenreId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_subgenre_id", "736");
+    }
+
+    @Test
+    void testEpisodeId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_episode_id", "0");
+    }
+
+    @Test
+    void testSeasonId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_season_id", "174278");
+    }
+
+    @Test
+    void testSeriesId() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_series_id", "146180");
+    }
+
+    @Test
+    void testProgramOphold() throws Exception {
+        testBooleanValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_program_ophold", false);
+    }
+
+
+
+
+
+
+
+
+
+
+
+    /*
     TODO:
-    original_title
-    episode_title
-    ritzau_id
-    tvmeter_id
-    startTime
-    endTime
-    duration_ms
-    color
-    video_quality
-    surround_sound
-    aspect_ratio
-    manifestation_type
-    episode
-    number_of_episodes
-    live_broadcast
-    retransmisison
-    abstract
     description
-    genre_sub
-    has_subtitles
-    has_subtitles_for_hearing_impaired
-    pid
+    all internal fields
      */
 
     /*
@@ -561,6 +709,36 @@ public class EmbeddedSolrTest {
     private SolrDocument getRecordByDerivedId(String recordFile) throws IOException {
         String recordID = "ds.test:" + Path.of(recordFile).getFileName().toString();
         return getRecordById(recordID);
+    }
+
+    private void testStringValuePreservicaField(String preservicaRecord, String solrField, String fieldValue) throws Exception {
+        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
+            SolrDocument record = singlePreservicaIndex(preservicaRecord);
+            assertEquals(fieldValue, record.getFieldValue(solrField));
+        } else {
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
+                    preservicaRecord, solrField);
+        }
+    }
+
+    private void testLongValuePreservicaField(String preservicaRecord, String solrField, Long fieldValue) throws Exception {
+        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
+            SolrDocument record = singlePreservicaIndex(preservicaRecord);
+            assertEquals(fieldValue, record.getFieldValue(solrField));
+        } else {
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
+                    preservicaRecord, solrField);
+        }
+    }
+
+    private void testBooleanValuePreservicaField(String preservicaRecord, String solrField, boolean fieldValue) throws Exception {
+        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
+            SolrDocument record = singlePreservicaIndex(preservicaRecord);
+            assertEquals(fieldValue, record.getFieldValue(solrField));
+        } else {
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
+                    preservicaRecord, solrField);
+        }
     }
 
 }
