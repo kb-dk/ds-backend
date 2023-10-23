@@ -63,7 +63,7 @@ public class EmbeddedSolrTest {
     public static final String PRESERVICA_RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
     public static final String PRESERVICA_RECORD_3945e2d1 = "internal_test_files/tvMetadata/3945e2d1-83a2-40d8-af1c-30f7b3b94390.xml";
     public static final String PRESERVICA_RECORD_9d9785a8 = "internal_test_files/tvMetadata/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml";
-
+    public static final String PRESERVICA_RECORD_1f3a6a66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
     @BeforeAll
     public static void startEmbeddedSolrServer() {
 
@@ -416,12 +416,12 @@ public class EmbeddedSolrTest {
     // TODO: Why are these not cast correctly.
     @Test
     void testEpisodeNumber() throws Exception {
-        testLongValuePreservicaField(PRESERVICA_RECORD_44979f67, "episode", 3L);
+        testIntValuePreservicaField(PRESERVICA_RECORD_44979f67, "episode", 3);
     }
 
     @Test
     void testNumberOfEpisodes() throws Exception {
-        testLongValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "number_of_episodes", 8L);
+        testIntValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "number_of_episodes", 8);
     }
 
     @Test
@@ -522,21 +522,36 @@ public class EmbeddedSolrTest {
         testBooleanValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_program_ophold", false);
     }
 
+    @Test
+    void testIsTeletext() throws Exception {
+        testBooleanValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_is_teletext", false);
+    }
 
+    @Test
+    void testShowviewcode() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_showviewcode", "0");
+    }
 
+    @Test
+    void testPadding() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_padding_seconds", "15");
+    }
 
+    @Test
+    void testInternalAccess() throws Exception {
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_access_individual_prohibition", "Nej");
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_access_claused", "Nej");
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_access_malfunction", "Nej");
+        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_access_comments", null);
+    }
 
-
-
-
-
-
-
-    /*
-    TODO:
-    description
-    all internal fields
-     */
+    @Test
+    void testProgramStructure() throws Exception {
+        testIntValuePreservicaField(PRESERVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_start", 0);
+        testIntValuePreservicaField(PRESERVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_end", 0);
+        testStringValuePreservicaField(PRESERVICA_RECORD_1f3a6a66, "internal_program_structure_holes", null);
+        testStringValuePreservicaField(PRESERVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", null);
+    }
 
     /*
      * ------- Private helper methods below --------------
@@ -722,6 +737,15 @@ public class EmbeddedSolrTest {
     }
 
     private void testLongValuePreservicaField(String preservicaRecord, String solrField, Long fieldValue) throws Exception {
+        if (Resolver.getPathFromClasspath(preservicaRecord) != null){
+            SolrDocument record = singlePreservicaIndex(preservicaRecord);
+            assertEquals(fieldValue, record.getFieldValue(solrField));
+        } else {
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
+                    preservicaRecord, solrField);
+        }
+    }
+    private void testIntValuePreservicaField(String preservicaRecord, String solrField, Integer fieldValue) throws Exception {
         if (Resolver.getPathFromClasspath(preservicaRecord) != null){
             SolrDocument record = singlePreservicaIndex(preservicaRecord);
             assertEquals(fieldValue, record.getFieldValue(solrField));
