@@ -734,6 +734,7 @@ public class EmbeddedSolrTest {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
+            return;
         }
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
@@ -744,6 +745,7 @@ public class EmbeddedSolrTest {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
+            return;
         }
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
@@ -753,6 +755,7 @@ public class EmbeddedSolrTest {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
+            return;
         }
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
@@ -762,6 +765,7 @@ public class EmbeddedSolrTest {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
+            return;
         }
 
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
@@ -772,6 +776,7 @@ public class EmbeddedSolrTest {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
                     preservicaRecord, solrField);
+            return;
         }
 
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
