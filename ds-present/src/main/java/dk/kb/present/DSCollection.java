@@ -19,6 +19,7 @@ import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.RuntimeTransformerException;
 import dk.kb.storage.model.v1.DsRecordDto;
 
+import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -130,6 +131,7 @@ public class DSCollection {
     public String getRecord(String recordID, String format) throws ServiceException {
         View view = getView(format);
         DsRecordDto record = storage.getDSRecordTreeLocal(recordID);
+
 
         String recordData = record.getData();
         String childData = getNewestChild(record);

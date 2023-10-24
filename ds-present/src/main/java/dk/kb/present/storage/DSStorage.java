@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import dk.kb.storage.model.v1.RecordTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,12 @@ public class DSStorage implements Storage {
     public DsRecordDto getDSRecordTreeLocal(String id) {
         log.debug("getDSRecordTreeLocal(id='{}') called", id);
         try {
-            return storageClient.getRecordTreeLocal(id);
+            DsRecordDto record = storageClient.getRecordTreeLocal(id);
+            if (record.getRecordType() != RecordTypeDto.DELIVERABLEUNIT){
+                log.warn("Requests for anything else than deliverableUnits are not allowed.");
+                throw new IllegalArgumentException("Requests for anything else than deliverableUnits are not allowed.");
+            }
+            return record;
         } catch (ApiException e){
             log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
             throw new NotFoundServiceException("Unable to retrieve record '" + id + "'", e);
