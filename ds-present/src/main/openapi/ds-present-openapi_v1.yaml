@@ -6,8 +6,11 @@ info:
     Metadata delivery for the Royal Danish Library.
     
     This API delivers metadata from collections at the Royal Danish Library.
-    These metadata can be delivered in different formats. The `/record/{id}`-endpoint can deliver metadata as [JSON-LD](https://json-ld.org/), [MODS](http://www.loc.gov/standards/mods/) and [SolrJSON](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates).
-    In general all metadata are represented in both solr and JSON-LD, however, there might be some differences in names. If you are interested in an overview of this mapping it can be found [here](../mappings_radiotv.html). 
+    These metadata can be delivered in different formats. The `/record/{id}`-endpoint can deliver metadata as 
+    [JSON-LD](https://json-ld.org/), [MODS](http://www.loc.gov/standards/mods/) and 
+    [SolrJSON](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates).
+    In general all metadata are represented in both solr and JSON-LD, however, there might be some differences in names.
+    If you are interested in an overview of this mapping it can be found [here](../mappings_radiotv.html). 
     
     Furthermore metadata can be delivered as IIIF Presentation manifests through the `/IIIF/{identifier}/manifest`-endpoint. 
     For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.0 and should be backwards compatible with version 2.1.1
@@ -28,7 +31,7 @@ paths:
     get:
       tags:
         - '${project.name}'
-      summary: 'Retrieve metadata for the record with the given ID and in the given format'
+      summary: 'Retrieve metadata for the record with the given ID and in the given format.'
       operationId: getRecord
       parameters:
         - name: id
@@ -43,7 +46,7 @@ paths:
               value: 'local.test:luftfoto-sample.xml'
               summary: 'Record fetched from fixed local test corpus'
             remote:
-              value: 'doms.radio:illum.xml'
+              value: 'ds.radiotv:oai:du:b1405ff8-6a00-4e20-b2bf-334b22ec2b37'
               #value: 'remote.images:luftfoto-sample.xml'
               summary: 'Record fetched from (hopefully) running ds-storage'
         - name: format
@@ -86,20 +89,23 @@ paths:
     get:
       tags:
         - '${project.name}'
-      summary: 'Extract records from a collection after a given mTime and up to a defined maximum. The records are returned in sorted order by mTime increasing. Records marked for delete will also be returned.'
+      summary: 'Extract records from a collection after a given mTime.'
+      description: |
+        The extracted records are returned in sorted order by mTime increasing. By changing the parameter `maxRecords`, 
+        the size of the result can be defined. Records marked with a delete flag will also be returned.
       operationId: getRecords
       x-streamingOutput: true
       parameters:
         - name: collection
           in: query
-          description: 'The collection to extract records from'
+          description: 'The collection to extract records from.'
           required: true
           schema:
             type: string
-            example: 'images_jsmss'
+            example: 'radiotv'
         - name: mTime
           in: query
-          description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between seperate calls'
+          description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
           required: false
           schema:
             type: integer
@@ -109,7 +115,7 @@ paths:
             #default: 0
         - name: maxRecords
           in: query
-          description: 'Maximum number of records to return. -1 means no limit'
+          description: 'Maximum number of records to return. -1 means no limit.'
           required: false
           schema:
             type: integer
@@ -137,7 +143,7 @@ paths:
             default: 'JSON-LD'
       responses:
         '200':
-          description: 'List of records in the requested format'
+          description: 'List of records in the requested format.'
           content:
             application/ld+json:
               schema:
@@ -156,7 +162,7 @@ paths:
                 type: string
             application/xml:
               schema:
-                description: 'XML-compliant representation of as MODS records.'
+                description: 'XML-compliant representation of exported records as MODS records.'
                 type: array
                 items:
                   type: string
@@ -181,7 +187,7 @@ paths:
     get:
       tags:
         - '${project.name}'
-      summary: 'Retrieve a formal description of a single collection'
+      summary: 'Retrieve a formal description of a single collection.'
       operationId: getCollection
       parameters:
         - name: id
@@ -191,16 +197,16 @@ paths:
           schema:
             type: string
             minLength: 1
-            example: 'images-dsfl'
+            example: 'radiotv'
       responses:
         '200':
-          description: 'OK: The collection was known and a description is returned'
+          description: 'OK: The collection was known and a description is returned.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Collection'
         '404':
-          description: 'Collection is unknown'
+          description: 'Collection is unknown.'
           content:
             text/plain:
               schema:
@@ -210,11 +216,11 @@ paths:
     get:
       tags:
         - '${project.name}'
-      summary: 'Retrieve a formal description of all collections'
+      summary: 'Retrieve a formal description of all available collections.'
       operationId: getCollections
       responses:
         '200':
-          description: 'OK: Collections are returned'
+          description: 'OK: Collections are returned.'
           content:
             application/json:
               schema:
