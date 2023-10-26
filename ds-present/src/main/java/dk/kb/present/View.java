@@ -89,7 +89,13 @@ public class View extends ArrayList<DSTransformer> implements TriFunction<String
         final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", recordID);
         metadata.put("origin", origin);
-        metadata.put("childRecord", child);
+
+        if (child == null ){
+            metadata.put("childRecord", "");
+        } else {
+            metadata.put("childRecord", child);
+        }
+
         for (DSTransformer transformer: this) {
             try {
                 content = transformer.apply(content, metadata);
