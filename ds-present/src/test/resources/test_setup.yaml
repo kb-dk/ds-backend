@@ -90,3 +90,41 @@ config:
               mime: 'text/plain'
               transformers:
                 - identity:
+    - radiotv: # ds-present internal
+            prefix: 'local' # The prefix to match on incoming IDs
+            origin: 'ds.test'
+            description: 'Local records, mostly biographical'
+            getrecordendpoint: 'http://example.com/ds-present/v1/record/'
+
+            # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+            views:
+              - mods:
+                  mime: 'application/xml'
+                  transformers:
+                    - identity: # No transformation steps as mods is the core format for images-dsfl
+              - json-ld:
+                  mime: 'application/json'
+                  transformers:
+                    - xslt:
+                        stylesheet: 'xslt/preservica2schemaorg.xsl'
+                        injections:
+                        - imageserver: 'https://example.com/imageserver/'
+                        - streamingserver: "here_should_be_a_wowza_url"
+              - solrjson:
+                  mime: 'application/json'
+                  transformers:
+                    - xslt:
+                        stylesheet: 'xslt/preservica2solr.xsl'
+                        injections:
+                        - imageserver: 'https://example.com/imageserver/'
+                        - streamingserver: "here_should_be_a_wowza_url"
+              - raw:
+                  mime: 'text/plain'
+                  transformers:
+                    - fail:
+                        message: 'Raw format contains confidential information and cannot be delivered'
+              # For testing purposes
+              - raw-bypass:
+                  mime: 'text/plain'
+                  transformers:
+                    - identity:

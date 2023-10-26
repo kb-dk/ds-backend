@@ -42,13 +42,24 @@ class ViewTest {
 
     // Should still work after update of XSLT to JSON-LD, might fail and need reassessment
     @Test
-    void jsonld() throws Exception {
+    void jsonldMods() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
         String jsonld = jsonldView.apply("40221e30-1414-11e9-8fb8-00505688346e", mods, "");
         assertTrue(jsonld.contains("\"headline\":[{\"value\":\"Christian VIII\",\"@language\":\"da\"}]"));
+    }
+
+    @Test
+    void jsonldPvica() throws Exception {
+        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
+        YAML radiotvConf = conf.getYAMLList(".config.collections").get(1);
+        View jsonldView = new View(radiotvConf.getSubMap("radiotv").getYAMLList("views").get(1), radiotvConf.getSubMap("radiotv").getString("origin"));
+        String pvica = Resolver.resolveUTF8String("internal_test_files/tvMetadata/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
+        String jsonld = jsonldView.apply("df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00", pvica, null);
+
+        System.out.println(jsonld);
     }
 
     @Test
