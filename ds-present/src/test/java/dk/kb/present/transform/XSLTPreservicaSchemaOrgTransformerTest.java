@@ -44,10 +44,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
 
     @Test
     public void testSetup() throws IOException {
-        //printSchemaOrgJson(RECORD_74e22fd8);
-        printSchemaOrgJson(RECORD_df3dc9cf);
-        //printSchemaOrgJson(RECORD_1F3A6A66);
-        //printSchemaOrgJson(RECORD_44979f67);
+        printSchemaOrgJson(RECORD_74e22fd8);
+        printSchemaOrgJson(RECORD_68b233c3);
+        printSchemaOrgJson(RECORD_1F3A6A66);
+        printSchemaOrgJson(RECORD_44979f67);
     }
 
     @Test
