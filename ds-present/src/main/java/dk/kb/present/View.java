@@ -90,11 +90,10 @@ public class View extends ArrayList<DSTransformer> implements TriFunction<String
         metadata.put("recordID", recordID);
         metadata.put("origin", origin);
 
-        if (child == null ){
-            metadata.put("childRecord", "");
-        } else {
+        if (child != null ) {
             metadata.put("childRecord", child);
         }
+
 
         for (DSTransformer transformer: this) {
             try {
