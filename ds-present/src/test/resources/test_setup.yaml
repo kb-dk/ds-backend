@@ -53,7 +53,7 @@ config:
   collections:
     # Straight forward collection with the core format being MODS
     - dsfl: # ds-present internal
-        prefix: 'local' # The prefix to match on incoming IDs
+        prefix: 'local.mods' # The prefix to match on incoming IDs
         origin: 'ds.test'
         description: 'Local records, mostly biographical'
         getrecordendpoint: 'http://example.com/ds-present/v1/record/'
@@ -91,7 +91,7 @@ config:
               transformers:
                 - identity:
     - radiotv: # ds-present internal
-            prefix: 'local' # The prefix to match on incoming IDs
+            prefix: 'local.radiotv' # The prefix to match on incoming IDs
             origin: 'ds.test'
             description: 'Local records, mostly biographical'
             getrecordendpoint: 'http://example.com/ds-present/v1/record/'

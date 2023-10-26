@@ -77,7 +77,7 @@ class CollectionHandlerTest {
     void localCorpusMODS() throws IOException {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         CollectionHandler ch = new CollectionHandler(conf);
-        String record = ch.getRecord("local:40221e30-1414-11e9-8fb8-00505688346e.xml", "mods");
+        String record = ch.getRecord("local.mods:40221e30-1414-11e9-8fb8-00505688346e.xml", "mods");
         assertTrue(record.contains("<mods:title>Christian VIII</mods:title>"));
     }
 
