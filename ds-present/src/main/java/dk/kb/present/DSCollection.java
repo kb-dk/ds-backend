@@ -29,6 +29,7 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -148,6 +149,12 @@ public class DSCollection {
                         .findFirst().orElse("");
     }
 
+
+    /**
+     * Check for child being null.
+     * @param child record to check for data in.
+     * @return the data from child if child is not null. Otherwise, return an empty string.
+     */
     private String getNonNullChild(DsRecordDto child) {
         if (child.getData() == null){
             return "";
@@ -196,8 +203,7 @@ public class DSCollection {
             return storage.getDSRecordsByRecordTypeLocalTree(origin, deliverableUnit, mTime, maxRecords)
                     .peek(record -> {
                         try {
-                            //String relation = getFirstChild(record);
-                            String relation = "";
+                            String relation = getFirstChild(record);
                             record.data(view.apply(record.getId(), record.getData(), relation));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(

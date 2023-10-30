@@ -280,7 +280,7 @@ public class FileStorage implements Storage {
 
     @Override
     public Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
-        return null;
+        return getDSRecords(origin, mTime, maxRecords);
     }
 
     /**

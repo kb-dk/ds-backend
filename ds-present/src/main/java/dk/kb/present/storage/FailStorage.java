@@ -70,7 +70,7 @@ public class FailStorage implements Storage {
 
     @Override
     public Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
-        return null;
+        throw new NotFoundServiceException("Unable to locate any records after mTime " + mTime);
     }
 
     @Override
