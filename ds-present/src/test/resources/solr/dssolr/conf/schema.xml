@@ -535,6 +535,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     109.1.4/3945e2d1-83a2-40d8-af1c-30f7b3b94390?>
   </field>
 
+  <field name="streaming_url" type="string">
+    <?description An URL, where the resource can be streamed.?>
+    <?example     www.example.com/streaming/bart-access-copies-tv/00/00/00/000000e1-0000-462a-a2b4-7488244fcca7/playlist.m3u8"?>
+  </field>
+
 
 
   <!-- =========================================================================== -->
