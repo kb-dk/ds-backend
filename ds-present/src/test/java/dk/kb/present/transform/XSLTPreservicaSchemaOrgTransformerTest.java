@@ -60,7 +60,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     void testContentUrl() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, RECORD_5a5357be, null);
-        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\""));
+        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
     }
 
     @Test

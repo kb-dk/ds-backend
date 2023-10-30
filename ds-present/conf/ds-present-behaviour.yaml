@@ -36,6 +36,9 @@ config:
   oldimageserver:
     url: "http://kb-images.kb.dk"
 
+  streamingserver:
+    url: "http://example.com/streaming/"
+
   endpoints:
     - example:
         getrecord: 'http://example.com/ds-present/v1/record/'

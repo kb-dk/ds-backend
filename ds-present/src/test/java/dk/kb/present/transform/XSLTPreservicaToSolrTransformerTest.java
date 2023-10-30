@@ -8,9 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -296,10 +299,16 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertContains(RECORD_1f3a6a66, "\"endTime\":\"2012-04-28T16:40:00Z\"");
     }
 
+    @Test
+    void testStreamingUrl() throws IOException {
+        String solrJson = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SOLR, RECORD_1f3a6a66, null);
+        assertTrue(solrJson.contains("\"www.example.com\\/streaming\\/bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
+    }
+
 
     @Test
     public void prettyPrintTransformation() throws Exception {
-        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_1f3a6a66);
+        TestUtil.prettyPrintSolrJsonFromPreservica(RECORD_44979f67);
     }
 
 
