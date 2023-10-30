@@ -149,6 +149,7 @@ public class DSCollection {
         return record.getChildren() == null ? "" :
                 record.getChildren().stream()
                         .map(this::getNonNullChild)
+                        .filter(childData -> childData.contains("<ManifestationRelRef>2</ManifestationRelRef>"))
                         .findFirst().orElse("");
     }
 
@@ -192,17 +193,6 @@ public class DSCollection {
         log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
-            /*return storage.getDSRecords(origin, mTime, maxRecords)
-                    .peek(record -> {
-                        try {
-                            String relation = getChildRecord(record);
-                            record.data(view.apply(record.getId(), record.getData(), relation));
-                        } catch (Exception e) {
-                            throw new RuntimeTransformerException(
-                                    "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
-
-                        }
-                    });*/
             return storage.getDSRecordsByRecordTypeLocalTree(origin, deliverableUnit, mTime, maxRecords)
                     .peek(record -> {
                         try {
