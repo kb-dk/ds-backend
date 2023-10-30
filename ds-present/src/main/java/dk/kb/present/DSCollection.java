@@ -134,31 +134,8 @@ public class DSCollection {
 
 
         String recordData = record.getData();
-        String childData = getNewestChild(record);
+        String childData = getChildRecord(record);
         return view.apply(recordID, recordData, childData);
-    }
-
-    /**
-     * If record has children, the child which has been modified the latest is returned.
-     * @param record to extract the newest child from.
-     * @return  the data from the newest child related to the input record.
-     */
-    private String getNewestChild(DsRecordDto record) {
-        // TODO: Figure how to choose correct manifestation for record, if more than one is present
-        List<DsRecordDto> children = record.getChildren();
-        DsRecordDto newestChild = new DsRecordDto();
-        if (children == null || children.isEmpty()){
-            return null;
-        } else if (children.size() == 1) {
-            return children.get(0).getData();
-        } else {
-            for (DsRecordDto child: children) {
-                if (child.getmTime() > newestChild.getmTime()){
-                    newestChild = child;
-                }
-            }
-            return newestChild.getData();
-        }
     }
 
     /**
@@ -175,6 +152,7 @@ public class DSCollection {
 
     /**
      * Returns a stream of records where the data are transformed to the given format.
+     * Only records of type DELIVERABLEUNIT are returned as these are the main metadata format.
      * @param mTime point in time (epoch * 1000) for the records to deliver, exclusive.
      * @param maxRecords the maximum number of records to deliver. -1 means no limit.
      * @param format the format of the record. See {@link #getViews()} for available formats.
@@ -183,10 +161,22 @@ public class DSCollection {
      */
     public Stream<DsRecordDto> getDSRecords(Long mTime, Long maxRecords, String format) {
         View view = getView(format);
+        RecordTypeDto deliverableUnit = RecordTypeDto.DELIVERABLEUNIT;
         log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
-            return storage.getDSRecords(origin, mTime, maxRecords)
+            /*return storage.getDSRecords(origin, mTime, maxRecords)
+                    .peek(record -> {
+                        try {
+                            String relation = getChildRecord(record);
+                            record.data(view.apply(record.getId(), record.getData(), relation));
+                        } catch (Exception e) {
+                            throw new RuntimeTransformerException(
+                                    "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
+
+                        }
+                    });*/
+            return storage.getDSRecordsByRecordTypeLocalTree(origin, deliverableUnit, mTime, maxRecords)
                     .peek(record -> {
                         try {
                             String relation = getChildRecord(record);
