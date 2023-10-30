@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -132,10 +131,28 @@ public class DSCollection {
         View view = getView(format);
         DsRecordDto record = storage.getDSRecordTreeLocal(recordID);
 
-
         String recordData = record.getData();
-        String childData = getChildRecord(record);
+        String childData = getFirstChild(record);
         return view.apply(recordID, recordData, childData);
+    }
+
+    /**
+     * If record has children, the first child is returned.
+     * @param record to extract the newest child from.
+     * @return  the data from the first child related to the input record.
+     */
+    private String getFirstChild(DsRecordDto record) {
+        return record.getChildren() == null ? "" :
+                record.getChildren().stream()
+                        .map(this::getNonNullChild)
+                        .findFirst().orElse("");
+    }
+
+    private String getNonNullChild(DsRecordDto child) {
+        if (child.getData() == null){
+            return "";
+        }
+        return child.getData();
     }
 
     /**
@@ -179,7 +196,8 @@ public class DSCollection {
             return storage.getDSRecordsByRecordTypeLocalTree(origin, deliverableUnit, mTime, maxRecords)
                     .peek(record -> {
                         try {
-                            String relation = getChildRecord(record);
+                            //String relation = getFirstChild(record);
+                            String relation = "";
                             record.data(view.apply(record.getId(), record.getData(), relation));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(
@@ -196,7 +214,7 @@ public class DSCollection {
     }
 
     /**
-     * Extract the first child record from storage if present in input record.
+     * Extract the first child record from storage if present in input record through external API call.
      * @param record     to extract children for.
      * @return the URI value of the related raw record for the input record.
      */
