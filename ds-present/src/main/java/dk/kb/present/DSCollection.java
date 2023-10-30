@@ -143,6 +143,9 @@ public class DSCollection {
      * @return  the data from the first child related to the input record.
      */
     private String getFirstChild(DsRecordDto record) {
+        // TODO: Figure how to choose correct manifestation for record, if more than one is present
+        // Return first child record, but if there are multiple presentation manifestations,
+        // the rest are currently not added to the transformation
         return record.getChildren() == null ? "" :
                 record.getChildren().stream()
                         .map(this::getNonNullChild)
@@ -217,33 +220,6 @@ public class DSCollection {
             throw new InternalServiceException(
                     "Internal exception requesting records from collection '" + getId() + "' in format " + format);
         }
-    }
-
-    /**
-     * Extract the first child record from storage if present in input record through external API call.
-     * @param record     to extract children for.
-     * @return the URI value of the related raw record for the input record.
-     */
-    private String getChildRecord(DsRecordDto record) {
-
-        // TODO: Figure how to choose correct manifestation for record, if more than one is present
-        // Return first child record, but if there are multiple presentation manifestations,
-        // the rest are currently not added to the transformation
-        return record.getChildrenIds() == null ? "" :
-                record.getChildrenIds().stream()
-                        .map(id -> getRawUri(id, getRecordEndpoint))
-                        .findFirst().orElse("");
-    }
-
-    /**
-     * Construct a URI for child records pointing towards the raw representation of the child record in ds-present.
-     * @param id id of record to construct URI for.
-     * @return   the URI for the input record.
-     */
-    private static String getRawUri(String id, String getRecordEndpoint) {
-        String encodedId = URLEncoder.encode(id, StandardCharsets.UTF_8);
-        String rawRecordUri = getRecordEndpoint + encodedId + "?format=raw";
-        return rawRecordUri;
     }
 
     /**
