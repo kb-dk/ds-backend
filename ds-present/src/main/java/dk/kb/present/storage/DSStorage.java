@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import dk.kb.storage.model.v1.RecordTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,12 @@ public class DSStorage implements Storage {
     public DsRecordDto getDSRecordTreeLocal(String id) {
         log.debug("getDSRecordTreeLocal(id='{}') called", id);
         try {
-            return storageClient.getRecordTreeLocal(id);
+            DsRecordDto record = storageClient.getRecordTreeLocal(id);
+            if (record.getRecordType() != RecordTypeDto.DELIVERABLEUNIT){
+                log.warn("Requests for anything else than deliverableUnits are not allowed.");
+                throw new IllegalArgumentException("Requests for anything else than deliverableUnits are not allowed.");
+            }
+            return record;
         } catch (ApiException e){
             log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
             throw new NotFoundServiceException("Unable to retrieve record '" + id + "'", e);
@@ -116,8 +122,22 @@ public class DSStorage implements Storage {
     @Override
     public Stream<DsRecordDto> getDSRecords(final String origin, long mTime, long maxRecords) {
         log.debug("getDSRecords(origin='{}', mTime={}, maxRecords={}) called", origin, mTime, maxRecords);
-        String finalOrigin = origin == null ? this.origin : origin;
 
+        return getDsRecordDtoStream(mTime, maxRecords, origin, null);
+    }
+
+    @Override
+    public Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType,
+                                                                 long mTime, long maxRecords) {
+        log.debug("getDSRecordsByRecordTypeLocalTree(origin='{}', recordType={}, mTime={}, maxRecords={}) called",
+                origin, recordType, mTime, maxRecords);
+
+
+        return getDsRecordDtoStream(mTime, maxRecords, origin, recordType);
+    }
+
+    private Stream<DsRecordDto> getDsRecordDtoStream(long mTime, long maxRecords, String origin, RecordTypeDto recordType) {
+        String finalOrigin = origin == null ? this.origin : origin;
         if (finalOrigin == null || finalOrigin.isEmpty()) {
             throw new InternalServiceException(
                     "origin not defined for DSStorage '" + getID() + "'. Only single record lookups are possible");
@@ -143,7 +163,11 @@ public class DSStorage implements Storage {
 
                 long request = pending < batchCount ? (int) pending : batchCount;
                 try {
-                    records = storageClient.getRecordsModifiedAfter(finalOrigin, lastMTime.get(), request);
+                    if (recordType == null) {
+                        records = storageClient.getRecordsModifiedAfter(finalOrigin, lastMTime.get(), request);
+                    } else {
+                        records = storageClient.getRecordsByRecordTypeModifiedAfterLocalTree(finalOrigin, recordType, lastMTime.get(), request);
+                    }
                 } catch (ApiException e) {
                     String message = String.format(
                             Locale.ROOT,

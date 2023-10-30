@@ -19,6 +19,7 @@ import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.RuntimeTransformerException;
 import dk.kb.storage.model.v1.DsRecordDto;
 
+import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -28,9 +29,9 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -132,31 +133,36 @@ public class DSCollection {
         DsRecordDto record = storage.getDSRecordTreeLocal(recordID);
 
         String recordData = record.getData();
-        String childData = getNewestChild(record);
+        String childData = getFirstChild(record);
         return view.apply(recordID, recordData, childData);
     }
 
     /**
-     * If record has children, the child which has been modified the latest is returned.
+     * If record has children, the first child is returned.
      * @param record to extract the newest child from.
-     * @return  the data from the newest child related to the input record.
+     * @return  the data from the first child related to the input record.
      */
-    private String getNewestChild(DsRecordDto record) {
+    private String getFirstChild(DsRecordDto record) {
         // TODO: Figure how to choose correct manifestation for record, if more than one is present
-        List<DsRecordDto> children = record.getChildren();
-        DsRecordDto newestChild = new DsRecordDto();
-        if (children == null || children.isEmpty()){
-            return null;
-        } else if (children.size() == 1) {
-            return children.get(0).getData();
-        } else {
-            for (DsRecordDto child: children) {
-                if (child.getmTime() > newestChild.getmTime()){
-                    newestChild = child;
-                }
-            }
-            return newestChild.getData();
+        // Return first child record, but if there are multiple presentation manifestations,
+        // the rest are currently not added to the transformation
+        return record.getChildren() == null ? "" :
+                record.getChildren().stream()
+                        .map(this::getNonNullChild)
+                        .findFirst().orElse("");
+    }
+
+
+    /**
+     * Check for child being null.
+     * @param child record to check for data in.
+     * @return the data from child if child is not null. Otherwise, return an empty string.
+     */
+    private String getNonNullChild(DsRecordDto child) {
+        if (child.getData() == null){
+            return "";
         }
+        return child.getData();
     }
 
     /**
@@ -173,6 +179,7 @@ public class DSCollection {
 
     /**
      * Returns a stream of records where the data are transformed to the given format.
+     * Only records of type DELIVERABLEUNIT are returned as these are the main metadata format.
      * @param mTime point in time (epoch * 1000) for the records to deliver, exclusive.
      * @param maxRecords the maximum number of records to deliver. -1 means no limit.
      * @param format the format of the record. See {@link #getViews()} for available formats.
@@ -181,13 +188,25 @@ public class DSCollection {
      */
     public Stream<DsRecordDto> getDSRecords(Long mTime, Long maxRecords, String format) {
         View view = getView(format);
+        RecordTypeDto deliverableUnit = RecordTypeDto.DELIVERABLEUNIT;
         log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
-            return storage.getDSRecords(origin, mTime, maxRecords)
+            /*return storage.getDSRecords(origin, mTime, maxRecords)
                     .peek(record -> {
                         try {
                             String relation = getChildRecord(record);
+                            record.data(view.apply(record.getId(), record.getData(), relation));
+                        } catch (Exception e) {
+                            throw new RuntimeTransformerException(
+                                    "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
+
+                        }
+                    });*/
+            return storage.getDSRecordsByRecordTypeLocalTree(origin, deliverableUnit, mTime, maxRecords)
+                    .peek(record -> {
+                        try {
+                            String relation = getFirstChild(record);
                             record.data(view.apply(record.getId(), record.getData(), relation));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(
@@ -201,33 +220,6 @@ public class DSCollection {
             throw new InternalServiceException(
                     "Internal exception requesting records from collection '" + getId() + "' in format " + format);
         }
-    }
-
-    /**
-     * Extract the first child record from storage if present in input record.
-     * @param record     to extract children for.
-     * @return the URI value of the related raw record for the input record.
-     */
-    private String getChildRecord(DsRecordDto record) {
-
-        // TODO: Figure how to choose correct manifestation for record, if more than one is present
-        // Return first child record, but if there are multiple presentation manifestations,
-        // the rest are currently not added to the transformation
-        return record.getChildrenIds() == null ? "" :
-                record.getChildrenIds().stream()
-                        .map(id -> getRawUri(id, getRecordEndpoint))
-                        .findFirst().orElse("");
-    }
-
-    /**
-     * Construct a URI for child records pointing towards the raw representation of the child record in ds-present.
-     * @param id id of record to construct URI for.
-     * @return   the URI for the input record.
-     */
-    private static String getRawUri(String id, String getRecordEndpoint) {
-        String encodedId = URLEncoder.encode(id, StandardCharsets.UTF_8);
-        String rawRecordUri = getRecordEndpoint + encodedId + "?format=raw";
-        return rawRecordUri;
     }
 
     /**

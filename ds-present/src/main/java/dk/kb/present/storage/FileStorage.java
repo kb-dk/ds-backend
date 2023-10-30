@@ -17,6 +17,7 @@ package dk.kb.present.storage;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.storage.model.v1.DsRecordDto;
 
+import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 
@@ -275,6 +276,11 @@ public class FileStorage implements Storage {
             }
         };
         return StreamSupport.stream(((Iterable<DsRecordDto>) () -> iterator).spliterator(), false);
+    }
+
+    @Override
+    public Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
+        return getDSRecords(origin, mTime, maxRecords);
     }
 
     /**

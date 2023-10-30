@@ -17,6 +17,7 @@ package dk.kb.present.storage;
 
 import dk.kb.present.util.Combiner;
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,6 +144,11 @@ public class MultiStorage implements Storage {
 
         return Combiner.mergeStreams(providers, Comparator.comparingLong(DsRecordDto::getmTime))
                 .limit(maxRecords == -1 ? Long.MAX_VALUE : maxRecords);
+    }
+
+    @Override
+    public Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
+        return getDSRecords(origin, mTime, maxRecords);
     }
 
     /**
