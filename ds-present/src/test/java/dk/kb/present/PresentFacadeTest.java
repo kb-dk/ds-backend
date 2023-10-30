@@ -79,7 +79,6 @@ class PresentFacadeTest {
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord");
         String result = toString(out);
-        System.out.println(result);
 
         assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"origin\":null,\"recordType\":null,\"deleted\":false"));
         assertTrue(result.contains(",\n"), "Result should contain a comma followed by newline as it should be a multi-entry JSON array"); // Plain JSON array

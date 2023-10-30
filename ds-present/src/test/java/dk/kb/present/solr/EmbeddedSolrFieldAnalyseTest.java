@@ -131,7 +131,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 		solrQuery.setQuery("id:1");
 		solrQuery.setRows(10);
 		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
-		System.out.println(rsp.getResults().get(0).toString());
+		//System.out.println(rsp.getResults().get(0).toString());
 	}
 	
 

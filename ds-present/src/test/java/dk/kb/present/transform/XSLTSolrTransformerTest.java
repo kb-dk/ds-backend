@@ -203,7 +203,6 @@ class XSLTSolrTransformerTest extends XSLTTransformerTestBase {
 						"  - old_imageserver: 'http://kb-images.kb.dk'\n";
 		YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
 		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, RECORD_40221e30);
-		System.out.println(solrString);
 		assertTrue(solrString.contains("\"origin\":\"ds.test\""));
 	}
 
