@@ -86,7 +86,7 @@ config:
                     stylesheet: 'xslt/preservica2schemaorg.xsl'
                     injections:
                       #- imageserver: ${path:config.imageservers[default=true].url}
-                      - streamingserver: "here_should_be_a_wowza_url"
+                      - streamingserver: ${path:config.streamingserver.url}
                       - old_imageserver: ${path:config.oldimageserver.url}
           - SolrJSON:
               mime: 'application/json'
@@ -95,7 +95,7 @@ config:
                     stylesheet: 'xslt/preservica2solr.xsl'
                     injections:
                       # - imageserver: ${path:config.imageservers[default=true].url}
-                      - streamingserver: "here_should_be_a_wowza_url"
+                      - streamingserver: ${path:config.streamingserver.url}
                       - old_imageserver: ${path:config.oldimageserver.url}
 
 

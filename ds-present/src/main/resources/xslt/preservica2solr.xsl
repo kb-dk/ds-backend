@@ -42,13 +42,43 @@
         <!-- Manifestations are extracted here. I would like to create a template for this.
              However, this is quite tricky when using the document() function -->
         <xsl:if test="$childRecord != ''">
+          <xsl:variable name="manifestationRef">
+            <xsl:value-of select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/FileRef"/>
+          </xsl:variable>
+          <xsl:variable name="urlPrefix">
+            <xsl:choose>
+              <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">bart-access-copies-tv/</xsl:when>
+              <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">bart-access-copies-radio/</xsl:when>
+              <xsl:otherwise></xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+          <xsl:variable name="path">
+            <xsl:variable name="path_level1">
+              <xsl:value-of select="concat(substring($manifestationRef,1,2), '/')"/>
+            </xsl:variable>
+            <xsl:variable name="path_level2">
+              <xsl:value-of select="concat(substring($manifestationRef,3,2), '/')"/>
+            </xsl:variable>
+            <xsl:variable name="path_level3">
+              <xsl:value-of select="concat(substring($manifestationRef,5,2), '/')"/>
+            </xsl:variable>
+            <xsl:value-of select="concat($path_level1, $path_level2, $path_level3)"/>
+          </xsl:variable>
+          <xsl:variable name="streamingUrl">
+            <xsl:value-of select="concat($streamingserver, $urlPrefix,
+                                         $path, $manifestationRef,
+                                         '/playlist.m3u8')"/>
+          </xsl:variable>
           <f:array key="resource_id">
             <xsl:for-each select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/FileRef">
               <f:string>
-                <xsl:value-of select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/FileRef"/>
+                <xsl:value-of select="$manifestationRef"/>
               </f:string>
             </xsl:for-each>
           </f:array>
+          <f:string key="streaming_url">
+            <xsl:value-of select="$streamingUrl"/>
+          </f:string>
           <f:string key="manifestation_type">
             <xsl:value-of select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/ComponentType"/>
           </f:string>
