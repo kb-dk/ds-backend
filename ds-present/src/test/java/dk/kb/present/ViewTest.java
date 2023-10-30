@@ -58,8 +58,7 @@ class ViewTest {
         View jsonldView = new View(radiotvConf.getSubMap("radiotv").getYAMLList("views").get(1), radiotvConf.getSubMap("radiotv").getString("origin"));
         String pvica = Resolver.resolveUTF8String("internal_test_files/tvMetadata/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
         String jsonld = jsonldView.apply("df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00", pvica, null);
-
-        System.out.println(jsonld);
+        assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
     }
 
     @Test
