@@ -103,13 +103,6 @@ paths:
           schema:
             type: string
             example: 'radiotv'
-        - name: recordType
-          in: query
-          description: |
-            The specific type of records to extract.
-          schema:
-            type: string
-            enum: [COLLECTION, DELIVERABLEUNIT, MANIFESTATION]
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'

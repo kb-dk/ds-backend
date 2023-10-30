@@ -93,7 +93,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     }
 
     @Override
-    public StreamingOutput getRecords(String collection, String recordType, Long mTime, Long maxRecords, String format) {
+    public StreamingOutput getRecords(String collection, Long mTime, Long maxRecords, String format) {
         log.debug("getRecords(collection='{}', mTime={}, maxRecords={}, format='{}') called with call details: {}",
                   collection, mTime, maxRecords, format, getCallDetails());
         if (collection == null) {
