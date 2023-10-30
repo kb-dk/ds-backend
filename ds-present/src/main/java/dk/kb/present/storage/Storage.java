@@ -18,6 +18,7 @@ package dk.kb.present.storage;
 import java.util.stream.Stream;
 
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.model.v1.RecordTypeDto;
 
 /**
  * Provides access to records.
@@ -72,5 +73,7 @@ public interface Storage {
      * @return a stream of records after the given mTime.
      */
     Stream<DsRecordDto> getDSRecords(String origin, long mTime, long maxRecords);
+
+    Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords);
 
 }
