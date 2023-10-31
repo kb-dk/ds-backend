@@ -19,7 +19,6 @@ import dk.kb.present.transform.TransformerController;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
-import org.apache.commons.lang3.function.TriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
@@ -41,10 +39,12 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     private static final String MIME_KEY = "mime";
     private static final String TRANSFORMERS_KEY = "transformers";
+    private static final String STRATEGY_KEY = "strategy";
 
     private final String id;
     private final String origin;
     private final MediaType mime;
+    private final String strategy;
 
     /**
      * Creates a view from the given YAML. Expects the YAML to contain a single entry,
@@ -65,6 +65,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         conf = conf.getSubMap(id);
         String[] mimeTokens = conf.getString(MIME_KEY).split("/", 2);
         mime = new MediaType(mimeTokens[0], mimeTokens[1]);
+        strategy = conf.getString(STRATEGY_KEY, "none");
         if (conf.isEmpty()) {
             throw new IllegalArgumentException("No transformer specified for view '" + id + "'");
         }
@@ -88,19 +89,17 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     @Override
     public String apply(DsRecordDto record) {
-        String recordID = record.getId();
-        String content = record.getData();
-        String child = getFirstChild(record);
-
-
         final Map<String, String> metadata = new HashMap<>();
-        metadata.put("recordID", recordID);
-        metadata.put("origin", origin);
+        addBasicMetadataToMetadataMap(record, metadata);
 
-        if (child != null ) {
-            metadata.put("childRecord", child);
+        String content = record.getData();
+
+        switch (strategy) {
+            case "manifestation":
+                updateMetadataMapWithPreservicaManifestation(record, metadata);
+            case "none":
+
         }
-
 
         for (DSTransformer transformer: this) {
             try {
@@ -108,12 +107,34 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             } catch (Exception e) {
                 String message = String.format(
                         Locale.ROOT, "Exception in View '%s' while calling %s with recordID '%s' and metadata %s",
-                        getId(), transformer, recordID, metadata);
+                        getId(), transformer, record.getId(), metadata);
                 log.warn(message, e);
                 throw new InternalServiceException(message);
             }
         }
         return content;
+    }
+
+    /**
+     * Extract metadata which should always be present to a metadata map.
+     * @param record to extract basic metadata from.
+     * @param metadata map that values from the record is extracted to.
+     */
+    private void addBasicMetadataToMetadataMap(DsRecordDto record, Map<String, String> metadata) {
+        metadata.put("recordID", record.getId());
+        metadata.put("origin", origin);
+    }
+
+    /**
+     * Update the map of metadata with child record from the deliverable unit contained in the input record.
+     * @param record with an expanded tree containing manifestation childs.
+     * @param metadata map that values from the record is extracted to.
+     */
+    private void updateMetadataMapWithPreservicaManifestation(DsRecordDto record, Map<String, String> metadata) {
+        String child = getFirstChild(record);
+        if (child != null ) {
+            metadata.put("childRecord", child);
+        }
     }
 
     @Override
