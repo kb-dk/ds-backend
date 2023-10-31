@@ -63,8 +63,8 @@
           </xsl:variable>
           <xsl:variable name="urlPrefix">
             <xsl:choose>
-              <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">bart-access-copies-tv/</xsl:when>
-              <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">bart-access-copies-radio/</xsl:when>
+              <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">mp4:bart-access-copies-tv/</xsl:when>
+              <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">mp3:bart-access-copies-radio/</xsl:when>
               <xsl:otherwise></xsl:otherwise>
             </xsl:choose>
           </xsl:variable>

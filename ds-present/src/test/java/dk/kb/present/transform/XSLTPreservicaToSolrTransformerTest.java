@@ -302,7 +302,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testStreamingUrl() throws IOException {
         String solrJson = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SOLR, RECORD_1f3a6a66, null);
-        assertTrue(solrJson.contains("\"www.example.com\\/streaming\\/bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
+        assertTrue(solrJson.contains("\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
     }
 
 
