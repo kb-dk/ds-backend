@@ -1,5 +1,6 @@
 package dk.kb.present;
 
+import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,9 @@ class ViewTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View view = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(0), dsflConf.getSubMap("dsfl").getString("origin"));
-        assertEquals("SameAsInput", view.apply("someID", "SameAsInput", "")); // Identity view
+        DsRecordDto record = new DsRecordDto();
+        record.setData("SameAsInput");
+        assertEquals("SameAsInput", view.apply(record)); // Identity view
     }
 
 
@@ -41,7 +44,10 @@ class ViewTest {
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
-        String jsonld = jsonldView.apply(RECORD_40221e, mods, "");
+
+        DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id");
+
+        String jsonld = jsonldView.apply(recordDto);
         assertTrue(jsonld.contains("\"headline\":[{\"value\":\"Christian VIII\",\"@language\":\"da\"}]"));
     }
 
@@ -51,7 +57,10 @@ class ViewTest {
         YAML radiotvConf = conf.getYAMLList(".config.collections").get(1);
         View jsonldView = new View(radiotvConf.getSubMap("radiotv").getYAMLList("views").get(1), radiotvConf.getSubMap("radiotv").getString("origin"));
         String pvica = Resolver.resolveUTF8String("internal_test_files/tvMetadata/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
-        String jsonld = jsonldView.apply(RECORD_df3dc9cf, pvica, null);
+
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id");
+
+        String jsonld = jsonldView.apply(recordDto);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
     }
 
@@ -61,7 +70,10 @@ class ViewTest {
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View solrView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
-        String solrJson = solrView.apply(RECORD_df3dc9cf, mods, "");
+
+        DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id");
+
+        String solrJson = solrView.apply(recordDto);
         assertTrue(solrJson.contains("\"origin\":\"ds.test\""));
         assertTrue(solrJson.contains("\"resource_id\":[\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"), "SolrJSON does not contain correct resource_id");
         assertTrue(solrJson.contains("\"thumbnail\":\"https:\\/\\/example.com\\/imageserver\\/%2FDAMJP2%2FDAM%2FSamlingsbilleder%2F0000%2F624%2F420%2FKE070592\\/full\\/%21150%2C150\\/0\\/default.jpg\"")

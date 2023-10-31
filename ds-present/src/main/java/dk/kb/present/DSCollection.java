@@ -132,38 +132,9 @@ public class DSCollection {
         View view = getView(format);
         DsRecordDto record = storage.getDSRecordTreeLocal(recordID);
 
-        String recordData = record.getData();
-        String childData = getFirstChild(record);
-        return view.apply(recordID, recordData, childData);
+        return view.apply(record);
     }
 
-    /**
-     * If record has children, the first child is returned.
-     * @param record to extract the newest child from.
-     * @return  the data from the first child related to the input record.
-     */
-    private String getFirstChild(DsRecordDto record) {
-        // TODO: Figure how to choose correct manifestation for record, if more than one is present
-        // Return first child record, but if there are multiple presentation manifestations,
-        // the rest are currently not added to the transformation
-        return record.getChildren() == null ? "" :
-                record.getChildren().stream()
-                        .map(this::getNonNullChild)
-                        .findFirst().orElse("");
-    }
-
-
-    /**
-     * Check for child being null.
-     * @param child record to check for data in.
-     * @return the data from child if child is not null. Otherwise, return an empty string.
-     */
-    private String getNonNullChild(DsRecordDto child) {
-        if (child.getData() == null){
-            return "";
-        }
-        return child.getData();
-    }
 
     /**
      * Retrieve a record with the given ID in ds-storage record format.
@@ -206,8 +177,7 @@ public class DSCollection {
             return storage.getDSRecordsByRecordTypeLocalTree(origin, deliverableUnit, mTime, maxRecords)
                     .peek(record -> {
                         try {
-                            String relation = getFirstChild(record);
-                            record.data(view.apply(record.getId(), record.getData(), relation));
+                            record.data(view.apply(record));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(
                                     "Exception transforming record '" + record.getId() + "' to format '" + format + "'");

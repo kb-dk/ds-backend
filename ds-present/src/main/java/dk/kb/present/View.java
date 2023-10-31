@@ -16,6 +16,7 @@ package dk.kb.present;
 
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
+import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.lang3.function.TriFunction;
@@ -28,13 +29,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 
 /**
  * A view is at the core a list of {@link dk.kb.present.transform.DSTransformer}s.
  * It takes three values of {@code recordID, recordContent, childRecord} and return transformed recordContent.
  */
-public class View extends ArrayList<DSTransformer> implements TriFunction<String, String, String, String> {
+public class View extends ArrayList<DSTransformer> implements Function<DsRecordDto, String> {
     private static final Logger log = LoggerFactory.getLogger(View.class);
 
     private static final String MIME_KEY = "mime";
@@ -85,7 +87,12 @@ public class View extends ArrayList<DSTransformer> implements TriFunction<String
     }
 
     @Override
-    public String apply(String recordID, String content, String child) {
+    public String apply(DsRecordDto record) {
+        String recordID = record.getId();
+        String content = record.getData();
+        String child = getFirstChild(record);
+
+
         final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", recordID);
         metadata.put("origin", origin);
@@ -117,5 +124,32 @@ public class View extends ArrayList<DSTransformer> implements TriFunction<String
                ", origin=" + origin +
                ", transformers=" + super.toString() +
                ')';
+    }
+
+    /**
+     * If record has children, the first child is returned.
+     * @param record to extract the newest child from.
+     * @return  the data from the first child related to the input record.
+     */
+    private String getFirstChild(DsRecordDto record) {
+        // TODO: Figure how to choose correct manifestation for record, if more than one is present
+        // Return first child record, but if there are multiple presentation manifestations,
+        // the rest are currently not added to the transformation
+        return record.getChildren() == null ? "" :
+                record.getChildren().stream()
+                        .map(this::getNonNullChild)
+                        .findFirst().orElse("");
+    }
+
+    /**
+     * Check for child being null.
+     * @param child record to check for data in.
+     * @return the data from child if child is not null. Otherwise, return an empty string.
+     */
+    private String getNonNullChild(DsRecordDto child) {
+        if (child.getData() == null){
+            return "";
+        }
+        return child.getData();
     }
 }
