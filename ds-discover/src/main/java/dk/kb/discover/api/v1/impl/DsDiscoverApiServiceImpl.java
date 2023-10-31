@@ -1,9 +1,7 @@
 package dk.kb.discover.api.v1.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -48,7 +46,12 @@ import dk.kb.util.webservice.exception.ServiceException;
 public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
 
-
+    /**
+     * If the config has {@code config.solr.permissive: true}, all parameters are passed on Solr calls.
+     * If it is false, only vetted parameters are allowed.
+     */
+    public static final String PERMISSIVE_KEY = "config.solr.permissive";
+    public static final boolean PERMISSIVE_DEFAULT = false;
 
     /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
 
@@ -156,7 +159,12 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
                       collection, q, getCallDetails());
             Map<String, String[]> extra = getExtraParams();
             if (!extra.isEmpty()) {
-                throw new InvalidArgumentServiceException("Unsupported parameters: " + extra.keySet());
+                if (ServiceConfig.getConfig().getBoolean(PERMISSIVE_KEY, PERMISSIVE_DEFAULT)) {
+                    log.warn("solrMLT: ds-discover is configured to permit all Solr parameters. " +
+                            "Non-vetted parameters passed on: {}", toString(extra));
+                } else {
+                    throw new InvalidArgumentServiceException("Unsupported parameters: " + toString(extra));
+                }
             }
             SolrService solr = SolrManager.getSolrService(collection);
             // TODO: Pass the map of request parameters instead of all parameters as first class
@@ -179,7 +187,8 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
 
             return solr.mlt(q, fq, rows, start, fl, qOp, wt,
                     mltFl, mltMintf, mltMindf, mltMaxdf, mltMaxdfpct, mltMinwl, mltMaxwl, mltMaxqt,
-                    mltBoost, mltInterestingTerms);
+                    mltBoost, mltInterestingTerms,
+                    extra);
         } catch (Exception e){
             throw handleException(e);
         }
@@ -208,7 +217,12 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
                       collection, q, getCallDetails());
             Map<String, String[]> extra = getExtraParams();
             if (!extra.isEmpty()) {
-                throw new InvalidArgumentServiceException("Unsupported parameters: " + extra.keySet());
+                if (ServiceConfig.getConfig().getBoolean(PERMISSIVE_KEY, PERMISSIVE_DEFAULT)) {
+                    log.warn("solrSearch: ds-discover is configured to permit all Solr parameters. " +
+                            "Non-vetted parameters passed on: {}", toString(extra));
+                } else {
+                    throw new InvalidArgumentServiceException("Unsupported parameters: " + toString(extra));
+                }
             }
             SolrService solr = SolrManager.getSolrService(collection);
             // TODO: Pass the map of request parameters instead of all parameters as first class
@@ -229,13 +243,25 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             log.debug("solrSearch: Using filter query='{}'  for user attributes='{}' ",filterQuery.getFilterQuery(), getLicenseQueryDto()) ;
             fq.add(filterQuery.getFilterQuery()); //Add the additional filter query
                         
-            return solr.query(q, fq, rows, start, fl, facet, facetField, qOp, wt, version, indent, debug, debugExplainStructured);
+            return solr.query(q, fq, rows, start, fl, facet, facetField, qOp,
+                    wt, version, indent, debug, debugExplainStructured, extra);
         } catch (Exception e){
             throw handleException(e);
         }
     }
 
-    
+    /**
+     * Timy helper for creating a proper toString for maps with String arrays as values.
+     * @param map a {@code String -> String[]} map.
+     * @return human readable representation of {@code map}.
+     */
+    private String toString(Map<String, String[]> map) {
+        return map.entrySet().stream()
+                .map(e -> e.getKey() + "=[" + String.join(", ", e.getValue()) + "]")
+                .collect(Collectors.joining(", ", "{", "}"));
+    }
+
+
     private static GetUserQueryInputDto getLicenseQueryDto() {
     	   GetUserQueryInputDto getQueryDto = new GetUserQueryInputDto(); 
           

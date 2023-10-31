@@ -14,6 +14,12 @@ config:
     max: 10000
 
   solr:
+    # If permissive is false, only vetted Solr parameters are accepted
+    # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
+    # Intended for development purposes.
+    # WARNING: This should never be true in production.
+    permissive: false
+
     # Test purpose only in ds-discover-behaviour.yaml. Override in environment configuration.
     collections:
       # Keys are collection names

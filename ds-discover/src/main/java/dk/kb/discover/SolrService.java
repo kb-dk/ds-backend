@@ -28,6 +28,7 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -160,10 +161,11 @@ public class SolrService {
      * @see <a href="https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html">Solr MLT</a>.
      * @return solr More Like This response.
      */
+    @SuppressWarnings("SuspiciousTernaryOperatorInVarargsCall")
     public String mlt(String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt,
                       String mltFl, Integer mltMintf, Integer mltMindf, Integer mltMaxdf, Integer mltMaxdfpct,
                       Integer mltMinwl, Integer mltMaxwl, Integer mltMaxqt, Boolean mltBoost,
-                      String mltInterestingTerms) {
+                      String mltInterestingTerms, Map<String, String[]> extra) {
         if (q == null) {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
@@ -181,6 +183,11 @@ public class SolrService {
         addParamIfAvailable(builder, MLT_BOOST, mltBoost);
         if (mltInterestingTerms != null) {
             builder.queryParam(MLT_INTERESTING_TERMS, MLT_INTERESTING_TERMS_ENUM.safeParse(mltInterestingTerms));
+        }
+        if (extra != null) {
+            extra.forEach((key, values) ->
+                    Arrays.stream(values).forEach(
+                            value -> builder.queryParam(key, value)));
         }
 
         return performCall(q, builder, "mlt");
@@ -200,9 +207,11 @@ public class SolrService {
      * @param indent                 if true, Solr response is indented (if possible).
      * @param debug                  as enumerated in {@link DEBUG_ENUM}.
      * @param debugExplainStructured true if debug information should be structuredinstead of just a string.
+     * @param extra                  optional extra parameters.
      * @return Solr response.
      */
-    public String query(String q, List<String> fq, Integer rows, Integer start, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
+    @SuppressWarnings("SuspiciousTernaryOperatorInVarargsCall")
+    public String query(String q, List<String> fq, Integer rows, Integer start, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured, Map<String, String[]> extra) {
         if (q == null) {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
@@ -223,6 +232,12 @@ public class SolrService {
         }
         if (debugExplainStructured != null || debug != null) {
             builder.queryParam(DEBUG_EXPLAIN_STRUCTURED, Boolean.parseBoolean(debugExplainStructured));
+        }
+
+        if (extra != null) {
+            extra.forEach((key, values) ->
+                    Arrays.stream(values).forEach(
+                            value -> builder.queryParam(key, value)));
         }
 
         return performCall(q, builder, "search");
