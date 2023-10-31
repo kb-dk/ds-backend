@@ -157,6 +157,7 @@ public class FileStorage implements Storage {
                 .id(recordID)
                 .data(safeRead(path))
                 .deleted(false)
+                .children(addTestChildren())
                 .mTime(mTime)
                 .mTimeHuman(DATE_FORMAT.format(new Date(mTime / 1000)));
     }
@@ -343,5 +344,46 @@ public class FileStorage implements Storage {
                ", isDefault=" + isDefault +
                ", stripPrefix=" + stripPrefix +
                ')';
+    }
+
+    /**
+     * Method that creates test children, where one should be filtered away and the other should be returned,
+     * when records are returned from a tess FileStorage through a CollectionHandler. These test files are used to
+     * test filtering of preservation manifestations.
+     * @return a list of test children records for a deliverable unit.
+     */
+    private List<DsRecordDto> addTestChildren() {
+        List<DsRecordDto> children = new ArrayList<>();
+
+        DsRecordDto wrongChild = new DsRecordDto();
+        wrongChild.setData("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<xip:Manifestation xmlns:xip=\"http://www.tessella.com/XIP/v4\" status=\"new\">" +
+                "<ManifestationRelRef>1</ManifestationRelRef>" +
+                "<TypeRef>1</TypeRef>" +
+                "<ComponentManifestation status=\"same\">" +
+                "<ComponentRef>wrong-reference</ComponentRef>" +
+                "<ComponentManifestationRef>wrong-reference</ComponentManifestationRef>" +
+                "<MasterFileRef>wrong-reference</MasterFileRef>" +
+                "<FileRef>wrong-reference</FileRef>" +
+                "</ComponentManifestation>" +
+                "</xip:Manifestation>");
+
+        DsRecordDto correctChild = new DsRecordDto();
+        correctChild.setData("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<xip:Manifestation xmlns:xip=\"http://www.tessella.com/XIP/v4\" status=\"new\">" +
+                "<ManifestationRelRef>2</ManifestationRelRef>" +
+                "<TypeRef>2</TypeRef>" +
+                "<ComponentManifestation status=\"same\">" +
+                "<ComponentRef>correct-reference</ComponentRef>" +
+                "<ComponentManifestationRef>correct-reference</ComponentManifestationRef>" +
+                "<MasterFileRef>correct-reference</MasterFileRef>" +
+                "<FileRef>correct-reference</FileRef>" +
+                "</ComponentManifestation>" +
+                "</xip:Manifestation>");
+
+        children.add(wrongChild);
+        children.add(correctChild);
+
+        return children;
     }
 }
