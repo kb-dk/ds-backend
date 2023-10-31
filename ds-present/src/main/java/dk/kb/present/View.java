@@ -89,8 +89,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     @Override
     public String apply(DsRecordDto record) {
-        final Map<String, String> metadata = new HashMap<>();
-        addBasicMetadataToMetadataMap(record, metadata);
+        final Map<String, String> metadata = createBasicMetadataMap(record);
 
         String content = record.getData();
 
@@ -118,11 +117,12 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     /**
      * Extract metadata which should always be present to a metadata map.
      * @param record to extract basic metadata from.
-     * @param metadata map that values from the record is extracted to.
      */
-    private void addBasicMetadataToMetadataMap(DsRecordDto record, Map<String, String> metadata) {
+    private Map<String,String> createBasicMetadataMap(DsRecordDto record) {
+        final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", record.getId());
         metadata.put("origin", origin);
+        return metadata;
     }
 
     /**
