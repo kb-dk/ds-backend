@@ -251,7 +251,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     }
 
     /**
-     * Timy helper for creating a proper toString for maps with String arrays as values.
+     * Tiny helper for creating a proper toString for maps with String arrays as values.
      * @param map a {@code String -> String[]} map.
      * @return human readable representation of {@code map}.
      */
