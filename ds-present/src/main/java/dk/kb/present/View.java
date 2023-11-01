@@ -150,9 +150,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      */
     private void updateMetadataMapWithPreservicaManifestation(DsRecordDto record, Map<String, String> metadata) {
         String child = getFirstChild(record);
-        if (child != null ) {
-            metadata.put("childRecord", child);
-        }
+        metadata.put("childRecord", child);
     }
 
     @Override
@@ -166,7 +164,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * If record has children, the first child is returned.
+     * If record has children, the first child is returned. If record have not got children an empty string is returned.
      * @param record to extract the newest child from.
      * @return  the data from the first child related to the input record.
      */
@@ -181,7 +179,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Check for child being null.
+     * Check for the data of the child being null.
      * @param child record to check for data in.
      * @return the data from child if child is not null. Otherwise, return an empty string.
      */
