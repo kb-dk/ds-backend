@@ -55,7 +55,6 @@ config:
     - dsfl: # ds-present internal
         prefix: 'local.mods' # The prefix to match on incoming IDs
         origin: 'ds.test'
-        strategy: 'none'
         description: 'Local records, mostly biographical'
         getrecordendpoint: 'http://example.com/ds-present/v1/record/'
 
@@ -63,12 +62,12 @@ config:
         views:
           - mods:
               mime: 'application/xml'
-              strategy: 'none'
+              strategy: 'NONE'
               transformers:
                 - identity: # No transformation steps as mods is the core format for images-dsfl
           - json-ld:
               mime: 'application/json'
-              strategy: 'none'
+              strategy: 'NONE'
               transformers:
                 - xslt:
                     stylesheet: 'xslt/mods2schemaorg.xsl'
@@ -77,7 +76,7 @@ config:
                     - old_imageserver: 'http://kb-images.kb.dk'
           - solrjson:
               mime: 'application/json'
-              strategy: 'none'
+              strategy: 'NONE'
               transformers:
                 - xslt:
                     stylesheet: 'xslt/mods2solr.xsl'
@@ -86,7 +85,7 @@ config:
                     - old_imageserver: 'http://kb-images.kb.dk'
           - raw:
               mime: 'text/plain'
-              strategy: 'none'
+              strategy: 'NONE'
               transformers:
                 - fail:
                     message: 'Raw format contains confidential information and cannot be delivered'
@@ -105,12 +104,12 @@ config:
             views:
               - mods:
                   mime: 'application/xml'
-                  strategy: 'none'
+                  strategy: 'NONE'
                   transformers:
                     - identity: # No transformation steps as mods is the core format for images-dsfl
               - json-ld:
                   mime: 'application/json'
-                  strategy: 'manifestation'
+                  strategy: 'MANIFESTATION'
                   transformers:
                     - xslt:
                         stylesheet: 'xslt/preservica2schemaorg.xsl'
@@ -119,7 +118,7 @@ config:
                         - streamingserver: "here_should_be_a_wowza_url"
               - solrjson:
                   mime: 'application/json'
-                  strategy: 'manifestation'
+                  strategy: 'MANIFESTATION'
                   transformers:
                     - xslt:
                         stylesheet: 'xslt/preservica2solr.xsl'
@@ -128,7 +127,7 @@ config:
                         - streamingserver: "here_should_be_a_wowza_url"
               - raw:
                   mime: 'text/plain'
-                  strategy: 'none'
+                  strategy: 'NONE'
                   transformers:
                     - fail:
                         message: 'Raw format contains confidential information and cannot be delivered'

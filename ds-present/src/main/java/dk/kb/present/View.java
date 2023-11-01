@@ -44,7 +44,25 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private final String id;
     private final String origin;
     private final MediaType mime;
-    private final String strategy;
+    private final Strategy strategy;
+
+    /**
+     * Defines the strategy used to construct the wanted view of the resource.
+     * Strategy can be one of the following: <br/>
+     * {@link #NONE} <br/>
+     * {@link #MANIFESTATION} <br/>
+     */
+    enum Strategy {
+        /**
+         * Default strategy, used when the metadata to transform does not depend on manifestation metadata.
+         */
+        NONE,
+        /**
+         * Manifestation strategy, used when the metadata to transform is dependent on one or more manifestations.
+         * This strategy injects a manifestation into the XSLT,which is then used as part of the transformation.
+         */
+        MANIFESTATION
+    }
 
     /**
      * Creates a view from the given YAML. Expects the YAML to contain a single entry,
@@ -65,7 +83,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         conf = conf.getSubMap(id);
         String[] mimeTokens = conf.getString(MIME_KEY).split("/", 2);
         mime = new MediaType(mimeTokens[0], mimeTokens[1]);
-        strategy = conf.getString(STRATEGY_KEY, "none");
+        strategy = Strategy.valueOf(conf.getString(STRATEGY_KEY, "NONE"));
         if (conf.isEmpty()) {
             throw new IllegalArgumentException("No transformer specified for view '" + id + "'");
         }
@@ -94,9 +112,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         String content = record.getData();
 
         switch (strategy) {
-            case "manifestation":
+            case MANIFESTATION:
                 updateMetadataMapWithPreservicaManifestation(record, metadata);
-            case "none":
+            case NONE:
 
         }
 
