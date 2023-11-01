@@ -158,6 +158,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         return "View(" +
                "id='" + id + '\'' +
                ", mime=" + mime +
+               ", strategy=" + strategy +
                ", origin=" + origin +
                ", transformers=" + super.toString() +
                ')';
