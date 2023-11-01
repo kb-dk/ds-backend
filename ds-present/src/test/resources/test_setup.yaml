@@ -31,7 +31,10 @@ config:
         #      whitelist: *whitelist
           - folder:
               root: 'src/test/resources/xml/copyright_extraction'
-              extension: '.xml'                            
+              extension: '.xml'
+          - folder:
+              root: 'src/test/resources/internal_test_files/tvMetadata'
+              extension: '.xml'
               
 
   # Settings for handling at the record level

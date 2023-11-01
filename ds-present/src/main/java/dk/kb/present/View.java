@@ -159,7 +159,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param metadata map that values from the record is extracted to.
      */
     private void updateMetadataMapWithPreservicaManifestation(DsRecordDto record, Map<String, String> metadata) {
-        String child = getFirstChild(record);
+        String child = getFirstPresentationManifestation(record);
         metadata.put("manifestation", child);
     }
 
@@ -175,17 +175,19 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * If record has children, the first child is returned. If record have not got children an empty string is returned.
-     * @param record to extract the newest child from.
-     * @return  the data from the first child related to the input record.
+     * If record has children, the first presentation manifestation is returned.
+     * If record have not got children an empty string is returned.
+     * @param record to extract the newest presentation manifestation from.
+     * @return  the data from the first presentation manifestation related to the input record.
      */
-    private String getFirstChild(DsRecordDto record) {
+    private String getFirstPresentationManifestation(DsRecordDto record) {
         // TODO: Figure how to choose correct manifestation for record, if more than one is present
-        // Return first child record, but if there are multiple presentation manifestations,
+        // Return first child record of manifestation type = 2. If there are multiple presentation manifestations,
         // the rest are currently not added to the transformation
         return record.getChildren() == null ? "" :
                 record.getChildren().stream()
                         .map(this::getNonNullChild)
+                        .filter(childData -> childData.contains("<ManifestationRelRef>2</ManifestationRelRef>"))
                         .findFirst().orElse("");
     }
 
