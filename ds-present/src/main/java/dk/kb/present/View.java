@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -115,6 +116,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             case MANIFESTATION:
                 updateMetadataMapWithPreservicaManifestation(record, metadata);
             case NONE:
+                break;
+            default:
+                throw new UnsupportedOperationException("Strategy: '" + strategy + "' is not allowed. " +
+                        "Allowed strategies are: '" + Arrays.toString(Strategy.values()) + "'.");
 
         }
 
@@ -144,7 +149,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Update the map of metadata with child record from the deliverable unit contained in the input record.
+     * Update the map of metadata with manifestation record from the deliverable unit contained in the input record.
      * @param record with an expanded tree containing manifestation childs.
      * @param metadata map that values from the record is extracted to.
      */
