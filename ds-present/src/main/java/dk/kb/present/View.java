@@ -59,8 +59,13 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
          */
         NONE,
         /**
-         * Manifestation strategy, used when the metadata to transform is dependent on one or more manifestations.
+         * Manifestation strategy, used when the metadata to transform is dependent on one or more manifestations. This
+         * strategy is oriented towards metadata from preservica and expects the metadata to conform to the preservica
+         * datamodel, where data is divided between DeliverableUnits and Manifestations. The DeliverableUnit contains
+         * the metadata, while a manifestation contains metadata on a single representation of the resource described in
+         * the DeliverableUnit.
          * This strategy injects a manifestation into the XSLT,which is then used as part of the transformation.
+         * The manifestation is needed to create streaming_urls for resources.
          */
         MANIFESTATION
     }
