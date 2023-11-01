@@ -22,7 +22,7 @@
   <xsl:param name="streamingserver"/>
   <xsl:param name="recordID"/>
   <xsl:param name="origin"/>
-  <xsl:param name="childRecord"/>
+  <xsl:param name="manifestation"/>
 
   <xsl:template match="/" >
     <xsl:variable name="solrjson">
@@ -41,9 +41,9 @@
 
         <!-- Manifestations are extracted here. I would like to create a template for this.
              However, this is quite tricky when using the document() function -->
-        <xsl:if test="$childRecord != ''">
+        <xsl:if test="$manifestation != ''">
           <xsl:variable name="manifestationRef">
-            <xsl:value-of select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/FileRef"/>
+            <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef"/>
           </xsl:variable>
           <xsl:variable name="urlPrefix">
             <xsl:choose>
@@ -70,7 +70,7 @@
                                          '/playlist.m3u8')"/>
           </xsl:variable>
           <f:array key="resource_id">
-            <xsl:for-each select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/FileRef">
+            <xsl:for-each select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef">
               <f:string>
                 <xsl:value-of select="$manifestationRef"/>
               </f:string>
@@ -80,7 +80,7 @@
             <xsl:value-of select="$streamingUrl"/>
           </f:string>
           <f:string key="manifestation_type">
-            <xsl:value-of select="f:parse-xml($childRecord)/xip:Manifestation/ComponentManifestation/ComponentType"/>
+            <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/ComponentType"/>
           </f:string>
         </xsl:if>
 
