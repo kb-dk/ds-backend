@@ -32,7 +32,7 @@ import java.util.function.Function;
 
 /**
  * A view is at the core a list of {@link dk.kb.present.transform.DSTransformer}s.
- * It takes three values of {@code recordID, recordContent, childRecord} and return transformed recordContent.
+ * It takes one value of {@code DsRecordDto} and return transformed recordContent.
  */
 public class View extends ArrayList<DSTransformer> implements Function<DsRecordDto, String> {
     private static final Logger log = LoggerFactory.getLogger(View.class);
@@ -150,7 +150,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      */
     private void updateMetadataMapWithPreservicaManifestation(DsRecordDto record, Map<String, String> metadata) {
         String child = getFirstChild(record);
-        metadata.put("childRecord", child);
+        metadata.put("manifestation", child);
     }
 
     @Override

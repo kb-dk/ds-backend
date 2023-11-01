@@ -72,7 +72,7 @@ public class TestUtil {
 		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		metadata.put("streamingserver", "www.example.com/streaming/");
 		metadata.put("origin", "ds.test");
-		metadata.put("childRecord", childData);
+		metadata.put("manifestation", childData);
 		//System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
 	}
