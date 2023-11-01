@@ -32,7 +32,7 @@
           <xsl:value-of select="$schemaorg-xml('name')"/>
         </f:string>
 
-        <xsl:if test="$schemaorg-xml('keywords') != ''">
+        <xsl:if test="$schemaorg-xml('keywords')">
           <!--Save categories to a variable as a sequence. -->
           <xsl:variable name="categories" as="item()*" select="tokenize($schemaorg-xml('keywords'), ',')"/>
           <!--Create array of categories, which fits with the multivalued solr field -->
@@ -43,13 +43,31 @@
           </f:array>
         </xsl:if>
 
-        <f:string key="collection">
-          <xsl:value-of select="$schemaorg-xml('isPartOf')('name')"/>
-        </f:string>
+        <xsl:if test="$schemaorg-xml('isPartOf')('name')">
+          <f:string key="collection">
+            <xsl:value-of select="$schemaorg-xml('isPartOf')('name')"/>
+          </f:string>
+        </xsl:if>
 
-        <f:string key="genre">
-          <xsl:value-of select="$schemaorg-xml('genre')"/>
-        </f:string>
+        <xsl:if test="$schemaorg-xml('genre')">
+          <f:string key="genre">
+            <xsl:value-of select="$schemaorg-xml('genre')"/>
+          </f:string>
+        </xsl:if>
+
+        <xsl:if test="$schemaorg-xml('name')">
+          <f:string key="title">
+            <xsl:value-of select="$schemaorg-xml('name')"/>
+          </f:string>
+        </xsl:if>
+
+        <xsl:if test="$schemaorg-xml('alternateName')">
+          <f:string key="original_title">
+            <xsl:value-of select="$schemaorg-xml('alternateName')"/>
+          </f:string>
+        </xsl:if>
+
+
 
 
         <!--Extract the array of identifiers to a variable, where the individual maps can be accessed. -->
