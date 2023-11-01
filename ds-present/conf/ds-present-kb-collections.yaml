@@ -11,14 +11,17 @@ config:
     # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
     - raw:
         mime: 'text/plain'
+        strategy: 'NONE'
         transformers:
           - identity:
     - MODS:
         mime: 'application/xml'
+        strategy: 'NONE'
         transformers:
           - identity: # No transformation steps as mods is the core format for images-dsfl
     - JSON-LD:
         mime: 'application/json'
+        strategy: 'NONE'
         transformers:
           - imagerights: # KB specific rules for image rights stated in MODS
           - xslt:
@@ -29,6 +32,7 @@ config:
 
     - SolrJSON:
         mime: 'application/json'
+        strategy: 'NONE'
         transformers:
           - imagerights: # KB specific rules for image rights stated in MODS
           - xslt:
@@ -77,10 +81,12 @@ config:
         views:
           - raw:
               mime: 'text/plain'
+              strategy: 'NONE'
               transformers:
                 - identity:
           - JSON-LD:
               mime: 'application/json'
+              strategy: 'MANIFESTATION'
               transformers:
                 - xslt:
                     stylesheet: 'xslt/preservica2schemaorg.xsl'
@@ -90,6 +96,7 @@ config:
                       - old_imageserver: ${path:config.oldimageserver.url}
           - SolrJSON:
               mime: 'application/json'
+              strategy: 'MANIFESTATION'
               transformers:
                 - xslt:
                     stylesheet: 'xslt/preservica2solr.xsl'
