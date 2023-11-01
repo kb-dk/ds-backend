@@ -26,6 +26,12 @@
 
 
 
+        <f:array key="test">
+          <xsl:for-each select="map:keys($schemaorg-xml('identifier'))">
+
+
+          </xsl:for-each>
+        </f:array>
 
         <f:string key="keys">
           <xsl:value-of select="map:keys($schemaorg-xml('identifier'))"/>
