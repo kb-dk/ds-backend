@@ -36,8 +36,8 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     // License handling in DsPresentApiServiceImpl as tokens from the request will be needed later on
     private static final String LICENSE_URL_KEY = "config.licensemodule.url";
     private static final String LICENSE_ALLOWALL_KEY = "config.licensemodule.allowall";
-    private static DsLicenseApi licenseClient;
-    private static boolean licenseAllowAll = false;
+    static DsLicenseApi licenseClient;     // Shared between instances
+    static boolean licenseAllowAll = false;
     public static final String RECORD_ACCESS_TYPE = "Search"; // TODO: Evaluate if a specific type is needed
 
     /**
@@ -137,7 +137,8 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
                     throw new UnsupportedOperationException("The access condition '" + access + "' is unsupported");
             }
         } catch (Exception e){
-            throw handleException(e);
+            throw e;
+            //throw handleException(e);
         }
     }
 
