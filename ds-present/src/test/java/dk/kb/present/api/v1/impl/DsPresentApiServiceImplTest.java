@@ -25,6 +25,7 @@ import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import javax.servlet.http.HttpServletMapping;
 import javax.servlet.http.HttpServletRequest;
@@ -65,14 +66,34 @@ class DsPresentApiServiceImplTest {
         // Change the mock to not allow the record
         CheckAccessForIdsOutputDto noAccessResponse = new CheckAccessForIdsOutputDto().nonAccessIds(List.of(RECORD_ID));
         doReturn(noAccessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
-        assertThrows(ForbiddenServiceException.class, () -> presentAPI.getRecord(RECORD_ID, "mods"),
-                "Calling getRecord should not be allowed");
+        assertThrowsInner(ForbiddenServiceException.class, () -> presentAPI.getRecord(RECORD_ID, "mods"),
+                "Calling getRecord should raise a forbidden exception");
 
         // Change the mock to not have the record
         CheckAccessForIdsOutputDto noRecordResponse = new CheckAccessForIdsOutputDto().nonExistingIds(List.of(RECORD_ID));
         doReturn(noRecordResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
-        assertThrows(NotFoundServiceException.class, () -> presentAPI.getRecord(RECORD_ID, "mods"),
+        assertThrowsInner(NotFoundServiceException.class, () -> presentAPI.getRecord(RECORD_ID, "mods"),
                 "Calling getRecord should raise a not found exception");
+    }
+
+    /**
+     * Assert that compares {@code expectedException} against the inner {@code Exception} (aka wrapped) for the
+     * {@code Exception} thrown by running {@code executable}.
+     * @param expectedException the expected inner {@code Exception}.
+     * @param executable a code expected to throw an {@code Exception} wrapping an instance of {@code expectedException}.
+     * @param message the message to show if the assert fails.
+     */
+    private void assertThrowsInner(Class<? extends Exception> expectedException, Executable executable, String message) {
+        try {
+            executable.execute();
+            fail(message + ": Expectected to fail with Exception with inner exception " + expectedException.getName());
+        } catch (Throwable t) {
+            assertTrue(t instanceof Exception,
+                    message + ": Expected an Exception but got Throwable " + t.getClass().getName());
+            Exception e = (Exception)t;
+            assertEquals(expectedException, e.getCause().getClass(),
+                    message + ": Expected Exception to expected inner Exception");
+        }
     }
 
     @Test
@@ -112,8 +133,8 @@ class DsPresentApiServiceImplTest {
         doReturn(noAccessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
         DsPresentApiServiceImpl.licenseClient = mockedLicenseClient;
 
-        assertThrows(ForbiddenServiceException.class, () -> presentAPI.getRecord(RECORD_ID, "mods"),
-                    "Calling getRecord should not be allowed");
+        assertThrowsInner(ForbiddenServiceException.class, () -> presentAPI.getRecord(RECORD_ID, "mods"),
+                "Calling getRecord should not be allowed");
 
         // Set allowall=true and try again
         boolean oldAllowall = DsPresentApiServiceImpl.licenseAllowAll;

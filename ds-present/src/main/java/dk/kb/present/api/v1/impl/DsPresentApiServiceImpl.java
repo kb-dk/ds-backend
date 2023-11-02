@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     private static final Logger log = LoggerFactory.getLogger(DsPresentApiServiceImpl.class);
 
-
     // License handling in DsPresentApiServiceImpl as tokens from the request will be needed later on
     private static final String LICENSE_URL_KEY = "config.licensemodule.url";
     private static final String LICENSE_ALLOWALL_KEY = "config.licensemodule.allowall";
@@ -75,6 +74,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     @Override
     public CollectionDto getCollection(String id) throws ServiceException {
         try {
+            // Allowed for everyone
             log.debug("() called with call details: {}", getCallDetails());
             return PresentFacade.getCollection(id);
         } catch (Exception e){
@@ -95,6 +95,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     @Override
     public List<CollectionDto> getCollections() throws ServiceException {
         try {
+            // Allowed for everyone
             log.debug("getCollections() called with call details: {}", getCallDetails());
             return PresentFacade.getCollections();
         } catch (Exception e){
@@ -122,7 +123,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     public String getRecord(String id, String format) throws ServiceException {
         try {
             log.debug("getRecord(id='{}', format='{}') called with call details: {}", id, format, getCallDetails());
-            ACCESS access = licenseAllowAll ? ACCESS.ok : createAccessChecker().apply(id);
+            ACCESS access = createAccessChecker(RECORD_ACCESS_TYPE).apply(id);
             switch (access) {
                 case ok:
                     return PresentFacade.getRecord(id, format);
@@ -137,8 +138,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
                     throw new UnsupportedOperationException("The access condition '" + access + "' is unsupported");
             }
         } catch (Exception e){
-            throw e;
-            //throw handleException(e);
+            throw handleException(e);
         }
     }
 
@@ -154,7 +154,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecords(
                     httpServletResponse, collection, finalMTime, finalMaxRecords, format,
-                    licenseAllowAll ? ids -> ids : createAccessFilter());
+                    createAccessFilter(RECORD_ACCESS_TYPE));
         } catch (Exception e){
             throw handleException(e);
         }
@@ -164,7 +164,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
      * The ds-license client is used to verify access to individual records.
      * @return a ds-license client, ready for use.
      */
-    private static DsLicenseApi getLicenseClient() {
+    static DsLicenseApi getLicenseClient() {
         if (licenseClient != null) {
           return licenseClient;
         }
@@ -179,11 +179,12 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     }
 
     /**
-     * Based on user credentials (not used yet) and ds-license this function return the {@link ACCESS} state for
-     * the material for a given id.
+     * Based on user credentials (not used yet as it requires pending OAuth2-integration) and ds-license setup,
+     * the produced function return an {@link ACCESS} state for metadata for a given id.
+     * @param presentationType as defined in ds-license, e.g. {@code Search}, {@code Stream}, {@code Thumbnails}...
      * @return function for evaluating access to metadata for the current caller.
      */
-    private static Function<String, ACCESS> createAccessChecker() {
+    static Function<String, ACCESS> createAccessChecker(String presentationType) {
         return id -> {
             if (licenseAllowAll) {
                 return ACCESS.ok;
@@ -195,12 +196,12 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
 
             CheckAccessForIdsInputDto input = new CheckAccessForIdsInputDto()
                     .accessIds(List.of(id))
-                    .presentationType(RECORD_ACCESS_TYPE)
+                    .presentationType(presentationType)
                     .attributes(List.of(everybody));
             CheckAccessForIdsOutputDto response;
             try {
                 response = getLicenseClient().checkAccessForIds(input);
-            } catch (ApiException e) {
+            } catch (Exception e) {
                 String message = String.format(Locale.ROOT,
                         "Exception calling license server for ID '%s' with attributes %s",
                         id, everybody);
@@ -221,17 +222,16 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     }
 
     /**
-     * Based on user credentials (not used yet) and ds-license this function extract allowed IDs from the given
-     * list and return them as a new list. Order is preserved.
+     * Based on user credentials (not used yet as it requires pending OAuth2-integration) and ds-license setup,
+     * the produced function isolate the IDs that the caller is allowed to see metadata for.
+     * Order is preserved, input is never changed, output is always a new list.
+     * @param presentationType as defined in ds-license, e.g. {@code Search}, {@code Stream}, {@code Thumbnails}...
      * @return function converting a list of IDs to allowed IDs.
      */
-    private static Function<List<String>, List<String>> createAccessFilter() {
+    private static Function<List<String>, List<String>> createAccessFilter(String presentationType) {
         return ids -> {
-            if (licenseAllowAll) {
+            if (licenseAllowAll || ids.isEmpty()) {
                 return new ArrayList<>(ids);
-            }
-            if (ids.isEmpty()) {
-                return ids;
             }
 
             UserObjAttributeDto everybody = new UserObjAttributeDto()
@@ -240,12 +240,12 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
 
             CheckAccessForIdsInputDto input = new CheckAccessForIdsInputDto()
                     .accessIds(ids)
-                    .presentationType(RECORD_ACCESS_TYPE)
+                    .presentationType(presentationType)
                     .attributes(List.of(everybody));
             CheckAccessForIdsOutputDto response;
             try {
                 response = getLicenseClient().checkAccessForIds(input);
-            } catch (ApiException e) {
+            } catch (Exception e) {
                 String message = String.format(Locale.ROOT,
                         "Exception calling license server for %d IDs with attributes %s. First ID='%s'",
                         ids.size(), everybody, ids.get(0));
@@ -254,7 +254,8 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             }
             if (response.getAccessIds() != null) {
                 if (response.getAccessIds().size() == ids.size()) {
-                    return ids;
+                    // New array creation to ensure decoupling of input & output
+                    return new ArrayList<>(ids);
                 }
                 Set<String> allowed = new HashSet<>(response.getAccessIds());
                 return ids.stream().filter(allowed::contains).collect(Collectors.toList());
