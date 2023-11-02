@@ -5,18 +5,16 @@ import dk.kb.license.invoker.v1.ApiException;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.present.PresentFacade;
+import dk.kb.present.PresentFacadeTest;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
-import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.FieldSetter;
 
 import javax.servlet.http.HttpServletMapping;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -74,6 +72,32 @@ class DsPresentApiServiceImplTest {
         doReturn(noRecordResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
         assertThrows(NotFoundServiceException.class, () -> presentAPI.getRecord(RECORD_ID, "mods"),
                 "Calling getRecord should raise a not found exception");
+    }
+
+    @Test
+    public void testMultiRecordsLicense() throws NoSuchFieldException, ApiException, IOException {
+        // No local.mods-prefix here. This is an oversight of the file based test-storage
+        final String RECORD_ID1 = "40221e30-1414-11e9-8fb8-00505688346e.xml";
+        final String RECORD_ID2 = "5cc1bea0-71fa-11e2-b31c-0016357f605f.xml";
+        final String RECORD_ID3 = "3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
+
+        // Setup mock license that allow only 3 known records.
+        DsPresentApiServiceImpl presentAPI = getMockedPresentAPI();
+        DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
+        CheckAccessForIdsOutputDto accessResponse = new CheckAccessForIdsOutputDto().accessIds(List.of(
+                RECORD_ID1, RECORD_ID2, RECORD_ID3));
+        doReturn(accessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
+        DsPresentApiServiceImpl.licenseClient = mockedLicenseClient;
+        StreamingOutput records = presentAPI.getRecords("dsfl", 0L, 1000L, "mods");
+        assertEquals(3, PresentFacadeTest.countMETS(records),
+                "3-specific-records-accepting license should return exactly 3 records");
+
+        // Change the mock to not allow any record
+        accessResponse = new CheckAccessForIdsOutputDto().accessIds(Collections.emptyList());
+        doReturn(accessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
+        StreamingOutput noRecords = presentAPI.getRecords("dsfl", 0L, 1000L, "mods");
+        assertEquals(0, PresentFacadeTest.countMETS(noRecords),
+                "Zero accepting license should return exactly 0 records");
     }
 
     /**

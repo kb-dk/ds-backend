@@ -221,8 +221,8 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     }
 
     /**
-     * Based on user credentials (not used yet) and ds-license this function extracts allowed IDs from the given
-     * list and returns them as a new list. Order is preserved.
+     * Based on user credentials (not used yet) and ds-license this function extract allowed IDs from the given
+     * list and return them as a new list. Order is preserved.
      * @return function converting a list of IDs to allowed IDs.
      */
     private static Function<List<String>, List<String>> createAccessFilter() {

@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PresentFacadeTest {
+public class PresentFacadeTest {
 
 
     @BeforeAll
@@ -79,7 +79,7 @@ class PresentFacadeTest {
      * @param out stream of records in METS/MODS-format.
      * @return the number of records in the stream.
      */
-    private long countMETS(StreamingOutput out) throws IOException {
+    public static long countMETS(StreamingOutput out) throws IOException {
         Matcher m = METS_PATTERN.matcher(toString(out));
         long count = 0;
         while (m.find()) {
@@ -87,7 +87,7 @@ class PresentFacadeTest {
         }
         return count;
     }
-    private final Pattern METS_PATTERN = Pattern.compile("<mets:mets ");
+    private static final Pattern METS_PATTERN = Pattern.compile("<mets:mets ");
 
     @Test
     void getRecordsMODSDeclaration() throws IOException {
@@ -163,7 +163,7 @@ class PresentFacadeTest {
         String result = toString(out);
     }
 
-    private String toString(StreamingOutput out) throws IOException {
+    private static String toString(StreamingOutput out) throws IOException {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             out.write(os);
             return os.toString(StandardCharsets.UTF_8);
