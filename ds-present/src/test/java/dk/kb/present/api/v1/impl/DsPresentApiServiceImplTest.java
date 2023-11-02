@@ -1,3 +1,17 @@
+/*
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
 package dk.kb.present.api.v1.impl;
 
 import dk.kb.license.client.v1.DsLicenseApi;
@@ -23,20 +37,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.util.reflection.FieldSetter.setField;
 
-/*
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
 class DsPresentApiServiceImplTest {
 
     @BeforeAll
@@ -48,6 +48,7 @@ class DsPresentApiServiceImplTest {
             throw new RuntimeException(e);
         }
     }
+
     @Test
     public void testSingleRecordLicense() throws NoSuchFieldException, ApiException {
         final String RECORD_ID = "local.mods:40221e30-1414-11e9-8fb8-00505688346e.xml";
@@ -100,10 +101,63 @@ class DsPresentApiServiceImplTest {
                 "Zero accepting license should return exactly 0 records");
     }
 
+    @Test
+    public void testSingleRecordLicenseAllowAll() throws NoSuchFieldException, ApiException, IOException {
+        final String RECORD_ID = "local.mods:40221e30-1414-11e9-8fb8-00505688346e.xml";
+
+        // Setup mock license that does not allow any records
+        DsPresentApiServiceImpl presentAPI = getMockedPresentAPI();
+        DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
+        CheckAccessForIdsOutputDto noAccessResponse = new CheckAccessForIdsOutputDto().nonAccessIds(List.of(RECORD_ID));
+        doReturn(noAccessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
+        DsPresentApiServiceImpl.licenseClient = mockedLicenseClient;
+
+        assertThrows(ForbiddenServiceException.class, () -> presentAPI.getRecord(RECORD_ID, "mods"),
+                    "Calling getRecord should not be allowed");
+
+        // Set allowall=true and try again
+        boolean oldAllowall = DsPresentApiServiceImpl.licenseAllowAll;
+        DsPresentApiServiceImpl.licenseAllowAll = true;
+        try {
+            assertTrue(presentAPI.getRecord(RECORD_ID, "mods").contains("<mets:mets "),
+                    "Extraction with allowall=true should work");
+        } finally {
+            // Clean up for next test
+            DsPresentApiServiceImpl.licenseAllowAll = oldAllowall;
+        }
+    }
+
+    @Test
+    public void testMultiRecordsLicenseAllowAll() throws NoSuchFieldException, ApiException, IOException {
+        // Setup mock license that allows 1 record
+        final String RECORD_ID1 = "40221e30-1414-11e9-8fb8-00505688346e.xml";
+
+        // Setup mock license that allow only 1 known record.
+        DsPresentApiServiceImpl presentAPI = getMockedPresentAPI();
+        DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
+        CheckAccessForIdsOutputDto accessResponse = new CheckAccessForIdsOutputDto().accessIds(List.of(RECORD_ID1));
+        doReturn(accessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
+        DsPresentApiServiceImpl.licenseClient = mockedLicenseClient;
+        StreamingOutput records = presentAPI.getRecords("dsfl", 0L, 1000L, "mods");
+        assertEquals(1, PresentFacadeTest.countMETS(records),
+                "1-specific-record-accepting license should return exactly 1 records");
+
+        // Set allowall=true and try again
+        boolean oldAllowall = DsPresentApiServiceImpl.licenseAllowAll;
+        DsPresentApiServiceImpl.licenseAllowAll = true;
+        try {
+            records = presentAPI.getRecords("dsfl", 0L, 1000L, "mods");
+            assertTrue(PresentFacadeTest.countMETS(records) > 1,
+                    "allowall should return more than 1 records");
+        } finally {
+            // Clean up for next test
+            DsPresentApiServiceImpl.licenseAllowAll = oldAllowall;
+        }
+    }
+
     /**
      * Basic mocking of the {@link DsPresentApiServiceImpl}. Callers should add further mocking.
      * @return a Mochito mock of {@code } DsPresentApiServiceImpl with {@code httpServletRequest}.
-     * @throws NoSuchFieldException
      */
     private static DsPresentApiServiceImpl getMockedPresentAPI() throws NoSuchFieldException {
         HttpServletMapping mockedMapping = mock(HttpServletMapping.class);
