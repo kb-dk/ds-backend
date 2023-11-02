@@ -37,7 +37,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     private static final String LICENSE_URL_KEY = "config.licensemodule.url";
     private static final String LICENSE_ALLOWALL_KEY = "config.licensemodule.allowall";
     static DsLicenseApi licenseClient;     // Shared between instances
-    static boolean licenseAllowAll = false;
+    static boolean licenseAllowAll = ServiceConfig.getConfig().getBoolean(LICENSE_ALLOWALL_KEY, false);
     public static final String RECORD_ACCESS_TYPE = "Search"; // TODO: Evaluate if a specific type is needed
 
     /**
@@ -122,7 +122,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     public String getRecord(String id, String format) throws ServiceException {
         try {
             log.debug("getRecord(id='{}', format='{}') called with call details: {}", id, format, getCallDetails());
-            ACCESS access = createAccessChecker().apply(id);
+            ACCESS access = licenseAllowAll ? ACCESS.ok : createAccessChecker().apply(id);
             switch (access) {
                 case ok:
                     return PresentFacade.getRecord(id, format);
@@ -153,7 +153,8 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             long finalMTime = mTime == null ? 0L : mTime;
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecords(
-                    httpServletResponse, collection, finalMTime, finalMaxRecords, format, createAccessFilter());
+                    httpServletResponse, collection, finalMTime, finalMaxRecords, format,
+                    licenseAllowAll ? ids -> ids : createAccessFilter());
         } catch (Exception e){
             throw handleException(e);
         }
@@ -173,7 +174,6 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             throw new IllegalStateException("No ds-license URL specified at " + LICENSE_URL_KEY);
         }
         licenseClient = new DsLicenseClient(dsLicenseUrl);
-        licenseAllowAll = ServiceConfig.getConfig().getBoolean(LICENSE_ALLOWALL_KEY, licenseAllowAll);
         log.info("Created client for ds-license at URL '{}' with allowall={}", dsLicenseUrl, licenseAllowAll);
         return licenseClient;
     }
