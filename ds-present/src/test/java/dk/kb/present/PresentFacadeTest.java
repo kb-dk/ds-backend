@@ -24,14 +24,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PresentFacadeTest {
 
-	
-	
+
     @BeforeAll
     static void setup() {
         try {
@@ -42,26 +42,56 @@ class PresentFacadeTest {
         }
     }
 
-
     @Test
     void getRecord() {
         // Throws an Exception if not found
         PresentFacade.getRecord("local.mods:40221e30-1414-11e9-8fb8-00505688346e.xml", "mods");
     }
 
-
-
     @Test
     void getRecordsMODS() throws IOException {
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods");
+        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods", ids -> ids);
         String result = toString(out);
         assertTrue(result.contains("<mods:namePart type=\"family\">Andersen</mods:namePart>"));
     }
 
+    @Test
+    void accessFilterMultiRecords() throws IOException {
+        // No access checking
+        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods", ids -> ids);
+        long baseCount = countMETS(out);
+        assertTrue(baseCount > 1, "There should be more than 1 record returned when requesting 'dsfl'-records");
+
+        // Filter every other record
+        out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods",
+                ids -> IntStream.range(0, ids.size())
+                        .filter(i -> (i&1) == 0)
+                        .boxed()
+                        .map(ids::get)
+                        .collect(Collectors.toList()));
+        long evenCount = countMETS(out);
+        assertEquals(baseCount/2, evenCount, "Filtering every other 'dsfl'-record should yield the expected count");
+    }
+
+    /**
+     * Count the number of occurrences of {@code <mets:mets } (note the trailing space) in {@code out}.
+     * This is equivalent to record counting.
+     * @param out stream of records in METS/MODS-format.
+     * @return the number of records in the stream.
+     */
+    private long countMETS(StreamingOutput out) throws IOException {
+        Matcher m = METS_PATTERN.matcher(toString(out));
+        long count = 0;
+        while (m.find()) {
+            count++;
+        }
+        return count;
+    }
+    private final Pattern METS_PATTERN = Pattern.compile("<mets:mets ");
 
     @Test
     void getRecordsMODSDeclaration() throws IOException {
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods");
+        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods", ids -> ids);
         String result = toString(out);
 
         Pattern DECLARATION = Pattern.compile("<[?]xml version=\"1.0\" encoding=\"UTF-8\"[?]>", Pattern.DOTALL);
@@ -77,7 +107,7 @@ class PresentFacadeTest {
     @Test
     void getRecordsRaw() throws IOException {
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord");
+        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord", ids -> ids);
         String result = toString(out);
 
         assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"origin\":null,\"recordType\":null,\"deleted\":false"));
@@ -91,7 +121,7 @@ class PresentFacadeTest {
     @Test
     void getRecordsRawLines() throws IOException {
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord-lines");
+        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord-lines", ids -> ids);
         String result = toString(out);
         assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"origin\":null,\"recordType\":null,\"deleted\":false"));
         assertFalse(result.contains(",\n"), "Result should not contain a comma followed by newline as it should be a multi-entry JSON-Lines");
@@ -129,7 +159,7 @@ class PresentFacadeTest {
 
     @Test
     void getRecordsSolr() throws IOException {
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "SolrJSON");
+        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "SolrJSON", ids -> ids);
         String result = toString(out);
     }
 

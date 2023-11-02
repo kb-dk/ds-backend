@@ -39,6 +39,12 @@ config:
   streamingserver:
     url: "http://example.com/streaming/"
 
+  # Used for verifying access to metadata https://github.com/kb-dk/ds-license
+  # If allowall is set to true (default is false), all access is granted. Use only for devel + stage
+  licensemodule:
+    url: http://localhost:9076/ds-license/v1
+    allowall: false
+
   endpoints:
     - example:
         getrecord: 'http://example.com/ds-present/v1/record/'
