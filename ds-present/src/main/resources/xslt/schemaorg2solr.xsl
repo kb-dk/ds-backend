@@ -239,15 +239,6 @@
           </f:string>
         </xsl:if>
 
-
-
-
-
-
-
-
-
-
         <!--Extract the array of identifiers to a variable, where the individual maps can be accessed. -->
         <xsl:variable name="identifers" as="item()*">
           <xsl:copy-of select="array:flatten($schemaorg-xml('identifier'))"/>
@@ -255,38 +246,8 @@
         <!--For each identifier in the variable $identifiers check for specific properties and map them to their
             respective solr counterpart.-->
         <xsl:for-each select="$identifers">
-          <!-- Finds origin -->
-          <xsl:if test="map:get(., 'PropertyID') = 'Origin'">
-            <f:string key="origin">
-              <xsl:value-of select="map:get(., 'value')"/>
-            </f:string>
-          </xsl:if>
-          <!--Finds Ritzau ID -->
-          <xsl:if test="map:get(., 'PropertyID') = 'ritzauId'">
-            <f:string key="ritzau_id">
-              <xsl:value-of select="map:get(., 'value')"/>
-            </f:string>
-          </xsl:if>
-          <!-- Finds tvmeter id-->
-          <xsl:if test="map:get(., 'PropertyID') = 'tvmeterId'">
-            <f:string key="tvmeter_id">
-              <xsl:value-of select="map:get(., 'value')"/>
-            </f:string>
-          </xsl:if>
-          <!-- Finds PID -->
-          <xsl:if test="map:get(., 'PropertyID') = 'PID'">
-            <f:string key="pid">
-              <xsl:value-of select="map:get(., 'value')"/>
-            </f:string>
-          </xsl:if>
-          <!-- Finds internal accession ref -->
-          <xsl:if test="map:get(., 'PropertyID') = 'InternalAccessionRef'">
-            <f:string key="internal_accession_ref">
-              <xsl:value-of select="map:get(., 'value')"/>
-            </f:string>
-          </xsl:if>
+          <xsl:call-template name="identifierExtractor"/>
         </xsl:for-each>
-
 
         <!-- Extract internal fields -->
         <xsl:call-template name="kbInternal">
@@ -299,6 +260,39 @@
     <xsl:value-of select="f:xml-to-json($solrjson)"/>
   </xsl:template>
 
+  <!-- EXTRACT IDENTIFIERS FROM THE SCHEMA.ORG ARRAY OF IDENTIFIERS. -->
+  <xsl:template name="identifierExtractor">
+    <!-- Finds origin -->
+    <xsl:if test="map:get(., 'PropertyID') = 'Origin'">
+      <f:string key="origin">
+        <xsl:value-of select="map:get(., 'value')"/>
+      </f:string>
+    </xsl:if>
+    <!--Finds Ritzau ID -->
+    <xsl:if test="map:get(., 'PropertyID') = 'ritzauId'">
+      <f:string key="ritzau_id">
+        <xsl:value-of select="map:get(., 'value')"/>
+      </f:string>
+    </xsl:if>
+    <!-- Finds tvmeter id-->
+    <xsl:if test="map:get(., 'PropertyID') = 'tvmeterId'">
+      <f:string key="tvmeter_id">
+        <xsl:value-of select="map:get(., 'value')"/>
+      </f:string>
+    </xsl:if>
+    <!-- Finds PID -->
+    <xsl:if test="map:get(., 'PropertyID') = 'PID'">
+      <f:string key="pid">
+        <xsl:value-of select="map:get(., 'value')"/>
+      </f:string>
+    </xsl:if>
+    <!-- Finds internal accession ref -->
+    <xsl:if test="map:get(., 'PropertyID') = 'InternalAccessionRef'">
+      <f:string key="internal_accession_ref">
+        <xsl:value-of select="map:get(., 'value')"/>
+      </f:string>
+    </xsl:if>
+  </xsl:template>
 
   <!-- TEMPLATE WHICH EXTRACTS VALUES FROM THE KB INTERNAL MAP, THAT HAVE STATUS AS INTERNAL FIELDS IN SOLR AS WELL. -->
   <xsl:template name="kbInternal">
