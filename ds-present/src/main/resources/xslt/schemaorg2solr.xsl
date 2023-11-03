@@ -103,11 +103,31 @@
           </f:string>
         </xsl:if>
 
-        <!-- extract episode titel -->
-        <xsl:if test="map:get(map:get($schemaorg-xml,'encodesCreativeWork'),'name')">
-          <f:string key="episode_title">
-            <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('name')"/>
-          </f:string>
+        <!-- Extract data on the encoded creative work, if present-->
+        <xsl:if test="map:contains($schemaorg-xml, 'encodesCreativeWork')">
+          <!-- extract episode titel -->
+          <xsl:if test="exists($schemaorg-xml('encodesCreativeWork')('name'))">
+            <f:string key="episode_title">
+              <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('name')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract episode number -->
+          <xsl:if test="$schemaorg-xml('encodesCreativeWork')('episodeNumber')">
+            <f:string key="episode">
+              <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('episodeNumber')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Quite nested structure here. We already know that the map encodesCreativeWork exists, now we are checking
+               for the submap partOfSeason and when that exists, we know that the numberOfEpisodes is present, as this
+               field is creating the map partOfSeason. -->
+          <!-- Extract number of episodes-->
+          <xsl:if test="map:contains($schemaorg-xml('encodesCreativeWork'), 'partOfSeason')">
+            <f:string key="number_of_episodes">
+              <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('partOfSeason')('numberOfEpisodes')"/>
+            </f:string>
+          </xsl:if>
         </xsl:if>
 
         <!-- extract start time-->
@@ -172,21 +192,6 @@
         <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'), 'kb:aspect_ratio'))">
           <f:string key="aspect_ratio">
             <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:aspect_ratio')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract episode number -->
-        <xsl:if test="$schemaorg-xml('encodesCreativeWork')('episodeNumber')">
-          <f:string key="episode">
-            <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('episodeNumber')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- TODO: Not pretty, but working. Needs to be tested correctly. -->
-        <!-- Extract number of episodes-->
-        <xsl:if test="map:find($schemaorg-xml, 'numberOfEpisodes') != ''">
-          <f:string key="number_of_episodes">
-            <xsl:value-of select="map:find($schemaorg-xml, 'numberOfEpisodes')"/>
           </f:string>
         </xsl:if>
 

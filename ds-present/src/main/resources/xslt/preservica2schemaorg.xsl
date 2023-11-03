@@ -477,12 +477,13 @@
       <xsl:for-each select="/xip:DeliverableUnit/Metadata/access:access">
         <xsl:call-template name="access-template"/>
       </xsl:for-each>
-    </f:map>
 
-    <!-- Extracts information on the structure of the video component. -->
-    <xsl:for-each select="/xip:DeliverableUnit/Metadata/program_structure:program_structure">
-      <xsl:call-template name="program-structure"/>
-    </xsl:for-each>
+      <!-- Extracts information on the structure of the video component. -->
+      <xsl:for-each select="/xip:DeliverableUnit/Metadata/program_structure:program_structure">
+        <xsl:call-template name="program-structure"/>
+      </xsl:for-each>
+
+    </f:map>
 
   </xsl:template>
 

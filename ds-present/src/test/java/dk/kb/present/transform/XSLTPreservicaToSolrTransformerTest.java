@@ -147,7 +147,10 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    void testNumberOfEpisodes(){
+    void testNumberOfEpisodes() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_a8aafb121);
+        TestUtil.prettyPrintJson(transformedJSON);
+
         assertContains(RECORD_a8aafb121, "\"number_of_episodes\":");
         assertNotContains(RECORD_5a5357be, "\"number_of_episodes\":");
         assertNotContains(RECORD_1f3a6a66, "\"number_of_episodes\":");
