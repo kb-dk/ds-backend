@@ -207,7 +207,7 @@ public class PresentFacade {
     // Direct ds-storage record JSON
     private static StreamingOutput getRecordsSolr(DSCollection collection, Long mTime, Long maxRecords,
                                                   HttpServletResponse httpServletResponse,
-                                                  Function<List<DsRecordDto>, Stream<DsRecordDto>> accessPredicate) {
+                                                  Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, ExportWriterFactory.FORMAT.json);
         return output -> {
             ExportWriter writer = ExportWriterFactory.wrap(
@@ -217,7 +217,7 @@ public class PresentFacade {
             ((JSONStreamWriter) writer).setPostOutput("\n}\n");
 
             try {
-                collection.getDSRecords(mTime, maxRecords, "SolrJSON", accessPredicate)
+                collection.getDSRecords(mTime, maxRecords, "SolrJSON", accessFilter)
                         .map(PresentFacade::wrapSolrJSON)
                         .forEach(writer::write);
             } catch (Exception e) {
