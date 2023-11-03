@@ -64,6 +64,12 @@ public abstract class XSLTTransformerTestBase {
         );
     }
 
+    public void assertPvicaContains(String recordFile, String substring) {
+        assertMultiTestsThroughSchemaTransformation(recordFile,
+                solrDoc -> assertTrue(solrDoc.contains(substring))
+        );
+    }
+
     /**
      * Wrapper for {@link #assertMultiTests(String, Consumer[])} that verifies that the transformed record contains
      * the given {@code substring}.
@@ -85,6 +91,11 @@ public abstract class XSLTTransformerTestBase {
      */
     public void assertNotContains(String recordFile, String substring) {
         assertMultiTests(recordFile,
+                solrDoc -> assertFalse(solrDoc.contains(substring))
+        );
+    }
+    public void assertPvicaNotContains(String recordFile, String substring) {
+        assertMultiTestsThroughSchemaTransformation(recordFile,
                 solrDoc -> assertFalse(solrDoc.contains(substring))
         );
     }
@@ -117,7 +128,14 @@ public abstract class XSLTTransformerTestBase {
         }
         String solrString;
         try {
-            solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
+            String yamlStr =
+                    "stylesheet: '" + getXSLT() + "'\n" +
+                            "injections:\n" +
+                            "  - streamingserver: 'example.com/streaming'\n" +
+                            "  - origin: 'ds.test'\n";
+            YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
+            solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, record);
+            //TestUtil.prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
@@ -128,4 +146,20 @@ public abstract class XSLTTransformerTestBase {
         Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
 
+    public final void assertMultiTestsThroughSchemaTransformation(String record, Consumer<String>... tests){
+        if (!TestFileProvider.hasSomeTestFiles()) {
+            return;  // ensureTestFiles takes care of logging is there are no internal test files
+        }
+        String solrString;
+        try {
+            solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
+        }
+
+        TestUtil.prettyPrintJson(solrString);
+
+        Arrays.stream(tests).forEach(test -> test.accept(solrString));
+    }
 }
