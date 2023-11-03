@@ -1,15 +1,9 @@
 package dk.kb.present.api.v1.impl;
 
-import dk.kb.license.client.v1.DsLicenseApi;
-import dk.kb.license.invoker.v1.ApiException;
-import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
-import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
-import dk.kb.license.model.v1.UserObjAttributeDto;
-import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.PresentFacade;
 import dk.kb.present.api.v1.DsPresentApi;
-import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
+import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -19,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.StreamingOutput;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * ds-present
@@ -32,12 +24,9 @@ import java.util.stream.Collectors;
 public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     private static final Logger log = LoggerFactory.getLogger(DsPresentApiServiceImpl.class);
 
-    // License handling in DsPresentApiServiceImpl as tokens from the request will be needed later on
-    private static final String LICENSE_URL_KEY = "config.licensemodule.url";
-    private static final String LICENSE_ALLOWALL_KEY = "config.licensemodule.allowall";
-    static DsLicenseApi licenseClient;     // Shared between instances
-    static boolean licenseAllowAll = ServiceConfig.getConfig().getBoolean(LICENSE_ALLOWALL_KEY, false);
-    public static final String RECORD_ACCESS_TYPE = "Search"; // TODO: Evaluate if a specific type is needed
+    // "Search" is best guess for the access type for now
+    // This might be changed when we make a major evaluation of the license system
+    public static final String RECORD_ACCESS_TYPE = "Search";
 
     /**
      * The different types of access for a given material.
@@ -123,7 +112,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     public String getRecord(String id, String format) throws ServiceException {
         try {
             log.debug("getRecord(id='{}', format='{}') called with call details: {}", id, format, getCallDetails());
-            ACCESS access = createAccessChecker(RECORD_ACCESS_TYPE).apply(id);
+            ACCESS access = AccessUtil.createAccessChecker(RECORD_ACCESS_TYPE).apply(id);
             switch (access) {
                 case ok:
                     return PresentFacade.getRecord(id, format);
@@ -154,115 +143,10 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecords(
                     httpServletResponse, collection, finalMTime, finalMaxRecords, format,
-                    createAccessFilter(RECORD_ACCESS_TYPE));
+                    AccessUtil.createAccessFilter(RECORD_ACCESS_TYPE));
         } catch (Exception e){
             throw handleException(e);
         }
-    }
-
-    /**
-     * The ds-license client is used to verify access to individual records.
-     * @return a ds-license client, ready for use.
-     */
-    static DsLicenseApi getLicenseClient() {
-        if (licenseClient != null) {
-          return licenseClient;
-        }
-
-        String dsLicenseUrl = ServiceConfig.getConfig().getString(LICENSE_URL_KEY, null);
-        if (dsLicenseUrl == null) {
-            throw new IllegalStateException("No ds-license URL specified at " + LICENSE_URL_KEY);
-        }
-        licenseClient = new DsLicenseClient(dsLicenseUrl);
-        log.info("Created client for ds-license at URL '{}' with allowall={}", dsLicenseUrl, licenseAllowAll);
-        return licenseClient;
-    }
-
-    /**
-     * Based on user credentials (not used yet as it requires pending OAuth2-integration) and ds-license setup,
-     * the produced function return an {@link ACCESS} state for metadata for a given id.
-     * @param presentationType as defined in ds-license, e.g. {@code Search}, {@code Stream}, {@code Thumbnails}...
-     * @return function for evaluating access to metadata for the current caller.
-     */
-    static Function<String, ACCESS> createAccessChecker(String presentationType) {
-        return id -> {
-            if (licenseAllowAll) {
-                return ACCESS.ok;
-            }
-
-            UserObjAttributeDto everybody = new UserObjAttributeDto()
-                    .attribute("everybody")
-                    .values(List.of("yes"));
-
-            CheckAccessForIdsInputDto input = new CheckAccessForIdsInputDto()
-                    .accessIds(List.of(id))
-                    .presentationType(presentationType)
-                    .attributes(List.of(everybody));
-            CheckAccessForIdsOutputDto response;
-            try {
-                response = getLicenseClient().checkAccessForIds(input);
-            } catch (Exception e) {
-                String message = String.format(Locale.ROOT,
-                        "Exception calling license server for ID '%s' with attributes %s",
-                        id, everybody);
-                log.warn(message, e);
-                throw new InternalServiceException(message + ". This error has been logged");
-            }
-            if (response.getAccessIds() != null && response.getAccessIds().contains(id)) {
-                return ACCESS.ok;
-            }
-            if (response.getNonAccessIds() != null && response.getNonAccessIds().contains(id)) {
-                return ACCESS.not_allowed;
-            }
-            if (response.getNonExistingIds() != null && response.getNonExistingIds().contains(id)) {
-                return ACCESS.not_exists;
-            }
-            throw new InternalServiceException("Unable to determine access for '" + id + "'");
-        };
-    }
-
-    /**
-     * Based on user credentials (not used yet as it requires pending OAuth2-integration) and ds-license setup,
-     * the produced function isolate the IDs that the caller is allowed to see metadata for.
-     * Order is preserved, input is never changed, output is always a new list.
-     * @param presentationType as defined in ds-license, e.g. {@code Search}, {@code Stream}, {@code Thumbnails}...
-     * @return function converting a list of IDs to allowed IDs.
-     */
-    private static Function<List<String>, List<String>> createAccessFilter(String presentationType) {
-        return ids -> {
-            if (licenseAllowAll || ids.isEmpty()) {
-                return new ArrayList<>(ids);
-            }
-
-            UserObjAttributeDto everybody = new UserObjAttributeDto()
-                    .attribute("everybody")
-                    .values(List.of("yes"));
-
-            CheckAccessForIdsInputDto input = new CheckAccessForIdsInputDto()
-                    .accessIds(ids)
-                    .presentationType(presentationType)
-                    .attributes(List.of(everybody));
-            CheckAccessForIdsOutputDto response;
-            try {
-                response = getLicenseClient().checkAccessForIds(input);
-            } catch (Exception e) {
-                String message = String.format(Locale.ROOT,
-                        "Exception calling license server for %d IDs with attributes %s. First ID='%s'",
-                        ids.size(), everybody, ids.get(0));
-                log.warn(message, e);
-                throw new InternalServiceException(message + ". This error has been logged");
-            }
-            if (response.getAccessIds() != null) {
-                if (response.getAccessIds().size() == ids.size()) {
-                    // New array creation to ensure decoupling of input & output
-                    return new ArrayList<>(ids);
-                }
-                Set<String> allowed = new HashSet<>(response.getAccessIds());
-                return ids.stream().filter(allowed::contains).collect(Collectors.toList());
-            }
-            // TODO: Should a warning be logged here? Will getAccessIds return null if no IDs are allowed?
-            return Collections.emptyList();
-        };
     }
 
 }

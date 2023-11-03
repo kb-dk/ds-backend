@@ -21,6 +21,7 @@ import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.present.PresentFacade;
 import dk.kb.present.PresentFacadeTest;
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
@@ -59,7 +60,7 @@ class DsPresentApiServiceImplTest {
         DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
         CheckAccessForIdsOutputDto accessResponse = new CheckAccessForIdsOutputDto().accessIds(List.of(RECORD_ID));
         doReturn(accessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
-        DsPresentApiServiceImpl.licenseClient = mockedLicenseClient;
+        AccessUtil.licenseClient = mockedLicenseClient;
         String record = presentAPI.getRecord(RECORD_ID, "mods");
         assertTrue(record.contains("<mets:mets "), "Extraction with accepting license client should work");
 
@@ -109,7 +110,7 @@ class DsPresentApiServiceImplTest {
         CheckAccessForIdsOutputDto accessResponse = new CheckAccessForIdsOutputDto().accessIds(List.of(
                 RECORD_ID1, RECORD_ID2, RECORD_ID3));
         doReturn(accessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
-        DsPresentApiServiceImpl.licenseClient = mockedLicenseClient;
+        AccessUtil.licenseClient = mockedLicenseClient;
         StreamingOutput records = presentAPI.getRecords("dsfl", 0L, 1000L, "mods");
         assertEquals(3, PresentFacadeTest.countMETS(records),
                 "3-specific-records-accepting license should return exactly 3 records");
@@ -131,20 +132,20 @@ class DsPresentApiServiceImplTest {
         DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
         CheckAccessForIdsOutputDto noAccessResponse = new CheckAccessForIdsOutputDto().nonAccessIds(List.of(RECORD_ID));
         doReturn(noAccessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
-        DsPresentApiServiceImpl.licenseClient = mockedLicenseClient;
+        AccessUtil.licenseClient = mockedLicenseClient;
 
         assertThrowsInner(ForbiddenServiceException.class, () -> presentAPI.getRecord(RECORD_ID, "mods"),
                 "Calling getRecord should not be allowed");
 
         // Set allowall=true and try again
-        boolean oldAllowall = DsPresentApiServiceImpl.licenseAllowAll;
-        DsPresentApiServiceImpl.licenseAllowAll = true;
+        boolean oldAllowall = AccessUtil.licenseAllowAll;
+        AccessUtil.licenseAllowAll = true;
         try {
             assertTrue(presentAPI.getRecord(RECORD_ID, "mods").contains("<mets:mets "),
                     "Extraction with allowall=true should work");
         } finally {
             // Clean up for next test
-            DsPresentApiServiceImpl.licenseAllowAll = oldAllowall;
+            AccessUtil.licenseAllowAll = oldAllowall;
         }
     }
 
@@ -158,21 +159,21 @@ class DsPresentApiServiceImplTest {
         DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
         CheckAccessForIdsOutputDto accessResponse = new CheckAccessForIdsOutputDto().accessIds(List.of(RECORD_ID1));
         doReturn(accessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
-        DsPresentApiServiceImpl.licenseClient = mockedLicenseClient;
+        AccessUtil.licenseClient = mockedLicenseClient;
         StreamingOutput records = presentAPI.getRecords("dsfl", 0L, 1000L, "mods");
         assertEquals(1, PresentFacadeTest.countMETS(records),
                 "1-specific-record-accepting license should return exactly 1 records");
 
         // Set allowall=true and try again
-        boolean oldAllowall = DsPresentApiServiceImpl.licenseAllowAll;
-        DsPresentApiServiceImpl.licenseAllowAll = true;
+        boolean oldAllowall = AccessUtil.licenseAllowAll;
+        AccessUtil.licenseAllowAll = true;
         try {
             records = presentAPI.getRecords("dsfl", 0L, 1000L, "mods");
             assertTrue(PresentFacadeTest.countMETS(records) > 1,
                     "allowall should return more than 1 records");
         } finally {
             // Clean up for next test
-            DsPresentApiServiceImpl.licenseAllowAll = oldAllowall;
+            AccessUtil.licenseAllowAll = oldAllowall;
         }
     }
 
