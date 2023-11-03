@@ -1,5 +1,9 @@
 package dk.kb.present.transform;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -35,12 +39,11 @@ public class XSLTSchemaOrgToSolrTransformerTest {
         String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, injections);
 
         System.out.println("Solr document below:");
-        System.out.println(solrJson);
-        /*Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrJson);
         String transformedPrettyJSON = gson.toJson(je);
 
-        System.out.println(transformedPrettyJSON);*/
+        System.out.println(transformedPrettyJSON);
 
     }
 
