@@ -13,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
+import static dk.kb.present.transform.XSLTSchemaOrgToSolrTransformerTest.SCHEMA2SOLR;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -37,7 +39,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Override
     String getXSLT() {
-        return PRESERVICA2SOLR;
+        return PRESERVICA2SCHEMAORG + " AND " + SCHEMA2SOLR;
     }
 
     @BeforeAll

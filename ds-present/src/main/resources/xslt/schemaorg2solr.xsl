@@ -104,8 +104,8 @@
         </xsl:if>
 
         <!-- extract episode titel -->
-        <xsl:if test="$schemaorg-xml('encodesCreativeWork')('name')">
-          <f:string key="episode_titel">
+        <xsl:if test="map:get(map:get($schemaorg-xml,'encodesCreativeWork'),'name')">
+          <f:string key="episode_title">
             <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('name')"/>
           </f:string>
         </xsl:if>
@@ -182,7 +182,7 @@
           </f:string>
         </xsl:if>
 
-        <!-- TODO: Not pretty, but working. Needs to be tested corectly. -->
+        <!-- TODO: Not pretty, but working. Needs to be tested correctly. -->
         <!-- Extract number of episodes-->
         <xsl:if test="map:find($schemaorg-xml, 'numberOfEpisodes') != ''">
           <f:string key="number_of_episodes">
@@ -200,7 +200,7 @@
         <!-- Extract boolean for retransmission -->
         <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:retransmission'))">
           <f:string key="retransmission">
-            <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:retransmission')"/>
+            <xsl:value-of select="($schemaorg-xml('kb:internal')('kb:retransmission'))"/>
           </f:string>
         </xsl:if>
 

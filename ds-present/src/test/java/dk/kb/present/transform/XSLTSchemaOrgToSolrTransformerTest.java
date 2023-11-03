@@ -24,19 +24,20 @@ public class XSLTSchemaOrgToSolrTransformerTest {
 
     @Test
     public void testSetup() throws IOException {
-        String schemaJson = inputToSchemaJson(RECORD_44979f67);
-        //schemaJson = "<data>"+schemaJson+"</data>";
-
-
-        printSolrJsonFromSchemaOrgJson(schemaJson);
+        printSolrJsonFromSchemaOrgJson(RECORD_44979f67);
 
     }
 
 
-    public static void printSolrJsonFromSchemaOrgJson(String schemaOrgJson) throws IOException {
+    public static void printSolrJsonFromSchemaOrgJson(String record) throws IOException {
+
+        Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
+                "streamingserver" ,"https://www.example.com/streamingserver/");
+        String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, record, injections);
+
         String placeholderXml = "placeholder.xml";
-        Map<String, String> injections = Map.of("schemaorgjson", schemaOrgJson);
-        String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, injections);
+        Map<String, String> schemaorgjson = Map.of("schemaorgjson", schemaOrgJson);
+        String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, schemaorgjson);
 
         System.out.println("Solr document below:");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -47,11 +48,6 @@ public class XSLTSchemaOrgToSolrTransformerTest {
 
     }
 
-    private static String inputToSchemaJson(String xml) throws IOException {
-        Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/");
-        String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, xml, injections);
-        System.out.println(schemaOrgJson);
-        return schemaOrgJson;
-    }
+
 
 }

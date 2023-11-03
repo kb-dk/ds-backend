@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static dk.kb.present.solr.EmbeddedSolrTest.PRESERVICA2SOLR;
+import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -116,18 +117,13 @@ public abstract class XSLTTransformerTestBase {
         }
         String solrString;
         try {
-            String yamlStr =
-                    "stylesheet: '" + getXSLT() + "'\n" +
-                            "injections:\n" +
-                            "  - streamingserver: 'example.com/streaming'\n" +
-                            "  - origin: 'ds.test'\n";
-            YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
-            solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, record);
-            //TestUtil.prettyPrintJson(solrString);
+            solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
         }
+
+        TestUtil.prettyPrintJson(solrString);
 
         Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
