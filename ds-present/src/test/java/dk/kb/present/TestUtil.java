@@ -14,7 +14,6 @@ import com.google.gson.JsonParser;
 import dk.kb.present.copyright.XsltCopyrightMapper;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.XSLTFactory;
-import dk.kb.present.transform.XSLTSchemaOrgToSolrTransformerTest;
 import dk.kb.present.transform.XSLTTransformer;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
@@ -23,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import static dk.kb.present.solr.EmbeddedSolrTest.MODS2SOLR;
 import static dk.kb.present.solr.EmbeddedSolrTest.PRESERVICA2SOLR;
-import static dk.kb.present.transform.XSLTSchemaOrgToSolrTransformerTest.SCHEMA2SOLR;
+import static dk.kb.present.transform.XSLTPreservicaToSolrTransformerTest.SCHEMA2SOLR;
 
 public class TestUtil {
 	private static final Logger log = LoggerFactory.getLogger(TestUtil.class);

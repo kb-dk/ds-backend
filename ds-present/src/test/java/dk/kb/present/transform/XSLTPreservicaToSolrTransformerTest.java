@@ -9,12 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
-import static dk.kb.present.transform.XSLTSchemaOrgToSolrTransformerTest.SCHEMA2SOLR;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -25,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase {
 
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
+    public static final String SCHEMA2SOLR =  "xslt/schemaorg2solr.xsl";
     public static final String RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
     public static final String RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
     public static final String RECORD_a8aafb121 = "internal_test_files/tvMetadata/a8afb121-e8b8-467a-8704-10dc42356ac4.xml";
