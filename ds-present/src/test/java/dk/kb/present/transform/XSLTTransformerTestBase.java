@@ -59,11 +59,18 @@ public abstract class XSLTTransformerTestBase {
      * @param substring must be present in the transformed record.
      */
     public void assertContains(String recordFile, String substring) {
+        // TODO: When mods2solr.xslt has been converted into schemaorg2solr.xslt combine the assertNotContains methods
         assertMultiTests(recordFile,
                 solrDoc -> assertTrue(solrDoc.contains(substring))
         );
     }
 
+    /**
+     * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
+     * transformed record contains the given {@code substring}.
+     * @param recordFile the file to load, transform and test.
+     * @param substring must be present in the transformed record.
+     */
     public void assertPvicaContains(String recordFile, String substring) {
         assertMultiTestsThroughSchemaTransformation(recordFile,
                 solrDoc -> assertTrue(solrDoc.contains(substring))
@@ -90,10 +97,18 @@ public abstract class XSLTTransformerTestBase {
      * @param substring must be present in the transformed record.
      */
     public void assertNotContains(String recordFile, String substring) {
+        // TODO: When mods2solr.xslt has been converted into schemaorg2solr.xslt combine the assertNotContains methods
         assertMultiTests(recordFile,
                 solrDoc -> assertFalse(solrDoc.contains(substring))
         );
     }
+
+    /**
+     * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
+     * transformed record does not contain the given {@code substring}.
+     * @param recordFile the file to load, transform and test.
+     * @param substring must be present in the transformed record.
+     */
     public void assertPvicaNotContains(String recordFile, String substring) {
         assertMultiTestsThroughSchemaTransformation(recordFile,
                 solrDoc -> assertFalse(solrDoc.contains(substring))
@@ -123,6 +138,7 @@ public abstract class XSLTTransformerTestBase {
      */
     @SafeVarargs
     public final void assertMultiTests(String record, Consumer<String>... tests) {
+        // TODO: When mods2solr.xslt has been converted into schemaorg2solr.xslt combine the assertNotContains methods
         if (!TestFileProvider.hasSomeTestFiles()) {
             return;  // ensureTestFiles takes care of logging is there are no internal test files
         }
@@ -135,17 +151,26 @@ public abstract class XSLTTransformerTestBase {
                             "  - origin: 'ds.test'\n";
             YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
             solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, record);
-            //TestUtil.prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
         }
 
-        TestUtil.prettyPrintJson(solrString);
+        //TestUtil.prettyPrintJson(solrString);
 
         Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
 
+    /**
+     * Checks that internal test files are available and if not, logs a warning and returns.
+     * <p>
+     * If the check passes, the content of the file {@code record} is transformed using two XSLTs.
+     * At first the XML record is transformed to Schema.org JSON and then the schema.org JSON is transformed to solr
+     * documents and the given tests are performed on the result.
+     * @param record file with a record that is to be transformed.
+     * @param tests Zero or more tests to perform on the transformed record.
+     */
+    @SafeVarargs
     public final void assertMultiTestsThroughSchemaTransformation(String record, Consumer<String>... tests){
         if (!TestFileProvider.hasSomeTestFiles()) {
             return;  // ensureTestFiles takes care of logging is there are no internal test files
@@ -158,7 +183,7 @@ public abstract class XSLTTransformerTestBase {
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
         }
 
-        TestUtil.prettyPrintJson(solrString);
+        //TestUtil.prettyPrintJson(solrString);
 
         Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
