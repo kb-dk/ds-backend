@@ -369,10 +369,12 @@
 
     <!-- Extracts collection -->
     <xsl:if test="pbcoreInstantiation/formatLocation != ''">
-      <f:map key="isPartOf">
-        <f:string key="@type">Collection</f:string>
-        <f:string key="name"><xsl:value-of select="pbcoreInstantiation/formatLocation"/></f:string>
-      </f:map>
+      <f:array key="isPartOf">
+        <f:map>
+          <f:string key="@type">Collection</f:string>
+          <f:string key="name"><xsl:value-of select="pbcoreInstantiation/formatLocation"/></f:string>
+        </f:map>
+      </f:array>
     </xsl:if>
 
     <!-- Is the resource hd? or do we know anything about the video quality=? -->

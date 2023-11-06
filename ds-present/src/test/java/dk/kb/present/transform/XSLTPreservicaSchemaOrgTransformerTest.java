@@ -53,7 +53,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest {
     @Test
     void testCollection() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, RECORD_44979f67);
-        Assertions.assertTrue(transformedJSON.contains("\"isPartOf\":" +
+        Assertions.assertTrue(transformedJSON.contains("\"isPartOf\":[" +
                                                         "{\"@type\":\"Collection\"," +
                                                         "\"name\":\"Det Kgl. Bibliotek; Radio\\/TV-Samlingen\"}"));
     }

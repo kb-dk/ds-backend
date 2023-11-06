@@ -28,236 +28,251 @@
         <f:string key="id">
           <xsl:value-of select="$schemaorg-xml('id')"/>
         </f:string>
-        <f:string key="name">
-          <xsl:value-of select="$schemaorg-xml('name')"/>
-        </f:string>
+        
+        <xsl:if test="contains(map:get($schemaorg-xml,'@type'), 'VideoObject') or
+                      contains(map:get($schemaorg-xml,'@type'), 'AudioObject') ">
 
-        <xsl:if test="$schemaorg-xml('keywords')">
-          <!--Save categories to a variable as a sequence. -->
-          <xsl:variable name="categories" as="item()*" select="tokenize($schemaorg-xml('keywords'), ',')"/>
-          <!--Create array of categories, which fits with the multivalued solr field -->
-          <f:array key="categories">
-            <xsl:for-each select="$categories">
-              <f:string><xsl:value-of select="normalize-space(.)"/></f:string>
-            </xsl:for-each>
-          </f:array>
-        </xsl:if>
-
-        <!-- Extract collection-->
-        <xsl:if test="$schemaorg-xml('isPartOf')('name')">
-          <f:string key="collection">
-            <xsl:value-of select="$schemaorg-xml('isPartOf')('name')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract main genre -->
-        <xsl:if test="$schemaorg-xml('genre')">
-          <f:string key="genre">
-            <xsl:value-of select="$schemaorg-xml('genre')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- extract title-->
-        <xsl:if test="$schemaorg-xml('name')">
-          <f:string key="title">
+          <f:string key="name">
             <xsl:value-of select="$schemaorg-xml('name')"/>
           </f:string>
-        </xsl:if>
 
-        <!-- extract alternate title-->
-        <xsl:if test="$schemaorg-xml('alternateName')">
-          <f:string key="original_title">
-            <xsl:value-of select="$schemaorg-xml('alternateName')"/>
-          </f:string>
-        </xsl:if>
+          <xsl:if test="f:exists($schemaorg-xml('keywords'))">
+            <!--Save categories to a variable as a sequence. -->
+            <xsl:variable name="categories" as="item()*" select="tokenize($schemaorg-xml('keywords'), ',')"/>
+            <!--Create array of categories, which fits with the multivalued solr field -->
+            <f:array key="categories">
+              <xsl:for-each select="$categories">
+                <f:string><xsl:value-of select="normalize-space(.)"/></f:string>
+              </xsl:for-each>
+            </f:array>
+          </xsl:if>
 
-        <!-- Extract the creater affiliation -->
-        <xsl:if test="$schemaorg-xml('publication')('publishedOn')('broadcastDisplayName')">
-          <f:string key="creator_affiliation">
-            <xsl:value-of select="$schemaorg-xml('publication')('publishedOn')('broadcastDisplayName')"/>
-          </f:string>
-        </xsl:if>
+          <!-- Extract collection-->
+          <xsl:if test="exists($schemaorg-xml('isPartOf'))">
+            <!-- Variable to find collections in. -->
+            <xsl:variable name="isPartOf" as="item()*">
+              <xsl:copy-of select="array:flatten($schemaorg-xml('isPartOf'))"/>
+            </xsl:variable>
 
-        <!-- Creates the notes field, which originates from the mods2solr XSLT and acts as a catch all field for metadata
-             The values in this field are also present in the specific abstract and description fields.-->
-        <xsl:if test="$schemaorg-xml('abstract') or $schemaorg-xml('description')">
-          <f:array key="notes">
-            <xsl:if test="$schemaorg-xml('abstract')">
-              <f:string>
-                <xsl:value-of select="$schemaorg-xml('abstract')"/>
+            <xsl:for-each select="$isPartOf">
+              <xsl:if test="map:get(., '@type') = 'Collection'">
+                <f:string key="collection">
+                  <xsl:value-of select="map:get(., 'name')"/>
+                </f:string>
+              </xsl:if>
+            </xsl:for-each>
+
+          </xsl:if>
+
+          <!-- Extract main genre -->
+          <xsl:if test="$schemaorg-xml('genre')">
+            <f:string key="genre">
+              <xsl:value-of select="$schemaorg-xml('genre')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- extract title-->
+          <xsl:if test="$schemaorg-xml('name')">
+            <f:string key="title">
+              <xsl:value-of select="$schemaorg-xml('name')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- extract alternate title-->
+          <xsl:if test="$schemaorg-xml('alternateName')">
+            <f:string key="original_title">
+              <xsl:value-of select="$schemaorg-xml('alternateName')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract the creater affiliation -->
+          <xsl:if test="f:exists($schemaorg-xml('publication')('publishedOn')('broadcastDisplayName'))">
+            <f:string key="creator_affiliation">
+              <xsl:value-of select="$schemaorg-xml('publication')('publishedOn')('broadcastDisplayName')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Creates the notes field, which originates from the mods2solr XSLT and acts as a catch all field for metadata
+               The values in this field are also present in the specific abstract and description fields.-->
+          <xsl:if test="$schemaorg-xml('abstract') or $schemaorg-xml('description')">
+            <f:array key="notes">
+              <xsl:if test="$schemaorg-xml('abstract')">
+                <f:string>
+                  <xsl:value-of select="$schemaorg-xml('abstract')"/>
+                </f:string>
+              </xsl:if>
+              <xsl:if test="$schemaorg-xml('description')">
+                <f:string>
+                  <xsl:value-of select="$schemaorg-xml('description')"/>
+                </f:string>
+              </xsl:if>
+            </f:array>
+          </xsl:if>
+
+          <!-- Extract content url-->
+          <!-- TODO: What about resourceID?-->
+          <xsl:if test="$schemaorg-xml('contentUrl')">
+            <f:string key="streaming_url">
+              <xsl:value-of select="$schemaorg-xml('contentUrl')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract data on the encoded creative work, if present-->
+          <xsl:if test="map:contains($schemaorg-xml, 'encodesCreativeWork')">
+            <!-- extract episode titel -->
+            <xsl:if test="exists($schemaorg-xml('encodesCreativeWork')('name'))">
+              <f:string key="episode_title">
+                <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('name')"/>
               </f:string>
             </xsl:if>
-            <xsl:if test="$schemaorg-xml('description')">
-              <f:string>
-                <xsl:value-of select="$schemaorg-xml('description')"/>
+
+            <!-- Extract episode number -->
+            <xsl:if test="$schemaorg-xml('encodesCreativeWork')('episodeNumber')">
+              <f:string key="episode">
+                <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('episodeNumber')"/>
               </f:string>
             </xsl:if>
-          </f:array>
-        </xsl:if>
 
-        <!-- Extract content url-->
-        <!-- TODO: What about resourceID?-->
-        <xsl:if test="$schemaorg-xml('contentUrl')">
-          <f:string key="streaming_url">
-            <xsl:value-of select="$schemaorg-xml('contentUrl')"/>
-          </f:string>
-        </xsl:if>
+            <!-- Quite nested structure here. We already know that the map encodesCreativeWork exists, now we are checking
+                 for the submap partOfSeason and when that exists, we know that the numberOfEpisodes is present, as this
+                 field is creating the map partOfSeason. -->
+            <!-- Extract number of episodes-->
+            <xsl:if test="map:contains($schemaorg-xml('encodesCreativeWork'), 'partOfSeason')">
+              <f:string key="number_of_episodes">
+                <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('partOfSeason')('numberOfEpisodes')"/>
+              </f:string>
+            </xsl:if>
+          </xsl:if>
 
-        <!-- Extract data on the encoded creative work, if present-->
-        <xsl:if test="map:contains($schemaorg-xml, 'encodesCreativeWork')">
-          <!-- extract episode titel -->
-          <xsl:if test="exists($schemaorg-xml('encodesCreativeWork')('name'))">
-            <f:string key="episode_title">
-              <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('name')"/>
+          <!-- extract start time-->
+          <xsl:if test="$schemaorg-xml('startTime')">
+            <f:string key="startTime">
+              <xsl:value-of select="$schemaorg-xml('startTime')"/>
             </f:string>
           </xsl:if>
 
-          <!-- Extract episode number -->
-          <xsl:if test="$schemaorg-xml('encodesCreativeWork')('episodeNumber')">
-            <f:string key="episode">
-              <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('episodeNumber')"/>
+          <!-- extract end time-->
+          <xsl:if test="$schemaorg-xml('endTime')">
+            <f:string key="endTime">
+              <xsl:value-of select="$schemaorg-xml('endTime')"/>
             </f:string>
           </xsl:if>
 
-          <!-- Quite nested structure here. We already know that the map encodesCreativeWork exists, now we are checking
-               for the submap partOfSeason and when that exists, we know that the numberOfEpisodes is present, as this
-               field is creating the map partOfSeason. -->
-          <!-- Extract number of episodes-->
-          <xsl:if test="map:contains($schemaorg-xml('encodesCreativeWork'), 'partOfSeason')">
-            <f:string key="number_of_episodes">
-              <xsl:value-of select="$schemaorg-xml('encodesCreativeWork')('partOfSeason')('numberOfEpisodes')"/>
+          <!-- Calculate duration from start and end times-->
+          <xsl:if test="$schemaorg-xml('duration')">
+            <xsl:variable name="startTime">
+              <xsl:value-of select="$schemaorg-xml('startTime')"/>
+            </xsl:variable>
+            <xsl:variable name="endTime">
+              <xsl:value-of select="$schemaorg-xml('endTime')"/>
+            </xsl:variable>
+            <xsl:variable name="durationInMilliseconds">
+              <xsl:value-of select="my:toMilliseconds($startTime, $endTime)"/>
+            </xsl:variable>
+            <f:string key="duration_ms">
+              <xsl:value-of select="$durationInMilliseconds"/>
             </f:string>
           </xsl:if>
-        </xsl:if>
 
-        <!-- extract start time-->
-        <xsl:if test="$schemaorg-xml('startTime')">
-          <f:string key="startTime">
-            <xsl:value-of select="$schemaorg-xml('startTime')"/>
-          </f:string>
-        </xsl:if>
+          <!-- Extract color boolean-->
+          <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'),'kb:color'))">
+            <f:string key="color">
+              <xsl:value-of select="map:get($schemaorg-xml('kb:internal'),'kb:color')"/>
+            </f:string>
+          </xsl:if>
 
-        <!-- extract end time-->
-        <xsl:if test="$schemaorg-xml('endTime')">
-          <f:string key="endTime">
-            <xsl:value-of select="$schemaorg-xml('endTime')"/>
-          </f:string>
-        </xsl:if>
+          <!-- Extract videoQuality -->
+          <xsl:if test="$schemaorg-xml('videoQuality')">
+            <f:string key="video_quality">
+              <xsl:value-of select="$schemaorg-xml('videoQuality')"/>
+            </f:string>
+          </xsl:if>
 
-        <!-- Calculate duration from start and end times-->
-        <xsl:if test="$schemaorg-xml('duration')">
-          <xsl:variable name="startTime">
-            <xsl:value-of select="$schemaorg-xml('startTime')"/>
+          <!-- Extract surround sound-->
+          <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'),'kb:surround_sound'))">
+            <f:string key="surround_sound">
+              <xsl:value-of select="map:get($schemaorg-xml('kb:internal'),'kb:surround_sound')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract premiere-->
+          <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'), 'kb:premiere'))">
+            <f:string key="premiere">
+              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:premiere')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract aspect ratio-->
+          <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'), 'kb:aspect_ratio'))">
+            <f:string key="aspect_ratio">
+              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:aspect_ratio')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract boolean for live broadcast -->
+          <xsl:if test="f:exists($schemaorg-xml('publication')('isLiveBroadcast'))">
+            <f:string key="live_broadcast">
+              <xsl:value-of select="$schemaorg-xml('publication')('isLiveBroadcast')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract boolean for retransmission -->
+          <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:retransmission'))">
+            <f:string key="retransmission">
+              <xsl:value-of select="($schemaorg-xml('kb:internal')('kb:retransmission'))"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract abstract -->
+          <xsl:if test="f:exists($schemaorg-xml('abstract'))">
+            <f:string key="abstract">
+              <xsl:value-of select="$schemaorg-xml('abstract')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract description -->
+          <xsl:if test="f:exists($schemaorg-xml('description'))">
+            <f:string key="description">
+              <xsl:value-of select="$schemaorg-xml('description')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract sub genre -->
+          <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:genre_sub'))">
+            <f:string key="genre_sub">
+              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:genre_sub')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract boolean for subtitles -->
+          <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:has_subtitles'))">
+            <f:string key="has_subtitles">
+              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:has_subtitles')"/>
+            </f:string>
+          </xsl:if>
+
+          <!-- Extract boolean for subtitles for hearing impaired  -->
+          <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:has_subtitles_for_hearing_impaired'))">
+            <f:string key="has_subtitles_for_hearing_impaired">
+              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:has_subtitles_for_hearing_impaired')"/>
+            </f:string>
+          </xsl:if>
+
+          <!--Extract the array of identifiers to a variable, where the individual maps can be accessed. -->
+          <xsl:variable name="identifers" as="item()*">
+            <xsl:copy-of select="array:flatten($schemaorg-xml('identifier'))"/>
           </xsl:variable>
-          <xsl:variable name="endTime">
-            <xsl:value-of select="$schemaorg-xml('endTime')"/>
-          </xsl:variable>
-          <xsl:variable name="durationInMilliseconds">
-            <xsl:value-of select="my:toMilliseconds($startTime, $endTime)"/>
-          </xsl:variable>
-          <f:string key="duration_ms">
-            <xsl:value-of select="$durationInMilliseconds"/>
-          </f:string>
+          <!--For each identifier in the variable $identifiers check for specific properties and map them to their
+              respective solr counterpart.-->
+          <xsl:for-each select="$identifers">
+            <xsl:call-template name="identifierExtractor"/>
+          </xsl:for-each>
+
+          <!-- Extract internal fields -->
+          <xsl:call-template name="kbInternal">
+            <xsl:with-param name="internalMap" select="$schemaorg-xml('kb:internal')"/>
+          </xsl:call-template>
         </xsl:if>
-
-        <!-- Extract color boolean-->
-        <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'),'kb:color'))">
-          <f:string key="color">
-            <xsl:value-of select="map:get($schemaorg-xml('kb:internal'),'kb:color')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract videoQuality -->
-        <xsl:if test="$schemaorg-xml('videoQuality')">
-          <f:string key="video_quality">
-            <xsl:value-of select="$schemaorg-xml('videoQuality')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract surround sound-->
-        <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'),'kb:surround_sound'))">
-          <f:string key="surround_sound">
-            <xsl:value-of select="map:get($schemaorg-xml('kb:internal'),'kb:surround_sound')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract premiere-->
-        <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'), 'kb:premiere'))">
-          <f:string key="premiere">
-            <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:premiere')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract aspect ratio-->
-        <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'), 'kb:aspect_ratio'))">
-          <f:string key="aspect_ratio">
-            <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:aspect_ratio')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract boolean for live broadcast -->
-        <xsl:if test="f:exists($schemaorg-xml('publication')('isLiveBroadcast'))">
-          <f:string key="live_broadcast">
-            <xsl:value-of select="$schemaorg-xml('publication')('isLiveBroadcast')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract boolean for retransmission -->
-        <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:retransmission'))">
-          <f:string key="retransmission">
-            <xsl:value-of select="($schemaorg-xml('kb:internal')('kb:retransmission'))"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract abstract -->
-        <xsl:if test="f:exists($schemaorg-xml('abstract'))">
-          <f:string key="abstract">
-            <xsl:value-of select="$schemaorg-xml('abstract')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract description -->
-        <xsl:if test="f:exists($schemaorg-xml('description'))">
-          <f:string key="description">
-            <xsl:value-of select="$schemaorg-xml('description')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract sub genre -->
-        <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:genre_sub'))">
-          <f:string key="genre_sub">
-            <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:genre_sub')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract boolean for subtitles -->
-        <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:has_subtitles'))">
-          <f:string key="has_subtitles">
-            <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:has_subtitles')"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- Extract boolean for subtitles for hearing impaired  -->
-        <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:has_subtitles_for_hearing_impaired'))">
-          <f:string key="has_subtitles_for_hearing_impaired">
-            <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:has_subtitles_for_hearing_impaired')"/>
-          </f:string>
-        </xsl:if>
-
-        <!--Extract the array of identifiers to a variable, where the individual maps can be accessed. -->
-        <xsl:variable name="identifers" as="item()*">
-          <xsl:copy-of select="array:flatten($schemaorg-xml('identifier'))"/>
-        </xsl:variable>
-        <!--For each identifier in the variable $identifiers check for specific properties and map them to their
-            respective solr counterpart.-->
-        <xsl:for-each select="$identifers">
-          <xsl:call-template name="identifierExtractor"/>
-        </xsl:for-each>
-
-        <!-- Extract internal fields -->
-        <xsl:call-template name="kbInternal">
-          <xsl:with-param name="internalMap" select="$schemaorg-xml('kb:internal')"/>
-        </xsl:call-template>
 
       </f:map>
     </xsl:variable>
