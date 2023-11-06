@@ -190,8 +190,8 @@ public class PresentFacade {
             ((JSONStreamWriter) writer).setPostOutput("\n}\n");
 
             try {
-                collection.getDSRecords(mTime, maxRecords, "SOLRJSON")
-                        .map(PresentFacade::wrapSolrJson)
+                collection.getDSRecords(mTime, maxRecords, "SolrJSON")
+                        .map(PresentFacade::wrapSolrJSON)
                         .forEach(writer::write);
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
@@ -218,12 +218,11 @@ public class PresentFacade {
      * @param record a record where the data component contains a SolrJSONDocument.
      * @return the record's data component wrapped as either {@code add} or {@code delete}.
      */
-    private static String wrapSolrJson(DsRecordDto record) {
+    private static String wrapSolrJSON(DsRecordDto record) {
         if (Boolean.TRUE.equals(record.getDeleted())) {
             return "\"delete\": { \"id\": \"" + record.getId() + "\" }";
         }
-        // When we had nested solr documentds, we had to split on documents. This has been removed.
-        // See outcommented method  splitSolrJSON if it becomes relevant
+        // When we had nested solr documentds, we had to split on documents. This has been removed. See outcommented method  splitSolrJSON if it becomes relevant
         StringBuilder sb = new StringBuilder();
         sb.append("\"add\": { \"doc\" : ").append(record.getData()).append(" }");
 
