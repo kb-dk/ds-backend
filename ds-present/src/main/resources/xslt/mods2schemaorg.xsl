@@ -563,7 +563,7 @@
                             <xsl:variable name="collectionURL" select="m:relatedItem[@type='host']/m:identifier[@type='URL']"/>
                             <f:map>
                                 <f:string key="@type">Collection</f:string>
-                                <f:string key="headline"><xsl:value-of select="$collectionTitle"/></f:string>
+                                <f:string key="name"><xsl:value-of select="$collectionTitle"/></f:string>
                                 <f:string key="description">
                                     <xsl:value-of select="$collectionDescription"/>
                                 </f:string>
