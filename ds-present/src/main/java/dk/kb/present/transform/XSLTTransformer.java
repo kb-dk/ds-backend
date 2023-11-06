@@ -85,6 +85,11 @@ public class XSLTTransformer extends DSTransformer {
     }
 
     @Override
+    public String getStylesheet() {
+        return stylesheet;
+    }
+
+    @Override
     public synchronized String apply(String s, Map<String, String> metadata) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             try (Reader in = new StringReader(s)) {

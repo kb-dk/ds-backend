@@ -32,4 +32,11 @@ public abstract class DSTransformer implements BiFunction<String, Map<String, St
      */
     abstract public String getID();
 
+    /**
+     * @return the stylesheet used by the transformer, if any existst. If stylesheet does not exist return null.
+     */
+    abstract public String getStylesheet();
+
+
+
 }

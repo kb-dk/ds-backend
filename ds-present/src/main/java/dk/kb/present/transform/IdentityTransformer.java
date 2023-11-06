@@ -38,6 +38,11 @@ public class IdentityTransformer extends DSTransformer {
         return ID;
     }
 
+    @Override
+    public String getStylesheet() {
+        return null;
+    }
+
     // A "real" transformer would do something here
     @Override
     public String apply(String s, Map<String, String> metadata) {

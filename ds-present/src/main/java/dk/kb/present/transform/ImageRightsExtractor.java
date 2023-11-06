@@ -42,6 +42,11 @@ public class ImageRightsExtractor extends DSTransformer {
     }
 
     @Override
+    public String getStylesheet() {
+        return null;
+    }
+
+    @Override
     public String apply(String modsInMetsXml, Map<String, String> metadata) {
         try {
             metadata.putAll(XsltCopyrightMapper.applyXsltCopyrightTransformer(modsInMetsXml));

@@ -43,6 +43,11 @@ public class FailTransformer extends DSTransformer {
     }
 
     @Override
+    public String getStylesheet() {
+        return null;
+    }
+
+    @Override
     public String apply(String s, Map<String, String> metadata) {
         throw new RuntimeException(message);
     }

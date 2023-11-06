@@ -58,6 +58,11 @@ public class ReplaceTransformer extends DSTransformer {
     }
 
     @Override
+    public String getStylesheet() {
+        return null;
+    }
+
+    @Override
     public String apply(String s, Map<String, String> metadata) {
         Matcher m = pattern.matcher(s);
         return replaceAll ? m.replaceAll(replacement) : m.replaceFirst(replacement);
