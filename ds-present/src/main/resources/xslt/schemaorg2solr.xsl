@@ -86,9 +86,11 @@
           </xsl:if>
 
           <!-- Extract the creater affiliation -->
-          <xsl:if test="f:exists($schemaorg-xml('publication')('publishedOn')('broadcastDisplayName'))">
+          <!-- map:find() can be used, because we know that only one key in the complete JSON file is named
+               broadcastDisplayName -->
+          <xsl:if test="f:exists(map:find($schemaorg-xml,'broadcastDisplayName'))">
             <f:string key="creator_affiliation">
-              <xsl:value-of select="$schemaorg-xml('publication')('publishedOn')('broadcastDisplayName')"/>
+              <xsl:value-of select="map:find($schemaorg-xml,'broadcastDisplayName')"/>
             </f:string>
           </xsl:if>
 
