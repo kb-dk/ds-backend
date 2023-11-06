@@ -17,6 +17,7 @@ package dk.kb.present;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
@@ -85,7 +86,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
         id = conf.keySet().stream().findFirst().orElseThrow();
         origin = originOfCollection;
-        //TODO: Set origin injection here and also do renaming of base to origin in DSCollection
         conf = conf.getSubMap(id);
         String[] mimeTokens = conf.getString(MIME_KEY).split("/", 2);
         mime = new MediaType(mimeTokens[0], mimeTokens[1]);
@@ -128,9 +128,16 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         }
 
+
         for (DSTransformer transformer: this) {
             try {
-                content = transformer.apply(content, metadata);
+                if (transformer.getStylesheet() != null && transformer.getStylesheet().contains("schemaorg2solr.xsl")){
+                    String placeholderXml = Resolver.resolveUTF8String("placeholder.xml");
+                    metadata.putIfAbsent("schemaorgjson", content);
+                    content = transformer.apply(placeholderXml, metadata);
+                } else {
+                    content = transformer.apply(content, metadata);
+                }
             } catch (Exception e) {
                 String message = String.format(
                         Locale.ROOT, "Exception in View '%s' while calling %s with recordID '%s' and metadata %s",
