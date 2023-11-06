@@ -99,11 +99,13 @@ config:
               strategy: 'MANIFESTATION'
               transformers:
                 - xslt:
-                    stylesheet: 'xslt/preservica2solr.xsl'
+                    stylesheet: 'xslt/preservica2schemaorg.xsl'
                     injections:
-                      # - imageserver: ${path:config.imageservers[default=true].url}
+                      #- imageserver: ${path:config.imageservers[default=true].url}
                       - streamingserver: ${path:config.streamingserver.url}
                       - old_imageserver: ${path:config.oldimageserver.url}
+                - xslt:
+                    stylesheet: 'xslt/schemaorg2solr.xsl'
 
 
 
