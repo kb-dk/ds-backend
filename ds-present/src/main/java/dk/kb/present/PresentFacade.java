@@ -17,12 +17,10 @@ package dk.kb.present;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
-import dk.kb.present.transform.XSLTTransformer;
 import dk.kb.present.util.DataCleanup;
 import dk.kb.present.webservice.ExportWriterFactory;
 import dk.kb.storage.model.v1.DsRecordDto;
 
-import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
@@ -35,11 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -196,7 +191,7 @@ public class PresentFacade {
 
             try {
                 collection.getDSRecords(mTime, maxRecords, "JSON-LD")
-                        .map(PresentFacade::createSolrJson)
+                        .map(PresentFacade::wrapSolrJson)
                         .forEach(writer::write);
             } catch (Exception e) {
                 if (e instanceof ServiceException) {
@@ -218,34 +213,21 @@ public class PresentFacade {
     }
 
     /**
-     * Takes a {@code DsRecordDto} in schema.org compliant JSON and turns it into a solr document.
      * Uses information from the record object to wrap its data component in either {@code add} or {@code delete}.
      * See the <a href="https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates">solr guide</a>
      * @param record a record where the data component contains a SolrJSONDocument.
      * @return the record's data component wrapped as either {@code add} or {@code delete}.
      */
-    private static String createSolrJson(DsRecordDto record) {
+    private static String wrapSolrJson(DsRecordDto record) {
         if (Boolean.TRUE.equals(record.getDeleted())) {
             return "\"delete\": { \"id\": \"" + record.getId() + "\" }";
         }
+        // When we had nested solr documentds, we had to split on documents. This has been removed.
+        // See outcommented method  splitSolrJSON if it becomes relevant
+        StringBuilder sb = new StringBuilder();
+        sb.append("\"add\": { \"doc\" : ").append(record.getData()).append(" }");
 
-        try {
-            String placeholderXml = Resolver.resolveUTF8String("placeholder.xml");
-            Map<String, String> schemaorgjson = Map.of("schemaorgjson", Objects.requireNonNull(record.getData()));
-            String SCHEMA2SOLR = "xslt/schemaorg2solr.xsl";
-            XSLTTransformer transformer = new XSLTTransformer(SCHEMA2SOLR, schemaorgjson);
-            String solrJson = transformer.apply(placeholderXml, schemaorgjson);
-
-            // When we had nested solr documentds, we had to split on documents. This has been removed.
-            // See outcommented method  splitSolrJSON if it becomes relevant
-            StringBuilder sb = new StringBuilder();
-            sb.append("\"add\": { \"doc\" : ").append(solrJson).append(" }");
-
-            return sb.toString();
-        }  catch (IOException e) {
-            log.warn("Error during transformation of Schema.org JSON to solr documents.");
-            throw new RuntimeException(e);
-        }
+        return sb.toString();
     }
 
     /**
