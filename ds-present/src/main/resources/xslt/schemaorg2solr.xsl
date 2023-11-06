@@ -28,7 +28,10 @@
         <f:string key="id">
           <xsl:value-of select="$schemaorg-xml('id')"/>
         </f:string>
-        
+
+        <!-- THIS IS THE BIGGEST AND BADDEST HACK IN TOWN! TO MAKE TEST METHODS AND XSLTS PRETTY AND MANAGEABLE,
+             WE SHOULD REALLY IMPLEMENT THIS SCHEMA2SOLR TRANSFORMATION FOR MODS RESOURCES AS WELL. CURRENTLY, THIS
+             BRANCH CAN'T GENERATE ANY SOLR-DOCUMENTS FOR MODS RECORDS, WHICH SHOULD BE DO-ABLE. -->
         <xsl:if test="contains(map:get($schemaorg-xml,'@type'), 'VideoObject') or
                       contains(map:get($schemaorg-xml,'@type'), 'AudioObject') ">
 
