@@ -190,7 +190,7 @@ public class PresentFacade {
             ((JSONStreamWriter) writer).setPostOutput("\n}\n");
 
             try {
-                collection.getDSRecords(mTime, maxRecords, "JSON-LD")
+                collection.getDSRecords(mTime, maxRecords, "SOLRJSON")
                         .map(PresentFacade::wrapSolrJson)
                         .forEach(writer::write);
             } catch (Exception e) {
