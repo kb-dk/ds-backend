@@ -90,7 +90,7 @@ class SolrServiceTest {
                 "      <str>resource_description:[* TO \"Moving Image\"]</str>\n" +
                 "      <str>{!cache=true}(((access_searlige_visningsvilkaar:\"Visning kun af metadata\") OR (catalog:\"Maps\") OR (collection:\"Det Kgl. Bibliotek; Radio/TV-Samlingen\") OR (catalog:\"Samlingsbilleder\")) -(id:(\"fr508045.tif\" OR \"fr552041x.tif\")) -(access_blokeret:true) -(cataloging_language:*tysk*))</str>\n" +
                 "    </arr>\n";
-        String exp = "<str name=\"q.op\">AND</str>\n" +
+        String exp = "  <str name=\"q.op\">AND</str>\n" +
                 "    <arr name=\"fq\">\n" +
                 "      <str>number_of_episodes:[2 TO 10]</str>\n" +
                 "      <str>resource_description:[* TO \"Moving Image\"]</str>\n" +

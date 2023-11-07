@@ -17,7 +17,7 @@ package dk.kb.discover;
 import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-import org.slf4j.Logger;
+ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.UriBuilder;
@@ -366,53 +366,9 @@ public class SolrService {
      */
     public static String removePrefixedFilters(String solrResponse, String prefix, String wt) {
         switch (wt == null ? "json" : wt) {
-            case "json": {
-//     "fq": [
-//        "number_of_episodes:[2 TO 10]",
-//        "resource_description:[* TO \"Moving Image\"]",
-//        "{!cache=true}(((access_searlige_visningsvilkaar:\"Visning kun af metadata\") OR (catalog:\"Maps\") OR (collection:\"Det Kgl. Bibliotek; Radio/TV-Samlingen\") OR (catalog:\"Samlingsbilleder\")) -(id:(\"fr508045.tif\" OR \"fr552041x.tif\")) -(access_blokeret:true) -(cataloging_language:*tysk*))"
-//      ],
-                // Note that the optional leading comma is stripped.
-                // It is assumed that prefixed filters will appear after other filters
-                Pattern stripPattern = Pattern.compile(
-                        "(?:,\\s*)?\"" + Pattern.quote(prefix) + ".*?[^\\\\]\"", Pattern.DOTALL);
-                Matcher stripMatcher = stripPattern.matcher(solrResponse);
-                if (!stripMatcher.find()) {
-                    String message =
-                            "Unable to find a match for the prefixed filter with '" + stripMatcher.pattern() + "'";
-                    log.warn(message);
-                    throw new IllegalArgumentException(message);
-                }
-                // Remove prefixed queries
-                String response = stripMatcher.replaceAll("");
-                // If there is only 1 fq, make it a single value instead of an array.
-                response = SINGLE_FQ_JSON.matcher(response).replaceAll(SINGLE_FQ_JSON_REPLACEMENT);
-                // If there are no fq left, remove the fq-key
-                return EMPTY_FQ_JSON.matcher(response).replaceAll("");
-            }
-
-            case "xml": {
-//    <str name="q.op">AND</str>
-//    <arr name="fq">
-//      <str>number_of_episodes:[2 TO 10]</str>
-//      <str>resource_description:[* TO "Moving Image"]</str>
-//      <str>(((access_searlige_visningsvilkaar:"Visning kun af metadata") OR (catalog:"Maps") OR (collection:"Det Kgl. Bibliotek; Radio/TV-Samlingen") OR (catalog:"Samlingsbilleder")) -(id:("fr508045.tif" OR "fr552041x.tif")) -(access_blokeret:true) -(cataloging_language:*tysk*))</str>
-//    </arr>
-                Pattern stripPattern = Pattern.compile(
-                        " *<str>" + Pattern.quote(prefix) + ".*?</str>\n?", Pattern.DOTALL);
-                Matcher stripMatcher = stripPattern.matcher(solrResponse);
-                if (!stripMatcher.find()) {
-                    String message =
-                            "Unable to find a match for the prefixed filter with '" + stripMatcher.pattern() + "'";
-                    log.warn(message);
-                    throw new IllegalArgumentException(message);
-                }
-                String response = stripMatcher.replaceAll("");
-                return EMPTY_FQ_XML.matcher(response).replaceAll("");
-            }
-
-            case "csv":
-                return solrResponse;
+            case "json": return removePrefixedFiltersJSON(solrResponse, prefix);
+            case "xml": return removePrefixedFilterXML(solrResponse, prefix);
+            case "csv": return solrResponse;
 
             // Missing is python, ruby, php. Very low priority
 
@@ -421,7 +377,79 @@ public class SolrService {
                 throw new IllegalArgumentException("The Solr delivery format '" + wt + "' is unsupported");
         }
     }
-    private static final Pattern SINGLE_FQ_JSON = Pattern.compile("\"fq\":\\s*\\[\\s*(\".*?[^\\\\]\")\\s*]", Pattern.DOTALL);
+
+    /**
+     * Remove filters with {@code prefix} from the {@code params.fq} entries in {@code solrResponse}.
+     * Intended use is to remove internal licensing information from responses returned to external caller.
+     * <p>
+     * Note: This uses regexp-based search/replace to adjust the JSON.
+     *       This is error prone and should generally be avoided.
+     *       It is used here as the service is expected to under heavy load so performance is a high priority.
+     * @param solrResponse a Solr search response in JSON format.
+     * @param prefix the prefix identifying the filter to remove, e.g. {@code {!cache=true}}.
+     * @return the response with the prefixed filter removed.
+     * @throws IllegalArgumentException if the {@code solrResponse} did not contain a prefixed filter.
+     */
+    // TODO: This uses 3 regexp-based search-replace, which will be heavy on large inputs. Consider CallbackReplacer
+    private static String removePrefixedFiltersJSON(String solrResponse, String prefix) {
+//     "fq": [
+//        "number_of_episodes:[2 TO 10]",
+//        "resource_description:[* TO \"Moving Image\"]",
+//        "{!cache=true}(((access_searlige_visningsvilkaar:\"Visning kun af metadata\") OR (catalog:\"Maps\") OR (collection:\"Det Kgl. Bibliotek; Radio/TV-Samlingen\") OR (catalog:\"Samlingsbilleder\")) -(id:(\"fr508045.tif\" OR \"fr552041x.tif\")) -(access_blokeret:true) -(cataloging_language:*tysk*))"
+//      ],
+
+        // Note that the optional leading comma is stripped.
+        // It is assumed that prefixed filters will appear after other filters
+        Pattern stripPattern = Pattern.compile(
+                "(?:,\\s*)?\"" + Pattern.quote(prefix) + ".*?[^\\\\]\"", Pattern.DOTALL);
+        Matcher stripMatcher = stripPattern.matcher(solrResponse);
+        if (!stripMatcher.find()) {
+            String message =
+                    "Unable to find a match for the prefixed filter with '" + stripMatcher.pattern() + "'";
+            log.warn(message);
+            throw new IllegalArgumentException(message);
+        }
+        // Remove prefixed queries
+        String response = stripMatcher.replaceAll("");
+        // If there is exactly 1 fq, make it a single value instead of an array.
+        response = SINGLE_FQ_JSON.matcher(response).replaceAll(SINGLE_FQ_JSON_REPLACEMENT);
+        // If there are no fq left, remove the fq-key
+        return EMPTY_FQ_JSON.matcher(response).replaceAll("");
+    }
+
+    /**
+     * Remove filters with {@code prefix} from the {@code params.fq} entries in {@code solrResponse}.
+     * Intended use is to remove internal licensing information from responses returned to external caller.
+     * <p>
+     * Note: This uses regexp-based search/replace to adjust the XML.
+     *       This is error prone and should generally be avoided.
+     *       It is used here as the service is expected to under heavy load so performance is a high priority.
+     * @param solrResponse a Solr search response in XML format.
+     * @param prefix the prefix identifying the filter to remove, e.g. {@code {!cache=true}}.
+     * @return the response with the prefixed filter removed.
+     * @throws IllegalArgumentException if the {@code solrResponse} did not contain a prefixed filter.
+     */
+    private static String removePrefixedFilterXML(String solrResponse, String prefix) {
+        //    <str name="q.op">AND</str>
+//    <arr name="fq">
+//      <str>number_of_episodes:[2 TO 10]</str>
+//      <str>resource_description:[* TO "Moving Image"]</str>
+//      <str>(((access_searlige_visningsvilkaar:"Visning kun af metadata") OR (catalog:"Maps") OR (collection:"Det Kgl. Bibliotek; Radio/TV-Samlingen") OR (catalog:"Samlingsbilleder")) -(id:("fr508045.tif" OR "fr552041x.tif")) -(access_blokeret:true) -(cataloging_language:*tysk*))</str>
+//    </arr>
+        Pattern stripPattern = Pattern.compile(
+                " *<str>" + Pattern.quote(prefix) + ".*?</str>\n?", Pattern.DOTALL);
+        Matcher stripMatcher = stripPattern.matcher(solrResponse);
+        if (!stripMatcher.find()) {
+            String message =
+                    "Unable to find a match for the prefixed filter with '" + stripMatcher.pattern() + "'";
+            log.warn(message);
+            throw new IllegalArgumentException(message);
+        }
+        String response = stripMatcher.replaceAll("");
+        return EMPTY_FQ_XML.matcher(response).replaceAll("");
+    }
+
+    private static final Pattern SINGLE_FQ_JSON = Pattern.compile("\"fq\":\\s*\\[\\s*(\"(?:[^\"\\\\]|\\\\.)*\")\\s*]", Pattern.DOTALL);
     private static final String SINGLE_FQ_JSON_REPLACEMENT = "\"fq\": $1";
     private static final Pattern EMPTY_FQ_JSON = Pattern.compile(" *\"fq\":\\s*\\[?\\s*]?,\n?", Pattern.DOTALL);
     private static final Pattern EMPTY_FQ_XML = Pattern.compile(" *<arr name=\"fq\">\\s*</arr>\n?", Pattern.DOTALL);
