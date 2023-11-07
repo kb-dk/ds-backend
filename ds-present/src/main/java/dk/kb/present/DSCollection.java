@@ -51,7 +51,7 @@ public class DSCollection {
     private static final String STORAGE_KEY = "storage";
     private static final String ORIGIN_KEY = "origin";
     private static final String VIEWS_KEY = "views";
-    private static final String GET_RECORD_ENDPOINT_KEY = "getrecordendpoint";
+    private static final String RECORDTYPE_KEY = "recordtype";
 
     /**
      * The ID of the collection, primarily used for debugging and configuration.
@@ -87,7 +87,7 @@ public class DSCollection {
      */
     private final Map<String, View> views; // keys are lowercase
 
-    private String getRecordEndpoint;
+    private RecordTypeDto recordType;
 
     /**
      * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
@@ -99,16 +99,12 @@ public class DSCollection {
     public DSCollection(YAML conf, StorageHandler storageHandler) {
         id = conf.keySet().stream().findFirst().orElseThrow();
         try {
-            origin = conf.getSubMap(id).getString("origin");
             conf = conf.getSubMap(id); // There must be some properties for a storage
+            origin = conf.getString("origin");
             prefix = conf.getString(PREFIX_KEY);
             description = conf.getString(DESCRIPTION_KEY, null);
+            recordType = RecordTypeDto.valueOf(conf.getString(RECORDTYPE_KEY));
             storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
-
-            if (conf.containsKey(GET_RECORD_ENDPOINT_KEY)){
-                getRecordEndpoint = conf.getString(GET_RECORD_ENDPOINT_KEY);
-
-            }
 
             views = conf.getYAMLList(VIEWS_KEY)
                     .stream()
@@ -166,13 +162,12 @@ public class DSCollection {
     public Stream<DsRecordDto> getDSRecords(
             Long mTime, Long maxRecords, String format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         View view = getView(format);
-        RecordTypeDto deliverableUnit = RecordTypeDto.DELIVERABLEUNIT;
         log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
             // 500 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
             return ExtractionUtils.splitToLists(
-                            storage.getDSRecordsByRecordTypeLocalTree(origin, deliverableUnit, mTime, maxRecords), 500)
+                            storage.getDSRecordsByRecordTypeLocalTree(origin, recordType, mTime, maxRecords), 500)
                     .flatMap(accessFilter)
                     .peek(record -> {
                         try {
@@ -255,6 +250,7 @@ public class DSCollection {
                ", description='" + description + '\'' +
                ", storage=" + storage +
                ", origin=" + origin +
+               ", recordtype= " + recordType +
                ", views=" + views +
                ')';
     }
