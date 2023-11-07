@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 
+import dk.kb.present.TestFiles;
 import org.junit.jupiter.api.Test;
 
 import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
@@ -32,7 +33,7 @@ public class CopyrightAccessExtractorTest {
 
     @Test
     void testSinglePerson() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_096c9090);
 
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
@@ -80,8 +81,8 @@ public class CopyrightAccessExtractorTest {
     @Test
     void testDateCaptured() throws Exception {
 
-        // Rare situation where dateCaptured field is used. This is only used if there is no createdDate field         
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml");
+        // Rare situation where dateCaptured field is used. This is only used if there is no createdDate field
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_3956d820);
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Postkort",copyright.getMaterialeType());  
 
@@ -110,7 +111,7 @@ public class CopyrightAccessExtractorTest {
 
     @Test
     void testNoDeathYearForPerson() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/e3fcf020-85cb-11e8-8398-00505688346e.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_e3fcf020);
 
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
@@ -146,7 +147,7 @@ public class CopyrightAccessExtractorTest {
 
     @Test
     void testBlokeret() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/e91341d0-7184-11e0-82d7-002185371280.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_e91341d0);
 
 
         String access_note="Kurators beslutning. Se journal nr. 897697";
@@ -195,7 +196,7 @@ public class CopyrightAccessExtractorTest {
 
     @Test
     void testVisningKunPaaStedet() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/aaf3b130-e6e7-11e6-bdbe-00505688346e.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_aaf3b130);
 
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
@@ -233,7 +234,7 @@ public class CopyrightAccessExtractorTest {
 
     @Test
     void testEjermaerke() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/25461fb0-f664-11e0-9d29-0016357f605f.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_25461fb0);
 
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
@@ -264,7 +265,7 @@ public class CopyrightAccessExtractorTest {
 
     @Test
     void testVisningKunAfMetaDataOgPersonIkkeDoed() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_226d41a0);
 
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
@@ -299,33 +300,9 @@ public class CopyrightAccessExtractorTest {
         assertEquals(CopyrightAccessDto.SPECIAL_RESTRICTION_VISNING_KUN_AF_METADATA, mapper.getSearligevisningsVilkaar());
     }
 
-
-    /*
-     * <mets:rightsMD CREATED="2022-11-14T07:42:19.915+01:00" ID="ModsRights1">
-            <mets:mdWrap MDTYPE="MODS">
-                <mets:xmlData>
-                    <mods:mods xmlns:dk="/usr/local/ginnungagap/current/script/xsd" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" xmlns:md="http://www.loc.gov/mods/v3" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-7.xsd">
-                        <mods:accessCondition type="use and reproduction" displayLabel="Restricted ">Ejermærke</mods:accessCondition>
-                        <mods:accessCondition type="use and reproduction note" displayLabel="Restricted">Se journalnr: 205068</mods:accessCondition>
-                        <mods:accessCondition type="pligtaflevering">Pligtafleveret</mods:accessCondition>
-                        <mods:accessCondition>
-                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD /usr/local/ginnungagap/current/script/xsd/copyright-md.xsd">
-                                <cdl:creator>
-                                    <cdl:creator.person>
-                                        <cdl:name>Helmer-Petersen, Keld</cdl:name>
-                                        <cdl:year.birth>1920-8-23</cdl:year.birth>
-                                        <cdl:year.death>2013-3-6</cdl:year.death>
-                                    </cdl:creator.person>
-                                </cdl:creator>
-                            </cdl:copyright>
-                        </mods:accessCondition>
-                    </mods:mods>
-     * 
-     */
-
     @Test
     void testPligtAfleveret_Ejermærke_Restricted() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/e5a0e980-d6cb-11e3-8d2e-0016357f605f.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_e5a0e980);
 
         //Copyright statuses
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
@@ -358,7 +335,7 @@ public class CopyrightAccessExtractorTest {
 
     @Test
     void testThreeAccessConditionsWith1Person() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/8e608940-d6db-11e3-8d2e-0016357f605f.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_8e608940);
 
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Dia",copyright.getMaterialeType()); 
@@ -382,7 +359,7 @@ public class CopyrightAccessExtractorTest {
 	
     @Test
     void testAccessConditionwith3Persons1Corporate() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_05fea810);
 
         CopyrightAccessDto copyright = CopyrightAccessExtractor.buildCopyrightFields(mods);
         assertEquals("Grafik",copyright.getMaterialeType()); 
@@ -449,8 +426,8 @@ public class CopyrightAccessExtractorTest {
      */
     @Test
     void testSolrFields2XsltMapper() throws Exception {
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml");
-        
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_226d41a0);
+
         HashMap<String, String> xsltMapper = XsltCopyrightMapper.applyXsltCopyrightTransformer(mods);        
         assertEquals("Tegning",xsltMapper.get(XsltCopyrightMapper.ACCESS_MATERIALE_TYPE)); 
         assertEquals("1971",xsltMapper.get(XsltCopyrightMapper.ACCESS_SKABELSESAAR_FIELD));
