@@ -53,6 +53,17 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     public static final String PERMISSIVE_KEY = "config.solr.permissive";
     public static final boolean PERMISSIVE_DEFAULT = false;
 
+    /**
+     * Signals that a filter should be cached in Solr (default is already to cache).
+     * This prefix has two purposes:
+     * <ol>
+     *   <li>To signal caching, even though it probably changes nothing</li>
+     *   <li>To act as a magic String, making it possible to remove the filter from the response using simple
+     *   search/replace</li>
+     * </ol>
+     */
+    public static final String FILTER_CACHE_PREFIX = "{!cache=true}";
+
     /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
 
     @Context
@@ -170,21 +181,10 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             // TODO: Pass the map of request parameters instead of all parameters as first class
             httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
 
-             //Add filter query from license module.
-            DsLicenseApi licenseClient = getDsLicenseApiClient();
-            GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
-            GetUsersFilterQueryOutputDto filterQuery;
-            try {
-                filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
-            } catch (Exception e) {
-                log.warn("Unable to get response from ds-license at URL '" +
-                        ServiceConfig.getConfig().getString("config.licensemodule.url") + "'", e);
-                throw new InternalServiceException("Unable to contact license server");
-            }
+            //Add filter query from license module.
+            fq = addAccessFilter("solrMLT", fq);
 
-            log.debug("solrMLT: Using filter query='{}'  for user attributes='{}' ",filterQuery.getFilterQuery(), getLicenseQueryDto()) ;
-            fq.add(filterQuery.getFilterQuery()); //Add the additional filter query
-
+            // No removal of access filter as that is not part of MLT-responses
             return solr.mlt(q, fq, rows, start, fl, qOp, wt,
                     mltFl, mltMintf, mltMindf, mltMaxdf, mltMaxdfpct, mltMinwl, mltMaxwl, mltMaxqt,
                     mltBoost, mltInterestingTerms,
@@ -212,9 +212,9 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     public String solrSearch(String collection, String q, List<String> fq, Integer rows, Integer start, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
     
         try {
-        	        	
+
             log.debug("solrSearch(collection='{}', q='{}', ...) called with call details: {}",
-                      collection, q, getCallDetails());
+                    collection, q, getCallDetails());
             Map<String, String[]> extra = getExtraParams();
             if (!extra.isEmpty()) {
                 if (ServiceConfig.getConfig().getBoolean(PERMISSIVE_KEY, PERMISSIVE_DEFAULT)) {
@@ -227,27 +227,46 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             SolrService solr = SolrManager.getSolrService(collection);
             // TODO: Pass the map of request parameters instead of all parameters as first class
             httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
-           
-             //Add filter query from license module.
-            DsLicenseApi licenseClient = getDsLicenseApiClient();
-            GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
-            GetUsersFilterQueryOutputDto filterQuery;
-            try {
-                filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
-            } catch (Exception e) {
-                log.warn("Unable to get response from ds-license at URL '" +
-                        ServiceConfig.getConfig().getString("config.licensemodule.url") + "'", e);
-                throw new InternalServiceException("Unable to contact license server");
-            }
 
-            log.debug("solrSearch: Using filter query='{}'  for user attributes='{}' ",filterQuery.getFilterQuery(), getLicenseQueryDto()) ;
-            fq.add(filterQuery.getFilterQuery()); //Add the additional filter query
-                        
-            return solr.query(q, fq, rows, start, fl, facet, facetField, qOp,
+            //Add filter query from license module.
+            fq = addAccessFilter("solrSearch", fq);
+
+            String rawResponse = solr.query(q, fq, rows, start, fl, facet, facetField, qOp,
                     wt, version, indent, debug, debugExplainStructured, extra);
+            return SolrService.removePrefixedFilters(rawResponse, FILTER_CACHE_PREFIX, wt);
         } catch (Exception e){
             throw handleException(e);
         }
+    }
+
+    /**
+     * Request a filter query from ds-license and append it to {@code fq}.
+     * @param designation describes the caller, used for logging only.
+     * @param fq a list of existing filter queries or null.
+     * @return {@code fq} extended with an access filter from ds-license.
+     */
+    private List<String> addAccessFilter(String designation, List<String> fq) {
+        //Add filter query from license module.
+        DsLicenseApi licenseClient = getDsLicenseApiClient();
+        GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
+        GetUsersFilterQueryOutputDto filterQuery;
+        try {
+            filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
+        } catch (Exception e) {
+            log.warn("Unable to get response from ds-license at URL '" +
+                    ServiceConfig.getConfig().getString("config.licensemodule.url") + "'", e);
+            throw new InternalServiceException("Unable to contact license server");
+        }
+
+        log.debug("{}: Using filter query='{}' for user attributes='{}'",
+                designation, filterQuery.getFilterQuery(), getLicenseQueryDto());
+        if (fq == null) {
+            fq = new ArrayList<>();
+        }
+        if (filterQuery.getFilterQuery() != null && !filterQuery.getFilterQuery().isEmpty()) {
+            fq.add(FILTER_CACHE_PREFIX + filterQuery.getFilterQuery()); //Add the additional filter query
+        }
+        return fq;
     }
 
     /**
