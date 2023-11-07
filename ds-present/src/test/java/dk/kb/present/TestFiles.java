@@ -5,7 +5,7 @@ package dk.kb.present;
  * Records have the format COLLECTIONPREFIX_RECORD_IDENTIFIER, where COLLECTIONPREFIX specifies, where the collection
  * comes from and IDENTIFIER is the first part of the id of the record (Typically the first 8 characters).
  * <br/>
- * To fetch a specific testfile resolve it through {@link dk.kb.util.Resolver#resolveUTF8String(String)}
+ * To fetch the content of a specific testfile resolve it through {@link dk.kb.util.Resolver#resolveUTF8String(String)}
  */
 public class TestFiles {
 
