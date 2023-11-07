@@ -1,5 +1,6 @@
 package dk.kb.present.util;
 
+import dk.kb.present.TestFiles;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +26,7 @@ class DataCleanupTest {
 
     @Test
     public void testDeclarationRemoval() throws IOException {
-        String xmlWithDeclaration = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
+        String xmlWithDeclaration = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
         assertTrue(xmlWithDeclaration.startsWith("<?xml version"), "The test XML should have a declaration");
         String stripped = DataCleanup.removeXMLDeclaration(xmlWithDeclaration);
         assertTrue(stripped.startsWith("<mets:mets"), "The cleaned test XML should not have a declaration");

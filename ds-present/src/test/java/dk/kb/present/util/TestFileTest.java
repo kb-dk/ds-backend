@@ -14,6 +14,7 @@
  */
 package dk.kb.present.util;
 
+import dk.kb.present.TestFiles;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class TestFileTest {
     private static final Logger log = LoggerFactory.getLogger(TestFileTest.class);
-    private static final String KNOWN_TEST_FILE = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
 
     // This always passes (as it should). Is is primarily a demonstration on how to write a unit test
     @Disabled
@@ -42,6 +42,6 @@ public class TestFileTest {
         }
 
         log.info("Test files are available");
-        assertNotNull(Resolver.getPathFromClasspath(KNOWN_TEST_FILE));
+        assertNotNull(Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_5a5357be));
     }
 }

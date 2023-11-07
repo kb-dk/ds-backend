@@ -14,6 +14,7 @@
  */
 package dk.kb.present.storage;
 
+import dk.kb.present.TestFiles;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +39,7 @@ class FileStorageTest {
     }
 
     private Storage getStorage() throws IOException {
-        URL testFile = Resolver.resolveURL("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
+        URL testFile = Resolver.resolveURL(TestFiles.CUMULUS_RECORD_40221e30);
         assertNotNull(testFile, "The test file 40221e30-1414-11e9-8fb8-00505688346e.xml should be available");
         Path rootFolder = Path.of(testFile.getPath()).getParent();
         Storage storage = new FileStorage("test", rootFolder, "", false, null, null, false);
