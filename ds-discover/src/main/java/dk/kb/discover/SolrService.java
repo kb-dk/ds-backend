@@ -354,9 +354,9 @@ public class SolrService {
      * Remove filters with {@code prefix} from the {@code params.fq} entries in {@code solrResponse}.
      * Intended use is to remove internal licensing information from responses returned to external caller.
      * <p>
-     * Note: This uses regexp-based search/replace to adjust JSON & XML. This is error prone and should generally be
-     *       avoided. It is used here
-     *
+     * Note: This uses regexp-based search/replace to adjust JSON & XML.
+     *       This is error prone and should generally be avoided.
+     *       It is used here as the service is expected to under heavy load so performance is a high priority.
      * @param solrResponse a Solr search response in {@code wt} format.
      * @param prefix the prefix identifying the filter to remove, e.g. {@code {!cache=true}}.
      * @param wt the delivery format ({@code json}, {@code xml}, {@code csv}). null means {@code json}.
