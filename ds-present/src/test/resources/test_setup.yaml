@@ -64,7 +64,7 @@ config:
         prefix: 'local.mods' # The prefix to match on incoming IDs
         origin: 'ds.test'
         description: 'Local records, mostly biographical'
-        getrecordendpoint: 'http://example.com/ds-present/v1/record/'
+        recordrequesttype: 'DELIVERABLEUNIT'
 
         # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
         views:
@@ -106,8 +106,7 @@ config:
             prefix: 'local.radiotv' # The prefix to match on incoming IDs
             origin: 'ds.test'
             description: 'Local records'
-            getrecordendpoint: 'http://example.com/ds-present/v1/record/'
-
+            recordrequesttype: 'DELIVERABLEUNIT'
             # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
             views:
               - mods:
