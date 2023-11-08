@@ -51,7 +51,7 @@ public class DSCollection {
     private static final String STORAGE_KEY = "storage";
     private static final String ORIGIN_KEY = "origin";
     private static final String VIEWS_KEY = "views";
-    private static final String RECORDTYPE_KEY = "recordtype";
+    private static final String RECORDREQUESTTYPE_KEY = "recordrequesttype";
 
     /**
      * The ID of the collection, primarily used for debugging and configuration.
@@ -87,7 +87,17 @@ public class DSCollection {
      */
     private final Map<String, View> views; // keys are lowercase
 
-    private RecordTypeDto recordType;
+    /**
+     * Type of metadata records to obtain from the service. Metadata can be structured in different files and often
+     * the needed metadata is delivered in a specific type. This variable defines which type of metadata records that
+     * are to be delivered.
+     * These types are currently:<br/>
+     * {@link RecordTypeDto#COLLECTION}
+     * {@link RecordTypeDto#DELIVERABLEUNIT}
+     * {@link RecordTypeDto#MANIFESTATION}
+     *
+     */
+    private final RecordTypeDto recordRequestType;
 
     /**
      * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
@@ -100,10 +110,10 @@ public class DSCollection {
         id = conf.keySet().stream().findFirst().orElseThrow();
         try {
             conf = conf.getSubMap(id); // There must be some properties for a storage
-            origin = conf.getString("origin");
+            origin = conf.getString(ORIGIN_KEY);
             prefix = conf.getString(PREFIX_KEY);
             description = conf.getString(DESCRIPTION_KEY, null);
-            recordType = RecordTypeDto.valueOf(conf.getString(RECORDTYPE_KEY));
+            recordRequestType = RecordTypeDto.valueOf(conf.getString(RECORDREQUESTTYPE_KEY));
             storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
 
             views = conf.getYAMLList(VIEWS_KEY)
@@ -167,7 +177,7 @@ public class DSCollection {
         try {
             // 500 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
             return ExtractionUtils.splitToLists(
-                            storage.getDSRecordsByRecordTypeLocalTree(origin, recordType, mTime, maxRecords), 500)
+                            storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords), 500)
                     .flatMap(accessFilter)
                     .peek(record -> {
                         try {
@@ -250,7 +260,7 @@ public class DSCollection {
                ", description='" + description + '\'' +
                ", storage=" + storage +
                ", origin=" + origin +
-               ", recordtype= " + recordType +
+               ", recordtype= " + recordRequestType +
                ", views=" + views +
                ')';
     }
