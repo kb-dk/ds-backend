@@ -3,6 +3,11 @@
 #
 config:
 
+  # The client for ds-license will be mocked in the relevant unit tests.
+  licensemodule:
+    url: http://example.com
+    allowall: false
+
   # Only some of the sample files can be properly transformed to SolrJSONDocuments
   filewhitelist: &whitelist
      - '.*albert-einstein.xml'

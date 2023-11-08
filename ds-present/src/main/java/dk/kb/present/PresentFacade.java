@@ -14,6 +14,7 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.api.v1.impl.DsPresentApiServiceImpl;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
@@ -35,7 +36,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 import java.util.List;
 import java.util.Locale;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -115,8 +119,20 @@ public class PresentFacade {
                 .mime(view.getMime().toString());
     }
 
+    /**
+     * Deliver streaming output for serialized records from a given collection.
+     * @param httpServletResponse used for setting MIME type.
+     * @param collectionID the collection to retrieve records for.
+     * @param mTime        only records after this time (Epoch milliseconds) will be delivered.
+     * @param maxRecords   the maximum number of records to deliver.
+     * @param format       the serialized format of the records. Valid values are {@code JSON-LD},
+     * {@code JSON-LD-LINES}, {@code MODS}, {@code STORAGERECORD} , {@code STORAGERECORD-LINES} and {@code SOLRJSON}.
+     * @param accessChecker only IDs evaluating to {@link DsPresentApiServiceImpl.ACCESS#ok} are delivered.
+     * @return a stream of serialized records.
+     */
     public static StreamingOutput getRecords(
-            HttpServletResponse httpServletResponse, String collectionID, Long mTime, Long maxRecords, String format) {
+            HttpServletResponse httpServletResponse, String collectionID, Long mTime, Long maxRecords, String format,
+            Function<List<String>, List<String>> accessChecker) {
         DSCollection collection = collectionHandler.getCollection(collectionID);
         if (collection == null) {
             throw new InvalidArgumentServiceException(String.format(
@@ -125,24 +141,34 @@ public class PresentFacade {
                     collectionHandler.getCollections().stream().map(DSCollection::getId).collect(Collectors.toList())));
         }
 
+        // Batch-oriented filter that only passed records that are allowed
+        Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = records -> {
+            List<String> allIDs = records.stream().map(DsRecordDto::getId).collect(Collectors.toList());
+            Set<String> allowedIDs = new HashSet<>(accessChecker.apply(allIDs));
+            return records.size() == allowedIDs.size() ?
+                    records.stream() : // No need for checking as all IDs passed
+                    records.stream().filter(record -> allowedIDs.contains(record.getId()));
+        };
+
         // enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON', "StorageRecord"]
         switch (format.toUpperCase(Locale.ROOT)) {
             case "JSON-LD": return getRecordsData(
                     collection, mTime, maxRecords,
-                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.json);
+                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.json,
+                    accessFilter);
             case "JSON-LD-LINES": return getRecordsData(
                     collection, mTime, maxRecords,
-                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.jsonl);
+                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.jsonl, accessFilter);
             case "MODS": return getRecordsData(
                     collection, mTime, maxRecords,
-                    httpServletResponse, "MODS", ExportWriterFactory.FORMAT.xml);
+                    httpServletResponse, "MODS", ExportWriterFactory.FORMAT.xml, accessFilter);
             case "STORAGERECORD": return getRecordsFull(
                     collection, mTime, maxRecords,
-                    httpServletResponse, ExportWriterFactory.FORMAT.json);
+                    httpServletResponse, ExportWriterFactory.FORMAT.json, accessFilter);
             case "STORAGERECORD-LINES": return getRecordsFull(
                     collection, mTime, maxRecords,
-                    httpServletResponse, ExportWriterFactory.FORMAT.jsonl);
-            case "SOLRJSON": return getRecordsSolr(collection, mTime, maxRecords, httpServletResponse);
+                    httpServletResponse, ExportWriterFactory.FORMAT.jsonl, accessFilter);
+            case "SOLRJSON": return getRecordsSolr(collection, mTime, maxRecords, httpServletResponse, accessFilter);
             default: throw new InvalidArgumentServiceException("The format '" + format + "' is not supported");
         }
     }
@@ -150,12 +176,13 @@ public class PresentFacade {
     // Only deliver the data-part of the Records
     private static StreamingOutput getRecordsData(
             DSCollection collection, Long mTime, Long maxRecords,
-            HttpServletResponse httpServletResponse, String recordFormat, ExportWriterFactory.FORMAT deliveryFormat) {
+            HttpServletResponse httpServletResponse, String recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
+            Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
-                collection.getDSRecords(mTime, maxRecords, recordFormat)
+                collection.getDSRecords(mTime, maxRecords, recordFormat, accessFilter)
                         .map(DsRecordDto::getData)
                         .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
@@ -166,12 +193,13 @@ public class PresentFacade {
     // Retrieve full records to support deletions
     private static StreamingOutput getRecordsFull(
             DSCollection collection, Long mTime, Long maxRecords,
-            HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT deliveryFormat) {
+            HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT deliveryFormat,
+            Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
-                collection.getDSRecords(mTime, maxRecords, recordView) // Does not contain deleted records
+                collection.getDSRecords(mTime, maxRecords, recordView, accessFilter) // Does not contain deleted records
                         .peek(record -> record.setData(DataCleanup.removeXMLDeclaration(record.getData())))
                         .forEach(writer::write);
             }
@@ -180,7 +208,8 @@ public class PresentFacade {
 
     // Direct ds-storage record JSON
     private static StreamingOutput getRecordsSolr(DSCollection collection, Long mTime, Long maxRecords,
-                                                  HttpServletResponse httpServletResponse) {
+                                                  HttpServletResponse httpServletResponse,
+                                                  Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, ExportWriterFactory.FORMAT.json);
         return output -> {
             ExportWriter writer = ExportWriterFactory.wrap(
@@ -190,7 +219,7 @@ public class PresentFacade {
             ((JSONStreamWriter) writer).setPostOutput("\n}\n");
 
             try {
-                collection.getDSRecords(mTime, maxRecords, "SolrJSON")
+                collection.getDSRecords(mTime, maxRecords, "SolrJSON", accessFilter)
                         .map(PresentFacade::wrapSolrJSON)
                         .forEach(writer::write);
             } catch (Exception e) {
@@ -229,7 +258,7 @@ public class PresentFacade {
         return sb.toString();
     }
 
-    /**
+    /*
      * If the source data contains multiple DOMS, there will also be multiple SolrJSONDocuments.
      * This method splits those from one JSON structure to one structure/document.
      * @param solrJSONs one or more JSON documents in a JSON array.
