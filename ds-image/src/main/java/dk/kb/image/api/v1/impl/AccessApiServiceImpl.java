@@ -16,20 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.DecimalMin;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.StreamingOutput;
-
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * ds-image
@@ -86,6 +76,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             log.debug("getDeepzoomDZI(imageid='{}') called with call details: {}", imageid, getCallDetails());
             // MIME-TYPE has to be set in proxy helper
             httpServletResponse.setContentType(getMIME("xml"));
+            httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
             setFilename(new File(imageid).getName() + ".dzi", false, false);
             return IIPFacade.getInstance().getDeepzoomDZI(
                     uriInfo.getRequestUri(), imageid,
@@ -166,6 +157,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
                       CNT, GAM, CMP, CTW, INV, COL,
                       getCallDetails());
             httpServletResponse.setContentType(getMIME(format));
+            httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
             return IIPFacade.getInstance().getDeepzoomTile(
                     uriInfo.getRequestUri(),
                     imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
@@ -223,6 +215,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             // Show download link in Swagger UI, inline when opened directly in browser
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(format));
+            httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
 
             // TODO: Add support for XML when the OpenAPI specification has been corrected
             return IIIFFacade.getInstance().getIIIFInfo(uriInfo.getRequestUri(), identifier, "json");
@@ -307,6 +300,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
                         
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(format));
+            httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
 
             return IIIFFacade.getInstance().getIIIFImage(
                     uriInfo.getRequestUri(),
@@ -385,6 +379,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             // Show download link in Swagger UI, inline when opened directly in browser
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(CVT));
+            httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
 
             return IIPFacade.getInstance().getIIPImage(
                     uriInfo.getRequestUri(),

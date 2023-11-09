@@ -25,6 +25,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     public String ping() throws ServiceException {
         try{
             log.debug("ping() called with call details: {}", getCallDetails());
+            httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
             return "Pong";
         } catch (Exception e){
             throw handleException(e);
@@ -48,6 +49,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
             } catch (UnknownHostException e) {
                 log.warn("Exception resolving hostname", e);
             }
+            httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
             return new StatusDto()
                     .application(BuildInfoManager.getName())
                     .version(BuildInfoManager.getVersion())
