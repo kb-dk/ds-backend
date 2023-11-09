@@ -125,6 +125,13 @@ public class ProxyHelper {
                                        Response.Status.fromStatusCode(statusCode));
         }
 
+        if (statusCode == -1) {
+            log.warn("Remote response not valid HTTP (-1) for connection to '{}' for client request '{}'",
+                    uri, clientRequestURI);
+            throw new ServiceException("Unable to proxy request for '" + request + "' due to proxied server error -1",
+                    Response.Status.fromStatusCode(500));
+        }
+
         log.warn("Unhandled status code {} for connection to '{}' for client request '{}'",
                  statusCode, uri, clientRequestURI);
         throw new ServiceException("Unhandled status code " + statusCode + " for proxy connection for '" +
