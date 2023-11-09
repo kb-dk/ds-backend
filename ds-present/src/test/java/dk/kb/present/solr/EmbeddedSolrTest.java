@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EmbeddedSolrTest {
 
     private static final Logger log = LoggerFactory.getLogger(EmbeddedSolrTest.class);
-    private static final String solr_home = "target/test-classes/solr";
+    private static final String solr_home = "src/main/solr";
 
     private static CoreContainer coreContainer = null;
     private static EmbeddedSolrServer embeddedServer = null;

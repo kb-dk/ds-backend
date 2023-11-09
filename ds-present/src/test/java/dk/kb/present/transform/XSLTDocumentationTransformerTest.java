@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class XSLTDocumentationTransformerTest {
 
     public static final String SCHEMA2DOC = "xslt/schema2doc.xsl";
-    public static final String SCHEMA = "solr/dssolr/conf/schema.xml";
+    public static final String SCHEMA = "src/main/solr/dssolr/conf/schema.xml";
 
     @Test
     public void testExtractionOfProcessingInstruction() throws IOException {
