@@ -392,6 +392,8 @@ public class SolrService {
      */
     // TODO: This uses 3 regexp-based search-replace, which will be heavy on large inputs. Consider CallbackReplacer
     private static String removePrefixedFiltersJSON(String solrResponse, String prefix) {
+        // In the sample below, the filter starting with {!cache=true} is to be removed
+
 //     "fq": [
 //        "number_of_episodes:[2 TO 10]",
 //        "resource_description:[* TO \"Moving Image\"]",
@@ -430,11 +432,13 @@ public class SolrService {
      * @throws IllegalArgumentException if the {@code solrResponse} did not contain a prefixed filter.
      */
     private static String removePrefixedFilterXML(String solrResponse, String prefix) {
-        //    <str name="q.op">AND</str>
+        // In the sample below, the filter starting with {!cache=true} is to be removed
+
+//    <str name="q.op">AND</str>
 //    <arr name="fq">
 //      <str>number_of_episodes:[2 TO 10]</str>
 //      <str>resource_description:[* TO "Moving Image"]</str>
-//      <str>(((access_searlige_visningsvilkaar:"Visning kun af metadata") OR (catalog:"Maps") OR (collection:"Det Kgl. Bibliotek; Radio/TV-Samlingen") OR (catalog:"Samlingsbilleder")) -(id:("fr508045.tif" OR "fr552041x.tif")) -(access_blokeret:true) -(cataloging_language:*tysk*))</str>
+//      <str>{!cache=true}(((access_searlige_visningsvilkaar:"Visning kun af metadata") OR (catalog:"Maps") OR (collection:"Det Kgl. Bibliotek; Radio/TV-Samlingen") OR (catalog:"Samlingsbilleder")) -(id:("fr508045.tif" OR "fr552041x.tif")) -(access_blokeret:true) -(cataloging_language:*tysk*))</str>
 //    </arr>
         Pattern stripPattern = Pattern.compile(
                 " *<str>" + Pattern.quote(prefix) + ".*?</str>\n?", Pattern.DOTALL);
