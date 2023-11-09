@@ -132,7 +132,7 @@ config:
                         injections:
                           - imageserver: 'https://example.com/imageserver/'
                           - streamingserver: "here_should_be_a_wowza_url"
-                    - xslt:
+                    - xsltsolr:
                         stylesheet: 'xslt/schemaorg2solr.xsl'
               - raw:
                   mime: 'text/plain'

@@ -109,7 +109,7 @@ config:
                       #- imageserver: ${path:config.imageservers[default=true].url}
                       - streamingserver: ${path:config.streamingserver.url}
                       - old_imageserver: ${path:config.oldimageserver.url}
-                - xslt:
+                - xsltsolr:
                     stylesheet: 'xslt/schemaorg2solr.xsl'
 
 

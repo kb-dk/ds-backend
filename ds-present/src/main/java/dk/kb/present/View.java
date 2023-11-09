@@ -48,7 +48,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private final String origin;
     private final MediaType mime;
     private final Strategy strategy;
-    final String placeholderXml;
 
     /**
      * Defines the strategy used to construct the wanted view of the resource.
@@ -103,11 +102,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             }
         }
 
-        try {
-            placeholderXml = Resolver.resolveUTF8String("placeholder.xml");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         log.info("Created " + this);
     }
 
@@ -139,12 +133,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         for (DSTransformer transformer: this) {
             try {
-                if (transformer.getStylesheet() != null && transformer.getStylesheet().contains("schemaorg2solr.xsl")){
-                    metadata.putIfAbsent("schemaorgjson", content);
-                    content = transformer.apply(placeholderXml, metadata);
-                } else {
-                    content = transformer.apply(content, metadata);
-                }
+                content = transformer.apply(content, metadata);
             } catch (Exception e) {
                 String message = String.format(
                         Locale.ROOT, "Exception in View '%s' while calling %s with recordID '%s' and metadata %s",
