@@ -156,6 +156,11 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
                       imageid, layer, tiles, format,
                       CNT, GAM, CMP, CTW, INV, COL,
                       getCallDetails());
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(imageid, httpServletResponse);
+            if (handleNoAccessOrNoImage != null) {
+                return handleNoAccessOrNoImage;
+            }
+
             httpServletResponse.setContentType(getMIME(format));
             httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
             return IIPFacade.getInstance().getDeepzoomTile(
@@ -292,15 +297,16 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String filename = elements[elements.length - 1] + "." + format;
             // Show download link in Swagger UI, inline when opened directly in browser
             
-            //Will return null if there is access to the image.
-            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse);
-            if (handleNoAccessOrNoImage != null) {                
-                return handleNoAccessOrNoImage;
-            }
-                        
+
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(format));
             httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
+
+            //Will return null if there is access to the image.
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse);
+            if (handleNoAccessOrNoImage != null) {
+                return handleNoAccessOrNoImage;
+            }
 
             return IIIFFacade.getInstance().getIIIFImage(
                     uriInfo.getRequestUri(),
