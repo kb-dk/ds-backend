@@ -18,7 +18,7 @@
     <xsl:copy-of select="f:parse-json($schemaorgjson)"/>
   </xsl:variable>
 
-  <xsl:template match="/">
+  <xsl:template name="initial-template" match="/">
     <xsl:variable name="solrjson">
       <f:map>
         <f:string key="resource_description">
