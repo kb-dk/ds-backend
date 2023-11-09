@@ -55,11 +55,6 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
         }
     }
 
-    @Override
-    public String toString() {
-        return "XSLTTransformer(stylesheet='" + stylesheet + "', fixedInjections='" + fixedInjections + "'.)";
-    }
-
     /**
      * Create a small DOM document with only one element named placeholder.
      * This document is used as a placeholder for the transformation from schema.org JSON to JSON solr documents.

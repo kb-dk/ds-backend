@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * The identity transformer returns the given input unchanged.
  */
-public class IdentityTransformer extends DSTransformer {
+public class IdentityTransformer implements DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(IdentityTransformer.class);
     public static final String ID = "identity";
 
@@ -36,11 +36,6 @@ public class IdentityTransformer extends DSTransformer {
     @Override
     public String getID() {
         return ID;
-    }
-
-    @Override
-    public String getStylesheet() {
-        return null;
     }
 
     // A "real" transformer would do something here

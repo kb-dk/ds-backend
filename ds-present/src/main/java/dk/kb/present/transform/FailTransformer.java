@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * The fail transformer always fails. Used to signal unavailable views.
  */
-public class FailTransformer extends DSTransformer {
+public class FailTransformer implements DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(FailTransformer.class);
     public static final String ID = "fail";
 
@@ -40,11 +40,6 @@ public class FailTransformer extends DSTransformer {
     @Override
     public String getID() {
         return ID;
-    }
-
-    @Override
-    public String getStylesheet() {
-        return null;
     }
 
     @Override

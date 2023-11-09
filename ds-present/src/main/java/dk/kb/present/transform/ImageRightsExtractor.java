@@ -25,7 +25,7 @@ import java.util.Map;
  * The image rights extractor parses the rights section in MODS (packed in METS) input from the
  * Digital Preservation Service at the Royal Danish Library. It updates metadata but returns the given input unchanged.
  */
-public class ImageRightsExtractor extends DSTransformer {
+public class ImageRightsExtractor implements DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(ImageRightsExtractor.class);
     public static final String ID = "imagerights";
 
@@ -39,11 +39,6 @@ public class ImageRightsExtractor extends DSTransformer {
     @Override
     public String getID() {
         return ID;
-    }
-
-    @Override
-    public String getStylesheet() {
-        return null;
     }
 
     @Override

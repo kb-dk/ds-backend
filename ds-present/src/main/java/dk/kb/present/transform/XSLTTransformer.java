@@ -38,7 +38,7 @@ import java.util.Map;
  * XSLT transformer using Saxon HE 3.
  *
  */
-public class XSLTTransformer extends DSTransformer {
+public class XSLTTransformer implements DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(XSLTTransformer.class);
     public static final String ID = "xslt";
 
