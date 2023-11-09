@@ -19,7 +19,7 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.CollectionDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
-import dk.kb.present.webservice.ExportWriterFactory;
+import dk.kb.util.webservice.stream.ExportWriterFactory;
 import dk.kb.storage.model.v1.DsRecordDto;
 
 import dk.kb.util.webservice.exception.InternalServiceException;
