@@ -72,7 +72,7 @@ public class TestUtil {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
 		String xml = Resolver.resolveUTF8String(xmlResource);
 		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
-		String childData = Resolver.resolveUTF8String("internal_test_files/tvMetadata/33e30aa9-d216-4216-aabf-b28d2b465215.xml");
+		String childData = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_33e30aa9);
 
 		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		metadata.put("streamingserver", "www.example.com/streaming/");

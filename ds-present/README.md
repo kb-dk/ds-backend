@@ -47,7 +47,7 @@ ds-present comes with convenience scripts for downloading, installing and starti
 ```shell
   bin/cloud_install.sh
   bin/cloud_start.sh
-  bin/cloud_sync.sh src/test/resources/solr/dssolr/conf/ ds-conf ds
+  bin/cloud_sync.sh src/main/solr/dssolr/conf/ ds-conf ds
 ```
 
 Check that the collection was created by visiting
@@ -61,7 +61,7 @@ bin/cloud_start.sh
 
 If the Solr configuration is changed, force an update of `ds` with
 ```
-FORCE_CONFIG=true bin/cloud_sync.sh src/test/resources/solr/dssolr/conf/ ds-conf ds
+FORCE_CONFIG=true bin/cloud_sync.sh src/main/solr/dssolr/conf/ ds-conf ds
 ```
 
 Clear all records in the `ds` collection, but keep the collection with

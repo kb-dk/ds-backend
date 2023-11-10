@@ -18,7 +18,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.CoreContainer;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,41 +30,40 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_05fea810;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_096c9090;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_0c02aa10;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_226d41a0;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_25461fb0;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_3956d820;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_40221e30;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_54b34b50;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_770379f0;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_8e608940;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_9c17a440;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_ANSK;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_FM;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_aaf3b130;
+import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
+import static dk.kb.present.TestFiles.PVICA_RECORD_1f3a6a66;
+import static dk.kb.present.TestFiles.PVICA_RECORD_3945e2d1;
+import static dk.kb.present.TestFiles.PVICA_RECORD_44979f67;
+import static dk.kb.present.TestFiles.PVICA_RECORD_9d9785a8;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EmbeddedSolrTest {
 
     private static final Logger log = LoggerFactory.getLogger(EmbeddedSolrTest.class);
-    private static final String solr_home = "target/test-classes/solr";
+    private static final String solr_home = "src/main/solr";
 
     private static CoreContainer coreContainer = null;
     private static EmbeddedSolrServer embeddedServer = null;
 
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
-    public static final String MODS_RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
-    public static final String MODS_RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
-    public static final String MODS_RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
-    public static final String MODS_RECORD_aaf3b130 = "xml/copyright_extraction/aaf3b130-e6e7-11e6-bdbe-00505688346e.xml";
-    public static final String MODS_RECORD_54b34b50 = "xml/copyright_extraction/54b34b50-2ce6-11ed-81b4-005056882ec3.xml";
-    public static final String MODS_RECORD_8e608940 = "xml/copyright_extraction/8e608940-d6db-11e3-8d2e-0016357f605f.xml";
-    public static final String MODS_RECORD_ANSK = "xml/copyright_extraction/ANSK_11614.tif.xml";
-    public static final String MODS_RECORD_e2519ce0 = "xml/copyright_extraction/e2519ce0-9fb0-11e8-8891-00505688346e.xml";
-    public static final String MODS_RECORD_FM = "xml/copyright_extraction/FM103703H.tif.xml";
-    public static final String MODS_RECORD_DB_hans = "xml/copyright_extraction/25461fb0-f664-11e0-9d29-0016357f605f.xml";
-    public static final String MODS_RECORD_770379f0 = "xml/copyright_extraction/770379f0-8a0d-11e1-805f-0016357f605f.xml";
-    public static final String MODS_RECORD_40221e30 = "xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml";
-    public static final String MODS_RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
-    public static final String MODS_RECORD_9c17a440 = "xml/copyright_extraction/9c17a440-fe1a-11e8-9044-00505688346e.xml";
-    public static final String MODS_RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
-    public static final String PRESERVICA_RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
-    public static final String PRESERVICA_RECORD_3945e2d1 = "internal_test_files/tvMetadata/3945e2d1-83a2-40d8-af1c-30f7b3b94390.xml";
-    public static final String PRESERVICA_RECORD_9d9785a8 = "internal_test_files/tvMetadata/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml";
-    public static final String PRESERVICA_RECORD_1f3a6a66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
+
     @BeforeAll
     public static void startEmbeddedSolrServer() {
 
@@ -97,7 +95,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecord000332() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_05fea810);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_05fea810);
 
         //Single value field
         assertEquals("000332.tif",record.getFieldValue("filename_local"));
@@ -114,7 +112,7 @@ public class EmbeddedSolrTest {
      */
     @Test
     void testRecordDPK() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_3956d820);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_3956d820);
 
         assertContentAllSingleValues(record, "DPK000107.tif", "da",
                 "Billedsamlingen. Postkortsamlingen, Vestindien, Sankt Thomas, Charlotte Amalie, Det gamle fort/politistation",
@@ -138,7 +136,7 @@ public class EmbeddedSolrTest {
      */
     @Test
     void testRecord096c9090() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_096c9090);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_096c9090);
 
         assertContentAllSingleValues(record,"000225.tif", "da",
                 "Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",
@@ -193,7 +191,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordDt005031() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_aaf3b130);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_aaf3b130);
 
         //Single value field
         assertEquals("DT005031.tif",record.getFieldValue("filename_local"));
@@ -203,7 +201,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordANSK() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_ANSK);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_ANSK);
 
         //Single value field
         assertEquals("ANSK_11614.tif",record.getFieldValue("filename_local"));
@@ -213,7 +211,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordSkfF0137() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_54b34b50);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_54b34b50);
 
         //Single value field
         assertEquals("SKF_f_0137.tif",record.getFieldValue("filename_local"));
@@ -228,7 +226,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordKhp() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_8e608940);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_8e608940);
 
         //Single value field
         assertEquals("KHP0001-049.tif",record.getFieldValue("filename_local"));
@@ -242,7 +240,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testRecordUldallForTitleAndPlaceOfProductionAndGenre() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_e2519ce0);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_e2519ce0);
 
         //Single value field
         assertEquals("Uldall_186_2_Foborg.tif",record.getFieldValue("filename_local"));
@@ -259,7 +257,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testAccessionNumberExtraction() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_FM);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_FM);
 
         //Single value field
         assertEquals("2000-3/7",record.getFieldValue("accession_number"));
@@ -267,7 +265,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testPublishedInAndCollection() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_DB_hans);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_25461fb0);
 
         //Single value field
         assertEquals("Bladtegnersamlingen",record.getFieldValue("collection"));
@@ -276,7 +274,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testTitle() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_770379f0);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_770379f0);
 
         assertMultivalueField(record, "title", "Romeo og Julie");
         assertEquals(1, record.getFieldValue("title_count"));
@@ -284,13 +282,13 @@ public class EmbeddedSolrTest {
 
     @Test
     void testResourceId() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_40221e30);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_40221e30);
         assertMultivalueField(record, "resource_id", "/DAMJP2/DAM/Samlingsbilleder/0000/624/420/KE070592");
     }
 
     @Test
     void testMapScale() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_0c02aa10);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_0c02aa10);
 
         //Single value field
         assertEquals("Målestok 1:75 000",record.getFieldValue("map_scale"));
@@ -298,7 +296,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testSubjectStrict() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_9c17a440);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_9c17a440);
 
         String[] testName = Arrays.copyOf(
                 record.getFieldValues("subject_full_name_strict").toArray(),
@@ -310,14 +308,14 @@ public class EmbeddedSolrTest {
 
     @Test
     void testSingleProductionDate() throws IOException{
-        SolrDocument record = singleMODSIndex(MODS_RECORD_226d41a0);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_226d41a0);
 
         assertEquals("1971", record.getFieldValue("production_date"));
     }
 
     @Test
     void testCountsCreatedBySolr() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_05fea810);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_05fea810);
 
         assertEquals(3, record.getFieldValue("creator_count"));
         assertEquals(6, record.getFieldValue("topic_count"));
@@ -328,7 +326,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testNotesLength() throws IOException {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_DB_hans);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_25461fb0);
 
         assertEquals(93, record.getFieldValue("notes_length"));
     }
@@ -336,7 +334,7 @@ public class EmbeddedSolrTest {
     @Test
     void testPreservicaPremiere() throws Exception {
         if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null) {
-            SolrDocument record = singlePreservicaIndex(PRESERVICA_RECORD_44979f67);
+            SolrDocument record = singlePreservicaIndex(PVICA_RECORD_44979f67);
             assertFalse((Boolean) record.getFieldValue("premiere"));
         } else {
             log.info("Preservica test files are not present. Embedded Solr tests for preservica metadata are not run.");
@@ -345,37 +343,37 @@ public class EmbeddedSolrTest {
 
     @Test
     void testPreservicaDuration() throws Exception {
-        testLongValuePreservicaField(PRESERVICA_RECORD_44979f67, "duration_ms", 950000L);
+        testLongValuePreservicaField(PVICA_RECORD_44979f67, "duration_ms", 950000L);
     }
 
     @Test
     void testOriginMods() throws Exception {
-        SolrDocument record = singleMODSIndex(MODS_RECORD_40221e30);
+        SolrDocument record = singleMODSIndex(CUMULUS_RECORD_40221e30);
         assertEquals("ds.test", record.getFieldValue("origin"));
     }
     @Test
     void testOriginPreservica() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "origin", "ds.test");
+        testStringValuePreservicaField(PVICA_RECORD_44979f67, "origin", "ds.test");
     }
 
     @Test
     void testOriginalTitle() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "original_title", "Backstage II");
+        testStringValuePreservicaField(PVICA_RECORD_44979f67, "original_title", "Backstage II");
     }
 
     @Test
     void testEpisodeTitel() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "episode_title", "Kagerester");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "episode_title", "Kagerester");
     }
     @Test
     void testRitzauId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "ritzau_id",
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "ritzau_id",
                 "4aa3482b-a149-44d1-8715-f789e69f1a1e");
     }
 
     @Test
     void testTvmeterId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "tvmeter_id",
+        testStringValuePreservicaField(PVICA_RECORD_44979f67, "tvmeter_id",
                 "78e74634-bec1-4cea-a984-20192c97b743");
     }
 
@@ -386,7 +384,7 @@ public class EmbeddedSolrTest {
     void testPvicaStartTime() throws Exception {
         // Epoch value of 2018-07-11T18-06-33Z
         Date startTime = new Date(1531332393000L);
-        testDateValuePreservicaField(PRESERVICA_RECORD_44979f67, "startTime", startTime);
+        testDateValuePreservicaField(PVICA_RECORD_44979f67, "startTime", startTime);
     }
 
 
@@ -394,167 +392,167 @@ public class EmbeddedSolrTest {
     void testPvicaEndTime() throws Exception {
         // Epoch value of 2018-07-11T18-22-23Z
         Date endTime = new Date(1531333343000L);
-        testDateValuePreservicaField(PRESERVICA_RECORD_44979f67, "endTime", endTime);
+        testDateValuePreservicaField(PVICA_RECORD_44979f67, "endTime", endTime);
     }
 
     @Test
     void testColor() throws Exception {
-        testBooleanValuePreservicaField(PRESERVICA_RECORD_44979f67, "color", true );
+        testBooleanValuePreservicaField(PVICA_RECORD_44979f67, "color", true );
     }
 
     @Test
     void testVideoQuality() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "video_quality", "ikke hd" );
+        testStringValuePreservicaField(PVICA_RECORD_44979f67, "video_quality", "ikke hd" );
     }
 
     @Test
     void testSurroundSound() throws Exception {
-        testBooleanValuePreservicaField(PRESERVICA_RECORD_44979f67, "surround_sound", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_44979f67, "surround_sound", false);
     }
 
     @Test
     void testAspectRation() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_44979f67, "aspect_ratio", "16:9");
+        testStringValuePreservicaField(PVICA_RECORD_44979f67, "aspect_ratio", "16:9");
     }
 
     // TODO: Why are these not cast correctly.
     @Test
     void testEpisodeNumber() throws Exception {
-        testIntValuePreservicaField(PRESERVICA_RECORD_44979f67, "episode", 3);
+        testIntValuePreservicaField(PVICA_RECORD_44979f67, "episode", 3);
     }
 
     @Test
     void testNumberOfEpisodes() throws Exception {
-        testIntValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "number_of_episodes", 8);
+        testIntValuePreservicaField(PVICA_RECORD_3945e2d1, "number_of_episodes", 8);
     }
 
     @Test
     void testLive() throws Exception {
-        testBooleanValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "live_broadcast", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "live_broadcast", false);
     }
 
     @Test
     void testRetransmission() throws Exception {
-        testBooleanValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "retransmission", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "retransmission", false);
     }
 
 
     @Test
     void testAbstract() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "abstract", "Dan. dok.-serie");
+        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "abstract", "Dan. dok.-serie");
     }
 
     @Test
     void testSubtitles() throws Exception {
-        testBooleanValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "has_subtitles", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_9d9785a8, "has_subtitles", false);
     }
 
     @Test
     void testSubtitlesForImpaired() throws Exception {
-        testBooleanValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "has_subtitles_for_hearing_impaired", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_9d9785a8, "has_subtitles_for_hearing_impaired", false);
     }
 
     @Test
     void testPreservicaPid() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "pid",
+        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "pid",
                 "109.1.4/9d9785a8-71f4-4b34-9a0e-1c99c13b001b");
     }
 
     @Test
     void testGenreSub() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "genre_sub", "Alle");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "genre_sub", "Alle");
     }
 
     @Test
     void testInternalAccesssionRef() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_accession_ref",
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_accession_ref",
                 "4eb00536-5efa-4346-9165-b13997b0ffd2");
     }
 
     @Test
     void testInternalFormatIdentiferRitzau() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_format_identifier_ritzau",
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_format_identifier_ritzau",
                 "81318588");
     }
     @Test
     void testInternalFormatIdentiferNielsen() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "internal_format_identifier_nielsen",
+        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_format_identifier_nielsen",
                 "101|20220227|252839|255705|0|4d3a94a4-1ff0-4598-b593-034eacf1c77d|98");
     }
 
     @Test
     void testInternalMaingenreId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "internal_maingenre_id", "13");
+        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_maingenre_id", "13");
     }
 
     @Test
     void testInternalChannelId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "internal_channel_id", "3");
+        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_channel_id", "3");
     }
 
     @Test
     void testInternalCountryOfOriginId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_9d9785a8, "internal_country_of_origin_id", "0");
+        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_country_of_origin_id", "0");
     }
     @Test
     void testInternalRitzauProgramId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_ritzau_program_id", "25101143");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_ritzau_program_id", "25101143");
     }
 
     @Test
     void testSubgenreId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_subgenre_id", "736");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_subgenre_id", "736");
     }
 
     @Test
     void testEpisodeId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_episode_id", "0");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_episode_id", "0");
     }
 
     @Test
     void testSeasonId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_season_id", "174278");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_season_id", "174278");
     }
 
     @Test
     void testSeriesId() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_series_id", "146180");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_series_id", "146180");
     }
 
     @Test
     void testProgramOphold() throws Exception {
-        testBooleanValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_program_ophold", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_program_ophold", false);
     }
 
     @Test
     void testIsTeletext() throws Exception {
-        testBooleanValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_is_teletext", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_is_teletext", false);
     }
 
     @Test
     void testShowviewcode() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_showviewcode", "0");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_showviewcode", "0");
     }
 
     @Test
     void testPadding() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_padding_seconds", "15");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_padding_seconds", "15");
     }
 
     @Test
     void testInternalAccess() throws Exception {
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_access_individual_prohibition", "Nej");
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_access_claused", "Nej");
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_access_malfunction", "Nej");
-        testStringValuePreservicaField(PRESERVICA_RECORD_3945e2d1, "internal_access_comments", null);
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_individual_prohibition", "Nej");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_claused", "Nej");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_malfunction", "Nej");
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_comments", null);
     }
 
     @Test
     void testProgramStructure() throws Exception {
-        testIntValuePreservicaField(PRESERVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_start", 0);
-        testIntValuePreservicaField(PRESERVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_end", 0);
-        testStringValuePreservicaField(PRESERVICA_RECORD_1f3a6a66, "internal_program_structure_holes", null);
-        testStringValuePreservicaField(PRESERVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", null);
+        testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_start", 0);
+        testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_end", 0);
+        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_holes", null);
+        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", null);
     }
 
     /*
