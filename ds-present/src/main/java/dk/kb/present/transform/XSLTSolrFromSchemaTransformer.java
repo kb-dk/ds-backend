@@ -18,16 +18,22 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
     private static final Logger log = LoggerFactory.getLogger(XSLTTransformer.class);
     public static final String ID = "xsltsolr";
 
+    /**
+     * Placeholder XML used when transforming JSON to JSON, as the {@link javax.xml.transform.TransformerFactory} is
+     * build towards XSLT 1.0, and therefore it's not possible to transform JSON without using an empty placeholder XML.
+     */
+    private static final String placeholderXml = "<placeholder></placeholder>";
+
     public static final TransformerFactory transformerFactory;
 
     static {
         System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
         transformerFactory = TransformerFactoryImpl.newInstance();
-        /* Played with setting attributes on the transformer level. This can be tweaked quite a bit, however the javax
-           TransformerFactory which we are using is oriented towards XSLT 1.0, which doesn't allow calling an XSLT
+        /* Attributes on the transformer level can be tweaked quite a bit, however the javax
+           TransformerFactory is oriented towards XSLT 1.0, which doesn't allow calling an XSLT
            without giving it XML as input. The only way to transform through this API is with either an empty placeholder
            or encapsulating the JSON structure in XML tags.
-           Link to StackOverfow discussion on this: https://stackoverflow.com/a/35383155/12400491*/
+           Link to StackOverfow discussion on this: https://stackoverflow.com/a/35383155/12400491 */
         // transformerFactory.setAttribute("http://saxon.sf.net/feature/initialTemplate", "initial-template");
 
     }
@@ -57,9 +63,7 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
             transformer.setParameter("schemaorgjson", s);
             metadata.forEach(transformer::setParameter);
 
-            String jsonInXml = "<json>" + s + "</json>";
-
-            transformer.transform(new StreamSource(new ByteArrayInputStream(jsonInXml.getBytes(StandardCharsets.UTF_8))),
+            transformer.transform(new StreamSource(new ByteArrayInputStream(placeholderXml.getBytes(StandardCharsets.UTF_8))),
                                   new StreamResult(out));
 
             return out.toString(StandardCharsets.UTF_8);
