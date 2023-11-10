@@ -21,14 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static dk.kb.present.solr.EmbeddedSolrTest.PRESERVICA2SOLR;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -36,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Helper base for writing XSLT transformation tests.
  */
 public abstract class XSLTTransformerTestBase {
+
     private static final Logger log = LoggerFactory.getLogger(XSLTTransformerTestBase.class);
 
     /**

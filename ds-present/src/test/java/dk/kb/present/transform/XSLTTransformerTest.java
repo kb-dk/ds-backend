@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class XSLTTransformerTest {
     public static final String MODS2JSONLD = "xslt/mods2schemaorg.xsl";
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
-    public static final String RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
 
     @Test
     void testIDInjection() throws IOException {

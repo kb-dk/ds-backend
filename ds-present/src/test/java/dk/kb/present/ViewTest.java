@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 
 
 import static org.junit.jupiter.api.Assertions.*;
-import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.*;
-import static dk.kb.present.transform.XSLTSchemaDotOrgTransformerTest.*;
 
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +41,7 @@ class ViewTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1), dsflConf.getSubMap("dsfl").getString("origin"));
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
 
         DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id");
 
@@ -56,7 +54,7 @@ class ViewTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML radiotvConf = conf.getYAMLList(".config.collections").get(1);
         View jsonldView = new View(radiotvConf.getSubMap("radiotv").getYAMLList("views").get(1), radiotvConf.getSubMap("radiotv").getString("origin"));
-        String pvica = Resolver.resolveUTF8String("internal_test_files/tvMetadata/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id");
 
@@ -69,7 +67,7 @@ class ViewTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);
         View solrView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2), dsflConf.getSubMap("dsfl").getString("origin"));
-        String mods = Resolver.resolveUTF8String("xml/copyright_extraction/40221e30-1414-11e9-8fb8-00505688346e.xml");
+        String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
 
         DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id");
 
