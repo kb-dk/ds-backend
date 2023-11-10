@@ -9,6 +9,7 @@ package dk.kb.present;
  */
 public class TestFiles {
 
+    public static final String PVICA_RECORD_3006e2f8 = "internal_test_files/tvMetadata/3006e2f8-3f73-477a-a504-4d7cb1ae1e1c.xml";
     public static final String PVICA_RECORD_5a5357be = "internal_test_files/tvMetadata/5a5357be-5890-472a-a294-41a99f108936.xml";
     public static final String PVICA_RECORD_44979f67 = "internal_test_files/tvMetadata/44979f67-b563-462e-9bf1-c970167a5c5f.xml";
     public static final String PVICA_RECORD_1F3A6A66 = "internal_test_files/tvMetadata/1f3a6a66-5f5a-48e6-abbf-452552320176.xml";
