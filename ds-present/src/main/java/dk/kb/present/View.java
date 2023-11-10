@@ -27,10 +27,14 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 /**
@@ -187,11 +191,32 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         // TODO: Figure how to choose correct manifestation for record, if more than one is present
         // Return first child record of manifestation type = 2. If there are multiple presentation manifestations,
         // the rest are currently not added to the transformation
-        return record.getChildren() == null ? "" :
+        List<String> presentationManifestations = record.getChildren() == null ? Collections.singletonList("") :
                 record.getChildren().stream()
                         .map(this::getNonNullChild)
                         .filter(childData -> childData.contains("<ManifestationRelRef>2</ManifestationRelRef>"))
-                        .findFirst().orElse("");
+                        .collect(Collectors.toList());
+                        /*.map(childData -> updateCount(childData, count))
+                        .findFirst().orElse("");*/
+
+        if (presentationManifestations.size() > 1) {
+            log.warn("Multiple presentation manifestations were present for record with id: '{}'. " +
+                     "Only the first has been returned", record.getId());
+        }
+
+        return presentationManifestations.get(0);
+    }
+
+    /**
+     * Count the amount of presentation manifestations present for a single record. The count is then later used to log
+     * a warning if more than one presentation manifestation is present for the analysed record.
+     * @param manifestationData
+     * @param count
+     * @return
+     */
+    private String updateCount(String manifestationData, AtomicInteger count) {
+        count.incrementAndGet();
+        return manifestationData;
     }
 
     /**
