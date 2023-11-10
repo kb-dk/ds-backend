@@ -175,9 +175,9 @@ public class DSCollection {
         log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
-            // 500 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
+            // 35 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
             return ExtractionUtils.splitToLists(
-                            storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords), 500)
+                            storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords), 35)
                     .flatMap(accessFilter)
                     .peek(record -> {
                         try {
