@@ -35,7 +35,7 @@
         <xsl:if test="contains(map:get($schemaorg-xml,'@type'), 'VideoObject') or
                       contains(map:get($schemaorg-xml,'@type'), 'AudioObject') ">
 
-          <f:string key="name">
+          <f:string key="title">
             <xsl:value-of select="$schemaorg-xml('name')"/>
           </f:string>
 
