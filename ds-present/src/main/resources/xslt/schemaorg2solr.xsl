@@ -35,10 +35,6 @@
         <xsl:if test="contains(map:get($schemaorg-xml,'@type'), 'VideoObject') or
                       contains(map:get($schemaorg-xml,'@type'), 'AudioObject') ">
 
-          <f:string key="title">
-            <xsl:value-of select="$schemaorg-xml('name')"/>
-          </f:string>
-
           <xsl:if test="f:exists($schemaorg-xml('keywords'))">
             <!--Save categories to a variable as a sequence. -->
             <xsl:variable name="categories" as="item()*" select="tokenize($schemaorg-xml('keywords'), ',')"/>
