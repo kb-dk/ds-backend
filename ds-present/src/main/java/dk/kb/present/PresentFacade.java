@@ -85,10 +85,10 @@ public class PresentFacade {
      * @throws NotFoundServiceException if the collection was not known.
      */
     public static CollectionDto getCollection(String id) {
-        DSCollection collection = getCollectionHandler().getCollection(id);
+        DSCollection collection = getCollectionHandler().getOrigin(id);
         if (collection == null) {
             throw new NotFoundServiceException("A collection with the id '" + id + "' could not be located. " +
-                                               "Supported collections are " + collectionHandler.getCollectionIDs());
+                                               "Supported collections are " + collectionHandler.getOriginIDs());
         }
         return toDto(collection);
     }
@@ -97,7 +97,7 @@ public class PresentFacade {
      * @return all known collections.
      */
     public static List<CollectionDto> getCollections() {
-        return getCollectionHandler().getCollections().stream()
+        return getCollectionHandler().getOrigins().stream()
                 .map(PresentFacade::toDto)
                 .collect(Collectors.toList());
     }
@@ -133,12 +133,12 @@ public class PresentFacade {
     public static StreamingOutput getRecords(
             HttpServletResponse httpServletResponse, String collectionID, Long mTime, Long maxRecords, String format,
             Function<List<String>, List<String>> accessChecker) {
-        DSCollection collection = collectionHandler.getCollection(collectionID);
+        DSCollection collection = collectionHandler.getOrigin(collectionID);
         if (collection == null) {
             throw new InvalidArgumentServiceException(String.format(
                     Locale.ROOT, "The collection '%s' was unknown. Known collections are %s",
                     collectionID,
-                    collectionHandler.getCollections().stream().map(DSCollection::getId).collect(Collectors.toList())));
+                    collectionHandler.getOrigins().stream().map(DSCollection::getId).collect(Collectors.toList())));
         }
 
         // Batch-oriented filter that only passed records that are allowed

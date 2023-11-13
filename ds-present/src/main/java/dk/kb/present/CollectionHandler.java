@@ -36,13 +36,13 @@ public class CollectionHandler {
     private static final Logger log = LoggerFactory.getLogger(CollectionHandler.class);
     private static final String ORIGINS_KEY = ".config.origins";
     private static final String RECORD_ID_PATTERN_KEY = ".config.record.id.pattern";
-    private static final String ORIGIN_ID_PATTERN_KEY = ".config.collection.prefix.pattern";
+    private static final String ORIGIN_ID_PATTERN_KEY = ".config.origin.prefix.pattern";
 
     private final StorageHandler storageHandler;
-    private final Map<String, DSCollection> collectionsByPrefix; // prefix, collection
-    private final Map<String, DSCollection> collectionsByID; // id, collection
+    private final Map<String, DSCollection> originsByPrefix; // prefix, origin
+    private final Map<String, DSCollection> originsByID; // id, origin
     private final Pattern recordIDPattern;
-    private final Pattern collectionPrefixPattern;
+    private final Pattern originPrefixPattern;
 
     /**
      * Creates a {@link StorageHandler} and a set of {@link Storage}s based on the given configuration.
@@ -51,7 +51,7 @@ public class CollectionHandler {
      */
     public CollectionHandler(YAML conf) {
         try {
-            collectionPrefixPattern = Pattern.compile(conf.getString(ORIGIN_ID_PATTERN_KEY));
+            originPrefixPattern = Pattern.compile(conf.getString(ORIGIN_ID_PATTERN_KEY));
         } catch (Exception e) {
             String message = "Unable to create pattern from configuration, expected key " + RECORD_ID_PATTERN_KEY;
             log.warn(message, e);
@@ -59,17 +59,17 @@ public class CollectionHandler {
         }
 
         storageHandler = new StorageHandler(conf);
-        collectionsByPrefix = conf.getYAMLList(ORIGINS_KEY).stream()
-                .map(collectionConf -> new DSCollection(collectionConf, storageHandler))
-                .peek(collection -> {
-                    if (!collectionPrefixPattern.matcher(collection.getPrefix()).matches()) {
+        originsByPrefix = conf.getYAMLList(ORIGINS_KEY).stream()
+                .map(originConf -> new DSCollection(originConf, storageHandler))
+                .peek(origin -> {
+                    if (!originPrefixPattern.matcher(origin.getPrefix()).matches()) {
                         throw new IllegalStateException(
-                                "The configured collection prefix '" + collection.getPrefix() + "' for collection '" +
-                                collection.getId() + "' does not match the collection prefix pattern '" +
-                                collectionPrefixPattern.pattern() + "'");
+                                "The configured origin prefix '" + origin.getPrefix() + "' for origin '" +
+                                origin.getId() + "' does not match the origin prefix pattern '" +
+                                originPrefixPattern.pattern() + "'");
                     }})
                 .collect(Collectors.toMap(DSCollection::getPrefix, storage -> storage));
-        collectionsByID = collectionsByPrefix.values().stream()
+        originsByID = originsByPrefix.values().stream()
                 .collect(Collectors.toMap(DSCollection::getId, storage -> storage));
         try {
             recordIDPattern = Pattern.compile(conf.getString(RECORD_ID_PATTERN_KEY));
@@ -87,41 +87,41 @@ public class CollectionHandler {
             throw new InvalidArgumentServiceException(
                     "ID '" + id + "' should conform to pattern '" + recordIDPattern + "'");
         }
-        DSCollection collection = collectionsByPrefix.get(matcher.group(1));
-        if (collection == null) {
+        DSCollection origin = originsByPrefix.get(matcher.group(1));
+        if (origin == null) {
             throw new NotFoundServiceException(
-                    "A collection for IDs with prefix '" + matcher.group(1) + "' is not available. " +
-                    "Full ID was '" + id + "'. Available collection-prefixess are " + collectionsByPrefix.keySet());
+                    "A origin for IDs with prefix '" + matcher.group(1) + "' is not available. " +
+                    "Full ID was '" + id + "'. Available origin-prefixess are " + originsByPrefix.keySet());
         }
-        return collection.getRecord(id, format);
+        return origin.getRecord(id, format);
     }
 
     /**
-     * @param collectionID an ID for a collection.
-     * @return a collection with the given ID or null if it does not exist.
+     * @param originID an ID for an origin.
+     * @return an origin with the given ID or null if it does not exist.
      */
-    public DSCollection getCollection(String collectionID) {
-        return collectionsByID.get(collectionID);
+    public DSCollection getOrigin(String originID) {
+        return originsByID.get(originID);
     }
 
     /**
-     * @return a complete list of supported collections.
+     * @return a complete list of supported origins.
      */
-    public List<String> getCollectionIDs() {
-        return new ArrayList<>(collectionsByID.keySet());
+    public List<String> getOriginIDs() {
+        return new ArrayList<>(originsByID.keySet());
     }
 
     /**
-     * @return all collections.
+     * @return all origins.
      */
-    public Collection<DSCollection> getCollections() {
-        return collectionsByPrefix.values();
+    public Collection<DSCollection> getOrigins() {
+        return originsByPrefix.values();
     }
 
     @Override
     public String toString() {
         return "CollectionHandler(" +
-               "collections=" + collectionsByPrefix.values() +
+               "origins=" + originsByPrefix.values() +
                "recordIDPattern: '" + recordIDPattern + "'" +
                ')';
     }

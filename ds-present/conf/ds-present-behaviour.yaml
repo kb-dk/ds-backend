@@ -102,7 +102,7 @@ config:
       # and the second being the collection specific par of the ID
       # Mandatory. Suggested value: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)', e.g. 'images.dsfl:Image1234:2_3-b'
       pattern: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)'
-  collection:
+  origin:
     prefix:
       # Pattern for acceptable collection prefixes. This will practically always be a mirror of the first capturing
       # group for record.id.pattern.
