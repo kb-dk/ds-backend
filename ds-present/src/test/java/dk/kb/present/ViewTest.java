@@ -73,7 +73,7 @@ class ViewTest {
 
         String solrdoc = solrView.apply(recordDto);
         System.out.println(solrdoc);
-        assertTrue(solrdoc.contains("\"name\":\"Før Bjørnen Er Skudt\""));
+        assertTrue(solrdoc.contains("\"title\":\"Før Bjørnen Er Skudt\""));
     }
 
     @Test
