@@ -196,27 +196,23 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
                         .map(this::getNonNullChild)
                         .filter(childData -> childData.contains("<ManifestationRelRef>2</ManifestationRelRef>"))
                         .collect(Collectors.toList());
-                        /*.map(childData -> updateCount(childData, count))
-                        .findFirst().orElse("");*/
 
-        if (presentationManifestations.size() > 1) {
-            log.warn("Multiple presentation manifestations were present for record with id: '{}'. " +
-                     "Only the first has been returned", record.getId());
-        }
-
-        return presentationManifestations.get(0);
+        return returnPresentationManifestationFromList(presentationManifestations, record.getId());
     }
 
     /**
-     * Count the amount of presentation manifestations present for a single record. The count is then later used to log
-     * a warning if more than one presentation manifestation is present for the analysed record.
-     * @param manifestationData
-     * @param count
-     * @return
+     * Returns the first presentation manifestation for a record. If there are more than one presentation manifestation
+     * for the record a warning will be logged.
+     * @param presentationManifestations list of all presentation manifestations for a record
+     * @return the first presentation manifestation for a record.
      */
-    private String updateCount(String manifestationData, AtomicInteger count) {
-        count.incrementAndGet();
-        return manifestationData;
+    private String returnPresentationManifestationFromList(List<String> presentationManifestations, String recordId) {
+        if (presentationManifestations.size() > 1) {
+            log.warn("Multiple presentation manifestations were present for record with id: '{}'. " +
+                    "Only the first has been returned", recordId);
+        }
+
+        return presentationManifestations.get(0);
     }
 
     /**
