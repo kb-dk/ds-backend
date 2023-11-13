@@ -63,6 +63,20 @@ class ViewTest {
     }
 
     @Test
+    void solrFromPvica() throws Exception {
+        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
+        YAML radiotvConf = conf.getYAMLList(".config.collections").get(1);
+        View solrView = new View(radiotvConf.getSubMap("radiotv").getYAMLList("views").get(2), radiotvConf.getSubMap("radiotv").getString("origin"));
+        String pvica = Resolver.resolveUTF8String("internal_test_files/tvMetadata/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
+
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id");
+
+        String solrdoc = solrView.apply(recordDto);
+        System.out.println(solrdoc);
+        assertTrue(solrdoc.contains("\"name\":\"Før Bjørnen Er Skudt\""));
+    }
+
+    @Test
     void solrJson() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".config.collections").get(0);

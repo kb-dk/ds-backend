@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This XML is used as a placeholder in transformations that use the schemaorg2solr XSLT. This XSLT transforms
+     JSON given as an input to the transformer. However, a valid XML file is needed for the transformation to
+     run at all. -->
+<placeholder></placeholder>

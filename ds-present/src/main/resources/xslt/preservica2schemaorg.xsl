@@ -369,10 +369,12 @@
 
     <!-- Extracts collection -->
     <xsl:if test="pbcoreInstantiation/formatLocation != ''">
-      <f:map key="isPartOf">
-        <f:string key="@type">Collection</f:string>
-        <f:string key="name"><xsl:value-of select="pbcoreInstantiation/formatLocation"/></f:string>
-      </f:map>
+      <f:array key="isPartOf">
+        <f:map>
+          <f:string key="@type">Collection</f:string>
+          <f:string key="name"><xsl:value-of select="pbcoreInstantiation/formatLocation"/></f:string>
+        </f:map>
+      </f:array>
     </xsl:if>
 
     <!-- Is the resource hd? or do we know anything about the video quality=? -->
@@ -477,12 +479,13 @@
       <xsl:for-each select="/xip:DeliverableUnit/Metadata/access:access">
         <xsl:call-template name="access-template"/>
       </xsl:for-each>
-    </f:map>
 
-    <!-- Extracts information on the structure of the video component. -->
-    <xsl:for-each select="/xip:DeliverableUnit/Metadata/program_structure:program_structure">
-      <xsl:call-template name="program-structure"/>
-    </xsl:for-each>
+      <!-- Extracts information on the structure of the video component. -->
+      <xsl:for-each select="/xip:DeliverableUnit/Metadata/program_structure:program_structure">
+        <xsl:call-template name="program-structure"/>
+      </xsl:for-each>
+
+    </f:map>
 
   </xsl:template>
 

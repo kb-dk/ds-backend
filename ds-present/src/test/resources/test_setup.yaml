@@ -128,10 +128,12 @@ config:
                   strategy: 'MANIFESTATION'
                   transformers:
                     - xslt:
-                        stylesheet: 'xslt/preservica2solr.xsl'
+                        stylesheet: 'xslt/preservica2schemaorg.xsl'
                         injections:
-                        - imageserver: 'https://example.com/imageserver/'
-                        - streamingserver: "here_should_be_a_wowza_url"
+                          - imageserver: 'https://example.com/imageserver/'
+                          - streamingserver: "here_should_be_a_wowza_url"
+                    - xsltsolr:
+                        stylesheet: 'xslt/schemaorg2solr.xsl'
               - raw:
                   mime: 'text/plain'
                   strategy: 'NONE'

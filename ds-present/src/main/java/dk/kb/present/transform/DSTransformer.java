@@ -25,11 +25,20 @@ import java.util.function.BiFunction;
  * metadata and pass the input unchanged, then having another transformer responsible for transforming to Solr-JSON
  * with extra fields added from the metadata delivered by the copyright extractor.
  */
-public abstract class DSTransformer implements BiFunction<String, Map<String, String>, String> {
+public interface DSTransformer extends BiFunction<String, Map<String, String>, String> {
 
     /**
      * @return the ID for the transformer, e.g. {@code mods2solr}.
      */
-    abstract public String getID();
+     String getID();
+
+    /**
+     * @return the stylesheet used by the transformer, if any existst. If stylesheet does not exist return null.
+     */
+    default String getStylesheet(){
+        return null;
+    };
+
+
 
 }

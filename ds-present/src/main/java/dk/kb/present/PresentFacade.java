@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
+import java.util.List;
+import java.util.Locale;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -241,11 +243,10 @@ public class PresentFacade {
 
     /**
      * Uses information from the record object to wrap its data component in either {@code add} or {@code delete}.
-     * See https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates
+     * See the <a href="https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates">solr guide</a>
      * @param record a record where the data component contains a SolrJSONDocument.
      * @return the record's data component wrapped as either {@code add} or {@code delete}.
      */
-    //
     private static String wrapSolrJSON(DsRecordDto record) {
         if (Boolean.TRUE.equals(record.getDeleted())) {
             return "\"delete\": { \"id\": \"" + record.getId() + "\" }";
@@ -253,9 +254,8 @@ public class PresentFacade {
         // When we had nested solr documentds, we had to split on documents. This has been removed. See outcommented method  splitSolrJSON if it becomes relevant
         StringBuilder sb = new StringBuilder();
         sb.append("\"add\": { \"doc\" : ").append(record.getData()).append(" }");
-       
+
         return sb.toString();
-    
     }
 
     /*

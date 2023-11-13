@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 /**
  * Perform regexp-based search & replace on the given content.
  */
-public class ReplaceTransformer extends DSTransformer {
+public class ReplaceTransformer implements DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(ReplaceTransformer.class);
     public static final String ID = "replace";
 

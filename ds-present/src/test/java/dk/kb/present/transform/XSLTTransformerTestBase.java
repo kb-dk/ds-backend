@@ -57,6 +57,7 @@ public abstract class XSLTTransformerTestBase {
      * @param substring must be present in the transformed record.
      */
     public void assertContains(String recordFile, String substring) {
+        // TODO: When mods2solr.xslt has been converted into schemaorg2solr.xslt combine the assertNotContains methods
         assertMultiTests(recordFile,
                 solrDoc -> assertTrue(solrDoc.contains(substring))
         );
@@ -82,6 +83,7 @@ public abstract class XSLTTransformerTestBase {
      * @param substring must be present in the transformed record.
      */
     public void assertNotContains(String recordFile, String substring) {
+        // TODO: When mods2solr.xslt has been converted into schemaorg2solr.xslt combine the assertNotContains methods
         assertMultiTests(recordFile,
                 solrDoc -> assertFalse(solrDoc.contains(substring))
         );
@@ -110,6 +112,7 @@ public abstract class XSLTTransformerTestBase {
      */
     @SafeVarargs
     public final void assertMultiTests(String record, Consumer<String>... tests) {
+        // TODO: When mods2solr.xslt has been converted into schemaorg2solr.xslt combine the assertNotContains methods
         if (!TestFileProvider.hasSomeTestFiles()) {
             return;  // ensureTestFiles takes care of logging is there are no internal test files
         }
@@ -122,11 +125,12 @@ public abstract class XSLTTransformerTestBase {
                             "  - origin: 'ds.test'\n";
             YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
             solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, record);
-            //TestUtil.prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
         }
+
+        //TestUtil.prettyPrintJson(solrString);
 
         Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
