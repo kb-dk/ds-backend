@@ -112,7 +112,7 @@ config:
 
   # Collections are to be set in ds-present-kb-collections-yaml if possible, as that file overwrites the collections defined here
   # The collections available for this instance of ds-present
-  #collections:
+  #origins:
     # General note: All collections are expected to support at least the views raw, mods, jsonld and solrjson.
     # If any of those are not supported, the transformer 'fail' should be used with a telling message.
 

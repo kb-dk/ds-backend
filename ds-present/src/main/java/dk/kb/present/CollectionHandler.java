@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
  */
 public class CollectionHandler {
     private static final Logger log = LoggerFactory.getLogger(CollectionHandler.class);
-    private static final String COLLECTIONS_KEY = ".config.collections";
+    private static final String ORIGINS_KEY = ".config.origins";
     private static final String RECORD_ID_PATTERN_KEY = ".config.record.id.pattern";
-    private static final String COLLECTION_ID_PATTERN_KEY = ".config.collection.prefix.pattern";
+    private static final String ORIGIN_ID_PATTERN_KEY = ".config.collection.prefix.pattern";
 
     private final StorageHandler storageHandler;
     private final Map<String, DSCollection> collectionsByPrefix; // prefix, collection
@@ -47,11 +47,11 @@ public class CollectionHandler {
     /**
      * Creates a {@link StorageHandler} and a set of {@link Storage}s based on the given configuration.
      * @param conf top-level configuration. The parts for this handler is expected to be found at
-     * {@code .config.collections} and {@code .config.record.id.pattern}
+     * {@code .config.origins} and {@code .config.record.id.pattern}
      */
     public CollectionHandler(YAML conf) {
         try {
-            collectionPrefixPattern = Pattern.compile(conf.getString(COLLECTION_ID_PATTERN_KEY));
+            collectionPrefixPattern = Pattern.compile(conf.getString(ORIGIN_ID_PATTERN_KEY));
         } catch (Exception e) {
             String message = "Unable to create pattern from configuration, expected key " + RECORD_ID_PATTERN_KEY;
             log.warn(message, e);
@@ -59,7 +59,7 @@ public class CollectionHandler {
         }
 
         storageHandler = new StorageHandler(conf);
-        collectionsByPrefix = conf.getYAMLList(COLLECTIONS_KEY).stream()
+        collectionsByPrefix = conf.getYAMLList(ORIGINS_KEY).stream()
                 .map(collectionConf -> new DSCollection(collectionConf, storageHandler))
                 .peek(collection -> {
                     if (!collectionPrefixPattern.matcher(collection.getPrefix()).matches()) {

@@ -58,7 +58,7 @@ config:
       pattern: '[a-z0-9.]+'
 
   # The collections available for this instance of ds-present 
-  collections:
+  origins:
     # Straight forward collection with the core format being MODS
     - dsfl: # ds-present internal
         prefix: 'local.mods' # The prefix to match on incoming IDs

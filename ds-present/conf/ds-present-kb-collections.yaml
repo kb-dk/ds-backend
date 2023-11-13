@@ -42,7 +42,7 @@ config:
                 - old_imageserver: ${path:config.oldimageserver.url}
 
   # The collections available for this instance of ds-present
-  collections:
+  origins:
     # General note: All collections are expected to support at least the views raw, mods, jsonld and solrjson.
     # If any of those are not supported, the transformer 'fail' should be used with a telling message.
 
