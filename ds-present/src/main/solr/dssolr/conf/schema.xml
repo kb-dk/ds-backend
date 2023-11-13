@@ -79,6 +79,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description The name of an organization, institution, etc. with which
             the entity was associated at the time that the resource was created.?>
     <?example     Bisson frères?>
+    <?example     Danmarks Radio?>
   </field>
 
   <!-- Field name: For resources that contain persons in the content, these people are described in a field called
