@@ -2,6 +2,7 @@ package dk.kb.present.transform;
 
 import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
+import dk.kb.present.util.TestFileProvider;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,8 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.function.Consumer;
 
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -231,6 +235,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testSeasonId(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_season_id\":\"174278\"");
     }
+
     @Test
     void testSeriesId(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_series_id\":\"146180\"");
@@ -240,18 +245,17 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"has_subtitles\":\"false\"");
         // TODO: Create test for has_subtitles:true, with custom test file
     }
-
     @Test
     void testSubtitlesHearingImpaired(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"has_subtitles_for_hearing_impaired\":\"false\"");
         // TODO: Create test for has_subtitles_for_hearing_impaired:true, with custom test file
     }
+
     @Test
     void testTeletext(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_is_teletext\":\"false\"");
         // TODO: Create test for internal_is_teletext:true, with custom test file
     }
-
     @Test
     void testShowviewcode(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_showviewcode\":\"0\"");
@@ -289,21 +293,71 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testStartTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"startTime\":\"2012-04-28T16:15:00Z\"");
     }
+
     @Test
     void testEndTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"endTime\":\"2012-04-28T16:40:00Z\"");
     }
-
     @Test
     void testStreamingUrl() throws IOException {
         String solrJson = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SOLR, TestFiles.PVICA_RECORD_1f3a6a66, null);
         assertTrue(solrJson.contains("\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
     }
 
-
     @Test
     public void prettyPrintTransformation() throws Exception {
         TestUtil.prettyPrintSolrJsonFromPreservica(TestFiles.PVICA_RECORD_44979f67);
+    }
+
+    /**
+     * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
+     * transformed record contains the given {@code substring}.
+     * @param recordFile the file to load, transform and test.
+     * @param substring must be present in the transformed record.
+     */
+    public void assertPvicaContains(String recordFile, String substring) {
+        assertMultiTestsThroughSchemaTransformation(recordFile,
+                solrDoc -> assertTrue(solrDoc.contains(substring))
+        );
+    }
+
+    /**
+     * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
+     * transformed record does not contain the given {@code substring}.
+     * @param recordFile the file to load, transform and test.
+     * @param substring must be present in the transformed record.
+     */
+    public void assertPvicaNotContains(String recordFile, String substring) {
+        assertMultiTestsThroughSchemaTransformation(recordFile,
+                solrDoc -> assertFalse(solrDoc.contains(substring))
+        );
+    }
+
+    /**
+     * Checks that internal test files are available and if not, logs a warning and returns.
+     * <p>
+     * If the check passes, the content of the file {@code record} is transformed using two XSLTs.
+     * At first the XML record is transformed to Schema.org JSON and then the schema.org JSON is transformed to solr
+     * documents and the given tests are performed on the result.
+     * @param record file with a record that is to be transformed.
+     * @param tests Zero or more tests to perform on the transformed record.
+     */
+    @SafeVarargs
+    public final void assertMultiTestsThroughSchemaTransformation(String record, Consumer<String>... tests){
+        if (!TestFileProvider.hasSomeTestFiles()) {
+            return;  // ensureTestFiles takes care of logging is there are no internal test files
+        }
+        String solrString;
+        try {
+            solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
+        }
+
+        //TestUtil.prettyPrintJson(solrString);
+
+        Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
 
 
