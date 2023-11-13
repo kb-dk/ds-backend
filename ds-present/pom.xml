@@ -467,7 +467,7 @@
                     </execution>
                     <execution>
                         <id>copy-resources</id>
-                        <phase>compile</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -477,6 +477,22 @@
                                 <resource>
                                     <directory>src/test/jetty</directory>
                                     <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-solr-test-resources</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>testResources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/solr</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/solr</directory>
+                                    <filtering>false</filtering>
                                 </resource>
                             </resources>
                         </configuration>
