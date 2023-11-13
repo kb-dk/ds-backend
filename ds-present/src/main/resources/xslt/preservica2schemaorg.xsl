@@ -291,7 +291,7 @@
     <xsl:if test="pbcoreGenre">
       <xsl:variable name="keywords">
         <xsl:for-each select="pbcoreGenre/genre">
-          <xsl:if test=". != null and substring-after(., ':') != ''">
+          <xsl:if test="substring-after(., ':') != '' and not(f:contains(., 'null'))">
             <xsl:value-of select="concat(normalize-space(f:substring-after(., ':')), ', ')"/>
           </xsl:if>
         </xsl:for-each>
