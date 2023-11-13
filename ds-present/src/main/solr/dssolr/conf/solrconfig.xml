@@ -759,13 +759,22 @@
         <str name="qf">
         filename_local^5.0
         title_strict^5.0
-        creator_full_name_strict^5.0        
+        creator_full_name_strict^5.0
+        pid^5.0
+        episode_title^4.0
         topic^2.0
         location
         notes
         collection
+        categories
         catalog
+        genre
+        genre_sub
         resource_description
+        creator_affiliation
+        abstract
+        description
+        internal_showviewcode
         text^0.75
         freetext^0.5
        </str>
@@ -779,12 +788,19 @@
        
        <str name="facet.field">catalog</str>
        <str name="facet.field">collection</str>
+       <str name="facet.field">categories</str>
        <str name="facet.field">genre</str>
+       <!-- -->
+       <str name="facet.field">genre_sub</str>
+       <!-- Describes the type of material. Should be available across collections. -->
        <str name="facet.field">resource_description</str>
        <str name="facet.field">resource_description_general</str>
        <str name="facet.field">creator_full_name</str>
+       <!-- For radio and TV creator_affiliation contains the channel, which aired the resource.
+            If its present for images, it contains information on an institution, which the artist was/is related to -->
+       <str name="facet.field">creator_affiliation</str>
        <str name="facet.field">subject_full_name</str>
-                   
+
         
        <str name="hl">on</str>
        <str name="hl.requireFieldMatch">false</str>
@@ -908,12 +924,21 @@
         filename_local^5.0
         title_strict^5.0
         creator_full_name_strict^5.0
+        pid^5.0
+        episode_title^4.0
         topic^2.0
         location
         notes
         collection
+        categories
         catalog
+        genre
+        genre_sub
         resource_description
+        creator_affiliation
+        abstract
+        description
+        internal_showviewcode
         text^0.75
         freetext^0.5
       </str>
