@@ -1,18 +1,9 @@
 package dk.kb.present;
 
-import dk.kb.present.storage.FileStorage;
-import dk.kb.present.storage.Storage;
-import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *  limitations under the License.
  *
  */
-class CollectionHandlerTest {
+class OriginHandlerTest {
 
     @Test
     void idPattern() {
@@ -85,7 +76,7 @@ class CollectionHandlerTest {
     @Test
     void localCorpusMODS() throws IOException {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        CollectionHandler ch = new CollectionHandler(conf);
+        OriginHandler ch = new OriginHandler(conf);
         String record = ch.getRecord("local.mods:40221e30-1414-11e9-8fb8-00505688346e.xml", "mods");
         assertTrue(record.contains("<mods:title>Christian VIII</mods:title>"));
     }
@@ -93,7 +84,7 @@ class CollectionHandlerTest {
     @Test
     void localCorpusPvica() throws IOException {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        CollectionHandler ch = new CollectionHandler(conf);
+        OriginHandler ch = new OriginHandler(conf);
         String record = ch.getRecord("local.radiotv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", "json-ld");
         assertTrue(record.contains("\"id\":\"local.radiotv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
     }
@@ -104,7 +95,7 @@ class CollectionHandlerTest {
         // The FileStorage used for testing appends two children to each record. One with referenceType = 1 and one with
         // referenceType = 2. Only children with type = 2 should be returned as these are presentation manifestations.
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        CollectionHandler ch = new CollectionHandler(conf);
+        OriginHandler ch = new OriginHandler(conf);
         String record = ch.getRecord("local.radiotv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", "json-ld");
         assertTrue(record.contains("correct-reference\\/playlist.m3u8"));
         assertFalse(record.contains("wrong-reference\\/playlist.m3u8"));
@@ -114,7 +105,7 @@ class CollectionHandlerTest {
     @Test
     void localCorpusFail() throws IOException {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        CollectionHandler ch = new CollectionHandler(conf);
+        OriginHandler ch = new OriginHandler(conf);
         try {
             ch.getRecord("local:40221e30-1414-11e9-8fb8-00505688346e.xml", "raw");
             fail("Requesting record in raw format should fail");

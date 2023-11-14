@@ -348,7 +348,7 @@ public class FileStorage implements Storage {
 
     /**
      * Method that creates test children, where one should be filtered away and the other should be returned,
-     * when records are returned from a tess FileStorage through a CollectionHandler. These test files are used to
+     * when records are returned from a tess FileStorage through a OriginHandler. These test files are used to
      * test filtering of preservation manifestations.
      * @return a list of test children records for a deliverable unit.
      */

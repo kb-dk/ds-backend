@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 /**
  * Creates {@link DSCollection}s from a given configuration and provides access to them based on ID-prefix.
  */
-public class CollectionHandler {
-    private static final Logger log = LoggerFactory.getLogger(CollectionHandler.class);
+public class OriginHandler {
+    private static final Logger log = LoggerFactory.getLogger(OriginHandler.class);
     private static final String ORIGINS_KEY = ".config.origins";
     private static final String RECORD_ID_PATTERN_KEY = ".config.record.id.pattern";
     private static final String ORIGIN_ID_PATTERN_KEY = ".config.origin.prefix.pattern";
@@ -49,7 +49,7 @@ public class CollectionHandler {
      * @param conf top-level configuration. The parts for this handler is expected to be found at
      * {@code .config.origins} and {@code .config.record.id.pattern}
      */
-    public CollectionHandler(YAML conf) {
+    public OriginHandler(YAML conf) {
         try {
             originPrefixPattern = Pattern.compile(conf.getString(ORIGIN_ID_PATTERN_KEY));
         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class CollectionHandler {
 
     @Override
     public String toString() {
-        return "CollectionHandler(" +
+        return "OriginHandler(" +
                "origins=" + originsByPrefix.values() +
                "recordIDPattern: '" + recordIDPattern + "'" +
                ')';

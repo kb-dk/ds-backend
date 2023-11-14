@@ -48,7 +48,7 @@ import java.util.stream.Stream;
 public class PresentFacade {
     private static final Logger log = LoggerFactory.getLogger(PresentFacade.class);
 
-    private static CollectionHandler collectionHandler;
+    private static OriginHandler originHandler;
     // TODO: The whole retrieval of raw records through getRecords does nok look very clean
     static String recordView = "raw"; // View used when retrieving the full records
 
@@ -56,14 +56,14 @@ public class PresentFacade {
      * Optional warmUp (initialization) for fail early.
      */
     public static void warmUp() {
-        getCollectionHandler();
+        getOriginHandler();
     }
 
-    private static CollectionHandler getCollectionHandler() {
-        if (collectionHandler == null) {
-            collectionHandler = new CollectionHandler(ServiceConfig.getConfig());
+    private static OriginHandler getOriginHandler() {
+        if (originHandler == null) {
+            originHandler = new OriginHandler(ServiceConfig.getConfig());
         }
-        return collectionHandler;
+        return originHandler;
     }
 
     // TODO: What about setting the MIME type?
@@ -76,7 +76,7 @@ public class PresentFacade {
      * @throws NotFoundServiceException if the record or the format was unknown.
      */
     public static String getRecord(String recordID, String format) {
-        return getCollectionHandler().getRecord(recordID, format);
+        return getOriginHandler().getRecord(recordID, format);
     }
 
     /**
@@ -85,10 +85,10 @@ public class PresentFacade {
      * @throws NotFoundServiceException if the collection was not known.
      */
     public static CollectionDto getCollection(String id) {
-        DSCollection collection = getCollectionHandler().getOrigin(id);
+        DSCollection collection = getOriginHandler().getOrigin(id);
         if (collection == null) {
             throw new NotFoundServiceException("A collection with the id '" + id + "' could not be located. " +
-                                               "Supported collections are " + collectionHandler.getOriginIDs());
+                                               "Supported collections are " + originHandler.getOriginIDs());
         }
         return toDto(collection);
     }
@@ -97,7 +97,7 @@ public class PresentFacade {
      * @return all known collections.
      */
     public static List<CollectionDto> getCollections() {
-        return getCollectionHandler().getOrigins().stream()
+        return getOriginHandler().getOrigins().stream()
                 .map(PresentFacade::toDto)
                 .collect(Collectors.toList());
     }
@@ -133,12 +133,12 @@ public class PresentFacade {
     public static StreamingOutput getRecords(
             HttpServletResponse httpServletResponse, String collectionID, Long mTime, Long maxRecords, String format,
             Function<List<String>, List<String>> accessChecker) {
-        DSCollection collection = collectionHandler.getOrigin(collectionID);
+        DSCollection collection = originHandler.getOrigin(collectionID);
         if (collection == null) {
             throw new InvalidArgumentServiceException(String.format(
                     Locale.ROOT, "The collection '%s' was unknown. Known collections are %s",
                     collectionID,
-                    collectionHandler.getOrigins().stream().map(DSCollection::getId).collect(Collectors.toList())));
+                    originHandler.getOrigins().stream().map(DSCollection::getId).collect(Collectors.toList())));
         }
 
         // Batch-oriented filter that only passed records that are allowed
