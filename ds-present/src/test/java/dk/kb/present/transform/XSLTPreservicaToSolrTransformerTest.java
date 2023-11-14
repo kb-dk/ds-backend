@@ -298,6 +298,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testEndTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"endTime\":\"2012-04-28T16:40:00Z\"");
     }
+
+    @Test
+    void testNoNotes(){
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_b346acc8, "\"notes\":");
+    }
+
     @Test
     void testStreamingUrl() throws IOException {
         String solrJson = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SOLR, TestFiles.PVICA_RECORD_1f3a6a66, null);
@@ -306,7 +312,10 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void prettyPrintTransformation() throws Exception {
-        TestUtil.prettyPrintSolrJsonFromPreservica(TestFiles.PVICA_RECORD_44979f67);
+        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_b346acc8);
+        TestUtil.prettyPrintJson(solrJson);
+
+        TestUtil.prettyPrintSolrJsonFromPreservica(TestFiles.PVICA_RECORD_b346acc8);
     }
 
     /**
