@@ -44,8 +44,8 @@ import java.util.stream.Stream;
  * Access is read-only and always with an explicit export format. The format can be {@code raw} for direct proxying to
  * the connected ds-storage, but common use case is to request MODS, JSON-LD (schema.org) or SolrJSON representations.
  */
-public class DSCollection {
-    private static final Logger log = LoggerFactory.getLogger(DSCollection.class);
+public class DSOrigin {
+    private static final Logger log = LoggerFactory.getLogger(DSOrigin.class);
     private static final String PREFIX_KEY = "prefix"; // IDs for this collection starts with <prefix>_ (note the underscore)
     private static final String DESCRIPTION_KEY = "description";
     private static final String STORAGE_KEY = "storage";
@@ -106,7 +106,7 @@ public class DSCollection {
      *             collection ID and the value being the configuration for the collection.
      * @param storageHandler previously initialized pool of storages.
      */
-    public DSCollection(YAML conf, StorageHandler storageHandler) {
+    public DSOrigin(YAML conf, StorageHandler storageHandler) {
         id = conf.keySet().stream().findFirst().orElseThrow();
         try {
             conf = conf.getSubMap(id); // There must be some properties for a storage
@@ -254,7 +254,7 @@ public class DSCollection {
 
     @Override
     public String toString() {
-        return "DSCollection(" +
+        return "DSOrigin(" +
                "id='" + id + '\'' +
                ", prefix='" + prefix + '\'' +
                ", description='" + description + '\'' +

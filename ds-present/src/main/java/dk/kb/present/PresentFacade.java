@@ -85,7 +85,7 @@ public class PresentFacade {
      * @throws NotFoundServiceException if the collection was not known.
      */
     public static CollectionDto getCollection(String id) {
-        DSCollection collection = getOriginHandler().getOrigin(id);
+        DSOrigin collection = getOriginHandler().getOrigin(id);
         if (collection == null) {
             throw new NotFoundServiceException("A collection with the id '" + id + "' could not be located. " +
                                                "Supported collections are " + originHandler.getOriginIDs());
@@ -103,7 +103,7 @@ public class PresentFacade {
     }
 
     // TODO: storage is not returned as that is internal information. With elevated privileges this might be added?
-    private static CollectionDto toDto(DSCollection collection) {
+    private static CollectionDto toDto(DSOrigin collection) {
         return new CollectionDto()
                 .id(collection.getId())
                 .prefix(collection.getPrefix())
@@ -133,12 +133,12 @@ public class PresentFacade {
     public static StreamingOutput getRecords(
             HttpServletResponse httpServletResponse, String collectionID, Long mTime, Long maxRecords, String format,
             Function<List<String>, List<String>> accessChecker) {
-        DSCollection collection = originHandler.getOrigin(collectionID);
+        DSOrigin collection = originHandler.getOrigin(collectionID);
         if (collection == null) {
             throw new InvalidArgumentServiceException(String.format(
                     Locale.ROOT, "The collection '%s' was unknown. Known collections are %s",
                     collectionID,
-                    originHandler.getOrigins().stream().map(DSCollection::getId).collect(Collectors.toList())));
+                    originHandler.getOrigins().stream().map(DSOrigin::getId).collect(Collectors.toList())));
         }
 
         // Batch-oriented filter that only passed records that are allowed
@@ -175,7 +175,7 @@ public class PresentFacade {
 
     // Only deliver the data-part of the Records
     private static StreamingOutput getRecordsData(
-            DSCollection collection, Long mTime, Long maxRecords,
+            DSOrigin collection, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, String recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
             Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
@@ -192,7 +192,7 @@ public class PresentFacade {
 
     // Retrieve full records to support deletions
     private static StreamingOutput getRecordsFull(
-            DSCollection collection, Long mTime, Long maxRecords,
+            DSOrigin collection, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT deliveryFormat,
             Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
@@ -207,7 +207,7 @@ public class PresentFacade {
     }
 
     // Direct ds-storage record JSON
-    private static StreamingOutput getRecordsSolr(DSCollection collection, Long mTime, Long maxRecords,
+    private static StreamingOutput getRecordsSolr(DSOrigin collection, Long mTime, Long maxRecords,
                                                   HttpServletResponse httpServletResponse,
                                                   Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, ExportWriterFactory.FORMAT.json);

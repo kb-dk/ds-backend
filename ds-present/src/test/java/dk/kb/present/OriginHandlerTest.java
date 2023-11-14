@@ -91,7 +91,7 @@ class OriginHandlerTest {
 
     @Test
     void testManifestationFiltering() throws IOException {
-        // This test checks that the correct filtering is applied in DSCollection.getFirstChild()
+        // This test checks that the correct filtering is applied in DSOrigin.getFirstChild()
         // The FileStorage used for testing appends two children to each record. One with referenceType = 1 and one with
         // referenceType = 2. Only children with type = 2 should be returned as these are presentation manifestations.
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");

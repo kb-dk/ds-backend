@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Creates {@link DSCollection}s from a given configuration and provides access to them based on ID-prefix.
+ * Creates {@link DSOrigin}s from a given configuration and provides access to them based on ID-prefix.
  */
 public class OriginHandler {
     private static final Logger log = LoggerFactory.getLogger(OriginHandler.class);
@@ -39,8 +39,8 @@ public class OriginHandler {
     private static final String ORIGIN_ID_PATTERN_KEY = ".config.origin.prefix.pattern";
 
     private final StorageHandler storageHandler;
-    private final Map<String, DSCollection> originsByPrefix; // prefix, origin
-    private final Map<String, DSCollection> originsByID; // id, origin
+    private final Map<String, DSOrigin> originsByPrefix; // prefix, origin
+    private final Map<String, DSOrigin> originsByID; // id, origin
     private final Pattern recordIDPattern;
     private final Pattern originPrefixPattern;
 
@@ -60,7 +60,7 @@ public class OriginHandler {
 
         storageHandler = new StorageHandler(conf);
         originsByPrefix = conf.getYAMLList(ORIGINS_KEY).stream()
-                .map(originConf -> new DSCollection(originConf, storageHandler))
+                .map(originConf -> new DSOrigin(originConf, storageHandler))
                 .peek(origin -> {
                     if (!originPrefixPattern.matcher(origin.getPrefix()).matches()) {
                         throw new IllegalStateException(
@@ -68,9 +68,9 @@ public class OriginHandler {
                                 origin.getId() + "' does not match the origin prefix pattern '" +
                                 originPrefixPattern.pattern() + "'");
                     }})
-                .collect(Collectors.toMap(DSCollection::getPrefix, storage -> storage));
+                .collect(Collectors.toMap(DSOrigin::getPrefix, storage -> storage));
         originsByID = originsByPrefix.values().stream()
-                .collect(Collectors.toMap(DSCollection::getId, storage -> storage));
+                .collect(Collectors.toMap(DSOrigin::getId, storage -> storage));
         try {
             recordIDPattern = Pattern.compile(conf.getString(RECORD_ID_PATTERN_KEY));
         } catch (Exception e) {
@@ -87,7 +87,7 @@ public class OriginHandler {
             throw new InvalidArgumentServiceException(
                     "ID '" + id + "' should conform to pattern '" + recordIDPattern + "'");
         }
-        DSCollection origin = originsByPrefix.get(matcher.group(1));
+        DSOrigin origin = originsByPrefix.get(matcher.group(1));
         if (origin == null) {
             throw new NotFoundServiceException(
                     "A origin for IDs with prefix '" + matcher.group(1) + "' is not available. " +
@@ -100,7 +100,7 @@ public class OriginHandler {
      * @param originID an ID for an origin.
      * @return an origin with the given ID or null if it does not exist.
      */
-    public DSCollection getOrigin(String originID) {
+    public DSOrigin getOrigin(String originID) {
         return originsByID.get(originID);
     }
 
@@ -114,7 +114,7 @@ public class OriginHandler {
     /**
      * @return all origins.
      */
-    public Collection<DSCollection> getOrigins() {
+    public Collection<DSOrigin> getOrigins() {
         return originsByPrefix.values();
     }
 
