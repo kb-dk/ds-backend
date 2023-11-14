@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A collection encapsulates access to a logical collection ("samling"). It uses the same collections as ds-storage and
+ * An origin encapsulates access to a logical collection ("samling"). It uses the same origins as ds-storage and
  * is typically backed by a ds-storage instance.
  *
  * Access is read-only and always with an explicit export format. The format can be {@code raw} for direct proxying to
@@ -46,7 +46,7 @@ import java.util.stream.Stream;
  */
 public class DSOrigin {
     private static final Logger log = LoggerFactory.getLogger(DSOrigin.class);
-    private static final String PREFIX_KEY = "prefix"; // IDs for this collection starts with <prefix>_ (note the underscore)
+    private static final String PREFIX_KEY = "prefix"; // IDs for this origin starts with <prefix>_ (note the underscore)
     private static final String DESCRIPTION_KEY = "description";
     private static final String STORAGE_KEY = "storage";
     private static final String ORIGIN_KEY = "origin";
@@ -54,24 +54,24 @@ public class DSOrigin {
     private static final String RECORDREQUESTTYPE_KEY = "recordrequesttype";
 
     /**
-     * The ID of the collection, primarily used for debugging and configuration.
+     * The ID of the origin, primarily used for debugging and configuration.
      */
     private final String id;
 
     /**
-     * recordIDs always starts with the collection followed by underscore, e.g. {@code images-dsfl_internalid1234}.
+     * recordIDs always starts with the origin followed by underscore, e.g. {@code images-dsfl_internalid1234}.
      * The prefix must be present for all recordIDs used for lookup.
      * This might be the same as the {@link #id} but it is not a requirement.
      */
     private final String prefix;
 
     /**
-     * Human readable description of the collection.
+     * Human readable description of the origin.
      */
     private final String description;
 
     /**
-     * Encapsulation of the backing storage for the collection. This will typically be a ds-storage service.
+     * Encapsulation of the backing storage for the origin. This will typically be a ds-storage service.
      */
     private final Storage storage;
 
@@ -100,10 +100,10 @@ public class DSOrigin {
     private final RecordTypeDto recordRequestType;
 
     /**
-     * Create a collection based on the given conf. The storageHandler is expected to be initialized and should contain
-     * the storage specified for the collection.
-     * @param conf configuration for the collection, should contain a single key:value with the key being the
-     *             collection ID and the value being the configuration for the collection.
+     * Create an origin based on the given conf. The storageHandler is expected to be initialized and should contain
+     * the storage specified for the origin.
+     * @param conf configuration for the origin, should contain a single key:value with the key being the
+     *             origin ID and the value being the configuration for the origin.
      * @param storageHandler previously initialized pool of storages.
      */
     public DSOrigin(YAML conf, StorageHandler storageHandler) {
@@ -122,7 +122,7 @@ public class DSOrigin {
                     .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
         } catch (NotFoundException e) {
             throw new IllegalArgumentException(
-                    "Mandatory property '" + e.getPath() + "' not present for Collection '" + id + "'");
+                    "Mandatory property '" + e.getPath() + "' not present for Origin '" + id + "'");
         }
         log.info("Created " + this);
     }
@@ -189,32 +189,32 @@ public class DSOrigin {
                         }
                     });
         } catch (Exception e) {
-            log.warn("Exception calling getDSRecords with collection='{}', mTime={}, maxRecords={}",
+            log.warn("Exception calling getDSRecords with origin='{}', mTime={}, maxRecords={}",
                      getId(), mTime, maxRecords, e);
             throw new InternalServiceException(
-                    "Internal exception requesting records from collection '" + getId() + "' in format " + format);
+                    "Internal exception requesting records from origin '" + getId() + "' in format " + format);
         }
     }
 
     /**
-     * @return the ID of the collection, primarily used for debugging and configuration.
+     * @return the ID of the origin, primarily used for debugging and configuration.
      */
     public String getId() {
         return id;
     }
 
     /**
-     * recordIDs always starts with the collection followed by underscore, e.g. {@code images-dsfl_internalid1234}.
+     * recordIDs always starts with the origin followed by underscore, e.g. {@code images-dsfl_internalid1234}.
      * The prefix must be present for all recordIDs used for lookup.
      * This might be the same as the {@link #id} but it is not a requirement.
-     * @return the prefix for recordIDs in the collection.
+     * @return the prefix for recordIDs in the origin.
      */
     public String getPrefix() {
         return prefix;
     }
 
     /**
-     * @return human readable description of the collection.
+     * @return human readable description of the origin.
      */
     public String getDescription() {
         return description;
@@ -223,7 +223,7 @@ public class DSOrigin {
     /**
      * Map from format -> view. A view is at the core an array of transformations and responsible for transforming
      * metadata to the requested format.
-     * @return the available views (aka formats) for this collection. Keys are lowercase.
+     * @return the available views (aka formats) for this origin. Keys are lowercase.
      */
     public Map<String, View> getViews() {
         return views;
@@ -239,14 +239,14 @@ public class DSOrigin {
         View view = views.get(format.toLowerCase(Locale.ROOT));
         if (view == null) {
             throw new InvalidArgumentServiceException(
-                    "The format '" + format + "' is not supported for collection '" + id + "'");
+                    "The format '" + format + "' is not supported for origin '" + id + "'");
         }
         return view;
     }
 
     /**
      * @param view any given view, e.g. {@code DOMS} or {@code raw}.
-     * @return true if the collection supports the view.
+     * @return true if the origin supports the view.
      */
     public boolean supportsView(String view) {
         return views.containsKey(view.toLowerCase(Locale.ROOT));

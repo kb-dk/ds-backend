@@ -65,7 +65,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
         try {
             // Allowed for everyone
             log.debug("() called with call details: {}", getCallDetails());
-            return PresentFacade.getCollection(id);
+            return PresentFacade.getOrigin(id);
         } catch (Exception e){
             throw handleException(e);
         }
@@ -86,7 +86,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
         try {
             // Allowed for everyone
             log.debug("getCollections() called with call details: {}", getCallDetails());
-            return PresentFacade.getCollections();
+            return PresentFacade.getOrigins();
         } catch (Exception e){
             throw handleException(e);
         }

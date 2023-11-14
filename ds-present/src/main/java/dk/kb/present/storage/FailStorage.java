@@ -37,9 +37,9 @@ public class FailStorage implements Storage {
 
     /**
      * Create a storage where all lookups fails.
-     * @param id the ID for the storage, used for connecting collections to storages.
+     * @param id the ID for the storage, used for connecting origins to storages.
      * @param message the message to deliver when {@link #getRecord(String)} is called.
-     * @param isDefault if true, this is the default storage for collections.
+     * @param isDefault if true, this is the default storage for origins.
      */
     public FailStorage(String id, String message, boolean isDefault) {
         this.id = id;

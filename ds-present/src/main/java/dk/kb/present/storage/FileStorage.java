@@ -60,13 +60,13 @@ public class FileStorage implements Storage {
 
     /**
      * Create a file backed Storage.
-     * @param id the ID for the storage, used for connecting collections to storages.
+     * @param id the ID for the storage, used for connecting origins to storages.
      * @param folder the folder containing the files to deliver upon request.
      * @param extension if defined, {@link #getDSRecords(long, long)} will only return files with this extension.
      * @param stripPrefix if true, the ID {@code collection:subid} is reduced to {subid} before lookup.
      * @param whitelist if not null, ID's must pass the whitelist in order to be delivered.
      * @param blacklist if not null, ID's that matches the blacklist are not delivered.
-     * @param isDefault if true, this is the default storage for collections.
+     * @param isDefault if true, this is the default storage for origins.
      * @throws IOException if the given folder could not be accessed.
      */
     public FileStorage(String id, Path folder, String extension,

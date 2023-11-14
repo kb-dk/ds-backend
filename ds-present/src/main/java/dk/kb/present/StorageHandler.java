@@ -14,6 +14,7 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.storage.DSStorage;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.storage.StorageController;
 import dk.kb.util.yaml.YAML;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 
 /**
  * Creates {@link DSStorage}s from a given configuration. Storages are used for retrieving raw records by
- * {@link DSOrigin} and can be shared between multiple collections.
+ * {@link DSOrigin} and can be shared between multiple originss.
  */
 public class StorageHandler {
     private static final Logger log = LoggerFactory.getLogger(StorageHandler.class);
