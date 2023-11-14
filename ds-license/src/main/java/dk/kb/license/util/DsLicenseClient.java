@@ -99,7 +99,7 @@ public class DsLicenseClient extends DsLicenseApi {
     public DsLicenseApi cache(int cacheIDCount, long cacheIDms) {
         log.debug("Setting ID cache to count={}, ms={}", cacheIDCount, cacheIDms);
         idcache = Caffeine.newBuilder()
-                .maximumSize(cacheIDms)
+                .maximumSize(cacheIDCount)
                 .expireAfterWrite(cacheIDms, TimeUnit.MILLISECONDS)
                 .build();
         return this;
