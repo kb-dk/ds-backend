@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class EmbeddedSolrFieldAnalyseTest {
 
 	private static final Logger log = LoggerFactory.getLogger(EmbeddedSolrTest.class);
-	private static String solr_home = "target/solr/";
+	private static String solr_home = "target/solr";
 
 	private static CoreContainer coreContainer = null;
 	private static EmbeddedSolrServer embeddedServer = null;
