@@ -3,6 +3,7 @@ package dk.kb.present.api.v1.impl;
 import dk.kb.present.PresentFacade;
 import dk.kb.present.api.v1.DsPresentApi;
 import dk.kb.present.model.v1.CollectionDto;
+import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.webservice.ImplBase;
@@ -61,7 +62,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public CollectionDto getCollection(String id) throws ServiceException {
+    public OriginDto getOrigin(String id) throws ServiceException {
         try {
             // Allowed for everyone
             log.debug("() called with call details: {}", getCallDetails());
@@ -82,7 +83,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public List<CollectionDto> getCollections() throws ServiceException {
+    public List<OriginDto> getOrigins() throws ServiceException {
         try {
             // Allowed for everyone
             log.debug("getCollections() called with call details: {}", getCallDetails());

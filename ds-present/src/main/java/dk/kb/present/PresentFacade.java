@@ -16,7 +16,7 @@ package dk.kb.present;
 
 import dk.kb.present.api.v1.impl.DsPresentApiServiceImpl;
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.model.v1.CollectionDto;
+import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
 import dk.kb.util.webservice.stream.ExportWriterFactory;
@@ -84,7 +84,7 @@ public class PresentFacade {
      * @return the origin with the given ID.
      * @throws NotFoundServiceException if the origin was not known.
      */
-    public static CollectionDto getOrigin(String id) {
+    public static OriginDto getOrigin(String id) {
         DSOrigin origin = getOriginHandler().getOrigin(id);
         if (origin == null) {
             throw new NotFoundServiceException("A origin with the id '" + id + "' could not be located. " +
@@ -96,15 +96,15 @@ public class PresentFacade {
     /**
      * @return all known origins.
      */
-    public static List<CollectionDto> getOrigins() {
+    public static List<OriginDto> getOrigins() {
         return getOriginHandler().getOrigins().stream()
                 .map(PresentFacade::toDto)
                 .collect(Collectors.toList());
     }
 
     // TODO: storage is not returned as that is internal information. With elevated privileges this might be added?
-    private static CollectionDto toDto(DSOrigin origin) {
-        return new CollectionDto()
+    private static OriginDto toDto(DSOrigin origin) {
+        return new OriginDto()
                 .id(origin.getId())
                 .prefix(origin.getPrefix())
                 .description(origin.getDescription())

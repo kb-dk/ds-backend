@@ -22,6 +22,7 @@ import dk.kb.present.model.v1.ManifestServiceDto;
 import dk.kb.present.model.v1.ManifestServicesDto;
 import dk.kb.present.model.v1.ManifestStartDto;
 import dk.kb.present.model.v1.ManifestThumbnailDto;
+import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.RangeDto;
 import dk.kb.present.model.v1.RangeLabelDto;
 import dk.kb.present.model.v1.ViewDto;
@@ -122,14 +123,7 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
         try { 
             CollectionDto response = new CollectionDto();
         response.setId("i9HXo7kIBw");
-        response.setPrefix("RH3O0k65");
-        response.setDescription("wy66D");
-        List<ViewDto> views = new ArrayList<>();
-        ViewDto views2 = new ViewDto();
-        views2.setId("gCu5C1B");
-        views2.setMime("xp322");
-        views.add(views2);
-        response.setViews(views);
+
         return response;
         } catch (Exception e){
             throw handleException(e);
