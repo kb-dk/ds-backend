@@ -50,10 +50,10 @@ public class DsLicenseClient extends DsLicenseApi {
     public static final String CACHE_ID_MS_KEY = "config.licensemodule.cache.id.ms";
     public static final long CACHE_ID_MS_DEFAULT = 60000;
 
-    Cache<CheckAccessForIdsInputDto, CheckAccessForIdsOutputDto> idcache =
+    private Cache<CheckAccessForIdsInputDto, CheckAccessForIdsOutputDto> idcache =
             Caffeine.newBuilder()
-                    .expireAfterWrite(60000, TimeUnit.MILLISECONDS)
-                    .maximumSize(100)
+                    .maximumSize(CACHE_ID_COUNT_DEFAULT)
+                    .expireAfterWrite(CACHE_ID_MS_DEFAULT, TimeUnit.MILLISECONDS)
                     .build();
 
     /**
