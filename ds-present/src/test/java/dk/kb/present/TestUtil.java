@@ -111,7 +111,7 @@ public class TestUtil {
 		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
 				"streamingserver" ,"https://www.example.com/streamingserver/");
 		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
-		log.debug("Input XML gets transformed to this schema.org JSON: '{}'", schemaOrgJson);
+		prettyPrintJson(schemaOrgJson);
 
 		String placeholderXml = "placeholder.xml";
 		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);

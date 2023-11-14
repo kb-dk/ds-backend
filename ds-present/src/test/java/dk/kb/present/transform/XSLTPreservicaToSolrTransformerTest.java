@@ -314,8 +314,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     public void prettyPrintTransformation() throws Exception {
         String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_b346acc8);
         TestUtil.prettyPrintJson(solrJson);
-
-        TestUtil.prettyPrintSolrJsonFromPreservica(TestFiles.PVICA_RECORD_b346acc8);
     }
 
     /**
