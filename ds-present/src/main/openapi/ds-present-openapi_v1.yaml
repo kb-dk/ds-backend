@@ -89,16 +89,16 @@ paths:
     get:
       tags:
         - '${project.name}'
-      summary: 'Extract records from a collection after a given mTime.'
+      summary: 'Extract records from an origin after a given mTime.'
       description: |
         The extracted records are returned in sorted order by mTime increasing. By changing the parameter `maxRecords`, 
         the size of the result can be defined. Records marked with a delete flag will also be returned.
       operationId: getRecords
       x-streamingOutput: true
       parameters:
-        - name: collection
+        - name: origin
           in: query
-          description: 'The collection to extract records from.'
+          description: 'The origin to extract records from.'
           required: true
           schema:
             type: string
@@ -183,16 +183,16 @@ paths:
                   [ds-storage](https://github.com/kb-dk/ds-storage/) record as JSON-Lines.
                 type: string
 
-  /collection/{id}:
+  /origin/{id}:
     get:
       tags:
         - '${project.name}'
-      summary: 'Retrieve a formal description of a single collection.'
-      operationId: getCollection
+      summary: 'Retrieve a formal description of a single origin.'
+      operationId: getOrigin
       parameters:
         - name: id
           in: path
-          description: 'The ID of the collection'
+          description: 'The ID of the origin'
           required: true
           schema:
             type: string
@@ -200,33 +200,33 @@ paths:
             example: 'radiotv'
       responses:
         '200':
-          description: 'OK: The collection was known and a description is returned.'
+          description: 'OK: The origin was known and a description is returned.'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: '#/components/schemas/Origin'
         '404':
-          description: 'Collection is unknown.'
+          description: 'Origin is unknown.'
           content:
             text/plain:
               schema:
                 type: string
 
-  /collections:
+  /origins:
     get:
       tags:
         - '${project.name}'
-      summary: 'Retrieve a formal description of all available collections.'
-      operationId: getCollections
+      summary: 'Retrieve a formal description of all available origins.'
+      operationId: getOrigins
       responses:
         '200':
-          description: 'OK: Collections are returned.'
+          description: 'OK: Origins are returned.'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Collection'
+                  $ref: '#/components/schemas/Origin'
   
 # IIIF Presentation endpoints
   /IIIF/collection/{name}:
@@ -941,7 +941,7 @@ components:
         message:
           type: string
 
-    Collection:
+    Origin:
       type: object
       required:
         - id
@@ -949,19 +949,19 @@ components:
         - views
       properties:
         id:
-          description: 'The ID of the collection'
+          description: 'The ID of the origin'
           type: string
           example: 'images-DSFL'
         prefix:
-          description: 'The prefix used by all records in the collection'
+          description: 'The prefix used by all records in the origin'
           type: string
           example: 'images.dsfl:'
         description:
-          description: 'A human readable description fo the collection'
+          description: 'A human readable description of the origin'
           type: string
           example: 'Images from the Danmark Set Fra Luften (Denmark seen from the air) project'
         views:
-          description: 'Metadata views (aka formats) supported by this collection'
+          description: 'Metadata views (aka formats) supported by this origin'
           type: array
           items:
             $ref: '#/components/schemas/View'
