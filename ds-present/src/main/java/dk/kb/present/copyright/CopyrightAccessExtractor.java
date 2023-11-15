@@ -1,17 +1,10 @@
 package dk.kb.present.copyright;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-
+import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
+import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
+import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.xml.XMLEscapeSanitiser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -20,12 +13,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
-
-import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
-import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-import dk.kb.util.xml.XMLEscapeSanitiser;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * CopyrightAccessExtractor reads the XML (Mods/Meds) in the preservation format at kb.dk for the Cumulus records.
