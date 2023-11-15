@@ -109,7 +109,9 @@ public class DSOrigin {
     public DSOrigin(YAML conf, StorageHandler storageHandler) {
         id = conf.keySet().stream().findFirst().orElseThrow();
         try {
-            conf = conf.getSubMap(id); // There must be some properties for a storage
+            // When YAML keys contain YAML syntax they need to be encapsulated in quotation marks.
+            // This should probably be handled in the YAML util class.
+            conf = conf.getSubMap("\"" + id + "\""); // There must be some properties for a storage
             origin = conf.getString(ORIGIN_KEY);
             prefix = conf.getString(PREFIX_KEY);
             description = conf.getString(DESCRIPTION_KEY, null);

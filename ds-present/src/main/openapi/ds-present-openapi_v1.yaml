@@ -102,7 +102,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 'radiotv'
+            example: 'ds.radiotv'
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
@@ -197,7 +197,7 @@ paths:
           schema:
             type: string
             minLength: 1
-            example: 'radiotv'
+            example: 'ds.radiotv'
       responses:
         '200':
           description: 'OK: The origin was known and a description is returned.'

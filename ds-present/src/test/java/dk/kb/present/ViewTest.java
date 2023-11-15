@@ -53,7 +53,7 @@ class ViewTest {
     void jsonldPvica() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML radiotvConf = conf.getYAMLList(".config.origins").get(1);
-        View jsonldView = new View(radiotvConf.getSubMap("radiotv").getYAMLList("views").get(1), radiotvConf.getSubMap("radiotv").getString("origin"));
+        View jsonldView = new View(radiotvConf.getSubMap("\"ds.radiotv\"").getYAMLList("views").get(1), radiotvConf.getSubMap("\"ds.radiotv\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id");
@@ -66,7 +66,7 @@ class ViewTest {
     void solrFromPvica() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML radiotvConf = conf.getYAMLList(".config.origins").get(1);
-        View solrView = new View(radiotvConf.getSubMap("radiotv").getYAMLList("views").get(2), radiotvConf.getSubMap("radiotv").getString("origin"));
+        View solrView = new View(radiotvConf.getSubMap("\"ds.radiotv\"").getYAMLList("views").get(2), radiotvConf.getSubMap("\"ds.radiotv\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String("internal_test_files/tvMetadata/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id");

@@ -107,7 +107,7 @@ class OriginHandlerTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         OriginHandler ch = new OriginHandler(conf);
         try {
-            ch.getRecord("local:40221e30-1414-11e9-8fb8-00505688346e.xml", "raw");
+            ch.getRecord("local.radiotv:40221e30-1414-11e9-8fb8-00505688346e.xml", "raw");
             fail("Requesting record in raw format should fail");
         } catch (Exception e) {
             // Expected

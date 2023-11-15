@@ -78,7 +78,7 @@ config:
         origin: 'ds.samlingsbilleder'
         recordrequesttype: 'DELIVERABLEUNIT'
         views: *MODS_IMAGE_VIEWS
-    - radiotv:
+    - 'ds.radiotv':
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
         prefix: 'ds.radiotv'
         origin: 'ds.radiotv'

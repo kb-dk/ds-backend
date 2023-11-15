@@ -102,9 +102,9 @@ config:
               mime: 'text/plain'
               transformers:
                 - identity:
-    - radiotv: # ds-present internal
+    - "ds.radiotv": # ds-present internal
             prefix: 'local.radiotv' # The prefix to match on incoming IDs
-            origin: 'ds.test'
+            origin: 'ds.radiotv'
             description: 'Local records'
             recordrequesttype: 'DELIVERABLEUNIT'
             # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
