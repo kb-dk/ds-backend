@@ -22,12 +22,9 @@ import dk.kb.present.model.v1.ManifestServiceDto;
 import dk.kb.present.model.v1.ManifestServicesDto;
 import dk.kb.present.model.v1.ManifestStartDto;
 import dk.kb.present.model.v1.ManifestThumbnailDto;
-import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.RangeDto;
 import dk.kb.present.model.v1.RangeLabelDto;
-import dk.kb.present.model.v1.ViewDto;
 import dk.kb.util.webservice.ImplBase;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -53,8 +50,6 @@ import javax.ws.rs.ext.Providers;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * ds-present

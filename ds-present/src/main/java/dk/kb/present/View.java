@@ -77,9 +77,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * Creates a view from the given YAML. Expects the YAML to contain a single entry,
      * where the key is the ID for the view and the value is the configuration of the view.
      * @param conf the configuration for this specific view.
-     * @param originOfCollection the origin of the collection specified in the CONF yaml.
+     * @param origin the origin of the collection specified in the CONF yaml.
      */
-    public View(YAML conf, String originOfCollection) {
+    public View(YAML conf, String origin) {
         super();
         if (conf.size() != 1) {
             throw new IllegalArgumentException
@@ -87,7 +87,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
                      ". Maybe indenting was not correct in the config file?");
         }
         id = conf.keySet().stream().findFirst().orElseThrow();
-        origin = originOfCollection;
+        this.origin = origin;
         conf = conf.getSubMap(id);
         String[] mimeTokens = conf.getString(MIME_KEY).split("/", 2);
         mime = new MediaType(mimeTokens[0], mimeTokens[1]);

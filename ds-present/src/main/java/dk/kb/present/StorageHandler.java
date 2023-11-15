@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 /**
  * Creates {@link DSStorage}s from a given configuration. Storages are used for retrieving raw records by
- * {@link DSOrigin} and can be shared between multiple originss.
+ * {@link DSOrigin} and can be shared between multiple origins.
  */
 public class StorageHandler {
     private static final Logger log = LoggerFactory.getLogger(StorageHandler.class);
