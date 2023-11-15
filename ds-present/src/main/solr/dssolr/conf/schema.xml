@@ -661,10 +661,33 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description ?>
     <?example     ?>
   </field>
-  <!--TODO: Figure out what this field can contain-->
-  <field name="internal_program_structure_overlaps" type="string">
-    <?description ?>
-    <?example     ?>
+  <field name="internal_program_structure_overlaps" type="boolean">
+    <?description A boolean value that indicates if there are overlaps between this resource and other resources.?>
+    <?example     true?>
+  </field>
+  <field name="internal_program_structure_overlap_type_one_length_ms" type="plong">
+    <?description Indicates the length of an overlap of type one in ms.?>
+    <?example     3120?>
+  </field>
+  <field name="internal_program_structure_overlap_type_one_file1UUID" type="string">
+    <?description The UUID of the first file that is part of overlap one.?>
+    <?example     ca358239-2c1a-431e-84d9-d9c91642dae7?>
+  </field>
+  <field name="internal_program_structure_overlap_type_one_file2UUID" type="string">
+    <?description The UUID of the second file that is part of overlap one.?>
+    <?example     f73b69da-2bc0-4e06-b19b-95f24756804e?>
+  </field>
+  <field name="internal_program_structure_overlap_type_two_length_ms" type="plong">
+    <?description Indicates the length of an overlap of type one in ms.?>
+    <?example     3120?>
+  </field>
+  <field name="internal_program_structure_overlap_type_two_file1UUID" type="string">
+    <?description The UUID of the first file that is part of overlap one.?>
+    <?example     ca358239-2c1a-431e-84d9-d9c91642dae7?>
+  </field>
+  <field name="internal_program_structure_overlap_type_two_file2UUID" type="string">
+    <?description The UUID of the second file that is part of overlap one.?>
+    <?example     f73b69da-2bc0-4e06-b19b-95f24756804e?>
   </field>
 
   <!-- ================================================================ -->
