@@ -112,7 +112,7 @@ upload_config() {
     if [[ "." == ".$EXISTS" || "true" == "$FORCE_CONFIG" ]]; then
         # Upload the config
         echo "Adding/updating Solr config $CONFIG_NAME from $CONFIG_FOLDER to ZooKeeper at $ZOOKEEPER"
-        echo "> $SOLR_SCRIPTS/zkcli.sh -zkhost $ZOOKEEPER -cmd upconfig -confname $CONFIG_NAME -confdir \"$CONFIG_FOLDER\""
+        echo "command> $SOLR_SCRIPTS/zkcli.sh -zkhost $ZOOKEEPER -cmd upconfig -confname $CONFIG_NAME -confdir \"$CONFIG_FOLDER\""
         $SOLR_SCRIPTS/zkcli.sh -zkhost $ZOOKEEPER -cmd upconfig -confname $CONFIG_NAME -confdir "$CONFIG_FOLDER"
     else
         echo "Solr config $CONFIG_NAME already exists. Skipping upload"
@@ -149,13 +149,13 @@ create_new_collection() {
     URL="http://$SOLR/solr/admin/collections?action=CREATE&name=${COLLECTION}&numShards=${SHARDS}&maxShardsPerNode=${SHARDS}&replicationFactor=${REPLICAS}&collection.configName=${CONFIG_NAME}"
     echo "request> $URL"
     RESPONSE="`curl -m 60 -s \"$URL\"`"
-    if [ ! -z "`echo "$RESPONSE" | grep "<int name=\"status\">0</int>"`" ]; then
+    if [ -z "$(grep 'status":0,' <<< "$RESPONSE")" ]; then
         >&2 echo "Failed to create collection ${COLLECTION} with config ${CONFIG_NAME}:"
         >&2 echo "$RESPONSE"
         exit 1
     fi
    
-    echo "Collection with config $CONFIG_NAME available at http://$SOLR/solr/"
+    echo "Collection with config $CONFIG_NAME available at http://$SOLR/solr/$COLLECTION"
 }
 
 update_existing_collection() {
@@ -164,7 +164,7 @@ update_existing_collection() {
 
     echo "Reloading collection $COLLECTION"
     RESPONSE=`curl -m 120 -s "http://$SOLR/solr/admin/collections?action=RELOAD&name=$COLLECTION"`
-    if [ -z "`echo \"$RESPONSE\" | grep \"<int name=.status.>0</int>\"`" ]; then
+    if [ -z "$(grep 'status":0,' <<< "$RESPONSE")" ]; then
         >&2 echo "Failed to reload collection ${COLLECTION}:"
         >&2 echo "$RESPONSE"
         exit 1
@@ -193,7 +193,7 @@ fi
 # Update existing or create new collection
 #EXISTS=`curl -m 30 -s "http://$SOLR/solr/admin/collections?action=LIST" | grep -o "<str>${COLLECTION}</str>"`
 set +e
-EXISTS=$(curl -m 30 -s "http://$SOLR/solr/admin/collections?action=LIST" | jq -r '.collections[]')
+EXISTS=$(curl -m 30 -s "http://$SOLR/solr/admin/collections?action=LIST" | jq -r '.collections[]' | grep '^${COLLECTION}$')
 set -e
 if [ "." == ".$EXISTS" ]; then
     create_new_collection
