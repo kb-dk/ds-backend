@@ -2,7 +2,7 @@
 # This config contains definitions for image collections at the Royal Danish Library.
 #
 # If used by another institution the origins should be overwritten by another config sorted alphanumerically
-# later than "ds-present-kb-collections.yaml". Optionally this config file should also be deleted.
+# later than "ds-present-kb-origins.yaml". Optionally this config file should also be deleted.
 #
 config:
 
