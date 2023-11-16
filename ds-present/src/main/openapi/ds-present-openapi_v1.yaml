@@ -183,6 +183,64 @@ paths:
                   [ds-storage](https://github.com/kb-dk/ds-storage/) record as JSON-Lines.
                 type: string
 
+  /recordsraw:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Extract raw records from a collection after a given mTime.'
+      description: |
+        The extracted records are returned in sorted order by mTime increasing. By changing the parameter `maxRecords`, 
+        the size of the result can be defined. Records marked with a delete flag will also be returned. Records are returned 
+        in a raw storage record.
+      operationId: getRawRecords
+      x-streamingOutput: true
+      parameters:
+        - name: origin
+          in: query
+          description: 'The origin to extract records from.'
+          required: true
+          schema:
+            type: string
+            example: 'ds.radiotv'
+        - name: mTime
+          in: query
+          description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 0
+            # Default values for longs does not work with the current version of OpenAPI generator
+            #default: 0
+        - name: maxRecords
+          in: query
+          description: 'Maximum number of records to return. -1 means no limit.'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 1000
+        - name: asJsonLines
+          in: query
+          description: 'If true, the records are delivered as JSON Lines instead of plain JSON. Otherwise the endpoint delivers JSON.'
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: 'List of records in the requested format.'
+          content:
+            application/x-storagerecord:
+              schema:
+                description: |
+                  [ds-storage](https://github.com/kb-dk/ds-storage/) record as JSON.
+                type: string
+            application/x-storagerecord-ndjson:
+              schema:
+                description: |
+                  [ds-storage](https://github.com/kb-dk/ds-storage/) record as JSON-Lines.
+                type: string
   /collection/{id}:
     get:
       tags:
