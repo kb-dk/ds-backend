@@ -15,6 +15,15 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
           examples for a field, please encapsulate each example in their own ?Example tag.?>
 
 <schema name="example" version="1.6">
+
+  <!-- Digitale Samlinger specific version field.
+
+       Update this according to Semantic Versioning rules: https://semver.org/
+
+       Used by scripts for keeping track of versioning of Solr setup across time and Solr instances.
+  -->
+  <field name="_ds_1.0.0_" type="string" indexed="false" stored="false"/>
+
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
