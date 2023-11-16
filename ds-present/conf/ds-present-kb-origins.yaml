@@ -1,14 +1,14 @@
 #
 # This config contains definitions for image collections at the Royal Danish Library.
 #
-# If used by another institution the collections should be overwritten by another config sorted alphanumerically
-# later than "ds-present-kb-collections.yaml". Optionally this config file should also be deleted.
+# If used by another institution the origins should be overwritten by another config sorted alphanumerically
+# later than "ds-present-kb-origins.yaml". Optionally this config file should also be deleted.
 #
 config:
 
-  # Generic views for images represented as MODS, used for multiple collections
+  # Generic views for images represented as MODS, used for multiple origins
   baseviews: &MODS_IMAGE_VIEWS
-    # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+    # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
     - raw:
         mime: 'text/plain'
         strategy: 'NONE'
@@ -41,9 +41,9 @@ config:
                 - imageserver: ${path:config.imageservers[default=true].url}
                 - old_imageserver: ${path:config.oldimageserver.url}
 
-  # The collections available for this instance of ds-present
-  collections:
-    # General note: All collections are expected to support at least the views raw, mods, jsonld and solrjson.
+  # The origins available for this instance of ds-present
+  origins:
+    # General note: All origins are expected to support at least the views raw, mods, jsonld and solrjson.
     # If any of those are not supported, the transformer 'fail' should be used with a telling message.
 
     # Royal Danish Library image collection with the core format being MODS
@@ -78,7 +78,7 @@ config:
         origin: 'ds.samlingsbilleder'
         recordrequesttype: 'DELIVERABLEUNIT'
         views: *MODS_IMAGE_VIEWS
-    - radiotv:
+    - 'ds.radiotv':
         description: 'Radio and television records from the Preservica system at the Royal Danish Library'
         prefix: 'ds.radiotv'
         origin: 'ds.radiotv'
@@ -114,14 +114,14 @@ config:
 
 
 
-    # Straight forward collection with the core format being MODS
+    # Straight forward origin with the core format being MODS
     # Uses the default storage, which connects to a running ds-storage instance
     - remote: # ds-present internal
         prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
         origin: "old.doms.radio"
         description: 'Images from the collections at the Royal Danish Library'
         recordrequesttype: 'DELIVERABLEUNIT'
-        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+        # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
         views:
           - raw:
               mime: 'text/plain'
@@ -146,7 +146,7 @@ config:
                     injections:
                       - imageserver: ${path:config.imageservers[default=true].url}
 
-    # Straight forward collection with the core format being MODS, using test data
+    # Straight forward origin with the core format being MODS, using test data
     - local: # ds-present internal
         prefix: 'local.test' # The prefix to match on incoming IDs
         origin: 'ds.local'

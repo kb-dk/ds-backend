@@ -49,7 +49,7 @@ config:
       # and the second being the collection-specifix par of the ID
       # Mandatory. Suggested value: '$([a-z][0-9][.]):([a-z][0-9][.-_])$', e.g. 'images.dsfl:image1234'
       pattern: '^([a-z0-9.]+):([a-z0-9._-]+)$'
-  collection:
+  origin:
     prefix:
       # Pattern for acceptable collection prefixes. This will practically always be a mirror of the first capturing
       # group for record.id.pattern.
@@ -58,7 +58,7 @@ config:
       pattern: '[a-z0-9.]+'
 
   # The collections available for this instance of ds-present 
-  collections:
+  origins:
     # Straight forward collection with the core format being MODS
     - dsfl: # ds-present internal
         prefix: 'local.mods' # The prefix to match on incoming IDs
@@ -102,9 +102,9 @@ config:
               mime: 'text/plain'
               transformers:
                 - identity:
-    - radiotv: # ds-present internal
+    - "ds.radiotv": # ds-present internal
             prefix: 'local.radiotv' # The prefix to match on incoming IDs
-            origin: 'ds.test'
+            origin: 'ds.radiotv'
             description: 'Local records'
             recordrequesttype: 'DELIVERABLEUNIT'
             # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views

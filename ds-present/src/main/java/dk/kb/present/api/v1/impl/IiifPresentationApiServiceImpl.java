@@ -24,9 +24,7 @@ import dk.kb.present.model.v1.ManifestStartDto;
 import dk.kb.present.model.v1.ManifestThumbnailDto;
 import dk.kb.present.model.v1.RangeDto;
 import dk.kb.present.model.v1.RangeLabelDto;
-import dk.kb.present.model.v1.ViewDto;
 import dk.kb.util.webservice.ImplBase;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -52,8 +50,6 @@ import javax.ws.rs.ext.Providers;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * ds-present
@@ -122,14 +118,7 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
         try { 
             CollectionDto response = new CollectionDto();
         response.setId("i9HXo7kIBw");
-        response.setPrefix("RH3O0k65");
-        response.setDescription("wy66D");
-        List<ViewDto> views = new ArrayList<>();
-        ViewDto views2 = new ViewDto();
-        views2.setId("gCu5C1B");
-        views2.setMime("xp322");
-        views.add(views2);
-        response.setViews(views);
+
         return response;
         } catch (Exception e){
             throw handleException(e);

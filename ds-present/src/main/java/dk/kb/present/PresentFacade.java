@@ -16,7 +16,7 @@ package dk.kb.present;
 
 import dk.kb.present.api.v1.impl.DsPresentApiServiceImpl;
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.model.v1.CollectionDto;
+import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
 import dk.kb.util.webservice.stream.ExportWriterFactory;
@@ -48,7 +48,7 @@ import java.util.stream.Stream;
 public class PresentFacade {
     private static final Logger log = LoggerFactory.getLogger(PresentFacade.class);
 
-    private static CollectionHandler collectionHandler;
+    private static OriginHandler originHandler;
     // TODO: The whole retrieval of raw records through getRecords does nok look very clean
     static String recordView = "raw"; // View used when retrieving the full records
 
@@ -56,59 +56,59 @@ public class PresentFacade {
      * Optional warmUp (initialization) for fail early.
      */
     public static void warmUp() {
-        getCollectionHandler();
+        getOriginHandler();
     }
 
-    private static CollectionHandler getCollectionHandler() {
-        if (collectionHandler == null) {
-            collectionHandler = new CollectionHandler(ServiceConfig.getConfig());
+    private static OriginHandler getOriginHandler() {
+        if (originHandler == null) {
+            originHandler = new OriginHandler(ServiceConfig.getConfig());
         }
-        return collectionHandler;
+        return originHandler;
     }
 
     // TODO: What about setting the MIME type?
 
     /**
-     * Derived a collection from the recordID and requests the record from that, with the specified format.
-     * @param recordID an ID for a record in any known collection.
-     * @param format the wanted format (collection specific).
+     * Derived an origin from the recordID and requests the record from that, with the specified format.
+     * @param recordID an ID for a record in any known origin.
+     * @param format the wanted format (origin specific).
      * @return the record in the given format.
      * @throws NotFoundServiceException if the record or the format was unknown.
      */
     public static String getRecord(String recordID, String format) {
-        return getCollectionHandler().getRecord(recordID, format);
+        return getOriginHandler().getRecord(recordID, format);
     }
 
     /**
-     * @param id ID for a collection.
-     * @return the collection with the given ID.
-     * @throws NotFoundServiceException if the collection was not known.
+     * @param id ID for an origin.
+     * @return the origin with the given ID.
+     * @throws NotFoundServiceException if the origin was not known.
      */
-    public static CollectionDto getCollection(String id) {
-        DSCollection collection = getCollectionHandler().getCollection(id);
-        if (collection == null) {
-            throw new NotFoundServiceException("A collection with the id '" + id + "' could not be located. " +
-                                               "Supported collections are " + collectionHandler.getCollectionIDs());
+    public static OriginDto getOrigin(String id) {
+        DSOrigin origin = getOriginHandler().getOrigin(id);
+        if (origin == null) {
+            throw new NotFoundServiceException("A origin with the id '" + id + "' could not be located. " +
+                                               "Supported origins are " + originHandler.getOriginIDs());
         }
-        return toDto(collection);
+        return toDto(origin);
     }
 
     /**
-     * @return all known collections.
+     * @return all known origins.
      */
-    public static List<CollectionDto> getCollections() {
-        return getCollectionHandler().getCollections().stream()
+    public static List<OriginDto> getOrigins() {
+        return getOriginHandler().getOrigins().stream()
                 .map(PresentFacade::toDto)
                 .collect(Collectors.toList());
     }
 
     // TODO: storage is not returned as that is internal information. With elevated privileges this might be added?
-    private static CollectionDto toDto(DSCollection collection) {
-        return new CollectionDto()
-                .id(collection.getId())
-                .prefix(collection.getPrefix())
-                .description(collection.getDescription())
-                .views(collection.getViews().values().stream()
+    private static OriginDto toDto(DSOrigin origin) {
+        return new OriginDto()
+                .id(origin.getId())
+                .prefix(origin.getPrefix())
+                .description(origin.getDescription())
+                .views(origin.getViews().values().stream()
                                .map(PresentFacade::toDto)
                                .collect(Collectors.toList()));
     }
@@ -120,9 +120,9 @@ public class PresentFacade {
     }
 
     /**
-     * Deliver streaming output for serialized records from a given collection.
+     * Deliver streaming output for serialized records from a given origin.
      * @param httpServletResponse used for setting MIME type.
-     * @param collectionID the collection to retrieve records for.
+     * @param originID     the origin to retrieve records for.
      * @param mTime        only records after this time (Epoch milliseconds) will be delivered.
      * @param maxRecords   the maximum number of records to deliver.
      * @param format       the serialized format of the records. Valid values are {@code JSON-LD},
@@ -131,25 +131,25 @@ public class PresentFacade {
      * @return a stream of serialized records.
      */
     public static StreamingOutput getRecords(
-            HttpServletResponse httpServletResponse, String collectionID, Long mTime, Long maxRecords, String format,
+            HttpServletResponse httpServletResponse, String originID, Long mTime, Long maxRecords, String format,
             Function<List<String>, List<String>> accessChecker) {
-        DSCollection collection = collectionHandler.getCollection(collectionID);
-        Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(collectionID, accessChecker, collection);
+        DSOrigin origin = originHandler.getOrigin(originID);
+        Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(originID, accessChecker, origin);
 
         // Maybe re-write this switch to use an actual ENUM?
         // enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON']
         switch (format.toUpperCase(Locale.ROOT)) {
             case "JSON-LD": return getRecordsData(
-                    collection, mTime, maxRecords,
+                    origin, mTime, maxRecords,
                     httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.json,
                     accessFilter);
             case "JSON-LD-LINES": return getRecordsData(
-                    collection, mTime, maxRecords,
+                    origin, mTime, maxRecords,
                     httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.jsonl, accessFilter);
             case "MODS": return getRecordsData(
-                    collection, mTime, maxRecords,
+                    origin, mTime, maxRecords,
                     httpServletResponse, "MODS", ExportWriterFactory.FORMAT.xml, accessFilter);
-            case "SOLRJSON": return getRecordsSolr(collection, mTime, maxRecords, httpServletResponse, accessFilter);
+            case "SOLRJSON": return getRecordsSolr(origin, mTime, maxRecords, httpServletResponse, accessFilter);
             default: throw new InvalidArgumentServiceException("The format '" + format + "' is not supported");
         }
     }
@@ -167,17 +167,17 @@ public class PresentFacade {
      */
     public static StreamingOutput getRecordsRaw(HttpServletResponse httpServletResponse, String originID, Long mTime, Long maxRecords,
                                                 Function<List<String>, List<String>> accessChecker, Boolean asJsonLines){
-        DSCollection collection = collectionHandler.getCollection(originID);
-        Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(originID, accessChecker, collection);
+        DSOrigin origin = originHandler.getOrigin(originID);
+        Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(originID, accessChecker, origin);
 
         if (asJsonLines == null){
             asJsonLines = false;
         }
 
         return asJsonLines ?
-                getRecordsFull(collection, mTime, maxRecords,
+                getRecordsFull(origin, mTime, maxRecords,
                         httpServletResponse, ExportWriterFactory.FORMAT.jsonl, accessFilter) :
-                getRecordsFull(collection, mTime, maxRecords,
+                getRecordsFull(origin, mTime, maxRecords,
                         httpServletResponse, ExportWriterFactory.FORMAT.json, accessFilter);
     }
 
@@ -188,12 +188,12 @@ public class PresentFacade {
      * @param origin of the metadata records going through the access checking.
      * @return an access filter used to filter records, delivered to the requester.
      */
-    private static Function<List<DsRecordDto>, Stream<DsRecordDto>> validateAccessForRecords(String originID, Function<List<String>, List<String>> accessChecker, DSCollection origin) {
+    private static Function<List<DsRecordDto>, Stream<DsRecordDto>> validateAccessForRecords(String originID, Function<List<String>, List<String>> accessChecker, DSOrigin origin) {
         if (origin == null) {
             throw new InvalidArgumentServiceException(String.format(
                     Locale.ROOT, "The collection '%s' was unknown. Known collections are %s",
                     originID,
-                    collectionHandler.getCollections().stream().map(DSCollection::getId).collect(Collectors.toList())));
+                    originHandler.getOrigins().stream().map(DSOrigin::getId).collect(Collectors.toList())));
         }
 
         // Batch-oriented filter that only passed records that are allowed
@@ -209,14 +209,14 @@ public class PresentFacade {
 
     // Only deliver the data-part of the Records
     private static StreamingOutput getRecordsData(
-            DSCollection collection, Long mTime, Long maxRecords,
+            DSOrigin origin, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, String recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
             Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
-                collection.getDSRecords(mTime, maxRecords, recordFormat, accessFilter)
+                origin.getDSRecords(mTime, maxRecords, recordFormat, accessFilter)
                         .map(DsRecordDto::getData)
                         .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
@@ -226,14 +226,14 @@ public class PresentFacade {
 
     // Retrieve full records to support deletions
     private static StreamingOutput getRecordsFull(
-            DSCollection collection, Long mTime, Long maxRecords,
+            DSOrigin origin, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT deliveryFormat,
             Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
-                collection.getDSRecords(mTime, maxRecords, recordView, accessFilter) // Does not contain deleted records
+                origin.getDSRecords(mTime, maxRecords, recordView, accessFilter) // Does not contain deleted records
                         .peek(record -> record.setData(DataCleanup.removeXMLDeclaration(record.getData())))
                         .forEach(writer::write);
             }
@@ -241,7 +241,7 @@ public class PresentFacade {
     }
 
     // Direct ds-storage record JSON
-    private static StreamingOutput getRecordsSolr(DSCollection collection, Long mTime, Long maxRecords,
+    private static StreamingOutput getRecordsSolr(DSOrigin origin, Long mTime, Long maxRecords,
                                                   HttpServletResponse httpServletResponse,
                                                   Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, ExportWriterFactory.FORMAT.json);
@@ -253,7 +253,7 @@ public class PresentFacade {
             ((JSONStreamWriter) writer).setPostOutput("\n}\n");
 
             try {
-                collection.getDSRecords(mTime, maxRecords, "SolrJSON", accessFilter)
+                origin.getDSRecords(mTime, maxRecords, "SolrJSON", accessFilter)
                         .map(PresentFacade::wrapSolrJSON)
                         .forEach(writer::write);
             } catch (Exception e) {
@@ -262,9 +262,9 @@ public class PresentFacade {
                 }
                 String message = String.format(
                         Locale.ROOT,
-                        "Exception delivering Solr records with collection='%s', mTime=%d, maxRecords=%d",
-                        collection.getId(), mTime, maxRecords);
-                // We need to log here as the writer does not have information on collection, mTime and maxRecords
+                        "Exception delivering Solr records with origin='%s', mTime=%d, maxRecords=%d",
+                        origin.getId(), mTime, maxRecords);
+                // We need to log here as the writer does not have information on origin, mTime and maxRecords
                 log.warn(message, e);
                 throw new InternalServiceException(message);
             }

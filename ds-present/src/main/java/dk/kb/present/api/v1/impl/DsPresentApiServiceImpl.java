@@ -2,7 +2,7 @@ package dk.kb.present.api.v1.impl;
 
 import dk.kb.present.PresentFacade;
 import dk.kb.present.api.v1.DsPresentApi;
-import dk.kb.present.model.v1.CollectionDto;
+import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.webservice.ImplBase;
@@ -48,45 +48,45 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
 
     /**
-     * Retrieve a formal description of a single collection
+     * Retrieve a formal description of a single origin
      * 
-     * @param id: The ID of the collection
+     * @param id: The ID of the origin
      * 
      * @return <ul>
-      *   <li>code = 200, message = "OK: The collection was known and a description is returned", response = CollectionDto.class</li>
-      *   <li>code = 404, message = "Collection is unknown", response = String.class</li>
+      *   <li>code = 200, message = "OK: The origin was known and a description is returned", response = OriginDto.class</li>
+      *   <li>code = 404, message = "Origin is unknown", response = String.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public CollectionDto getCollection(String id) throws ServiceException {
+    public OriginDto getOrigin(String id) throws ServiceException {
         try {
             // Allowed for everyone
             log.debug("() called with call details: {}", getCallDetails());
-            return PresentFacade.getCollection(id);
+            return PresentFacade.getOrigin(id);
         } catch (Exception e){
             throw handleException(e);
         }
     }
 
     /**
-     * Retrieve a formal description of all collections
+     * Retrieve a formal description of all origins
      * 
      * @return <ul>
-      *   <li>code = 200, message = "OK: Collections are returned", response = CollectionDto.class, responseContainer = "List"</li>
+      *   <li>code = 200, message = "OK: Origins are returned", response = OriginDto.class, responseContainer = "List"</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public List<CollectionDto> getCollections() throws ServiceException {
+    public List<OriginDto> getOrigins() throws ServiceException {
         try {
             // Allowed for everyone
-            log.debug("getCollections() called with call details: {}", getCallDetails());
-            return PresentFacade.getCollections();
+            log.debug("getOrigins() called with call details: {}", getCallDetails());
+            return PresentFacade.getOrigins();
         } catch (Exception e){
             throw handleException(e);
         }
@@ -132,17 +132,17 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     }
 
     @Override
-    public StreamingOutput getRecords(String collection, Long mTime, Long maxRecords, String format) {
-        log.debug("getRecords(collection='{}', mTime={}, maxRecords={}, format='{}') called with call details: {}",
-                  collection, mTime, maxRecords, format, getCallDetails());
-        if (collection == null) {
-            throw new InternalServiceException("collection must be specified but was not");
+    public StreamingOutput getRecords(String origin, Long mTime, Long maxRecords, String format) {
+        log.debug("getRecords(origin='{}', mTime={}, maxRecords={}, format='{}') called with call details: {}",
+                  origin, mTime, maxRecords, format, getCallDetails());
+        if (origin == null) {
+            throw new InternalServiceException("origin must be specified but was not");
         }
         try {
             long finalMTime = mTime == null ? 0L : mTime;
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecords(
-                    httpServletResponse, collection, finalMTime, finalMaxRecords, format,
+                    httpServletResponse, origin, finalMTime, finalMaxRecords, format,
                     AccessUtil.createAccessFilter(RECORD_ACCESS_TYPE));
         } catch (Exception e){
             throw handleException(e);

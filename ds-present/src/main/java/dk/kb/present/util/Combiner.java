@@ -49,14 +49,15 @@ public class Combiner {
      * Merge multiple ordered collections into a single ordered list.
      * The input ordering must match the order of the comparator.
      * This collection delivers the result as a List which implies a memory overhead which is the sum of all the
-     * elements from the given collections.
+     * elements from the given origins.
      * See {@link #mergeStreams(Collection, Comparator)} or {@link #mergeIterators(Collection, Comparator)} for
-     * low-memory merging of pre-ordered collections.
-     * @param collections zero or more collections where the order of the elements matches comparator.
-     * @param comparator a comparator that matches the order in the given collections.
+     * low-memory merging of pre-ordered origins.
+     *
+     * @param origins    zero or more origins where the order of the elements matches comparator.
+     * @param comparator a comparator that matches the order in the given origins.
      */
-    public static <T> List<T> mergeCollections(Collection<Collection<T>> collections, Comparator<T> comparator) {
-        Collection<Iterator<T>> iterators = collections.stream()
+    public static <T> List<T> mergeCollections(Collection<Collection<T>> origins, Comparator<T> comparator) {
+        Collection<Iterator<T>> iterators = origins.stream()
                 .map(Collection::iterator)
                 .collect(Collectors.toList());
         Iterator<T> iterator = mergeIterators(iterators, comparator);

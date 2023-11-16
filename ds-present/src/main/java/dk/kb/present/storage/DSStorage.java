@@ -55,12 +55,12 @@ public class DSStorage implements Storage {
 
     /**
      * Create a Storage connection to a ds-storage server.
-     * @param id the ID for the storage, used for connecting collections to storages.
+     * @param id the ID for the storage, used for connecting origins to storages.
      * @param origin the origin used for requests to {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
      * @param storageUrl The full url to the service. Example: http://localhost:9072/ds-storage/v1/
      * @param batchCount the number of records to request in one call when paging using
      *                   {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
-     * @param isDefault if true, this is the default storage for collections.
+     * @param isDefault if true, this is the default storage for origins.
      */
     public DSStorage(String id, String origin,
                      String storageUrl,

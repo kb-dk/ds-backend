@@ -14,22 +14,19 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.storage.DSStorage;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.storage.StorageController;
 import dk.kb.util.yaml.YAML;
-import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.ServiceNotFoundException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Creates {@link DSStorage}s from a given configuration. Storages are used for retrieving raw records by
- * {@link DSCollection} and can be shared between multiple collections.
+ * {@link DSOrigin} and can be shared between multiple origins.
  */
 public class StorageHandler {
     private static final Logger log = LoggerFactory.getLogger(StorageHandler.class);

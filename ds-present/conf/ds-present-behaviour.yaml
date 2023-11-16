@@ -98,30 +98,30 @@ config:
   # Settings for handling at the record level
   record:
     id:
-      # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the collection prefix
-      # and the second being the collection specific par of the ID
+      # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the origin prefix
+      # and the second being the origin specific par of the ID
       # Mandatory. Suggested value: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)', e.g. 'images.dsfl:Image1234:2_3-b'
       pattern: '([a-z0-9.]+):([a-zA-Z0-9:._-]+)'
-  collection:
+  origin:
     prefix:
-      # Pattern for acceptable collection prefixes. This will practically always be a mirror of the first capturing
+      # Pattern for acceptable origin prefixes. This will practically always be a mirror of the first capturing
       # group for record.id.pattern.
       # Primarily used for verifying configuration.
       # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
       pattern: '[a-z0-9.]+'
 
-  # Collections are to be set in ds-present-kb-collections-yaml if possible, as that file overwrites the collections defined here
-  # The collections available for this instance of ds-present
-  #collections:
-    # General note: All collections are expected to support at least the views raw, mods, jsonld and solrjson.
+  # Origins are to be set in ds-present-kb-collections-yaml if possible, as that file overwrites the origins defined here
+  # The origins available for this instance of ds-present
+  #origins:
+    # General note: All origins are expected to support at least the views raw, mods, jsonld and solrjson.
     # If any of those are not supported, the transformer 'fail' should be used with a telling message.
 
-    # Straight forward collection with the core format being MODS
+    # Straight forward origin with the core format being MODS
     # Uses the default storage, which connects to a running ds-storage instance
   #  - remote: # ds-present internal
   #      prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
   #      description: 'Images from the collections at the Royal Danish Library'
-      #   Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+      #   Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
   #      views:
   #        - raw:
   #            mime: 'text/plain'
@@ -146,12 +146,12 @@ config:
   #                  injections:
   #                    - imageserver: 'https://example.com/imageserver'
 
-    # Straight forward collection with the core format being MODS, using test data
+    # Straight forward origin with the core format being MODS, using test data
     #- local: # ds-present internal
     #    prefix: 'local.test' # The prefix to match on incoming IDs
     #    description: 'Selected image data from the collections at the Royal Danish Library'
     #    storage: 'test' # Not production here
-    #    # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+    #    # Different views on the material. Note that all origin has at least mods, jsonld and solrjson as views
     #    views:
     #      - raw:
     #          mime: 'text/plain'
