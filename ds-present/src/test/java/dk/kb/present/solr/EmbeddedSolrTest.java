@@ -51,6 +51,7 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
 import static dk.kb.present.TestFiles.PVICA_RECORD_1f3a6a66;
 import static dk.kb.present.TestFiles.PVICA_RECORD_3945e2d1;
 import static dk.kb.present.TestFiles.PVICA_RECORD_44979f67;
+import static dk.kb.present.TestFiles.PVICA_RECORD_74e22fd8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_9d9785a8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
@@ -361,7 +362,10 @@ public class EmbeddedSolrTest {
 
     @Test
     void testOriginalTitle() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_44979f67, "original_title", "Backstage II");
+        // With the new transformation chain this field is not created records where titel and original title are identical
+        // Here the value is only extracted to the title field in JSONLD and the solr field original_titel does not
+        // contain any values for such a record
+        testStringValuePreservicaField(PVICA_RECORD_74e22fd8, "original_title", "Pokalfodbold: Finale: OB - FC Midtjylland, direkte");
     }
 
     @Test
