@@ -151,10 +151,13 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
 
     @Override
     public StreamingOutput getRawRecords(String origin, Long mTime, Long maxRecords, Boolean asJsonLines) {
-        log.debug("getRecords(origin='{}', mTime={}, maxRecords={}) called with call details: {}",
-                origin, mTime, maxRecords, getCallDetails());
+        log.debug("getRawRecords(origin='{}', mTime={}, maxRecords={}, asJsonLines={}) called with call details: {}",
+                origin, mTime, maxRecords, getCallDetails(), asJsonLines);
         if (origin == null) {
             throw new InternalServiceException("origin must be specified but was not");
+        }
+        if (asJsonLines == null){
+            asJsonLines = false;
         }
         try {
             long finalMTime = mTime == null ? 0L : mTime;

@@ -137,7 +137,7 @@ public class PresentFacade {
         Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(collectionID, accessChecker, collection);
 
         // Maybe re-write this switch to use an actual ENUM?
-        // enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON', "StorageRecord"]
+        // enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON']
         switch (format.toUpperCase(Locale.ROOT)) {
             case "JSON-LD": return getRecordsData(
                     collection, mTime, maxRecords,
@@ -149,12 +149,6 @@ public class PresentFacade {
             case "MODS": return getRecordsData(
                     collection, mTime, maxRecords,
                     httpServletResponse, "MODS", ExportWriterFactory.FORMAT.xml, accessFilter);
-            case "STORAGERECORD": return getRecordsFull(
-                    collection, mTime, maxRecords,
-                    httpServletResponse, ExportWriterFactory.FORMAT.json, accessFilter);
-            case "STORAGERECORD-LINES": return getRecordsFull(
-                    collection, mTime, maxRecords,
-                    httpServletResponse, ExportWriterFactory.FORMAT.jsonl, accessFilter);
             case "SOLRJSON": return getRecordsSolr(collection, mTime, maxRecords, httpServletResponse, accessFilter);
             default: throw new InvalidArgumentServiceException("The format '" + format + "' is not supported");
         }
@@ -175,6 +169,10 @@ public class PresentFacade {
                                                 Function<List<String>, List<String>> accessChecker, Boolean asJsonLines){
         DSCollection collection = collectionHandler.getCollection(originID);
         Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(originID, accessChecker, collection);
+
+        if (asJsonLines == null){
+            asJsonLines = false;
+        }
 
         return asJsonLines ?
                 getRecordsFull(collection, mTime, maxRecords,
