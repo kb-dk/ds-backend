@@ -83,6 +83,14 @@
             </exclusion>
         </exclusions>
       </dependency>
+      <!-- Remember to include caffeine when using ds license client-->
+      <!-- https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine -->
+      <!-- Used for DsLicenseClient -->
+      <dependency>
+        <groupId>com.github.ben-manes.caffeine</groupId>
+        <artifactId>caffeine</artifactId>
+        <version>3.1.8</version>
+      </dependency>
 
         <dependency>
             <groupId>jakarta.servlet</groupId>
