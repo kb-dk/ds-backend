@@ -51,6 +51,9 @@ class ViewTest {
 
     @Test
     void jsonldPvica() throws Exception {
+        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
+            return;
+        }
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML radiotvConf = conf.getYAMLList(".config.origins").get(1);
         View jsonldView = new View(radiotvConf.getSubMap("\"ds.radiotv\"").getYAMLList("views").get(1), radiotvConf.getSubMap("\"ds.radiotv\"").getString("origin"));
@@ -64,6 +67,9 @@ class ViewTest {
 
     @Test
     void solrFromPvica() throws Exception {
+        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
+            return;
+        }
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML radiotvConf = conf.getYAMLList(".config.origins").get(1);
         View solrView = new View(radiotvConf.getSubMap("\"ds.radiotv\"").getYAMLList("views").get(2), radiotvConf.getSubMap("\"ds.radiotv\"").getString("origin"));

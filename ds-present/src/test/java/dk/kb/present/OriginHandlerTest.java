@@ -1,7 +1,10 @@
 package dk.kb.present;
 
+import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -24,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  */
 class OriginHandlerTest {
+    private static final Logger log = LoggerFactory.getLogger(OriginHandlerTest.class);
+
 
     @Test
     void idPattern() {
@@ -83,6 +88,10 @@ class OriginHandlerTest {
 
     @Test
     void localCorpusPvica() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml") == null){
+            log.info("Preservica test file is not present. Test for file 9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml is not run");
+            return;
+        }
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         OriginHandler ch = new OriginHandler(conf);
         String record = ch.getRecord("local.radiotv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", "json-ld");
@@ -91,6 +100,10 @@ class OriginHandlerTest {
 
     @Test
     void testManifestationFiltering() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml") == null){
+            log.info("Preservica test file is not present. Test for file 9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml is not run");
+            return;
+        }
         // This test checks that the correct filtering is applied in DSOrigin.getFirstChild()
         // The FileStorage used for testing appends two children to each record. One with referenceType = 1 and one with
         // referenceType = 2. Only children with type = 2 should be returned as these are presentation manifestations.

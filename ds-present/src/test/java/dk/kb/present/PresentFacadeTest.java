@@ -15,6 +15,7 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.util.Resolver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +51,9 @@ public class PresentFacadeTest {
 
     @Test
     void getRecordsMODS() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            return;
+        }
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods", ids -> ids);
         String result = toString(out);
         assertTrue(result.contains("<mods:namePart type=\"family\">Andersen</mods:namePart>"));
@@ -57,6 +61,9 @@ public class PresentFacadeTest {
 
     @Test
     void accessFilterMultiRecords() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            return;
+        }
         // No access checking
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods", ids -> ids);
         long baseCount = countMETS(out);
@@ -91,6 +98,9 @@ public class PresentFacadeTest {
 
     @Test
     void getRecordsMODSDeclaration() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            return;
+        }
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods", ids -> ids);
         String result = toString(out);
 
@@ -106,6 +116,9 @@ public class PresentFacadeTest {
 
     @Test
     void getRecordsRaw() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            return;
+        }
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord", ids -> ids);
         String result = toString(out);
@@ -120,6 +133,9 @@ public class PresentFacadeTest {
 
     @Test
     void getRecordsRawLines() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            return;
+        }
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord-lines", ids -> ids);
         String result = toString(out);
@@ -159,6 +175,9 @@ public class PresentFacadeTest {
 
     @Test
     void getRecordsSolr() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            return;
+        }
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "SolrJSON", ids -> ids);
         String result = toString(out);
     }

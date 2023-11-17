@@ -23,6 +23,7 @@ import dk.kb.present.PresentFacadeTest;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
+import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -99,6 +100,9 @@ class DsPresentApiServiceImplTest {
 
     @Test
     public void testMultiRecordsLicense() throws NoSuchFieldException, ApiException, IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            return;
+        }
         // No local.mods-prefix here. This is an oversight of the file based test-storage
         final String RECORD_ID1 = "40221e30-1414-11e9-8fb8-00505688346e.xml";
         final String RECORD_ID2 = "5cc1bea0-71fa-11e2-b31c-0016357f605f.xml";
@@ -151,6 +155,9 @@ class DsPresentApiServiceImplTest {
 
     @Test
     public void testMultiRecordsLicenseAllowAll() throws NoSuchFieldException, ApiException, IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            return;
+        }
         // Setup mock license that allows 1 record
         final String RECORD_ID1 = "40221e30-1414-11e9-8fb8-00505688346e.xml";
 
