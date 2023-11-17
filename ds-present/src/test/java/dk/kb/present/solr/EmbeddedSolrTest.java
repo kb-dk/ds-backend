@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
@@ -50,7 +51,10 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
 import static dk.kb.present.TestFiles.PVICA_RECORD_1f3a6a66;
 import static dk.kb.present.TestFiles.PVICA_RECORD_3945e2d1;
 import static dk.kb.present.TestFiles.PVICA_RECORD_44979f67;
+import static dk.kb.present.TestFiles.PVICA_RECORD_74e22fd8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_9d9785a8;
+import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
+import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EmbeddedSolrTest {
@@ -358,7 +362,10 @@ public class EmbeddedSolrTest {
 
     @Test
     void testOriginalTitle() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_44979f67, "original_title", "Backstage II");
+        // With the new transformation chain this field is not created records where titel and original title are identical
+        // Here the value is only extracted to the title field in JSONLD and the solr field original_titel does not
+        // contain any values for such a record
+        testStringValuePreservicaField(PVICA_RECORD_74e22fd8, "original_title", "Pokalfodbold: Finale: OB - FC Midtjylland, direkte");
     }
 
     @Test
@@ -552,7 +559,16 @@ public class EmbeddedSolrTest {
         testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_start", 0);
         testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_end", 0);
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_holes", null);
-        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", null);
+        testBooleanValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", false);
+    }
+
+    @Test
+    void testProgramStructureOverlaps() throws Exception {
+        testLongValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_two_length_ms", 3120L);
+        testLongValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_one_length_ms", 1320L);
+        testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_two_file2UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
+        testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_one_file1UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
+
     }
 
     /*
@@ -637,14 +653,7 @@ public class EmbeddedSolrTest {
     }
 
     private void indexPreservicaRecord(String preservicaRecord) throws Exception {
-        String yamlStr =
-                "stylesheet: '" + PRESERVICA2SOLR + "'\n" +
-                        "injections:\n" +
-                        "  - streamingserver: 'https://example.com/streamingserver/'\n" +
-                        "  - origin: 'ds.test'\n";
-        YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
-
-        String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, preservicaRecord);
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, preservicaRecord);
         addRecordToEmbeddedServer(preservicaRecord, solrString);
     }
 

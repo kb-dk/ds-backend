@@ -376,11 +376,35 @@
      		<td>Metadata/program_structure:program_structure/overlaps</td>
      		<td>internal_program_structure_overlaps</td>
      		<td>kb:internal/kb:program_structure_overlaps</td>
-     		<td></td>
+     		<td>Boolean value, which tells if there are any overlaps between this resource and other resources.</td>
      	</tr>
+	 <tr>
+		 <td>Metadata/program_structure:program_structure/overlaps/overlap/overlapType</td>
+		 <td>internal_program_structure_overlap_type_X....</td>
+		 <td>kb:program_structure_overlap/overlap_type</td>
+		 <td>As solr documents require a flat structure, the overlap type is used as part of naming in the solr fields.
+		 	 When reading the following fields 'type_X' is a placeholder for the actual type of overlap. </td>
+	 </tr>
+	<tr>
+		<td>Metadata/program_structure:program_structure/overlaps/overlap/overlapLength</td>
+		<td>internal_program_structure_overlap_type_X_length_ms</td>
+		<td>kb:program_structure_overlap/overlap_length</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Metadata/program_structure:program_structure/overlaps/overlap/file1UUID</td>
+		<td>internal_program_structure_overlap_type_X_file1UUID</td>
+		<td>kb:program_structure_overlap/file1UUID</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Metadata/program_structure:program_structure/overlaps/overlap/file2UUID</td>
+		<td>internal_program_structure_overlap_type_X_file2UUID</td>
+		<td>kb:program_structure_overlap/file2UUID</td>
+		<td></td>
+	</tr>
  	<tbody>
  </table>
-/
 
 </body>
 </html>

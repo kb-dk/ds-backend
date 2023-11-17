@@ -450,6 +450,45 @@
         <xsl:value-of select="$internalMap('kb:program_structure_overlaps')"/>
       </f:string>
     </xsl:if>
+
+    <!-- Extracting overlaps sorted by type of overlap as that is the only value to distinguish overlaps by. -->
+    <xsl:if test="f:exists($internalMap('kb:program_structure_overlap'))">
+      <xsl:variable name="overlaps" as="item()*">
+        <xsl:copy-of select="array:flatten($internalMap('kb:program_structure_overlap'))"/>
+      </xsl:variable>
+
+      <!-- Defines fields for overlaps of type 1 and 2. Currently, I don't know if more than two types exists, '
+           then they would have to be added. -->
+      <xsl:for-each select="$overlaps">
+        <xsl:choose>
+          <xsl:when test="map:get(. , 'overlap_type') = '1'">
+            <f:string key="internal_program_structure_overlap_type_one_length_ms">
+              <xsl:value-of select="map:get(. , 'overlap_length')"/>
+            </f:string>
+            <f:string key="internal_program_structure_overlap_type_one_file1UUID">
+              <xsl:value-of select="map:get(. , 'file1UUID')"/>
+            </f:string>
+            <f:string key="internal_program_structure_overlap_type_one_file2UUID">
+              <xsl:value-of select="map:get(. , 'file2UUID')"/>
+            </f:string>
+          </xsl:when>
+        </xsl:choose>
+        <xsl:choose>
+          <xsl:when test="map:get(. , 'overlap_type') = '2'">
+            <f:string key="internal_program_structure_overlap_type_two_length_ms">
+              <xsl:value-of select="map:get(. , 'overlap_length')"/>
+            </f:string>
+            <f:string key="internal_program_structure_overlap_type_two_file1UUID">
+              <xsl:value-of select="map:get(. , 'file1UUID')"/>
+            </f:string>
+            <f:string key="internal_program_structure_overlap_type_two_file2UUID">
+              <xsl:value-of select="map:get(. , 'file2UUID')"/>
+            </f:string>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:for-each>
+    </xsl:if>
+
   </xsl:template>
 
 

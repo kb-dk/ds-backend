@@ -298,6 +298,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testEndTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"endTime\":\"2012-04-28T16:40:00Z\"");
     }
+
+    @Test
+    void testNoNotes(){
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_b346acc8, "\"notes\":");
+    }
+
     @Test
     void testStreamingUrl() throws IOException {
         String solrJson = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SOLR, TestFiles.PVICA_RECORD_1f3a6a66, null);
@@ -305,8 +311,17 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testOverlaps() {
+        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_two_length_ms\":\"3120\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_one_length_ms\":\"1320\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_one_file1UUID\":\"f73b69da-2bc0-4e06-b19b-95f24756804e\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_two_file2UUID\":\"f73b69da-2bc0-4e06-b19b-95f24756804e\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
-        TestUtil.prettyPrintSolrJsonFromPreservica(TestFiles.PVICA_RECORD_44979f67);
+        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_b346acc8);
+        TestUtil.prettyPrintJson(solrJson);
     }
 
     /**

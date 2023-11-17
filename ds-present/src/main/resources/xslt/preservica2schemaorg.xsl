@@ -651,11 +651,38 @@
         <xsl:value-of select="holes"/>
       </f:string>
     </xsl:if>
-    <xsl:if test="overlaps != ''">
-      <f:string key="kb:program_structure_overlaps">
-        <xsl:value-of select="holes"/>
-      </f:string>
-    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="overlaps != ''">
+        <f:string key="kb:program_structure_overlaps">
+          <xsl:value-of select="f:true()"/>
+        </f:string>
+        <f:array key="kb:program_structure_overlap">
+          <xsl:for-each select="overlaps/overlap">
+            <f:map>
+              <f:string key="file1UUID">
+                <xsl:value-of select="file1UUID"/>
+              </f:string>
+              <f:string key="file2UUID">
+                <xsl:value-of select="file2UUID"/>
+              </f:string>
+              <f:number key="overlap_length">
+                <xsl:value-of select="overlapLength"/>
+              </f:number>
+              <f:string key="overlap_type">
+                <xsl:value-of select="overlapType"/>
+              </f:string>
+            </f:map>
+          </xsl:for-each>
+        </f:array>
+      </xsl:when>
+      <xsl:otherwise>
+        <f:string key="kb:program_structure_overlaps">
+          <xsl:value-of select="f:false()"/>
+        </f:string>
+      </xsl:otherwise>
+    </xsl:choose>
+
+
   </xsl:template>
 
 </xsl:transform>
