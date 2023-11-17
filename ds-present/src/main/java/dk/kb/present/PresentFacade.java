@@ -233,7 +233,7 @@ public class PresentFacade {
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
-                origin.getDSRecords(mTime, maxRecords, recordView, accessFilter) // Does not contain deleted records
+                origin.getDSRecordsAll(mTime, maxRecords, recordView, accessFilter) // Does not contain deleted records
                         .peek(record -> record.setData(DataCleanup.removeXMLDeclaration(record.getData())))
                         .forEach(writer::write);
             }
