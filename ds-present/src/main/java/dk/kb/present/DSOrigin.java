@@ -97,7 +97,7 @@ public class DSOrigin {
      * {@link RecordTypeDto#MANIFESTATION}
      *
      */
-    private final RecordTypeDto recordRequestType;
+    private RecordTypeDto recordRequestType;
 
     /**
      * Create an origin based on the given conf. The storageHandler is expected to be initialized and should contain
@@ -216,7 +216,10 @@ public class DSOrigin {
     public Stream<DsRecordDto> getDSRecordsAll(
             Long mTime, Long maxRecords, String format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         View view = getView(format);
-        log.debug("Calling storage.getDSRecordsRecordTypeLocalTree(origin='{}', mTime={}, maxRecords={})",
+        recordRequestType = null;
+        log.debug("DSOrigin is defined as this: '{}'", this);
+        log.debug("Extracting with the following view: '{}'", view);
+        log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
             // 35 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
