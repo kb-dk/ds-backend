@@ -216,8 +216,6 @@ public class DSOrigin {
     public Stream<DsRecordDto> getDSRecordsAll(
             Long mTime, Long maxRecords, String format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         View view = getView(format);
-        //recordRequestType = null;
-        log.debug("DSOrigin is defined as this: '{}'", this);
         log.debug("Extracting with the following view: '{}'", view);
         log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
@@ -228,9 +226,6 @@ public class DSOrigin {
                     .flatMap(accessFilter)
                     .peek(record -> {
                         try {
-                            if (record.getId().contains("man")){
-                                log.debug("Handling a manifestation with ID: '{}'.", record.getId());
-                            }
                             record.data(view.apply(record));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(
