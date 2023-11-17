@@ -228,6 +228,9 @@ public class DSOrigin {
                     .flatMap(accessFilter)
                     .peek(record -> {
                         try {
+                            if (record.getId().contains("man")){
+                                log.debug("Handling a manifestation with ID: '{}'.", record.getId());
+                            }
                             record.data(view.apply(record));
                         } catch (Exception e) {
                             throw new RuntimeTransformerException(
