@@ -55,7 +55,7 @@ The how-to below expects the version of the Solr configuration to be specified i
 ```xml
  <field name="_ds_1.0.0_" type="string" indexed="false" stored="false"/>
 ```
-If the schema is changed, the version must be updated.
+If the schema is changed, the version must be updated using [Semantic Versioning](https://semver.org/)
 
 ### Initial setup of Solr Cloud
 
@@ -151,7 +151,7 @@ ds-20231116-1045
 ds-20231116-1051
 ds-20231116-1240
 ```
-Note hos `ds-write` and `ds` points to different collections.
+Note how `ds-write` and `ds` points to different collections.
 
 
 Perform the full reindex (`http://<develserver>/ds-datahandler/api/#/ds-datahandler/solrIndex`).
