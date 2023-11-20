@@ -150,7 +150,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     }
 
     @Override
-    public StreamingOutput getRawRecords(String origin, Long mTime, Long maxRecords, Boolean asJsonLines) {
+    public StreamingOutput getRecordsRaw(String origin, Long mTime, Long maxRecords, Boolean asJsonLines) {
         log.debug("getRawRecords(origin='{}', mTime={}, maxRecords={}, asJsonLines={}) called with call details: {}",
                 origin, mTime, maxRecords, asJsonLines, getCallDetails());
         if (origin == null) {

@@ -177,14 +177,14 @@ paths:
         - '${project.name}'
       summary: 'Extract raw records from a collection after a given mTime.'
       description: |
-        The extracted records are returned in sorted order by mTime increasing. By changing the parameter `maxRecords`, 
-        the size of the result can be defined. Records marked with a delete flag will also be returned. Records are returned 
-        in a raw storage record.
+        The raw records are returned wrapped in JSON. The records are extracted in sorted order by mTime increasing. 
+        By changing the parameter `maxRecords`, the size of the result can be defined. 
+        Records marked with a delete flag will also be returned.
         
         Information on the storage formats can be found here:
         * StorageRecord: [ds-storage](https://github.com/kb-dk/ds-storage/) record in JSON
         * StorageRecord-Lines: [ds-storage](https://github.com/kb-dk/ds-storage/) record in JSON-Lines
-      operationId: getRawRecords
+      operationId: getRecordsRaw
       x-streamingOutput: true
       parameters:
         - name: origin
