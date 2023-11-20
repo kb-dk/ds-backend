@@ -336,6 +336,15 @@
             </xsl:when>
             <xsl:when test="identifier = ''">
             </xsl:when>
+            <xsl:when test="identifierSource = 'Det Kongelige Bibliotek; Radio/TV-samlingen; De hvide programmer'">
+              <f:map>
+                <f:string key="@type">PropertyValue</f:string>
+                <f:string key="PropertyID">WhiteProgramID</f:string>
+                <f:string key="value">
+                  <xsl:value-of select="normalize-space(substring-after(identifier, 'ID:'))"/>
+                </f:string>
+              </f:map>
+            </xsl:when>
             <xsl:otherwise>
               <f:map>
                 <f:string key="@type">PropertyValue</f:string>

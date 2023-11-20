@@ -37,7 +37,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testSetup() throws IOException {
         //printSchemaOrgJson(PVICA_RECORD_74e22fd8);
-        printSchemaOrgJson(TestFiles.PVICA_RECORD_e683b0b8);
+        printSchemaOrgJson(TestFiles.PVICA_RECORD_c295ae6c);
         //printSchemaOrgJson(PVICA_RECORD_1F3A6A66);
         //printSchemaOrgJson(PVICA_RECORD_44979f67);
     }
@@ -231,6 +231,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void noVideoQualityForRadioRecords() throws IOException {
         String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
         Assertions.assertFalse(radio.contains("\"videoQuality\":"));
+    }
+    @Test
+    void whiteProgramID() throws IOException {
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_c295ae6c);
+        Assertions.assertTrue(radio.contains("\"@type\":\"PropertyValue\"," +
+                "\"PropertyID\":\"WhiteProgramID\"," +
+                "\"value\":\"A-1966-03-20-P-0197_059\""));
     }
 
     @Test
