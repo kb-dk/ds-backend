@@ -31,8 +31,6 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PresentFacadeTest {
-
-
     @BeforeAll
     static void setup() {
         try {
@@ -113,14 +111,13 @@ public class PresentFacadeTest {
         assertTrue(count <= 1, "There should be at most 1 XML declaration but there was " + count);
     }
 
-
     @Test
     void getRecordsRaw() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             return;
         }
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord", ids -> ids);
+        StreamingOutput out = PresentFacade.getRecordsRaw(null, "dsfl", 0L, -1L,  ids -> ids, null);
         String result = toString(out);
 
         assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"origin\":null,\"recordType\":null,\"deleted\":false"));
@@ -128,27 +125,21 @@ public class PresentFacadeTest {
         assertTrue(result.endsWith("]\n"), "Result should end with ']' as it should be a JSON array"); // JSON array
     }
 
-
-    
-
     @Test
     void getRecordsRawLines() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             return;
         }
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord-lines", ids -> ids);
+        StreamingOutput out = PresentFacade.getRecordsRaw(null, "dsfl", 0L, -1L,  ids -> ids, true);
         String result = toString(out);
         assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"origin\":null,\"recordType\":null,\"deleted\":false"));
         assertFalse(result.contains(",\n"), "Result should not contain a comma followed by newline as it should be a multi-entry JSON-Lines");
         assertFalse(result.endsWith("]\n"), "Result should not end with ']' as it should be in JSON-Lin es");
     }
 
-
-
     /* TODO: FIX!
     //   Can only be fixed, when the updated XSLT to JSON-LD has been reviewed and merged to master
-
     @Test
     void getRecordsJSONLD() throws IOException {
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "json-ld");
@@ -158,7 +149,6 @@ public class PresentFacadeTest {
         assertTrue(result.contains(",\n"), "Result should contain a comma followed by newline as it should be a multi-entry JSON array"); // Plain JSON array
         assertTrue(result.endsWith("]\n"), "Result should end with ']' as it should be a JSON array"); // JSON array
     }
-
      */
 
     /*  TODO FIX!

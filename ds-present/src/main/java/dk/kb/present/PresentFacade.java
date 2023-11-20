@@ -134,9 +134,64 @@ public class PresentFacade {
             HttpServletResponse httpServletResponse, String originID, Long mTime, Long maxRecords, String format,
             Function<List<String>, List<String>> accessChecker) {
         DSOrigin origin = originHandler.getOrigin(originID);
+        Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(originID, accessChecker, origin);
+
+        // Maybe re-write this switch to use an actual ENUM?
+        // enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON']
+        switch (format.toUpperCase(Locale.ROOT)) {
+            case "JSON-LD": return getRecordsData(
+                    origin, mTime, maxRecords,
+                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.json,
+                    accessFilter);
+            case "JSON-LD-LINES": return getRecordsData(
+                    origin, mTime, maxRecords,
+                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.jsonl, accessFilter);
+            case "MODS": return getRecordsData(
+                    origin, mTime, maxRecords,
+                    httpServletResponse, "MODS", ExportWriterFactory.FORMAT.xml, accessFilter);
+            case "SOLRJSON": return getRecordsSolr(origin, mTime, maxRecords, httpServletResponse, accessFilter);
+            default: throw new InvalidArgumentServiceException("The format '" + format + "' is not supported");
+        }
+    }
+
+    /**
+     * Deliver streaming output for serialized records from a given collection in raw storage format.
+     * @param httpServletResponse used for setting MIME type.
+     * @param originID      the origin to retrieve records for.
+     * @param mTime         only records after this time (Epoch milliseconds) will be delivered.
+     * @param maxRecords    the maximum number of records to deliver.
+     * @param accessChecker only IDs evaluating to {@link DsPresentApiServiceImpl.ACCESS#ok} are delivered.
+     * @param asJsonLines   boolean value that determines the JSON format of the result. If true the method returns
+     *                      JSON Lines. If false normal JSON records are returned.
+     * @return a stream of serialized records in raw JSON storage format.
+     */
+    public static StreamingOutput getRecordsRaw(HttpServletResponse httpServletResponse, String originID, Long mTime, Long maxRecords,
+                                                Function<List<String>, List<String>> accessChecker, Boolean asJsonLines){
+        DSOrigin origin = originHandler.getOrigin(originID);
+        Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(originID, accessChecker, origin);
+
+        if (asJsonLines == null){
+            asJsonLines = false;
+        }
+
+        return asJsonLines ?
+                getRecordsFull(origin, mTime, maxRecords,
+                        httpServletResponse, ExportWriterFactory.FORMAT.jsonl, accessFilter) :
+                getRecordsFull(origin, mTime, maxRecords,
+                        httpServletResponse, ExportWriterFactory.FORMAT.json, accessFilter);
+    }
+
+    /**
+     * Validate if caller is allowed to access metadata from the given origin.
+     * @param originID ID of the origin, containing the metadata being asked for.
+     * @param accessChecker used to determine if the request can be authenticated.
+     * @param origin of the metadata records going through the access checking.
+     * @return an access filter used to filter records, delivered to the requester.
+     */
+    private static Function<List<DsRecordDto>, Stream<DsRecordDto>> validateAccessForRecords(String originID, Function<List<String>, List<String>> accessChecker, DSOrigin origin) {
         if (origin == null) {
             throw new InvalidArgumentServiceException(String.format(
-                    Locale.ROOT, "The origin '%s' was unknown. Known origins are %s",
+                    Locale.ROOT, "The collection '%s' was unknown. Known collections are %s",
                     originID,
                     originHandler.getOrigins().stream().map(DSOrigin::getId).collect(Collectors.toList())));
         }
@@ -149,28 +204,7 @@ public class PresentFacade {
                     records.stream() : // No need for checking as all IDs passed
                     records.stream().filter(record -> allowedIDs.contains(record.getId()));
         };
-
-        // enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON', "StorageRecord"]
-        switch (format.toUpperCase(Locale.ROOT)) {
-            case "JSON-LD": return getRecordsData(
-                    origin, mTime, maxRecords,
-                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.json,
-                    accessFilter);
-            case "JSON-LD-LINES": return getRecordsData(
-                    origin, mTime, maxRecords,
-                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.jsonl, accessFilter);
-            case "MODS": return getRecordsData(
-                    origin, mTime, maxRecords,
-                    httpServletResponse, "MODS", ExportWriterFactory.FORMAT.xml, accessFilter);
-            case "STORAGERECORD": return getRecordsFull(
-                    origin, mTime, maxRecords,
-                    httpServletResponse, ExportWriterFactory.FORMAT.json, accessFilter);
-            case "STORAGERECORD-LINES": return getRecordsFull(
-                    origin, mTime, maxRecords,
-                    httpServletResponse, ExportWriterFactory.FORMAT.jsonl, accessFilter);
-            case "SOLRJSON": return getRecordsSolr(origin, mTime, maxRecords, httpServletResponse, accessFilter);
-            default: throw new InvalidArgumentServiceException("The format '" + format + "' is not supported");
-        }
+        return accessFilter;
     }
 
     // Only deliver the data-part of the Records
@@ -199,7 +233,7 @@ public class PresentFacade {
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
-                origin.getDSRecords(mTime, maxRecords, recordView, accessFilter) // Does not contain deleted records
+                origin.getDSRecordsAll(mTime, maxRecords, recordView, accessFilter) // Does not contain deleted records
                         .peek(record -> record.setData(DataCleanup.removeXMLDeclaration(record.getData())))
                         .forEach(writer::write);
             }

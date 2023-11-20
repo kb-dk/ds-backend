@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -174,28 +175,73 @@ public class DSOrigin {
     public Stream<DsRecordDto> getDSRecords(
             Long mTime, Long maxRecords, String format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         View view = getView(format);
-        log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
+        log.debug("Calling storage.getDSRecordsRecordTypeLocalTree(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
             // 35 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
             return ExtractionUtils.splitToLists(
                             storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords), 35)
                     .flatMap(accessFilter)
-                    .peek(record -> {
-                        try {
-                            record.data(view.apply(record));
-                        } catch (Exception e) {
-                            throw new RuntimeTransformerException(
-                                    "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
-
-                        }
-                    });
+                    .peek(safeView(format, view));
         } catch (Exception e) {
             log.warn("Exception calling getDSRecords with origin='{}', mTime={}, maxRecords={}",
                      getId(), mTime, maxRecords, e);
             throw new InternalServiceException(
                     "Internal exception requesting records from origin '" + getId() + "' in format " + format);
         }
+    }
+
+    /**
+     * Returns a stream of records with IDs of parent and child records.
+     * All types of records are returned.
+     * <p>
+     * The logic is complicated by the need to check for access to the IDs:
+     * The raw stream of records is split into batches in order to lower the amount of external calls to ds-license.
+     * The {@code flatMap(accessFilter)} processes such a batch (a list of {@code DsRecordDto}s) and flattens the
+     * result to a regular stream of {@code DsRecordDto}s.
+     * @param mTime  starting point in time (epoch * 1000) for the records to deliver, exclusive.
+     * @param maxRecords the maximum number of records to deliver. -1 means no limit.
+     * @param format the format of the record. See {@link #getViews()} for available formats.
+     * @param accessFilter filters which records should be delivered.
+     * @return a stream of records in the requested format.
+     * @throws ServiceException if anything went wrong during construction of the stream.
+     */
+    public Stream<DsRecordDto> getDSRecordsAll(
+            Long mTime, Long maxRecords, String format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
+        View view = getView(format);
+        log.debug("Extracting with the following view: '{}'", view);
+        log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
+                origin, mTime, maxRecords);
+        try {
+            // 35 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
+            return ExtractionUtils.splitToLists(
+                            storage.getDSRecords(origin, mTime, maxRecords), 35)
+                    .flatMap(accessFilter)
+                    .peek(safeView(format, view));
+        } catch (Exception e) {
+            log.warn("Exception calling getDSRecordsRaw with origin='{}', mTime={}, maxRecords={}",
+                    getId(), mTime, maxRecords, e);
+            throw new InternalServiceException(
+                    "Internal exception requesting records from origin '" + getId() + "' in format " + format);
+        }
+    }
+
+    /**
+     * Applies the given view to record
+     * @param format which the transformation is transforming to.
+     * @param view to apply to record.
+     * @return a transformed record, transformed with input view.
+     */
+    private static Consumer<DsRecordDto> safeView(String format, View view) {
+        return record -> {
+            try {
+                record.data(view.apply(record));
+            } catch (Exception e) {
+                throw new RuntimeTransformerException(
+                        "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
+
+            }
+        };
     }
 
     /**

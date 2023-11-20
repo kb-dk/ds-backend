@@ -164,6 +164,7 @@ public class DSStorage implements Storage {
                 long request = pending < batchCount ? (int) pending : batchCount;
                 try {
                     if (recordType == null) {
+                        log.debug("Calling the raw endpoint.");
                         records = storageClient.getRecordsModifiedAfter(finalOrigin, lastMTime.get(), request);
                     } else {
                         records = storageClient.getRecordsByRecordTypeModifiedAfterLocalTree(finalOrigin, recordType, lastMTime.get(), request);
