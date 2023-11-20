@@ -23,6 +23,8 @@
   <xsl:param name="recordID"/>
   <xsl:param name="manifestation"/>
 
+  <!-- MAIN TEMPLATE. This template delegates, which fields are to be created for each schema.org object.
+       Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
   <xsl:template match="/">
     <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
          This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
@@ -40,12 +42,16 @@
         </xsl:choose>
       </xsl:variable>
 
+      <!-- First three fields for schema.org are these no matter which object the transformer transforms to. -->
       <f:map>
         <f:string key="@context">http://schema.org/</f:string>
         <f:string key="@type"><xsl:value-of select="$type"/></f:string>
         <f:string key="id">
             <xsl:value-of select="$recordID"/>
         </f:string>
+
+        <!-- TODO: Here should be a choose statement, which handles the overall transformation for either VideoObject or
+             AudioObject -->
 
         <!-- Extract PBCore metadata -->
         <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
@@ -55,7 +61,7 @@
           </xsl:call-template>
         </xsl:for-each>
 
-        <!-- Manifestations are extracted here. I would like to create a template for this.
+        <!-- TODO: Manifestations are extracted here. I would like to create a template for this.
             However, this is quite tricky when using the document() function -->
         <xsl:if test="$manifestation != ''">
           <xsl:variable name="manifestationRef">
