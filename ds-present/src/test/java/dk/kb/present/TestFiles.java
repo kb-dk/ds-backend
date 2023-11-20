@@ -26,6 +26,7 @@ public class TestFiles {
     public static final String PVICA_RECORD_33e30aa9 = "internal_test_files/tvMetadata/33e30aa9-d216-4216-aabf-b28d2b465215.xml";
     public static final String PVICA_RECORD_b346acc8 = "internal_test_files/tvMetadata//b346acc8-bcb2-41cd-bab1-be58bb0665e0.xml";
     public static final String PVICA_RECORD_e683b0b8 = "internal_test_files/tvMetadata/e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml";
+    // White program radio metadata from 1966
     public static final String PVICA_RECORD_c295ae6c = "internal_test_files/tvMetadata/c295ae6c-fd34-4694-a9cc-4204b4a9f3a0.xml";
     public static final String CUMULUS_RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
     public static final String CUMULUS_RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";

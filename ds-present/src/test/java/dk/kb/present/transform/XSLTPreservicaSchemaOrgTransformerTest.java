@@ -239,6 +239,11 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
                 "\"PropertyID\":\"WhiteProgramID\"," +
                 "\"value\":\"A-1966-03-20-P-0197_059\""));
     }
+    @Test
+    void noShowViewcodeForRadio() throws IOException {
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_c295ae6c);
+        Assertions.assertFalse(radio.contains("kb:showviewcode"));
+    }
 
     @Test
     void noAspectRatioForRadio() throws IOException {

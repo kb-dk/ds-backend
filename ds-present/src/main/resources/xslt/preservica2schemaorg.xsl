@@ -551,7 +551,7 @@
         </f:string>
       </xsl:when>
       <!--Extract internal showviewcode -->
-      <xsl:when test="f:starts-with(. , 'showviewcode:')">
+      <xsl:when test="$type = 'VideoObject' and f:starts-with(. , 'showviewcode:')">
         <f:string key="kb:showviewcode">
           <xsl:value-of select="f:substring-after(. , 'showviewcode:')"/>
         </f:string>
