@@ -36,7 +36,6 @@
        affect both how text is indexed and queried.
   -->
   <luceneMatchVersion>9.3</luceneMatchVersion>
-
   <!-- <lib/> directives can be used to instruct Solr to load any Jars
        identified and use them to resolve any "plugins" specified in
        your solrconfig.xml or schema.xml (ie: Analyzers, Request
@@ -591,7 +590,7 @@
      Circuit Breaker Section - This section consists of configurations for
      circuit breakers
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-  <circuitBreaker>
+  <circuitBreaker class="solr.CircuitBreakerManager" enabled="true">
     <!-- Enable Circuit Breakers
 
      Circuit breakers are designed to allow stability and predictable query

@@ -15,7 +15,7 @@ Developed and maintained by the Royal Danish Library.
 ## Test run
 
 Build and start the service using jetty with
-```
+```shell
 mvn package jetty:run
 ```
 After this, the Swagger UI should be available at <http://localhost:9073/ds-present/api/>. 
@@ -40,40 +40,130 @@ After this, a record for ID `doms.radio:albert-einstein.xml` should be delivered
 
 ## Test with Solr
 
-### Setup Solr
+### Solr fundamentals
+
+In DS, Solr operates with versioned collections. Upon first start or if a full reindex is needed, a timestamped collection is created. Access to the collection is done through two aliases:
+
+* **ds** is used for searching
+* **ds-write** is used for updating
+
+Normally the two aliases will point to the same timestamped collection, but if a full index rebuild is underway, **ds** will point to the complete old collection while **ds-write** will point to the new collection being created. When the full index rebuild has finished, **ds** will be switched to the new collection.
+
+This method ensures that there are no disruptions to Solr search. It is used in production at the Royal Danish Library and also on devel + stage for consistency.
+
+The how-to below expects the version of the Solr configuration to be specified in `schema.xml` as a special field looking like this:
+```xml
+ <field name="_ds_1.0.0_" type="string" indexed="false" stored="false"/>
+```
+If the schema is changed, the version must be updated using [Semantic Versioning](https://semver.org/)
+
+### Initial setup of Solr Cloud
 
 ds-present comes with convenience scripts for downloading, installing and starting Solr 9 in Cloud mode.
 
 ```shell
   bin/cloud_install.sh
   bin/cloud_start.sh
-  bin/cloud_sync.sh src/main/solr/dssolr/conf/ ds-conf ds
+ 
+  bin/cloud_ds.sh new
+  bin/cloud_ds.sh align
 ```
 
 Check that the collection was created by visiting
 [http://localhost:10007/solr/#/~cloud?view=graph](http://localhost:10007/solr/#/~cloud?view=graph)
 
-After this Solr is available at http://localhost:10007/solr/ and can be stopped and started with
-```
+After this Solr is available at http://localhost:10007/solr/ 
+
+### Operating Solr
+
+The cloud can be stopped and started with
+```shell
 bin/cloud_stop.sh
 bin/cloud_start.sh
 ```
 
-If the Solr configuration is changed, force an update of `ds` with
+Aliases and collections can be seen from the admin gui or by calling
+```shell
+bin/cloud_alias.sh
 ```
-FORCE_CONFIG=true bin/cloud_sync.sh src/main/solr/dssolr/conf/ ds-conf ds
-```
-
-Clear all records in the `ds` collection, but keep the collection with
-```
-bin/cloud_clear.sh ds
-```
-
-Fully delete the `ds` collection with
-```
-bin/cloud_delete.sh ds
+and
+```shell
+bin/cloud_status.sh
 ```
 
+Clear all records in the `ds-20231114-1446` collection, but keep the collection:
+```shell
+bin/cloud_clear.sh ds-20231114-1446
+```
+
+Fully delete a concrete collection, e.g. `ds-20231114-1446`:
+```shell
+bin/cloud_delete.sh ds-20231114-1446
+```
+
+### Configuration update without reindex
+
+
+If the Solr configuration is changed in a way that does not require a full reindex, the
+configuration can be assigned to an existing collection.
+
+The existing collection should be the one that the alias `ds-write` points to.
+In that case the updated configuration can be assigned with
+```shell
+bin/cloud_ds.sh update
+```
+If not, the aliases and collections can be listed with `bin/cloud_alias.sh` and the 
+relevant collection can be fiven as argument
+```shell
+bin/cloud_ds.sh update <a-specific-collection>
+```
+
+If this is during development and the Solr config version has not been bumped, the update can be forced:
+```shell
+FORCE_CONFIG=true bin/cloud_ds.sh update
+```
+
+
+### Full reindex
+
+If a fresh index is needed, the alias mehanism ensures that this is done without disrupting
+the existing collection.
+
+Create a new empty index with
+```shell
+bin/cloud_ds.sh new
+```
+This will create a new index and set the `ds-write` alias to point to it. It can be inspected with
+```shell
+bin/cloud_alias.sh
+```
+which should give something like
+
+```
+Aliases:
+{
+  "ds-write": "ds-20231116-1240",
+  "ds": "ds-20231116-1045"
+}
+
+Collections:
+ds-20231116-1045
+ds-20231116-1051
+ds-20231116-1240
+```
+Note how `ds-write` and `ds` points to different collections.
+
+
+Perform the full reindex (`http://<develserver>/ds-datahandler/api/#/ds-datahandler/solrIndex`).
+Users of the index (`ds-license` and `ds-discover`) will continue to query the old index
+while this takes place.
+
+When the index has finished, adjust the **ds** alias to point to the new full collection
+```shell
+bin/cloud_ds.sh align
+```
+
+Users of the index (`ds-license` and `ds-discover`) will now use the new index.
 
 ### Extract SolrJSONDocuments and index in Solr
 
@@ -100,12 +190,12 @@ copy `conf/ds-present-behaviour.yaml` to `conf/ds-present-environment.yaml` and 
 ## Build & run
 
 Build with
-``` 
+```shell 
 mvn package
 ```
 
 Test the webservice with
-```
+```shell
 mvn jetty:run
 ```
 
