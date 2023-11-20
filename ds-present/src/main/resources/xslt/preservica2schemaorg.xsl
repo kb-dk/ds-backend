@@ -95,6 +95,7 @@
              https://github.com/kb-dk/ds-present/blob/spolorm-now-works/src/main/resources/xslt/mods2schemaorg.xsl -->
         <xsl:call-template name="kb-internal">
           <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+          <xsl:with-param name="type" select="$type"/>
         </xsl:call-template>
 
       </f:map>
@@ -378,7 +379,7 @@
     </xsl:if>
 
     <!-- Is the resource hd? or do we know anything about the video quality=? -->
-    <xsl:if test="$type = 'Moving Image' and pbcoreInstantiation/formatStandard != ''">
+    <xsl:if test="$type = 'VideoObject' and pbcoreInstantiation/formatStandard != ''">
       <f:string key="videoQuality"><xsl:value-of select="pbcoreInstantiation/formatStandard"/></f:string>
     </xsl:if>
   </xsl:template>
@@ -387,6 +388,7 @@
        These values can be almost anything ranging from identifiers to acces conditions.-->
   <xsl:template name="kb-internal">
     <xsl:param name="pbcExtensions"/>
+    <xsl:param name="type"/>
     <f:map key="kb:internal">
       <!-- Extract subgenre if present -->
       <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
@@ -397,7 +399,7 @@
         </xsl:if>
       </xsl:for-each>
       <!-- Extract aspect ratio-->
-      <xsl:if test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio">
+      <xsl:if test="$type = 'VideoObject' and /xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio">
         <f:string key="kb:aspect_ratio">
           <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
         </f:string>
@@ -411,15 +413,17 @@
           <f:boolean key="kb:surround_sound"><xsl:value-of select="false()"/></f:boolean>
         </xsl:when>
       </xsl:choose>
-      <!-- Create boolean for color-->
-      <xsl:choose>
-        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
-          <f:boolean key="kb:color"><xsl:value-of select="true()"/></f:boolean>
-        </xsl:when>
-        <xsl:otherwise>
-          <f:boolean key="kb:color"><xsl:value-of select="false()"/></f:boolean>
-        </xsl:otherwise>
-      </xsl:choose>
+      <!-- Create boolean for color for tv resources-->
+      <xsl:if test="$type = 'VideoObject'">
+        <xsl:choose>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
+            <f:boolean key="kb:color"><xsl:value-of select="true()"/></f:boolean>
+          </xsl:when>
+          <xsl:otherwise>
+            <f:boolean key="kb:color"><xsl:value-of select="false()"/></f:boolean>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
       <!-- Create boolean for premiere-->
       <xsl:choose>
         <xsl:when test="$pbcExtensions[f:contains(., 'premiere:ikke premiere')]">
@@ -465,7 +469,9 @@
       <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
            Some have external value, while others primarily are for internal usage.-->
       <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
-        <xsl:call-template name="extension-extractor"/>
+        <xsl:call-template name="extension-extractor">
+        <xsl:with-param name="type" select="$type"/>
+        </xsl:call-template>
       </xsl:for-each>
 
       <!-- Extracts information on video padding. -->
@@ -492,6 +498,7 @@
   <!-- EXTRACT VALUES FROM PBCORE EXTENSIONS TO KB:INTERNAL MAP. These extensions can contain many different values.
        Some might be relevant in relation to schema.org and can be elevated to the correct structure.-->
   <xsl:template name="extension-extractor">
+    <xsl:param name="type"/>
     <!-- Extracts multiple internal ids. -->
     <xsl:choose>
       <xsl:when test="f:starts-with(. , 'hovedgenre_id:')">
@@ -558,7 +565,7 @@
       </xsl:when>
       <!-- TODO: Check if has_subtitles fits in schema.org-->
       <!-- Boolean for if the program contains subtitles.-->
-      <xsl:when test="f:starts-with(. , 'tekstet:')">
+      <xsl:when test="$type = 'VideoObject' and f:starts-with(. , 'tekstet:')">
         <!-- Inner XSLT  choose to determine value of boolean -->
         <xsl:choose>
           <xsl:when test=". = 'tekstet:ikke tekstet'">
@@ -575,7 +582,7 @@
       </xsl:when>
       <!--TODO: Check if subtitles for hearing impaired can be described in schema.org'-->
       <!-- Boolean value - does the resource contain subtitles for hearing impaired?-->
-      <xsl:when test="f:starts-with(. , 'th:')">
+      <xsl:when test="$type = 'VideoObject' and f:starts-with(. , 'th:')">
         <!-- Inner XSLT  choose to determine value of boolean -->
         <xsl:choose>
           <xsl:when test=". = 'th:ikke tekstet for hørehæmmede'">
@@ -591,7 +598,7 @@
         </xsl:choose>
       </xsl:when>
       <!-- Is the resource teletext?-->
-      <xsl:when test="f:starts-with(. , 'ttv:')">
+      <xsl:when test="$type = 'VideoObject' and f:starts-with(. , 'ttv:')">
         <!-- Inner XSLT  choose to determine value of boolean -->
         <xsl:choose>
           <xsl:when test=". = 'ttv:ikke tekst-tv'">

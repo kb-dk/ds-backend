@@ -234,6 +234,31 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
+    void noAspectRatioForRadio() throws IOException {
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        Assertions.assertFalse(radio.contains("\"kb:aspect_ratio\":"));
+    }
+
+    @Test
+    void noColorForRadio() throws IOException {
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        Assertions.assertFalse(radio.contains("\"kb:color\":"));
+    }
+    @Test
+    void noTeletextForRadio() throws IOException {
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        Assertions.assertFalse(radio.contains("\"kb:is_teletext\":"));
+    }
+
+    @Test
+    void noSubtitlesForRadio() throws IOException {
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        Assertions.assertFalse(radio.contains("\"kb:has_subtitles\":"));
+        Assertions.assertFalse(radio.contains("\"kb:has_subtitles_for_hearing_impaired\":"));
+    }
+
+
+    @Test
     void testKBInternalMap() throws IOException {
         // TODO: Add individual tests for all params
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
