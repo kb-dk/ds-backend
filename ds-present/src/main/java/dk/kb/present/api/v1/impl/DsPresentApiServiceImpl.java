@@ -160,12 +160,14 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             asJsonLines = false;
         }
 
+        // Returning all IDs.
+        // When using AccessUtil.createAccessFilter(RECORD_ACCESS_TYPE) online deliverable units are returned
         try {
             long finalMTime = mTime == null ? 0L : mTime;
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecordsRaw(
                     httpServletResponse, origin, finalMTime, finalMaxRecords,
-                    AccessUtil.createAccessFilter(RECORD_ACCESS_TYPE), asJsonLines);
+                    ids -> ids, asJsonLines);
         } catch (Exception e){
             throw handleException(e);
         }
