@@ -25,6 +25,7 @@ public class TestFiles {
     public static final String PVICA_RECORD_4b18d02d = "internal_test_files/tvMetadata/4b18d02d-a421-4026-b522-66436a56bc0a.xml";
     public static final String PVICA_RECORD_33e30aa9 = "internal_test_files/tvMetadata/33e30aa9-d216-4216-aabf-b28d2b465215.xml";
     public static final String PVICA_RECORD_b346acc8 = "internal_test_files/tvMetadata//b346acc8-bcb2-41cd-bab1-be58bb0665e0.xml";
+    public static final String PVICA_RECORD_e683b0b8 = "internal_test_files/tvMetadata/e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml";
     public static final String CUMULUS_RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
     public static final String CUMULUS_RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
     public static final String CUMULUS_RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
@@ -50,4 +51,5 @@ public class TestFiles {
     public static final String CUMULUS_RECORD_8e608940 = "xml/copyright_extraction/8e608940-d6db-11e3-8d2e-0016357f605f.xml";
     public static final String CUMULUS_RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
     public static final String CUMULUS_RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
+
 }

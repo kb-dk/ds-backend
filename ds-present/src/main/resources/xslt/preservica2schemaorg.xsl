@@ -378,7 +378,7 @@
     </xsl:if>
 
     <!-- Is the resource hd? or do we know anything about the video quality=? -->
-    <xsl:if test="pbcoreInstantiation/formatStandard != ''">
+    <xsl:if test="$type = 'Moving Image' and pbcoreInstantiation/formatStandard != ''">
       <f:string key="videoQuality"><xsl:value-of select="pbcoreInstantiation/formatStandard"/></f:string>
     </xsl:if>
   </xsl:template>
