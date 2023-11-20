@@ -233,7 +233,7 @@ public class FileStorage implements Storage {
         if (!stripPrefix) {
             return recordID;
         }
-        // TODO: Switch to using .config.record.id.pattern
+        // TODO: Switch to using .record.id.pattern
         String[] tokens = recordID.split(":", 2);
         if (tokens.length < 2) {
             log.warn("Attempted to strip prefix from '" + recordID + "' but there was no '_' delimiter");

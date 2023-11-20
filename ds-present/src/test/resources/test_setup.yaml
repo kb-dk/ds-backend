@@ -1,147 +1,145 @@
 #
 # Only used for unit testing
 #
-config:
+# The client for ds-license will be mocked in the relevant unit tests.
+licensemodule:
+  url: http://example.com
+  allowall: false
 
-  # The client for ds-license will be mocked in the relevant unit tests.
-  licensemodule:
-    url: http://example.com
-    allowall: false
+# Only some of the sample files can be properly transformed to SolrJSONDocuments
+filewhitelist: &whitelist
+   - '.*albert-einstein.xml'
+   - '.*hvidovre-teater.xml'
+   - '.*simonsen-brandes.xml'
+   - '.*tystrup-soroe.xml'
+   - '.*homiliae-super-psalmos.xml'
+   - '.*work_on_logic.xml'
+   - '.*joergen_hansens_visebog.xml'
+   - '.*responsa.xml'
 
-  # Only some of the sample files can be properly transformed to SolrJSONDocuments
-  filewhitelist: &whitelist
-     - '.*albert-einstein.xml'
-     - '.*hvidovre-teater.xml'
-     - '.*simonsen-brandes.xml'
-     - '.*tystrup-soroe.xml'
-     - '.*homiliae-super-psalmos.xml'
-     - '.*work_on_logic.xml'
-     - '.*joergen_hansens_visebog.xml'
-     - '.*responsa.xml'
+# List of backing storages. The real URLs should be overridden in ds-present-environment.yaml
+storages:
+  - test:
+      order: sequential
+      backends:
+        # Problematic: Can we rely on the test being started with the working folder at the root of the project?
 
-  # List of backing storages. The real URLs should be overridden in ds-present-environment.yaml
-  storages:
-    - test:
-        order: sequential
-        backends:
-          # Problematic: Can we rely on the test being started with the working folder at the root of the project?
-      
-        #    - folder:
-        #       root: 'src/test/resources/xml'
-        #      extension: '.xml'
-        #     whitelist: *whitelist
-        #  - folder:
-        #      root: 'src/test/resources/xml/corpus'
-        #      extension: '.xml'
-        #      whitelist: *whitelist
-          - folder:
-              root: 'src/test/resources/xml/copyright_extraction'
-              extension: '.xml'
-          - folder:
-              root: 'src/test/resources/internal_test_files/tvMetadata'
-              extension: '.xml'
-              
+      #    - folder:
+      #       root: 'src/test/resources/xml'
+      #      extension: '.xml'
+      #     whitelist: *whitelist
+      #  - folder:
+      #      root: 'src/test/resources/xml/corpus'
+      #      extension: '.xml'
+      #      whitelist: *whitelist
+        - folder:
+            root: 'src/test/resources/xml/copyright_extraction'
+            extension: '.xml'
+        - folder:
+            root: 'src/test/resources/internal_test_files/tvMetadata'
+            extension: '.xml'
 
-  # Settings for handling at the record level
-  record:
-    id:
-      # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the collection prefix
-      # and the second being the collection-specifix par of the ID
-      # Mandatory. Suggested value: '$([a-z][0-9][.]):([a-z][0-9][.-_])$', e.g. 'images.dsfl:image1234'
-      pattern: '^([a-z0-9.]+):([a-z0-9._-]+)$'
-  origin:
-    prefix:
-      # Pattern for acceptable collection prefixes. This will practically always be a mirror of the first capturing
-      # group for record.id.pattern.
-      # Primarily used for verifying configuration.
-      # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
-      pattern: '[a-z0-9.]+'
 
-  # The collections available for this instance of ds-present 
-  origins:
-    # Straight forward collection with the core format being MODS
-    - dsfl: # ds-present internal
-        prefix: 'local.mods' # The prefix to match on incoming IDs
-        origin: 'ds.test'
-        description: 'Local records, mostly biographical'
-        recordrequesttype: 'DELIVERABLEUNIT'
+# Settings for handling at the record level
+record:
+  id:
+    # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the collection prefix
+    # and the second being the collection-specifix par of the ID
+    # Mandatory. Suggested value: '$([a-z][0-9][.]):([a-z][0-9][.-_])$', e.g. 'images.dsfl:image1234'
+    pattern: '^([a-z0-9.]+):([a-z0-9._-]+)$'
+origin:
+  prefix:
+    # Pattern for acceptable collection prefixes. This will practically always be a mirror of the first capturing
+    # group for record.id.pattern.
+    # Primarily used for verifying configuration.
+    # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
+    pattern: '[a-z0-9.]+'
 
-        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
-        views:
-          - mods:
-              mime: 'application/xml'
-              strategy: 'NONE'
-              transformers:
-                - identity: # No transformation steps as mods is the core format for images-dsfl
-          - json-ld:
-              mime: 'application/json'
-              strategy: 'NONE'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2schemaorg.xsl'
-                    injections:
-                    - imageserver: 'https://example.com/imageserver/'
-                    - old_imageserver: 'http://kb-images.kb.dk'
-          - solrjson:
-              mime: 'application/json'
-              strategy: 'NONE'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2solr.xsl'
-                    injections:
-                    - imageserver: 'https://example.com/imageserver/'
-                    - old_imageserver: 'http://kb-images.kb.dk'
-          - raw:
-              mime: 'text/plain'
-              strategy: 'NONE'
-              transformers:
-                - fail:
-                    message: 'Raw format contains confidential information and cannot be delivered'
-          # For testing purposes
-          - raw-bypass:
-              mime: 'text/plain'
-              transformers:
-                - identity:
-    - "ds.radiotv": # ds-present internal
-            prefix: 'local.radiotv' # The prefix to match on incoming IDs
-            origin: 'ds.radiotv'
-            description: 'Local records'
-            recordrequesttype: 'DELIVERABLEUNIT'
-            # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
-            views:
-              - mods:
-                  mime: 'application/xml'
-                  strategy: 'NONE'
-                  transformers:
-                    - identity: # No transformation steps as mods is the core format for images-dsfl
-              - json-ld:
-                  mime: 'application/json'
-                  strategy: 'MANIFESTATION'
-                  transformers:
-                    - xslt:
-                        stylesheet: 'xslt/preservica2schemaorg.xsl'
-                        injections:
+# The collections available for this instance of ds-present
+origins:
+  # Straight forward collection with the core format being MODS
+  - dsfl: # ds-present internal
+      prefix: 'local.mods' # The prefix to match on incoming IDs
+      origin: 'ds.test'
+      description: 'Local records, mostly biographical'
+      recordrequesttype: 'DELIVERABLEUNIT'
+
+      # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+      views:
+        - mods:
+            mime: 'application/xml'
+            strategy: 'NONE'
+            transformers:
+              - identity: # No transformation steps as mods is the core format for images-dsfl
+        - json-ld:
+            mime: 'application/json'
+            strategy: 'NONE'
+            transformers:
+              - xslt:
+                  stylesheet: 'xslt/mods2schemaorg.xsl'
+                  injections:
+                  - imageserver: 'https://example.com/imageserver/'
+                  - old_imageserver: 'http://kb-images.kb.dk'
+        - solrjson:
+            mime: 'application/json'
+            strategy: 'NONE'
+            transformers:
+              - xslt:
+                  stylesheet: 'xslt/mods2solr.xsl'
+                  injections:
+                  - imageserver: 'https://example.com/imageserver/'
+                  - old_imageserver: 'http://kb-images.kb.dk'
+        - raw:
+            mime: 'text/plain'
+            strategy: 'NONE'
+            transformers:
+              - fail:
+                  message: 'Raw format contains confidential information and cannot be delivered'
+        # For testing purposes
+        - raw-bypass:
+            mime: 'text/plain'
+            transformers:
+              - identity:
+  - "ds.radiotv": # ds-present internal
+          prefix: 'local.radiotv' # The prefix to match on incoming IDs
+          origin: 'ds.radiotv'
+          description: 'Local records'
+          recordrequesttype: 'DELIVERABLEUNIT'
+          # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+          views:
+            - mods:
+                mime: 'application/xml'
+                strategy: 'NONE'
+                transformers:
+                  - identity: # No transformation steps as mods is the core format for images-dsfl
+            - json-ld:
+                mime: 'application/json'
+                strategy: 'MANIFESTATION'
+                transformers:
+                  - xslt:
+                      stylesheet: 'xslt/preservica2schemaorg.xsl'
+                      injections:
+                      - imageserver: 'https://example.com/imageserver/'
+                      - streamingserver: "here_should_be_a_wowza_url"
+            - solrjson:
+                mime: 'application/json'
+                strategy: 'MANIFESTATION'
+                transformers:
+                  - xslt:
+                      stylesheet: 'xslt/preservica2schemaorg.xsl'
+                      injections:
                         - imageserver: 'https://example.com/imageserver/'
                         - streamingserver: "here_should_be_a_wowza_url"
-              - solrjson:
-                  mime: 'application/json'
-                  strategy: 'MANIFESTATION'
-                  transformers:
-                    - xslt:
-                        stylesheet: 'xslt/preservica2schemaorg.xsl'
-                        injections:
-                          - imageserver: 'https://example.com/imageserver/'
-                          - streamingserver: "here_should_be_a_wowza_url"
-                    - xsltsolr:
-                        stylesheet: 'xslt/schemaorg2solr.xsl'
-              - raw:
-                  mime: 'text/plain'
-                  strategy: 'NONE'
-                  transformers:
-                    - fail:
-                        message: 'Raw format contains confidential information and cannot be delivered'
-              # For testing purposes
-              - raw-bypass:
-                  mime: 'text/plain'
-                  transformers:
-                    - identity:
+                  - xsltsolr:
+                      stylesheet: 'xslt/schemaorg2solr.xsl'
+            - raw:
+                mime: 'text/plain'
+                strategy: 'NONE'
+                transformers:
+                  - fail:
+                      message: 'Raw format contains confidential information and cannot be delivered'
+            # For testing purposes
+            - raw-bypass:
+                mime: 'text/plain'
+                transformers:
+                  - identity:

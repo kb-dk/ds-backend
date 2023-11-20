@@ -27,7 +27,7 @@ class ViewTest {
     @Test
     void identity() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML dsflConf = conf.getYAMLList(".config.origins").get(0);
+        YAML dsflConf = conf.getYAMLList(".origins").get(0);
         View view = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(0), dsflConf.getSubMap("dsfl").getString("origin"));
         DsRecordDto record = new DsRecordDto();
         record.setData("SameAsInput");
@@ -39,7 +39,7 @@ class ViewTest {
     @Test
     void jsonldMods() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML dsflConf = conf.getYAMLList(".config.origins").get(0);
+        YAML dsflConf = conf.getYAMLList(".origins").get(0);
         View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
 
@@ -55,7 +55,7 @@ class ViewTest {
             return;
         }
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML radiotvConf = conf.getYAMLList(".config.origins").get(1);
+        YAML radiotvConf = conf.getYAMLList(".origins").get(1);
         View jsonldView = new View(radiotvConf.getSubMap("\"ds.radiotv\"").getYAMLList("views").get(1), radiotvConf.getSubMap("\"ds.radiotv\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
@@ -71,7 +71,7 @@ class ViewTest {
             return;
         }
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML radiotvConf = conf.getYAMLList(".config.origins").get(1);
+        YAML radiotvConf = conf.getYAMLList(".origins").get(1);
         View solrView = new View(radiotvConf.getSubMap("\"ds.radiotv\"").getYAMLList("views").get(2), radiotvConf.getSubMap("\"ds.radiotv\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String("internal_test_files/tvMetadata/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
@@ -85,7 +85,7 @@ class ViewTest {
     @Test
     void solrJson() throws Exception {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML dsflConf = conf.getYAMLList(".config.origins").get(0);
+        YAML dsflConf = conf.getYAMLList(".origins").get(0);
         View solrView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
 
