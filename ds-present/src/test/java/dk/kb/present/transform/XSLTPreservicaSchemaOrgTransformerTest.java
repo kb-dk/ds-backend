@@ -274,34 +274,57 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void testKBInternalMap() throws IOException {
         // TODO: Add individual tests for all params
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
-        Assertions.assertTrue(transformedJSON.contains("\"kb:internal\":{" +
-                                                "\"kb:genre_sub\":\"Alle\"," +
-                                                "\"kb:aspect_ratio\":\"16:9\"," +
-                                                "\"kb:surround_sound\":false," +
-                                                "\"kb:color\":true," +
-                                                "\"kb:premiere\":false," +
-                                                "\"kb:format_identifier_ritzau\":\"81213310\"," +
-                                                "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," +
-                                                "\"kb:retransmission\":false," +
-                                                "\"kb:maingenre_id\":\"1\"," +
-                                                "\"kb:channel_id\":3," +
-                                                "\"kb:country_of_origin_id\":\"0\"," +
-                                                "\"kb:ritzau_program_id\":\"25101114\"," +
-                                                "\"kb:program_ophold\":false," +
-                                                "\"kb:subgenre_id\":\"708\"," +
-                                                "\"kb:episode_id\":\"0\"," +
-                                                "\"kb:season_id\":\"0\"," +
-                                                "\"kb:series_id\":\"0\"," +
-                                                "\"kb:has_subtitles\":false," +
-                                                "\"kb:has_subtitles_for_hearing_impaired\":false," +
-                                                "\"kb:is_teletext\":false," +
-                                                "\"kb:showviewcode\":\"0\"," +
-                                                "\"kb:padding_seconds\":15," +
-                                                "\"kb:access_individual_prohibition\":\"Nej\"," +
-                                                "\"kb:access_claused\":\"Nej\"," +
-                                                "\"kb:access_malfunction\":\"Nej\"" +
-                                                "}")
-        );
+        Assertions.assertTrue(transformedJSON.contains("\"kb:surround_sound\":false"));
+        Assertions.assertTrue(transformedJSON.contains("\"kb:color\":true"));
+        Assertions.assertTrue(transformedJSON.contains("\"kb:premiere\":false"));
+        Assertions.assertTrue(transformedJSON.contains("\"kb:retransmission\":false"));
+        Assertions.assertTrue(transformedJSON.contains("\"kb:program_ophold\":false"));
+        Assertions.assertTrue(transformedJSON.contains("\"kb:showviewcode\":\"0\""));
+        Assertions.assertTrue(transformedJSON.contains("\"kb:padding_seconds\":15"));
+    }
+    @Test
+    void testInternalGenreSub() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
+        Assertions.assertTrue(transformedJSON.contains("\"kb:genre_sub\":\"Alle\""));
+    }
+    @Test
+    void testInternalAspectRatio() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
+
+        Assertions.assertTrue(transformedJSON.contains("\"kb:aspect_ratio\":\"16:9\""));
+    }
+    @Test
+    void testInternalSubtitlesAndTeletext() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
+
+        Assertions.assertTrue(transformedJSON.contains("\"kb:has_subtitles\":false," +
+                                                        "\"kb:has_subtitles_for_hearing_impaired\":false," +
+                                                        "\"kb:is_teletext\":false"));
+    }
+    @Test
+    void testInternalAcces() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
+
+        Assertions.assertTrue(transformedJSON.contains("\"kb:access_individual_prohibition\":\"Nej\"," +
+                                                        "\"kb:access_claused\":\"Nej\"," +
+                                                        "\"kb:access_malfunction\":\"Nej\""));
+    }
+    @Test
+    void testInternalIds() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
+
+        Assertions.assertTrue(transformedJSON.contains("\"kb:subgenre_id\":\"708\"," +
+                                                        "\"kb:episode_id\":\"0\"," +
+                                                        "\"kb:season_id\":\"0\"," +
+                                                        "\"kb:series_id\":\"0\""));
+
+        Assertions.assertTrue(transformedJSON.contains("\"kb:maingenre_id\":\"1\"," +
+                                                        "\"kb:channel_id\":3," +
+                                                        "\"kb:country_of_origin_id\":\"0\"," +
+                                                        "\"kb:ritzau_program_id\":\"25101114\"" ));
+
+        Assertions.assertTrue(transformedJSON.contains("\"kb:format_identifier_ritzau\":\"81213310\"," +
+                "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," ));
     }
 
 
