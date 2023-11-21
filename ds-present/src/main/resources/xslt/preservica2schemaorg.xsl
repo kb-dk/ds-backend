@@ -42,72 +42,138 @@
         </xsl:choose>
       </xsl:variable>
 
-      <!-- First three fields for schema.org are these no matter which object the transformer transforms to. -->
-      <f:map>
-        <f:string key="@context">http://schema.org/</f:string>
-        <f:string key="@type"><xsl:value-of select="$type"/></f:string>
-        <f:string key="id">
-            <xsl:value-of select="$recordID"/>
-        </f:string>
-
-        <!-- TODO: Here should be a choose statement, which handles the overall transformation for either VideoObject or
-             AudioObject -->
-
-        <!-- Extract PBCore metadata -->
-        <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
-          <xsl:call-template name="pbc-metadata">
+      <!-- Choose which type of transformation to do, based on the input data.
+           This choose-statement decides, which of the following templates are to be used for the given record. -->
+      <xsl:choose>
+        <xsl:when test="$type = 'VideoObject'">
+          <xsl:call-template name="video-transformation">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
           </xsl:call-template>
-        </xsl:for-each>
+        </xsl:when>
+        <xsl:when test="$type = 'AudioObject'">
+          <xsl:call-template name="audio-transformation">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="generic-transformation">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
 
-        <!-- TODO: Manifestations are extracted here. I would like to create a template for this.
-            However, this is quite tricky when using the document() function -->
-        <xsl:if test="$manifestation != ''">
-          <xsl:variable name="manifestationRef">
-            <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef"/>
-          </xsl:variable>
-          <xsl:variable name="urlPrefix">
-            <xsl:choose>
-              <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">mp4:bart-access-copies-tv/</xsl:when>
-              <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">mp3:bart-access-copies-radio/</xsl:when>
-              <xsl:otherwise></xsl:otherwise>
-            </xsl:choose>
-          </xsl:variable>
-          <xsl:variable name="path">
-            <xsl:variable name="path_level1">
-              <xsl:value-of select="concat(substring($manifestationRef,1,2), '/')"/>
-            </xsl:variable>
-            <xsl:variable name="path_level2">
-              <xsl:value-of select="concat(substring($manifestationRef,3,2), '/')"/>
-            </xsl:variable>
-            <xsl:variable name="path_level3">
-              <xsl:value-of select="concat(substring($manifestationRef,5,2), '/')"/>
-            </xsl:variable>
-            <xsl:value-of select="concat($path_level1, $path_level2, $path_level3)"/>
-          </xsl:variable>
-          <xsl:variable name="streamingUrl">
-            <xsl:value-of select="concat($streamingserver, $urlPrefix,
-                                         $path, $manifestationRef,
-                                         '/playlist.m3u8')"/>
-          </xsl:variable>
-          <f:string key="contentUrl">
-            <!-- TODO: Add full url to content when possible-->
-            <xsl:value-of select="$streamingUrl"/>
-          </f:string>
-        </xsl:if>
-
-        <!-- This kb:internal map was how we've handled internal values in the past, see line 109 in this file:
-             https://github.com/kb-dk/ds-present/blob/spolorm-now-works/src/main/resources/xslt/mods2schemaorg.xsl -->
-        <xsl:call-template name="kb-internal">
-          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-          <xsl:with-param name="type" select="$type"/>
-        </xsl:call-template>
-
-      </f:map>
     </xsl:variable>
     <xsl:value-of select="f:xml-to-json($json)"/>
   </xsl:template>
+
+  <!-- TEMPLATE FOR TRANSFORMING VIDEOOBJECTS. -->
+  <xsl:template name="video-transformation">
+    <xsl:param name="type"/>
+    <xsl:param name="pbcExtensions"/>
+
+    <f:map>
+      <!-- Creates the first three fields for docs. -->
+      <xsl:call-template name="schema-context-and-type">
+        <xsl:with-param name="type" select="$type"/>
+      </xsl:call-template>
+
+      <!-- Extract PBCore metadata -->
+      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+        <xsl:call-template name="pbc-metadata">
+          <xsl:with-param name="type" select="$type"/>
+          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+        </xsl:call-template>
+      </xsl:for-each>
+
+      <!-- Extract manifestation -->
+      <xsl:call-template name="extract-manifestation"/>
+
+      <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
+      <xsl:call-template name="kb-internal">
+        <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+        <xsl:with-param name="type" select="$type"/>
+      </xsl:call-template>
+
+    </f:map>
+  </xsl:template>
+
+  <!-- TEMPLATE FOR TRANSFORMING AUDIOOBJECTS. -->
+  <xsl:template name="audio-transformation">
+    <xsl:param name="type"/>
+    <xsl:param name="pbcExtensions"/>
+
+    <f:map>
+      <!-- Creates the first three fields for docs. -->
+      <xsl:call-template name="schema-context-and-type">
+        <xsl:with-param name="type" select="$type"/>
+      </xsl:call-template>
+
+      <!-- Extract PBCore metadata -->
+      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+        <xsl:call-template name="pbc-metadata">
+          <xsl:with-param name="type" select="$type"/>
+          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+        </xsl:call-template>
+      </xsl:for-each>
+
+      <!-- Extract manifestation -->
+      <xsl:call-template name="extract-manifestation"/>
+
+      <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
+      <xsl:call-template name="kb-internal">
+        <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+        <xsl:with-param name="type" select="$type"/>
+      </xsl:call-template>
+
+    </f:map>
+  </xsl:template>
+
+  <!-- TEMPLATE FOR TRANSFORMING OBJECTS, WHICH ARE WRONGLY DEFINED.-->
+  <xsl:template name="generic-transformation">
+    <xsl:param name="type"/>
+    <xsl:param name="pbcExtensions"/>
+
+    <f:map>
+      <!-- Creates the first three fields for docs. -->
+      <xsl:call-template name="schema-context-and-type">
+        <xsl:with-param name="type" select="$type"/>
+      </xsl:call-template>
+
+      <!-- Extract PBCore metadata -->
+      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+        <xsl:call-template name="pbc-metadata">
+          <xsl:with-param name="type" select="$type"/>
+          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+        </xsl:call-template>
+      </xsl:for-each>
+
+      <!-- Extract manifestation -->
+      <xsl:call-template name="extract-manifestation"/>
+
+      <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
+      <xsl:call-template name="kb-internal">
+        <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+        <xsl:with-param name="type" select="$type"/>
+      </xsl:call-template>
+
+    </f:map>
+  </xsl:template>
+
+  <!-- CREATE THREE FIRST FIELDS FOR SCHEMAORG JSON: CONTEXT, TYPE AND ID. These fields are present in every document.-->
+  <xsl:template name="schema-context-and-type">
+    <xsl:param name="type"/>
+
+    <!-- First three fields for schema.org are these no matter which object the transformer transforms to. -->
+    <f:string key="@context">http://schema.org/</f:string>
+    <f:string key="@type"><xsl:value-of select="$type"/></f:string>
+    <f:string key="id">
+      <xsl:value-of select="$recordID"/>
+    </f:string>
+  </xsl:template>
+
 
   <!-- TEMPLATE FOR ACCESSING PBC METADATA.-->
   <xsl:template name="pbc-metadata">
@@ -399,8 +465,47 @@
     </xsl:if>
   </xsl:template>
 
+  <!-- EXTRACT MANIFESTATION FROM METADATA.-->
+  <xsl:template name="extract-manifestation">
+    <xsl:if test="$manifestation != ''">
+      <xsl:variable name="manifestationRef">
+        <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef"/>
+      </xsl:variable>
+      <xsl:variable name="urlPrefix">
+        <xsl:choose>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">mp4:bart-access-copies-tv/</xsl:when>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">mp3:bart-access-copies-radio/</xsl:when>
+          <xsl:otherwise></xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:variable name="path">
+        <xsl:variable name="path_level1">
+          <xsl:value-of select="concat(substring($manifestationRef,1,2), '/')"/>
+        </xsl:variable>
+        <xsl:variable name="path_level2">
+          <xsl:value-of select="concat(substring($manifestationRef,3,2), '/')"/>
+        </xsl:variable>
+        <xsl:variable name="path_level3">
+          <xsl:value-of select="concat(substring($manifestationRef,5,2), '/')"/>
+        </xsl:variable>
+        <xsl:value-of select="concat($path_level1, $path_level2, $path_level3)"/>
+      </xsl:variable>
+      <xsl:variable name="streamingUrl">
+        <xsl:value-of select="concat($streamingserver, $urlPrefix,
+                                         $path, $manifestationRef,
+                                         '/playlist.m3u8')"/>
+      </xsl:variable>
+      <f:string key="contentUrl">
+        <!-- TODO: Add full url to content when possible-->
+        <xsl:value-of select="$streamingUrl"/>
+      </f:string>
+    </xsl:if>
+  </xsl:template>
+
   <!-- TEMPLATE FOR EXTRACTING INTERNAL VALUES WHICH DON'T HAVE A SCHEMA.ORG DATA REPRESENTATION.
-       These values can be almost anything ranging from identifiers to acces conditions.-->
+       These values can be almost anything ranging from identifiers to acces conditions.
+       This kb:internal map was how we've handled internal values in the past, see line 109 in this file:
+       https://github.com/kb-dk/ds-present/blob/spolorm-now-works/src/main/resources/xslt/mods2schemaorg.xsl -->
   <xsl:template name="kb-internal">
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
