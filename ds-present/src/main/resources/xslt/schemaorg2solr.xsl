@@ -20,6 +20,7 @@
 
   <xsl:template name="initial-template" match="/">
     <xsl:variable name="solrjson">
+
       <f:map>
         <f:string key="resource_description">
           <xsl:value-of select="$schemaorg-xml('@type')"/>

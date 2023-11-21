@@ -54,6 +54,7 @@ import static dk.kb.present.TestFiles.PVICA_RECORD_44979f67;
 import static dk.kb.present.TestFiles.PVICA_RECORD_74e22fd8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_9d9785a8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
+import static dk.kb.present.TestFiles.PVICA_RECORD_e683b0b8;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -569,6 +570,11 @@ public class EmbeddedSolrTest {
         testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_two_file2UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
         testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_one_file1UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
 
+    }
+
+    @Test
+    void testIndexingOfRadioRecord() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "resource_description", "AudioObject");
     }
 
     /*
