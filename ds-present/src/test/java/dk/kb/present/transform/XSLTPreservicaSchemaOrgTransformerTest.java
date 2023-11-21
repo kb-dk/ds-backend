@@ -37,7 +37,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testSetup() throws IOException {
         //printSchemaOrgJson(PVICA_RECORD_74e22fd8);
-        printSchemaOrgJson(TestFiles.PVICA_RECORD_c295ae6c);
+        printSchemaOrgJson(TestFiles.PVICA_RECORD_accf8d1c);
         //printSchemaOrgJson(PVICA_RECORD_1F3A6A66);
         //printSchemaOrgJson(PVICA_RECORD_44979f67);
     }
@@ -64,7 +64,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testBroadcastDisplayName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_44979f67);
-        Assertions.assertTrue(transformedJSON.contains("\"broadcastDisplayName\":\"DR Ultra\"}"));
+        Assertions.assertTrue(transformedJSON.contains("\"broadcastDisplayName\":\"DR Ultra\",\"alternateName\":\"drultra\""));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void noAlternateName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_1F3A6A66);
-        Assertions.assertFalse(transformedJSON.contains("alternateName"));
+        Assertions.assertFalse(transformedJSON.contains("\"name\":\"Kunstnere i Kolding\",\"alternateName"));
     }
 
     @Test

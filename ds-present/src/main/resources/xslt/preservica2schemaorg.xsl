@@ -220,38 +220,55 @@
 
     <!-- Publisher extraction. Some metadata has two pbcorePublisher/publisher/publisherRole.
          We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
-    <xsl:for-each select="pbcorePublisher">
-      <xsl:if test="./publisherRole = 'kanalnavn'">
-        <f:map key="publication">
-          <f:string key="@type">BroadcastEvent</f:string>
-          <!-- Define isLiveBroadcast from live extension field.  -->
-          <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
-          <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
-            <xsl:if test="f:contains(., 'live:live') or f:contains(., 'live:ikke live')">
-              <f:boolean key="isLiveBroadcast">
-                <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
-                <xsl:choose>
-                  <xsl:when test="contains(., 'live:live')"><xsl:value-of select="f:true()"/></xsl:when>
-                  <xsl:when test="contains(., 'live:ikke live')"><xsl:value-of select="false()"/></xsl:when>
-                </xsl:choose>
-              </f:boolean>
-            </xsl:if>
-          </xsl:for-each>
-          <xsl:if test="publisher != ''">
-            <f:map key="publishedOn">
-              <f:string key="@type">BroadcastService</f:string>
-              <f:string key="broadcastDisplayName">
-                <xsl:value-of select="./publisher"/>
-              </f:string>
-            </f:map>
+    <xsl:variable name="publisherSpecific">
+      <xsl:for-each select="pbcorePublisher">
+        <xsl:if test="./publisherRole ='kanalnavn'">
+          <xsl:value-of select="./publisher"/>
+        </xsl:if>
+      </xsl:for-each>    </xsl:variable>
+    <xsl:variable name="publisherGeneral">
+      <xsl:for-each select="pbcorePublisher">
+        <xsl:if test="./publisherRole ='channel_name'">
+          <xsl:value-of select="./publisher"/>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:if test="pbcorePublisher">
+      <f:map key="publication">
+        <f:string key="@type">BroadcastEvent</f:string>
+        <!-- Define isLiveBroadcast from live extension field.  -->
+        <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
+        <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+          <xsl:if test="f:contains(., 'live:live') or f:contains(., 'live:ikke live')">
+            <f:boolean key="isLiveBroadcast">
+              <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
+              <xsl:choose>
+                <xsl:when test="contains(., 'live:live')"><xsl:value-of select="f:true()"/></xsl:when>
+                <xsl:when test="contains(., 'live:ikke live')"><xsl:value-of select="false()"/></xsl:when>
+              </xsl:choose>
+            </f:boolean>
           </xsl:if>
-          <!-- TODO: Figure if it is possible to extract broadcaster in any meaningful way for the field 'broadcaster',
-                maybe from hovedgenre_id or kanalid. Otherwise it could be defined as 'Danmarks Radio'
-                for the first part of the project. -->
-        </f:map>
-      </xsl:if>
-    </xsl:for-each>
-    
+        </xsl:for-each>
+        <!-- Preservica contains two different fields for broadcaster-->
+        <xsl:if test="$publisherSpecific != ''">
+          <f:map key="publishedOn">
+            <f:string key="@type">BroadcastService</f:string>
+            <f:string key="broadcastDisplayName">
+              <xsl:value-of select="$publisherSpecific"/>
+            </f:string>
+            <xsl:if test="$publisherGeneral != ''"/>
+            <f:string key="alternateName">
+              <xsl:value-of select="$publisherGeneral"/>
+            </f:string>
+          </f:map>
+        </xsl:if>
+        <!-- TODO: Figure if it is possible to extract broadcaster in any meaningful way for the field 'broadcaster',
+              maybe from hovedgenre_id or kanalid. Otherwise it could be defined as 'Danmarks Radio'
+              for the first part of the project. -->
+      </f:map>
+    </xsl:if>
+
     
     <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
     <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
