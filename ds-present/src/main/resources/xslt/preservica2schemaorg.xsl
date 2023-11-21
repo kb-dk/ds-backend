@@ -86,16 +86,38 @@
           <xsl:with-param name="type" select="$type"/>
           <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
         </xsl:call-template>
+
+        <!-- This is the only field directly present in pbc:PBCoreDescriptionDocument, which is only used for video
+             objects. Therefore, it is extracted here. If more fields from this part of the metadata were only
+             relevant for video objects, then a new template would be introduced. -->
+        <!-- Is the resource hd? or do we know anything about the video quality=? -->
+        <xsl:if test="pbcoreInstantiation/formatStandard != ''">
+          <f:string key="videoQuality"><xsl:value-of select="./pbcoreInstantiation/formatStandard"/></f:string>
+        </xsl:if>
       </xsl:for-each>
 
       <!-- Extract manifestation -->
       <xsl:call-template name="extract-manifestation"/>
 
+      <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
+           available from the preservica records.-->
+      <f:map key="kb:internal">
       <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
       <xsl:call-template name="kb-internal">
         <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
         <xsl:with-param name="type" select="$type"/>
       </xsl:call-template>
+
+      <!-- This template extracts internal fields, that are only relevant for video objects. Therefore, they have been
+           removed from the overall kb-internal template called above. The fields are: aspect_ratio and color.-->
+      <xsl:call-template name="internal-video-fields"/>
+
+      <!-- This template also extracts internal fields only relevant for video. The rest of the extension extraction
+           is handled in the kb-internal template called above. -->
+      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+        <xsl:call-template name="video-extension-extractor"/>
+      </xsl:for-each>
+      </f:map>
 
     </f:map>
   </xsl:template>
@@ -122,11 +144,13 @@
       <!-- Extract manifestation -->
       <xsl:call-template name="extract-manifestation"/>
 
+      <f:map key="kb:internal">
       <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
-      <xsl:call-template name="kb-internal">
-        <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-        <xsl:with-param name="type" select="$type"/>
-      </xsl:call-template>
+        <xsl:call-template name="kb-internal">
+          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+          <xsl:with-param name="type" select="$type"/>
+        </xsl:call-template>
+      </f:map>
 
     </f:map>
   </xsl:template>
@@ -153,11 +177,13 @@
       <!-- Extract manifestation -->
       <xsl:call-template name="extract-manifestation"/>
 
+      <f:map key="kb:internal">
       <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
-      <xsl:call-template name="kb-internal">
-        <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-        <xsl:with-param name="type" select="$type"/>
-      </xsl:call-template>
+        <xsl:call-template name="kb-internal">
+          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+          <xsl:with-param name="type" select="$type"/>
+        </xsl:call-template>
+      </f:map>
 
     </f:map>
   </xsl:template>
@@ -175,7 +201,9 @@
   </xsl:template>
 
 
-  <!-- TEMPLATE FOR ACCESSING PBC METADATA.-->
+  <!-- TEMPLATE FOR ACCESSING PBCORE METADATA. This template transforms all fields, that are relevant for all objects.
+       Fields such as 'videoQuality' is not part of the template extraction and are extracted in the video-transformation
+       template.-->
   <xsl:template name="pbc-metadata">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
@@ -458,11 +486,6 @@
         </f:map>
       </f:array>
     </xsl:if>
-
-    <!-- Is the resource hd? or do we know anything about the video quality=? -->
-    <xsl:if test="$type = 'VideoObject' and pbcoreInstantiation/formatStandard != ''">
-      <f:string key="videoQuality"><xsl:value-of select="pbcoreInstantiation/formatStandard"/></f:string>
-    </xsl:if>
   </xsl:template>
 
   <!-- EXTRACT MANIFESTATION FROM METADATA.-->
@@ -509,110 +532,110 @@
   <xsl:template name="kb-internal">
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
-    <f:map key="kb:internal">
-      <!-- Extract subgenre if present -->
-      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
-        <xsl:if test="contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">
-          <f:string key="kb:genre_sub">
-            <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
-          </f:string>
-        </xsl:if>
-      </xsl:for-each>
-      <!-- Extract aspect ratio-->
-      <xsl:if test="$type = 'VideoObject' and /xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio">
-        <f:string key="kb:aspect_ratio">
-          <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
+    <!-- Extract subgenre if present -->
+    <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
+      <xsl:if test="contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">
+        <f:string key="kb:genre_sub">
+          <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
         </f:string>
       </xsl:if>
-      <!-- Create boolean for surround-->
+    </xsl:for-each>
+    <!-- Create boolean for surround-->
+    <xsl:choose>
+      <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'surround'">
+        <f:boolean key="kb:surround_sound"><xsl:value-of select="true()"/></f:boolean>
+      </xsl:when>
+      <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'ikke surround'">
+        <f:boolean key="kb:surround_sound"><xsl:value-of select="false()"/></f:boolean>
+      </xsl:when>
+    </xsl:choose>
+    <!-- Create boolean for premiere-->
+    <xsl:choose>
+      <xsl:when test="$pbcExtensions[f:contains(., 'premiere:ikke premiere')]">
+        <f:boolean key="kb:premiere">
+          <xsl:value-of select="false()"/>
+        </f:boolean>
+      </xsl:when>
+      <xsl:when test="$pbcExtensions[f:contains(., 'premiere:premiere')]">
+        <f:boolean key="kb:premiere">
+          <xsl:value-of select="true()"/>
+        </f:boolean>
+      </xsl:when>
+    </xsl:choose>
+    <!-- Extract format identifiers -->
+    <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID">
       <xsl:choose>
-        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'surround'">
-          <f:boolean key="kb:surround_sound"><xsl:value-of select="true()"/></f:boolean>
+        <xsl:when test="formatIdentifierSource = 'ritzau'">
+          <f:string key="kb:format_identifier_ritzau">
+            <xsl:value-of select="formatIdentifier"/>
+          </f:string>
         </xsl:when>
-        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'ikke surround'">
-          <f:boolean key="kb:surround_sound"><xsl:value-of select="false()"/></f:boolean>
+        <xsl:when test="formatIdentifierSource = 'nielsen'">
+          <f:string key="kb:format_identifier_nielsen">
+            <xsl:value-of select="formatIdentifier"/>
+          </f:string>
         </xsl:when>
       </xsl:choose>
-      <!-- Create boolean for color for tv resources-->
-      <xsl:if test="$type = 'VideoObject'">
-        <xsl:choose>
-          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
-            <f:boolean key="kb:color"><xsl:value-of select="true()"/></f:boolean>
-          </xsl:when>
-          <xsl:otherwise>
-            <f:boolean key="kb:color"><xsl:value-of select="false()"/></f:boolean>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:if>
-      <!-- Create boolean for premiere-->
-      <xsl:choose>
-        <xsl:when test="$pbcExtensions[f:contains(., 'premiere:ikke premiere')]">
-          <f:boolean key="kb:premiere">
-            <xsl:value-of select="false()"/>
-          </f:boolean>
-        </xsl:when>
-        <xsl:when test="$pbcExtensions[f:contains(., 'premiere:premiere')]">
-          <f:boolean key="kb:premiere">
-            <xsl:value-of select="true()"/>
-          </f:boolean>
-        </xsl:when>
-      </xsl:choose>
-      <!-- Extract format identifiers -->
-      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID">
-        <xsl:choose>
-          <xsl:when test="formatIdentifierSource = 'ritzau'">
-            <f:string key="kb:format_identifier_ritzau">
-              <xsl:value-of select="formatIdentifier"/>
-            </f:string>
-          </xsl:when>
-          <xsl:when test="formatIdentifierSource = 'nielsen'">
-            <f:string key="kb:format_identifier_nielsen">
-              <xsl:value-of select="formatIdentifier"/>
-            </f:string>
-          </xsl:when>
-        </xsl:choose>
-      </xsl:for-each>
-      <!--TODO: Figure if retransmission can fit into real schema.org -->
-      <!-- Create boolean for retransmission-->
-      <xsl:choose>
-        <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:ikke genudsendelse')]">
-          <f:boolean key="kb:retransmission">
-            <xsl:value-of select="false()"/>
-          </f:boolean>
-        </xsl:when>
-        <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:genudsendelse')]">
-          <f:boolean key="kb:retransmission">
-            <xsl:value-of select="true()"/>
-          </f:boolean>
-        </xsl:when>
-      </xsl:choose>
-      <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
-           Some have external value, while others primarily are for internal usage.-->
-      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
-        <xsl:call-template name="extension-extractor">
-        <xsl:with-param name="type" select="$type"/>
-        </xsl:call-template>
-      </xsl:for-each>
+    </xsl:for-each>
+    <!--TODO: Figure if retransmission can fit into real schema.org -->
+    <!-- Create boolean for retransmission-->
+    <xsl:choose>
+      <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:ikke genudsendelse')]">
+        <f:boolean key="kb:retransmission">
+          <xsl:value-of select="false()"/>
+        </f:boolean>
+      </xsl:when>
+      <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:genudsendelse')]">
+        <f:boolean key="kb:retransmission">
+          <xsl:value-of select="true()"/>
+        </f:boolean>
+      </xsl:when>
+    </xsl:choose>
+    <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
+         Some have external value, while others primarily are for internal usage.-->
+    <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+      <xsl:call-template name="extension-extractor">
+      <xsl:with-param name="type" select="$type"/>
+      </xsl:call-template>
+    </xsl:for-each>
 
-      <!-- Extracts information on video padding. -->
-      <xsl:if test="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds">
-        <f:number key="kb:padding_seconds">
-          <xsl:value-of select="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds"/>
-        </f:number>
-      </xsl:if>
+    <!-- Extracts information on video padding. -->
+    <xsl:if test="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds">
+      <f:number key="kb:padding_seconds">
+        <xsl:value-of select="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds"/>
+      </f:number>
+    </xsl:if>
 
-      <!-- Extracts access metadata to the internal kb map -->
-      <xsl:for-each select="/xip:DeliverableUnit/Metadata/access:access">
-        <xsl:call-template name="access-template"/>
-      </xsl:for-each>
+    <!-- Extracts access metadata to the internal kb map -->
+    <xsl:for-each select="/xip:DeliverableUnit/Metadata/access:access">
+      <xsl:call-template name="access-template"/>
+    </xsl:for-each>
 
-      <!-- Extracts information on the structure of the video component. -->
-      <xsl:for-each select="/xip:DeliverableUnit/Metadata/program_structure:program_structure">
-        <xsl:call-template name="program-structure"/>
-      </xsl:for-each>
+    <!-- Extracts information on the structure of the video component. -->
+    <xsl:for-each select="/xip:DeliverableUnit/Metadata/program_structure:program_structure">
+      <xsl:call-template name="program-structure"/>
+    </xsl:for-each>
+  </xsl:template>
 
-    </f:map>
+  <!-- Transforms internal fields, that are only present for tv/video metadata. These fields are:
+       aspect_ratio and color.-->
+  <xsl:template name="internal-video-fields">
+    <!-- Extract aspect ratio-->
+    <xsl:if test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio">
+      <f:string key="kb:aspect_ratio">
+        <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
+      </f:string>
+    </xsl:if>
 
+    <!-- Create boolean for color for tv resources-->
+    <xsl:choose>
+      <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
+        <f:boolean key="kb:color"><xsl:value-of select="true()"/></f:boolean>
+      </xsl:when>
+      <xsl:otherwise>
+        <f:boolean key="kb:color"><xsl:value-of select="false()"/></f:boolean>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!-- EXTRACT VALUES FROM PBCORE EXTENSIONS TO KB:INTERNAL MAP. These extensions can contain many different values.
@@ -661,12 +684,6 @@
           <xsl:value-of select="f:substring-after(. , 'serie_id:')"/>
         </f:string>
       </xsl:when>
-      <!--Extract internal showviewcode -->
-      <xsl:when test="$type = 'VideoObject' and f:starts-with(. , 'showviewcode:')">
-        <f:string key="kb:showviewcode">
-          <xsl:value-of select="f:substring-after(. , 'showviewcode:')"/>
-        </f:string>
-      </xsl:when>
       <!-- Check if there has been a stop in the transmission-->
       <xsl:when test="f:starts-with(. , 'program_ophold:')">
         <!-- inner XSLT Choose which determines if program_ophold is false or true -->
@@ -683,9 +700,21 @@
           </xsl:when>
         </xsl:choose>
       </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- Extracts extensions that are only applicable for video objects. -->
+  <xsl:template name="video-extension-extractor">
+    <xsl:choose>
+      <!--Extract internal showviewcode -->
+      <xsl:when test="f:starts-with(. , 'showviewcode:')">
+        <f:string key="kb:showviewcode">
+          <xsl:value-of select="f:substring-after(. , 'showviewcode:')"/>
+        </f:string>
+      </xsl:when>
       <!-- TODO: Check if has_subtitles fits in schema.org-->
       <!-- Boolean for if the program contains subtitles.-->
-      <xsl:when test="$type = 'VideoObject' and f:starts-with(. , 'tekstet:')">
+      <xsl:when test="f:starts-with(. , 'tekstet:')">
         <!-- Inner XSLT  choose to determine value of boolean -->
         <xsl:choose>
           <xsl:when test=". = 'tekstet:ikke tekstet'">
@@ -700,25 +729,8 @@
           </xsl:when>
         </xsl:choose>
       </xsl:when>
-      <!--TODO: Check if subtitles for hearing impaired can be described in schema.org'-->
-      <!-- Boolean value - does the resource contain subtitles for hearing impaired?-->
-      <xsl:when test="$type = 'VideoObject' and f:starts-with(. , 'th:')">
-        <!-- Inner XSLT  choose to determine value of boolean -->
-        <xsl:choose>
-          <xsl:when test=". = 'th:ikke tekstet for hørehæmmede'">
-            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
-              <xsl:value-of select="false()"/>
-            </f:boolean>
-          </xsl:when>
-          <xsl:when test=". = 'th:tekstet for hørehæmmede'">
-            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
-              <xsl:value-of select="true()"/>
-            </f:boolean>
-          </xsl:when>
-        </xsl:choose>
-      </xsl:when>
       <!-- Is the resource teletext?-->
-      <xsl:when test="$type = 'VideoObject' and f:starts-with(. , 'ttv:')">
+      <xsl:when test="f:starts-with(. , 'ttv:')">
         <!-- Inner XSLT  choose to determine value of boolean -->
         <xsl:choose>
           <xsl:when test=". = 'ttv:ikke tekst-tv'">
@@ -728,6 +740,23 @@
           </xsl:when>
           <xsl:when test=". = 'ttv:tekst-tv'">
             <f:boolean key="kb:is_teletext">
+              <xsl:value-of select="true()"/>
+            </f:boolean>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:when>
+      <!--TODO: Check if subtitles for hearing impaired can be described in schema.org'-->
+      <!-- Boolean value - does the resource contain subtitles for hearing impaired?-->
+      <xsl:when test="f:starts-with(. , 'th:')">
+        <!-- Inner XSLT  choose to determine value of boolean -->
+        <xsl:choose>
+          <xsl:when test=". = 'th:ikke tekstet for hørehæmmede'">
+            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
+              <xsl:value-of select="false()"/>
+            </f:boolean>
+          </xsl:when>
+          <xsl:when test=". = 'th:tekstet for hørehæmmede'">
+            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
               <xsl:value-of select="true()"/>
             </f:boolean>
           </xsl:when>
