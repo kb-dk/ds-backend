@@ -127,32 +127,11 @@
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
 
-    <f:map>
-      <!-- Creates the first three fields for docs. -->
-      <xsl:call-template name="schema-context-and-type">
-        <xsl:with-param name="type" select="$type"/>
-      </xsl:call-template>
-
-      <!-- Extract PBCore metadata -->
-      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
-        <xsl:call-template name="pbc-metadata">
-          <xsl:with-param name="type" select="$type"/>
-          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-        </xsl:call-template>
-      </xsl:for-each>
-
-      <!-- Extract manifestation -->
-      <xsl:call-template name="extract-manifestation"/>
-
-      <f:map key="kb:internal">
-      <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
-        <xsl:call-template name="kb-internal">
-          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-          <xsl:with-param name="type" select="$type"/>
-        </xsl:call-template>
-      </f:map>
-
-    </f:map>
+    <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
+    <xsl:call-template name="generic-transformation">
+      <xsl:with-param name="type" select="$type"/>
+      <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+    </xsl:call-template>
   </xsl:template>
 
   <!-- TEMPLATE FOR TRANSFORMING OBJECTS, WHICH ARE WRONGLY DEFINED.-->
