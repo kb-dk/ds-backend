@@ -265,6 +265,27 @@
             <f:string key="alternateName">
               <xsl:value-of select="$publisherGeneral"/>
             </f:string>
+            <xsl:choose>
+              <xsl:when test="f:starts-with($publisherGeneral, 'dr')">
+                <f:map key="broadcaster">
+                  <f:string key="@type">Organization</f:string>
+                  <f:string key="legalName">DR</f:string>
+                </f:map>
+              </xsl:when>
+              <xsl:when test="f:starts-with($publisherGeneral, 'tv2')">
+                <f:map key="broadcaster">
+                  <f:string key="@type">Organization</f:string>
+                  <f:string key="legalName">TV 2 Danmark</f:string>
+                </f:map>
+              </xsl:when>
+              <xsl:when test="f:starts-with($publisherGeneral, 'tv3')">
+                <f:map key="broadcaster">
+                  <f:string key="@type">Organization</f:string>
+                  <f:string key="legalName">TV3</f:string>
+                </f:map>
+              </xsl:when>
+              <xsl:otherwise></xsl:otherwise>
+            </xsl:choose>
           </f:map>
         </xsl:if>
         <!-- TODO: Figure if it is possible to extract broadcaster in any meaningful way for the field 'broadcaster',

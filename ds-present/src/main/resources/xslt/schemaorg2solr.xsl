@@ -104,6 +104,11 @@
               <xsl:value-of select="map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName')"/>
             </f:string>
           </xsl:if>
+          <xsl:if test="f:exists(map:find($schemaorg-xml, 'legalName'))">
+            <f:string key="broadcaster">
+              <xsl:value-of select="map:find($schemaorg-xml, 'legalName')"/>
+            </f:string>
+          </xsl:if>
 
           <!-- Creates the notes field, which originates from the mods2solr XSLT and acts as a catch all field for metadata
                The values in this field are also present in the specific abstract and description fields.-->

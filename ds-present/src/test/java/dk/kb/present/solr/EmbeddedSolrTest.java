@@ -53,6 +53,7 @@ import static dk.kb.present.TestFiles.PVICA_RECORD_3945e2d1;
 import static dk.kb.present.TestFiles.PVICA_RECORD_44979f67;
 import static dk.kb.present.TestFiles.PVICA_RECORD_74e22fd8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_9d9785a8;
+import static dk.kb.present.TestFiles.PVICA_RECORD_accf8d1c;
 import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_e683b0b8;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
@@ -561,6 +562,7 @@ public class EmbeddedSolrTest {
         testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_end", 0);
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_holes", null);
         testBooleanValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", false);
     }
 
     @Test
@@ -580,6 +582,11 @@ public class EmbeddedSolrTest {
     @Test
     void testAccessConditions() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "conditions_of_access", "placeholderCondition");
+    }
+
+    @Test
+    void testBroadcaster() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_accf8d1c, "broadcaster", "DR");
     }
 
     /*
