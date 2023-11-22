@@ -30,6 +30,10 @@
           <xsl:value-of select="$schemaorg-xml('id')"/>
         </f:string>
 
+        <f:string key="conditions_of_access">
+          <xsl:value-of select="map:get($schemaorg-xml, 'conditionsOfAccess')"/>
+        </f:string>
+
         <!-- THIS IS THE BIGGEST AND BADDEST HACK IN TOWN! TO MAKE TEST METHODS AND XSLTS PRETTY AND MANAGEABLE,
              WE SHOULD REALLY IMPLEMENT THIS SCHEMA2SOLR TRANSFORMATION FOR MODS RESOURCES AS WELL. CURRENTLY, THIS
              BRANCH CAN'T GENERATE ANY SOLR-DOCUMENTS FOR MODS RECORDS, WHICH SHOULD BE DO-ABLE. -->

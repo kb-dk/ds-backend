@@ -577,6 +577,11 @@ public class EmbeddedSolrTest {
         testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "resource_description", "AudioObject");
     }
 
+    @Test
+    void testAccessConditions() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "conditions_of_access", "placeholderCondition");
+    }
+
     /*
      * ------- Private helper methods below --------------
      */

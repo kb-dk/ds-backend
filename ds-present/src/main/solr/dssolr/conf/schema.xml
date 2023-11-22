@@ -48,6 +48,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     ds.samlingsbilleder?>
   </field>
 
+  <field name="conditions_of_access" type="string">
+    <?description A value that describes how the resource can be accessed?>
+    <?example ?> <!--TODO: What should the value of this field actually contain-->
+  </field>
+
   <field name="collection" type="string" docValues="true">
     <?description The original collection.?>
     <?example     Billedsamlingen?>

@@ -323,6 +323,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testAccessConditions(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"conditions_of_access\":\"placeholderCondition\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_accf8d1c);
         TestUtil.prettyPrintJson(solrJson);
