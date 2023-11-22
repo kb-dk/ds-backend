@@ -62,6 +62,7 @@ public class TestUtil {
 		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		metadata.put("streamingserver", "www.example.com/streaming/");
 		metadata.put("origin", "ds.test");
+		metadata.put("conditionsOfAccess", "placeholderCondition");
 		//System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
 	}
@@ -78,6 +79,7 @@ public class TestUtil {
 		metadata.put("streamingserver", "www.example.com/streaming/");
 		metadata.put("origin", "ds.test");
 		metadata.put("manifestation", childData);
+		metadata.put("conditionsOfAccess", "placeholderCondition");
 		//System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
 	}

@@ -54,6 +54,11 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_5a5357be, null);
         Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
     }
+    @Test
+    void testConditionOfAccess() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_5a5357be, null);
+        Assertions.assertTrue(transformedJSON.contains("\"conditionsOfAccess\":\"placeholderCondition\""));
+    }
 
     @Test
     void testName() throws IOException {
@@ -333,7 +338,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
 
     private static void printSchemaOrgJson(String xml) throws IOException {
-        Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/");
+        Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
+                                                "conditionsOfAccess", "placeholderCondition");
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, xml, injections);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();

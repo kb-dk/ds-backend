@@ -22,6 +22,7 @@
   <xsl:param name="origin"/>
   <xsl:param name="recordID"/>
   <xsl:param name="manifestation"/>
+  <xsl:param name="conditionsOfAccess"/>
 
   <!-- MAIN TEMPLATE. This template delegates, which fields are to be created for each schema.org object.
        Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
@@ -176,6 +177,9 @@
     <f:string key="@type"><xsl:value-of select="$type"/></f:string>
     <f:string key="id">
       <xsl:value-of select="$recordID"/>
+    </f:string>
+    <f:string key="conditionsOfAccess">
+      <xsl:value-of select="$conditionsOfAccess"/>
     </f:string>
   </xsl:template>
 

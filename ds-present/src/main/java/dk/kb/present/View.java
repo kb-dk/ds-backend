@@ -154,6 +154,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", record.getId());
         metadata.put("origin", origin);
+        metadata.put("conditionsOfAccess", "placeholderCondition");
         return metadata;
     }
 
