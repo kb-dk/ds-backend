@@ -76,6 +76,10 @@
             <f:string key="title">
               <xsl:value-of select="$schemaorg-xml('name')"/>
             </f:string>
+
+            <f:string key="title_sort_da">
+              <xsl:value-of select="$schemaorg-xml('name')"/>
+            </f:string>
           </xsl:if>
 
           <!-- extract alternate title-->
