@@ -112,6 +112,10 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     public void testCreatorAffiliation() {
         assertPvicaNotContains(TestFiles.PVICA_RECORD_5a5357be, "\"creator_affiliation\": \"DR Ultra\"");
     }
+    @Test
+    public void testCreatorAffiliationGeneric() {
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_accf8d1c, "\"creator_affiliation_generic\": \"drp1\"");
+    }
 
     @Test
     public void testNotes() {
@@ -320,7 +324,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void prettyPrintTransformation() throws Exception {
-        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_accf8d1c);
         TestUtil.prettyPrintJson(solrJson);
     }
 

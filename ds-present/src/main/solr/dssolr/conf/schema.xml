@@ -421,9 +421,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Children?>
   </field>
 
-  <!-- ====================================================-->
-  <!-- ====== Fields that only apply to tv metadata  ===== -->
-  <!-- ====================================================-->
+  <!-- ============================================================= -->
+  <!-- ====== Fields that only apply to tv and radio metadata  ===== -->
+  <!-- ============================================================= -->
 
   <field name="original_title" type="string">
     <?description The original title of the resource.?>
@@ -433,6 +433,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="episode_title" type="string">
     <?description The name of a single episode.?>
     <?example     Kagerester?>
+  </field>
+
+  <field name="creator_affiliation_generic" type="text_general" multiValued="true">
+    <?description The name of an organization, institution, etc. with which
+                  the entity was associated at the time that the resource was created.
+                  This value is a more generic version of the value available in the field 'creator_affiliation'.
+                  This is needed as radio and TV channels change names over time. So to find all material from e.g.
+                  DR P1 over time, these resources has the value drp1 in this field, while the channel has had names
+                  as 'Program 1' and 'P1'. ?>
+    <?example     Bisson frères?>
+    <?example     Danmarks Radio?>
   </field>
 
   <field name="ritzau_id" type="string">

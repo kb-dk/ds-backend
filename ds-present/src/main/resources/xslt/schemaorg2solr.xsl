@@ -85,12 +85,19 @@
             </f:string>
           </xsl:if>
 
-          <!-- Extract the creater affiliation -->
+          <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
+               Therefore, we are also extracting the creator_affiliation_generic which contains the same value for e.g.
+               DR P1 from 1960 'program 1' and 2000's 'P1'. Here the value would be drp1. -->
           <!-- map:find() can be used, because we know that only one key in the complete JSON file is named
                broadcastDisplayName -->
           <xsl:if test="f:exists(map:find($schemaorg-xml,'broadcastDisplayName'))">
             <f:string key="creator_affiliation">
               <xsl:value-of select="map:find($schemaorg-xml,'broadcastDisplayName')"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName'))">
+            <f:string key="creator_affiliation_generic">
+              <xsl:value-of select="map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName')"/>
             </f:string>
           </xsl:if>
 
