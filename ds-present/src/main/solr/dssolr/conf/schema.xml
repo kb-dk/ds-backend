@@ -89,6 +89,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Den grimme ælling.?>
   </field>
 
+  <!-- Note: The title_sort_da field IS NOT automatically copied from title as title_sort_da is single valued -->
+  <field name="title_sort_da" type="sort_da">
+    <?description The object title, usable for sorting according to Danish locale.
+                  Not readable for human eyes.?>
+    <?example     #432#2asFSSAFs?>
+  </field>
+
   <field name="creator_affiliation" type="text_general" multiValued="true">
     <?description The name of an organization, institution, etc. with which
             the entity was associated at the time that the resource was created.?>
@@ -868,6 +875,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
+
+  <!-- https://solr.apache.org/guide/solr/9_3/indexing-guide/language-analysis.html#unicode-collation -->
+  <fieldType name="sort_da" class="solr.ICUCollationField" locale="da" strength="secondary"
+             indexed="true" stored="false" docValues="true" multiValued="false"/>
+
   <!-- END FIELDTYPE DEFINITIONS-->
 
   <!-- START COPYFIELDS  -->
