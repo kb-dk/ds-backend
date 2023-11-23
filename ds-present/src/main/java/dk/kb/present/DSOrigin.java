@@ -15,6 +15,7 @@
 package dk.kb.present;
 
 
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.RuntimeTransformerException;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,6 +48,7 @@ import java.util.stream.Stream;
  * the connected ds-storage, but common use case is to request MODS, JSON-LD (schema.org) or SolrJSON representations.
  */
 public class DSOrigin {
+    // Origin-specific properties
     private static final Logger log = LoggerFactory.getLogger(DSOrigin.class);
     private static final String PREFIX_KEY = "prefix"; // IDs for this origin starts with <prefix>_ (note the underscore)
     private static final String DESCRIPTION_KEY = "description";
@@ -53,6 +56,9 @@ public class DSOrigin {
     private static final String ORIGIN_KEY = "origin";
     private static final String VIEWS_KEY = "views";
     private static final String RECORDREQUESTTYPE_KEY = "recordrequesttype";
+
+    // General properties
+    private static final String STOP_ON_ERROR_KEY = "config.records.stoponerrors";
 
     private static final int LICENSE_BATCH_SIZE = 500;
 
@@ -184,7 +190,8 @@ public class DSOrigin {
             return ExtractionUtils.splitToLists(
                             storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords), LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
-                    .peek(safeView(format, view));
+                    .peek(safeView(format, view))
+                    .filter(Objects::nonNull);
         } catch (Exception e) {
             log.warn("Exception calling getDSRecords with origin='{}', mTime={}, maxRecords={}",
                      getId(), mTime, maxRecords, e);
@@ -219,7 +226,8 @@ public class DSOrigin {
             return ExtractionUtils.splitToLists(
                             storage.getDSRecords(origin, mTime, maxRecords), LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
-                    .peek(safeView(format, view));
+                    .peek(safeView(format, view))
+                    .filter(Objects::nonNull);
         } catch (Exception e) {
             log.warn("Exception calling getDSRecordsRaw with origin='{}', mTime={}, maxRecords={}",
                     getId(), mTime, maxRecords, e);
@@ -239,9 +247,12 @@ public class DSOrigin {
             try {
                 record.data(view.apply(record));
             } catch (Exception e) {
-                throw new RuntimeTransformerException(
-                        "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
-
+                if (ServiceConfig.getConfig().getBoolean(STOP_ON_ERROR_KEY, true)) {
+                    throw new RuntimeTransformerException(
+                            "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
+                } else {
+                    log.warn("Exception transforming record '" + record.getId() + "' to format '" + format + "'", e);
+                }
             }
         };
     }

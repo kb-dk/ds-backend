@@ -95,6 +95,14 @@ config:
           - folder:
               root: 'ds-present/src/test/resources/xml/corpus' # Maybe PWD is outsid eof the checkout (unlikely)
 
+  # Settings for handling export of multiple records
+  records:
+    # If true, export is stopped if a transformation fails for any record
+    # If false, failed records are logged and skipped
+    # Default: true
+    stoponerrors: true
+
+
   # Settings for handling at the record level
   record:
     id:
