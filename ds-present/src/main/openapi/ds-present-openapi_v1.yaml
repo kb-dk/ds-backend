@@ -46,7 +46,7 @@ paths:
               value: 'local.test:luftfoto-sample.xml'
               summary: 'Record fetched from fixed local test corpus'
             remote:
-              value: 'ds.radiotv:oai:du:b1405ff8-6a00-4e20-b2bf-334b22ec2b37'
+              value: 'ds.tv:oai:du:b1405ff8-6a00-4e20-b2bf-334b22ec2b37'
               #value: 'remote.images:luftfoto-sample.xml'
               summary: 'Record fetched from (hopefully) running ds-storage'
         - name: format
@@ -102,7 +102,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 'ds.radiotv'
+            example: 'ds.tv'
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
@@ -193,7 +193,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 'ds.radiotv'
+            example: 'ds.tv'
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
@@ -249,7 +249,7 @@ paths:
           schema:
             type: string
             minLength: 1
-            example: 'ds.radiotv'
+            example: 'ds.tv'
       responses:
         '200':
           description: 'OK: The origin was known and a description is returned.'
