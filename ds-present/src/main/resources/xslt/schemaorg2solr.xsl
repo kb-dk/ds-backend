@@ -30,6 +30,10 @@
           <xsl:value-of select="$schemaorg-xml('id')"/>
         </f:string>
 
+        <f:string key="conditions_of_access">
+          <xsl:value-of select="map:get($schemaorg-xml, 'conditionsOfAccess')"/>
+        </f:string>
+
         <!-- THIS IS THE BIGGEST AND BADDEST HACK IN TOWN! TO MAKE TEST METHODS AND XSLTS PRETTY AND MANAGEABLE,
              WE SHOULD REALLY IMPLEMENT THIS SCHEMA2SOLR TRANSFORMATION FOR MODS RESOURCES AS WELL. CURRENTLY, THIS
              BRANCH CAN'T GENERATE ANY SOLR-DOCUMENTS FOR MODS RECORDS, WHICH SHOULD BE DO-ABLE. -->
@@ -89,12 +93,24 @@
             </f:string>
           </xsl:if>
 
-          <!-- Extract the creater affiliation -->
+          <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
+               Therefore, we are also extracting the creator_affiliation_generic which contains the same value for e.g.
+               DR P1 from 1960 'program 1' and 2000's 'P1'. Here the value would be drp1. -->
           <!-- map:find() can be used, because we know that only one key in the complete JSON file is named
                broadcastDisplayName -->
           <xsl:if test="f:exists(map:find($schemaorg-xml,'broadcastDisplayName'))">
             <f:string key="creator_affiliation">
               <xsl:value-of select="map:find($schemaorg-xml,'broadcastDisplayName')"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName'))">
+            <f:string key="creator_affiliation_generic">
+              <xsl:value-of select="map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName')"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="f:exists(map:find($schemaorg-xml, 'legalName'))">
+            <f:string key="broadcaster">
+              <xsl:value-of select="map:find($schemaorg-xml, 'legalName')"/>
             </f:string>
           </xsl:if>
 

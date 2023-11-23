@@ -94,8 +94,8 @@ class OriginHandlerTest {
         }
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         OriginHandler ch = new OriginHandler(conf);
-        String record = ch.getRecord("local.radiotv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", "json-ld");
-        assertTrue(record.contains("\"id\":\"local.radiotv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
+        String record = ch.getRecord("local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", "json-ld");
+        assertTrue(record.contains("\"id\":\"local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
     }
 
     @Test
@@ -109,7 +109,7 @@ class OriginHandlerTest {
         // referenceType = 2. Only children with type = 2 should be returned as these are presentation manifestations.
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         OriginHandler ch = new OriginHandler(conf);
-        String record = ch.getRecord("local.radiotv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", "json-ld");
+        String record = ch.getRecord("local.tv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", "json-ld");
         assertTrue(record.contains("correct-reference\\/playlist.m3u8"));
         assertFalse(record.contains("wrong-reference\\/playlist.m3u8"));
     }
@@ -120,7 +120,7 @@ class OriginHandlerTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         OriginHandler ch = new OriginHandler(conf);
         try {
-            ch.getRecord("local.radiotv:40221e30-1414-11e9-8fb8-00505688346e.xml", "raw");
+            ch.getRecord("local.radio:40221e30-1414-11e9-8fb8-00505688346e.xml", "raw");
             fail("Requesting record in raw format should fail");
         } catch (Exception e) {
             // Expected

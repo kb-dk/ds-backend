@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 /**
  * An origin encapsulates access to a logical collection ("samling"). It uses the same origins as ds-storage and
  * is typically backed by a ds-storage instance.
- *
+ * <p>
  * Access is read-only and always with an explicit export format. The format can be {@code raw} for direct proxying to
  * the connected ds-storage, but common use case is to request MODS, JSON-LD (schema.org) or SolrJSON representations.
  */
@@ -53,6 +53,8 @@ public class DSOrigin {
     private static final String ORIGIN_KEY = "origin";
     private static final String VIEWS_KEY = "views";
     private static final String RECORDREQUESTTYPE_KEY = "recordrequesttype";
+
+    private static final int LICENSE_BATCH_SIZE = 500;
 
     /**
      * The ID of the origin, primarily used for debugging and configuration.
@@ -180,7 +182,7 @@ public class DSOrigin {
         try {
             // 35 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
             return ExtractionUtils.splitToLists(
-                            storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords), 35)
+                            storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords), LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
                     .peek(safeView(format, view));
         } catch (Exception e) {
@@ -215,7 +217,7 @@ public class DSOrigin {
         try {
             // 35 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
             return ExtractionUtils.splitToLists(
-                            storage.getDSRecords(origin, mTime, maxRecords), 35)
+                            storage.getDSRecords(origin, mTime, maxRecords), LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
                     .peek(safeView(format, view));
         } catch (Exception e) {
