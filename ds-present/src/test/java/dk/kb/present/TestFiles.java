@@ -30,6 +30,7 @@ public class TestFiles {
     public static final String PVICA_RECORD_c295ae6c = "internal_test_files/tvMetadata/c295ae6c-fd34-4694-a9cc-4204b4a9f3a0.xml";
     public static final String PVICA_RECORD_accf8d1c = "internal_test_files/tvMetadata/accf8d1c-3c4f-41a9-a1a2-48ce1cf0c5ca.xml";
     public static final String PVICA_RECORD_0b3f6a54 = "internal_test_files/tvMetadata/0b3f6a54-befa-4471-95c0-78bcb1de6300.xml";
+    public static final String PVICA_RECORD_5b29fca1 = "internal_test_files/tvMetadata/5b29fca1-5e6a-4ef2-a5d2-a7550a25388d.xml";
     public static final String CUMULUS_RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
     public static final String CUMULUS_RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
     public static final String CUMULUS_RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
