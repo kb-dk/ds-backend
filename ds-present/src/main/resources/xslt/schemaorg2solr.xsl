@@ -103,10 +103,14 @@
               <xsl:value-of select="map:find($schemaorg-xml,'broadcastDisplayName')"/>
             </f:string>
           </xsl:if>
-          <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName'))">
-            <f:string key="creator_affiliation_generic">
-              <xsl:value-of select="map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName')"/>
-            </f:string>
+          <xsl:if test="f:exists(map:get($schemaorg-xml, 'publication'))">
+            <xsl:if test="f:exists(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'))">
+              <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName'))">
+                <f:string key="creator_affiliation_generic">
+                  <xsl:value-of select="map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName')"/>
+                </f:string>
+              </xsl:if>
+            </xsl:if>
           </xsl:if>
           <xsl:if test="f:exists(map:find($schemaorg-xml, 'legalName'))">
             <f:string key="broadcaster">
