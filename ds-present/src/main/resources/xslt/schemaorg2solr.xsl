@@ -38,7 +38,8 @@
              WE SHOULD REALLY IMPLEMENT THIS SCHEMA2SOLR TRANSFORMATION FOR MODS RESOURCES AS WELL. CURRENTLY, THIS
              BRANCH CAN'T GENERATE ANY SOLR-DOCUMENTS FOR MODS RECORDS, WHICH SHOULD BE DO-ABLE. -->
         <xsl:if test="contains(map:get($schemaorg-xml,'@type'), 'VideoObject') or
-                      contains(map:get($schemaorg-xml,'@type'), 'AudioObject') ">
+                      contains(map:get($schemaorg-xml,'@type'), 'AudioObject') or
+                      contains(map:get($schemaorg-xml,'@type'), 'MediaObject')">
 
           <xsl:if test="f:exists($schemaorg-xml('keywords'))">
             <!--Save categories to a variable as a sequence. -->
@@ -98,13 +99,17 @@
                DR P1 from 1960 'program 1' and 2000's 'P1'. Here the value would be drp1. -->
           <!-- map:find() can be used, because we know that only one key in the complete JSON file is named
                broadcastDisplayName -->
-          <xsl:if test="f:exists(map:find($schemaorg-xml,'broadcastDisplayName'))">
-            <f:string key="creator_affiliation">
-              <xsl:value-of select="map:find($schemaorg-xml,'broadcastDisplayName')"/>
-            </f:string>
-          </xsl:if>
           <xsl:if test="f:exists(map:get($schemaorg-xml, 'publication'))">
             <xsl:if test="f:exists(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'))">
+
+              <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'broadcastDisplayName' ))">
+                <xsl:if test="f:exists(map:find($schemaorg-xml,'broadcastDisplayName'))">
+                  <f:string key="creator_affiliation">
+                    <xsl:value-of select="map:find($schemaorg-xml,'broadcastDisplayName')"/>
+                  </f:string>
+                </xsl:if>
+              </xsl:if>
+
               <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName'))">
                 <f:string key="creator_affiliation_generic">
                   <xsl:value-of select="map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName')"/>
@@ -236,10 +241,12 @@
           </xsl:if>
 
           <!-- Extract boolean for live broadcast -->
-          <xsl:if test="f:exists($schemaorg-xml('publication')('isLiveBroadcast'))">
-            <f:string key="live_broadcast">
-              <xsl:value-of select="$schemaorg-xml('publication')('isLiveBroadcast')"/>
-            </f:string>
+          <xsl:if test="f:exists($schemaorg-xml('publication'))">
+            <xsl:if test="f:exists($schemaorg-xml('publication')('isLiveBroadcast'))">
+              <f:string key="live_broadcast">
+                <xsl:value-of select="$schemaorg-xml('publication')('isLiveBroadcast')"/>
+              </f:string>
+            </xsl:if>
           </xsl:if>
 
           <!-- Extract boolean for retransmission -->

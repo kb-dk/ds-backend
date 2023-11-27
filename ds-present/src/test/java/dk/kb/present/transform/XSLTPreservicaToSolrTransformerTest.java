@@ -338,6 +338,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testNoSpecificOrigin(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_5b29fca1, "\"origin\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_5b29fca1);
         TestUtil.prettyPrintJson(solrJson);

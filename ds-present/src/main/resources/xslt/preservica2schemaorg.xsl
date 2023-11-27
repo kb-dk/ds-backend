@@ -147,12 +147,27 @@
       </xsl:call-template>
 
       <!-- Extract PBCore metadata -->
-      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
-        <xsl:call-template name="pbc-metadata">
-          <xsl:with-param name="type" select="$type"/>
-          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-        </xsl:call-template>
-      </xsl:for-each>
+      <!-- We cant assume that all records contain PBCore metadata as some OAI harvests might fail and not extract it.
+           We do need to set origin anyway, therefore this choose-statement. -->
+      <xsl:choose>
+        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+          <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+            <xsl:call-template name="pbc-metadata">
+              <xsl:with-param name="type" select="$type"/>
+              <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            </xsl:call-template>
+          </xsl:for-each>
+        </xsl:when>
+        <xsl:otherwise>
+          <f:array key="identifier">
+            <f:map>
+              <f:string key="@type">PropertyValue</f:string>
+              <f:string key="PropertyID">Origin</f:string>
+              <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+            </f:map>
+          </f:array>
+        </xsl:otherwise>
+      </xsl:choose>
 
       <!-- Extract manifestation -->
       <xsl:call-template name="extract-manifestation"/>
