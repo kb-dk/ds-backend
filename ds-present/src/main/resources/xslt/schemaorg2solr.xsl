@@ -97,31 +97,31 @@
           <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
                Therefore, we are also extracting the creator_affiliation_generic which contains the same value for e.g.
                DR P1 from 1960 'program 1' and 2000's 'P1'. Here the value would be drp1. -->
-          <!-- map:find() can be used, because we know that only one key in the complete JSON file is named
-               broadcastDisplayName -->
           <xsl:if test="f:exists(map:get($schemaorg-xml, 'publication'))">
-            <xsl:if test="f:exists(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'))">
+            <xsl:if test="f:exists(my:getNestedMapValue($schemaorg-xml, 'publication','publishedOn'))">
 
-              <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'broadcastDisplayName' ))">
-                <xsl:if test="f:exists(map:find($schemaorg-xml,'broadcastDisplayName'))">
+              <xsl:if test="f:exists(my:getTripleNestedMapValue($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName'))">
                   <f:string key="creator_affiliation">
-                    <xsl:value-of select="map:find($schemaorg-xml,'broadcastDisplayName')"/>
+                    <xsl:value-of select="my:getTripleNestedMapValue($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')"/>
                   </f:string>
-                </xsl:if>
               </xsl:if>
 
-              <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName'))">
+              <xsl:if test="f:exists(my:getTripleNestedMapValue($schemaorg-xml, 'publication', 'publishedOn', 'alternateName'))">
                 <f:string key="creator_affiliation_generic">
-                  <xsl:value-of select="map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName')"/>
+                  <xsl:value-of select="my:getTripleNestedMapValue($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')"/>
+                </f:string>
+              </xsl:if>
+
+              <xsl:if test="my:getTripleNestedMapValue($schemaorg-xml, 'publication',
+                                                        'publishedOn', 'broadcaster') != ''">
+                <f:string key="broadcaster">
+                  <xsl:value-of select="my:getFourLevelNestedMapValue($schemaorg-xml, 'publication',
+                                                          'publishedOn', 'broadcaster', 'legalName')"/>
                 </f:string>
               </xsl:if>
             </xsl:if>
           </xsl:if>
-          <xsl:if test="f:exists(map:find($schemaorg-xml, 'legalName'))">
-            <f:string key="broadcaster">
-              <xsl:value-of select="map:find($schemaorg-xml, 'legalName')"/>
-            </f:string>
-          </xsl:if>
+
 
           <!-- Creates the notes field, which originates from the mods2solr XSLT and acts as a catch all field for metadata
                The values in this field are also present in the specific abstract and description fields.-->
@@ -531,4 +531,32 @@
     <xsl:param name="endDate" as="xs:dateTime"/>
     <xsl:value-of select="($endDate - $startDate) div xs:dayTimeDuration('PT0.001S')"/>
   </xsl:function>
+
+  <!-- Return the innermost value from a three-level nested JSON object. -->
+  <xsl:function name="my:getTripleNestedMapValue" as="item()">
+    <xsl:param name="object"/>
+    <xsl:param name="outerMap"/>
+    <xsl:param name="middleMap"/>
+    <xsl:param name="innerMap"/>
+    <xsl:value-of select="map:get(map:get(map:get($object, $outerMap),$middleMap), $innerMap)"/>
+  </xsl:function>
+
+  <!-- Get a value from a nested JSON map. -->
+  <xsl:function name="my:getNestedMapValue">
+    <xsl:param name="object"/>
+    <xsl:param name="outerMap"/>
+    <xsl:param name="innerMap"/>
+    <xsl:value-of select="map:get(map:get($object, $outerMap),$innerMap)"/>
+  </xsl:function>
+
+  <!-- Get a value from a complex nested JSON map. Returns a value hidden four levels into the JSON structure.-->
+  <xsl:function name="my:getFourLevelNestedMapValue" as="item()">
+    <xsl:param name="object"/>
+    <xsl:param name="map1"/>
+    <xsl:param name="map2"/>
+    <xsl:param name="map3"/>
+    <xsl:param name="map4"/>
+    <xsl:value-of select="map:get(map:get(map:get(map:get($object, $map1),$map2), $map3), $map4)"/>
+  </xsl:function>
+
 </xsl:transform>

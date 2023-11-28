@@ -27,9 +27,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
     public static final String SCHEMA2SOLR =  "xslt/schemaorg2solr.xsl";
-
     private static final Logger log = LoggerFactory.getLogger(XSLTPreservicaToSolrTransformerTest.class);
-
 
     @Override
     String getXSLT() {
@@ -389,7 +387,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString;
         try {
             solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
-            TestUtil.prettyPrintJson(solrString);
+            //TestUtil.prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
