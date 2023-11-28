@@ -26,6 +26,7 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 
+import dk.kb.util.webservice.stream.ContinuationStream;
 import dk.kb.util.yaml.NotFoundException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
@@ -166,7 +167,7 @@ public class DSOrigin {
     }
 
     /**
-     * Returns a stream of records where the data are transformed to the given format.
+     * Return a stream of records where the data are transformed to the given format.
      * Only records of type DELIVERABLEUNIT are returned as these are the main metadata format.
      * <p>
      * The logic is complicated by the need to check for access to the IDs:
@@ -180,21 +181,23 @@ public class DSOrigin {
      * @return a stream of records in the requested format.
      * @throws ServiceException if anything went wrong during construction of the stream.
      */
-    public Stream<DsRecordDto> getDSRecords(
+    public ContinuationStream<DsRecordDto, Long> getDSRecords(
             Long mTime, Long maxRecords, String format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         View view = getView(format);
         log.debug("Calling storage.getDSRecordsRecordTypeLocalTree(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
-            // 35 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
-            return ExtractionUtils.splitToLists(
-                            storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords), LICENSE_BATCH_SIZE)
+            // splitToLists creates new streams so this cannot be a single long stream chain
+            ContinuationStream<DsRecordDto, Long> allRecords =
+                    storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords);
+            Stream<DsRecordDto> filteredRecords =  ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
                     .peek(safeView(format, view))
                     .filter(Objects::nonNull);
+            return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore());
         } catch (Exception e) {
-            log.warn("Exception calling getDSRecords with origin='{}', mTime={}, maxRecords={}",
-                     getId(), mTime, maxRecords, e);
+            log.warn("Exception calling getDSRecords with origin='{}', mTime={}, maxRecords={}, format='{}'",
+                     getId(), mTime, maxRecords, format, e);
             throw new InternalServiceException(
                     "Internal exception requesting records from origin '" + getId() + "' in format " + format);
         }
@@ -215,22 +218,22 @@ public class DSOrigin {
      * @return a stream of records in the requested format.
      * @throws ServiceException if anything went wrong during construction of the stream.
      */
-    public Stream<DsRecordDto> getDSRecordsAll(
+    public ContinuationStream<DsRecordDto, Long> getDSRecordsAll(
             Long mTime, Long maxRecords, String format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         View view = getView(format);
         log.debug("Extracting with the following view: '{}'", view);
         log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
-            // 35 is a magic number, which is poor code style. Currently, it controls batch size against ds-license
-            return ExtractionUtils.splitToLists(
-                            storage.getDSRecords(origin, mTime, maxRecords), LICENSE_BATCH_SIZE)
+            ContinuationStream<DsRecordDto, Long> allRecords = storage.getDSRecords(origin, mTime, maxRecords);
+            Stream<DsRecordDto> filteredRecords = ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
                     .peek(safeView(format, view))
                     .filter(Objects::nonNull);
+            return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore());
         } catch (Exception e) {
-            log.warn("Exception calling getDSRecordsRaw with origin='{}', mTime={}, maxRecords={}",
-                    getId(), mTime, maxRecords, e);
+            log.warn("Exception calling getDSRecordsAll with origin='{}', mTime={}, maxRecords={}, format='{}'",
+                    getId(), mTime, maxRecords, format, e);
             throw new InternalServiceException(
                     "Internal exception requesting records from origin '" + getId() + "' in format " + format);
         }

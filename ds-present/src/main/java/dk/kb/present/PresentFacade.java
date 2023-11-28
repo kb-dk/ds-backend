@@ -19,15 +19,13 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
-import dk.kb.util.webservice.stream.ExportWriterFactory;
+import dk.kb.util.webservice.stream.*;
 import dk.kb.storage.model.v1.DsRecordDto;
 
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
-import dk.kb.util.webservice.stream.ExportWriter;
-import dk.kb.util.webservice.stream.JSONStreamWriter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,10 +211,14 @@ public class PresentFacade {
             HttpServletResponse httpServletResponse, String recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
             Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
+        ContinuationStream<DsRecordDto, Long> records =
+                origin.getDSRecords(mTime, maxRecords, recordFormat, accessFilter);
+        records.setHeaders(httpServletResponse);
+
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
-                origin.getDSRecords(mTime, maxRecords, recordFormat, accessFilter)
+                records
                         .map(DsRecordDto::getData)
                         .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
@@ -230,10 +232,14 @@ public class PresentFacade {
             HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT deliveryFormat,
             Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
+        ContinuationStream<DsRecordDto, Long> records =
+                origin.getDSRecordsAll(mTime, maxRecords, recordView, accessFilter); // Does not contain deleted records
+        records.setHeaders(httpServletResponse);
+
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, deliveryFormat, false, "records")) {
-                origin.getDSRecordsAll(mTime, maxRecords, recordView, accessFilter) // Does not contain deleted records
+                records
                         .peek(record -> record.setData(DataCleanup.removeXMLDeclaration(record.getData())))
                         .forEach(writer::write);
             }
@@ -245,6 +251,10 @@ public class PresentFacade {
                                                   HttpServletResponse httpServletResponse,
                                                   Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, ExportWriterFactory.FORMAT.json);
+        ContinuationStream<DsRecordDto, Long> records =
+                origin.getDSRecords(mTime, maxRecords, "SolrJSON", accessFilter);
+        records.setHeaders(httpServletResponse);
+
         return output -> {
             ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records");
@@ -253,7 +263,7 @@ public class PresentFacade {
             ((JSONStreamWriter) writer).setPostOutput("\n}\n");
 
             try {
-                origin.getDSRecords(mTime, maxRecords, "SolrJSON", accessFilter)
+                records
                         .map(PresentFacade::wrapSolrJSON)
                         .forEach(writer::write);
             } catch (Exception e) {
