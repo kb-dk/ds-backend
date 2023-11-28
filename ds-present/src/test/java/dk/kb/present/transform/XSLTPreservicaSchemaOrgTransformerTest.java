@@ -75,7 +75,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testBroadcasterOrganization() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_44979f67);
-        TestUtil.prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"legalName\":\"DR\""));
     }
 
@@ -115,7 +114,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertTrue(isLive.contains("\"isLiveBroadcast\":true"));
 
         String notLive = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_5a5357be);
-        printSchemaOrgJson(TestFiles.PVICA_RECORD_5a5357be);
         Assertions.assertTrue(notLive.contains("\"isLiveBroadcast\":false"));
     }
 
