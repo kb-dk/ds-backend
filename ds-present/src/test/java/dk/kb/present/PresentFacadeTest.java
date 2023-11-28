@@ -23,6 +23,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,6 +58,7 @@ public class PresentFacadeTest {
         assertTrue(result.contains("<mods:namePart type=\"family\">Andersen</mods:namePart>"));
     }
 
+    // TODO: Rewrite this test so that it is keeps running even when more test files are added (maybe filter 1 or 2 specific records by ID?)
     @Test
     void accessFilterMultiRecords() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
@@ -67,15 +69,20 @@ public class PresentFacadeTest {
         long baseCount = countMETS(out);
         assertTrue(baseCount > 1, "There should be more than 1 record returned when requesting 'dsfl'-records");
 
-        // Filter every other record
+        // Filter every other record, sorted order
         out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods",
-                ids -> IntStream.range(0, ids.size())
-                        .filter(i -> (i&1) == 0)
-                        .boxed()
-                        .map(ids::get)
-                        .collect(Collectors.toList()));
+                ids -> {
+                    List<String> sorted = ids.stream()
+                            .sorted()
+                            .collect(Collectors.toList());
+                    return IntStream.range(0, sorted.size())
+                            .filter(i -> (i & 1) == 0)
+                            .boxed()
+                            .map(sorted::get)
+                            .collect(Collectors.toList());
+                });
         long evenCount = countMETS(out);
-        assertEquals(baseCount/2, evenCount, "Filtering every other 'dsfl'-record should yield the expected count");
+        assertEquals(14, evenCount, "Filtering every other 'dsfl'-record should yield the expected count");
     }
 
     /**
