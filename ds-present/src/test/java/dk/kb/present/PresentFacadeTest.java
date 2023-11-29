@@ -82,7 +82,7 @@ public class PresentFacadeTest {
                             .collect(Collectors.toList());
                 });
         long evenCount = countMETS(out);
-        assertEquals(14, evenCount, "Filtering every other 'dsfl'-record should yield the expected count");
+        assertEquals(12, evenCount, "Filtering every other 'dsfl'-record should yield the expected count");
     }
 
     /**

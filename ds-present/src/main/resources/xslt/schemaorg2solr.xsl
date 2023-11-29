@@ -483,14 +483,17 @@
       </f:string>
     </xsl:if>
 
-    <!-- Extracting overlaps sorted by type of overlap as that is the only value to distinguish overlaps by. -->
+    <!--
+    INTERNAL STRUCTURE HAS BEEN TEMPORARILY REMOVED FROM TRANSFORMATION AS ITS HARD TO REPRESENT IT FLAT.
+
+    &lt;!&ndash; Extracting overlaps sorted by type of overlap as that is the only value to distinguish overlaps by. &ndash;&gt;
     <xsl:if test="f:exists($internalMap('kb:program_structure_overlap'))">
       <xsl:variable name="overlaps" as="item()*">
         <xsl:copy-of select="array:flatten($internalMap('kb:program_structure_overlap'))"/>
       </xsl:variable>
 
-      <!-- Defines fields for overlaps of type 1 and 2. Currently, I don't know if more than two types exists, '
-           then they would have to be added. -->
+      &lt;!&ndash; Defines fields for overlaps of type 1 and 2. Currently, I don't know if more than two types exists, '
+           then they would have to be added. &ndash;&gt;
       <xsl:for-each select="$overlaps">
         <xsl:choose>
           <xsl:when test="map:get(. , 'overlap_type') = '1'">
@@ -519,7 +522,7 @@
           </xsl:when>
         </xsl:choose>
       </xsl:for-each>
-    </xsl:if>
+    </xsl:if>-->
 
   </xsl:template>
 
