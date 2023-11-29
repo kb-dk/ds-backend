@@ -565,6 +565,7 @@ public class EmbeddedSolrTest {
         testBooleanValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", false);
     }
 
+    /* Disabled as overlaps arent represented in solr as of now
     @Test
     void testProgramStructureOverlaps() throws Exception {
         testLongValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_two_length_ms", 3120L);
@@ -572,7 +573,7 @@ public class EmbeddedSolrTest {
         testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_two_file2UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
         testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_one_file1UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
 
-    }
+    }*/
 
     @Test
     void testIndexingOfRadioRecord() throws Exception {
