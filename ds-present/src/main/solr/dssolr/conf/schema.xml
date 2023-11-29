@@ -706,6 +706,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                   14:28:00, there would be a two minute overlap between the resources.?>
     <?example     true?>
   </field>
+  <!-- These fields are commented out as they are not used in the current setup. Hopefully they will be used at some
+       point in the future.
   <field name="internal_program_structure_overlap_type_one_length_ms" type="plong">
     <?description Indicates the length of an overlap of type one in ms. Types are from Preservica and properply defines
             if the overlap is in the beginning or end of the queried resource.?>
@@ -731,7 +733,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="internal_program_structure_overlap_type_two_file2UUID" type="string">
     <?description The UUID of the second file that is part of overlap one.?>
     <?example     f73b69da-2bc0-4e06-b19b-95f24756804e?>
-  </field>
+  </field>-->
   <field name="internal_overlapping_files" type="string" multiValued="true">
     <?description If there are overlaps between files related to a metadata resource. the UUIDs of the relevant files
                   will be listed in this field. These overlaps can be of all types and there is currently no possibility
