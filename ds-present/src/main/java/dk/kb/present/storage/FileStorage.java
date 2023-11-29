@@ -22,6 +22,7 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 
 import dk.kb.util.Resolver;
+import dk.kb.util.webservice.stream.ContinuationStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class FileStorage implements Storage {
      * Create a file backed Storage.
      * @param id the ID for the storage, used for connecting origins to storages.
      * @param folder the folder containing the files to deliver upon request.
-     * @param extension if defined, {@link #getDSRecords(long, long)} will only return files with this extension.
+     * @param extension if defined, {@link #getDSRecords} will only return files with this extension.
      * @param stripPrefix if true, the ID {@code origin:subid} is reduced to {subid} before lookup.
      * @param whitelist if not null, ID's must pass the whitelist in order to be delivered.
      * @param blacklist if not null, ID's that matches the blacklist are not delivered.
@@ -258,11 +259,16 @@ public class FileStorage implements Storage {
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecords(String origin, long mTime, long maxRecords) {
+    public ContinuationStream<DsRecordDto, Long> getDSRecords(String origin, long mTime, long maxRecords) {
         // To keep memory usage down we create shallow DsRecordDtos (aka without data) and only
         // populate them when delivering the next stream element
 
-        final List<DsRecordDto> shallow = getShallow(mTime, maxRecords);
+        // We need 1 extra record to determine hasMore later on
+        final List<DsRecordDto> shallowPlusOne = getShallow(mTime, maxRecords == -1 ? -1 : maxRecords+1);
+        final List<DsRecordDto> shallow = maxRecords == -1 || shallowPlusOne.size() <= maxRecords ?
+                shallowPlusOne :
+                shallowPlusOne.subList(0, (int) maxRecords);
+
         Iterator<DsRecordDto> iterator = new Iterator<>() {
             int pos = 0;
 
@@ -276,11 +282,16 @@ public class FileStorage implements Storage {
                 return populate(shallow.get(pos++));
             }
         };
-        return StreamSupport.stream(((Iterable<DsRecordDto>) () -> iterator).spliterator(), false);
+        Stream<DsRecordDto> records = StreamSupport.stream(((Iterable<DsRecordDto>) () -> iterator).spliterator(), false);
+        Long continuationToken = shallow.isEmpty() ? null : populate(shallow.get(shallow.size()-1)).getmTime();
+        Boolean hasMore = shallowPlusOne.size() == maxRecords+1;
+        return new ContinuationStream<>(records, continuationToken, hasMore);
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
+    public ContinuationStream<DsRecordDto, Long> getDSRecordsByRecordTypeLocalTree(
+            String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
+        // TODO: Make a proper implementation that checks the type (e.g. make getShallow take a filter)
         return getDSRecords(origin, mTime, maxRecords);
     }
 
