@@ -23,7 +23,9 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -64,6 +66,13 @@ public class PresentFacadeTest {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             return;
         }
+
+        // Random subset of the sample files
+        final Set<String> ALLOWED = new HashSet<>(List.of(
+                "09222b40-dba1-11e5-9785-0016357f605f.xml",
+                "e5a0e980-d6cb-11e3-8d2e-0016357f605f.xml",
+                "05fea810-7181-11e0-82d7-002185371280.xml"));
+
         // No access checking
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods", ids -> ids);
         long baseCount = countMETS(out);
@@ -71,18 +80,11 @@ public class PresentFacadeTest {
 
         // Filter every other record, sorted order
         out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods",
-                ids -> {
-                    List<String> sorted = ids.stream()
-                            .sorted()
-                            .collect(Collectors.toList());
-                    return IntStream.range(0, sorted.size())
-                            .filter(i -> (i & 1) == 0)
-                            .boxed()
-                            .map(sorted::get)
-                            .collect(Collectors.toList());
-                });
+                ids -> ids.stream()
+                        .filter(ALLOWED::contains)
+                        .collect(Collectors.toList()));
         long evenCount = countMETS(out);
-        assertEquals(17, evenCount, "Filtering every other 'dsfl'-record should yield the expected count");
+        assertEquals(ALLOWED.size(), evenCount, "Keeping only allowed METS/MODS records should yield the expected count");
     }
 
     /**
