@@ -484,7 +484,7 @@
     </xsl:if>
 
     <!--
-    INTERNAL STRUCTURE HAS BEEN TEMPORARILY REMOVED FROM TRANSFORMATION AS ITS HARD TO REPRESENT IT FLAT.
+    INTERNAL STRUCTURE HAS BEEN TEMPORARILY REMOVED FROM TRANSFORMATION AS IT'S HARD TO REPRESENT IT FLAT.
 
     &lt;!&ndash; Extracting overlaps sorted by type of overlap as that is the only value to distinguish overlaps by. &ndash;&gt;
     <xsl:if test="f:exists($internalMap('kb:program_structure_overlap'))">
