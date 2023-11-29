@@ -484,6 +484,24 @@
       </f:string>
     </xsl:if>
 
+    <!-- Overlaps are hard to extract to solr as they are tricky to represent in a flat JSON structure where each key
+         has a unique name. -->
+    <xsl:if test="f:exists($internalMap('kb:program_structure_overlap'))">
+      <xsl:variable name="overlapsArray" as="item()*">
+        <xsl:copy-of select="array:flatten($internalMap('kb:program_structure_overlap'))"/>
+      </xsl:variable>
+
+      <f:array key="internal_overlapping_files">
+        <xsl:for-each select="$overlapsArray">
+          <f:string>
+            <xsl:value-of select="map:get(., 'file1UUID')"/>
+          </f:string>
+          <f:string>
+            <xsl:value-of select="map:get(., 'file2UUID')"/>
+          </f:string>
+        </xsl:for-each>
+      </f:array>
+    </xsl:if>
     <!--
     INTERNAL STRUCTURE HAS BEEN TEMPORARILY REMOVED FROM TRANSFORMATION AS IT'S HARD TO REPRESENT IT FLAT.
 

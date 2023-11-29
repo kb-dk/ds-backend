@@ -49,6 +49,7 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_FM;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_aaf3b130;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
 import static dk.kb.present.TestFiles.PVICA_RECORD_1f3a6a66;
+import static dk.kb.present.TestFiles.PVICA_RECORD_2973e7fa;
 import static dk.kb.present.TestFiles.PVICA_RECORD_3945e2d1;
 import static dk.kb.present.TestFiles.PVICA_RECORD_44979f67;
 import static dk.kb.present.TestFiles.PVICA_RECORD_74e22fd8;
@@ -565,6 +566,11 @@ public class EmbeddedSolrTest {
         testBooleanValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", false);
     }
 
+    @Test
+    void testOverlappingFiles() throws Exception {
+        testStringPresentInPreservicaMultiField(PVICA_RECORD_2973e7fa, "internal_overlapping_files", "8ac98f6e-5653-492a-ab8c-c1462edaeb4a");
+    }
+
     /* Disabled as overlaps arent represented in solr as of now
     @Test
     void testProgramStructureOverlaps() throws Exception {
@@ -765,6 +771,18 @@ public class EmbeddedSolrTest {
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
 
+    }
+
+    private void testStringPresentInPreservicaMultiField(String preservicaRecord, String solrField, String... fieldValues) throws Exception {
+        if (Resolver.getPathFromClasspath(preservicaRecord) == null) {
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
+                    preservicaRecord, solrField);
+            return;
+        }
+        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        for (String value:fieldValues) {
+            assertTrue(record.getFieldValue(solrField).toString().contains(value));
+        }
     }
 
     private void testDateValuePreservicaField(String preservicaRecord, String solrField, Date fieldValue) throws Exception {

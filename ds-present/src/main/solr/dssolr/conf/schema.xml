@@ -732,6 +732,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description The UUID of the second file that is part of overlap one.?>
     <?example     f73b69da-2bc0-4e06-b19b-95f24756804e?>
   </field>
+  <field name="internal_overlapping_files" type="string" multiValued="true">
+    <?description If there are overlaps between files related to a metadata resource. the UUIDs of the relevant files
+                  will be listed in this field. These overlaps can be of all types and there is currently no possibility
+                  for knowing how long the overlap is or what kind of overlap there are between the files. Overlapping
+                  files are listed in pairs, which means that the first and second entry in the field are overlapping
+                  and so forth.?>
+    <?example     c8f496cf-4e0b-4682-8eee-67dfe07525d2, 8ac98f6e-5653-492a-ab8c-c1462edaeb4a?>
+  </field>
 
   <!-- ================================================================ -->
   <!-- ====== Fields related to copyright and access conditions   ===== -->
