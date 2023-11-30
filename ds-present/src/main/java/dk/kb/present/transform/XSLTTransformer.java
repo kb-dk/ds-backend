@@ -18,10 +18,7 @@ import dk.kb.util.Resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayOutputStream;
@@ -47,6 +44,8 @@ public class XSLTTransformer implements DSTransformer {
     static {
         System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
         transformerFactory = TransformerFactory.newInstance();
+        // Ignoring base as it is always null in the ds-present code
+        transformerFactory.setURIResolver((href, base) -> new StreamSource(Resolver.resolveStream(href)));
     }
     public final String stylesheet;
     public final Transformer transformer;

@@ -12,7 +12,7 @@
   
   <xsl:output method="text" />
   <xsl:param name="schemaorgjson"/>
-  <xsl:include href="src/main/resources/xslt/utils.xsl"/>
+  <xsl:include href="xslt/utils.xsl"/>
 
   <!--Saves the input JSON as an XDM object. -->
   <xsl:variable name="schemaorg-xml" as="item()*">
