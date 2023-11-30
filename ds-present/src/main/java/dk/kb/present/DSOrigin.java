@@ -14,7 +14,6 @@
  */
 package dk.kb.present;
 
-
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.RuntimeTransformerException;
@@ -36,8 +35,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -200,7 +199,7 @@ public class DSOrigin {
                     storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords);
             Stream<DsRecordDto> filteredRecords =  ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
-                    .peek(safeView(format, view, stopOnError()))
+                    .map(safeView(format, view, stopOnError()))
                     .filter(Objects::nonNull);
             return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore());
         } catch (Exception e) {
@@ -236,7 +235,7 @@ public class DSOrigin {
             ContinuationStream<DsRecordDto, Long> allRecords = storage.getDSRecords(origin, mTime, maxRecords);
             Stream<DsRecordDto> filteredRecords = ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
-                    .peek(safeView(format, view, stopOnError()))
+                    .map(safeView(format, view, stopOnError()))
                     .filter(Objects::nonNull);
             return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore());
         } catch (Exception e) {
@@ -253,16 +252,18 @@ public class DSOrigin {
      * @param view to apply to record.
      * @return a transformed record, transformed with input view.
      */
-    private static Consumer<DsRecordDto> safeView(String format, View view, boolean stopOnError) {
+    private static UnaryOperator<DsRecordDto> safeView(String format, View view, boolean stopOnError) {
         return record -> {
             try {
                 record.data(view.apply(record));
+                return record;
             } catch (Exception e) {
                 if (stopOnError) {
                     throw new RuntimeTransformerException(
                             "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
                 } else {
                     log.warn("Exception transforming record '" + record.getId() + "' to format '" + format + "'", e);
+                    return null;
                 }
             }
         };
