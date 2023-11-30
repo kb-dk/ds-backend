@@ -6,7 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Client for the service, to be used by external projects
+
+
+
+## [1.2.0] - 2023-11-30
+### Added
+Ds-license client added. Option for caching to prevent DOS from image zooming calls.
+Solr calls changed from GET to POST 
 
 
 ## [1.0.0] - YYYY-MM-DD
