@@ -568,7 +568,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testOverlappingFiles() throws Exception {
-        testStringPresentInPreservicaMultiField(PVICA_RECORD_2973e7fa, "internal_overlapping_files", "8ac98f6e-5653-492a-ab8c-c1462edaeb4a");
+        testStringPresentInPreservicaMultiField(PVICA_RECORD_2973e7fa, "internal_overlapping_files", "c8f496cf-4e0b-4682-8eee-67dfe07525d2,8ac98f6e-5653-492a-ab8c-c1462edaeb4a");
     }
 
     /* Disabled as overlaps arent represented in solr as of now

@@ -494,10 +494,7 @@
       <f:array key="internal_overlapping_files">
         <xsl:for-each select="$overlapsArray">
           <f:string>
-            <xsl:value-of select="map:get(., 'file1UUID')"/>
-          </f:string>
-          <f:string>
-            <xsl:value-of select="map:get(., 'file2UUID')"/>
+            <xsl:value-of select="concat(map:get(., 'file1UUID'), ',', map:get(., 'file2UUID'))"/>
           </f:string>
         </xsl:for-each>
       </f:array>
