@@ -166,7 +166,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      */
     private void updateMetadataMapWithPreservicaManifestation(DsRecordDto record, Map<String, String> metadata) {
         String child = getFirstPresentationManifestation(record);
-        metadata.put("manifestation", child);
+        if (!child.isEmpty()){
+            metadata.put("manifestation", child);
+        }
     }
 
     @Override
@@ -206,9 +208,15 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @return the first presentation manifestation for a record.
      */
     private String returnPresentationManifestationFromList(List<String> presentationManifestations, String recordId) {
+        if (presentationManifestations == null || presentationManifestations.isEmpty()){
+            log.warn("No presentation manifestations were delivered from DS-storage as children for record: '{}'", recordId);
+            return "";
+        }
+
         if (presentationManifestations.size() > 1) {
             log.warn("Multiple presentation manifestations were present for record with id: '{}'. " +
                     "Only the first has been returned", recordId);
+            return presentationManifestations.get(0);
         }
 
         return presentationManifestations.get(0);

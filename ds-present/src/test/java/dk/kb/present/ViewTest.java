@@ -6,6 +6,8 @@ import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /*
@@ -63,6 +65,25 @@ class ViewTest {
 
         String jsonld = jsonldView.apply(recordDto);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
+    }
+
+    @Test
+    void pvicaEmptyChild() throws Exception {
+        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
+            return;
+        }
+        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
+        YAML radioConf = conf.getYAMLList(".config.origins").get(2);
+        View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(1), radioConf.getSubMap("\"ds.radio\"").getString("origin"));
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
+
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id");
+
+        DsRecordDto emptyChildDto = new DsRecordDto().id("test.emptyChild");
+        recordDto.setChildren(List.of(emptyChildDto));
+
+        String jsonld = jsonldView.apply(recordDto);
+        assertFalse(jsonld.contains("\"contentUrl\":"));
     }
 
     @Test
