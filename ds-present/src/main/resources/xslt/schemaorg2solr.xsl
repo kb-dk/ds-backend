@@ -12,6 +12,7 @@
   
   <xsl:output method="text" />
   <xsl:param name="schemaorgjson"/>
+  <xsl:include href="src/main/resources/xslt/utils.xsl"/>
 
   <!--Saves the input JSON as an XDM object. -->
   <xsl:variable name="schemaorg-xml" as="item()*">
@@ -97,31 +98,31 @@
           <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
                Therefore, we are also extracting the creator_affiliation_generic which contains the same value for e.g.
                DR P1 from 1960 'program 1' and 2000's 'P1'. Here the value would be drp1. -->
-          <!-- map:find() can be used, because we know that only one key in the complete JSON file is named
-               broadcastDisplayName -->
           <xsl:if test="f:exists(map:get($schemaorg-xml, 'publication'))">
-            <xsl:if test="f:exists(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'))">
+            <xsl:if test="f:exists(my:getNestedMapValue2Levels($schemaorg-xml, 'publication','publishedOn'))">
 
-              <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'broadcastDisplayName' ))">
-                <xsl:if test="f:exists(map:find($schemaorg-xml,'broadcastDisplayName'))">
+              <xsl:if test="not(f:empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')))">
                   <f:string key="creator_affiliation">
-                    <xsl:value-of select="map:find($schemaorg-xml,'broadcastDisplayName')"/>
+                    <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')"/>
                   </f:string>
-                </xsl:if>
               </xsl:if>
 
-              <xsl:if test="f:exists(map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName'))">
+              <xsl:if test="not(empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')))">
                 <f:string key="creator_affiliation_generic">
-                  <xsl:value-of select="map:get(map:get(map:get($schemaorg-xml, 'publication'),'publishedOn'), 'alternateName')"/>
+                  <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')"/>
+                </f:string>
+              </xsl:if>
+
+              <xsl:if test="not(f:empty(my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
+                                                        'publishedOn', 'broadcaster', 'legalName')))">
+                <f:string key="broadcaster">
+                  <xsl:value-of select="my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
+                                                          'publishedOn', 'broadcaster', 'legalName')"/>
                 </f:string>
               </xsl:if>
             </xsl:if>
           </xsl:if>
-          <xsl:if test="f:exists(map:find($schemaorg-xml, 'legalName'))">
-            <f:string key="broadcaster">
-              <xsl:value-of select="map:find($schemaorg-xml, 'legalName')"/>
-            </f:string>
-          </xsl:if>
+
 
           <!-- Creates the notes field, which originates from the mods2solr XSLT and acts as a catch all field for metadata
                The values in this field are also present in the specific abstract and description fields.-->
@@ -525,13 +526,4 @@
     </xsl:if>-->
 
   </xsl:template>
-
-
-  <!-- FUNCTIONS -->
-  <!-- Get milliseconds between two datetimes. -->
-  <xsl:function name="my:toMilliseconds" as="xs:integer">
-    <xsl:param name="startDate" as="xs:dateTime"/>
-    <xsl:param name="endDate" as="xs:dateTime"/>
-    <xsl:value-of select="($endDate - $startDate) div xs:dayTimeDuration('PT0.001S')"/>
-  </xsl:function>
 </xsl:transform>
