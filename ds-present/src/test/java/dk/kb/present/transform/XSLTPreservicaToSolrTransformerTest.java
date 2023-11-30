@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
@@ -27,9 +28,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
     public static final String SCHEMA2SOLR =  "xslt/schemaorg2solr.xsl";
-
     private static final Logger log = LoggerFactory.getLogger(XSLTPreservicaToSolrTransformerTest.class);
-
 
     @Override
     String getXSLT() {
@@ -111,6 +110,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     public void testCreatorAffiliation() {
         assertPvicaContains(TestFiles.PVICA_RECORD_5a5357be, "\"creator_affiliation\":\"TLC\"");
+    }
+
+    @Test
+    public void testNoCreatorAffiliation() {
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_4f706cda, "\"creator_affiliation\"");
     }
 
     @Test
@@ -390,7 +394,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString;
         try {
             solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
-            TestUtil.prettyPrintJson(solrString);
+            //TestUtil.prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
