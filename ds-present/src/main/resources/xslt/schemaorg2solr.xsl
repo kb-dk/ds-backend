@@ -99,24 +99,24 @@
                Therefore, we are also extracting the creator_affiliation_generic which contains the same value for e.g.
                DR P1 from 1960 'program 1' and 2000's 'P1'. Here the value would be drp1. -->
           <xsl:if test="f:exists(map:get($schemaorg-xml, 'publication'))">
-            <xsl:if test="f:exists(my:getNestedMapValue($schemaorg-xml, 'publication','publishedOn'))">
+            <xsl:if test="f:exists(my:getNestedMapValue2Levels($schemaorg-xml, 'publication','publishedOn'))">
 
-              <xsl:if test="not(f:empty(my:getTripleNestedMapValue($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')))">
+              <xsl:if test="not(f:empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')))">
                   <f:string key="creator_affiliation">
-                    <xsl:value-of select="my:getTripleNestedMapValue($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')"/>
+                    <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')"/>
                   </f:string>
               </xsl:if>
 
-              <xsl:if test="not(empty(my:getTripleNestedMapValue($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')))">
+              <xsl:if test="not(empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')))">
                 <f:string key="creator_affiliation_generic">
-                  <xsl:value-of select="my:getTripleNestedMapValue($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')"/>
+                  <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')"/>
                 </f:string>
               </xsl:if>
 
-              <xsl:if test="not(f:empty(my:getFourLevelNestedMapValue($schemaorg-xml, 'publication',
+              <xsl:if test="not(f:empty(my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
                                                         'publishedOn', 'broadcaster', 'legalName')))">
                 <f:string key="broadcaster">
-                  <xsl:value-of select="my:getFourLevelNestedMapValue($schemaorg-xml, 'publication',
+                  <xsl:value-of select="my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
                                                           'publishedOn', 'broadcaster', 'legalName')"/>
                 </f:string>
               </xsl:if>

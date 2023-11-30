@@ -18,39 +18,39 @@
 
   <!-- Get a value from a nested JSON map. The function checks that each level of the map isn't empty.
        If the map is empty, an empty string will be returned.-->
-  <xsl:function name="my:getNestedMapValue">
+  <xsl:function name="my:getNestedMapValue2Levels">
     <xsl:param name="object"/>
-    <xsl:param name="outerMap"/>
-    <xsl:param name="innerMap"/>
+    <xsl:param name="map1"/>
+    <xsl:param name="map2"/>
     <xsl:choose>
       <xsl:when test="f:empty($object)"><xsl:value-of select="''"/></xsl:when>
-      <xsl:when test="f:empty(map:get($object, $outerMap))"><xsl:value-of select="''"/></xsl:when>
-      <xsl:when test="f:empty(map:get(map:get($object, $outerMap), $innerMap))"><xsl:value-of select="''"/></xsl:when>
-      <xsl:otherwise> <xsl:value-of select="map:get(map:get($object, $outerMap),$innerMap)"/></xsl:otherwise>
+      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:value-of select="''"/></xsl:when>
+      <xsl:when test="f:empty(map:get(map:get($object, $map1), $map2))"><xsl:value-of select="''"/></xsl:when>
+      <xsl:otherwise> <xsl:value-of select="map:get(map:get($object, $map1),$map2)"/></xsl:otherwise>
     </xsl:choose>
   </xsl:function>
 
   <!-- Return the innermost value from a three-level nested JSON object.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
-  <xsl:function name="my:getTripleNestedMapValue">
+  <xsl:function name="my:getNestedMapValue3Levels">
     <xsl:param name="object"/>
-    <xsl:param name="outerMap"/>
-    <xsl:param name="middleMap"/>
-    <xsl:param name="innerMap"/>
+    <xsl:param name="map1"/>
+    <xsl:param name="map2"/>
+    <xsl:param name="map3"/>
     <xsl:choose>
       <xsl:when test="f:empty($object)"><xsl:value-of select="''"/></xsl:when>
-      <xsl:when test="f:empty(map:get($object, $outerMap))"><xsl:value-of select="''"/></xsl:when>
-      <xsl:when test="f:empty(map:get(map:get($object, $outerMap), $middleMap))"><xsl:value-of select="''"/></xsl:when>
-      <xsl:when test="f:empty(map:get(map:get(map:get($object, $outerMap), $middleMap), $innerMap))"><xsl:value-of select="''"/></xsl:when>
-      <xsl:otherwise><xsl:value-of select="map:get(map:get(map:get($object, $outerMap),$middleMap), $innerMap)"/></xsl:otherwise>
+      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:value-of select="''"/></xsl:when>
+      <xsl:when test="f:empty(map:get(map:get($object, $map1), $map2))"><xsl:value-of select="''"/></xsl:when>
+      <xsl:when test="f:empty(map:get(map:get(map:get($object, $map1), $map2), $map3))"><xsl:value-of select="''"/></xsl:when>
+      <xsl:otherwise><xsl:value-of select="map:get(map:get(map:get($object, $map1),$map2), $map3)"/></xsl:otherwise>
     </xsl:choose>
   </xsl:function>
 
   <!-- Get a value from a nested JSON map with four nested levels.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
-  <xsl:function name="my:getFourLevelNestedMapValue" as="item()">
+  <xsl:function name="my:getNestedMapValue4Levels" as="item()">
     <xsl:param name="object"/>
     <xsl:param name="map1"/>
     <xsl:param name="map2"/>
@@ -69,7 +69,7 @@
   <!-- Get a value from a nested JSON map with five nested levels.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
-  <xsl:function name="my:getFiveLevelNestedMapValue" as="item()">
+  <xsl:function name="my:getNestedMapValue5Levels" as="item()">
     <xsl:param name="object"/>
     <xsl:param name="map1"/>
     <xsl:param name="map2"/>
@@ -90,7 +90,7 @@
   <!-- Get a value from a nested JSON map with six nested levels.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
-  <xsl:function name="my:getSixLevelNestedMapValue" as="item()">
+  <xsl:function name="my:getNestedMapValue6Levels" as="item()">
     <xsl:param name="object"/>
     <xsl:param name="map1"/>
     <xsl:param name="map2"/>
