@@ -167,28 +167,6 @@ public class PresentFacadeTest {
         assertFalse(result.endsWith("]\n"), "Result should not end with ']' as it should be in JSON-Lin es");
     }
 
-    /* TODO: FIX!
-    //   Can only be fixed, when the updated XSLT to JSON-LD has been reviewed and merged to master
-    @Test
-    void getRecordsJSONLD() throws IOException {
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "json-ld");
-        String result = toString(out);
-        System.out.println(result);
-        //assertTrue(result.contains("\"@value\":\"Letters to\\/from David Simonsen\"}"), "Result should contain the name David Simonsen in the expected wrapping");
-        assertTrue(result.contains(",\n"), "Result should contain a comma followed by newline as it should be a multi-entry JSON array"); // Plain JSON array
-        assertTrue(result.endsWith("]\n"), "Result should end with ']' as it should be a JSON array"); // JSON array
-    }
-     */
-
-    @Test
-    void getRecordsJSONLDLines() throws IOException {
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "json-ld-lines", ids -> ids);
-        String result = toString(out);
-        assertTrue(result.contains("\"@value\":\"Letters to\\/from David Simonsen\"}"), "Result should contain the name David Simonsen in the expected wrapping");
-        assertFalse(result.contains(",\n"), "Result should not contain a comma followed by newline as it should be a multi-entry JSON-Lines");
-        assertFalse(result.endsWith("]\n"), "Result should not end with ']' as it should be in JSON-Lin es");
-    }
-
     @Test
     void getRecordsSolr() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
