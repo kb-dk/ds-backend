@@ -59,7 +59,7 @@ public class DSOrigin {
     private static final String RECORDREQUESTTYPE_KEY = "recordrequesttype";
 
     // General properties
-    private static final String STOP_ON_ERROR_KEY = "config.records.stoponerrors";
+    public static final String STOP_ON_ERROR_KEY = "config.records.stoponerrors";
 
     private static final int LICENSE_BATCH_SIZE = 500;
 
@@ -110,6 +110,11 @@ public class DSOrigin {
     private final RecordTypeDto recordRequestType;
 
     /**
+     * If true, single record errors during records-export stops the whole flow. If false, a warning is logged.
+     */
+    private final boolean stopOnError;
+
+    /**
      * Create an origin based on the given conf. The storageHandler is expected to be initialized and should contain
      * the storage specified for the origin.
      * @param conf configuration for the origin, should contain a single key:value with the key being the
@@ -132,6 +137,9 @@ public class DSOrigin {
                     .stream()
                     .map(yaml -> new View(yaml, origin))
                     .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
+
+            // Note: stopOnError is set at the outer level, not specifically for each orgin
+            stopOnError = ServiceConfig.getConfig().getBoolean(STOP_ON_ERROR_KEY, true);
         } catch (NotFoundException e) {
             throw new IllegalArgumentException(
                     "Mandatory property '" + e.getPath() + "' not present for Origin '" + id + "'");
@@ -192,7 +200,7 @@ public class DSOrigin {
                     storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords);
             Stream<DsRecordDto> filteredRecords =  ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
-                    .peek(safeView(format, view))
+                    .peek(safeView(format, view, stopOnError()))
                     .filter(Objects::nonNull);
             return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore());
         } catch (Exception e) {
@@ -228,7 +236,7 @@ public class DSOrigin {
             ContinuationStream<DsRecordDto, Long> allRecords = storage.getDSRecords(origin, mTime, maxRecords);
             Stream<DsRecordDto> filteredRecords = ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
                     .flatMap(accessFilter)
-                    .peek(safeView(format, view))
+                    .peek(safeView(format, view, stopOnError()))
                     .filter(Objects::nonNull);
             return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore());
         } catch (Exception e) {
@@ -245,12 +253,12 @@ public class DSOrigin {
      * @param view to apply to record.
      * @return a transformed record, transformed with input view.
      */
-    private static Consumer<DsRecordDto> safeView(String format, View view) {
+    private static Consumer<DsRecordDto> safeView(String format, View view, boolean stopOnError) {
         return record -> {
             try {
                 record.data(view.apply(record));
             } catch (Exception e) {
-                if (ServiceConfig.getConfig().getBoolean(STOP_ON_ERROR_KEY, true)) {
+                if (stopOnError) {
                     throw new RuntimeTransformerException(
                             "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
                 } else {
@@ -316,6 +324,14 @@ public class DSOrigin {
         return views.containsKey(view.toLowerCase(Locale.ROOT));
     }
 
+
+    /**
+     * If true, single record errors during records-export stops the whole flow. If false, a warning is logged.
+     */
+    public boolean stopOnError() {
+        return stopOnError;
+    }
+
     @Override
     public String toString() {
         return "DSOrigin(" +
@@ -326,6 +342,7 @@ public class DSOrigin {
                ", origin=" + origin +
                ", recordtype= " + recordRequestType +
                ", views=" + views +
+               ", stopOnError=" + stopOnError +
                ')';
     }
 

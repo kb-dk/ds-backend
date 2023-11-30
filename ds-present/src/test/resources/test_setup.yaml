@@ -8,6 +8,11 @@ config:
     url: http://example.com
     allowall: false
 
+
+  records:
+    # Default is true, so set to false here to check via debugging
+    stoponerrors: false
+
   # Only some of the sample files can be properly transformed to SolrJSONDocuments
   filewhitelist: &whitelist
      - '.*albert-einstein.xml'
