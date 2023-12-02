@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -44,6 +46,12 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private static final String MIME_KEY = "mime";
     private static final String TRANSFORMERS_KEY = "transformers";
     private static final String STRATEGY_KEY = "strategy";
+    /**
+     * Preservica manifestations can be of different types. Presentation manifestations are of type 2 and are the ones
+     * we want to extract through this pattern.
+     */
+    private static final Pattern PRESENTATION_MANIFESTATION_PATTERN = Pattern.compile(
+            "<ManifestationRelRef>2</ManifestationRelRef>");
 
     private final String id;
     private final String origin;
@@ -195,10 +203,22 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         List<String> presentationManifestations = record.getChildren() == null ? Collections.singletonList("") :
                 record.getChildren().stream()
                         .map(this::getNonNullChild)
-                        .filter(childData -> childData.contains("<ManifestationRelRef>2</ManifestationRelRef>"))
+                        .filter(this::isPresentationManifestation)
                         .collect(Collectors.toList());
 
         return returnPresentationManifestationFromList(presentationManifestations, record.getId());
+    }
+
+    /**
+     * Determine if the input preservica manifestation is a presentation manifestation by looking for the XML tag
+     * {@code ManifestationRelRef} with a value of 2.
+     * @param preservicaManifestation content from a ds-storage record, which is a child of the current DeliverableUnit
+     *                                being processed.
+     * @return true if the given manifestation is a presentation manifestation, otherwise return false.
+     */
+    private boolean isPresentationManifestation(String preservicaManifestation) {
+        Matcher m = PRESENTATION_MANIFESTATION_PATTERN.matcher(preservicaManifestation);
+        return m.find();
     }
 
     /**
