@@ -26,7 +26,7 @@ baseviews: &MODS_IMAGE_VIEWS
         - xslt:
             stylesheet: 'xslt/mods2schemaorg.xsl'
             injections:
-              - imageserver: ${path:config.imageservers[default=true].url}
+              - imageserver: ${path:imageservers[default=true].url}
               - old_imageserver: ${path:config.oldimageserver.url}
 
   - SolrJSON:
@@ -37,7 +37,7 @@ baseviews: &MODS_IMAGE_VIEWS
         - xslt:
             stylesheet: 'xslt/mods2solr.xsl'
             injections:
-              - imageserver: ${path:config.imageservers[default=true].url}
+              - imageserver: ${path:imageservers[default=true].url}
               - old_imageserver: ${path:config.oldimageserver.url}
 
 # The origins available for this instance of ds-present
@@ -95,7 +95,7 @@ origins:
               - xslt:
                   stylesheet: 'xslt/preservica2schemaorg.xsl'
                   injections:
-                    #- imageserver: ${path:config.imageservers[default=true].url}
+                    #- imageserver: ${path:imageservers[default=true].url}
                     - streamingserver: ${path:config.streamingserver.url}
                     - old_imageserver: ${path:config.oldimageserver.url}
         - SolrJSON:
@@ -105,7 +105,7 @@ origins:
               - xslt:
                   stylesheet: 'xslt/preservica2schemaorg.xsl'
                   injections:
-                    #- imageserver: ${path:config.imageservers[default=true].url}
+                    #- imageserver: ${path:imageservers[default=true].url}
                     - streamingserver: ${path:config.streamingserver.url}
                     - old_imageserver: ${path:config.oldimageserver.url}
               - xsltsolr:
@@ -136,14 +136,14 @@ origins:
               - xslt:
                   stylesheet: 'xslt/mods2schemaorg.xsl'
                   injections:
-                    - imageserver: ${path:config.imageservers[default=true].url}
+                    - imageserver: ${path:imageservers[default=true].url}
         - SolrJSON:
             mime: 'application/json'
             transformers:
               - xslt:
                   stylesheet: 'xslt/mods2solr.xsl'
                   injections:
-                    - imageserver: ${path:config.imageservers[default=true].url}
+                    - imageserver: ${path:imageservers[default=true].url}
 
   # Straight forward origin with the core format being MODS, using test data
   - local: # ds-present internal
@@ -168,11 +168,11 @@ origins:
               - xslt:
                   stylesheet: 'xslt/mods2schemaorg.xsl'
                   injections:
-                    - imageserver: ${path:config.imageservers[default=true].url}
+                    - imageserver: ${path:imageservers[default=true].url}
         - SolrJSON:
             mime: 'application/json'
             transformers:
               - xslt:
                   stylesheet: 'xslt/mods2solr.xsl'
                   injections:
-                    - imageserver: ${path:config.imageservers[default=true].url}
+                    - imageserver: ${path:imageservers[default=true].url}
