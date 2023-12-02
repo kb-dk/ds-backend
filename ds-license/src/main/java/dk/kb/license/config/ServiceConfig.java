@@ -41,9 +41,9 @@ public class ServiceConfig {
         serviceConfig = YAML.resolveLayeredConfigs(configFile);
         serviceConfig.setExtrapolate(true);
     
-        List<String> solr_servers = serviceConfig.getList("config.license_solr_servers");
-        SOLR_FILTER_ID_FIELD = serviceConfig.getString("config.license_solr_filter_field");
-        SOLR_FILTER_RESOURCE_ID_FIELD = serviceConfig.getString("config.license_solr_resource_filter_field");
+        List<String> solr_servers = serviceConfig.getList("license_solr_servers");
+        SOLR_FILTER_ID_FIELD = serviceConfig.getString("license_solr_filter_field");
+        SOLR_FILTER_RESOURCE_ID_FIELD = serviceConfig.getString("license_solr_resource_filter_field");
         
         SOLR_SERVERS = solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
 
@@ -73,22 +73,22 @@ public class ServiceConfig {
     }
   
     public static  String getDBDriver() {
-        String dbDriver= serviceConfig.getString("config.db.driver");
+        String dbDriver= serviceConfig.getString("db.driver");
         return dbDriver;
     }
 
     public static  String getDBUrl() {
-        String dbUrl= serviceConfig.getString("config.db.url");
+        String dbUrl= serviceConfig.getString("db.url");
         return dbUrl;
     }
 
     public static  String getDBUserName() {
-        String dbUserName= serviceConfig.getString("config.db.username");
+        String dbUserName= serviceConfig.getString("db.username");
         return dbUserName;
     }
 
     public static  String getDBPassword() {
-        String dbPassword= serviceConfig.getString("config.db.password");
+        String dbPassword= serviceConfig.getString("db.password");
         return dbPassword;
     }
     

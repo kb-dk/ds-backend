@@ -44,10 +44,10 @@ import java.util.concurrent.TimeUnit;
 public class DsLicenseClient extends DsLicenseApi {
     private static final Logger log = LoggerFactory.getLogger(DsLicenseClient.class);
 
-    public static final String URL_KEY = "config.licensemodule.url";
-    public static final String CACHE_ID_COUNT_KEY = "config.licensemodule.cache.id.count";
+    public static final String URL_KEY = "licensemodule.url";
+    public static final String CACHE_ID_COUNT_KEY = "licensemodule.cache.id.count";
     public static final int CACHE_ID_COUNT_DEFAULT = 100;
-    public static final String CACHE_ID_MS_KEY = "config.licensemodule.cache.id.ms";
+    public static final String CACHE_ID_MS_KEY = "licensemodule.cache.id.ms";
     public static final long CACHE_ID_MS_DEFAULT = 60000;
 
     Cache<CheckAccessForIdsInputDto, CheckAccessForIdsOutputDto> idcache =
@@ -59,13 +59,12 @@ public class DsLicenseClient extends DsLicenseApi {
     /**
      * Creates a client for the service based on YAML config with the following structure:
      * <pre>
-     * config:
-     *   licensemodule:
-     *     url: 'http://localhost:9076/ds-license/v1' # Mandatory
-     *     cache:
-     *       id:
-     *         count: 100 # Default
-     *         ms: 60000  # Default
+     * licensemodule:
+     *   url: 'http://localhost:9076/ds-license/v1' # Mandatory
+     *   cache:
+     *     id:
+     *       count: 100 # Default
+     *       ms: 60000  # Default
      * </pre>
      * @param yaml setup for the license client, as outlined above.
      */
