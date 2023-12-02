@@ -63,11 +63,11 @@ class ServiceConfigTest {
     void autoLoadTest() throws IOException, InterruptedException {
         final ServiceConfig sc = ServiceConfig.getInstance();
 
-        final String CONF0 = "config:\n  autoupdate:\n    enabled: true\n    intervalms: 100\n  somevalue: 0";
-        final String CONF1 = "config:\n  autoupdate:\n    enabled: true\n    intervalms: 100\n  somevalue: 1";
-        final String CONF2 = "config:\n  autoupdate:\n    enabled: false\n    intervalms: 100\n  somevalue: 2";
+        final String CONF0 = "autoupdate:\n  enabled: true\n  intervalms: 100\nsomevalue: 0";
+        final String CONF1 = "autoupdate:\n  enabled: true\n  intervalms: 100\nsomevalue: 1";
+        final String CONF2 = "autoupdate:\n  enabled: false\n  intervalms: 100\nsomevalue: 2";
         final AtomicInteger reloads = new AtomicInteger(0);
-        final String VALUE_KEY = ".config.somevalue";
+        final String VALUE_KEY = ".somevalue";
 
         // Initial state
         File conf = File.createTempFile("ds-image_config_", ".yaml");
@@ -113,11 +113,11 @@ class ServiceConfigTest {
         ServiceConfig.getInstance().initialize(projectRoot + File.separator + "conf" + File.separator + "ds-image*.yaml");
 
         {
-            String homeQuote = ServiceConfig.getConfig().getString("config.userhome");
-            assertFalse(homeQuote.contains("$"), "The value for 'config.userhome' should be expanded");
+            String homeQuote = ServiceConfig.getConfig().getString("userhome");
+            assertFalse(homeQuote.contains("$"), "The value for 'userhome' should be expanded");
         }
         {
-            Integer fallback = ServiceConfig.getConfig().getInteger("config.fallback");
+            Integer fallback = ServiceConfig.getConfig().getInteger("fallback");
             assertEquals(87, fallback, "Expanding a non-existing property with fallback should yield the fallback");
         }
 

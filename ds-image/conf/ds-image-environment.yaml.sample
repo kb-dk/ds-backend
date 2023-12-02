@@ -10,22 +10,21 @@
 # The new file ds-image-environment.yaml should NOT be added to the code repository!
 #
 
-config:
 
-  # Production machine setup
-  imageservers:
-    # Full request URL sample: http://example.com:1234/iipsrv/iipsrv.fcgi?FIF=/my_images/hello.tif&CVT=jpg
-    iip:
-      server: 'http://example.com:1234/iipsrv/iipsrv.fcgi'
+# Production machine setup
+imageservers:
+  # Full request URL sample: http://example.com:1234/iipsrv/iipsrv.fcgi?FIF=/my_images/hello.tif&CVT=jpg
+  iip:
+    server: 'http://example.com:1234/iipsrv/iipsrv.fcgi'
 
-    # Full request URL sample: http://example.com:1234/non-archival/Images/noerrealle_portraetter/nap_2654/full/!166,/0/native.jpg
-    iiif:
-      server: 'http://example.com:1234/'
+  # Full request URL sample: http://example.com:1234/non-archival/Images/noerrealle_portraetter/nap_2654/full/!166,/0/native.jpg
+  iiif:
+    server: 'http://example.com:1234/'
 
-    # Deepzoom can be used with different imageservers. Some servers requires DeepZoom as param, others require DeepZoom in path.
-    # This has to be defined below. If you are using a parameter based server you out comment the path argument and vice-versa
-    deepzoom:
-      # Full request URL sample: http://example.com:1234/image_identifier.dzi
-      path: 'http://example.com:1234/'
-      # Full request URL sample: 'http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
-      param: 'http://example.com:1234/iipsrv/iipsrv.fcgi'
+  # Deepzoom can be used with different imageservers. Some servers requires DeepZoom as param, others require DeepZoom in path.
+  # This has to be defined below. If you are using a parameter based server you out comment the path argument and vice-versa
+  deepzoom:
+    # Full request URL sample: http://example.com:1234/image_identifier.dzi
+    path: 'http://example.com:1234/'
+    # Full request URL sample: 'http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
+    param: 'http://example.com:1234/iipsrv/iipsrv.fcgi'

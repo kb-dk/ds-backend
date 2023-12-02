@@ -17,10 +17,9 @@ import org.slf4j.LoggerFactory;
  * If wanted, changes to the configuration source (typically files) can result in an update of the ServiceConfig and
  * a callback to relevant classes. To enable this, add autoupdate keys to the YAML config:
  * <pre>
- * config:
- *   autoupdate:
- *     enabled: true
- *     intervalms: 60000
+ * autoupdate:
+ *   enabled: true
+ *   intervalms: 60000
  * </pre>
  * Notifications on config changes can be received using {@link #registerObserver(Observer)}.
  *
@@ -84,7 +83,7 @@ public class ServiceConfig extends AutoYAML {
      * @return the "Hello World" lines defined in the config file.
      */
     public static List<String> getHelloLines() {
-        return getConfig().getList("config.helloLines");
+        return getConfig().getList("helloLines");
     }
 
 }

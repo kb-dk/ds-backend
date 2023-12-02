@@ -126,14 +126,14 @@ public class ImageAccessValidation {
             return licenseClient;
         }
 
-        String dsLicenseUrl = ServiceConfig.getConfig().getString("config.licensemodule.url");
+        String dsLicenseUrl = ServiceConfig.getConfig().getString("licensemodule.url");
         log.info("license module url:"+dsLicenseUrl);
         licenseClient = new DsLicenseClient(dsLicenseUrl);
         return licenseClient;
     }
 
     private static StreamingOutput getImageForbidden() throws IOException {
-        String img=ServiceConfig.getConfig().getString("config.images.no_access");       
+        String img=ServiceConfig.getConfig().getString("images.no_access");
         try (InputStream nonExisting= Resolver.resolveStream(img)){                                       
             StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
             return result; 
@@ -142,7 +142,7 @@ public class ImageAccessValidation {
 
 
     private static StreamingOutput getImageNotExist() throws IOException {
-        String img=ServiceConfig.getConfig().getString("config.images.non_existing");
+        String img=ServiceConfig.getConfig().getString("images.non_existing");
         try (InputStream nonExisting= Resolver.resolveStream(img)){                        
             StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
             return result;                

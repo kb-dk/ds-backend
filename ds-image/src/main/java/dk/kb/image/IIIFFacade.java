@@ -35,7 +35,7 @@ public class IIIFFacade {
 
     private static IIIFFacade instance;
 
-    public static final String KEY_IIIF_SERVER = "config.imageservers.iiif.server";
+    public static final String KEY_IIIF_SERVER = "mageservers.iiif.server";
 
     // https://iiif.io/api/image/3.0/
     public static final String IIIF_IMAGE3_TEMPLATE = "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}";

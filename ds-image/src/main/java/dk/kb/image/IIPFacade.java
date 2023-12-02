@@ -36,11 +36,11 @@ public class IIPFacade {
 
     private static IIPFacade instance;
 
-    public static final String KEY_IIP_SERVER = "config.imageservers.iip.server";
+    public static final String KEY_IIP_SERVER = "imageservers.iip.server";
 
-    public static final String KEY_DEEPZOOM_SERVER_PATH = "config.imageservers.deepzoom.path";
+    public static final String KEY_DEEPZOOM_SERVER_PATH = "imageservers.deepzoom.path";
 
-    public static final String KEY_DEEPZOOM_SERVER_PARAM = "config.imageservers.deepzoom.param";
+    public static final String KEY_DEEPZOOM_SERVER_PARAM = "imageservers.deepzoom.param";
 
     public static synchronized IIPFacade getInstance() {
         if (instance == null) {
