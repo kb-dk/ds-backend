@@ -50,7 +50,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
      * If the config has {@code config.solr.permissive: true}, all parameters are passed on Solr calls.
      * If it is false, only vetted parameters are allowed.
      */
-    public static final String PERMISSIVE_KEY = "config.solr.permissive";
+    public static final String PERMISSIVE_KEY = "solr.permissive";
     public static final boolean PERMISSIVE_DEFAULT = false;
 
     /**
@@ -254,7 +254,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
         } catch (Exception e) {
             log.warn("Unable to get response from ds-license at URL '" +
-                    ServiceConfig.getConfig().getString("config.licensemodule.url") + "'", e);
+                    ServiceConfig.getConfig().getString("licensemodule.url") + "'", e);
             throw new InternalServiceException("Unable to contact license server");
         }
 
@@ -308,7 +308,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         return licenseClient;
       }
         
-      String dsLicenseUrl = ServiceConfig.getConfig().getString("config.licensemodule.url");                                
+      String dsLicenseUrl = ServiceConfig.getConfig().getString("licensemodule.url");
       licenseClient = new DsLicenseClient(dsLicenseUrl);               
       return licenseClient;
     }

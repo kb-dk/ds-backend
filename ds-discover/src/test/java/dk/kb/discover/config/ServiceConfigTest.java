@@ -61,11 +61,11 @@ class ServiceConfigTest {
     @Tag("slow")
     @Test
     void autoLoadTest() throws IOException, InterruptedException {
-        final String CONF0 = "config:\n  autoupdate:\n    enabled: true\n    intervalms: 100\n  somevalue: 0";
-        final String CONF1 = "config:\n  autoupdate:\n    enabled: true\n    intervalms: 100\n  somevalue: 1";
-        final String CONF2 = "config:\n  autoupdate:\n    enabled: false\n    intervalms: 100\n  somevalue: 2";
+        final String CONF0 = "autoupdate:\n  enabled: true\n  intervalms: 100\nsomevalue: 0";
+        final String CONF1 = "autoupdate:\n  enabled: true\n  intervalms: 100\nsomevalue: 1";
+        final String CONF2 = "autoupdate:\n  enabled: false\n  intervalms: 100\nsomevalue: 2";
         final AtomicInteger reloads = new AtomicInteger(0);
-        final String VALUE_KEY = ".config.somevalue";
+        final String VALUE_KEY = ".somevalue";
 
         // Initial state
         File conf = File.createTempFile("ds-discover_config_", ".yaml");

@@ -10,21 +10,20 @@
 # The new file ds-discover-environment.yaml should NOT be added to the code repository!
 #
 
-config:
 
-  solr:
-    collections:
-      # Keys are collection names
+solr:
+  collections:
+    # Keys are collection names
 
-      # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost
-      - ds: # http://localhost:10007/solr/ds/select?q=foo
-          # The Solr server, including port
-          # Mandatory
-          server: 'http://localhost:10007'
-          # The path for the Solr service
-          # Optional. Default is 'solr'
-          path: 'solr'
-          # The Solr collection ID
-          # Mandatory. Typically the same as the abstract collection name
-          collection: 'ds'
-          # TODO: Default params
+    # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost
+    - ds: # http://localhost:10007/solr/ds/select?q=foo
+        # The Solr server, including port
+        # Mandatory
+        server: 'http://localhost:10007'
+        # The path for the Solr service
+        # Optional. Default is 'solr'
+        path: 'solr'
+        # The Solr collection ID
+        # Mandatory. Typically the same as the abstract collection name
+        collection: 'ds'
+        # TODO: Default params
