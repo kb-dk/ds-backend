@@ -14,6 +14,7 @@
  */
 package dk.kb.present.util;
 
+import dk.kb.present.api.v1.impl.DsPresentApiServiceImpl;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -90,6 +92,19 @@ public class DsPresentClientTest {
                          records.getContinuationToken(),
                     "Received highest mTime should match stated highest mTime");
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void getFixedHeaders() {
+        YAML config = new YAML(Map.of("config", Map.of("present", Map.of("headers", List.of(
+                Map.of(DsPresentApiServiceImpl.HEADER_SIMULATED_GROUP, "anonymous"),
+                Map.of("Some-Other-Header", "foo"))))));
+        Map<String, String> headers = DsPresentClient.getAllHeaders(config);
+        assertEquals(2, headers.size(),
+                "The right number of headers should be extracted");
+        assertEquals("anonymous", headers.get(DsPresentApiServiceImpl.HEADER_SIMULATED_GROUP),
+                "The group header should be correct");
     }
 
     /**

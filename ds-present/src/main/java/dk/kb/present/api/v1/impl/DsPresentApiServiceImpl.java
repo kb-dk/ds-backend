@@ -22,6 +22,7 @@ import java.util.List;
  *
  */
 public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
+    public static final String HEADER_SIMULATED_GROUP = "Simulated-OAuth2-Group";
     private static final Logger log = LoggerFactory.getLogger(DsPresentApiServiceImpl.class);
 
     // "Search" is best guess for the access type for now
