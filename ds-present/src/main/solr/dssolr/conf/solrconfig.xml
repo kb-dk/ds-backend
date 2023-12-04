@@ -830,8 +830,8 @@
   Important: Suggest index will be build on start-up now. Change for large index
   
   Example calls:
-  http://devel11:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=tv
-  http://devel11:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=Kendtes  
+  http://devel-server:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=tv
+  http://devel-server:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=Kendtes  
 -->
 
     <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy">
