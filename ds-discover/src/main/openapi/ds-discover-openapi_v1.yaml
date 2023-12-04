@@ -558,6 +558,81 @@ paths:
                   Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
                 type: string
 
+
+  /solr/{collection}/suggest:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Perform a Solr-compatible search in the stated collection'
+      operationId: solrSuggest
+      parameters:
+
+        - name: collection
+          in: path
+          description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections'
+          required: true
+          schema:
+            type: string
+            default: 'ds'
+            example: 'ds'
+
+
+        - name: suggest.dictionary
+          in: path
+          description: 'The suggest dictionary for use. The dictionary must be defined in solr.'
+          required: true
+          schema:
+            type: string
+            default: 'dr_title_suggest'
+            example: 'dr_title_suggest'
+
+        - name: suggest.q
+          in: query
+          description: 'The query text for suggest. Minimum 2 characters must be present. No solr operators allowed'
+          required: true
+          schema:
+            type: string
+            default: ''
+          examples:
+            free:
+              value: 'TV'
+              summary: 'All documents starting with TV (case sensivive)'
+       
+      
+        - name: suggest.count
+          in: query
+          description: |             
+            The number suggestions to return. The default is 10
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+
+
+      responses:
+        '200':
+          description: 'Structured Solr response'
+          content:
+            application/json:
+              schema:
+                description: |
+                  Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
+                type: string
+            application/xml:
+              schema:
+                description: |
+                  Output compatible with [Solr XML response](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+                type: string
+            text/csv:
+              schema:
+                description: |
+                  Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+                type: string
+
+
+
   /solr/admin/collections:
     get:
       tags:
