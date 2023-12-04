@@ -824,10 +824,14 @@
 
 
 
-<!-- suggest for title field. If more fields are needed for suggest compontent the best way is to use copy-field and use that field.
+<!-- 
+   suggest for title field. If more fields are needed for suggest compontent the best way is to use copy-field and use that field.
+  Important: It is case sensitive now
   Important: Suggest index will be build on start-up now. Change for large index
-  Example call:
-  http://devel11:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=Kendtes
+  
+  Example calls:
+  http://devel11:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=tv
+  http://devel11:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=Kendtes  
 -->
 
     <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy">
