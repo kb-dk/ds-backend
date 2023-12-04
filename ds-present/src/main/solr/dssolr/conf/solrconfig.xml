@@ -813,6 +813,17 @@
 
 
 
+
+  <!-- The SuggestComponent in Solr provides users with automatic suggestions for query terms.
+       You can use this to implement a powerful auto-suggest feature in your search application.
+       As with the rest of this solrconfig.xml file, the configuration of this component is purely
+       an example that applies specifically to this configset and example documents.
+
+       See: https://solr.apache.org/guide/solr/latest/query-guide/suggester.html
+    -->
+
+
+
 <!-- suggest for title field. If more fields are needed for suggest compontent the best way is to use copy-field and use that field.
   Important: Suggest index will be build on start-up now. Change for large index
   Example call:
@@ -883,36 +894,6 @@
      -->
 
 
-
-  <!-- The SuggestComponent in Solr provides users with automatic suggestions for query terms.
-       You can use this to implement a powerful auto-suggest feature in your search application.
-       As with the rest of this solrconfig.xml file, the configuration of this component is purely
-       an example that applies specifically to this configset and example documents.
-
-       See: https://solr.apache.org/guide/solr/latest/query-guide/suggester.html
-    -->
-  <searchComponent name="suggest" class="solr.SuggestComponent">
-    <lst name="suggester">
-      <str name="name">mySuggester</str>
-      <str name="lookupImpl">FuzzyLookupFactory</str>
-      <str name="dictionaryImpl">DocumentDictionaryFactory</str>
-      <str name="field">cat</str>
-      <str name="weightField">price</str>
-      <str name="suggestAnalyzerFieldType">string</str>
-      <str name="buildOnStartup">false</str>
-    </lst>
-  </searchComponent>
-
-  <requestHandler name="/suggest" class="solr.SearchHandler"
-                  startup="lazy" >
-    <lst name="defaults">
-      <str name="suggest">true</str>
-      <str name="suggest.count">10</str>
-    </lst>
-    <arr name="components">
-      <str>suggest</str>
-    </arr>
-  </requestHandler>
 
 
   <!-- Term Vector Component
