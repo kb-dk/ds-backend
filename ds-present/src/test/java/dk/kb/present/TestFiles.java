@@ -25,6 +25,14 @@ public class TestFiles {
     public static final String PVICA_RECORD_4b18d02d = "internal_test_files/tvMetadata/4b18d02d-a421-4026-b522-66436a56bc0a.xml";
     public static final String PVICA_RECORD_33e30aa9 = "internal_test_files/tvMetadata/33e30aa9-d216-4216-aabf-b28d2b465215.xml";
     public static final String PVICA_RECORD_b346acc8 = "internal_test_files/tvMetadata//b346acc8-bcb2-41cd-bab1-be58bb0665e0.xml";
+    public static final String PVICA_RECORD_e683b0b8 = "internal_test_files/tvMetadata/e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml";
+    // White program radio metadata from 1966
+    public static final String PVICA_RECORD_c295ae6c = "internal_test_files/tvMetadata/c295ae6c-fd34-4694-a9cc-4204b4a9f3a0.xml";
+    public static final String PVICA_RECORD_accf8d1c = "internal_test_files/tvMetadata/accf8d1c-3c4f-41a9-a1a2-48ce1cf0c5ca.xml";
+    public static final String PVICA_RECORD_0b3f6a54 = "internal_test_files/tvMetadata/0b3f6a54-befa-4471-95c0-78bcb1de6300.xml";
+    public static final String PVICA_RECORD_5b29fca1 = "internal_test_files/tvMetadata/5b29fca1-5e6a-4ef2-a5d2-a7550a25388d.xml";
+    public static final String PVICA_RECORD_4f706cda = "internal_test_files/tvMetadata/4f706cda-f474-46c8-824b-5a62ed5a8bee.xml";
+    public static final String PVICA_RECORD_2973e7fa = "internal_test_files/tvMetadata/2973e7fa-0531-4c37-8b8d-5726c553b30b.xml";
     public static final String CUMULUS_RECORD_05fea810 = "xml/copyright_extraction/05fea810-7181-11e0-82d7-002185371280.xml";
     public static final String CUMULUS_RECORD_3956d820 = "xml/copyright_extraction/3956d820-7b7d-11e6-b2b3-0016357f605f.xml";
     public static final String CUMULUS_RECORD_096c9090 = "xml/copyright_extraction/096c9090-717f-11e0-82d7-002185371280.xml";
@@ -50,4 +58,5 @@ public class TestFiles {
     public static final String CUMULUS_RECORD_8e608940 = "xml/copyright_extraction/8e608940-d6db-11e3-8d2e-0016357f605f.xml";
     public static final String CUMULUS_RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
     public static final String CUMULUS_RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
+
 }

@@ -149,4 +149,28 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
         }
     }
 
+    @Override
+    public StreamingOutput getRecordsRaw(String origin, Long mTime, Long maxRecords, Boolean asJsonLines) {
+        log.debug("getRawRecords(origin='{}', mTime={}, maxRecords={}, asJsonLines={}) called with call details: {}",
+                origin, mTime, maxRecords, asJsonLines, getCallDetails());
+        if (origin == null) {
+            throw new InternalServiceException("origin must be specified but was not");
+        }
+        if (asJsonLines == null){
+            asJsonLines = false;
+        }
+
+        // Returning all IDs.
+        // When using AccessUtil.createAccessFilter(RECORD_ACCESS_TYPE) online deliverable units are returned
+        try {
+            long finalMTime = mTime == null ? 0L : mTime;
+            long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
+            return PresentFacade.getRecordsRaw(
+                    httpServletResponse, origin, finalMTime, finalMaxRecords,
+                    ids -> ids, asJsonLines);
+        } catch (Exception e){
+            throw handleException(e);
+        }
+    }
+
 }

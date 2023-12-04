@@ -19,6 +19,7 @@ import dk.kb.present.util.Combiner;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.stream.ContinuationStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,17 +138,20 @@ public class MultiStorage implements Storage {
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecords(String origin, long mTime, long maxRecords) {
+    public ContinuationStream<DsRecordDto, Long> getDSRecords(String origin, long mTime, long maxRecords) {
         List<Stream<DsRecordDto>> providers = getStorages()
                 .map(storage -> storage.getDSRecords(origin, mTime, maxRecords))
                 .collect(Collectors.toList());
 
-        return Combiner.mergeStreams(providers, Comparator.comparingLong(DsRecordDto::getmTime))
-                .limit(maxRecords == -1 ? Long.MAX_VALUE : maxRecords);
+        // TODO: Implementing continuation token this requires holding up to maxRecords in memory. Not acceptable!
+        return new ContinuationStream<>(Combiner.mergeStreams(providers, Comparator.comparingLong(DsRecordDto::getmTime))
+                .limit(maxRecords == -1 ? Long.MAX_VALUE : maxRecords),
+                null, null);
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
+    public ContinuationStream<DsRecordDto, Long> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
+        // TODO: Make a proper implementation that filters on type
         return getDSRecords(origin, mTime, maxRecords);
     }
 

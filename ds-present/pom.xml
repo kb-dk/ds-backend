@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
 
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.4.15</version>
+            <version>1.4.18</version>
             <exclusions>
                 <exclusion>
                     <!-- kb-util has 2.3.3, but transitive resolving has 2.4.0 somewhere-->
@@ -73,7 +73,7 @@
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>1.2-SNAPSHOT</version>
+          <version>1.2</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
@@ -348,7 +348,7 @@
       <dependency>
         <groupId>dk.kb.storage</groupId>
         <artifactId>ds-storage</artifactId>
-          <version>1.7</version>
+          <version>1.11</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
@@ -375,7 +375,7 @@
     <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-solrj</artifactId>
-      <version>9.1.1</version>
+      <version>9.4.0</version>
       <scope>test</scope>  
    <exclusions>
 	    <exclusion>
@@ -404,7 +404,7 @@
     <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-test-framework</artifactId>
-      <version>9.1.1</version>
+      <version>9.4.0</version>
       <scope>test</scope>
       <exclusions>
         <exclusion> <!-- Solves the "multiple slf bindings" warning -->
@@ -433,6 +433,13 @@
         </exclusion>
       </exclusions>    
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.solr/solr-analysis-extras -->
+    <dependency>
+      <groupId>org.apache.solr</groupId>
+      <artifactId>solr-analysis-extras</artifactId>
+      <version>9.4.0</version>
+    </dependency>
+
 
     </dependencies>
 

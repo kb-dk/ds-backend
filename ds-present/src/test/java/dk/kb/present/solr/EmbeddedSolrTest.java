@@ -49,11 +49,14 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_FM;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_aaf3b130;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
 import static dk.kb.present.TestFiles.PVICA_RECORD_1f3a6a66;
+import static dk.kb.present.TestFiles.PVICA_RECORD_2973e7fa;
 import static dk.kb.present.TestFiles.PVICA_RECORD_3945e2d1;
 import static dk.kb.present.TestFiles.PVICA_RECORD_44979f67;
 import static dk.kb.present.TestFiles.PVICA_RECORD_74e22fd8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_9d9785a8;
+import static dk.kb.present.TestFiles.PVICA_RECORD_accf8d1c;
 import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
+import static dk.kb.present.TestFiles.PVICA_RECORD_e683b0b8;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -560,8 +563,15 @@ public class EmbeddedSolrTest {
         testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_end", 0);
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_holes", null);
         testBooleanValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", false);
     }
 
+    @Test
+    void testOverlappingFiles() throws Exception {
+        testStringPresentInPreservicaMultiField(PVICA_RECORD_2973e7fa, "internal_overlapping_files", "c8f496cf-4e0b-4682-8eee-67dfe07525d2,8ac98f6e-5653-492a-ab8c-c1462edaeb4a");
+    }
+
+    /* Disabled as overlaps arent represented in solr as of now
     @Test
     void testProgramStructureOverlaps() throws Exception {
         testLongValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_two_length_ms", 3120L);
@@ -569,6 +579,21 @@ public class EmbeddedSolrTest {
         testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_two_file2UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
         testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_one_file1UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
 
+    }*/
+
+    @Test
+    void testIndexingOfRadioRecord() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "resource_description", "AudioObject");
+    }
+
+    @Test
+    void testAccessConditions() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "conditions_of_access", "placeholderCondition");
+    }
+
+    @Test
+    void testBroadcaster() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_accf8d1c, "broadcaster", "DR");
     }
 
     /*
@@ -746,6 +771,18 @@ public class EmbeddedSolrTest {
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
 
+    }
+
+    private void testStringPresentInPreservicaMultiField(String preservicaRecord, String solrField, String... fieldValues) throws Exception {
+        if (Resolver.getPathFromClasspath(preservicaRecord) == null) {
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
+                    preservicaRecord, solrField);
+            return;
+        }
+        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        for (String value:fieldValues) {
+            assertTrue(record.getFieldValue(solrField).toString().contains(value));
+        }
     }
 
     private void testDateValuePreservicaField(String preservicaRecord, String solrField, Date fieldValue) throws Exception {

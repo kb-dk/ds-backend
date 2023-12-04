@@ -14,11 +14,9 @@
  */
 package dk.kb.present.storage;
 
-
-import java.util.stream.Stream;
-
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.util.webservice.stream.ContinuationStream;
 
 /**
  * Provides access to records.
@@ -72,8 +70,8 @@ public interface Storage {
      * @param maxRecords the maximum number of records to deliver. -1 means no limit.
      * @return a stream of records after the given mTime.
      */
-    Stream<DsRecordDto> getDSRecords(String origin, long mTime, long maxRecords);
+    ContinuationStream<DsRecordDto, Long> getDSRecords(String origin, long mTime, long maxRecords);
 
-    Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords);
+    ContinuationStream<DsRecordDto, Long> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords);
 
 }

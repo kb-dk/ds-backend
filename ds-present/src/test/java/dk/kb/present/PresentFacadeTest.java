@@ -16,6 +16,7 @@ package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +24,9 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,8 +35,6 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PresentFacadeTest {
-
-
     @BeforeAll
     static void setup() {
         try {
@@ -64,20 +66,45 @@ public class PresentFacadeTest {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             return;
         }
+
+        // Random subset of the sample files
+        final Set<String> ALLOWED = new HashSet<>(List.of(
+                "09222b40-dba1-11e5-9785-0016357f605f.xml",
+                "e5a0e980-d6cb-11e3-8d2e-0016357f605f.xml",
+                "05fea810-7181-11e0-82d7-002185371280.xml"));
+
         // No access checking
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods", ids -> ids);
         long baseCount = countMETS(out);
         assertTrue(baseCount > 1, "There should be more than 1 record returned when requesting 'dsfl'-records");
 
-        // Filter every other record
+        // Filter every other record, sorted order
         out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "mods",
-                ids -> IntStream.range(0, ids.size())
-                        .filter(i -> (i&1) == 0)
-                        .boxed()
-                        .map(ids::get)
+                ids -> ids.stream()
+                        .filter(ALLOWED::contains)
                         .collect(Collectors.toList()));
         long evenCount = countMETS(out);
-        assertEquals(baseCount/2, evenCount, "Filtering every other 'dsfl'-record should yield the expected count");
+        assertEquals(ALLOWED.size(), evenCount, "Keeping only allowed METS/MODS records should yield the expected count");
+    }
+
+    @Test
+    void solrPreservicaRecords() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            return;
+        }
+
+        // No access checking
+        StreamingOutput out = PresentFacade.getRecords(null, "ds.radiotv", 0L, -1L, "solrjson", ids -> ids);
+        ByteArrayOutputStream resultBytes = new ByteArrayOutputStream();
+        out.write(resultBytes);
+        String result = resultBytes.toString(StandardCharsets.UTF_8);
+        // Very primitive check just to see if something passes
+        assertTrue(result.contains("096c9090-717f-11e0-82d7-002185371280"), "Result should contain expected UUID");
+    }
+
+    @Test
+    void skiponerror() {
+        assertEquals(false, ServiceConfig.getConfig().getBoolean(DSOrigin.STOP_ON_ERROR_KEY, true));
     }
 
     /**
@@ -113,23 +140,19 @@ public class PresentFacadeTest {
         assertTrue(count <= 1, "There should be at most 1 XML declaration but there was " + count);
     }
 
-
     @Test
     void getRecordsRaw() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             return;
         }
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord", ids -> ids);
+        StreamingOutput out = PresentFacade.getRecordsRaw(null, "dsfl", 0L, -1L,  ids -> ids, null);
         String result = toString(out);
 
         assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"origin\":null,\"recordType\":null,\"deleted\":false"));
         assertTrue(result.contains(",\n"), "Result should contain a comma followed by newline as it should be a multi-entry JSON array"); // Plain JSON array
         assertTrue(result.endsWith("]\n"), "Result should end with ']' as it should be a JSON array"); // JSON array
     }
-
-
-    
 
     @Test
     void getRecordsRawLines() throws IOException {
@@ -137,41 +160,12 @@ public class PresentFacadeTest {
             return;
         }
         PresentFacade.recordView = "raw-bypass"; // We don't want to check security here
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "storagerecord-lines", ids -> ids);
+        StreamingOutput out = PresentFacade.getRecordsRaw(null, "dsfl", 0L, -1L,  ids -> ids, true);
         String result = toString(out);
         assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"origin\":null,\"recordType\":null,\"deleted\":false"));
         assertFalse(result.contains(",\n"), "Result should not contain a comma followed by newline as it should be a multi-entry JSON-Lines");
         assertFalse(result.endsWith("]\n"), "Result should not end with ']' as it should be in JSON-Lin es");
     }
-
-
-
-    /* TODO: FIX!
-    //   Can only be fixed, when the updated XSLT to JSON-LD has been reviewed and merged to master
-
-    @Test
-    void getRecordsJSONLD() throws IOException {
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "json-ld");
-        String result = toString(out);
-        System.out.println(result);
-        //assertTrue(result.contains("\"@value\":\"Letters to\\/from David Simonsen\"}"), "Result should contain the name David Simonsen in the expected wrapping");
-        assertTrue(result.contains(",\n"), "Result should contain a comma followed by newline as it should be a multi-entry JSON array"); // Plain JSON array
-        assertTrue(result.endsWith("]\n"), "Result should end with ']' as it should be a JSON array"); // JSON array
-    }
-
-     */
-
-    /*  TODO FIX!
-    /   Can only be fixed, when the updated XSLT to JSON-LD has been reviewed and merged to master
-    @Test
-    void getRecordsJSONLDLines() throws IOException {
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, "json-ld-lines");
-        String result = toString(out);
-        assertTrue(result.contains("\"@value\":\"Letters to\\/from David Simonsen\"}"), "Result should contain the name David Simonsen in the expected wrapping");
-        assertFalse(result.contains(",\n"), "Result should not contain a comma followed by newline as it should be a multi-entry JSON-Lines");
-        assertFalse(result.endsWith("]\n"), "Result should not end with ']' as it should be in JSON-Lin es");
-    }
-*/
 
     @Test
     void getRecordsSolr() throws IOException {

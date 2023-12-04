@@ -48,6 +48,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     ds.samlingsbilleder?>
   </field>
 
+  <field name="conditions_of_access" type="string">
+    <?description A value that describes how the resource can be accessed?>
+    <?example ?> <!--TODO: What should the value of this field actually contain-->
+  </field>
+
   <field name="collection" type="string" docValues="true">
     <?description The original collection.?>
     <?example     Billedsamlingen?>
@@ -82,6 +87,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="title" type="text_general" multiValued="true"> <!-- Only present in maps collection test data-->
     <?description The object title.?>
     <?example     Den grimme ælling.?>
+  </field>
+
+  <!-- Note: The title_sort_da field IS NOT automatically copied from title as title_sort_da is single valued -->
+  <field name="title_sort_da" type="sort_da">
+    <?description The object title, usable for sorting according to Danish locale.
+                  Not readable for human eyes.?>
+    <?example     #432#2asFSSAFs?>
   </field>
 
   <field name="creator_affiliation" type="text_general" multiValued="true">
@@ -421,9 +433,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Children?>
   </field>
 
-  <!-- ====================================================-->
-  <!-- ====== Fields that only apply to tv metadata  ===== -->
-  <!-- ====================================================-->
+  <!-- ============================================================= -->
+  <!-- ====== Fields that only apply to tv and radio metadata  ===== -->
+  <!-- ============================================================= -->
 
   <field name="original_title" type="string">
     <?description The original title of the resource.?>
@@ -433,6 +445,23 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="episode_title" type="string">
     <?description The name of a single episode.?>
     <?example     Kagerester?>
+  </field>
+
+  <field name="broadcaster" type="string">
+    <?description The broadcast organization behind the resource. If the resource has been aired on DR1, then the
+                  broadcaster is DR.?>
+    <?example     DR?>
+  </field>
+
+  <field name="creator_affiliation_generic" type="text_general" multiValued="true">
+    <?description The name of an organization, institution, etc. with which
+                  the entity was associated at the time that the resource was created.
+                  This value is a more generic version of the value available in the field 'creator_affiliation'.
+                  This is needed as radio and TV channels change names over time. So to find all material from e.g.
+                  DR P1 over time, these resources has the value drp1 in this field, while the channel has had names
+                  as 'Program 1' and 'P1'. ?>
+    <?example     Bisson frères?>
+    <?example     Danmarks Radio?>
   </field>
 
   <field name="ritzau_id" type="string">
@@ -677,6 +706,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                   14:28:00, there would be a two minute overlap between the resources.?>
     <?example     true?>
   </field>
+  <!-- These fields are commented out as they are not used in the current setup. Hopefully they will be used at some
+       point in the future.
   <field name="internal_program_structure_overlap_type_one_length_ms" type="plong">
     <?description Indicates the length of an overlap of type one in ms. Types are from Preservica and properply defines
             if the overlap is in the beginning or end of the queried resource.?>
@@ -702,6 +733,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="internal_program_structure_overlap_type_two_file2UUID" type="string">
     <?description The UUID of the second file that is part of overlap one.?>
     <?example     f73b69da-2bc0-4e06-b19b-95f24756804e?>
+  </field>-->
+  <field name="internal_overlapping_files" type="text_general" multiValued="true">
+    <?description If there are overlaps between files related to a metadata resource. the UUIDs of the relevant files
+                  will be listed in this field. These overlaps can be of all types and there is currently no possibility
+                  for knowing how long the overlap is or what kind of overlap there are between the files. Overlapping
+                  files are listed in comma seperated pairs.?>
+    <?example     c8f496cf-4e0b-4682-8eee-67dfe07525d2,8ac98f6e-5653-492a-ab8c-c1462edaeb4a?>
   </field>
 
   <!-- ================================================================ -->
@@ -846,6 +884,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
+
+  <!-- https://solr.apache.org/guide/solr/9_3/indexing-guide/language-analysis.html#unicode-collation -->
+  <fieldType name="sort_da" class="solr.ICUCollationField" locale="da" strength="secondary"
+             indexed="true" stored="false" docValues="true" multiValued="false"/>
+
   <!-- END FIELDTYPE DEFINITIONS-->
 
   <!-- START COPYFIELDS  -->

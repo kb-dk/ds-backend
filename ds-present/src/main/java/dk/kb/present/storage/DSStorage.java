@@ -14,25 +14,18 @@
  */
 package dk.kb.present.storage;
 
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import dk.kb.storage.model.v1.RecordTypeDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import dk.kb.storage.client.v1.DsStorageApi;
 import dk.kb.storage.invoker.v1.ApiException;
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.stream.ContinuationStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
 
 /**
  * Proxy for a ds-storage https://github.com/kb-dk/ds-storage instance.
@@ -51,7 +44,7 @@ public class DSStorage implements Storage {
 
     private final boolean isDefault;
     
-    private static DsStorageApi storageClient;  
+    private static DsStorageClient storageClient;
 
     /**
      * Create a Storage connection to a ds-storage server.
@@ -62,6 +55,7 @@ public class DSStorage implements Storage {
      *                   {@link DsStorageApi#getRecordsModifiedAfter(String, Long, Long)}.
      * @param isDefault if true, this is the default storage for origins.
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public DSStorage(String id, String origin,
                      String storageUrl,
                      int batchCount, boolean isDefault) {
@@ -75,9 +69,6 @@ public class DSStorage implements Storage {
        
 
         storageClient = getDsStorageApiClient(storageUrl);
-//        if (isEmpty(id) || isEmpty(scheme) || isEmpty(host) || isEmpty(basepath) || isEmpty(origin)) {
-//            throw new IllegalArgumentException("All parameters must be specified for " + this);
-//        }
         log.info("Created " + this);
     }
 
@@ -120,14 +111,14 @@ public class DSStorage implements Storage {
 
 
     @Override
-    public Stream<DsRecordDto> getDSRecords(final String origin, long mTime, long maxRecords) {
+    public ContinuationStream<DsRecordDto, Long> getDSRecords(final String origin, long mTime, long maxRecords) {
         log.debug("getDSRecords(origin='{}', mTime={}, maxRecords={}) called", origin, mTime, maxRecords);
 
         return getDsRecordDtoStream(mTime, maxRecords, origin, null);
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType,
+    public ContinuationStream<DsRecordDto, Long> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType,
                                                                  long mTime, long maxRecords) {
         log.debug("getDSRecordsByRecordTypeLocalTree(origin='{}', recordType={}, mTime={}, maxRecords={}) called",
                 origin, recordType, mTime, maxRecords);
@@ -136,78 +127,30 @@ public class DSStorage implements Storage {
         return getDsRecordDtoStream(mTime, maxRecords, origin, recordType);
     }
 
-    private Stream<DsRecordDto> getDsRecordDtoStream(long mTime, long maxRecords, String origin, RecordTypeDto recordType) {
+    private ContinuationStream<DsRecordDto, Long> getDsRecordDtoStream(
+            long mTime, long maxRecords, String origin, RecordTypeDto recordType) {
         String finalOrigin = origin == null ? this.origin : origin;
-        if (finalOrigin == null || finalOrigin.isEmpty()) {
+        if (isEmpty(finalOrigin)) {
             throw new InternalServiceException(
                     "origin not defined for DSStorage '" + getID() + "'. Only single record lookups are possible");
         }
 
-        // Unfortunately the OpenAPI generator creates a client which requests all records as a list in a single call
-        // instead of doing streaming, so we need to page.
-
-        Iterator<DsRecordDto> iterator = new Iterator<DsRecordDto>() {
-            long pending = maxRecords == -1 ? Long.MAX_VALUE : maxRecords; // -1 = all records
-            final AtomicLong lastMTime = new AtomicLong(mTime);
-            List<DsRecordDto> records = null;
-            boolean finished = pending == 0;
-
-            void ensureFilled() {
-                if (finished || (records != null && !records.isEmpty())) {
-                    return;
-                }
-                if (pending <= 0) {
-                    finished = true;
-                    return;
-                }
-
-                long request = pending < batchCount ? (int) pending : batchCount;
-                try {
-                    if (recordType == null) {
-                        records = storageClient.getRecordsModifiedAfter(finalOrigin, lastMTime.get(), request);
-                    } else {
-                        records = storageClient.getRecordsByRecordTypeModifiedAfterLocalTree(finalOrigin, recordType, lastMTime.get(), request);
-                    }
-                } catch (ApiException e) {
-                    String message = String.format(
-                            Locale.ROOT,
-                            "Exception making remote call to ds-storage client " +
-                            "getRecordsModifiedAfter(origin='%s', mTime=%d, maxRecords=%d)",
-                            finalOrigin, mTime, maxRecords);
-                    log.warn(message, e);
-                    throw new InternalServiceException(message, e);
-                }
-                pending -= records.size();
-                finished = records.isEmpty();
-                if (!finished) {
-                    Long lastRecordMTime = records.get(records.size()-1).getmTime();
-                    if (lastRecordMTime == null) {
-                        throw new InternalServiceException(
-                                "Got null as mTime for record '" + records.get(records.size()-1).getId());
-                    }
-                    lastMTime.set(lastRecordMTime);
-                }
-            }
-            @Override
-            public boolean hasNext() {
-                ensureFilled();
-                return !finished;
-            }
-
-            @Override
-            public DsRecordDto next() {
-                ensureFilled();
-                if (finished) {
-                    throw new NoSuchElementException("No more records");
-                }
-                return records.remove(0);
-            }
-        };
-
-        return StreamSupport.stream(((Iterable<DsRecordDto>) () -> iterator).spliterator(), false);
+        try {
+            return recordType == null ?
+                    storageClient.getRecordsModifiedAfterStream(finalOrigin, mTime, maxRecords) :
+                    storageClient.getRecordsByRecordTypeModifiedAfterLocalTreeStream(finalOrigin, recordType, mTime, maxRecords);
+        } catch (Exception e) {
+            String message = String.format(
+                    Locale.ROOT,
+                    "Exception requesting records from remote storage for " +
+                            "origin='%s', mTime=%d, maxRecords=%d, recordType='%s')",
+                    finalOrigin, mTime, maxRecords, recordType);
+            log.warn(message, e);
+            throw new InternalServiceException(message, e);
+        }
     }
 
-    private static DsStorageApi getDsStorageApiClient(String storageUrl) {       
+    private static DsStorageClient getDsStorageApiClient(String storageUrl) {
         if (storageClient!= null) {            
         	return storageClient;
         }

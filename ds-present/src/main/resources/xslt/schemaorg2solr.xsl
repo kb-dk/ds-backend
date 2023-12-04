@@ -12,6 +12,7 @@
   
   <xsl:output method="text" />
   <xsl:param name="schemaorgjson"/>
+  <xsl:include href="xslt/utils.xsl"/>
 
   <!--Saves the input JSON as an XDM object. -->
   <xsl:variable name="schemaorg-xml" as="item()*">
@@ -20,6 +21,7 @@
 
   <xsl:template name="initial-template" match="/">
     <xsl:variable name="solrjson">
+
       <f:map>
         <f:string key="resource_description">
           <xsl:value-of select="$schemaorg-xml('@type')"/>
@@ -29,11 +31,16 @@
           <xsl:value-of select="$schemaorg-xml('id')"/>
         </f:string>
 
+        <f:string key="conditions_of_access">
+          <xsl:value-of select="map:get($schemaorg-xml, 'conditionsOfAccess')"/>
+        </f:string>
+
         <!-- THIS IS THE BIGGEST AND BADDEST HACK IN TOWN! TO MAKE TEST METHODS AND XSLTS PRETTY AND MANAGEABLE,
              WE SHOULD REALLY IMPLEMENT THIS SCHEMA2SOLR TRANSFORMATION FOR MODS RESOURCES AS WELL. CURRENTLY, THIS
              BRANCH CAN'T GENERATE ANY SOLR-DOCUMENTS FOR MODS RECORDS, WHICH SHOULD BE DO-ABLE. -->
         <xsl:if test="contains(map:get($schemaorg-xml,'@type'), 'VideoObject') or
-                      contains(map:get($schemaorg-xml,'@type'), 'AudioObject') ">
+                      contains(map:get($schemaorg-xml,'@type'), 'AudioObject') or
+                      contains(map:get($schemaorg-xml,'@type'), 'MediaObject')">
 
           <xsl:if test="f:exists($schemaorg-xml('keywords'))">
             <!--Save categories to a variable as a sequence. -->
@@ -75,6 +82,10 @@
             <f:string key="title">
               <xsl:value-of select="$schemaorg-xml('name')"/>
             </f:string>
+
+            <f:string key="title_sort_da">
+              <xsl:value-of select="$schemaorg-xml('name')"/>
+            </f:string>
           </xsl:if>
 
           <!-- extract alternate title-->
@@ -84,14 +95,34 @@
             </f:string>
           </xsl:if>
 
-          <!-- Extract the creater affiliation -->
-          <!-- map:find() can be used, because we know that only one key in the complete JSON file is named
-               broadcastDisplayName -->
-          <xsl:if test="f:exists(map:find($schemaorg-xml,'broadcastDisplayName'))">
-            <f:string key="creator_affiliation">
-              <xsl:value-of select="map:find($schemaorg-xml,'broadcastDisplayName')"/>
-            </f:string>
+          <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
+               Therefore, we are also extracting the creator_affiliation_generic which contains the same value for e.g.
+               DR P1 from 1960 'program 1' and 2000's 'P1'. Here the value would be drp1. -->
+          <xsl:if test="f:exists(map:get($schemaorg-xml, 'publication'))">
+            <xsl:if test="f:exists(my:getNestedMapValue2Levels($schemaorg-xml, 'publication','publishedOn'))">
+
+              <xsl:if test="not(f:empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')))">
+                  <f:string key="creator_affiliation">
+                    <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')"/>
+                  </f:string>
+              </xsl:if>
+
+              <xsl:if test="not(empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')))">
+                <f:string key="creator_affiliation_generic">
+                  <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')"/>
+                </f:string>
+              </xsl:if>
+
+              <xsl:if test="not(f:empty(my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
+                                                        'publishedOn', 'broadcaster', 'legalName')))">
+                <f:string key="broadcaster">
+                  <xsl:value-of select="my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
+                                                          'publishedOn', 'broadcaster', 'legalName')"/>
+                </f:string>
+              </xsl:if>
+            </xsl:if>
           </xsl:if>
+
 
           <!-- Creates the notes field, which originates from the mods2solr XSLT and acts as a catch all field for metadata
                The values in this field are also present in the specific abstract and description fields.-->
@@ -211,10 +242,12 @@
           </xsl:if>
 
           <!-- Extract boolean for live broadcast -->
-          <xsl:if test="f:exists($schemaorg-xml('publication')('isLiveBroadcast'))">
-            <f:string key="live_broadcast">
-              <xsl:value-of select="$schemaorg-xml('publication')('isLiveBroadcast')"/>
-            </f:string>
+          <xsl:if test="f:exists($schemaorg-xml('publication'))">
+            <xsl:if test="f:exists($schemaorg-xml('publication')('isLiveBroadcast'))">
+              <f:string key="live_broadcast">
+                <xsl:value-of select="$schemaorg-xml('publication')('isLiveBroadcast')"/>
+              </f:string>
+            </xsl:if>
           </xsl:if>
 
           <!-- Extract boolean for retransmission -->
@@ -451,14 +484,32 @@
       </f:string>
     </xsl:if>
 
-    <!-- Extracting overlaps sorted by type of overlap as that is the only value to distinguish overlaps by. -->
+    <!-- Overlaps are hard to extract to solr as they are tricky to represent in a flat JSON structure where each key
+         has a unique name. -->
+    <xsl:if test="f:exists($internalMap('kb:program_structure_overlap'))">
+      <xsl:variable name="overlapsArray" as="item()*">
+        <xsl:copy-of select="array:flatten($internalMap('kb:program_structure_overlap'))"/>
+      </xsl:variable>
+
+      <f:array key="internal_overlapping_files">
+        <xsl:for-each select="$overlapsArray">
+          <f:string>
+            <xsl:value-of select="concat(map:get(., 'file1UUID'), ',', map:get(., 'file2UUID'))"/>
+          </f:string>
+        </xsl:for-each>
+      </f:array>
+    </xsl:if>
+    <!--
+    INTERNAL STRUCTURE HAS BEEN TEMPORARILY REMOVED FROM TRANSFORMATION AS IT'S HARD TO REPRESENT IT FLAT.
+
+    &lt;!&ndash; Extracting overlaps sorted by type of overlap as that is the only value to distinguish overlaps by. &ndash;&gt;
     <xsl:if test="f:exists($internalMap('kb:program_structure_overlap'))">
       <xsl:variable name="overlaps" as="item()*">
         <xsl:copy-of select="array:flatten($internalMap('kb:program_structure_overlap'))"/>
       </xsl:variable>
 
-      <!-- Defines fields for overlaps of type 1 and 2. Currently, I don't know if more than two types exists, '
-           then they would have to be added. -->
+      &lt;!&ndash; Defines fields for overlaps of type 1 and 2. Currently, I don't know if more than two types exists, '
+           then they would have to be added. &ndash;&gt;
       <xsl:for-each select="$overlaps">
         <xsl:choose>
           <xsl:when test="map:get(. , 'overlap_type') = '1'">
@@ -487,16 +538,7 @@
           </xsl:when>
         </xsl:choose>
       </xsl:for-each>
-    </xsl:if>
+    </xsl:if>-->
 
   </xsl:template>
-
-
-  <!-- FUNCTIONS -->
-  <!-- Get milliseconds between two datetimes. -->
-  <xsl:function name="my:toMilliseconds" as="xs:integer">
-    <xsl:param name="startDate" as="xs:dateTime"/>
-    <xsl:param name="endDate" as="xs:dateTime"/>
-    <xsl:value-of select="($endDate - $startDate) div xs:dayTimeDuration('PT0.001S')"/>
-  </xsl:function>
 </xsl:transform>

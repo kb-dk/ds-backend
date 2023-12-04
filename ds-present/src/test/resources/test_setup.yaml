@@ -6,6 +6,11 @@ licensemodule:
   url: http://example.com
   allowall: false
 
+
+records:
+  # Default is true, so set to false here to check via debugging
+  stoponerrors: false
+
 # Only some of the sample files can be properly transformed to SolrJSONDocuments
 filewhitelist: &whitelist
    - '.*albert-einstein.xml'
@@ -39,6 +44,43 @@ storages:
             root: 'src/test/resources/internal_test_files/tvMetadata'
             extension: '.xml'
 
+pvicaviews: &PRESERVICA_VIEWS
+  - mods:
+      mime: 'application/xml'
+      strategy: 'NONE'
+      transformers:
+        - identity: # No transformation steps as mods is the core format for images-dsfl
+  - json-ld:
+      mime: 'application/json'
+      strategy: 'MANIFESTATION'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              - imageserver: 'https://example.com/imageserver/'
+              - streamingserver: "here_should_be_a_wowza_url"
+  - solrjson:
+      mime: 'application/json'
+      strategy: 'MANIFESTATION'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              - imageserver: 'https://example.com/imageserver/'
+              - streamingserver: "here_should_be_a_wowza_url"
+        - xsltsolr:
+            stylesheet: 'xslt/schemaorg2solr.xsl'
+  - raw:
+      mime: 'text/plain'
+      strategy: 'NONE'
+      transformers:
+        - fail:
+            message: 'Raw format contains confidential information and cannot be delivered'
+  # For testing purposes
+  - raw-bypass:
+      mime: 'text/plain'
+      transformers:
+        - identity:
 
 # Settings for handling at the record level
 record:
@@ -106,40 +148,17 @@ origins:
           description: 'Local records'
           recordrequesttype: 'DELIVERABLEUNIT'
           # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
-          views:
-            - mods:
-                mime: 'application/xml'
-                strategy: 'NONE'
-                transformers:
-                  - identity: # No transformation steps as mods is the core format for images-dsfl
-            - json-ld:
-                mime: 'application/json'
-                strategy: 'MANIFESTATION'
-                transformers:
-                  - xslt:
-                      stylesheet: 'xslt/preservica2schemaorg.xsl'
-                      injections:
-                      - imageserver: 'https://example.com/imageserver/'
-                      - streamingserver: "here_should_be_a_wowza_url"
-            - solrjson:
-                mime: 'application/json'
-                strategy: 'MANIFESTATION'
-                transformers:
-                  - xslt:
-                      stylesheet: 'xslt/preservica2schemaorg.xsl'
-                      injections:
-                        - imageserver: 'https://example.com/imageserver/'
-                        - streamingserver: "here_should_be_a_wowza_url"
-                  - xsltsolr:
-                      stylesheet: 'xslt/schemaorg2solr.xsl'
-            - raw:
-                mime: 'text/plain'
-                strategy: 'NONE'
-                transformers:
-                  - fail:
-                      message: 'Raw format contains confidential information and cannot be delivered'
-            # For testing purposes
-            - raw-bypass:
-                mime: 'text/plain'
-                transformers:
-                  - identity:
+          views: *PRESERVICA_VIEWS
+  - "ds.radio": # ds-present internal
+          prefix: 'local.radio' # The prefix to match on incoming IDs
+          origin: 'ds.radio'
+          description: 'Local records'
+          recordrequesttype: 'DELIVERABLEUNIT'
+          views: *PRESERVICA_VIEWS
+  - "ds.tv": # ds-present internal
+          prefix: 'local.tv' # The prefix to match on incoming IDs
+          origin: 'ds.tv'
+          description: 'Local records'
+          recordrequesttype: 'DELIVERABLEUNIT'
+          views: *PRESERVICA_VIEWS
+

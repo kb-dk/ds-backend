@@ -5,6 +5,35 @@
 # later than "ds-present-kb-origins.yaml". Optionally this config file should also be deleted.
 #
 
+# Views for material harvested from preservica.
+pvicaviews: &PRESERVICA_VIEWS
+  - raw:
+      mime: 'text/plain'
+      strategy: 'NONE'
+      transformers:
+        - identity:
+  - JSON-LD:
+      mime: 'application/json'
+      strategy: 'MANIFESTATION'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              #- imageserver: ${path:config.imageservers[default=true].url}
+              - streamingserver: ${path:config.streamingserver.url}
+              - old_imageserver: ${path:config.oldimageserver.url}
+  - SolrJSON:
+      mime: 'application/json'
+      strategy: 'MANIFESTATION'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              #- imageserver: ${path:config.imageservers[default=true].url}
+              - streamingserver: ${path:config.streamingserver.url}
+              - old_imageserver: ${path:config.oldimageserver.url}
+        - xsltsolr:
+            stylesheet: 'xslt/schemaorg2solr.xsl'
 # Generic views for images represented as MODS, used for multiple origins
 baseviews: &MODS_IMAGE_VIEWS
   # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
@@ -26,7 +55,7 @@ baseviews: &MODS_IMAGE_VIEWS
         - xslt:
             stylesheet: 'xslt/mods2schemaorg.xsl'
             injections:
-              - imageserver: ${path:imageservers[default=true].url}
+              - imageserver: ${path:config.imageservers[default=true].url}
               - old_imageserver: ${path:config.oldimageserver.url}
 
   - SolrJSON:
@@ -82,34 +111,19 @@ origins:
       prefix: 'ds.radiotv'
       origin: 'ds.radiotv'
       recordrequesttype: 'DELIVERABLEUNIT'
-      views:
-        - raw:
-            mime: 'text/plain'
-            strategy: 'NONE'
-            transformers:
-              - identity:
-        - JSON-LD:
-            mime: 'application/json'
-            strategy: 'MANIFESTATION'
-            transformers:
-              - xslt:
-                  stylesheet: 'xslt/preservica2schemaorg.xsl'
-                  injections:
-                    #- imageserver: ${path:imageservers[default=true].url}
-                    - streamingserver: ${path:config.streamingserver.url}
-                    - old_imageserver: ${path:config.oldimageserver.url}
-        - SolrJSON:
-            mime: 'application/json'
-            strategy: 'MANIFESTATION'
-            transformers:
-              - xslt:
-                  stylesheet: 'xslt/preservica2schemaorg.xsl'
-                  injections:
-                    #- imageserver: ${path:imageservers[default=true].url}
-                    - streamingserver: ${path:config.streamingserver.url}
-                    - old_imageserver: ${path:config.oldimageserver.url}
-              - xsltsolr:
-                  stylesheet: 'xslt/schemaorg2solr.xsl'
+      views: *PRESERVICA_VIEWS
+  - 'ds.radio':
+      description: 'Radio records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.radio'
+      origin: 'ds.radio'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
+  - 'ds.tv':
+      description: 'TV records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.tv'
+      origin: 'ds.tv'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
 
 
 

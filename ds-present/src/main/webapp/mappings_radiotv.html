@@ -35,6 +35,13 @@
      		<td>Origin is not present in preservica. It is created from where the metadata originates from. In this case,
      	        the Radio/TV collection.</td>
      	</tr>
+	<tr>
+     		<td></td>
+     		<td>conditions_of_access</td>
+     		<td>conditionsOfAccess</td>
+     		<td>This field contains information on how the object can be accessed. It is not present in the original
+				metadata from Preservica but is added through the ds-present transformations. </td>
+     	</tr>
  	<tr>
      		<td>pbcoreGenre/genre</td>
      		<td>categories</td>
@@ -76,6 +83,14 @@
      		<td>creator_affiliation</td>
      		<td>publishedOn/broadcastDisplayName</td>
      		<td>The solr field has the same name across collections.</td>
+     	</tr>
+	<tr>
+     		<td>pbcorePublisher/<br/>publisherRole</td>
+     		<td>creator_affiliation_generic</td>
+     		<td>publishedOn/alternateName</td>
+     		<td>This generic field contains a constant value across different names for the same channel.
+				An example could be the Danish radio channel DR P1, which has had different names as 'Program 1' and
+				'P1' at different times. The value in this field for any P1 record is 'drp1'.</td>
      	</tr>
  	<tr>
      	    <td>pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart</td>

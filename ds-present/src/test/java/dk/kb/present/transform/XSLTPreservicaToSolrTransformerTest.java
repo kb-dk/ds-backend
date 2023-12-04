@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
@@ -27,9 +28,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
     public static final String SCHEMA2SOLR =  "xslt/schemaorg2solr.xsl";
-
     private static final Logger log = LoggerFactory.getLogger(XSLTPreservicaToSolrTransformerTest.class);
-
 
     @Override
     String getXSLT() {
@@ -110,7 +109,21 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void testCreatorAffiliation() {
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_5a5357be, "\"creator_affiliation\": \"DR Ultra\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_5a5357be, "\"creator_affiliation\":\"TLC\"");
+    }
+
+    @Test
+    public void testNoCreatorAffiliation() {
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_4f706cda, "\"creator_affiliation\"");
+    }
+
+    @Test
+    public void testBroadcaster() {
+        assertPvicaContains(TestFiles.PVICA_RECORD_accf8d1c, "\"broadcaster\":\"DR\"");
+    }
+    @Test
+    public void testCreatorAffiliationGeneric() {
+        assertPvicaContains(TestFiles.PVICA_RECORD_accf8d1c, "\"creator_affiliation_generic\":\"drp1\"");
     }
 
     @Test
@@ -310,17 +323,33 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(solrJson.contains("\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
     }
 
+    /* disabled as they are not represented in solr
     @Test
     void testOverlaps() {
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_two_length_ms\":\"3120\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_one_length_ms\":\"1320\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_one_file1UUID\":\"f73b69da-2bc0-4e06-b19b-95f24756804e\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_two_file2UUID\":\"f73b69da-2bc0-4e06-b19b-95f24756804e\"");
+    }*/
+
+    @Test
+    void testAccessConditions(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"conditions_of_access\":\"placeholderCondition\"");
+    }
+
+    @Test
+    void testNoBroadcasterInformation(){
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"publishedOn\"");
+    }
+
+    @Test
+    void testNoSpecificOrigin(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_5b29fca1, "\"origin\"");
     }
 
     @Test
     public void prettyPrintTransformation() throws Exception {
-        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_b346acc8);
+        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_2973e7fa);
         TestUtil.prettyPrintJson(solrJson);
     }
 
@@ -365,6 +394,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString;
         try {
             solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
+            //TestUtil.prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);

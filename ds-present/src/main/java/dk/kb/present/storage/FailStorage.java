@@ -18,6 +18,7 @@ package dk.kb.present.storage;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.stream.ContinuationStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +65,12 @@ public class FailStorage implements Storage {
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecords(String origin, long mTime, long maxRecords) {
+    public ContinuationStream<DsRecordDto, Long> getDSRecords(String origin, long mTime, long maxRecords) {
         throw new NotFoundServiceException("Unable to locate any records after mTime " + mTime);
     }
 
     @Override
-    public Stream<DsRecordDto> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
+    public ContinuationStream<DsRecordDto, Long> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
         throw new NotFoundServiceException("Unable to locate any records after mTime " + mTime);
     }
 
