@@ -35,7 +35,7 @@ public class ServiceConfig {
      * @return the "Hello World" lines defined in the config file.
      */
     public static List<String> getHelloLines() {
-        List<String> lines = serviceConfig.getList("config.helloLines");
+        List<String> lines = serviceConfig.getList("helloLines");
         return lines;
     }
 

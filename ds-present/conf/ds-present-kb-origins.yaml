@@ -19,9 +19,9 @@ pvicaviews: &PRESERVICA_VIEWS
         - xslt:
             stylesheet: 'xslt/preservica2schemaorg.xsl'
             injections:
-              #- imageserver: ${path:config.imageservers[default=true].url}
-              - streamingserver: ${path:config.streamingserver.url}
-              - old_imageserver: ${path:config.oldimageserver.url}
+              #- imageserver: ${path:imageservers[default=true].url}
+              - streamingserver: ${path:streamingserver.url}
+              - old_imageserver: ${path:oldimageserver.url}
   - SolrJSON:
       mime: 'application/json'
       strategy: 'MANIFESTATION'
@@ -29,9 +29,9 @@ pvicaviews: &PRESERVICA_VIEWS
         - xslt:
             stylesheet: 'xslt/preservica2schemaorg.xsl'
             injections:
-              #- imageserver: ${path:config.imageservers[default=true].url}
-              - streamingserver: ${path:config.streamingserver.url}
-              - old_imageserver: ${path:config.oldimageserver.url}
+              #- imageserver: ${path:imageservers[default=true].url}
+              - streamingserver: ${path:streamingserver.url}
+              - old_imageserver: ${path:oldimageserver.url}
         - xsltsolr:
             stylesheet: 'xslt/schemaorg2solr.xsl'
 # Generic views for images represented as MODS, used for multiple origins
@@ -55,8 +55,8 @@ baseviews: &MODS_IMAGE_VIEWS
         - xslt:
             stylesheet: 'xslt/mods2schemaorg.xsl'
             injections:
-              - imageserver: ${path:config.imageservers[default=true].url}
-              - old_imageserver: ${path:config.oldimageserver.url}
+              - imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
 
   - SolrJSON:
       mime: 'application/json'
@@ -67,7 +67,7 @@ baseviews: &MODS_IMAGE_VIEWS
             stylesheet: 'xslt/mods2solr.xsl'
             injections:
               - imageserver: ${path:imageservers[default=true].url}
-              - old_imageserver: ${path:config.oldimageserver.url}
+              - old_imageserver: ${path:oldimageserver.url}
 
 # The origins available for this instance of ds-present
 origins:

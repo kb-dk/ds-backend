@@ -44,7 +44,7 @@ public class DsPresentClient extends DsPresentApi {
     private static final Logger log = LoggerFactory.getLogger(DsPresentClient.class);
     private final String serviceURI;
 
-    public static final String PRESENT_SERVER_URL_KEY = ".config.present.url";
+    public static final String PRESENT_SERVER_URL_KEY = ".present.url";
 
     /**
      * Sub-client for the IIIF endpoints.
@@ -60,9 +60,8 @@ public class DsPresentClient extends DsPresentApi {
      * <p>
      * When working with YAML configs, it is suggested to define the ds-present URI as the structure
      * <pre>
-     * config:
-     *   storage:
-     *     url: 'http://localhost:9073/ds-storage/v1'
+     * storage:
+     *   url: 'http://localhost:9073/ds-storage/v1'
      * </pre>
      * Then use the path {@link #PRESENT_SERVER_URL_KEY} to extract the URL.
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-present/v1}.

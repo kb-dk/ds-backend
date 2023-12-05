@@ -67,7 +67,7 @@ class ServiceConfigTest {
         YAML yaml = ServiceConfig.getConfig();
 
         // Behaviour has an 'invalid' imageserver, but Servers overrides the list to only contain 'local'
-        //System.out.println(yaml.getYAMLList("config.imageservers"));
+        //System.out.println(yaml.getYAMLList("imageservers"));
         assertEquals("true", yaml.getString("imageservers[0].local.default"),
                 "The imageserver 'local' should have 'default: true'");
 
