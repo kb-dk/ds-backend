@@ -10,7 +10,7 @@
     <name>ds-discover</name> <!-- Human readable name, uppercase and spaces welcome -->
     <groupId>dk.kb.discover</groupId>
     <artifactId>ds-discover</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     
     <packaging>war</packaging>
     <description>ds-discover by the Royal Danish Library</description>
@@ -37,7 +37,7 @@
         <url>https://github.com/kb-dk/ds-discover</url>
         <connection>scm:git:git@github.com:kb-dk/ds-discover.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds-discover.git</developerConnection>
-        <tag>ds-discover-1.1.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
