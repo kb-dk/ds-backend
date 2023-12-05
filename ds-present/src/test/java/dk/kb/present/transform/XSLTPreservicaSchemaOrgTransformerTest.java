@@ -37,7 +37,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testSetup() throws IOException {
         //printSchemaOrgJson(PVICA_RECORD_74e22fd8);
-        printSchemaOrgJson(TestFiles.PVICA_RECORD_accf8d1c);
+        printSchemaOrgJson(TestFiles.PVICA_RECORD_4f706cda);
         //printSchemaOrgJson(PVICA_RECORD_1F3A6A66);
         //printSchemaOrgJson(PVICA_RECORD_44979f67);
     }
@@ -335,6 +335,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:format_identifier_ritzau\":\"81213310\"," +
                 "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," ));
+    }
+
+    @Test
+    void testNoEmptyInternalMap() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda);
+        TestUtil.prettyPrintJson(transformedJSON);
+        Assertions.assertFalse(transformedJSON.contains("\"kb:internal\":{}"));
+
     }
 
 

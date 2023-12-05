@@ -172,13 +172,22 @@
       <!-- Extract manifestation -->
       <xsl:call-template name="extract-manifestation"/>
 
-      <f:map key="kb:internal">
-      <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
-        <xsl:call-template name="kb-internal">
-          <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-          <xsl:with-param name="type" select="$type"/>
-        </xsl:call-template>
-      </f:map>
+      <!-- Checking for PBCore Extensions as most values in the internal map are defined as extensions. -->
+      <!--<xsl:if test="$pbcExtensions != ''">-->
+        <f:string key="exists">
+          <xsl:value-of select="my:doesInternalMapExist($pbcExtensions, '/')"/>
+        </f:string>
+
+        <f:map key="kb:internal">
+        <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
+          <xsl:call-template name="kb-internal">
+            <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            <xsl:with-param name="type" select="$type"/>
+          </xsl:call-template>
+        </f:map>
+<!--
+      </xsl:if>
+-->
 
     </f:map>
   </xsl:template>
@@ -876,5 +885,19 @@
 
 
   </xsl:template>
+
+  <xsl:function name="my:doesInternalMapExist" as="xs:boolean">
+    <xsl:param name="rootElement"/>
+    <xsl:param name="pbcExtensions"/>
+    <xsl:value-of select="$rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre != '' or
+                          $rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration != '' or
+                          $pbcExtensions != '' or
+                          $rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID != '' or
+                          $rootElement/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds != '' or
+                          $rootElement/xip:DeliverableUnit/Metadata/access:access != '' or
+                          $rootElement/xip:DeliverableUnit/Metadata/program_structure:program_structure != ''
+                          "/>
+
+  </xsl:function>
 
 </xsl:transform>
