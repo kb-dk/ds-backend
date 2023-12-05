@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
  */
 public class OriginHandler {
     private static final Logger log = LoggerFactory.getLogger(OriginHandler.class);
-    private static final String ORIGINS_KEY = ".config.origins";
-    private static final String RECORD_ID_PATTERN_KEY = ".config.record.id.pattern";
-    private static final String ORIGIN_ID_PATTERN_KEY = ".config.origin.prefix.pattern";
+    private static final String ORIGINS_KEY = ".origins";
+    private static final String RECORD_ID_PATTERN_KEY = ".record.id.pattern";
+    private static final String ORIGIN_ID_PATTERN_KEY = ".origin.prefix.pattern";
 
     private final StorageHandler storageHandler;
     private final Map<String, DSOrigin> originsByPrefix; // prefix, origin
@@ -47,7 +47,7 @@ public class OriginHandler {
     /**
      * Creates a {@link StorageHandler} and a set of {@link Storage}s based on the given configuration.
      * @param conf top-level configuration. The parts for this handler is expected to be found at
-     * {@code .config.origins} and {@code .config.record.id.pattern}
+     * {@code .origins} and {@code .record.id.pattern}
      */
     public OriginHandler(YAML conf) {
         try {

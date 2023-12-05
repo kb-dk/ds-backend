@@ -4,190 +4,189 @@
 # If used by another institution the origins should be overwritten by another config sorted alphanumerically
 # later than "ds-present-kb-origins.yaml". Optionally this config file should also be deleted.
 #
-config:
 
-  # Views for material harvested from preservica.
-  pvicaviews: &PRESERVICA_VIEWS
-    - raw:
-        mime: 'text/plain'
-        strategy: 'NONE'
-        transformers:
-          - identity:
-    - JSON-LD:
-        mime: 'application/json'
-        strategy: 'MANIFESTATION'
-        transformers:
-          - xslt:
-              stylesheet: 'xslt/preservica2schemaorg.xsl'
-              injections:
-                #- imageserver: ${path:config.imageservers[default=true].url}
-                - streamingserver: ${path:config.streamingserver.url}
-                - old_imageserver: ${path:config.oldimageserver.url}
-    - SolrJSON:
-        mime: 'application/json'
-        strategy: 'MANIFESTATION'
-        transformers:
-          - xslt:
-              stylesheet: 'xslt/preservica2schemaorg.xsl'
-              injections:
-                #- imageserver: ${path:config.imageservers[default=true].url}
-                - streamingserver: ${path:config.streamingserver.url}
-                - old_imageserver: ${path:config.oldimageserver.url}
-          - xsltsolr:
-              stylesheet: 'xslt/schemaorg2solr.xsl'
-  # Generic views for images represented as MODS, used for multiple origins
-  baseviews: &MODS_IMAGE_VIEWS
-    # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
-    - raw:
-        mime: 'text/plain'
-        strategy: 'NONE'
-        transformers:
-          - identity:
-    - MODS:
-        mime: 'application/xml'
-        strategy: 'NONE'
-        transformers:
-          - identity: # No transformation steps as mods is the core format for images-dsfl
-    - JSON-LD:
-        mime: 'application/json'
-        strategy: 'NONE'
-        transformers:
-          - imagerights: # KB specific rules for image rights stated in MODS
-          - xslt:
-              stylesheet: 'xslt/mods2schemaorg.xsl'
-              injections:
-                - imageserver: ${path:config.imageservers[default=true].url}
-                - old_imageserver: ${path:config.oldimageserver.url}
+# Views for material harvested from preservica.
+pvicaviews: &PRESERVICA_VIEWS
+  - raw:
+      mime: 'text/plain'
+      strategy: 'NONE'
+      transformers:
+        - identity:
+  - JSON-LD:
+      mime: 'application/json'
+      strategy: 'MANIFESTATION'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              #- imageserver: ${path:imageservers[default=true].url}
+              - streamingserver: ${path:streamingserver.url}
+              - old_imageserver: ${path:oldimageserver.url}
+  - SolrJSON:
+      mime: 'application/json'
+      strategy: 'MANIFESTATION'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              #- imageserver: ${path:imageservers[default=true].url}
+              - streamingserver: ${path:streamingserver.url}
+              - old_imageserver: ${path:oldimageserver.url}
+        - xsltsolr:
+            stylesheet: 'xslt/schemaorg2solr.xsl'
+# Generic views for images represented as MODS, used for multiple origins
+baseviews: &MODS_IMAGE_VIEWS
+  # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
+  - raw:
+      mime: 'text/plain'
+      strategy: 'NONE'
+      transformers:
+        - identity:
+  - MODS:
+      mime: 'application/xml'
+      strategy: 'NONE'
+      transformers:
+        - identity: # No transformation steps as mods is the core format for images-dsfl
+  - JSON-LD:
+      mime: 'application/json'
+      strategy: 'NONE'
+      transformers:
+        - imagerights: # KB specific rules for image rights stated in MODS
+        - xslt:
+            stylesheet: 'xslt/mods2schemaorg.xsl'
+            injections:
+              - imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
 
-    - SolrJSON:
-        mime: 'application/json'
-        strategy: 'NONE'
-        transformers:
-          - imagerights: # KB specific rules for image rights stated in MODS
-          - xslt:
-              stylesheet: 'xslt/mods2solr.xsl'
-              injections:
-                - imageserver: ${path:config.imageservers[default=true].url}
-                - old_imageserver: ${path:config.oldimageserver.url}
+  - SolrJSON:
+      mime: 'application/json'
+      strategy: 'NONE'
+      transformers:
+        - imagerights: # KB specific rules for image rights stated in MODS
+        - xslt:
+            stylesheet: 'xslt/mods2solr.xsl'
+            injections:
+              - imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
 
-  # The origins available for this instance of ds-present
-  origins:
-    # General note: All origins are expected to support at least the views raw, mods, jsonld and solrjson.
-    # If any of those are not supported, the transformer 'fail' should be used with a telling message.
+# The origins available for this instance of ds-present
+origins:
+  # General note: All origins are expected to support at least the views raw, mods, jsonld and solrjson.
+  # If any of those are not supported, the transformer 'fail' should be used with a telling message.
 
-    # Royal Danish Library image collection with the core format being MODS
-    # Uses the default storage, which connects to a running ds-storage instance
-    - imageshca:
-        description: 'Hans Christian Andersen images from the collections at the Royal Danish Library'
-        prefix: 'kb.images.billed.hca' # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
-        origin: 'kb.images.billed.hca' # Overrides the default origin for the storage
-        recordrequesttype: 'DELIVERABLEUNIT'
-        views: *MODS_IMAGE_VIEWS
-    - imagesjsmss:
-        description: 'Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library'
-        prefix: 'kb.image.judsam.jsmss'
-        origin: 'kb.image.judsam.jsmss'
-        recordrequesttype: 'DELIVERABLEUNIT'
-        views: *MODS_IMAGE_VIEWS
-    - imagesluftfoto:
-        description: 'Luftfoto (arial photographs) images from the collections at the Royal Danish Library'
-        prefix: 'kb.image.luftfo.luftfoto'
-        origin: 'kb.images.luftfo.luftfoto'
-        recordrequesttype: 'DELIVERABLEUNIT'
-        views: *MODS_IMAGE_VIEWS
-    - imagessmaatryk:
-        description: 'Småtryk images from the collections at the Royal Danish Library'
-        prefix: 'kb.pamphlets.dasmaa.smaatryk'
-        origin: 'kb.pamphlets.dasmaa.smaatryk'
-        recordrequesttype: 'DELIVERABLEUNIT'
-        views: *MODS_IMAGE_VIEWS
-    - samlingsbilleder:
-        description: 'Diverse images from image collections at the Royal Danish Library'
-        prefix: 'ds.samlingsbilleder'
-        origin: 'ds.samlingsbilleder'
-        recordrequesttype: 'DELIVERABLEUNIT'
-        views: *MODS_IMAGE_VIEWS
-    - 'ds.radiotv':
-        description: 'Radio and television records from the Preservica system at the Royal Danish Library'
-        prefix: 'ds.radiotv'
-        origin: 'ds.radiotv'
-        recordrequesttype: 'DELIVERABLEUNIT'
-        views: *PRESERVICA_VIEWS
-    - 'ds.radio':
-        description: 'Radio records from the Preservica system at the Royal Danish Library'
-        prefix: 'ds.radio'
-        origin: 'ds.radio'
-        recordrequesttype: 'DELIVERABLEUNIT'
-        views: *PRESERVICA_VIEWS
-    - 'ds.tv':
-        description: 'TV records from the Preservica system at the Royal Danish Library'
-        prefix: 'ds.tv'
-        origin: 'ds.tv'
-        recordrequesttype: 'DELIVERABLEUNIT'
-        views: *PRESERVICA_VIEWS
-
+  # Royal Danish Library image collection with the core format being MODS
+  # Uses the default storage, which connects to a running ds-storage instance
+  - imageshca:
+      description: 'Hans Christian Andersen images from the collections at the Royal Danish Library'
+      prefix: 'kb.images.billed.hca' # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
+      origin: 'kb.images.billed.hca' # Overrides the default origin for the storage
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *MODS_IMAGE_VIEWS
+  - imagesjsmss:
+      description: 'Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library'
+      prefix: 'kb.image.judsam.jsmss'
+      origin: 'kb.image.judsam.jsmss'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *MODS_IMAGE_VIEWS
+  - imagesluftfoto:
+      description: 'Luftfoto (arial photographs) images from the collections at the Royal Danish Library'
+      prefix: 'kb.image.luftfo.luftfoto'
+      origin: 'kb.images.luftfo.luftfoto'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *MODS_IMAGE_VIEWS
+  - imagessmaatryk:
+      description: 'Småtryk images from the collections at the Royal Danish Library'
+      prefix: 'kb.pamphlets.dasmaa.smaatryk'
+      origin: 'kb.pamphlets.dasmaa.smaatryk'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *MODS_IMAGE_VIEWS
+  - samlingsbilleder:
+      description: 'Diverse images from image collections at the Royal Danish Library'
+      prefix: 'ds.samlingsbilleder'
+      origin: 'ds.samlingsbilleder'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *MODS_IMAGE_VIEWS
+  - 'ds.radiotv':
+      description: 'Radio and television records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.radiotv'
+      origin: 'ds.radiotv'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
+  - 'ds.radio':
+      description: 'Radio records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.radio'
+      origin: 'ds.radio'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
+  - 'ds.tv':
+      description: 'TV records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.tv'
+      origin: 'ds.tv'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
 
 
-    # Straight forward origin with the core format being MODS
-    # Uses the default storage, which connects to a running ds-storage instance
-    - remote: # ds-present internal
-        prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
-        origin: "old.doms.radio"
-        description: 'Images from the collections at the Royal Danish Library'
-        recordrequesttype: 'DELIVERABLEUNIT'
-        # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
-        views:
-          - raw:
-              mime: 'text/plain'
-              transformers:
-                - identity:
-          - MODS:
-              mime: 'application/xml'
-              transformers:
-                - identity: # No transformation steps as mods is the core format for images-dsfl
-          - JSON-LD:
-              mime: 'application/json'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2schemaorg.xsl'
-                    injections:
-                      - imageserver: ${path:config.imageservers[default=true].url}
-          - SolrJSON:
-              mime: 'application/json'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2solr.xsl'
-                    injections:
-                      - imageserver: ${path:config.imageservers[default=true].url}
 
-    # Straight forward origin with the core format being MODS, using test data
-    - local: # ds-present internal
-        prefix: 'local.test' # The prefix to match on incoming IDs
-        origin: 'ds.local'
-        description: 'Selected image data from the collections at the Royal Danish Library'
-        storage: 'test' # Not production here
-        recordrequesttype: 'DELIVERABLEUNIT'
-        # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
-        views:
-          - raw:
-              mime: 'text/plain'
-              transformers:
-                - identity:
-          - MODS:
-              mime: 'application/xml'
-              transformers:
-                - identity: # No transformation steps as mods is the core format for images-dsfl
-          - JSON-LD:
-              mime: 'application/json'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2schemaorg.xsl'
-                    injections:
-                      - imageserver: ${path:config.imageservers[default=true].url}
-          - SolrJSON:
-              mime: 'application/json'
-              transformers:
-                - xslt:
-                    stylesheet: 'xslt/mods2solr.xsl'
-                    injections:
-                      - imageserver: ${path:config.imageservers[default=true].url}
+  # Straight forward origin with the core format being MODS
+  # Uses the default storage, which connects to a running ds-storage instance
+  - remote: # ds-present internal
+      prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
+      origin: "old.doms.radio"
+      description: 'Images from the collections at the Royal Danish Library'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
+      views:
+        - raw:
+            mime: 'text/plain'
+            transformers:
+              - identity:
+        - MODS:
+            mime: 'application/xml'
+            transformers:
+              - identity: # No transformation steps as mods is the core format for images-dsfl
+        - JSON-LD:
+            mime: 'application/json'
+            transformers:
+              - xslt:
+                  stylesheet: 'xslt/mods2schemaorg.xsl'
+                  injections:
+                    - imageserver: ${path:imageservers[default=true].url}
+        - SolrJSON:
+            mime: 'application/json'
+            transformers:
+              - xslt:
+                  stylesheet: 'xslt/mods2solr.xsl'
+                  injections:
+                    - imageserver: ${path:imageservers[default=true].url}
+
+  # Straight forward origin with the core format being MODS, using test data
+  - local: # ds-present internal
+      prefix: 'local.test' # The prefix to match on incoming IDs
+      origin: 'ds.local'
+      description: 'Selected image data from the collections at the Royal Danish Library'
+      storage: 'test' # Not production here
+      recordrequesttype: 'DELIVERABLEUNIT'
+      # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
+      views:
+        - raw:
+            mime: 'text/plain'
+            transformers:
+              - identity:
+        - MODS:
+            mime: 'application/xml'
+            transformers:
+              - identity: # No transformation steps as mods is the core format for images-dsfl
+        - JSON-LD:
+            mime: 'application/json'
+            transformers:
+              - xslt:
+                  stylesheet: 'xslt/mods2schemaorg.xsl'
+                  injections:
+                    - imageserver: ${path:imageservers[default=true].url}
+        - SolrJSON:
+            mime: 'application/json'
+            transformers:
+              - xslt:
+                  stylesheet: 'xslt/mods2solr.xsl'
+                  injections:
+                    - imageserver: ${path:imageservers[default=true].url}

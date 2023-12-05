@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
+### Changed 
+
+- General style of YAML configuration files, by removing the first level of indentation.
+
+
 
 ## [1.1.0] - YYYY-MM-DD
 - Client for the service, to be used by external projects

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class StorageHandler {
     private static final Logger log = LoggerFactory.getLogger(StorageHandler.class);
-    private static final String STORAGES_KEY = ".config.storages";
+    private static final String STORAGES_KEY = ".storages";
 
     private final Map<String, Storage> storages; // storageID, storage
     private Storage defaultStorage; // If the ID for the requested storage is null
