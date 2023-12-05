@@ -6,15 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+
+
+## [1.3.0]((https://github.com/kb-dk/ds-license/releases/tag/v1.0.0)) 2023-12-05
 ### Changed
 - General style of YAML configuration files, by removing the first level of indentation.
 
 
-
 ## [1.2.0] - 2023-11-30
 ### Added
-Ds-license client added. Option for caching to prevent DOS from image zooming calls.
-Solr calls changed from GET to POST 
+- Ds-license client
+- Option for caching to prevent DOS from image zooming calls.
+
+### Changed
+- Solr calls changed from GET to POST 
 
 
 ## [1.0.0] - YYYY-MM-DD
