@@ -577,7 +577,7 @@ paths:
             example: 'ds'
 
 
-        - name: suggest.dictionary
+        - name: suggestDictionary
           in: path
           description: 'The suggest dictionary for use. The dictionary must be defined in solr.'
           required: true
@@ -586,7 +586,7 @@ paths:
             default: 'dr_title_suggest'
             example: 'dr_title_suggest'
 
-        - name: suggest.q
+        - name: suggestQuery
           in: query
           description: 'The query text for suggest. Minimum 2 characters must be present. No solr operators allowed'
           required: true
@@ -609,6 +609,22 @@ paths:
             format: int32
             example: 10
             default: 10
+
+        - name: wt
+          in: query
+          description: | 
+            Solr response writer [wt](https://solr.apache.org/guide/8_10/response-writers.html)
+
+            Controls whether the response delivery format. Common values (non exhaustive list) are
+            
+            * [json](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer) (default)
+            * [csv](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+            * [xml](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+          required: false
+          schema:
+            type: string
+            default: 'json'
+            example: 'json'
 
 
       responses:

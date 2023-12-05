@@ -42,9 +42,11 @@ public class SolrService {
     private static final Logger log = LoggerFactory.getLogger(SolrService.class);
 
     public static final String SELECT = "select";
+    public static final String SUGGEST = "suggest";
     public static final String MLT = "mlt";
 
     public static final String Q = "q";
+    public static final String SUGGESTQ = "suggest.q";
     public static final String FQ = "fq";
     public static final String FL = "fl";
     public static final String ROWS = "rows";
@@ -244,6 +246,41 @@ public class SolrService {
         return performCall(q, builder, "search");
     }
 
+    
+    /**
+     * Issue a Solr suggest and return the result.
+     *
+     * @param q                      Solr query.
+     * @param wt                     Solr response format. 
+     * @return Solr response.
+     */
+    @SuppressWarnings("SuspiciousTernaryOperatorInVarargsCall")
+    public String suggest(String collection, String suggestDictionary, String suggestQuery, Integer suggestCount, String wt) {
+        if (suggestQuery == null) {
+            throw new InvalidArgumentServiceException("suggestQuery is mandatory but was missing");
+        }
+        // TODO: Catch extra arguments and throw "not supported"
+        UriBuilder builder = createSuggestRequestBuilder(SUGGEST, q, fq, rows, start, fl, qOp, wt);
+
+        addParamIfAvailable(builder, VERSION, version);
+        addParamIfAvailable(builder, )
+        
+    
+        
+        /*
+         * params.set(PARAM_QT, "/suggest");
+    params.set(PARAM_QUERY, query);
+    params.set(PARAM_SPELLCHECK, "true");
+    
+         */
+
+        return performCall(suggestQuery, builder, "suggest");
+    }
+
+    
+    
+    
+    
     /**
      * Creates a Solr oriented URI builder with basic parameters shared by standard search and More Like This requests.
      * @return a pre-filled builder ready to be extended with caller specific parameters.
@@ -267,7 +304,30 @@ public class SolrService {
         return builder;
     }
 
+    /**
+     * Creates a Solr oriented URI builder specific for suggest
+     * @return a pre-filled builder ready to be extended with caller specific parameters.
+     */
+    private UriBuilder createSuggestRequestBuilder(
+            String handler, String suggestQuery, Integer rows, String wt) {
+        UriBuilder builder = UriBuilder.fromUri(server)
+                .path(path)
+                .path(solrCollection)
+                .path(handler)
+                .queryParam(suggestQuery, suggestQuery)
+                .queryParam(WT, WT_ENUM.safeParse(wt));
+        
+        http://devel11:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=tv      
 
+        
+
+               
+        addParamIfAvailable(builder, ROWS, rows);
+        return builder;
+    }
+
+    
+    
     private String performCall(String q, UriBuilder builder, String callType) {
         URI solrCall = builder.build();
 

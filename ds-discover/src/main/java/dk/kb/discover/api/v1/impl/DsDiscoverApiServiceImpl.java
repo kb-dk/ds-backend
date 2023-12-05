@@ -7,6 +7,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -239,6 +240,39 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         }
     }
 
+    
+    /**
+     * Perform a Solr-suggest search in the stated collection
+     * 
+     * @param collection: The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections
+     * 
+     * @param q: Solr query param [https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters](q)
+     * 
+     * @return <ul>
+      *   <li>code = 200, message = "JSON structure with Solr response", response = String.class</li>
+      *   </ul>
+      * @throws ServiceException when other http codes should be returned
+      *
+      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
+     */
+    @Override   
+    public String solrSuggest(String collection, String suggestDictionary, String suggestQuery, Integer suggestCount, String wt) {
+
+
+        log.debug("solrsuggest(collection='{}', q='{}', ...) called with call details: {}",
+                collection, suggestQuery, getCallDetails());
+        
+        SolrService solr = SolrManager.getSolrService(collection);
+        // TODO: Pass the map of request parameters instead of all parameters as first class
+        httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
+
+        String rawResponse = solr.suggest(collection, suggestDictionary, suggestQuery, suggestCount, wt);
+                       
+        return rawResponse;
+    }
+    
+    
+    
     /**
      * Request a filter query from ds-license and append it to {@code fq}.
      * @param designation describes the caller, used for logging only.
@@ -331,5 +365,9 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
                 .forEach(extras::remove);
         return extras;
     }
+
+  
+
+
 
 }
