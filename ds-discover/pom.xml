@@ -35,8 +35,8 @@
 
     <scm>
         <url>https://github.com/kb-dk/ds-discover</url>
-        <connection>git@github.com:kb-dk/ds-discover.git</connection>
-        <developerConnection>scm:git:ssh://git@sbprojects.statsbiblioteket.dk:7999/ark/ds-discover-template.git</developerConnection>
+        <connection>scm:git:git@github.com:kb-dk/ds-discover.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds-discover.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
