@@ -563,7 +563,7 @@ paths:
     get:
       tags:
         - '${project.name}'
-      summary: 'Perform a Solr-compatible search in the stated collection'
+      summary: 'Perform a Solr suggest in the stated collection and dictionary'
       operationId: solrSuggest
       parameters:
 
