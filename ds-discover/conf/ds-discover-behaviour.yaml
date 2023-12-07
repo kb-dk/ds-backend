@@ -8,42 +8,41 @@
 # This config is controlled by the individual developer and is not part of the code repository.
 #
 
-config:
-  # Local experimenting with limits
-  limits:
-    max: 10000
+# Local experimenting with limits
+limits:
+  max: 10000
 
-  solr:
-    # If permissive is false, only vetted Solr parameters are accepted
-    # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
-    # Intended for development purposes.
-    # WARNING: This should never be true in production.
-    permissive: false
+solr:
+  # If permissive is false, only vetted Solr parameters are accepted
+  # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
+  # Intended for development purposes.
+  # WARNING: This should never be true in production.
+  permissive: false
 
-    # Test purpose only in ds-discover-behaviour.yaml. Override in environment configuration.
-    collections:
-      # Keys are collection names
+  # Test purpose only in ds-discover-behaviour.yaml. Override in environment configuration.
+  collections:
+    # Keys are collection names
 
-      # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost
-      - ds: # http://localhost:10007/solr/ds/select?q=foo
-          # The Solr server, including port
-          # Mandatory
-          server: 'http://localhost:10007'
-          # The path for the Solr service
-          # Optional. Default is 'solr'
-          path: 'solr'
-          # The Solr collection ID
-          # Mandatory. Typically the same as the abstract collection name
-          collection: 'ds'
-          # TODO: Default params
-          #
-          #
-          #
+    # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost
+    - ds: # http://localhost:10007/solr/ds/select?q=foo
+        # The Solr server, including port
+        # Mandatory
+        server: 'http://localhost:10007'
+        # The path for the Solr service
+        # Optional. Default is 'solr'
+        path: 'solr'
+        # The Solr collection ID
+        # Mandatory. Typically the same as the abstract collection name
+        collection: 'ds'
+        # TODO: Default params
+        #
+        #
+        #
 
-    #Minimum number of characters required for suggest
-    suggestminimumlength: 2
+  #Minimum number of characters required for suggest
+  suggestminimumlength: 2
 
-  #License module is called to generate a filter query that is used when calling Solr          
-  licensemodule:
-    url: http://localhost:9076/ds-license/v1
-          
+#License module is called to generate a filter query that is used when calling Solr
+licensemodule:
+  url: http://localhost:9076/ds-license/v1
+

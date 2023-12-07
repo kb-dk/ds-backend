@@ -31,7 +31,7 @@ import java.util.Objects;
 public class SolrManager implements ServiceConfig.Observer {
     private static final Logger log = LoggerFactory.getLogger(SolrManager.class);
 
-    private static final String SOLR_KEY = ".config.solr";
+    private static final String SOLR_KEY = ".solr";
     private static final String COLLECTIONS_KEY = ".collections";
     private static final String SOLR_COLLECTION_KEY = ".collection";
     private static final String SOLR_SERVER_KEY = ".server";

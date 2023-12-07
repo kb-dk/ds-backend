@@ -267,7 +267,7 @@ public class SolrService {
             throw new InvalidArgumentServiceException("suggestDictionary is mandatory but was missing");
         }
 
-    	int minimumSuggestLength=ServiceConfig.getConfig().getInteger("config.solr.suggestminimumlength");
+    	int minimumSuggestLength=ServiceConfig.getConfig().getInteger("solr.suggestminimumlength");
         if (suggestQuery == null || suggestQuery.trim().length() < minimumSuggestLength ) {
            throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
         }
