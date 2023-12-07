@@ -14,6 +14,7 @@
  */
 package dk.kb.discover;
 
+import dk.kb.discover.config.ServiceConfig;
 import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -42,9 +43,13 @@ public class SolrService {
     private static final Logger log = LoggerFactory.getLogger(SolrService.class);
 
     public static final String SELECT = "select";
+    public static final String SUGGEST = "suggest";
     public static final String MLT = "mlt";
 
     public static final String Q = "q";
+    public static final String SUGGEST_Q = "suggest.q";
+    public static final String SUGGEST_DICTIONARY = "suggest.dictionary";
+    public static final String SUGGEST_COUNT = "suggest.count";
     public static final String FQ = "fq";
     public static final String FL = "fl";
     public static final String ROWS = "rows";
@@ -244,6 +249,33 @@ public class SolrService {
         return performCall(q, builder, "search");
     }
 
+    
+    /**
+     * Issue a Solr suggest and return the result.
+     *
+     * @param suggestDictonary A suggest dictionary defined in the solr configuration. 
+     * @param suggestQuery The prefix text that the suggest compontent will try to autocomplete. 
+     * @param suggestCount Number of results to return. 10 is the default value.
+     * @param wt The return format from solr. (json, xml etc.) 
+     * @return Solr response.
+     */
+    public String suggest(String suggestDictionary, String suggestQuery, Integer suggestCount, String wt) {
+        if (suggestQuery == null) {
+            throw new InvalidArgumentServiceException("suggestQuery is mandatory but was missing");
+        }
+        if (suggestDictionary == null) {
+            throw new InvalidArgumentServiceException("suggestDictionary is mandatory but was missing");
+        }
+
+    	int minimumSuggestLength=ServiceConfig.getConfig().getInteger("solr.suggestminimumlength");
+        if (suggestQuery == null || suggestQuery.trim().length() < minimumSuggestLength ) {
+           throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
+        }
+               
+        UriBuilder builder = createSuggestRequestBuilder(SUGGEST, suggestDictionary, suggestQuery,suggestCount,wt);                
+        return performCall(suggestQuery, builder, "suggest");
+    }
+    
     /**
      * Creates a Solr oriented URI builder with basic parameters shared by standard search and More Like This requests.
      * @return a pre-filled builder ready to be extended with caller specific parameters.
@@ -267,7 +299,25 @@ public class SolrService {
         return builder;
     }
 
+    /**
+     * Creates a Solr oriented URI builder specific for suggest
+     * @return a pre-filled builder ready to be extended with caller specific parameters.
+     */
+    private UriBuilder createSuggestRequestBuilder(String handler, String suggestDictionary,String suggestQuery, Integer suggestCount, String wt) {
+        UriBuilder builder = UriBuilder.fromUri(server)
+                .path(path)
+                .path(solrCollection)
+                .path(handler)
+                .queryParam(SUGGEST_Q, suggestQuery)
+                .queryParam(SUGGEST_DICTIONARY, suggestDictionary)
+                .queryParam(SUGGEST_COUNT, suggestCount)
+                .queryParam(WT, WT_ENUM.safeParse(wt));
+                                    
+        return builder;
+    }
 
+    
+    
     private String performCall(String q, UriBuilder builder, String callType) {
         URI solrCall = builder.build();
 

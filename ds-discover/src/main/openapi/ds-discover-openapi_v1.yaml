@@ -193,7 +193,7 @@ paths:
           description: | 
             Solr default operator param [q.op](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)
             
-            Controls whether the implicit boolean operator is `OR` or `AND`.
+            Controls wether the implicit boolean operator is `OR` or `AND`.
           required: false
           schema:
             type: string
@@ -206,7 +206,7 @@ paths:
           description: | 
             Solr response writer [wt](https://solr.apache.org/guide/8_10/response-writers.html)
 
-            Controls whether the response delivery format. Common values (non exhaustive list) are
+            Controls the response delivery format. Common values (non exhaustive list) are
             
             * [json](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer) (default)
             * [csv](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
@@ -525,7 +525,7 @@ paths:
           description: | 
             Solr response writer [wt](https://solr.apache.org/guide/8_10/response-writers.html)
 
-            Controls whether the response delivery format. Common values (non exhaustive list) are
+            Controls the response delivery format. Common values (non exhaustive list) are
             
             * [json](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer) (default)
             * [csv](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
@@ -557,6 +557,98 @@ paths:
                 description: |
                   Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
                 type: string
+
+
+  /solr/{collection}/suggest:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Perform a Solr suggest in the stated collection and dictionary.  [Solr-Suggest](https://solr.apache.org/guide/solr/9_3/query-guide/suggester.html#adding-the-suggest-request-handler)'
+      operationId: solrSuggest
+      parameters:
+
+        - name: collection
+          in: path
+          description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections.'
+          required: true
+          schema:
+            type: string
+            default: 'ds'
+            example: 'ds'
+                
+        - name: suggest.dictionary
+          in: query
+          description: 'The suggest dictionary for use. The dictionary must be defined in solr.'
+          required: true
+          schema:
+            type: string
+            default: 'dr_title_suggest'
+            example: 'dr_title_suggest'
+
+        - name: suggest.q
+          in: query
+          description: 'The query text for suggest. Minimum 2 characters must be present. No solr operators allowed'
+          required: true
+          schema:
+            type: string
+            default: ''
+          examples:
+            lowercase:
+              value: 'tv'
+              summary: 'All documents starting with tv (case sensivive)'
+            uppercase:
+              value: 'TV'
+              summary: 'All documents starting with TV (case sensivive)'
+             
+        - name: suggest.count
+          in: query
+          description: |             
+            The number of suggestions to return. The default is 10
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+
+        - name: wt
+          in: query
+          description: | 
+            Solr response writer [wt](https://solr.apache.org/guide/8_10/response-writers.html)
+
+            Controls the response delivery format. Common values (non exhaustive list) are
+            
+            * [json](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer) (default)
+            * [csv](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+            * [xml](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+          required: false
+          schema:
+            type: string
+            default: 'json'
+            example: 'json'
+
+
+      responses:
+        '200':
+          description: 'Structured Solr response'
+          content:
+            application/json:
+              schema:
+                description: |
+                  Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
+                type: string
+            application/xml:
+              schema:
+                description: |
+                  Output compatible with [Solr XML response](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+                type: string
+            text/csv:
+              schema:
+                description: |
+                  Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+                type: string
+
+
 
   /solr/admin/collections:
     get:

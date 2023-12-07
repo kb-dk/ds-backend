@@ -239,6 +239,40 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         }
     }
 
+    
+    /**
+     * Perform a Solr-suggest search in the stated collection
+     * 
+     * @param collection: The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections
+     * @param suggestDictonary A suggest dictionary defined in the solr configuration. 
+     * @param suggestQuery The prefix text that the suggest compontent will try to autocomplete. 
+     * @param suggestCount Number of results to return. 10 is the default value.
+     * @param wt The return format from solr. (json, xml etc.)
+     * 
+     * @return <ul>
+      *   <li>code = 200, message = "JSON structure with Solr response", response = String.class</li>
+      *   </ul>
+      * @throws ServiceException when other http codes should be returned
+      *
+      * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
+     */
+    @Override   
+    public String solrSuggest(String collection, String suggestDictionary, String suggestQuery, Integer suggestCount, String wt) {
+
+
+        log.debug("solrsuggest(collection='{}', q='{}', ...) called with call details: {}",
+                collection, suggestQuery, getCallDetails());
+        
+        SolrService solr = SolrManager.getSolrService(collection);
+        httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
+
+        String rawResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);
+                       
+        return rawResponse;
+    }
+    
+    
+    
     /**
      * Request a filter query from ds-license and append it to {@code fq}.
      * @param designation describes the caller, used for logging only.
@@ -331,5 +365,9 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
                 .forEach(extras::remove);
         return extras;
     }
+
+  
+
+
 
 }
