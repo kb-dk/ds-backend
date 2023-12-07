@@ -47,9 +47,9 @@ public class SolrService {
     public static final String MLT = "mlt";
 
     public static final String Q = "q";
-    public static final String SUGGESTQ = "suggest.q";
-    public static final String SUGGESTDICTIONARY = "suggest.dictionary";
-    public static final String SUGGESTCOUNT = "suggest.count";
+    public static final String SUGGEST_Q = "suggest.q";
+    public static final String SUGGEST_DICTIONARY = "suggest.dictionary";
+    public static final String SUGGEST_COUNT = "suggest.count";
     public static final String FQ = "fq";
     public static final String FL = "fl";
     public static final String ROWS = "rows";
@@ -308,14 +308,11 @@ public class SolrService {
                 .path(path)
                 .path(solrCollection)
                 .path(handler)
-                .queryParam(SUGGESTQ, suggestQuery)
-                .queryParam(SUGGESTDICTIONARY, suggestDictionary)
-                .queryParam(SUGGESTCOUNT, suggestCount)
+                .queryParam(SUGGEST_Q, suggestQuery)
+                .queryParam(SUGGEST_DICTIONARY, suggestDictionary)
+                .queryParam(SUGGEST_COUNT, suggestCount)
                 .queryParam(WT, WT_ENUM.safeParse(wt));
-        
-        http://devel11:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=tv      
-                       
-
+                                    
         return builder;
     }
 
