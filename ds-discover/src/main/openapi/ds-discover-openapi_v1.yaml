@@ -578,7 +578,7 @@ paths:
 
 
         - name: suggestDictionary
-          in: path
+          in: query
           description: 'The suggest dictionary for use. The dictionary must be defined in solr.'
           required: true
           schema:
@@ -594,11 +594,13 @@ paths:
             type: string
             default: ''
           examples:
-            free:
+            lowercase:
+              value: 'tv'
+              summary: 'All documents starting with tv (case sensivive)'
+            uppercase:
               value: 'TV'
               summary: 'All documents starting with TV (case sensivive)'
-       
-      
+             
         - name: suggest.count
           in: query
           description: |             

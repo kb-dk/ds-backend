@@ -14,6 +14,7 @@
  */
 package dk.kb.discover;
 
+import dk.kb.discover.config.ServiceConfig;
 import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -47,6 +48,8 @@ public class SolrService {
 
     public static final String Q = "q";
     public static final String SUGGESTQ = "suggest.q";
+    public static final String SUGGESTDICTIONARY = "suggest.dictionary";
+    public static final String SUGGESTCOUNT = "suggest.count";
     public static final String FQ = "fq";
     public static final String FL = "fl";
     public static final String ROWS = "rows";
@@ -250,36 +253,28 @@ public class SolrService {
     /**
      * Issue a Solr suggest and return the result.
      *
-     * @param q                      Solr query.
-     * @param wt                     Solr response format. 
+     * @param suggestDictonary A suggest dictionary defined in the solr configuration. 
+     * @param suggestQuery The prefix text that the suggest compontent will try to autocomplete. 
+     * @param suggestCount Number of results to return. 10 is the default value.
+     * @param wt The return format from solr. (json, xml etc.) 
      * @return Solr response.
      */
-    @SuppressWarnings("SuspiciousTernaryOperatorInVarargsCall")
-    public String suggest(String collection, String suggestDictionary, String suggestQuery, Integer suggestCount, String wt) {
+    public String suggest(String suggestDictionary, String suggestQuery, Integer suggestCount, String wt) {
         if (suggestQuery == null) {
             throw new InvalidArgumentServiceException("suggestQuery is mandatory but was missing");
         }
-        // TODO: Catch extra arguments and throw "not supported"
-        UriBuilder builder = createSuggestRequestBuilder(SUGGEST, q, fq, rows, start, fl, qOp, wt);
+        if (suggestDictionary == null) {
+            throw new InvalidArgumentServiceException("suggestDictionary is mandatory but was missing");
+        }
 
-        addParamIfAvailable(builder, VERSION, version);
-        addParamIfAvailable(builder, )
-        
-    
-        
-        /*
-         * params.set(PARAM_QT, "/suggest");
-    params.set(PARAM_QUERY, query);
-    params.set(PARAM_SPELLCHECK, "true");
-    
-         */
-
+    	int minimumSuggestLength=ServiceConfig.getConfig().getInteger("config.solr.suggestminimumlength");
+        if (suggestQuery == null || suggestQuery.trim().length() < minimumSuggestLength ) {
+           throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
+        }
+               
+        UriBuilder builder = createSuggestRequestBuilder(SUGGEST, suggestDictionary, suggestQuery,suggestCount,wt);                
         return performCall(suggestQuery, builder, "suggest");
     }
-
-    
-    
-    
     
     /**
      * Creates a Solr oriented URI builder with basic parameters shared by standard search and More Like This requests.
@@ -308,21 +303,19 @@ public class SolrService {
      * Creates a Solr oriented URI builder specific for suggest
      * @return a pre-filled builder ready to be extended with caller specific parameters.
      */
-    private UriBuilder createSuggestRequestBuilder(
-            String handler, String suggestQuery, Integer rows, String wt) {
+    private UriBuilder createSuggestRequestBuilder(String handler, String suggestDictionary,String suggestQuery, Integer suggestCount, String wt) {
         UriBuilder builder = UriBuilder.fromUri(server)
                 .path(path)
                 .path(solrCollection)
                 .path(handler)
-                .queryParam(suggestQuery, suggestQuery)
+                .queryParam(SUGGESTQ, suggestQuery)
+                .queryParam(SUGGESTDICTIONARY, suggestDictionary)
+                .queryParam(SUGGESTCOUNT, suggestCount)
                 .queryParam(WT, WT_ENUM.safeParse(wt));
         
         http://devel11:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=tv      
+                       
 
-        
-
-               
-        addParamIfAvailable(builder, ROWS, rows);
         return builder;
     }
 

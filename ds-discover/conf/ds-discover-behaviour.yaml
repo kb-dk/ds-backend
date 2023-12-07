@@ -40,6 +40,8 @@ config:
           #
           #
 
+    #Minimum number of characters required for suggest
+    suggestminimumlength: 2
 
   #License module is called to generate a filter query that is used when calling Solr          
   licensemodule:
