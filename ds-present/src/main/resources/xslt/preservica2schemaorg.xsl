@@ -172,12 +172,8 @@
       <!-- Extract manifestation -->
       <xsl:call-template name="extract-manifestation"/>
 
-      <!-- Checking for PBCore Extensions as most values in the internal map are defined as extensions. -->
-      <!--<xsl:if test="$pbcExtensions != ''">-->
-        <f:string key="exists">
-          <xsl:value-of select="my:doesInternalMapExist($pbcExtensions, '/')"/>
-        </f:string>
-
+      <!-- If type is MediaObject we don't create the internal map. -->
+      <xsl:if test="$type != 'MediaObject'">
         <f:map key="kb:internal">
         <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
           <xsl:call-template name="kb-internal">
@@ -185,9 +181,8 @@
             <xsl:with-param name="type" select="$type"/>
           </xsl:call-template>
         </f:map>
-<!--
       </xsl:if>
--->
+
 
     </f:map>
   </xsl:template>
@@ -889,14 +884,21 @@
   <xsl:function name="my:doesInternalMapExist" as="xs:boolean">
     <xsl:param name="rootElement"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:value-of select="$rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre != '' or
-                          $rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration != '' or
-                          $pbcExtensions != '' or
-                          $rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID != '' or
-                          $rootElement/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds != '' or
-                          $rootElement/xip:DeliverableUnit/Metadata/access:access != '' or
-                          $rootElement/xip:DeliverableUnit/Metadata/program_structure:program_structure != ''
-                          "/>
+    <xsl:value-of select="f:contains($rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre, 'undergenre:' ) or
+                          f:contains($rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration, 'surround') or
+                          $rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID/formatIdentifierSource = 'ritzau' or
+                          $rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID/formatIdentifierSource = 'nielsen' or
+                          $rootElement/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds or
+                          $rootElement/xip:DeliverableUnit/Metadata/access:access/individuelt_forbud or
+                          $rootElement/xip:DeliverableUnit/Metadata/access:access/klausuleret or
+                          $rootElement/xip:DeliverableUnit/Metadata/access:access/defekt or
+                          $rootElement/xip:DeliverableUnit/Metadata/access:access/kommentarer != '' or
+                          $rootElement/xip:DeliverableUnit/Metadata/program_structure:program_structure != '' or
+                          $pbcExtensions[f:contains(., 'premiere')] or
+                          $pbcExtensions[f:contains(., 'genudsendelse')] or
+                          $pbcExtensions[f:contains(., 'id')] or
+                          $pbcExtensions[f:contains(., 'program')]
+                      "/>
 
   </xsl:function>
 

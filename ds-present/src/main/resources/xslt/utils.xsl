@@ -16,6 +16,18 @@
     <xsl:value-of select="($endDate - $startDate) div xs:dayTimeDuration('PT0.001S')"/>
   </xsl:function>
 
+  <xsl:function name="my:getArrayFromNestedMap">
+    <xsl:param name="object"/>
+    <xsl:param name="map1"/>
+    <xsl:param name="array"/>
+    <xsl:choose>
+      <xsl:when test="f:empty($object)"><xsl:value-of select="''"/></xsl:when>
+      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:value-of select="''"/></xsl:when>
+      <xsl:when test="f:empty(map:get(map:get($object, $map1), $array))"><xsl:value-of select="''"/></xsl:when>
+      <xsl:otherwise> <xsl:copy-of select="array:flatten(map:get(map:get($object, $map1), $array))"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
   <!-- Get a value from a nested JSON map. The function checks that each level of the map isn't empty.
        If the map is empty, an empty string will be returned.-->
   <xsl:function name="my:getNestedMapValue2Levels">

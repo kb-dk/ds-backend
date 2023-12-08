@@ -207,9 +207,9 @@
           </xsl:if>
 
           <!-- Extract color boolean-->
-          <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'),'kb:color'))">
+          <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:color') != ''">
             <f:string key="color">
-              <xsl:value-of select="map:get($schemaorg-xml('kb:internal'),'kb:color')"/>
+              <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:color') "/>
             </f:string>
           </xsl:if>
 
@@ -221,23 +221,23 @@
           </xsl:if>
 
           <!-- Extract surround sound-->
-          <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'),'kb:surround_sound'))">
+        <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:surround_sound') != ''">
             <f:string key="surround_sound">
-              <xsl:value-of select="map:get($schemaorg-xml('kb:internal'),'kb:surround_sound')"/>
+              <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:surround_sound')"/>
             </f:string>
           </xsl:if>
 
           <!-- Extract premiere-->
-          <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'), 'kb:premiere'))">
+        <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:premiere') != ''">
             <f:string key="premiere">
-              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:premiere')"/>
+              <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:premiere')"/>
             </f:string>
           </xsl:if>
 
           <!-- Extract aspect ratio-->
-          <xsl:if test="f:exists(map:get($schemaorg-xml('kb:internal'), 'kb:aspect_ratio'))">
+        <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio') != ''">
             <f:string key="aspect_ratio">
-              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:aspect_ratio')"/>
+              <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio')"/>
             </f:string>
           </xsl:if>
 
@@ -251,9 +251,9 @@
           </xsl:if>
 
           <!-- Extract boolean for retransmission -->
-          <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:retransmission'))">
+          <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:retransmission')">
             <f:string key="retransmission">
-              <xsl:value-of select="($schemaorg-xml('kb:internal')('kb:retransmission'))"/>
+              <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:retransmission')"/>
             </f:string>
           </xsl:if>
 
@@ -272,23 +272,25 @@
           </xsl:if>
 
           <!-- Extract sub genre -->
-          <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:genre_sub'))">
+          <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:genre_sub')">
             <f:string key="genre_sub">
-              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:genre_sub')"/>
+              <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:genre_sub')"/>
             </f:string>
           </xsl:if>
 
           <!-- Extract boolean for subtitles -->
-          <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:has_subtitles'))">
+          <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:has_subtitles')">
             <f:string key="has_subtitles">
-              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:has_subtitles')"/>
+              <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:has_subtitles')"/>
             </f:string>
           </xsl:if>
 
           <!-- Extract boolean for subtitles for hearing impaired  -->
-          <xsl:if test="f:exists($schemaorg-xml('kb:internal')('kb:has_subtitles_for_hearing_impaired'))">
+          <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal',
+                                                    'kb:has_subtitles_for_hearing_impaired')">
             <f:string key="has_subtitles_for_hearing_impaired">
-              <xsl:value-of select="$schemaorg-xml('kb:internal')('kb:has_subtitles_for_hearing_impaired')"/>
+              <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal',
+                                                                'kb:has_subtitles_for_hearing_impaired')"/>
             </f:string>
           </xsl:if>
 
@@ -352,149 +354,147 @@
   <xsl:template name="kbInternal">
     <xsl:param name="internalMap"/>
 
-    <xsl:if test="f:exists($internalMap('kb:format_identifier_ritzau'))">
+
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:format_identifier_ritzau') != ''">
       <f:string key="internal_format_identifier_ritzau">
-        <xsl:value-of select="$internalMap('kb:format_identifier_ritzau')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:format_identifier_ritzau')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:format_identifier_nielsen'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:format_identifier_nielsen') != ''">
       <f:string key="internal_format_identifier_nielsen">
-        <xsl:value-of select="$internalMap('kb:format_identifier_nielsen')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:format_identifier_nielsen')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:maingenre_id'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:maingenre_id') != ''">
       <f:string key="internal_maingenre_id">
-        <xsl:value-of select="$internalMap('kb:maingenre_id')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:maingenre_id')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:channel_id'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:channel_id') != ''">
       <f:string key="internal_channel_id">
-        <xsl:value-of select="$internalMap('kb:channel_id')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:channel_id')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:country_of_origin_id'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:country_of_origin_id') != ''">
       <f:string key="internal_country_of_origin_id">
-        <xsl:value-of select="$internalMap('kb:country_of_origin_id')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:country_of_origin_id')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:ritzau_program_id'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:ritzau_program_id') != ''">
       <f:string key="internal_ritzau_program_id">
-        <xsl:value-of select="$internalMap('kb:ritzau_program_id')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:ritzau_program_id')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:subgenre_id'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:subgenre_id') != ''">
       <f:string key="internal_subgenre_id">
-        <xsl:value-of select="$internalMap('kb:subgenre_id')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:subgenre_id')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:episode_id'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:episode_id') != ''">
       <f:string key="internal_episode_id">
-        <xsl:value-of select="$internalMap('kb:episode_id')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:episode_id')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:season_id'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:season_id') != ''">
       <f:string key="internal_season_id">
-        <xsl:value-of select="$internalMap('kb:season_id')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:season_id')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:series_id'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:series_id') != ''">
       <f:string key="internal_series_id">
-        <xsl:value-of select="$internalMap('kb:series_id')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:series_id')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:program_ophold'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_ophold') != ''">
       <f:string key="internal_program_ophold">
-        <xsl:value-of select="$internalMap('kb:program_ophold')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_ophold')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:is_teletext'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:is_teletext') != ''">
       <f:string key="internal_is_teletext">
-        <xsl:value-of select="$internalMap('kb:is_teletext')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:is_teletext')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:showviewcode'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:showviewcode') != ''">
       <f:string key="internal_showviewcode">
-        <xsl:value-of select="$internalMap('kb:showviewcode')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:showviewcode')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:padding_seconds'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:padding_seconds') != ''">
       <f:string key="internal_padding_seconds">
-        <xsl:value-of select="$internalMap('kb:padding_seconds')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:padding_seconds')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:access_individual_prohibition'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_individual_prohibition') != ''">
       <f:string key="internal_access_individual_prohibition">
-        <xsl:value-of select="$internalMap('kb:access_individual_prohibition')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_individual_prohibition')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:access_claused'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_claused') != ''">
       <f:string key="internal_access_claused">
-        <xsl:value-of select="$internalMap('kb:access_claused')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_claused')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:access_malfunction'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_malfunction') != ''">
       <f:string key="internal_access_malfunction">
-        <xsl:value-of select="$internalMap('kb:access_malfunction')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_malfunction')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:access_comments'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_comments') != ''">
       <f:string key="internal_access_comments">
-        <xsl:value-of select="$internalMap('kb:access_comments')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_comments')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:program_structure_missing_seconds_start'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_missing_seconds_start') != ''">
       <f:string key="internal_program_structure_missing_seconds_start">
-        <xsl:value-of select="$internalMap('kb:program_structure_missing_seconds_start')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_missing_seconds_start')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:program_structure_missing_seconds_end'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_missing_seconds_end') != ''">
       <f:string key="internal_program_structure_missing_seconds_end">
-        <xsl:value-of select="$internalMap('kb:program_structure_missing_seconds_end')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_missing_seconds_end')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:program_structure_holes'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_holes') != ''">
       <f:string key="internal_program_structure_holes">
-        <xsl:value-of select="$internalMap('kb:program_structure_holes')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_holes')"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="f:exists($internalMap('kb:program_structure_overlaps'))">
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlaps') != ''">
       <f:string key="internal_program_structure_overlaps">
-        <xsl:value-of select="$internalMap('kb:program_structure_overlaps')"/>
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlaps')"/>
       </f:string>
     </xsl:if>
 
     <!-- Overlaps are hard to extract to solr as they are tricky to represent in a flat JSON structure where each key
          has a unique name. -->
-    <xsl:if test="f:exists($internalMap('kb:program_structure_overlap'))">
-      <xsl:variable name="overlapsArray" as="item()*">
-        <xsl:copy-of select="array:flatten($internalMap('kb:program_structure_overlap'))"/>
-      </xsl:variable>
-
+    <xsl:if test="not(f:empty(my:getArrayFromNestedMap($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlap'))) and
+                  my:getArrayFromNestedMap($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlap') != '' ">
       <f:array key="internal_overlapping_files">
-        <xsl:for-each select="$overlapsArray">
+        <xsl:for-each select="my:getArrayFromNestedMap($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlap')">
           <f:string>
-            <xsl:value-of select="concat(map:get(., 'file1UUID'), ',', map:get(., 'file2UUID'))"/>
+            <xsl:value-of select="concat(map:get(., 'file1UUID'), ', ', map:get(., 'file2UUID'))"/>
           </f:string>
         </xsl:for-each>
       </f:array>
