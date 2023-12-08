@@ -19,6 +19,7 @@ import dk.kb.present.client.v1.DsPresentApi;
 import dk.kb.present.client.v1.IiifPresentationApi;
 import dk.kb.present.invoker.v1.ApiClient;
 import dk.kb.present.invoker.v1.Configuration;
+import dk.kb.present.model.v1.FormatDto;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
@@ -105,7 +106,7 @@ public class DsPresentClient extends DsPresentApi {
      * @return a raw bytestream with the response from the remote ds-present.
      * @throws IOException if the connection to the remote ds-present failed.
      */
-    public ContinuationInputStream<Long> getRecordsJSON(String origin, Long mTime, Long maxRecords, String format)
+    public ContinuationInputStream<Long> getRecordsJSON(String origin, Long mTime, Long maxRecords, FormatDto format)
             throws IOException {
         URI uri = UriBuilder.fromUri(serviceURI)
                 .path("records")
