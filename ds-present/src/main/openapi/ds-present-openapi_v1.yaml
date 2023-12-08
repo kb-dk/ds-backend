@@ -58,10 +58,7 @@ paths:
             * SolrJSON: [Solr JSON Formatted Index Updates](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates)
             * raw: Metadata unchanged from the source.
           schema:
-            type: string
-            enum:  ['JSON-LD', 'MODS', 'SolrJSON', "raw"]
-            example: 'JSON-LD'
-            default: 'JSON-LD'
+            $ref: '#/components/schemas/Format'
       responses:
         '200':
           description: 'OK: The record was available in the requested format'
@@ -135,10 +132,8 @@ paths:
             For the other formats, deleted records are skipped silently.
           required: false
           schema:
-            type: string
-            enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON']
-            example: 'JSON-LD'
-            default: 'JSON-LD'
+            $ref: '#/components/schemas/Format'
+
       responses:
         '200':
           description: 'List of records in the requested format.'
@@ -1032,6 +1027,18 @@ components:
           description: 'MIME type for the delivered metadata'
           type: string
           example: 'application/json'
+
+    Format:
+      type: string
+      enum:
+        - JSONLD
+        - JSONLDLINES
+        - MODS
+        - SOLRJSON
+        - RAW
+        #['JSON-LD', 'MODS', 'SolrJSON', "raw"]
+      example: 'JSONLD'
+      default: 'JSONLD'
 
     # Basic status response component.
     # TODO: Extend this to provide application specific status, such as a list of running jobs or free disk space
