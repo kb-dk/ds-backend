@@ -16,15 +16,15 @@
     <xsl:value-of select="($endDate - $startDate) div xs:dayTimeDuration('PT0.001S')"/>
   </xsl:function>
 
-  <xsl:function name="my:getArrayFromNestedMap">
+  <xsl:function name="my:getArrayFromNestedMap" as="item()*">
     <xsl:param name="object"/>
     <xsl:param name="map1"/>
     <xsl:param name="array"/>
     <xsl:choose>
-      <xsl:when test="f:empty($object)"><xsl:value-of select="''"/></xsl:when>
-      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:value-of select="''"/></xsl:when>
-      <xsl:when test="f:empty(map:get(map:get($object, $map1), $array))"><xsl:value-of select="''"/></xsl:when>
-      <xsl:otherwise> <xsl:copy-of select="array:flatten(map:get(map:get($object, $map1), $array))"/></xsl:otherwise>
+      <xsl:when test="f:empty($object)"><xsl:sequence select="map:entry('empty', 'empty')"/></xsl:when>
+      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:sequence select="map:entry('empty', 'empty')"/></xsl:when>
+      <xsl:when test="f:empty(map:get(map:get($object, $map1), $array))"><xsl:sequence select="map:entry('empty', 'empty')"/></xsl:when>
+      <xsl:otherwise><xsl:copy-of select="array:flatten(map:get(map:get($object, $map1), $array))"/></xsl:otherwise>
     </xsl:choose>
   </xsl:function>
 
@@ -35,9 +35,9 @@
     <xsl:param name="map1"/>
     <xsl:param name="map2"/>
     <xsl:choose>
-      <xsl:when test="f:empty($object)"><xsl:value-of select="('empty', 'empty')"/></xsl:when>
-      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:value-of select="('empty', 'empty')"/></xsl:when>
-      <xsl:when test="f:empty(map:get(map:get($object, $map1), $map2))"><xsl:value-of select="('empty', 'empty')"/></xsl:when>
+      <xsl:when test="f:empty($object)"><xsl:value-of select="''"/></xsl:when>
+      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:value-of select="''"/></xsl:when>
+      <xsl:when test="f:empty(map:get(map:get($object, $map1), $map2))"><xsl:value-of select="''"/></xsl:when>
       <xsl:otherwise> <xsl:value-of select="map:get(map:get($object, $map1),$map2)"/></xsl:otherwise>
     </xsl:choose>
   </xsl:function>
