@@ -489,8 +489,7 @@
 
     <!-- Overlaps are hard to extract to solr as they are tricky to represent in a flat JSON structure where each key
          has a unique name. -->
-    <xsl:if test="not(f:empty(my:getArrayFromNestedMap($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlap'))) and
-                  my:getArrayFromNestedMap($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlap') != '' ">
+    <xsl:if test="not(f:empty(my:getArrayFromNestedMap($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlap'))) ">
       <f:array key="internal_overlapping_files">
         <xsl:for-each select="my:getArrayFromNestedMap($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlap')">
           <f:string>
