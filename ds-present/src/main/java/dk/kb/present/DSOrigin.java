@@ -15,6 +15,7 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.RuntimeTransformerException;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -137,7 +138,7 @@ public class DSOrigin {
                     .map(yaml -> new View(yaml, origin))
                     .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
 
-            // Note: stopOnError is set at the outer level, not specifically for each orgin
+            // Note: stopOnError is set at the outer level, not specifically for each origin
             stopOnError = ServiceConfig.getConfig().getBoolean(STOP_ON_ERROR_KEY, true);
         } catch (NotFoundException e) {
             throw new IllegalArgumentException(
@@ -153,7 +154,7 @@ public class DSOrigin {
      * @return the record with the given id in the given format.
      * @throws ServiceException if the record could not be retrieved or transformed.
      */
-    public String getRecord(String recordID, String format) throws ServiceException {
+    public String getRecord(String recordID, FormatDto format) throws ServiceException {
         View view = getView(format);
         DsRecordDto record = storage.getDSRecordTreeLocal(recordID);
 
@@ -189,7 +190,7 @@ public class DSOrigin {
      * @throws ServiceException if anything went wrong during construction of the stream.
      */
     public ContinuationStream<DsRecordDto, Long> getDSRecords(
-            Long mTime, Long maxRecords, String format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
+            Long mTime, Long maxRecords, FormatDto format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         View view = getView(format);
         log.debug("Calling storage.getDSRecordsRecordTypeLocalTree(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
@@ -226,7 +227,7 @@ public class DSOrigin {
      * @throws ServiceException if anything went wrong during construction of the stream.
      */
     public ContinuationStream<DsRecordDto, Long> getDSRecordsAll(
-            Long mTime, Long maxRecords, String format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
+            Long mTime, Long maxRecords, FormatDto format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         View view = getView(format);
         log.debug("Extracting with the following view: '{}'", view);
         log.debug("Calling storage.getDSRecords(origin='{}', mTime={}, maxRecords={})",
@@ -252,7 +253,7 @@ public class DSOrigin {
      * @param view to apply to record.
      * @return a transformed record, transformed with input view.
      */
-    private static UnaryOperator<DsRecordDto> safeView(String format, View view, boolean stopOnError) {
+    private static UnaryOperator<DsRecordDto> safeView(FormatDto format, View view, boolean stopOnError) {
         return record -> {
             try {
                 record.data(view.apply(record));
@@ -309,8 +310,8 @@ public class DSOrigin {
      * @return a View matching the given format aka ID.
      * @throws InvalidArgumentServiceException if no View could be located.
      */
-    public View getView(String format) {
-        View view = views.get(format.toLowerCase(Locale.ROOT));
+    public View getView(FormatDto format) {
+        View view = views.get(format.getValue().toLowerCase(Locale.ROOT));
         if (view == null) {
             throw new InvalidArgumentServiceException(
                     "The format '" + format + "' is not supported for origin '" + id + "'");
