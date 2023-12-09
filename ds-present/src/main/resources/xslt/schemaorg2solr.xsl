@@ -489,26 +489,13 @@
 
 
     <xsl:variable name="array1" select="my:getArrayFromNestedMap($schemaorg-xml, 'kb:internal', 'kb:program_structure_overlap')" as="item()*"/>
-
-    <xsl:choose>
-      <xsl:when test="f:exists($array1[1])">
-        <f:string key="testArrayBool"><xsl:value-of select="map:get($array1[1], 'file1UUID')"/></f:string>
-      </xsl:when>
-      <xsl:when test="not(f:exists($array1['test']))">
-        <f:string key="testArrayBool"><xsl:value-of select="false()"/></f:string>
-      </xsl:when>
-      <xsl:otherwise>
-        <f:string key="testArrayBool"><xsl:value-of select="'nopenopenope'"/></f:string>
-      </xsl:otherwise>
-    </xsl:choose>
-
     <!-- Overlaps are hard to extract to solr as they are tricky to represent in a flat JSON structure where each key
          has a unique name. -->
     <xsl:if test="f:exists($array1[1])">
       <f:array key="internal_overlapping_files">
         <xsl:for-each select="$array1">
           <f:string>
-            <xsl:value-of select="concat(map:get(., 'file1UUID'), ', ', map:get(., 'file2UUID'))"/>
+            <xsl:value-of select="concat(map:get(., 'file1UUID'), ',', map:get(., 'file2UUID'))"/>
           </f:string>
         </xsl:for-each>
       </f:array>
