@@ -53,7 +53,7 @@ for ( GroupType current : allTypes){
   <span class="help-inline">Beskrivelse</span>  
   <input type="text" name="value_groupdescription" class="span3" value="<%=edit.getDescription_dk()%>">
   <span class="help-inline">Query</span>
-  <textarea cols="3"> <%=StringEscapeUtils.escapeHtml3(edit.getQuery())%> </textarea>
+  <textarea name="value_groupquery" cols="3"> <%=StringEscapeUtils.escapeHtml3(edit.getQuery())%> </textarea>
   <input type="checkbox"   name="denyGroupCheck"  <%if(edit.isRestrictionGroup()){out.println("checked");}%> > Klausulering
 </div>
 <div class="infoGroup">
