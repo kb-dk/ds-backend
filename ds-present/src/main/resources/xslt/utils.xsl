@@ -16,14 +16,15 @@
     <xsl:value-of select="($endDate - $startDate) div xs:dayTimeDuration('PT0.001S')"/>
   </xsl:function>
 
+  <!-- Get the objects from inside a nested array flattened. If the array doesn't exist an empty string will be returned. -->
   <xsl:function name="my:getArrayFromNestedMap" as="item()*">
     <xsl:param name="object"/>
     <xsl:param name="map1"/>
     <xsl:param name="array"/>
     <xsl:choose>
-      <xsl:when test="f:empty($object)"><xsl:sequence select="map:entry('empty', 'empty')"/></xsl:when>
-      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:sequence select="map:entry('empty', 'empty')"/></xsl:when>
-      <xsl:when test="f:empty(map:get(map:get($object, $map1), $array))"><xsl:sequence select="map:entry('empty', 'empty')"/></xsl:when>
+      <xsl:when test="f:empty($object)"><xsl:sequence select="''"/></xsl:when>
+      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:sequence select="''"/></xsl:when>
+      <xsl:when test="f:empty(map:get(map:get($object, $map1), $array))"><xsl:sequence select="''"/></xsl:when>
       <xsl:otherwise><xsl:copy-of select="array:flatten(map:get(map:get($object, $map1), $array))"/></xsl:otherwise>
     </xsl:choose>
   </xsl:function>
