@@ -155,7 +155,7 @@ public class DsPresentClient extends DsPresentApi {
                 .queryParam("format", format)
                 .build();
         log.debug("Opening streaming connection to '{}'", uri);
-        return ContinuationInputStream.from(uri, Long::valueOf);
+        return ContinuationInputStream.from(uri, Long::valueOf, headers);
     }
 
     /**
@@ -184,7 +184,7 @@ public class DsPresentClient extends DsPresentApi {
                 .queryParam("asJsonLines", asJsonLines != null && asJsonLines)
                 .build();
         log.debug("Opening streaming connection to '{}'", uri);
-        return ContinuationInputStream.from(uri, Long::valueOf);
+        return ContinuationInputStream.from(uri, Long::valueOf, headers);
     }
 
     /**
