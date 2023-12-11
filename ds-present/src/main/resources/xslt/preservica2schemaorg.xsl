@@ -881,6 +881,7 @@
 
   </xsl:template>
 
+  <!-- Specific function which checks for existence of any internal field in the incoming XML document. -->
   <xsl:function name="my:doesInternalMapExist" as="xs:boolean">
     <xsl:param name="rootElement"/>
     <xsl:param name="pbcExtensions"/>

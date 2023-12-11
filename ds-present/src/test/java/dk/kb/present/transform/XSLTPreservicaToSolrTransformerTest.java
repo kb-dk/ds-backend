@@ -399,8 +399,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
         }
 
-        TestUtil.prettyPrintJson(solrString);
-
         Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
 

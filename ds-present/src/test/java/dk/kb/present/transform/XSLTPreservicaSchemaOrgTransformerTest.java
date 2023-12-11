@@ -340,7 +340,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testNoEmptyInternalMap() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda);
-        TestUtil.prettyPrintJson(transformedJSON);
         Assertions.assertFalse(transformedJSON.contains("\"kb:internal\":{}"));
 
     }
