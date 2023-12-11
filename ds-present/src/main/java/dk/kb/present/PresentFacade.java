@@ -135,16 +135,15 @@ public class PresentFacade {
         DSOrigin origin = originHandler.getOrigin(originID);
         Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(originID, accessChecker, origin);
 
-        // Maybe re-write this switch to use an actual ENUM?
-        // enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON']
+
         switch (format) {
-            case JSONLD: return getRecordsData(
+            case JSON_LD: return getRecordsData(
                     origin, mTime, maxRecords,
-                    httpServletResponse, FormatDto.JSONLD, ExportWriterFactory.FORMAT.json,
+                    httpServletResponse, FormatDto.JSON_LD, ExportWriterFactory.FORMAT.json,
                     accessFilter);
-            case JSONLDLINES: return getRecordsData(
+            case JSON_LD_LINES: return getRecordsData(
                     origin, mTime, maxRecords,
-                    httpServletResponse, FormatDto.JSONLD, ExportWriterFactory.FORMAT.jsonl, accessFilter);
+                    httpServletResponse, FormatDto.JSON_LD_LINES, ExportWriterFactory.FORMAT.jsonl, accessFilter);
             case MODS: return getRecordsData(
                     origin, mTime, maxRecords,
                     httpServletResponse, FormatDto.MODS, ExportWriterFactory.FORMAT.xml, accessFilter);

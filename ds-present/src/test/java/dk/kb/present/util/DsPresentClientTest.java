@@ -63,7 +63,7 @@ public class DsPresentClientTest {
             return;
         }
         try (ContinuationInputStream<Long> recordsIS = remote.getRecordsJSON(
-                "ds.radiotv", 0L, 3L, FormatDto.JSONLD)) {
+                "ds.radiotv", 0L, 3L, FormatDto.JSON_LD)) {
             String recordsStr = IOUtils.toString(recordsIS, StandardCharsets.UTF_8);
             assertTrue(recordsStr.contains("\"id\":\"ds.radiotv:oai"),
                     "At least 1 JSON block for a record should be returned");
