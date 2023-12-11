@@ -12,7 +12,7 @@ pvicaviews: &PRESERVICA_VIEWS
       strategy: 'NONE'
       transformers:
         - identity:
-  - JSONLD:
+  - JSON-LD:
       mime: 'application/json'
       strategy: 'MANIFESTATION'
       transformers:
@@ -47,7 +47,7 @@ baseviews: &MODS_IMAGE_VIEWS
       strategy: 'NONE'
       transformers:
         - identity: # No transformation steps as mods is the core format for images-dsfl
-  - JSONLD:
+  - JSON-LD:
       mime: 'application/json'
       strategy: 'NONE'
       transformers:

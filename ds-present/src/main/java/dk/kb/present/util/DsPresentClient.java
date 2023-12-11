@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Locale;
 
 /**
  * Client for the service. Intended for use by other projects that calls this service.
@@ -113,7 +114,7 @@ public class DsPresentClient extends DsPresentApi {
                 .queryParam("origin", origin)
                 .queryParam("mTime", mTime == null ? 0L : mTime)
                 .queryParam("maxRecords", maxRecords == null ? 10 : maxRecords)
-                .queryParam("format", format)
+                .queryParam("format", format.getValue().toUpperCase(Locale.ROOT))
                 .build();
         log.debug("Opening streaming connection to '{}'", uri);
         return ContinuationInputStream.from(uri, Long::valueOf);
