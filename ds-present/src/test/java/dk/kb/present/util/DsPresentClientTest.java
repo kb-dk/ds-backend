@@ -97,9 +97,9 @@ public class DsPresentClientTest {
     @SuppressWarnings("unchecked")
     @Test
     void getFixedHeaders() {
-        YAML config = new YAML(Map.of("config", Map.of("present", Map.of("headers", List.of(
+        YAML config = new YAML(Map.of("present", Map.of("headers", List.of(
                 Map.of(AccessUtil.HEADER_SIMULATED_GROUP, "anonymous"),
-                Map.of("Some-Other-Header", "foo"))))));
+                Map.of("Some-Other-Header", "foo")))));
         Map<String, String> headers = DsPresentClient.getAllHeaders(config);
         assertEquals(2, headers.size(),
                 "The right number of headers should be extracted");
