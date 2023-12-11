@@ -8,6 +8,13 @@
                 xmlns:my="urn:my"
                 version="3.0">
 
+  <!-- Empty map used as return variable for functions-->
+  <xsl:param name="emptyMap" as="map(*)">
+    <xsl:map>
+      <xsl:map-entry key="'empty'" select="''"/>
+    </xsl:map>
+  </xsl:param>
+
   <!-- FUNCTIONS -->
   <!-- Get milliseconds between two datetimes. -->
   <xsl:function name="my:toMilliseconds" as="xs:integer">
@@ -22,9 +29,9 @@
     <xsl:param name="map1"/>
     <xsl:param name="array"/>
     <xsl:choose>
-      <xsl:when test="f:empty($object)"><xsl:sequence select="''"/></xsl:when>
-      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:sequence select="''"/></xsl:when>
-      <xsl:when test="f:empty(map:get(map:get($object, $map1), $array))"><xsl:sequence select="''"/></xsl:when>
+      <xsl:when test="f:empty($object)"><xsl:sequence select="$emptyMap"/></xsl:when>
+      <xsl:when test="f:empty(map:get($object, $map1))"><xsl:sequence select="$emptyMap"/></xsl:when>
+      <xsl:when test="f:empty(map:get(map:get($object, $map1), $array))"><xsl:sequence select="$emptyMap"/></xsl:when>
       <xsl:otherwise><xsl:copy-of select="array:flatten(map:get(map:get($object, $map1), $array))"/></xsl:otherwise>
     </xsl:choose>
   </xsl:function>
