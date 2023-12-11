@@ -40,8 +40,8 @@ public class AccessUtil {
     public static final String GROUP_INTERNAL_SERVICE = "internal_service";
     public static final String GROUP_ADMIN = "admin";
 
-    private static final String LICENSE_URL_KEY = "config.licensemodule.url"; // Used for creating licenseClient
-    private static final String LICENSE_ALLOWALL_KEY = "config.licensemodule.allowall";
+    private static final String LICENSE_URL_KEY = "licensemodule.url"; // Used for creating licenseClient
+    private static final String LICENSE_ALLOWALL_KEY = "licensemodule.allowall";
 
     public static DsLicenseApi licenseClient;     // Shared between instances
     public static boolean licenseAllowAll = ServiceConfig.getConfig().getBoolean(LICENSE_ALLOWALL_KEY, false);

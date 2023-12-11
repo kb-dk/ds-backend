@@ -46,10 +46,10 @@ class ServiceConfigTest {
         ServiceConfig.initialize(projectRoot + File.separator + "conf" + File.separator + "ds-present*.yaml");
 
         // Defined in behaviour
-        assertEquals(10, ServiceConfig.getConfig().getInteger("config.limits.min"));
+        assertEquals(10, ServiceConfig.getConfig().getInteger("limits.min"));
 
         // Real value in environment
-        assertEquals("real_dbpassword", ServiceConfig.getConfig().getString("config.backend.password"));
+        assertEquals("real_dbpassword", ServiceConfig.getConfig().getString("backend.password"));
     }
 
     @Test
@@ -67,19 +67,19 @@ class ServiceConfigTest {
         YAML yaml = ServiceConfig.getConfig();
 
         // Behaviour has an 'invalid' imageserver, but Servers overrides the list to only contain 'local'
-        //System.out.println(yaml.getYAMLList("config.imageservers"));
-        assertEquals("true", yaml.getString("config.imageservers[0].local.default"),
+        //System.out.println(yaml.getYAMLList("imageservers"));
+        assertEquals("true", yaml.getString("imageservers[0].local.default"),
                 "The imageserver 'local' should have 'default: true'");
 
-        assertEquals("the_right_url", yaml.getString("config.imageservers[default=true].url"),
+        assertEquals("the_right_url", yaml.getString("imageservers[default=true].url"),
                 "The correct URL should be extracted from the default imageserver using yaml.get with conditional");
 
         assertEquals("the_right_url",
-                yaml.getString("config.collections[4].samlingsbilleder.views[3].SolrJSON.transformers[1].xslt.injections[0].imageserver"),
+                yaml.getString("collections[4].samlingsbilleder.views[3].SolrJSON.transformers[1].xslt.injections[0].imageserver"),
                 "The correct URL should be substitution-extracted from the 'samlingsbilleder' view SolrJSON injection");
 
         assertEquals("the_right_url",
-                yaml.getSubMap("config.collections[4].samlingsbilleder.views[3].SolrJSON").
+                yaml.getSubMap("collections[4].samlingsbilleder.views[3].SolrJSON").
                         getString("transformers[1].xslt.injections[0].imageserver"),
                 "Requesting path substituted values from a sub map should work");
 
@@ -88,7 +88,7 @@ class ServiceConfigTest {
         yaml = ServiceConfig.getConfig();
 
         assertEquals("the_right_url",
-                yaml.getSubMap("config.collections[4].samlingsbilleder.views[3].SolrJSON").
+                yaml.getSubMap("collections[4].samlingsbilleder.views[3].SolrJSON").
                         getString("transformers[1].xslt.injections[0].imageserver"),
                 "Requesting path substituted values from a sub map should work on a newly loaded config");
     }

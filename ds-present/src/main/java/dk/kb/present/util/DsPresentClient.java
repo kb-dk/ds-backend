@@ -48,8 +48,8 @@ public class DsPresentClient extends DsPresentApi {
     private static final Logger log = LoggerFactory.getLogger(DsPresentClient.class);
     private final String serviceURI;
 
-    public static final String PRESENT_SERVER_URL_KEY = ".config.present.url";
-    public static final String PRESENT_SERVER_HEADERS_KEY = ".config.present.headers";
+    public static final String PRESENT_SERVER_URL_KEY = ".present.url";
+    public static final String PRESENT_SERVER_HEADERS_KEY = ".present.headers";
 
     /**
      * Sub-client for the IIIF endpoints.

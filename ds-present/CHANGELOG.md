@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 
+## [1.2.0](https://github.com/kb-dk/ds-present/releases/tag/v1.2.0) - 2023-12-05
+### Changed 
+- General style of YAML configuration files, by removing the first level of indentation.
+
+
 ## [1.1.0] - YYYY-MM-DD
 - Client for the service, to be used by external projects
 - Client upgraded to use kb-util streaming framework and calling ds-storage using streaming client also.
