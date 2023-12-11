@@ -14,6 +14,7 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.storage.Storage;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
@@ -81,7 +82,7 @@ public class OriginHandler {
         log.info("Created " + this);
     }
 
-    public String getRecord(String id, String format) throws NotFoundServiceException {
+    public String getRecord(String id, FormatDto format) throws NotFoundServiceException {
         Matcher matcher = recordIDPattern.matcher(id);
         if (!matcher.matches()) {
             throw new InvalidArgumentServiceException(

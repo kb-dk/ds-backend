@@ -77,7 +77,7 @@ pvicaviews: &PRESERVICA_VIEWS
         - fail:
             message: 'Raw format contains confidential information and cannot be delivered'
   # For testing purposes
-  - raw-bypass:
+  - rawbypass:
       mime: 'text/plain'
       transformers:
         - identity:
@@ -138,7 +138,7 @@ origins:
               - fail:
                   message: 'Raw format contains confidential information and cannot be delivered'
         # For testing purposes
-        - raw-bypass:
+        - rawbypass:
             mime: 'text/plain'
             transformers:
               - identity:

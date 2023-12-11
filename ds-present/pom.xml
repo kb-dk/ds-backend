@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
 
@@ -287,12 +287,21 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.2.4</version>
-            
+            <version>3.4.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-inline -->
+        <!-- Mockito-inline is used to mock static and final objects. In ds-present it is used to mock format ENUMS to
+               deliver raw records while bypassing license checking. -->
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-inline</artifactId>
+          <version>5.2.0</version>
+          <scope>test</scope>
         </dependency>
 
 
-        <!--Pretty print from unittests -->
+
+      <!--Pretty print from unittests -->
         <dependency>
            <groupId>com.google.code.gson</groupId>
            <artifactId>gson</artifactId>

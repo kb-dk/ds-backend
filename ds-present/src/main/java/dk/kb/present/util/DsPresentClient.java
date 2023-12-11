@@ -19,6 +19,7 @@ import dk.kb.present.client.v1.IiifPresentationApi;
 import dk.kb.present.client.v1.ServiceApi;
 import dk.kb.present.invoker.v1.ApiClient;
 import dk.kb.present.invoker.v1.Configuration;
+import dk.kb.present.model.v1.FormatDto;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.Locale;
 
 /**
  * Client for the service. Intended for use by other projects that calls this service.
@@ -145,14 +147,14 @@ public class DsPresentClient extends DsPresentApi {
      * @return a raw bytestream with the response from the remote ds-present.
      * @throws IOException if the connection to the remote ds-present failed.
      */
-    public ContinuationInputStream<Long> getRecordsJSON(String origin, Long mTime, Long maxRecords, String format)
+    public ContinuationInputStream<Long> getRecordsJSON(String origin, Long mTime, Long maxRecords, FormatDto format)
             throws IOException {
         URI uri = UriBuilder.fromUri(serviceURI)
                 .path("records")
                 .queryParam("origin", origin)
                 .queryParam("mTime", mTime == null ? 0L : mTime)
                 .queryParam("maxRecords", maxRecords == null ? 10 : maxRecords)
-                .queryParam("format", format)
+                .queryParam("format", format.getValue().toUpperCase(Locale.ROOT))
                 .build();
         log.debug("Opening streaming connection to '{}'", uri);
         return ContinuationInputStream.from(uri, Long::valueOf, headers);

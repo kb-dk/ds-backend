@@ -16,6 +16,7 @@ package dk.kb.present;
 
 import dk.kb.present.api.v1.impl.DsPresentApiServiceImpl;
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
@@ -48,7 +49,7 @@ public class PresentFacade {
 
     private static OriginHandler originHandler;
     // TODO: The whole retrieval of raw records through getRecords does nok look very clean
-    static String recordView = "raw"; // View used when retrieving the full records
+    static FormatDto recordView = FormatDto.RAW; // View used when retrieving the full records
 
     /**
      * Optional warmUp (initialization) for fail early.
@@ -73,7 +74,7 @@ public class PresentFacade {
      * @return the record in the given format.
      * @throws NotFoundServiceException if the record or the format was unknown.
      */
-    public static String getRecord(String recordID, String format) {
+    public static String getRecord(String recordID, FormatDto format) {
         return getOriginHandler().getRecord(recordID, format);
     }
 
@@ -129,25 +130,24 @@ public class PresentFacade {
      * @return a stream of serialized records.
      */
     public static StreamingOutput getRecords(
-            HttpServletResponse httpServletResponse, String originID, Long mTime, Long maxRecords, String format,
+            HttpServletResponse httpServletResponse, String originID, Long mTime, Long maxRecords, FormatDto format,
             Function<List<String>, List<String>> accessChecker) {
         DSOrigin origin = originHandler.getOrigin(originID);
         Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(originID, accessChecker, origin);
 
-        // Maybe re-write this switch to use an actual ENUM?
-        // enum:  ['JSON-LD', 'JSON-LD-Lines', 'MODS', 'SolrJSON']
-        switch (format.toUpperCase(Locale.ROOT)) {
-            case "JSON-LD": return getRecordsData(
+
+        switch (format) {
+            case JSON_LD: return getRecordsData(
                     origin, mTime, maxRecords,
-                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.json,
+                    httpServletResponse, FormatDto.JSON_LD, ExportWriterFactory.FORMAT.json,
                     accessFilter);
-            case "JSON-LD-LINES": return getRecordsData(
+            case JSON_LD_LINES: return getRecordsData(
                     origin, mTime, maxRecords,
-                    httpServletResponse, "JSON-LD", ExportWriterFactory.FORMAT.jsonl, accessFilter);
-            case "MODS": return getRecordsData(
+                    httpServletResponse, FormatDto.JSON_LD_LINES, ExportWriterFactory.FORMAT.jsonl, accessFilter);
+            case MODS: return getRecordsData(
                     origin, mTime, maxRecords,
-                    httpServletResponse, "MODS", ExportWriterFactory.FORMAT.xml, accessFilter);
-            case "SOLRJSON": return getRecordsSolr(origin, mTime, maxRecords, httpServletResponse, accessFilter);
+                    httpServletResponse, FormatDto.MODS, ExportWriterFactory.FORMAT.xml, accessFilter);
+            case SOLRJSON: return getRecordsSolr(origin, mTime, maxRecords, httpServletResponse, accessFilter);
             default: throw new InvalidArgumentServiceException("The format '" + format + "' is not supported");
         }
     }
@@ -208,7 +208,7 @@ public class PresentFacade {
     // Only deliver the data-part of the Records
     private static StreamingOutput getRecordsData(
             DSOrigin origin, Long mTime, Long maxRecords,
-            HttpServletResponse httpServletResponse, String recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
+            HttpServletResponse httpServletResponse, FormatDto recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
             Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
         ContinuationStream<DsRecordDto, Long> records =
@@ -252,7 +252,7 @@ public class PresentFacade {
                                                   Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
         setFilename(httpServletResponse, mTime, maxRecords, ExportWriterFactory.FORMAT.json);
         ContinuationStream<DsRecordDto, Long> records =
-                origin.getDSRecords(mTime, maxRecords, "SolrJSON", accessFilter);
+                origin.getDSRecords(mTime, maxRecords, FormatDto.SOLRJSON, accessFilter);
         records.setHeaders(httpServletResponse);
 
         return output -> {

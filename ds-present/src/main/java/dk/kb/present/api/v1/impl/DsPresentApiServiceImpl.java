@@ -2,6 +2,7 @@ package dk.kb.present.api.v1.impl;
 
 import dk.kb.present.PresentFacade;
 import dk.kb.present.api.v1.DsPresentApi;
+import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
@@ -107,9 +108,9 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public String getRecord(String id, String format) throws ServiceException {
+    public String getRecord(String id, FormatDto format) throws ServiceException {
         try {
-            log.debug("getRecord(id='{}', format='{}') called with groups {} call details: {}",
+            log.debug("getRecord(id='{}', format='{}') called with groups {} and call details: {}",
                     id, format, AccessUtil.getGroups(httpHeaders), getCallDetails());
             ACCESS access =
                     AccessUtil.createAccessChecker(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE).apply(id);
@@ -132,7 +133,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     }
 
     @Override
-    public StreamingOutput getRecords(String origin, Long mTime, Long maxRecords, String format) {
+    public StreamingOutput getRecords(String origin, Long mTime, Long maxRecords, FormatDto format) {
         log.debug("getRecords(origin='{}', mTime={}, maxRecords={}, format='{}') called with groups {} " +
                         "and call details: {}",
                   origin, mTime, maxRecords, format, AccessUtil.getGroups(httpHeaders), getCallDetails());
