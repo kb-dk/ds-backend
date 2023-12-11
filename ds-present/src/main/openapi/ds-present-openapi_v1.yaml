@@ -1031,11 +1031,11 @@ components:
     Format:
       type: string
       enum:
-        - JSONLD
-        - JSONLDLINES
+        - JSON-LD
+        - JSON-LD-Lines
         - MODS
-        - SOLRJSON
-        - RAW
+        - SolrJSON
+        - raw
         #['JSON-LD', 'MODS', 'SolrJSON', "raw"]
       example: 'JSONLD'
       default: 'JSONLD'

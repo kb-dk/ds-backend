@@ -50,7 +50,7 @@ pvicaviews: &PRESERVICA_VIEWS
       strategy: 'NONE'
       transformers:
         - identity: # No transformation steps as mods is the core format for images-dsfl
-  - jsonld:
+  - json-ld:
       mime: 'application/json'
       strategy: 'MANIFESTATION'
       transformers:
@@ -113,7 +113,7 @@ origins:
             strategy: 'NONE'
             transformers:
               - identity: # No transformation steps as mods is the core format for images-dsfl
-        - jsonld:
+        - json-ld:
             mime: 'application/json'
             strategy: 'NONE'
             transformers:

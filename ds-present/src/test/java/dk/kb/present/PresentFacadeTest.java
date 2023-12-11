@@ -157,7 +157,7 @@ public class PresentFacadeTest {
                     .thenReturn(new FormatDto[]{
                             FormatDto.RAW,
                             FormatDto.MODS,
-                            FormatDto.JSONLD,
+                            FormatDto.JSON_LD,
                             FormatDto.SOLRJSON,
                             RAWBYPASS});
 
@@ -187,7 +187,7 @@ public class PresentFacadeTest {
                     .thenReturn(new FormatDto[]{
                             FormatDto.RAW,
                             FormatDto.MODS,
-                            FormatDto.JSONLD,
+                            FormatDto.JSON_LD,
                             FormatDto.SOLRJSON,
                             RAWBYPASS});
 

@@ -96,7 +96,7 @@ class OriginHandlerTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         System.out.println(conf);
         OriginHandler ch = new OriginHandler(conf);
-        String record = ch.getRecord("local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSONLD);
+        String record = ch.getRecord("local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
         assertTrue(record.contains("\"id\":\"local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
     }
 
@@ -111,7 +111,7 @@ class OriginHandlerTest {
         // referenceType = 2. Only children with type = 2 should be returned as these are presentation manifestations.
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         OriginHandler ch = new OriginHandler(conf);
-        String record = ch.getRecord("local.tv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSONLD);
+        String record = ch.getRecord("local.tv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
         assertTrue(record.contains("correct-reference\\/playlist.m3u8"));
         assertFalse(record.contains("wrong-reference\\/playlist.m3u8"));
     }
