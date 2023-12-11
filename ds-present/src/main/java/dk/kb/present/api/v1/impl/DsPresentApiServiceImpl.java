@@ -17,12 +17,10 @@ import java.util.List;
 
 /**
  * ds-present
- *
- * <p>Metadata delivery for the Royal Danish Library 
- *
+ * <p>
+ * Metadata delivery for the Royal Danish Library
  */
 public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
-    public static final String HEADER_SIMULATED_GROUP = "Simulated-OAuth2-Group";
     private static final Logger log = LoggerFactory.getLogger(DsPresentApiServiceImpl.class);
 
     // "Search" is best guess for the access type for now
@@ -112,8 +110,8 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     @Override
     public String getRecord(String id, String format) throws ServiceException {
         try {
-            log.debug("getRecord(id='{}', format='{}') called with call details: {}", id, format, getCallDetails());
-            ACCESS access = AccessUtil.createAccessChecker(RECORD_ACCESS_TYPE).apply(id);
+            log.debug("getRecord(id='{}', format='{}') called with group call details: {}", id, format, getCallDetails());
+            ACCESS access = AccessUtil.createAccessChecker(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE).apply(id);
             switch (access) {
                 case ok:
                     return PresentFacade.getRecord(id, format);
@@ -144,7 +142,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecords(
                     httpServletResponse, origin, finalMTime, finalMaxRecords, format,
-                    AccessUtil.createAccessFilter(RECORD_ACCESS_TYPE));
+                    AccessUtil.createAccessFilter(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE));
         } catch (Exception e){
             throw handleException(e);
         }
@@ -161,14 +159,13 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             asJsonLines = false;
         }
 
-        // Returning all IDs.
-        // When using AccessUtil.createAccessFilter(RECORD_ACCESS_TYPE) online deliverable units are returned
         try {
             long finalMTime = mTime == null ? 0L : mTime;
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecordsRaw(
                     httpServletResponse, origin, finalMTime, finalMaxRecords,
-                    ids -> ids, asJsonLines);
+                    AccessUtil.createAccessFilter(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE),
+                    asJsonLines);
         } catch (Exception e){
             throw handleException(e);
         }

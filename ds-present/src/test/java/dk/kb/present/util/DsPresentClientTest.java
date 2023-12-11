@@ -14,7 +14,7 @@
  */
 package dk.kb.present.util;
 
-import dk.kb.present.api.v1.impl.DsPresentApiServiceImpl;
+import dk.kb.present.webservice.AccessUtil;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
@@ -98,12 +98,12 @@ public class DsPresentClientTest {
     @Test
     void getFixedHeaders() {
         YAML config = new YAML(Map.of("config", Map.of("present", Map.of("headers", List.of(
-                Map.of(DsPresentApiServiceImpl.HEADER_SIMULATED_GROUP, "anonymous"),
+                Map.of(AccessUtil.HEADER_SIMULATED_GROUP, "anonymous"),
                 Map.of("Some-Other-Header", "foo"))))));
         Map<String, String> headers = DsPresentClient.getAllHeaders(config);
         assertEquals(2, headers.size(),
                 "The right number of headers should be extracted");
-        assertEquals("anonymous", headers.get(DsPresentApiServiceImpl.HEADER_SIMULATED_GROUP),
+        assertEquals("anonymous", headers.get(AccessUtil.HEADER_SIMULATED_GROUP),
                 "The group header should be correct");
     }
 

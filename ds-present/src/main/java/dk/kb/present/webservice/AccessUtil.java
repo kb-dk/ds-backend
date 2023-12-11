@@ -25,6 +25,7 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.HttpHeaders;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -35,6 +36,9 @@ import java.util.stream.Collectors;
 public class AccessUtil {
     private static final Logger log = LoggerFactory.getLogger(AccessUtil.class);
 
+    public static final String HEADER_SIMULATED_GROUP = "Simulated-OAuth2-Group";
+    public static final String GROUP_ADMIN = "admin";
+
     private static final String LICENSE_URL_KEY = "config.licensemodule.url"; // Used for creating licenseClient
     private static final String LICENSE_ALLOWALL_KEY = "config.licensemodule.allowall";
 
@@ -44,13 +48,16 @@ public class AccessUtil {
     /**
      * Based on user credentials (not used yet as it requires pending OAuth2-integration) and ds-license setup,
      * the produced function return an {@link DsPresentApiServiceImpl.ACCESS} state for metadata for a given id.
+     *
+     * @param groups token derived user groups.
      * @param presentationType as defined in ds-license, e.g. {@code Search}, {@code Stream}, {@code Thumbnails}...
      * @return function for evaluating access to metadata for the current caller.
      */
     // Note: When OAuth2 support is added, this method should probably be extended with a HttpServletRequest parameter
-    public static Function<String, DsPresentApiServiceImpl.ACCESS> createAccessChecker(String presentationType) {
+    public static Function<String, DsPresentApiServiceImpl.ACCESS> createAccessChecker(
+            Set<String> groups, String presentationType) {
         return id -> {
-            if (licenseAllowAll) {
+            if (licenseAllowAll || groups.contains(GROUP_ADMIN)) {
                 return DsPresentApiServiceImpl.ACCESS.ok;
             }
 
@@ -90,13 +97,15 @@ public class AccessUtil {
      * Based on user credentials (not used yet as it requires pending OAuth2-integration) and ds-license setup,
      * the produced function isolate the IDs that the caller is allowed to see metadata for.
      * Order is preserved, input is never changed, output is always a new list.
+     * @param groups token derived user groups.
      * @param presentationType as defined in ds-license, e.g. {@code Search}, {@code Stream}, {@code Thumbnails}...
      * @return function converting a list of IDs to allowed IDs.
      */
     // Note: When OAuth2 support is added, this method should probably be extended with a HttpServletRequest parameter
-    public static Function<List<String>, List<String>> createAccessFilter(String presentationType) {
+    public static Function<List<String>, List<String>> createAccessFilter(
+            Set<String> groups, String presentationType) {
         return ids -> {
-            if (licenseAllowAll || ids.isEmpty()) {
+            if (licenseAllowAll || ids.isEmpty() || groups.contains(GROUP_ADMIN)) {
                 return new ArrayList<>(ids);
             }
 
@@ -150,4 +159,25 @@ public class AccessUtil {
         return licenseClient;
     }
 
+    /**
+     * @param httpHeaders HTTP headers from the initiating webservice call.
+     * @return true is the webservice call has a {@link #HEADER_SIMULATED_GROUP} token.
+     */
+    public static boolean hasAuthorization(HttpHeaders httpHeaders) {
+        return httpHeaders.getRequestHeader(HEADER_SIMULATED_GROUP) != null;
+    }
+
+    /**
+     * Important: This is a place holder until OAuth2-support is added.
+     * This has zero security checks and only exists for testing token based access flows.
+     * @param httpHeaders HTTP headers from the initiating webservice call.
+     * @return the groups that the user belongs to or empty if there are no associated groups.
+     */
+    public static Set<String> getGroups(HttpHeaders httpHeaders) {
+        List<String> groupHeaders;
+        if (httpHeaders == null || (groupHeaders = httpHeaders.getRequestHeader(HEADER_SIMULATED_GROUP)) == null) {
+            return Collections.emptySet();
+        }
+        return new HashSet<>(groupHeaders);
+    }
 }

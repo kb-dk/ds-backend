@@ -261,7 +261,9 @@ public class DsPresentClient extends DsPresentApi {
         if (headers == null || headers.length == 0) {
             return Collections.emptyMap();
         }
+
         return Arrays.stream(headers)
+                .filter(Objects::nonNull)
                 .flatMap(hs -> hs.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }

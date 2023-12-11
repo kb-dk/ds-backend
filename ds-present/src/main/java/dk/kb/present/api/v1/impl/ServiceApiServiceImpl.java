@@ -2,6 +2,8 @@ package dk.kb.present.api.v1.impl;
 
 import dk.kb.present.api.v1.ServiceApi;
 import dk.kb.present.model.v1.StatusDto;
+import dk.kb.present.model.v1.WhoamiDto;
+import dk.kb.present.webservice.AccessUtil;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 /**
  * ds-present
@@ -72,5 +75,11 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
                 .health("ok");
     }
 
-
+    // Test with curl -X GET "http://localhost:9073/ds-present/v1/probe/whoami" -H  "Simulated-OAuth2-Group: foo"
+    @Override
+    public WhoamiDto whoami() {
+        return new WhoamiDto()
+                .hasAuthenticationToken(AccessUtil.hasAuthorization(httpHeaders))
+                .groups(new ArrayList<>(AccessUtil.getGroups(httpHeaders)));
+    }
 }
