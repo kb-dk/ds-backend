@@ -37,6 +37,7 @@ public class AccessUtil {
     private static final Logger log = LoggerFactory.getLogger(AccessUtil.class);
 
     public static final String HEADER_SIMULATED_GROUP = "Simulated-OAuth2-Group";
+    public static final String GROUP_INTERNAL_SERVICE = "internal_service";
     public static final String GROUP_ADMIN = "admin";
 
     private static final String LICENSE_URL_KEY = "config.licensemodule.url"; // Used for creating licenseClient
@@ -57,7 +58,8 @@ public class AccessUtil {
     public static Function<String, DsPresentApiServiceImpl.ACCESS> createAccessChecker(
             Set<String> groups, String presentationType) {
         return id -> {
-            if (licenseAllowAll || groups.contains(GROUP_ADMIN)) {
+            if (licenseAllowAll ||
+                    groups.contains(GROUP_ADMIN) || groups.contains(GROUP_INTERNAL_SERVICE)) {
                 return DsPresentApiServiceImpl.ACCESS.ok;
             }
 
@@ -105,7 +107,8 @@ public class AccessUtil {
     public static Function<List<String>, List<String>> createAccessFilter(
             Set<String> groups, String presentationType) {
         return ids -> {
-            if (licenseAllowAll || ids.isEmpty() || groups.contains(GROUP_ADMIN)) {
+            if (licenseAllowAll || ids.isEmpty() ||
+                    groups.contains(GROUP_ADMIN) || groups.contains(GROUP_INTERNAL_SERVICE)) {
                 return new ArrayList<>(ids);
             }
 

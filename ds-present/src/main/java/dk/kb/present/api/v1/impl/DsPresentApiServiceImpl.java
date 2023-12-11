@@ -89,7 +89,6 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
         } catch (Exception e){
             throw handleException(e);
         }
-    
     }
 
     /**
@@ -110,8 +109,10 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     @Override
     public String getRecord(String id, String format) throws ServiceException {
         try {
-            log.debug("getRecord(id='{}', format='{}') called with group call details: {}", id, format, getCallDetails());
-            ACCESS access = AccessUtil.createAccessChecker(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE).apply(id);
+            log.debug("getRecord(id='{}', format='{}') called with groups {} call details: {}",
+                    id, format, AccessUtil.getGroups(httpHeaders), getCallDetails());
+            ACCESS access =
+                    AccessUtil.createAccessChecker(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE).apply(id);
             switch (access) {
                 case ok:
                     return PresentFacade.getRecord(id, format);
@@ -132,8 +133,9 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
 
     @Override
     public StreamingOutput getRecords(String origin, Long mTime, Long maxRecords, String format) {
-        log.debug("getRecords(origin='{}', mTime={}, maxRecords={}, format='{}') called with call details: {}",
-                  origin, mTime, maxRecords, format, getCallDetails());
+        log.debug("getRecords(origin='{}', mTime={}, maxRecords={}, format='{}') called with groups {} " +
+                        "and call details: {}",
+                  origin, mTime, maxRecords, format, AccessUtil.getGroups(httpHeaders), getCallDetails());
         if (origin == null) {
             throw new InternalServiceException("origin must be specified but was not");
         }
@@ -150,8 +152,9 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
 
     @Override
     public StreamingOutput getRecordsRaw(String origin, Long mTime, Long maxRecords, Boolean asJsonLines) {
-        log.debug("getRawRecords(origin='{}', mTime={}, maxRecords={}, asJsonLines={}) called with call details: {}",
-                origin, mTime, maxRecords, asJsonLines, getCallDetails());
+        log.debug("getRawRecords(origin='{}', mTime={}, maxRecords={}, asJsonLines={}) called with groups {} " +
+                        "and call details: {}",
+                origin, mTime, maxRecords, asJsonLines, AccessUtil.getGroups(httpHeaders), getCallDetails());
         if (origin == null) {
             throw new InternalServiceException("origin must be specified but was not");
         }
