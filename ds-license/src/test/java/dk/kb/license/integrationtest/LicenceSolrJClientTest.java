@@ -1,10 +1,12 @@
 package dk.kb.license.integrationtest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.solr.SolrServerClient;
+import org.apache.solr.client.solrj.SolrServerException;
 
 
 //Integration test. Run manually to see solr integration is working
@@ -16,7 +18,7 @@ public class LicenceSolrJClientTest {
 		
 
     
-	public static void main(String[] args) throws Exception{
+	public static void main(String[] args) throws IOException, SolrServerException {
      ServiceConfig.initialize("conf/ds-license*.yaml"); 
      SolrServerClient solrServer = new SolrServerClient("http://devel11:10001/ds-discover/v1/solr/ds/");
 	    

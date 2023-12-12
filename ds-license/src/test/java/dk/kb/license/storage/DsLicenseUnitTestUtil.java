@@ -1,6 +1,8 @@
 package dk.kb.license.storage;
 
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,7 +29,7 @@ public abstract class DsLicenseUnitTestUtil {
 
 
     
-    public static void insertDefaultConfigurationTypes() throws Exception {
+    public static void insertDefaultConfigurationTypes() throws SQLException {
         File insert_ddl_file = new File(INSERT_DEFAULT_CONFIGURATION_DDL_FILE);
         storage.runDDLScript(insert_ddl_file);        
     }
@@ -46,7 +48,7 @@ public abstract class DsLicenseUnitTestUtil {
 
 
     @BeforeAll
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() throws IOException, SQLException {
 
         ServiceConfig.initialize("conf/ds-license*.yaml"); 	    
 
@@ -62,7 +64,7 @@ public abstract class DsLicenseUnitTestUtil {
      * The facade class is reponsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
-    public void beforeEach() throws Exception {                     
+    public void beforeEach() throws SQLException {
         storage.clearTableRecords();                     
     }
 

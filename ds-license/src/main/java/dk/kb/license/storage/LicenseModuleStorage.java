@@ -225,7 +225,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         connection = dataSource.getConnection();
     }
 
-    public void persistLicensePresentationType(String key, String value_dk, String value_en) throws Exception {
+    public void persistLicensePresentationType(String key, String value_dk, String value_en) throws SQLException {
         log.info("Persisting new license presentationtype: " + key);
 
         validateValue(key);
@@ -249,7 +249,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     }
     
   
-    public void persistAuditLog(AuditLog auditlog) throws Exception {
+    public void persistAuditLog(AuditLog auditlog) throws SQLException {
         log.info("Persisting  persistAuditLog " + auditlog.getChangeType() +" for username:"+auditlog.getUsername());
         try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
             stmt.setLong(1,  auditlog.getMillis());
@@ -290,7 +290,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     }
 
 
-    public void deleteLicense(long licenseId) throws Exception {
+    public void deleteLicense(long licenseId) throws SQLException {
         log.info("Deleting license with id: " + licenseId);
         License license = null;
         try {
@@ -323,7 +323,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     // query can be null or empty
     public void persistLicenseGroupType(String key, String value, String value_en, String description,
-            String description_en, String query, boolean restriction) throws Exception {
+            String description_en, String query, boolean restriction) throws IllegalArgumentException, SQLException {
 
         if (!StringUtils.isNotEmpty(key)) {
             throw new IllegalArgumentException("Key can not be null when creating new Group");
@@ -365,7 +365,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     }
 
     public void updateLicenseGroupType(long id, String value_dk, String value_en, String description,
-            String description_en, String query, boolean restriction) throws Exception {
+            String description_en, String query, boolean restriction) throws SQLException {
 
         try (PreparedStatement stmt = connection.prepareStatement(updateLicenseGroupTypeQuery);) {
             log.info("Updating Group type with id:" + id);
@@ -394,7 +394,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void updatePresentationType(long id, String value_dk, String value_en) throws Exception {
+    public void updatePresentationType(long id, String value_dk, String value_en) throws SQLException {
 
         try (PreparedStatement stmt = connection.prepareStatement(updateLicensePresentationTypeQuery);) {
             log.info("Updating Presentation type with id:" + id);
@@ -418,7 +418,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void deleteLicenseGroupType(String groupName) throws Exception {
+    public void deleteLicenseGroupType(String groupName) throws IllegalArgumentException, SQLException {
 
         log.info("Deleting grouptype: " + groupName);
         // First check it is not used in any license, in that case throw exception.
@@ -451,7 +451,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void deletePresentationType(String presentationName) throws Exception {
+    public void deletePresentationType(String presentationName) throws IllegalArgumentException, SQLException {
 
         log.info("Deleting presentation type: " + presentationName);
         // First check it is not used in any license, in that case throw exception.
@@ -487,7 +487,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void persistLicense(License license) throws Exception {
+    public void persistLicense(License license) throws IllegalArgumentException, SQLException {
 
         log.info("Persisting new license: " + license.getLicenseName());
 
@@ -563,7 +563,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
     }
 
-    public void persistAttributeType(String value) throws Exception {
+    public void persistAttributeType(String value) throws SQLException {
 
         log.info("Persisting new  attribute type: " + value);
 
@@ -582,7 +582,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void deleteAttributeType(String attributeTypeName) throws Exception {
+    public void deleteAttributeType(String attributeTypeName) throws IllegalArgumentException, SQLException {
 
         log.info("Deleting attributetype: " + attributeTypeName);
         // First check it is not used in any license, in that case throw exception.
@@ -713,7 +713,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     */
     
     
-    public AuditLog getAuditLog(long millis) throws Exception {
+    public AuditLog getAuditLog(long millis) throws IllegalArgumentException, SQLException {
 
 
         try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQuery);) {
@@ -737,7 +737,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
     }
     
-    public ArrayList<AuditLog> getAllAudit() throws Exception {
+    public ArrayList<AuditLog> getAllAudit() throws SQLException {
 
         ArrayList<AuditLog> logs = new ArrayList<AuditLog>();
 
@@ -765,7 +765,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     
     
     
-    public PresentationType getPresentationTypeById(long id) throws Exception {
+    public PresentationType getPresentationTypeById(long id) throws IllegalArgumentException, SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryById);) {
             stmt.setLong(1, id);
             
@@ -785,7 +785,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
     }
     
-    public GroupType getGroupTypeById(long id) throws Exception {
+    public GroupType getGroupTypeById(long id) throws IllegalArgumentException, SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(selectGroupTypeQueryById);) {
             stmt.setLong(1, id);
             
@@ -811,7 +811,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     
     
-    public PresentationType getPresentationTypeByKey(String key) throws Exception {
+    public PresentationType getPresentationTypeByKey(String key) throws IllegalArgumentException, SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryByKey);) {
             stmt.setString(1, key);
             

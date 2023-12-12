@@ -1,7 +1,6 @@
 package dk.kb.license.util;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,7 +20,7 @@ public class H2DbUtil {
     private static final Logger log = LoggerFactory.getLogger(H2DbUtil.class);
     
     
-    public static void createEmptyH2DBFromDDL(String url, String driver, String username, String password) throws Exception {
+    public static void createEmptyH2DBFromDDL(String url, String driver, String username, String password) throws SQLException {
         //  
         try {
             Class.forName(driver); // load the driver

@@ -165,7 +165,7 @@ public class ConfigurationServlet extends HttpServlet {
                 request.setAttribute("message", "Unknown event:" + event);
             }
 
-        } catch (Exception e) {//various server errors
+        } catch (NumberFormatException e) {//various server errors
             log.error("unexpected error", e);
             request.setAttribute("message", e.getMessage());
             returnFormPage(request, response);
@@ -310,7 +310,7 @@ public class ConfigurationServlet extends HttpServlet {
             infoMessage.append("Brugeren mangler følgende Restriction grupper:"+output.getUserNotInDenyGroups() +"\n");	
             infoMessage.append("Query:"+output.getQuery() +"\n");
         }
-        catch(Exception e){
+        catch(RuntimeException e){
             infoMessage.append("Fejl under validateQuery kald:"+e.getMessage());	
             return infoMessage.toString();
         }

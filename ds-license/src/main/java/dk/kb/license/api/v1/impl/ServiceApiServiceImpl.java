@@ -42,7 +42,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     public String extractStatistics() throws ServiceException {
         try {
             throw new ServiceUnavailableException("Not implemented yet");
-        } catch (Exception e){
+        } catch (ServiceUnavailableException e){
             throw handleException(e);
         }
     

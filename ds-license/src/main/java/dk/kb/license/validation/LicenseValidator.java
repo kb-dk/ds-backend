@@ -1,8 +1,10 @@
 package dk.kb.license.validation;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +89,8 @@ public class LicenseValidator {
     * @param solrIdField The ID field in Solr used for filtering. So far only 'id' and 'resource_id' are suitable fields
     */
 
-    public static CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto input, String solrIdField) throws Exception{
+    public static CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto input, String solrIdField)
+            throws InvalidArgumentServiceException, SolrServerException, IOException {
 
         if  (input.getAccessIds() == null || input.getAccessIds().size() == 0){
             throw new InvalidArgumentServiceException("No ID's in input");          
@@ -617,7 +620,7 @@ public class LicenseValidator {
         }		  
     }
 
-    private static ArrayList<String> filterIDs(List<String> noAccessIdList, String filterQuery, String solrIdField) throws Exception{
+    private static ArrayList<String> filterIDs(List<String> noAccessIdList, String filterQuery, String solrIdField) throws org.apache.solr.client.solrj.SolrServerException, java.io.IOException {
         List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
 
         Set<String> noAccessfilteredIdsSet = new HashSet<String>();

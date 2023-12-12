@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     private static PresentationType THUMBNAILS = new  PresentationType(1, "Thumbnails" ,"Thumbnails_dk", "Thumbnails_en");
 
     @Test
-    public void testInsertDomLicensePresentationType() throws Exception {
+    public void testInsertDomLicensePresentationType() throws SQLException {
         String type1 = "unit_test_type1";
         String type1_en = "unit_test_type1_en";
         String type2 = "unit_test_type2";
@@ -60,7 +60,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testInsertDomLicenseGroupType() throws Exception {
+    public void testInsertDomLicenseGroupType() throws SQLException {
         String type1Key = "unit_test_key1";
         String type2Key = "unit_test_key2";
         String type1 = "unit_test_type1";
@@ -92,7 +92,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testInsertDomAttributeType() throws Exception {
+    public void testInsertDomAttributeType() throws SQLException {
         String type1 = "unit_test_type1";
         String type2 = "unit_test_type2";
         storage.persistAttributeType(type1);
@@ -106,13 +106,13 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testInsertDefaultConfiguration() throws Exception {
+    public void testInsertDefaultConfiguration() throws SQLException {
         insertDefaultConfigurationTypes();
 
     }
 
     @Test
-    public void testDeleteDomAttributeType() throws Exception {
+    public void testDeleteDomAttributeType() throws SQLException {
         // create configurationstypes and license using some of the attributestypes
         insertDefaultConfigurationTypes();
         License license = createTestLicenseWithAssociations(1L);
@@ -140,7 +140,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testDeleteDomGroupType() throws Exception {
+    public void testDeleteDomGroupType() throws SQLException {
         // create configurationstypes and license using some of the grouptypes
         insertDefaultConfigurationTypes();
         License license = createTestLicenseWithAssociations(1L);
@@ -168,7 +168,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testDeleteDomPresentationType() throws Exception {
+    public void testDeleteDomPresentationType() throws SQLException {
         // create configurationstypes and license using some of the grouptypes
         insertDefaultConfigurationTypes();
         License license = createTestLicenseWithAssociations(1L);
@@ -199,7 +199,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testGetAllListLicenseNames() throws Exception {
+    public void testGetAllListLicenseNames() throws SQLException {
         License license = createTestLicenseWithAssociations(1L);
         license.setLicenseName("name1");
         license.setDescription_dk("description1");
@@ -220,7 +220,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testPersistLicenseWithAssocations() throws Exception {
+    public void testPersistLicenseWithAssocations() throws SQLException, IllegalArgumentException {
         insertDefaultConfigurationTypes();
 
         // Full persistence and load test of associations
@@ -235,7 +235,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testDeleteLicense() throws Exception {
+    public void testDeleteLicense() throws SQLException {
 
         // Full persistence and load test of associations
         License license = createTestLicenseWithAssociations(1L);
@@ -253,7 +253,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testPersistAttributeGroupsForLicense() throws Exception {
+    public void testPersistAttributeGroupsForLicense() throws java.sql.SQLException {
 
         long licenseId = 1L;
         License license = createTestLicenseWithAssociations(1L);
@@ -267,7 +267,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testPersistLicenseContentForLicense() throws Exception {
+    public void testPersistLicenseContentForLicense() throws java.sql.SQLException {
         long licenseId = 1L;
 
         License license = createTestLicenseWithAssociations(1L);
@@ -281,7 +281,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testPersistAttributesForAttributeGroup() throws Exception {
+    public void testPersistAttributesForAttributeGroup() throws java.sql.SQLException {
 
         License license = createTestLicenseWithAssociations(1L);
         long attributeGroupId = 1L;
@@ -295,7 +295,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testPersistValuesForAttribute() throws Exception {
+    public void testPersistValuesForAttribute() throws java.sql.SQLException {
 
         long attributeId = 1L;
         ArrayList<AttributeValue> values = new ArrayList<AttributeValue>();
@@ -331,7 +331,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testFilterLicenseByValidDate() throws Exception {
+    public void testFilterLicenseByValidDate() throws SQLException {
         License license = createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);                
         storage.commit();//So the licence cache can read it.
@@ -358,7 +358,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testAllLicesesCache() throws Exception {
+    public void testAllLicesesCache() throws SQLException {
         License license = createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);
         storage.commit();//So the licence cache can read it.
@@ -453,7 +453,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testGetUserGroupsWithPresentation() throws Exception {
+    public void testGetUserGroupsWithPresentation() throws SQLException {
         insertDefaultConfigurationTypes();
 
         License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
@@ -571,7 +571,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
      * @param resource a generic resource.
      * @return a File pointing to the resource.
      */
-    private static File getFile(String resource) throws IOException {
+    private static File getFile(String resource) throws FileNotFoundException {
         File directFile = new File(resource);
         if (directFile.exists()) {
             return directFile;
@@ -767,7 +767,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testFilterRestrictionGroups() throws Exception {     
+    public void testFilterRestrictionGroups() throws SQLException {
         insertDefaultConfigurationTypes();
         LicenseCache.reloadCache(); //The buildGroup and FilterRestrictionGroup uses cache for performance
 
@@ -909,7 +909,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }   
 
     @Test
-    public void testMatchPresentationtype() throws Exception {
+    public void testMatchPresentationtype() throws SQLException {
 
         //Create a persentation type and reload cache
         storage.persistLicensePresentationType("Download","value_dk","value_en");
@@ -931,7 +931,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testGenerateQueryString() throws Exception {
+    public void testGenerateQueryString() throws SQLException {
 
         DsLicenseUnitTestUtil.insertDefaultConfigurationTypes();
         LicenseCache.reloadCache();
@@ -1028,7 +1028,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
 
     @Test
-    public void testPersistAndLoadAuditLogEntry() throws Exception {
+    public void testPersistAndLoadAuditLogEntry() throws SQLException, IllegalArgumentException {
          long millis=System.currentTimeMillis();
          String userName="teg";
          String changeType="test";

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -94,7 +93,7 @@ public class ContextListener implements ServletContextListener {
          log.info("Setting up H2 database under jetty in development mode");          
          H2DbUtil.createEmptyH2DBFromDDL(url, driver,  user, password);
        }
-       catch(Exception e) {
+       catch(SQLException e) {
          log.error("Unable to create local h2 database for jetty environment",e);             
        }
     }
