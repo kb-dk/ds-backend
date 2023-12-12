@@ -3,8 +3,6 @@ package dk.kb.license.integrationtest;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.util.concurrent.Service;
-
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.solr.SolrServerClient;
 

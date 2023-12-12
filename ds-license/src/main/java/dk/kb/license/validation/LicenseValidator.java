@@ -1,6 +1,5 @@
 package dk.kb.license.validation;
 
-import java.time.chrono.IsoEra;
 import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +19,6 @@ import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.model.v1.ValidateAccessInputDto;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.*;
-import dk.kb.license.storage.License;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
 

@@ -22,7 +22,6 @@ import dk.kb.license.model.v1.ValidateAccessOutputDto;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.PresentationType;
 import dk.kb.license.validation.LicenseValidator;
-import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.ImplBase;
 import org.slf4j.Logger;

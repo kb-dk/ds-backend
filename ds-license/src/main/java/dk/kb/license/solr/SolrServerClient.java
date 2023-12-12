@@ -2,9 +2,7 @@ package dk.kb.license.solr;
 
 
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.impl.NoOpResponseParser;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
-import org.apache.solr.client.solrj.request.RequestWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

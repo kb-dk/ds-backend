@@ -1,16 +1,6 @@
 package dk.kb.license.config;
 
-import dk.kb.util.Resolver;
-import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
