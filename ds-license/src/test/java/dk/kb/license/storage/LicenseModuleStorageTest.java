@@ -311,7 +311,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testDateFormat() throws Exception {
+    public void testDateFormat() {
         boolean valid = Util.validateDateFormat("13-01-2012");
         assertEquals(true, valid);
         valid = Util.validateDateFormat("31-01-2012");
@@ -589,7 +589,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
 
     @Test
-    public void testfilterUserObjAttributesToValidatedOnly() throws Exception {
+    public void testfilterUserObjAttributesToValidatedOnly() {
         License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
 
 
@@ -661,7 +661,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testValidateAccess1() throws Exception {
+    public void testValidateAccess1() {
         /* Access must be true. This is match from attributeGroup 1 in the license
          * 
          * wayf.schacHomeOrganization  with values: au.dk
@@ -694,7 +694,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testValidateAccess2() throws Exception {
+    public void testValidateAccess2() {
         /* Access must be true. This is match from attributeGroup 1 in the license
          * It is only matching part1 of 2 parts in attributegroup 1
          * 
@@ -723,7 +723,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testValidateAccess3() throws Exception {
+    public void testValidateAccess3() {
         /* Access must be true. This is match from both attributeGroup 1 and 3 in the license. (so 'double' access)
          * 
          * wayf.schacHomeOrganization  with values: au.dk
@@ -819,7 +819,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testFilterLicensesWithGroupNamesAndPresentationTypeNoRestrictionGroup() throws Exception {
+    public void testFilterLicensesWithGroupNamesAndPresentationTypeNoRestrictionGroup() {
 
         ArrayList<License> licenses = new ArrayList<License>(); 
         licenses.add(LicenseModuleStorageTest.createTestLicenseWithAssociations(1L));
@@ -850,7 +850,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
 
     @Test
-    public void testGetUserGroupsWithPresentationTypes() throws Exception {
+    public void testGetUserGroupsWithPresentationTypes() {
         //For this test notice the presentationtypes are loaded from the DB, only the names from input is used
         ArrayList<License> licenses = new ArrayList<License>(); 
         licenses.add(LicenseModuleStorageTest.createTestSimpleRestrictionGroupsLicenseWithAssociations());
@@ -869,7 +869,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testFilterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup() throws Exception {
+    public void testFilterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup() {
         //For this test notice the presentationtypes are loaded from the DB, only the names from input is used
         ArrayList<License> licenses = new ArrayList<License>(); 
         licenses.add(LicenseModuleStorageTest.createTestSimpleRestrictionGroupsLicenseWithAssociations());
@@ -959,7 +959,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testFilterGroupsWithPresentationtype() throws Exception {
+    public void testFilterGroupsWithPresentationtype() {
         License l = LicenseModuleStorageTest.createTestLicenseWithAssociations(1);
         ArrayList<License> list = new ArrayList<License>();
         list.add(l);
@@ -1007,7 +1007,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testMakeAuthIdPart() throws Exception {
+    public void testMakeAuthIdPart() {
 
         String filterField=ServiceConfig.SOLR_FILTER_ID_FIELD;
         ArrayList<String> ids = new ArrayList<String>(); 

@@ -19,7 +19,7 @@ import java.io.IOException;
 class ServiceConfigTest {
 
     //maybe implement something here.
-    void sampleConfigTest() throws IOException {
+    void sampleConfigTest() {
    
     }
 }

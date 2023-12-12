@@ -24,7 +24,7 @@ public class LicenseModuleFacade {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacade.class);
 
-    public static void persistLicensePresentationType(String key, String value_dk, String value_en) throws Exception {    
+    public static void persistLicensePresentationType(String key, String value_dk, String value_en) {
         
         performStorageAction("persistLicensePresentationType(" + key + ","+value_dk +","+value_en+")", storage -> {
         
@@ -40,27 +40,27 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache
     }
 
-    public static ArrayList<PresentationType> getLicensePresentationTypes() throws Exception {
+    public static ArrayList<PresentationType> getLicensePresentationTypes() {
        return performStorageAction("persistLicensePresentationType()", storage -> {
             return storage.getLicensePresentationTypes();                   
         });
                 
     }
 
-    public static AuditLog getAuditLog(Long millis) throws Exception {
+    public static AuditLog getAuditLog(Long millis) {
         return performStorageAction("getAuditLog()", storage -> {
              return storage.getAuditLog(millis);
          });                
      }
      
     
-    public static ArrayList<AuditLog> getAllAuditLogs() throws Exception {
+    public static ArrayList<AuditLog> getAllAuditLogs() {
        return performStorageAction("getAllAuditLogs()", storage -> {
             return storage.getAllAudit();                   
         });                
     }
     
-    public static void deleteLicense(long licenseId) throws Exception { 
+    public static void deleteLicense(long licenseId) {
         performStorageAction("deleteLicense(" + licenseId + ")", storage -> {
 
             License license = storage.getLicense(licenseId);
@@ -77,7 +77,7 @@ public class LicenseModuleFacade {
      
     }
 
-    public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean isRestriction) throws Exception {
+    public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean isRestriction) {
  
         performStorageAction("persistLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+ isRestriction+")", storage -> {                    
         GroupType g = new GroupType(0L,key,value,value_en,description,description_en,query, isRestriction);
@@ -92,7 +92,7 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
 
-    public static void updateLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean  isRestriction) throws Exception {
+    public static void updateLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean  isRestriction) {
       
         performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+ isRestriction+")", storage -> {
            GroupType oldGroupType = storage.getGroupTypeById(id);
@@ -112,7 +112,7 @@ public class LicenseModuleFacade {
 
     }
 
-    public static void updatePresentationType(long id, String value_dk, String value_en) throws Exception {
+    public static void updatePresentationType(long id, String value_dk, String value_en) {
        
         performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +")", storage -> {
 
@@ -129,7 +129,7 @@ public class LicenseModuleFacade {
 
     }
     
-    public static void deleteLicenseGroupType(String groupName) throws Exception {
+    public static void deleteLicenseGroupType(String groupName) {
    
         performStorageAction("deleteLicenseGroupType(" + groupName +")", storage -> {
            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete grouptype",groupName,groupName,"");
@@ -141,7 +141,7 @@ public class LicenseModuleFacade {
     }
     
     
-    public static void deletePresentationType(String presentationName) throws Exception {
+    public static void deletePresentationType(String presentationName) {
         performStorageAction("deletePresentationType(" + presentationName +")", storage -> {
             PresentationType oldType = storage.getPresentationTypeByKey(presentationName);
             storage.deletePresentationType(presentationName);
@@ -160,10 +160,9 @@ public class LicenseModuleFacade {
      * If license id=0 a new will be created. Else it will update the license with the id
      * 
      * @param license
-     * @throws Exception
      */
     
-    public static void persistLicense(License license)  throws Exception {
+    public static void persistLicense(License license) {
         
         performStorageAction("persistLicense(description_dk=" + license.getDescription_dk() +")", storage -> {
             AuditLog auditLog = null;
@@ -188,7 +187,7 @@ public class LicenseModuleFacade {
     
 
     
-    public static ArrayList<GroupType> getLicenseGroupTypes() throws Exception {
+    public static ArrayList<GroupType> getLicenseGroupTypes() {
    
         return performStorageAction("getLicenseGroupTypes()", storage -> {
             return storage.getLicenseGroupTypes();
@@ -197,7 +196,7 @@ public class LicenseModuleFacade {
        
     }
     
-    public static void persistAttributeType(String attributeTypeName) throws Exception {
+    public static void persistAttributeType(String attributeTypeName) {
         performStorageAction("persistAttributeType("+attributeTypeName+")", storage -> {
             AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create attribute", attributeTypeName,"",attributeTypeName);
             storage.persistAttributeType(attributeTypeName);
@@ -207,7 +206,7 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
     
-    public static void deleteAttributeType(String attributeTypeName) throws Exception {     
+    public static void deleteAttributeType(String attributeTypeName) {
         performStorageAction("deleteAttributeType("+attributeTypeName+")", storage -> {
             AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete attribute", attributeTypeName,attributeTypeName,"");
             storage.deleteAttributeType(attributeTypeName);
@@ -218,7 +217,7 @@ public class LicenseModuleFacade {
     }
      
     
-    public static ArrayList<AttributeType> getAttributeTypes() throws Exception {
+    public static ArrayList<AttributeType> getAttributeTypes() {
         return performStorageAction("getAttributeTypes()", storage -> {
             return storage.getAttributeTypes();                    
         });                                       
@@ -227,7 +226,7 @@ public class LicenseModuleFacade {
     
     
     
-    public static ArrayList<License> getAllLicenseNames() throws Exception {
+    public static ArrayList<License> getAllLicenseNames() {
         return performStorageAction("getAllLicenseNames()", storage -> {
             return storage.getAllLicenseNames();                    
         });            
@@ -235,7 +234,7 @@ public class LicenseModuleFacade {
 
     }
     
-    public static License getLicense(long licenseId)throws Exception {
+    public static License getLicense(long licenseId) {
         return performStorageAction("getLicense("+licenseId+")", storage -> {
             return storage.getLicense(licenseId);                    
         });           

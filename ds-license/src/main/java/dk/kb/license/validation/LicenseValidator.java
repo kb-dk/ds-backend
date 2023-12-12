@@ -37,7 +37,7 @@ public class LicenseValidator {
     // The following 3 methods are the API
 
     //TODO shitload of javadoc
-    public static ArrayList<License> getUsersLicenses(GetUsersLicensesInputDto input) throws Exception{
+    public static ArrayList<License> getUsersLicenses(GetUsersLicensesInputDto input) {
         //validate
         if (input.getAttributes() == null || input.getAttributes().size() == 0){
             log.error("No attributes defined in input.");
@@ -56,7 +56,7 @@ public class LicenseValidator {
     }
 
     //TODO shitload of javadoc
-    public static ArrayList<UserGroupDto> getUsersGroups(GetUserGroupsInputDto input) throws Exception{
+    public static ArrayList<UserGroupDto> getUsersGroups(GetUserGroupsInputDto input) {
         //validate
         if (input.getAttributes() == null || input.getAttributes().size() == 0){
             log.error("No attributes defined in input.");
@@ -137,7 +137,7 @@ public class LicenseValidator {
 
 
     //TODO shitload of javadoc
-    public static GetUserQueryOutputDto getUserQuery(GetUserQueryInputDto input) throws Exception{
+    public static GetUserQueryOutputDto getUserQuery(GetUserQueryInputDto input) {
 
         //validate
         if (input.getAttributes() == null){
@@ -192,7 +192,7 @@ public class LicenseValidator {
 
 
     //TODO shitload of javadoc
-    public static boolean validateAccess(ValidateAccessInputDto input) throws Exception{
+    public static boolean validateAccess(ValidateAccessInputDto input) {
 
         //validate
         if (input.getAttributes() == null || input.getAttributes().size() == 0){

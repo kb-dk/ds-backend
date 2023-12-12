@@ -191,7 +191,7 @@ public class ConfigurationServlet extends HttpServlet {
         return;
     }
 
-    private String decomposeValidateAccess (String validation_attribute_values, String validation_groups, String validation_presentationtype) throws Exception{
+    private String decomposeValidateAccess (String validation_attribute_values, String validation_groups, String validation_presentationtype) {
         StringBuilder infoMessage = new StringBuilder();   
         //parse input first.
         ValidateAccessInputDto input = new ValidateAccessInputDto();
@@ -285,7 +285,7 @@ public class ConfigurationServlet extends HttpServlet {
     }
 
 
-    private String decomposeValidateQuery (String validation_attribute_values,  String validation_presentationtypes) throws Exception{
+    private String decomposeValidateQuery (String validation_attribute_values,  String validation_presentationtypes) {
         StringBuilder infoMessage = new StringBuilder();   
         //parse input first.
         GetUserQueryInputDto input = new GetUserQueryInputDto();
@@ -326,7 +326,7 @@ public class ConfigurationServlet extends HttpServlet {
         return infoMessage.toString();
     }
 
-    private String decomposCheckAccessIds(String checkAccessIds_attribute_values,  String checkAccessIds_presentationtype, String checkAccessIds_ids) throws Exception{
+    private String decomposCheckAccessIds(String checkAccessIds_attribute_values,  String checkAccessIds_presentationtype, String checkAccessIds_ids) {
         StringBuilder infoMessage = new StringBuilder();   
         CheckAccessForIdsInputDto input = new CheckAccessForIdsInputDto();
         ArrayList<UserObjAttributeDto> attributes;
