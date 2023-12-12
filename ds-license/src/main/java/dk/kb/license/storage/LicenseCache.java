@@ -1,6 +1,7 @@
 package dk.kb.license.storage;
 
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -105,7 +106,7 @@ public class LicenseCache {
             }
 
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             log.error("Error in reload cache", e);
             throw new RuntimeException(e);
         }

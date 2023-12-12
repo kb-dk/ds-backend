@@ -62,7 +62,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 			HelloReplyDto response = new HelloReplyDto();
 			response.setMessage("KbqLzzD6");
 			return response;
-		} catch (Exception e){
+		} catch (RuntimeException e){
 			throw handleException(e);
 		}
 

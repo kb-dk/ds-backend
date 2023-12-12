@@ -387,7 +387,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
             connection.commit();
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             log.error("Exception in updateLicenseGroupType:" + e.getMessage());
             throw e;
         }
@@ -411,7 +411,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
             connection.commit();
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             log.error("Exception in updatePresentationType:" + e.getMessage());
             throw e;
         }
@@ -527,7 +527,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             persistLicenseContentsForLicense(licenseId, license.getLicenseContents());
 
             
-        } catch (Exception e) {
+        } catch (SQLException e) {
             log.error("SQL Exception in persistLicense:" + e.getMessage());
             throw e;
         }
@@ -668,7 +668,7 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     // this method a license from licenseId with all associations (complete
     // object-tree)
-    public License getLicense(long licenseId) throws Exception {
+    public License getLicense(long licenseId) throws IllegalArgumentException, SQLException {
 
         License license = new License();
 
@@ -1180,7 +1180,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     public void rollback() {
         try {
             connection.rollback();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             // nothing to do here
         }
     }
@@ -1189,7 +1189,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     public void close() {
         try {
             connection.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             // nothing to do here
         }
     }
@@ -1233,7 +1233,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             if (dataSource != null) {
                 dataSource.close();
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             // ignore errors during shutdown, we cant do anything about it anyway
             log.error("shutdown failed", e);
         }

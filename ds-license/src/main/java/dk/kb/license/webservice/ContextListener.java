@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -63,7 +64,7 @@ public class ContextListener implements ServletContextListener {
         }
         catch (IOException e) {
             throw new RuntimeException("Failed to load settings", e);
-        } 
+        }
         log.info("Service initialized.");
     }
     
@@ -118,7 +119,7 @@ public class ContextListener implements ServletContextListener {
                     log.debug("Error deregistering driver {}", driver, e);
                 }
             }            
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("failed to shutdown Ds-Storage", e);
         }
         

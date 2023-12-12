@@ -1,5 +1,6 @@
 package dk.kb.license;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,7 +60,7 @@ public class Util {
 				return false;
 			}
 			return true;
-		} catch (Exception e) {
+		} catch (ParseException e) {
 			log.info("Invalid dateformat entered:" + dateFormat);
 			return false;
 		}
@@ -73,7 +74,7 @@ public class Util {
 		}
 		try {
 			return formatter.get().parse(dateFormat).getTime();
-		} catch (Exception e) {
+		} catch (ParseException e) {
 			throw new IllegalArgumentException("Could not format date:" + dateFormat);
 		}
 	}

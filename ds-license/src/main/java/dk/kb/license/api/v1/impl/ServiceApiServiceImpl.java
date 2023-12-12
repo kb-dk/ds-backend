@@ -55,7 +55,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     public String ping() throws ServiceException {
         try{
             return "Pong";
-        } catch (Exception e){
+        } catch (RuntimeException e){
             throw handleException(e);
         }
     }

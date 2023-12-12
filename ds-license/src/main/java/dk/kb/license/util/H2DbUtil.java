@@ -42,7 +42,7 @@ public class H2DbUtil {
             connection.createStatement().execute("RUNSCRIPT FROM '" + file.getAbsolutePath() + "'");
             connection.createStatement().execute("SHUTDOWN");
         }
-        catch(Exception e) {
+        catch(RuntimeException e) {
             e.printStackTrace();
         }
 

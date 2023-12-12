@@ -19,7 +19,7 @@ public class SolrServerClient extends AbstractSolrJClient{
            //solrServer.setParser(new NoOpResponseParser("json"));
             solrServer.setParser(new XMLResponseParser());
         }
-        catch(Exception e){            
+        catch(RuntimeException e){
             log.error("Unable to connect to solr-server:"+serverUrl,e);
         }
 

@@ -53,9 +53,8 @@ public class ConfigurationServlet extends HttpServlet {
                 String value = request.getParameter("value_presentationtype");
                 String value_en = request.getParameter("value_en_presentationtype");
                 log.debug("Saving new presentationtype:" + key);
-                LicenseModuleFacade.persistLicensePresentationType(key,value,value_en);
-            }
-            else if ("save_grouptype".equals(event)) {
+                LicenseModuleFacade.persistLicensePresentationType(key, value, value_en);
+            } else if ("save_grouptype".equals(event)) {
                 request.setAttribute("tab", "2");
                 String key = request.getParameter("key_grouptype");
                 String value_dk = request.getParameter("value_grouptype");
@@ -67,11 +66,11 @@ public class ConfigurationServlet extends HttpServlet {
 
                 boolean isKlausulering = false;
 
-                if ("klausulering".equals(typeStr)) { 
+                if ("klausulering".equals(typeStr)) {
                     isKlausulering = true;
                 }
-                log.debug("Saving new grouptype:" + key +" klausulering:"+isKlausulering);
-                LicenseModuleFacade.persistLicenseGroupType(key,value_dk,value_en,description,description_en,query, isKlausulering);
+                log.debug("Saving new grouptype:" + key + " klausulering:" + isKlausulering);
+                LicenseModuleFacade.persistLicenseGroupType(key, value_dk, value_en, description, description_en, query, isKlausulering);
 
             } else if ("save_attributetype".equals(event)) {
 
@@ -83,7 +82,7 @@ public class ConfigurationServlet extends HttpServlet {
             } else if ("validate".equals(event)) {
                 log.debug("validate called");
                 request.setAttribute("tab", "4");
-                String validation_attribute_values = request.getParameter("validation_attribute_values");				                                                           		
+                String validation_attribute_values = request.getParameter("validation_attribute_values");
                 String validation_groups = request.getParameter("validation_groups");
                 String validation_presentationtype = request.getParameter("validation_presentationtype");
 
@@ -92,25 +91,23 @@ public class ConfigurationServlet extends HttpServlet {
                 request.setAttribute("validation_presentationtype", validation_presentationtype);
 
 
-                String result = decomposeValidateAccess(validation_attribute_values,validation_groups,validation_presentationtype);
-                request.setAttribute("validation_result", result);		
-            }
-            else if ("validateQuery".equals(event)) {
+                String result = decomposeValidateAccess(validation_attribute_values, validation_groups, validation_presentationtype);
+                request.setAttribute("validation_result", result);
+            } else if ("validateQuery".equals(event)) {
                 log.debug("validateQuery called");
                 request.setAttribute("tab", "5");
-                String validationQuery_attribute_values = request.getParameter("validationQuery_attribute_values");				                                                           		
+                String validationQuery_attribute_values = request.getParameter("validationQuery_attribute_values");
                 String validationQuery_presentationtype = request.getParameter("validationQuery_presentationtype");
 
                 request.setAttribute("validationQuery_attribute_values", validationQuery_attribute_values);
                 request.setAttribute("validationQuery_presentationtype", validationQuery_presentationtype);
 
-                String result = decomposeValidateQuery(validationQuery_attribute_values,validationQuery_presentationtype);
-                request.setAttribute("validationQuery_result", result);		
-            }			
-            else if ("checkAccessIds".equals(event)) {
+                String result = decomposeValidateQuery(validationQuery_attribute_values, validationQuery_presentationtype);
+                request.setAttribute("validationQuery_result", result);
+            } else if ("checkAccessIds".equals(event)) {
                 log.debug("checkAccessIds called");
                 request.setAttribute("tab", "6");
-                String checkAccessIds_attribute_values = request.getParameter("checkAccessIds_attribute_values");				                                                           		
+                String checkAccessIds_attribute_values = request.getParameter("checkAccessIds_attribute_values");
                 String checkAccessIds_presentationtype = request.getParameter("checkAccessIds_presentationtype");
                 String checkAccessIds_ids = request.getParameter("checkAccessIds_ids");
 
@@ -118,28 +115,24 @@ public class ConfigurationServlet extends HttpServlet {
                 request.setAttribute("checkAccessIds_presentationtype", checkAccessIds_presentationtype);
                 request.setAttribute("checkAccessIds_ids", checkAccessIds_ids);
 
-                String result = decomposCheckAccessIds(checkAccessIds_attribute_values,checkAccessIds_presentationtype,checkAccessIds_ids);
-                request.setAttribute("checkAccessIds_result", result);		
-            }			
-            else if ("deletePresentationType".equals(event)) {
+                String result = decomposCheckAccessIds(checkAccessIds_attribute_values, checkAccessIds_presentationtype, checkAccessIds_ids);
+                request.setAttribute("checkAccessIds_result", result);
+            } else if ("deletePresentationType".equals(event)) {
                 log.debug("deletePresentationType called");
                 request.setAttribute("tab", "1");
-                String typeName = request.getParameter("typeName");				                                                           				
+                String typeName = request.getParameter("typeName");
                 LicenseModuleFacade.deletePresentationType(typeName);
-            }
-            else if ("deleteGroupType".equals(event)) {
+            } else if ("deleteGroupType".equals(event)) {
                 log.debug("deleteGroup called");
                 request.setAttribute("tab", "2");
-                String typeName = request.getParameter("typeName");				                                                           				
+                String typeName = request.getParameter("typeName");
                 LicenseModuleFacade.deleteLicenseGroupType(typeName);
-            }
-            else if ("deleteAttributeType".equals(event)) {
+            } else if ("deleteAttributeType".equals(event)) {
                 log.debug("deleteAttributeType called");
                 request.setAttribute("tab", "3");
-                String typeName = request.getParameter("typeName");				                                                           				
+                String typeName = request.getParameter("typeName");
                 LicenseModuleFacade.deleteAttributeType(typeName);
-            }
-            else if ("updateGroup".equals(event)) {
+            } else if ("updateGroup".equals(event)) {
                 log.debug("updateGroup called");
                 request.setAttribute("tab", "2");
 
@@ -157,21 +150,19 @@ public class ConfigurationServlet extends HttpServlet {
                     isRestrictionGroup = true;
                 }
                 log.debug("Updating license group with id:" + id);
-                LicenseModuleFacade.updateLicenseGroupType(Long.parseLong(id),value, value_en,description,description_en, query, isRestrictionGroup);
-            }						
-            else if ("updatePresentationType".equals(event)) {
+                LicenseModuleFacade.updateLicenseGroupType(Long.parseLong(id), value, value_en, description, description_en, query, isRestrictionGroup);
+            } else if ("updatePresentationType".equals(event)) {
                 log.debug("updatePresentationType called");
                 request.setAttribute("tab", "1");
                 String id = request.getParameter("id");
                 //String key = request.getParameter("key");//Not used. Update by ID.
                 String value = request.getParameter("value_presentationtype");
-                String value_en = request.getParameter("value_en_presentationtype");							
+                String value_en = request.getParameter("value_en_presentationtype");
                 log.debug("Updating presentatintype with id:" + id);
-                LicenseModuleFacade.updatePresentationType(Long.parseLong(id),value, value_en);
-            }						
-            else {								
+                LicenseModuleFacade.updatePresentationType(Long.parseLong(id), value, value_en);
+            } else {
                 log.error("Unknown event:" + event);
-                request.setAttribute("message", "Unknown event:"+event);
+                request.setAttribute("message", "Unknown event:" + event);
             }
 
         } catch (Exception e) {//various server errors
@@ -212,7 +203,7 @@ public class ConfigurationServlet extends HttpServlet {
             input.setPresentationType(presentationTypes.get(0));
 
         }
-        catch(Exception e){
+        catch(RuntimeException e){
             infoMessage.append("Input validerings fejl fra web-form:"+e.getMessage());
             return infoMessage.toString();
         }        
@@ -277,7 +268,7 @@ public class ConfigurationServlet extends HttpServlet {
             //infoMessage.append("Generated Query:"+userGroupsDTO.getQueryString());
         }
 
-        catch(Exception e){
+        catch(RuntimeException e){
             infoMessage.append("Fejl under validateAccess kald:"+e.getMessage());	
             return infoMessage.toString();
         }
@@ -303,7 +294,7 @@ public class ConfigurationServlet extends HttpServlet {
             input.setPresentationType(presentationTypes.get(0));
 
         }
-        catch(Exception e){
+        catch(RuntimeException e){
             infoMessage.append("Input validerings fejl fra web-form:"+e.getMessage());
             return infoMessage.toString();
         }        
@@ -337,7 +328,7 @@ public class ConfigurationServlet extends HttpServlet {
             input.setAccessIds(createIdsFormData(checkAccessIds_ids));			
 
         }
-        catch(Exception e){
+        catch(RuntimeException e){
             infoMessage.append("Input validerings fejl fra web-form:"+e.getMessage());
             return infoMessage.toString();
         }        
