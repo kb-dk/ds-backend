@@ -125,7 +125,8 @@ public class DsPresentClientTest {
                     TEST_CONF, DsPresentClient.PRESENT_SERVER_URL_KEY);
             return null;
         }
-        DsPresentClient client = new DsPresentClient(presentURL);
+
+        DsPresentClient client = new DsPresentClient(config);
         try {
             client.service.status(); // We cannot use ping as it does not return JSON. This is a problem!
         } catch (Exception e) {
