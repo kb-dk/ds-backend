@@ -72,13 +72,12 @@ public class DsPresentClient extends DsPresentApi {
      * <p>
      * This constructor expects the structure
      * <pre>
-     * config:
-     *   present:
-     *     url: 'http://localhost:9073/ds-present/v1'
-     *     headers:
-     *       # Placeholder for authentication until OAuth2 integration is in place
-     *       # Set this to 'internal_service` on local and devel to bypass license check in ds-present
-     *       - Simulated-OAuth2-Group: anonymous
+     * present:
+     *   url: 'http://localhost:9073/ds-present/v1'
+     *   headers:
+     *     # Placeholder for authentication until OAuth2 integration is in place
+     *     # Set this to 'internal_service` on local and devel to bypass license check in ds-present
+     *     - Simulated-OAuth2-Group: anonymous
      * </pre>
      * @param config following the outlined structure.
      * @param headers zero or more maps of headers, which will be set for all calls by this client.
@@ -107,13 +106,12 @@ public class DsPresentClient extends DsPresentApi {
      * <p>
      * When working with YAML configs, it is suggested to use the structure
      * <pre>
-     * config:
-     *   present:
-     *     url: 'http://localhost:9073/ds-present/v1'
-     *     headers:
-     *       # Placeholder for authentication until OAuth2 integration is in place
-     *       # Set this to 'internal_service` on local and devel to bypass license check in ds-present
-     *       - Simulated-OAuth2-Group: anonymous
+     * present:
+     *   url: 'http://localhost:9073/ds-present/v1'
+     *   headers:
+     *     # Placeholder for authentication until OAuth2 integration is in place
+     *     # Set this to 'internal_service` on local and devel to bypass license check in ds-present
+     *     - Simulated-OAuth2-Group: anonymous
      * </pre>
      * Then use the path {@link #PRESENT_SERVER_URL_KEY} to extract the URL.
      * <p>
