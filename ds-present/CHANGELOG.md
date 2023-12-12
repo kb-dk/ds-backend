@@ -6,14 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Preliminary support for token based user group resolving, preparing for OAuth2
 
 ### Changed
 
 
+## [1.2.2](https://github.com/kb-dk/ds-present/releases/tag/v1.2.2) - 2023-12-12
+### Added
+- Preliminary support for token based user group resolving, preparing for OAuth2
+
+
 ## [1.2.1](https://github.com/kb-dk/ds-present/releases/tag/v1.2.1) - 2023-12-11
-### changed
- - Enum types define for presentations-formats (FormatDTO)
+### Changed
+- Enum types define for presentations-formats (FormatDTO)
+
 
 ## [1.2.0](https://github.com/kb-dk/ds-present/releases/tag/v1.2.0) - 2023-12-05
 ### Changed 
