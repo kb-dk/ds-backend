@@ -37,6 +37,7 @@ public class AccessUtil {
     private static final Logger log = LoggerFactory.getLogger(AccessUtil.class);
 
     public static final String HEADER_SIMULATED_GROUP = "Simulated-OAuth2-Group";
+    // TODO: The two roles below are preliminary. When the OAuth2 project is underway, they should be changed or removed
     public static final String GROUP_INTERNAL_SERVICE = "internal_service";
     public static final String GROUP_ADMIN = "admin";
 
