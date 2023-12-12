@@ -243,7 +243,7 @@ public class LicenseModuleFacade {
     
     /**
      * Starts a storage transaction and performs the given action on it, returning the result from the action.
-     *
+     * <p>
      * If the action throws an exception, a {@link LicenseModuleStorage#rollback()} is performed.
      * If the action passes without exceptions, a {@link LicenseModuleStorage#commit()} is performed.
      * @param actionID a debug-oriented ID for the action, typically the name of the calling method.
@@ -284,14 +284,14 @@ public class LicenseModuleFacade {
 
     /**
      * Callback used with {@link #performStorageAction(String, StorageAction)}.
-     * @param <T> the object returned from the {@link StorageAction#process(DsStorage)} method.
+     * @param <T> the object returned from the {@link StorageAction#process(LicenseModuleStorage)} method.
      */
     @FunctionalInterface
     private interface StorageAction<T> {
         /**
          * Access or modify the given storage inside of a transaction.
          * If the method throws an exception, it will be logged, a {@link LicenseModuleStorage#rollback()} will be performed and
-         * a wrapping {@link dk.kb.storage.webservice.exception.ServiceException} will be thrown.
+         * a wrapping {@link dk.kb.util.webservice.exception.InternalServiceException} will be thrown.
          * @param storage a storage ready for requests and updates.
          * @return custom return value.
          * @throws Exception if something went wrong.

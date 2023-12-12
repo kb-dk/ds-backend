@@ -1,10 +1,9 @@
 package dk.kb.license.api.v1.impl;
 
-import dk.kb.license.api.v1.*;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import dk.kb.license.api.v1.ServiceApi;
 import dk.kb.license.model.v1.StatusDto;
 
 import dk.kb.util.BuildInfoManager;
@@ -15,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.util.webservice.ImplBase;
 
-import javax.ws.rs.*;
+import javax.ws.rs.ServiceUnavailableException;
 
 /**
  * ds-license
@@ -62,7 +61,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
 
     /**
      * Detailed status / health check for the service.
-     *
+     * <p>
      * The default implementation presents status information available to all web applications.
      * This should be extended with application specific information, such as number of running jobs or
      * current load.

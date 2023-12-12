@@ -60,7 +60,6 @@ public class ServiceConfig {
     /**
      * Direct access to the backing YAML-class is used for configurations with more flexible content
      * and/or if the service developer prefers key-based property access.
-     * @see #getHelloLines() for alternative.
      * @return the backing YAML-handler for the configuration.
      */
     public static YAML getConfig() {

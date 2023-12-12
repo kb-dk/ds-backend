@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 /**
  * 
  * The DB consist of the following tables:
- * 
+ * <p>
  * 3 tables for configuration: PRESENTATIONTYPES: configured presentationtypes.
  * GROUPTYPES: configured groups ATTRIBUTETYPES: configured attributes
- * 
+ * <p>
  * The following tables to store created licenses: LICENSE (top parent)
  * ATTRIBUTEGROUP (parent=LICENSE) ATTRIBUTE (parent = ATTRIBUTEGROUP) VALUE
  * (parent = ATTRIBUTE) LICENSECONTENT (parent = LICENSE) PRESENTATION (parent =
