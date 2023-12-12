@@ -48,13 +48,13 @@ paths:
             type: string
             minLength: 1
           examples:
-            local:
-              value: 'local.test:luftfoto-sample.xml'
-              summary: 'Record fetched from fixed local test corpus'
             remote:
               value: 'ds.tv:oai:du:b1405ff8-6a00-4e20-b2bf-334b22ec2b37'
               #value: 'remote.images:luftfoto-sample.xml'
-              summary: 'Record fetched from (hopefully) running ds-storage'
+              summary: 'Record fetched from running ds-storage'
+            local:
+              value: 'local.test:luftfoto-sample.xml'
+              summary: 'Record fetched from fixed local test corpus'
         - name: format
           in: query
           description: |
@@ -1057,8 +1057,8 @@ components:
         - SolrJSON
         - raw
         #['JSON-LD', 'MODS', 'SolrJSON', "raw"]
-      example: 'JSONLD'
-      default: 'JSONLD'
+      example: 'JSON-LD'
+      default: 'JSON-LD'
 
     # Basic status response component.
     # TODO: Extend this to provide application specific status, such as a list of running jobs or free disk space
