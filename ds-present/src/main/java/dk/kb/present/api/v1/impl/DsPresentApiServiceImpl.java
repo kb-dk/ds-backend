@@ -18,9 +18,8 @@ import java.util.List;
 
 /**
  * ds-present
- *
- * <p>Metadata delivery for the Royal Danish Library 
- *
+ * <p>
+ * Metadata delivery for the Royal Danish Library
  */
 public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     private static final Logger log = LoggerFactory.getLogger(DsPresentApiServiceImpl.class);
@@ -91,7 +90,6 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
         } catch (Exception e){
             throw handleException(e);
         }
-    
     }
 
     /**
@@ -112,8 +110,10 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     @Override
     public String getRecord(String id, FormatDto format) throws ServiceException {
         try {
-            log.debug("getRecord(id='{}', format='{}') called with call details: {}", id, format, getCallDetails());
-            ACCESS access = AccessUtil.createAccessChecker(RECORD_ACCESS_TYPE).apply(id);
+            log.debug("getRecord(id='{}', format='{}') called with groups {} and call details: {}",
+                    id, format, AccessUtil.getGroups(httpHeaders), getCallDetails());
+            ACCESS access =
+                    AccessUtil.createAccessChecker(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE).apply(id);
             switch (access) {
                 case ok:
                     return PresentFacade.getRecord(id, format);
@@ -134,8 +134,9 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
 
     @Override
     public StreamingOutput getRecords(String origin, Long mTime, Long maxRecords, FormatDto format) {
-        log.debug("getRecords(origin='{}', mTime={}, maxRecords={}, format='{}') called with call details: {}",
-                  origin, mTime, maxRecords, format, getCallDetails());
+        log.debug("getRecords(origin='{}', mTime={}, maxRecords={}, format='{}') called with groups {} " +
+                        "and call details: {}",
+                  origin, mTime, maxRecords, format, AccessUtil.getGroups(httpHeaders), getCallDetails());
         if (origin == null) {
             throw new InternalServiceException("origin must be specified but was not");
         }
@@ -144,7 +145,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecords(
                     httpServletResponse, origin, finalMTime, finalMaxRecords, format,
-                    AccessUtil.createAccessFilter(RECORD_ACCESS_TYPE));
+                    AccessUtil.createAccessFilter(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE));
         } catch (Exception e){
             throw handleException(e);
         }
@@ -152,8 +153,9 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
 
     @Override
     public StreamingOutput getRecordsRaw(String origin, Long mTime, Long maxRecords, Boolean asJsonLines) {
-        log.debug("getRawRecords(origin='{}', mTime={}, maxRecords={}, asJsonLines={}) called with call details: {}",
-                origin, mTime, maxRecords, asJsonLines, getCallDetails());
+        log.debug("getRawRecords(origin='{}', mTime={}, maxRecords={}, asJsonLines={}) called with groups {} " +
+                        "and call details: {}",
+                origin, mTime, maxRecords, asJsonLines, AccessUtil.getGroups(httpHeaders), getCallDetails());
         if (origin == null) {
             throw new InternalServiceException("origin must be specified but was not");
         }
@@ -161,14 +163,13 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             asJsonLines = false;
         }
 
-        // Returning all IDs.
-        // When using AccessUtil.createAccessFilter(RECORD_ACCESS_TYPE) online deliverable units are returned
         try {
             long finalMTime = mTime == null ? 0L : mTime;
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
             return PresentFacade.getRecordsRaw(
                     httpServletResponse, origin, finalMTime, finalMaxRecords,
-                    ids -> ids, asJsonLines);
+                    AccessUtil.createAccessFilter(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE),
+                    asJsonLines);
         } catch (Exception e){
             throw handleException(e);
         }

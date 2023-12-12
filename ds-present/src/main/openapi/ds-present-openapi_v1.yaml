@@ -14,6 +14,12 @@ info:
     
     Furthermore metadata can be delivered as IIIF Presentation manifests through the `/IIIF/{identifier}/manifest`-endpoint. 
     For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.0 and should be backwards compatible with version 2.1.1
+    
+    This service is under development and is **not** suitable for production!
+    In order to perform calls at an elevanted level, i.e. bypass the license module, add the header
+    `Simulated-OAuth2-Group: admin` to relevant service calls.
+    
+    TODO: Update this description when enabling OAuth2 security
   contact:
     email: '${user.name}@kb.dk'
   license:
@@ -377,6 +383,20 @@ paths:
               schema:
                 type: string
 
+  # Debugging of OAuth2 roles
+  /probe/whoami:
+    get:
+      tags:
+        - Service
+      summary: 'Pseudo-OAuth2 check: The groups that the caller belongs'
+      operationId: whoami
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Whoami'
 
 components:
   schemas:
@@ -1077,3 +1097,19 @@ components:
           type: string
           description: 'Self diagnosed health'
           example: 'ok'
+
+    Whoami:
+      type: object
+      required:
+        - hasAuthenticationToken
+      properties:
+        hasAuthenticationToken:
+          description: 'True if an authentication token was provided with the call, else false'
+          type: boolean
+          example: true
+        groups:
+          description: 'The groups that the user belongs to within this service'
+          type: array
+          items:
+            type: string
+            example: 'read'

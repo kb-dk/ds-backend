@@ -14,6 +14,7 @@
  */
 package dk.kb.present.util;
 
+import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,6 +95,19 @@ public class DsPresentClientTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    void getFixedHeaders() {
+        YAML config = new YAML(Map.of("present", Map.of("headers", List.of(
+                Map.of(AccessUtil.HEADER_SIMULATED_GROUP, "anonymous"),
+                Map.of("Some-Other-Header", "foo")))));
+        Map<String, String> headers = DsPresentClient.getAllHeaders(config);
+        assertEquals(2, headers.size(),
+                "The right number of headers should be extracted");
+        assertEquals("anonymous", headers.get(AccessUtil.HEADER_SIMULATED_GROUP),
+                "The group header should be correct");
+    }
+
     /**
      * @return a {@link DsPresentClient} if a KB-internal remote storage is specified and is available.
      */
@@ -110,7 +125,8 @@ public class DsPresentClientTest {
                     TEST_CONF, DsPresentClient.PRESENT_SERVER_URL_KEY);
             return null;
         }
-        DsPresentClient client = new DsPresentClient(presentURL);
+
+        DsPresentClient client = new DsPresentClient(config);
         try {
             client.service.status(); // We cannot use ping as it does not return JSON. This is a problem!
         } catch (Exception e) {
