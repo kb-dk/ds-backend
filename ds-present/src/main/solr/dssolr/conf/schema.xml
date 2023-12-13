@@ -878,7 +878,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
             Unigrams are kept for use with keyword extraction using MoreLikeThis -->
        <!-- https://stackoverflow.com/questions/18885764/lucene-analyzer-chain-shinglefilter-without-filler-tokens -->
        <filter name="shingle" maxShingleSize="4" outputUnigrams="true" fillerToken="___" />
-       <filter class="solr.PatternReplaceFilterFactory" pattern=".*___.*" replacement=""/>        
+       <filter class="solr.PatternReplaceFilterFactory" pattern=".*___.*" replacement=""/>
+       <!-- Remove embedded timestamp tokens (only used in the 'text' field for temporal search via highlights) -->
+       <filter class="solr.PatternReplaceFilterFactory" pattern="ɣ[0-9]+ɣ" replacement=""/>        
     </analyzer>
   </fieldType>
 
