@@ -867,6 +867,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
+  <!-- TODO: Consider setting multi value distance fairly short for phrase search across
+       timestamped Whisper output -->
   <!-- https://solr.apache.org/guide/solr/latest/indexing-guide/filters.html#shingle-filter -->
   <fieldType name="text_shingles" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="false"  termVectors="true" storeOffsetsWithPositions="true">
     <analyzer>
