@@ -775,6 +775,7 @@
         description
         internal_showviewcode
         text^0.75
+        text_shingles^0.75
         freetext^0.5
        </str>
        
@@ -953,6 +954,7 @@
         description
         internal_showviewcode
         text^0.75
+        text_shingles^0.75
         freetext^0.5
       </str>
       <str name="mlt.maxqt">25</str>
@@ -971,6 +973,7 @@
           catalog
           resource_description
           text^0.75
+          text_shingles^0.75
           freetext^0.5
         </str>
     </lst>
