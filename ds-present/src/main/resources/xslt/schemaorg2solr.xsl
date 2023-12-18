@@ -31,6 +31,10 @@
           <xsl:value-of select="$schemaorg-xml('id')"/>
         </f:string>
 
+        <f:string key="date_modified">
+          <xsl:value-of select="$schemaorg-xml('dateModified')"/>
+        </f:string>
+
         <f:string key="conditions_of_access">
           <xsl:value-of select="map:get($schemaorg-xml, 'conditionsOfAccess')"/>
         </f:string>
