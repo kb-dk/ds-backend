@@ -745,6 +745,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     c8f496cf-4e0b-4682-8eee-67dfe07525d2,8ac98f6e-5653-492a-ab8c-c1462edaeb4a?>
   </field>
 
+  <field name="internal_transformation_error" type="boolean" default="false">
+    <?description This field tells if any of the XSLT transformations have failed during creation of the metadata document?>
+  </field>
+
+  <field name="internal_transformation_error_description" type="text_general">
+    <?description If any of the XSLT metadata transformations have failed during creation of the document, the error will be contained in this field.?>
+  </field>
   <!-- ================================================================ -->
   <!-- ====== Fields related to copyright and access conditions   ===== -->
   <!-- ================================================================ -->
