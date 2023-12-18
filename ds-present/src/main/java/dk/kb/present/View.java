@@ -162,6 +162,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", record.getId());
         metadata.put("origin", origin);
+        metadata.put("mTime", record.getmTimeHuman());
         //TODO: Update placeholder when actual value is in place
         metadata.put("conditionsOfAccess", "TODO: placeholderCondition");
         return metadata;
