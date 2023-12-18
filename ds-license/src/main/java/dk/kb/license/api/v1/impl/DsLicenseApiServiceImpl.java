@@ -62,7 +62,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 			HelloReplyDto response = new HelloReplyDto();
 			response.setMessage("KbqLzzD6");
 			return response;
-		} catch (RuntimeException e){
+		} catch (Exception e){
 			throw handleException(e);
 		}
 
@@ -134,7 +134,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 			ValidateAccessOutputDto output = new ValidateAccessOutputDto();
 			output.setAccess(access);
 			return output;              
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			throw handleException(e);
 		}   
 
@@ -169,7 +169,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 				list.add(item);
 			}     
 			return output;    
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			throw handleException(e);
 		}   
 	}
@@ -193,7 +193,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 			GetUsersFilterQueryOutputDto filterQuery= new GetUsersFilterQueryOutputDto();
 			filterQuery.setFilterQuery(output.getQuery());
 			return filterQuery;
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			throw handleException(e);
 		}   
 
@@ -211,7 +211,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 			output.setGroups(groups);
 
 			return output;    
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			throw handleException(e);
 		}   
 

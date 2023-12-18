@@ -41,7 +41,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     public String extractStatistics() throws ServiceException {
         try {
             throw new ServiceUnavailableException("Not implemented yet");
-        } catch (ServiceUnavailableException e){
+        } catch (Exception e){
             throw handleException(e);
         }
     
@@ -54,7 +54,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     public String ping() throws ServiceException {
         try{
             return "Pong";
-        } catch (RuntimeException e){
+        } catch (Exception e){
             throw handleException(e);
         }
     }
@@ -72,7 +72,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
         String host = "N/A";
         try {
             host = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             log.warn("Exception resolving hostname", e);
         }
         return new StatusDto()
