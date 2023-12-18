@@ -221,21 +221,21 @@
           </xsl:if>
 
           <!-- Extract surround sound-->
-        <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:surround_sound') != ''">
+          <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:surround_sound') != ''">
             <f:string key="surround_sound">
               <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:surround_sound')"/>
             </f:string>
           </xsl:if>
 
           <!-- Extract premiere-->
-        <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:premiere') != ''">
+          <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:premiere') != ''">
             <f:string key="premiere">
               <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:premiere')"/>
             </f:string>
           </xsl:if>
 
           <!-- Extract aspect ratio-->
-        <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio') != ''">
+          <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio') != ''">
             <f:string key="aspect_ratio">
               <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio')"/>
             </f:string>
