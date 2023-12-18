@@ -93,7 +93,7 @@ public class ContextListener implements ServletContextListener {
          log.info("Setting up H2 database under jetty in development mode");          
          H2DbUtil.createEmptyH2DBFromDDL(url, driver,  user, password);
        }
-       catch(SQLException e) {
+       catch(Exception e) {
          log.error("Unable to create local h2 database for jetty environment",e);             
        }
     }

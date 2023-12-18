@@ -165,7 +165,7 @@ public class ConfigurationServlet extends HttpServlet {
                 request.setAttribute("message", "Unknown event:" + event);
             }
 
-        } catch (NumberFormatException e) {//various server errors
+        } catch (Exception e) {//various server errors
             log.error("unexpected error", e);
             request.setAttribute("message", e.getMessage());
             returnFormPage(request, response);
