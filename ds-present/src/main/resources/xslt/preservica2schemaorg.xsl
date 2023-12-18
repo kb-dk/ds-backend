@@ -133,7 +133,7 @@
           </f:array>
           <f:map key="kb:internal">
             <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
-            <f:string key="kb:transformation_error_description"><xsl:value-of select="$err:description"/></f:string>
+            <f:string key="kb:transformation_error_description"><xsl:value-of select="concat($err:code, ': ', $err:description)"/></f:string>
           </f:map>
         </xsl:catch>
       </xsl:try>

@@ -71,7 +71,7 @@
                   <xsl:value-of select="f:true()"/>
                 </f:string>
                 <f:string key="internal_transformation_error_description">
-                  <xsl:value-of select="$err:description"/>
+                  <xsl:value-of select="concat($err:code, ': ', $err:description)"/>
                 </f:string>
               </xsl:catch>
             </xsl:try>
