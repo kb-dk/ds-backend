@@ -63,6 +63,7 @@ public class TestUtil {
 		metadata.put("streamingserver", "www.example.com/streaming/");
 		metadata.put("origin", "ds.test");
 		metadata.put("conditionsOfAccess", "placeholderCondition");
+		metadata.put("mTime", "2023-11-29 13:45:49+0100");
 		//System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
 	}
