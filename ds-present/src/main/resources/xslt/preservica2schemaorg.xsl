@@ -22,6 +22,7 @@
   <xsl:param name="origin"/>
   <xsl:param name="recordID"/>
   <xsl:param name="manifestation"/>
+  <xsl:param name="mTime"/>
   <xsl:param name="conditionsOfAccess"/>
 
   <!-- MAIN TEMPLATE. This template delegates, which fields are to be created for each schema.org object.
@@ -197,6 +198,7 @@
     <f:string key="id">
       <xsl:value-of select="$recordID"/>
     </f:string>
+    <f:string key="dateModified"><xsl:value-of select="$mTime"/></f:string>
     <f:string key="conditionsOfAccess">
       <xsl:value-of select="$conditionsOfAccess"/>
     </f:string>
