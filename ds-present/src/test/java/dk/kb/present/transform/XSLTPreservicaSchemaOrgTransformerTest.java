@@ -344,10 +344,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
     }
 
+    @Test
+    void testErrorCatching() throws IOException {
+        Map<String, String> fakeManifestation = Map.of("manifestation", "test");
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda, fakeManifestation);
 
-
-
-
+        Assertions.assertTrue(transformedJSON.contains("\"kb:transformation_error_description\":" +
+                "\"First argument to parse-xml() is not a well-formed and namespace-well-formed XML document."));
+    }
 
     private static void printSchemaOrgJson(String xml) throws IOException {
         Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
