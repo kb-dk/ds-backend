@@ -198,7 +198,7 @@
     <f:string key="id">
       <xsl:value-of select="$recordID"/>
     </f:string>
-    <f:string key="dateModified"><xsl:value-of select="$mTime"/></f:string>
+    <f:string key="dateModified"><xsl:value-of select="xs:dateTime($mTime)"/></f:string>
     <f:string key="conditionsOfAccess">
       <xsl:value-of select="$conditionsOfAccess"/>
     </f:string>

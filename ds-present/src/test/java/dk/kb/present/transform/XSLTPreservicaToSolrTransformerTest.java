@@ -349,7 +349,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testMTime() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"date_modified\":\"2023-11-29 13:45:49+0100\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"date_modified\":\"2023-11-29T13:45:49Z\"");
     }
 
     @Test
