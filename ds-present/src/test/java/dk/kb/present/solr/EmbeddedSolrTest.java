@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_05fea810;
@@ -594,6 +595,13 @@ public class EmbeddedSolrTest {
     @Test
     void testBroadcaster() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_accf8d1c, "broadcaster", "DR");
+    }
+
+    @Test
+    void testDateModified() throws Exception {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ROOT);
+        Date parsedDate = dateFormat.parse("Wed Nov 29 14:45:49 CET 2023");
+        testDateValuePreservicaField(PVICA_RECORD_e683b0b8, "date_modified", parsedDate);
     }
 
     /*

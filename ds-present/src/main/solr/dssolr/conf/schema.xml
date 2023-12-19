@@ -582,6 +582,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     www.example.com/streaming/bart-access-copies-tv/00/00/00/000000e1-0000-462a-a2b4-7488244fcca7/playlist.m3u8"?>
   </field>
 
+  <field name="date_modified" type="pdate" stored="true">
+    <?description Milliseconds since 1st of January 1970 (epoch) with three added digits representing the last time a record has been modified?>
+    <?example 2023-11-29 13:45:49+0100?>
+  </field>
+
 
 
   <!-- =========================================================================== -->
