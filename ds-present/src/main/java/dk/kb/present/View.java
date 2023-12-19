@@ -14,6 +14,7 @@
  */
 package dk.kb.present;
 
+import dk.kb.license.Util;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -23,13 +24,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -159,13 +168,33 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param record to extract basic metadata from.
      */
     private Map<String,String> createBasicMetadataMap(DsRecordDto record) {
+
         final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", record.getId());
         metadata.put("origin", origin);
-        metadata.put("mTime", record.getmTimeHuman());
+        metadata.put("mTime", getSolrDate(record.getmTimeHuman()));
         //TODO: Update placeholder when actual value is in place
         metadata.put("conditionsOfAccess", "TODO: placeholderCondition");
         return metadata;
+    }
+
+    /**
+     * Ensure formatting of date from ds-storage is indexable in solr and correctly formatted for schema.org representation
+     * by converting from format {@code yyyy-MM-dd HH:mm:ssZ} to {@code yyyy-MM-ddTHH:mm:ssZ}.
+     * @param dateTime a string representation of a dateTime in the format {@code yyyy-MM-dd HH:mm:ssZ}.
+     * @return a solr and schema.org compliant string in the format {@code yyyy-MM-ddTHH:mm:ssZ}
+     * converted with the {@link DateTimeFormatter#ISO_INSTANT}.
+     */
+    private static String getSolrDate(String dateTime) {
+        // Define the formatter for the input date string. This is almost already the expected format of ISO 8601.
+        // However, a small conversion needs to be make to change the space in the input pattern to a T.
+        DateTimeFormatter dsStoragePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssZ", Locale.ROOT);
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse(Objects.requireNonNull(dateTime), dsStoragePattern);
+        Instant instant = offsetDateTime.toInstant();
+        // Convert the datetime string to the ISO INSTANT format, which is in use in both SCHEMA.ORG and SOLR
+        // https://schema.org/DateTime and https://solr.apache.org/guide/6_6/working-with-dates.html#WorkingwithDates-DateFormatting
+        DateTimeFormatter isoInstantFormatter = DateTimeFormatter.ISO_INSTANT;
+        return instant.atOffset(offsetDateTime.getOffset()).format(isoInstantFormatter);
     }
 
     /**
