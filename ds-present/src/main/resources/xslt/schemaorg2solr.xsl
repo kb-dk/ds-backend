@@ -38,10 +38,6 @@
           <xsl:value-of select="$schemaorg-xml('id')"/>
         </f:string>
 
-        <f:string key="date_modified">
-          <xsl:value-of select="$schemaorg-xml('dateModified')"/>
-        </f:string>
-
         <f:string key="conditions_of_access">
           <xsl:value-of select="map:get($schemaorg-xml, 'conditionsOfAccess')"/>
         </f:string>
@@ -399,6 +395,11 @@
   <xsl:template name="kbInternal">
     <xsl:param name="internalMap"/>
 
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:storage_mTime') != ''">
+      <f:string key="internal_storage_mTime">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:storage_mTime')"/>
+      </f:string>
+    </xsl:if>
 
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:format_identifier_ritzau') != ''">
       <f:string key="internal_format_identifier_ritzau">

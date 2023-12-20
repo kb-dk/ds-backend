@@ -63,7 +63,7 @@ public class TestUtil {
 		metadata.put("streamingserver", "www.example.com/streaming/");
 		metadata.put("origin", "ds.test");
 		metadata.put("conditionsOfAccess", "placeholderCondition");
-		metadata.put("mTime", "2023-11-29T13:45:49Z");
+		metadata.put("mTime", "1701261949625000");
 		//System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
 	}
@@ -81,7 +81,7 @@ public class TestUtil {
 		metadata.put("origin", "ds.test");
 		metadata.put("manifestation", childData);
 		metadata.put("conditionsOfAccess", "placeholderCondition");
-		metadata.put("mTime", "2023-11-29T13:45:49Z");
+		metadata.put("mTime", "1701261949625000");
 		//System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
 	}

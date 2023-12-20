@@ -31,7 +31,7 @@ class ViewTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".origins").get(0);
         View view = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(0), dsflConf.getSubMap("dsfl").getString("origin"));
-        DsRecordDto record = new DsRecordDto().mTimeHuman("2023-11-29 13:45:49+0100");
+        DsRecordDto record = new DsRecordDto().mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
         record.setData("SameAsInput");
         assertEquals("SameAsInput", view.apply(record)); // Identity view
     }
@@ -114,7 +114,7 @@ class ViewTest {
         View solrView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
 
-        DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100");
+        DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
 
         String solrJson = solrView.apply(recordDto);
         assertTrue(solrJson.contains("\"origin\":\"ds.test\""));
