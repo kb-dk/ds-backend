@@ -144,9 +144,9 @@
           </f:array>
           <f:map key="kb:internal">
             <!-- Internal value for backing ds-storage mTime-->
-            <f:number key="kb:storage_mTime">
-              <xsl:value-of select="$mTime"/>
-            </f:number>
+            <f:string key="kb:storage_mTime">
+              <xsl:value-of select="format-number($mTime, '0')"/>
+            </f:string>
             <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
             <f:string key="kb:transformation_error_description"><xsl:value-of select="concat($err:code, ': ', $err:description)"/></f:string>
           </f:map>
@@ -228,9 +228,9 @@
           </f:array>
           <f:map key="kb:internal">
             <!-- Internal value for backing ds-storage mTime-->
-            <f:number key="kb:storage_mTime">
-              <xsl:value-of select="$mTime"/>
-            </f:number>
+            <f:string key="kb:storage_mTime">
+              <xsl:value-of select="format-number($mTime, '0')"/>
+            </f:string>
             <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
             <f:string key="kb:transformation_error_description"><xsl:value-of select="$err:description"/></f:string>
           </f:map>
@@ -626,9 +626,9 @@
     <xsl:param name="type"/>
 
     <!-- Internal value for backing ds-storage mTime-->
-    <f:number key="kb:storage_mTime">
-      <xsl:value-of select="$mTime"/>
-    </f:number>
+    <f:string key="kb:storage_mTime">
+      <xsl:value-of select="format-number($mTime, '0')"/>
+    </f:string>
 
     <!-- Extract subgenre if present -->
     <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">

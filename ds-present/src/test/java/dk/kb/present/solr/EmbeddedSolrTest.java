@@ -599,9 +599,7 @@ public class EmbeddedSolrTest {
 
     @Test
     void testDateModified() throws Exception {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ROOT);
-        Date parsedDate = dateFormat.parse("Wed Nov 29 14:45:49 CET 2023");
-        testDateValuePreservicaField(PVICA_RECORD_e683b0b8, "date_modified", parsedDate);
+        testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "internal_storage_mTime", 1701261949625000L);
     }
 
     /*

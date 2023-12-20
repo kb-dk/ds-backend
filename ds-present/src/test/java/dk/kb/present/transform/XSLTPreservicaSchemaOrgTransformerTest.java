@@ -348,6 +348,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void testDateInjection() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:storage_mTime\":"));
+        TestUtil.prettyPrintJson(transformedJSON);
     }
 
 
