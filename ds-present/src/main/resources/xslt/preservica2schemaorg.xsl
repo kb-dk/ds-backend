@@ -13,6 +13,7 @@
                xmlns:access="http://doms.statsbiblioteket.dk/types/access/0/1/#"
                xmlns:pidhandle="http://kuana.kb.dk/types/pidhandle/0/1/#"
                xmlns:program_structure="http://doms.statsbiblioteket.dk/types/program_structure/0/1/#"
+               xmlns:err="http://www.w3.org/2005/xqt-errors"
                version="3.0">
 
 
@@ -24,7 +25,6 @@
   <xsl:param name="manifestation"/>
   <xsl:param name="mTime"/>
   <xsl:param name="conditionsOfAccess"/>
-
   <!-- MAIN TEMPLATE. This template delegates, which fields are to be created for each schema.org object.
        Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
   <xsl:template match="/">
@@ -82,44 +82,62 @@
         <xsl:with-param name="type" select="$type"/>
       </xsl:call-template>
 
-      <!-- Extract PBCore metadata -->
-      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
-        <xsl:call-template name="pbc-metadata">
-          <xsl:with-param name="type" select="$type"/>
+      <xsl:try>
+        <!-- Extract PBCore metadata -->
+        <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+          <xsl:call-template name="pbc-metadata">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+          </xsl:call-template>
+
+          <!-- This is the only field directly present in pbc:PBCoreDescriptionDocument, which is only used for video
+               objects. Therefore, it is extracted here. If more fields from this part of the metadata were only
+               relevant for video objects, then a new template would be introduced. -->
+          <!-- Is the resource hd? or do we know anything about the video quality=? -->
+          <xsl:if test="pbcoreInstantiation/formatStandard != ''">
+            <f:string key="videoQuality"><xsl:value-of select="./pbcoreInstantiation/formatStandard"/></f:string>
+          </xsl:if>
+        </xsl:for-each>
+
+        <!-- Extract manifestation -->
+        <xsl:call-template name="extract-manifestation"/>
+
+        <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
+             available from the preservica records.-->
+        <f:map key="kb:internal">
+        <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
+        <xsl:call-template name="kb-internal">
           <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+          <xsl:with-param name="type" select="$type"/>
         </xsl:call-template>
 
-        <!-- This is the only field directly present in pbc:PBCoreDescriptionDocument, which is only used for video
-             objects. Therefore, it is extracted here. If more fields from this part of the metadata were only
-             relevant for video objects, then a new template would be introduced. -->
-        <!-- Is the resource hd? or do we know anything about the video quality=? -->
-        <xsl:if test="pbcoreInstantiation/formatStandard != ''">
-          <f:string key="videoQuality"><xsl:value-of select="./pbcoreInstantiation/formatStandard"/></f:string>
-        </xsl:if>
-      </xsl:for-each>
+        <!-- This template extracts internal fields, that are only relevant for video objects. Therefore, they have been
+             removed from the overall kb-internal template called above. The fields are: aspect_ratio and color.-->
+        <xsl:call-template name="internal-video-fields"/>
 
-      <!-- Extract manifestation -->
-      <xsl:call-template name="extract-manifestation"/>
+        <!-- This template also extracts internal fields only relevant for video. The rest of the extension extraction
+             is handled in the kb-internal template called above. -->
+        <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+          <xsl:call-template name="video-extension-extractor"/>
+        </xsl:for-each>
+        </f:map>
 
-      <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
-           available from the preservica records.-->
-      <f:map key="kb:internal">
-      <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
-      <xsl:call-template name="kb-internal">
-        <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-        <xsl:with-param name="type" select="$type"/>
-      </xsl:call-template>
-
-      <!-- This template extracts internal fields, that are only relevant for video objects. Therefore, they have been
-           removed from the overall kb-internal template called above. The fields are: aspect_ratio and color.-->
-      <xsl:call-template name="internal-video-fields"/>
-
-      <!-- This template also extracts internal fields only relevant for video. The rest of the extension extraction
-           is handled in the kb-internal template called above. -->
-      <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
-        <xsl:call-template name="video-extension-extractor"/>
-      </xsl:for-each>
-      </f:map>
+        <!-- Catches all errors in sequence constructors (places where data can be used as input). If an error occurs
+             the field origin will be created and internal fields about the error will be created as well. -->
+        <xsl:catch errors="*">
+          <f:array key="identifier">
+            <f:map>
+              <f:string key="@type">PropertyValue</f:string>
+              <f:string key="PropertyID">Origin</f:string>
+              <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+            </f:map>
+          </f:array>
+          <f:map key="kb:internal">
+            <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
+            <f:string key="kb:transformation_error_description"><xsl:value-of select="concat($err:code, ': ', $err:description)"/></f:string>
+          </f:map>
+        </xsl:catch>
+      </xsl:try>
 
     </f:map>
   </xsl:template>
@@ -147,19 +165,46 @@
         <xsl:with-param name="type" select="$type"/>
       </xsl:call-template>
 
-      <!-- Extract PBCore metadata -->
-      <!-- We cant assume that all records contain PBCore metadata as some OAI harvests might fail and not extract it.
-           We do need to set origin anyway, therefore this choose-statement. -->
-      <xsl:choose>
-        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
-          <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
-            <xsl:call-template name="pbc-metadata">
-              <xsl:with-param name="type" select="$type"/>
+      <xsl:try>
+        <!-- Extract PBCore metadata -->
+        <!-- We cant assume that all records contain PBCore metadata as some OAI harvests might fail and not extract it.
+             We do need to set origin anyway, therefore this choose-statement. -->
+        <xsl:choose>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+            <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+              <xsl:call-template name="pbc-metadata">
+                <xsl:with-param name="type" select="$type"/>
+                <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+              </xsl:call-template>
+            </xsl:for-each>
+          </xsl:when>
+          <xsl:otherwise>
+            <f:array key="identifier">
+              <f:map>
+                <f:string key="@type">PropertyValue</f:string>
+                <f:string key="PropertyID">Origin</f:string>
+                <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+              </f:map>
+            </f:array>
+          </xsl:otherwise>
+        </xsl:choose>
+
+        <!-- Extract manifestation -->
+        <xsl:call-template name="extract-manifestation"/>
+
+        <!-- If type is MediaObject we don't create the internal map. -->
+        <xsl:if test="$type != 'MediaObject'">
+          <f:map key="kb:internal">
+          <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
+            <xsl:call-template name="kb-internal">
               <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+              <xsl:with-param name="type" select="$type"/>
             </xsl:call-template>
-          </xsl:for-each>
-        </xsl:when>
-        <xsl:otherwise>
+          </f:map>
+        </xsl:if>
+        <!-- Catches all errors in sequence constructors (places where data can be used as input). If an error occurs
+           the field origin will be created and internal fields about the error will be created as well. -->
+        <xsl:catch errors="*">
           <f:array key="identifier">
             <f:map>
               <f:string key="@type">PropertyValue</f:string>
@@ -167,24 +212,12 @@
               <f:string key="value"><xsl:value-of select="$origin"/></f:string>
             </f:map>
           </f:array>
-        </xsl:otherwise>
-      </xsl:choose>
-
-      <!-- Extract manifestation -->
-      <xsl:call-template name="extract-manifestation"/>
-
-      <!-- If type is MediaObject we don't create the internal map. -->
-      <xsl:if test="$type != 'MediaObject'">
-        <f:map key="kb:internal">
-        <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
-          <xsl:call-template name="kb-internal">
-            <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="type" select="$type"/>
-          </xsl:call-template>
-        </f:map>
-      </xsl:if>
-
-
+          <f:map key="kb:internal">
+            <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
+            <f:string key="kb:transformation_error_description"><xsl:value-of select="$err:description"/></f:string>
+          </f:map>
+        </xsl:catch>
+      </xsl:try>
     </f:map>
   </xsl:template>
 
