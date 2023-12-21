@@ -241,8 +241,9 @@
           <xsl:value-of select="$schemaorg-xml('startTime')"/>
         </f:string>
 
+        <!-- Extracts the time from the datetime variable in danish normal time. -->
         <xsl:variable name="temporal_start_time_da_string">
-          <xsl:value-of select="xs:time($startTimeDK)"/>
+          <xsl:value-of select="substring-before(xs:string(xs:time($startTimeDK)),'+')"/>
         </xsl:variable>
 
         <!-- The string value of the danish time. -->
@@ -251,7 +252,7 @@
         </f:string>
 
         <f:string key="temporal_start_time_da_date">
-          <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_start_time_da_string))"/>
+          <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_start_time_da_string, 'Z'))"/>
         </f:string>
 
         <f:string key="temporal_start_day_da">
@@ -274,8 +275,9 @@
           <xsl:value-of select="$schemaorg-xml('endTime')"/>
         </f:string>
 
+        <!-- Extracts the time from the datetime variable in danish normal time. -->
         <xsl:variable name="temporal_end_time_da_string">
-          <xsl:value-of select="xs:time($endTimeDK)"/>
+          <xsl:value-of select="substring-before(xs:string(xs:time($endTimeDK)),'+')"/>
         </xsl:variable>
 
         <!-- The string value of the danish time. -->
@@ -284,7 +286,7 @@
         </f:string>
 
         <f:string key="temporal_end_time_da_date">
-          <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_end_time_da_string))"/>
+          <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_end_time_da_string, 'Z'))"/>
         </f:string>
 
         <f:string key="temporal_end_day_da">

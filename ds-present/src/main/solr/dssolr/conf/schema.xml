@@ -582,6 +582,42 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     www.example.com/streaming/bart-access-copies-tv/00/00/00/000000e1-0000-462a-a2b4-7488244fcca7/playlist.m3u8"?>
   </field>
 
+  <field name="temporal_start_time_da_string" type="string">
+    <?description The start time of the broadcast in GMT+01:00 (Danish Normal Time) represented as a string?>
+    <?example 17:15:00?>
+  </field>
+
+  <field name="temporal_end_time_da_string" type="string">
+    <?description The end time of the broadcast in GMT+01:00 (Danish Normal Time) represented as a string?>
+    <?example 17:40:00?>
+  </field>
+
+  <!-- TODO: I dont know if this is a valid way to implement this field. -->
+  <field name="temporal_start_time_da_date" type="pdate">
+    <?description A solr date representation of the temporal_start_time_da_string. This date value does NOT represent a
+                  valid datetime, as the date is always 9999-01-01. Furthermore the field and solr thinks that the value is in zulu
+                  time, however the value is in fact in GMT+01:00 (Danish Normal Time). This field should not be used to
+                  query for a specific date.?>
+    <?example 9999-01-01T17:15:00Z?>
+  </field>
+
+  <field name="temporal_end_time_da_date" type="pdate">
+    <?description A solr date representation of the temporal_end_time_da_string. This date value does NOT represent a
+            valid datetime, as the date is always 9999-01-01. Furthermore the field and solr thinks that the value is in zulu
+            time, however the value is in fact in GMT+01:00 (Danish Normal Time). This field should not be used to
+            query for a specific date.?>
+    <?example 9999-01-01T17:40:00Z?>
+  </field>
+
+  <field name="temporal_start_day_da" type="string">
+    <?description The day of the week when the broadcast started.?>
+    <?example Monday?>
+  </field>
+
+  <field name="temporal_end_day_da" type="string">
+    <?description The day of the week when the broadcast ended. ?>
+    <?example Friday?>
+  </field>
 
 
   <!-- =========================================================================== -->
