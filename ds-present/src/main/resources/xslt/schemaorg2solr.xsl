@@ -226,17 +226,69 @@
         </xsl:if>
       </xsl:if>
 
-      <!-- extract start time-->
+      <!-- If statement creating all fields related to the schema.org value startTime -->
       <xsl:if test="$schemaorg-xml('startTime')">
+        <xsl:variable name="startTimeZulu" as="xs:dateTime">
+          <xsl:value-of select="$schemaorg-xml('startTime')"/>
+        </xsl:variable>
+
+        <!-- Using danish "normal time" which is the european winter time for timezone GMT+1 -->
+        <xsl:variable name="startTimeDK" as="xs:dateTime">
+          <xsl:value-of select="f:adjust-dateTime-to-timezone($startTimeZulu, xs:dayTimeDuration('PT1H'))"/>
+        </xsl:variable>
+        
         <f:string key="startTime">
           <xsl:value-of select="$schemaorg-xml('startTime')"/>
         </f:string>
+
+        <xsl:variable name="temporal_start_time_da_string">
+          <xsl:value-of select="xs:time($startTimeDK)"/>
+        </xsl:variable>
+
+        <!-- The string value of the danish time. -->
+        <f:string key="temporal_start_time_da_string">
+          <xsl:value-of select="$temporal_start_time_da_string"/>
+        </f:string>
+
+        <f:string key="temporal_start_time_da_date">
+          <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_start_time_da_string))"/>
+        </f:string>
+
+        <f:string key="temporal_start_day_da">
+          <xsl:value-of select="format-dateTime($startTimeDK, '[F]')"/>
+        </f:string>
       </xsl:if>
 
-      <!-- extract end time-->
+      <!-- If statement creating all fields related to the schema.org value endTime -->
       <xsl:if test="$schemaorg-xml('endTime')">
+        <xsl:variable name="endTimeZulu" as="xs:dateTime">
+          <xsl:value-of select="$schemaorg-xml('endTime')"/>
+        </xsl:variable>
+
+        <!-- Using danish "normal time" which is the european winter time for timezone GMT+1 -->
+        <xsl:variable name="endTimeDK" as="xs:dateTime">
+          <xsl:value-of select="f:adjust-dateTime-to-timezone($endTimeZulu, xs:dayTimeDuration('PT1H'))"/>
+        </xsl:variable>
+
         <f:string key="endTime">
           <xsl:value-of select="$schemaorg-xml('endTime')"/>
+        </f:string>
+
+        <xsl:variable name="temporal_end_time_da_string">
+          <xsl:value-of select="xs:time($endTimeDK)"/>
+        </xsl:variable>
+
+        <!-- The string value of the danish time. -->
+        <f:string key="temporal_end_time_da_string">
+          <xsl:value-of select="$temporal_end_time_da_string"/>
+        </f:string>
+
+        <f:string key="temporal_end_time_da_date">
+          <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_end_time_da_string))"/>
+        </f:string>
+
+        <f:string key="temporal_end_day_da">
+          <xsl:value-of select="format-dateTime($endTimeDK, '[F]')"/>
         </f:string>
       </xsl:if>
 

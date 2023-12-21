@@ -313,6 +313,15 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testTemporalSearchFields(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_start_time_da_string\":\"17:15:00+01:00\"," +
+                                                                        "\"temporal_start_time_da_date\":\"9999-01-01T17:15:00+01:00\"," +
+                                                                        "\"temporal_start_day_da\":\"Saturday\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_end_time_da_string\":\"17:40:00+01:00\"," +
+                                                                        "\"temporal_end_time_da_date\":\"9999-01-01T17:40:00+01:00\"," +
+                                                                        "\"temporal_end_day_da\":\"Saturday\"");
+    }
+    @Test
     void testNoNotes(){
         assertPvicaNotContains(TestFiles.PVICA_RECORD_b346acc8, "\"notes\":");
     }
@@ -349,7 +358,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void prettyPrintTransformation() throws Exception {
-        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_2973e7fa);
+        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_1f3a6a66);
         TestUtil.prettyPrintJson(solrJson);
     }
 
