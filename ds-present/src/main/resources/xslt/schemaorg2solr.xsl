@@ -101,6 +101,10 @@
             <f:string><xsl:value-of select="normalize-space(.)"/></f:string>
           </xsl:for-each>
         </f:array>
+
+        <f:string key="categories_count">
+          <xsl:value-of select="f:count($categories)"/>
+        </f:string>
       </xsl:if>
 
       <!-- Extract collection-->
@@ -129,12 +133,18 @@
 
       <!-- extract title-->
       <xsl:if test="$schemaorg-xml('name')">
-        <f:string key="title">
+        <xsl:variable name="title">
           <xsl:value-of select="$schemaorg-xml('name')"/>
+        </xsl:variable>
+        <f:string key="title">
+          <xsl:value-of select="$title"/>
         </f:string>
 
         <f:string key="title_sort_da">
-          <xsl:value-of select="$schemaorg-xml('name')"/>
+          <xsl:value-of select="$title"/>
+        </f:string>
+        <f:string key="title_length">
+          <xsl:value-of select="f:string-length($title)"/>
         </f:string>
       </xsl:if>
 
@@ -189,6 +199,33 @@
             </f:string>
           </xsl:if>
         </f:array>
+
+        <f:string key="notes_count">
+          <xsl:choose>
+            <xsl:when test="$schemaorg-xml('abstract') and $schemaorg-xml('description')">
+              <xsl:value-of select="'2'"/>
+            </xsl:when>
+            <xsl:when test="$schemaorg-xml('abstract') and not($schemaorg-xml('description'))">
+              <xsl:value-of select="'1'"/>
+            </xsl:when>
+            <xsl:when test="$schemaorg-xml('description') and not($schemaorg-xml('abstract'))">
+              <xsl:value-of select="'1'"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="'0'"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </f:string>
+
+        <f:string key="notes_length">
+          <xsl:variable name="noteslength">
+            <!-- Eventhough IntelliJ IDEA underlines the syntax below as wrong formatted it works, because we are
+                 JSON represented as XDM. -->
+           <xsl:value-of select="concat($schemaorg-xml('abstract'), $schemaorg-xml('description'))"/>
+          </xsl:variable>
+          <xsl:value-of select="f:string-length($noteslength)"/>
+        </f:string>
+
       </xsl:if>
 
       <!-- Extract content url-->
@@ -309,15 +346,28 @@
 
       <!-- Extract abstract -->
       <xsl:if test="f:exists($schemaorg-xml('abstract'))">
-        <f:string key="abstract">
+        <xsl:variable name="abstract">
           <xsl:value-of select="$schemaorg-xml('abstract')"/>
+        </xsl:variable>
+        <f:string key="abstract">
+          <xsl:value-of select="$abstract"/>
         </f:string>
+        <f:string key="abstract_length">
+          <xsl:value-of select="f:string-length($abstract)"/>
+        </f:string>
+
       </xsl:if>
 
       <!-- Extract description -->
       <xsl:if test="f:exists($schemaorg-xml('description'))">
-        <f:string key="description">
+        <xsl:variable name="description">
           <xsl:value-of select="$schemaorg-xml('description')"/>
+        </xsl:variable>
+        <f:string key="description">
+          <xsl:value-of select="$description"/>
+        </f:string>
+        <f:string key="description_length">
+          <xsl:value-of select="f:string-length($description)"/>
         </f:string>
       </xsl:if>
 

@@ -348,8 +348,23 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testCountFields(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"categories_count\":\"2\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"notes_count\":\"2\"");
+    }
+
+    @Test
+    void testLengthFields(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"title_length\":\"25\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"notes_length\":\"389\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"abstract_length\":\"15\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"description_length\":\"374\"");
+
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
-        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_2973e7fa);
+        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8aafb121);
         TestUtil.prettyPrintJson(solrJson);
     }
 
