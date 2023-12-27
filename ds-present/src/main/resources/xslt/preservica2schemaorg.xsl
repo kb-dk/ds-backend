@@ -38,41 +38,79 @@
   <!-- MAIN TEMPLATE. This template delegates, which fields are to be created for each schema.org object.
        Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
   <xsl:template match="/">
+
+    <!-- Variable containing information on which version of preservica the record in hand origins from.
+         This is used to define which tag should be used as root tag for metadata extraction. -->
+    <xsl:variable name="preservicaVersion">
+      <xsl:choose>
+        <xsl:when test="/XIP">6</xsl:when>
+        <xsl:when test="/xip:DeliverableUnit">5</xsl:when>
+        <xsl:otherwise>Unknown</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <!-- Defines the root path for metadata based on preservica version-->
+    <xsl:variable name="metadataPath">
+      <xsl:choose>
+        <xsl:when test="$preservicaVersion = '5'"><xsl:copy-of select="/xip:DeliverableUnit/Metadata"/></xsl:when>
+        <xsl:when test="$preservicaVersion = '6'"><xsl:copy-of select="/XIP/Metadata/Content"/></xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+
+    <!-- For preservica 5 records the AccessionRef is saved as a variable to be used later in the transformation.
+         Preservica 6 records contains this value inside the $metadataPath and is therefore not extracted here. -->
+    <xsl:variable name="preservica5AccessionRef">
+      <xsl:choose>
+        <xsl:when test="$preservicaVersion= '5'"><xsl:copy-of select="/xip:DeliverableUnit/AccessionRef"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="''"/></xsl:otherwise>
+      </xsl:choose>
+
+    </xsl:variable>
+
+    <!-- Determine the type of schema.org object in hand.-->
+    <xsl:variable name="type">
+      <xsl:choose>
+        <xsl:when test="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
+        <xsl:when test="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
+        <xsl:otherwise>MediaObject</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+
     <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
          This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
-    <xsl:variable name="pbcExtensions" select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension"/>
+    <xsl:variable name="pbcExtensions" select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension"/>
 
     <xsl:variable name="json">
       <!-- TODO: Generel todo: Figure how to determine language for the strings "@language" that can be used throughout the schema.-->
-
-      <!-- Determine the type of schema.org object in hand.-->
-      <xsl:variable name="type">
-        <xsl:choose>
-        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
-        <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
-        <xsl:otherwise>MediaObject</xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
-
       <!-- Choose which type of transformation to do, based on the input data.
            This choose-statement decides, which of the following templates are to be used for the given record. -->
       <xsl:choose>
         <xsl:when test="$type = 'VideoObject'">
           <xsl:call-template name="video-transformation">
             <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
+            <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:when test="$type = 'AudioObject'">
           <xsl:call-template name="audio-transformation">
             <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
+            <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
           <xsl:call-template name="generic-transformation">
             <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
+            <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
@@ -81,10 +119,20 @@
     <xsl:value-of select="f:xml-to-json($json)"/>
   </xsl:template>
 
-  <!-- TEMPLATE FOR TRANSFORMING VIDEOOBJECTS. -->
+  <!-- TEMPLATE FOR TRANSFORMING VIDEOOBJECTS. The template requires the following five parameters:
+        type: The type of schema-org object in hand.
+        metadataPath: The root tag for metadata from the preservica preservation system. This changes between version 5 and 6.
+        pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
+                       the transformation.
+        preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
+        preservica5AccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
+                                 If not, then the parameter contains an empty string.-->
   <xsl:template name="video-transformation">
     <xsl:param name="type"/>
+    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
+    <xsl:param name="preservicaVersion"/>
+    <xsl:param name="preservica5AccessionRef"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -93,19 +141,22 @@
       </xsl:call-template>
 
       <xsl:try>
-        <!-- Extract PBCore metadata -->
-        <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+        <!-- Extract PBCore metadata-->
+        <xsl:for-each select="$metadataPath">
           <xsl:call-template name="pbc-metadata">
             <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
+            <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
           </xsl:call-template>
 
           <!-- This is the only field directly present in pbc:PBCoreDescriptionDocument, which is only used for video
                objects. Therefore, it is extracted here. If more fields from this part of the metadata were only
                relevant for video objects, then a new template would be introduced. -->
           <!-- Is the resource hd? or do we know anything about the video quality=? -->
-          <xsl:if test="pbcoreInstantiation/formatStandard != ''">
-            <f:string key="videoQuality"><xsl:value-of select="./pbcoreInstantiation/formatStandard"/></f:string>
+          <xsl:if test="//pbcoreInstantiation/formatStandard != ''">
+            <f:string key="videoQuality"><xsl:value-of select="//pbcoreInstantiation/formatStandard"/></f:string>
           </xsl:if>
         </xsl:for-each>
 
@@ -127,7 +178,7 @@
 
         <!-- This template also extracts internal fields only relevant for video. The rest of the extension extraction
              is handled in the kb-internal template called above. -->
-        <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+        <xsl:for-each select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
           <xsl:call-template name="video-extension-extractor"/>
         </xsl:for-each>
         </f:map>
@@ -156,22 +207,46 @@
     </f:map>
   </xsl:template>
 
-  <!-- TEMPLATE FOR TRANSFORMING AUDIOOBJECTS. -->
+  <!-- TEMPLATE FOR TRANSFORMING AUDIOOBJECTS. The template requires the following five parameters:
+        type: The type of schema-org object in hand.
+        metadataPath: The root tag for metadata from the preservica preservation system. This changes between version 5 and 6.
+        pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
+                       the transformation.
+        preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
+        preservica5AccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
+                                 If not, then the parameter contains an empty string.-->
   <xsl:template name="audio-transformation">
     <xsl:param name="type"/>
+    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
+    <xsl:param name="preservicaVersion"/>
+    <xsl:param name="preservica5AccessionRef"/>
 
     <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
     <xsl:call-template name="generic-transformation">
       <xsl:with-param name="type" select="$type"/>
+      <xsl:with-param name="metadataPath" select="$metadataPath"/>
       <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+      <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
+      <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
+
     </xsl:call-template>
   </xsl:template>
 
-  <!-- TEMPLATE FOR TRANSFORMING OBJECTS, WHICH ARE WRONGLY DEFINED.-->
+  <!-- TEMPLATE FOR TRANSFORMING OBJECTS, WHICH ARE WRONGLY DEFINED. The template requires the following five parameters:
+        type: The type of schema-org object in hand.
+        metadataPath: The root tag for metadata from the preservica preservation system. This changes between version 5 and 6.
+        pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
+                       the transformation.
+        preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
+        preservica5AccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
+                                 If not, then the parameter contains an empty string.-->
   <xsl:template name="generic-transformation">
     <xsl:param name="type"/>
+    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
+    <xsl:param name="preservicaVersion"/>
+    <xsl:param name="preservica5AccessionRef"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -184,11 +259,14 @@
         <!-- We cant assume that all records contain PBCore metadata as some OAI harvests might fail and not extract it.
              We do need to set origin anyway, therefore this choose-statement. -->
         <xsl:choose>
-          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
-            <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument">
+          <xsl:when test="$metadataPath">
+            <xsl:for-each select="$metadataPath">
               <xsl:call-template name="pbc-metadata">
                 <xsl:with-param name="type" select="$type"/>
+                <xsl:with-param name="metadataPath" select="$metadataPath"/>
                 <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+                <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
+                <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
               </xsl:call-template>
             </xsl:for-each>
           </xsl:when>
@@ -213,6 +291,7 @@
             <xsl:call-template name="kb-internal">
               <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
               <xsl:with-param name="type" select="$type"/>
+              <xsl:with-param name="metadataPath" select="$metadataPath"/>
             </xsl:call-template>
           </f:map>
         </xsl:if>
@@ -260,16 +339,19 @@
        template.-->
   <xsl:template name="pbc-metadata">
     <xsl:param name="type"/>
+    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
+    <xsl:param name="preservicaVersion"/>
+    <xsl:param name="preservica5AccessionRef"/>
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
     <!-- TODO: Do some validation of titles - check with metadata schema when they are set.    -->
     <xsl:variable name="title">
-      <xsl:value-of select="pbcoreTitle[1]/title"/>
+      <xsl:value-of select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreTitle[1]/title"/>
     </xsl:variable>
     <xsl:variable name="original-title">
-      <xsl:value-of select="pbcoreTitle[2]/title"/>
+      <xsl:value-of select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreTitle[2]/title"/>
     </xsl:variable>
 
     <xsl:choose>
@@ -296,25 +378,25 @@
     <!-- Publisher extraction. Some metadata has two pbcorePublisher/publisher/publisherRole.
          We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
     <xsl:variable name="publisherSpecific">
-      <xsl:for-each select="pbcorePublisher">
+      <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcorePublisher">
         <xsl:if test="./publisherRole ='kanalnavn'">
           <xsl:value-of select="./publisher"/>
         </xsl:if>
       </xsl:for-each>    </xsl:variable>
     <xsl:variable name="publisherGeneral">
-      <xsl:for-each select="pbcorePublisher">
+      <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcorePublisher">
         <xsl:if test="./publisherRole ='channel_name'">
           <xsl:value-of select="./publisher"/>
         </xsl:if>
       </xsl:for-each>
     </xsl:variable>
 
-    <xsl:if test="pbcorePublisher">
+    <xsl:if test="$metadataPath//pbc:PBCoreDescriptionDocument/pbcorePublisher">
       <f:map key="publication">
         <f:string key="@type">BroadcastEvent</f:string>
         <!-- Define isLiveBroadcast from live extension field.  -->
         <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
-        <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+        <xsl:for-each select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
           <xsl:if test="f:contains(., 'live:live') or f:contains(., 'live:ikke live')">
             <f:boolean key="isLiveBroadcast">
               <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
@@ -367,7 +449,7 @@
 
     
     <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
-    <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
+    <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
       <f:string key="datePublished">
         <xsl:value-of select="f:substring-before(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart, 'T')"/>
       </f:string>
@@ -392,14 +474,14 @@
         </f:string>
 
         <!-- If episode titel is defined it is extracted here. -->
-        <xsl:for-each select="pbcoreTitle">
+        <xsl:for-each select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreTitle">
           <xsl:if test="titleType = 'episodetitel' and title != ''">
             <f:string key="name"><xsl:value-of select="title"/></f:string>
           </xsl:if>
         </xsl:for-each>
 
         <!-- Extract metadata from PBC extensions related to episodes -->
-        <xsl:for-each select="./pbcoreExtension/extension">
+        <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
           <!-- Extract episode number if present.
                Checks for 'episodenr' in PBC extension and checks that there is a substring after the key.-->
           <xsl:if test="f:contains(., 'episodenr:') and f:string-length(substring-after(., 'episodenr:')) > 0">
@@ -410,7 +492,7 @@
         </xsl:for-each>
 
         <!-- Extract metadata from PBC extensions related to season length. -->
-        <xsl:for-each select="./pbcoreExtension/extension">
+        <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
           <!-- Extract number of episodes in a season, if present.
                Checks for 'antalepisoder' in PBC extension and checks that the value is not an empty string or 0.
                Create partOfSeason field, if any metadata is present. -->
@@ -441,7 +523,7 @@
     <!-- From the metadata it is clear, that 'kortomtale' and 'langomtale' can contain completely different values.
          'kortomtale' is therefore not just a shorter form of 'langomtale'.
          'kortomtale' maps to the schema.org value abstract, while 'langomtale' maps to description-->
-    <xsl:for-each select="pbcoreDescription">
+    <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcoreDescription">
       <xsl:choose>
         <!-- Extract 'kortomtale' as abstract. -->
         <xsl:when test="./descriptionType = 'kortomtale' and description != ''">
@@ -458,12 +540,13 @@
     </xsl:for-each>
 
     <!-- Extract start and end times for broadcast  and calculate duration -->
-    <xsl:if test="pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
+    <xsl:if test="//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and
+                  //pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
       <xsl:variable name="start-time">
-        <xsl:value-of select="xs:dateTime(normalize-space(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart))"/>
+        <xsl:value-of select="xs:dateTime(normalize-space(//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart))"/>
       </xsl:variable>
       <xsl:variable name="end-time">
-        <xsl:value-of select="xs:dateTime(normalize-space(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd))"/>
+        <xsl:value-of select="xs:dateTime(normalize-space(//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd))"/>
       </xsl:variable>
       <f:string key="startTime">
         <xsl:value-of select="$start-time"/>
@@ -481,9 +564,9 @@
 
     <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.
          Also extracts maingenre to the schema.org field 'genre'-->
-    <xsl:if test="pbcoreGenre">
+    <xsl:if test="//pbcoreGenre">
       <xsl:variable name="keywords">
-        <xsl:for-each select="pbcoreGenre/genre">
+        <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
           <xsl:if test="substring-after(., ':') != '' and not(f:contains(., 'null'))">
             <xsl:value-of select="concat(normalize-space(f:substring-after(., ':')), ', ')"/>
           </xsl:if>
@@ -498,7 +581,7 @@
         </f:string>
       </xsl:if>
 
-      <xsl:for-each select="pbcoreGenre/genre">
+      <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
         <xsl:if test="f:contains(., 'hovedgenre:') and substring-after(., 'hovedgenre:') != ''">
           <f:string key="genre">
             <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
@@ -520,8 +603,8 @@
         <f:string key="PropertyID">RecordID</f:string>
         <f:string key="value"><xsl:value-of select="$recordID"/></f:string>
       </f:map>
-      <xsl:if test="pbcoreIdentifier">
-        <xsl:for-each select="pbcoreIdentifier">
+      <xsl:if test="//pbcoreIdentifier">
+        <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcoreIdentifier">
           <xsl:choose>
             <!-- Do nothing when identifierSource or identifier is empty. -->
             <xsl:when test="identifierSource = ''">
@@ -552,35 +635,44 @@
         </xsl:for-each>
       </xsl:if>
       <!-- Extracts PID as identifier if present.-->
-      <xsl:if test="/xip:DeliverableUnit/Metadata/pidhandle:pidhandle/handle">
+      <xsl:if test="$metadataPath//pidhandle:pidhandle/handle">
         <f:map>
           <f:string key="@type">PropertyValue</f:string>
           <f:string key="PropertyID">PID</f:string>
           <f:string key="value">
-            <xsl:value-of select="substring-after(/xip:DeliverableUnit/Metadata/pidhandle:pidhandle/handle, 'hdl:')"/>
+            <xsl:value-of select="substring-after($metadataPath//pidhandle:pidhandle/handle, 'hdl:')"/>
           </f:string>
         </f:map>
       </xsl:if>
       <!-- Extract accession ref as schema.org identifier --> <!-- TODO: This could properly be done with loads of the identifiers in the kb:internal map.-->
+      <!-- TODO: This field is only extracted from preservica 5 records. However, it is present in preservica 6 records at XPATH: /XIP/Metadata[1]/Content/LegacyXIP/AccessionRef -->
       <f:map>
         <f:string key="@type">PropertyValue</f:string>
         <f:string key="PropertyID">InternalAccessionRef</f:string>
-        <f:string key="value"><xsl:value-of select="/xip:DeliverableUnit/AccessionRef"/></f:string>
+        <xsl:choose>
+          <xsl:when test="$preservicaVersion = '5'">
+            <f:string key="value"><xsl:value-of select="$preservica5AccessionRef"/></f:string>
+          </xsl:when>
+          <xsl:when test="$preservicaVersion = '6'">
+            <f:string key="value"><xsl:value-of select="$metadataPath//LegacyXIP/AccessionRef"/></f:string>
+          </xsl:when>
+        </xsl:choose>
       </f:map>
     </f:array>
 
     <!-- Extracts collection -->
-    <xsl:if test="pbcoreInstantiation/formatLocation != ''">
+    <xsl:if test="//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatLocation != ''">
       <f:array key="isPartOf">
         <f:map>
           <f:string key="@type">Collection</f:string>
-          <f:string key="name"><xsl:value-of select="pbcoreInstantiation/formatLocation"/></f:string>
+          <f:string key="name"><xsl:value-of select="//pbcoreInstantiation/formatLocation"/></f:string>
         </f:map>
       </f:array>
     </xsl:if>
   </xsl:template>
 
   <!-- EXTRACT MANIFESTATION FROM METADATA.-->
+  <!-- TODO: Figure out manifestation extraction from preservica 6-->
   <xsl:template name="extract-manifestation">
     <xsl:if test="$manifestation != ''">
       <xsl:variable name="manifestationRef">
@@ -622,6 +714,7 @@
        This kb:internal map was how we've handled internal values in the past, see line 109 in this file:
        https://github.com/kb-dk/ds-present/blob/spolorm-now-works/src/main/resources/xslt/mods2schemaorg.xsl -->
   <xsl:template name="kb-internal">
+    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
 

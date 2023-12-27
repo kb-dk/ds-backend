@@ -183,6 +183,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testNoNullKeywords() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3006e2f8);
+        TestUtil.prettyPrintJson(transformedJSON);
         Assertions.assertFalse(transformedJSON.contains("null"));
     }
 
