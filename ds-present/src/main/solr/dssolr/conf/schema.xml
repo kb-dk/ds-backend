@@ -99,6 +99,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     #432#2asFSSAFs?>
   </field>
 
+  <field name="title_length" type="plong">
+    <?description The length of the title messured in characters.?>
+    <?example     12?>
+  </field>
+
   <field name="creator_affiliation" type="text_general" multiValued="true">
     <?description The name of an organization, institution, etc. with which
             the entity was associated at the time that the resource was created.?>
@@ -551,9 +556,19 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     A danish commedy show.?>
   </field>
 
+  <field name="abstract_length" type="pint">
+    <?description The length of the abstract meassured in characters. ?>
+    <?example     20?>
+  </field>
+
   <field name="description" type="text_general">
     <?description A description of the resource. For videos this description is often quite extensive.?>
     <?example     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis consequat libero, quis ornare mi.?>
+  </field>
+
+  <field name="description_length" type="plong">
+    <?description The length of the description meassured in characters. ?>
+    <?example     256?>
   </field>
 
   <field name="genre_sub" type="string" docValues="true">
