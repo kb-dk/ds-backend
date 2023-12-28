@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Added service endpoints to webapp, which makes the service endpoints reachable.
 
 ### Changed 
 - Update exception throwing and catching throughout the service.
