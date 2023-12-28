@@ -45,6 +45,7 @@ public class SolrService {
     public static final String SELECT = "select";
     public static final String SUGGEST = "suggest";
     public static final String MLT = "mlt";
+    public static final String SCHEMA = "schema";
 
     public static final String Q = "q";
     public static final String SUGGEST_Q = "suggest.q";
@@ -275,6 +276,11 @@ public class SolrService {
         UriBuilder builder = createSuggestRequestBuilder(SUGGEST, suggestDictionary, suggestQuery,suggestCount,wt);                
         return performCall(suggestQuery, builder, "suggest");
     }
+
+    public String schema (){
+        UriBuilder builder = schemaRequestBuilder();
+        return performCall("", builder, "");
+    }
     
     /**
      * Creates a Solr oriented URI builder with basic parameters shared by standard search and More Like This requests.
@@ -314,6 +320,19 @@ public class SolrService {
                 .queryParam(WT, WT_ENUM.safeParse(wt));
                                     
         return builder;
+    }
+
+
+
+    /**
+     * Create a {@code UriBuilder} for fetching the schema behind the solr collection
+     * @return a ready to use builder.
+     */
+    public UriBuilder schemaRequestBuilder(){
+        return UriBuilder.fromUri(server)
+                .path(path)
+                .path(solrCollection)
+                .path(SCHEMA);
     }
 
     

@@ -67,6 +67,32 @@ paths:
               schema:
                 type: string
 
+  /solr/{collection}/schema:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Get the schema behind the solr index for the given collection. The schema contains information on all fields available for the collection.'
+      operationId: solrSchema
+      parameters:
+
+        - name: collection
+          in: path
+          description: 'The ID of the Solr collection to get schema for. Available collections can be requested from /solr/admin/collections'
+          required: true
+          schema:
+            type: string
+            default: 'ds'
+            example: 'ds'
+      responses:
+        '200':
+          description: 'Schema for solr collection.'
+          content:
+            application/json:
+              schema:
+                description: |
+                  Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
+                type: string
+
   /solr/{collection}/select:
     get:
       tags:

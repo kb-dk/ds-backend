@@ -194,6 +194,18 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         }
     }
 
+    @Override
+    public String solrSchema(String collection) {
+        try {
+            SolrService solr = SolrManager.getSolrService(collection);
+            httpServletResponse.setContentType(solr.getResponseMIMEType(null)); // Needed by SolrJ
+            return solr.schema();
+        } catch (Exception e){
+            throw handleException(e);
+        }
+
+    }
+
     /**
      * Perform a Solr-compatible search in the stated collection
      * 
@@ -244,7 +256,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
      * Perform a Solr-suggest search in the stated collection
      * 
      * @param collection: The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections
-     * @param suggestDictonary A suggest dictionary defined in the solr configuration. 
+     * @param suggestDictionary A suggest dictionary defined in the solr configuration.
      * @param suggestQuery The prefix text that the suggest compontent will try to autocomplete. 
      * @param suggestCount Number of results to return. 10 is the default value.
      * @param wt The return format from solr. (json, xml etc.)
