@@ -29,7 +29,7 @@
   <!-- XML containing the presentation manifestation for the record in hand-->
   <xsl:param name="manifestation"/>
   <!-- Representation of when the record was last modified in the backing ds-storage. The value is a long representing time
-       since epoch with millisecond precision. -->
+       since epoch with microsecond precision (milliseconds with 3 extra digits). -->
   <xsl:param name="mTime"/>
   <!-- Access condition for DR material. Currently, this param contains a placeholder. -->
   <xsl:param name="conditionsOfAccess"/>
