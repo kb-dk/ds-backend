@@ -83,6 +83,22 @@ paths:
             type: string
             default: 'ds'
             example: 'ds'
+
+        - name: wt
+          in: query
+          description: |
+            The format for the schema. See [retrieve-schema-information](https://solr.apache.org/guide/solr/9_0/indexing-guide/schema-api.html#retrieve-schema-information)
+            for details.
+          
+            * json: Entire schema in JSON format
+            * xml: Entire schema in XML format, with explicit typing of values
+            * schema.xml: Entire schema in schema.xml format. Note that this is raw XML without inline comments
+          required: false
+          schema:
+            type: string
+            enum: ['json', 'xml', 'schema.xml']
+            default: 'json'
+            example: 'json'
       responses:
         '200':
           description: 'Schema for solr collection.'
@@ -90,7 +106,12 @@ paths:
             application/json:
               schema:
                 description: |
-                  Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
+                  Entire Solr schema in [JSON schema format](https://solr.apache.org/guide/solr/9_0/indexing-guide/schema-api.html#retrieve-schema-examples)
+                type: string
+            application/xml:
+              schema:
+                description: |
+                  Entire Solr schema in [XML or schema.xml format](https://solr.apache.org/guide/solr/9_0/indexing-guide/schema-api.html#retrieve-schema-examples)
                 type: string
 
   /solr/{collection}/select:

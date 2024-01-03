@@ -195,15 +195,14 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     }
 
     @Override
-    public String solrSchema(String collection) {
+    public String solrSchema(String collection, String wt) {
         try {
             SolrService solr = SolrManager.getSolrService(collection);
-            httpServletResponse.setContentType(solr.getResponseMIMEType(null)); // Needed by SolrJ
-            return solr.schema();
+            httpServletResponse.setContentType(solr.getSchemaResponseMIMEType(wt)); // Needed by SolrJ
+            return solr.schema(wt);
         } catch (Exception e){
             throw handleException(e);
         }
-
     }
 
     /**
