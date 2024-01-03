@@ -37,11 +37,11 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static dk.kb.present.util.ReflectUtils.setField;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.internal.util.reflection.FieldSetter.setField;
 
-class DsPresentApiServiceImplTest {
+public class DsPresentApiServiceImplTest {
 
     @BeforeAll
     static void setup() {
