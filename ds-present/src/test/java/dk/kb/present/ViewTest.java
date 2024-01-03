@@ -31,7 +31,7 @@ class ViewTest {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML dsflConf = conf.getYAMLList(".origins").get(0);
         View view = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(0), dsflConf.getSubMap("dsfl").getString("origin"));
-        DsRecordDto record = new DsRecordDto();
+        DsRecordDto record = new DsRecordDto().mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
         record.setData("SameAsInput");
         assertEquals("SameAsInput", view.apply(record)); // Identity view
     }
@@ -45,7 +45,8 @@ class ViewTest {
         View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
 
-        DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id");
+        DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100")
+                .mTime(1701261949625000L);
 
         String jsonld = jsonldView.apply(recordDto);
         assertTrue(jsonld.contains("\"headline\":[{\"value\":\"Christian VIII\",\"@language\":\"da\"}]"));
@@ -62,9 +63,10 @@ class ViewTest {
                                     radioConf.getSubMap("\"ds.radio\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id");
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
 
         String jsonld = jsonldView.apply(recordDto);
+        TestUtil.prettyPrintJson(jsonld);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
     }
 
@@ -79,9 +81,9 @@ class ViewTest {
                                     radioConf.getSubMap("\"ds.radio\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id");
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
 
-        DsRecordDto emptyChildDto = new DsRecordDto().id("test.emptyChild");
+        DsRecordDto emptyChildDto = new DsRecordDto().id("test.emptyChild").mTime(1701261949625000L);
         recordDto.setChildren(List.of(emptyChildDto));
 
         String jsonld = jsonldView.apply(recordDto);
@@ -99,7 +101,7 @@ class ViewTest {
                                  tvConf.getSubMap("\"ds.tv\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String("internal_test_files/tvMetadata/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id");
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
 
         String solrdoc = solrView.apply(recordDto);
         assertTrue(solrdoc.contains("\"title\":\"Før Bjørnen Er Skudt\""));
@@ -112,7 +114,7 @@ class ViewTest {
         View solrView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2), dsflConf.getSubMap("dsfl").getString("origin"));
         String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
 
-        DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id");
+        DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
 
         String solrJson = solrView.apply(recordDto);
         assertTrue(solrJson.contains("\"origin\":\"ds.test\""));

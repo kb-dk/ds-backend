@@ -19,11 +19,22 @@
 
   <xsl:output method="text"/>
 
+  <!--INJECTIONS -->
+  <!-- Streraming server where preservica manifestations can be streamed from.-->
   <xsl:param name="streamingserver"/>
+  <!-- Origin for transformed record.-->
   <xsl:param name="origin"/>
+  <!-- ID of the record. -->
   <xsl:param name="recordID"/>
+  <!-- XML containing the presentation manifestation for the record in hand-->
   <xsl:param name="manifestation"/>
+  <!-- Representation of when the record was last modified in the backing ds-storage. The value is a long representing time
+       since epoch with microsecond precision (milliseconds with 3 extra digits). -->
+  <xsl:param name="mTime"/>
+  <!-- Access condition for DR material. Currently, this param contains a placeholder. -->
   <xsl:param name="conditionsOfAccess"/>
+
+
   <!-- MAIN TEMPLATE. This template delegates, which fields are to be created for each schema.org object.
        Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
   <xsl:template match="/">
@@ -132,6 +143,10 @@
             </f:map>
           </f:array>
           <f:map key="kb:internal">
+            <!-- Internal value for backing ds-storage mTime-->
+            <f:string key="kb:storage_mTime">
+              <xsl:value-of select="format-number($mTime, '0')"/>
+            </f:string>
             <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
             <f:string key="kb:transformation_error_description"><xsl:value-of select="concat($err:code, ': ', $err:description)"/></f:string>
           </f:map>
@@ -212,6 +227,10 @@
             </f:map>
           </f:array>
           <f:map key="kb:internal">
+            <!-- Internal value for backing ds-storage mTime-->
+            <f:string key="kb:storage_mTime">
+              <xsl:value-of select="format-number($mTime, '0')"/>
+            </f:string>
             <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
             <f:string key="kb:transformation_error_description"><xsl:value-of select="$err:description"/></f:string>
           </f:map>
@@ -605,6 +624,12 @@
   <xsl:template name="kb-internal">
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
+
+    <!-- Internal value for backing ds-storage mTime-->
+    <f:string key="kb:storage_mTime">
+      <xsl:value-of select="format-number($mTime, '0')"/>
+    </f:string>
+
     <!-- Extract subgenre if present -->
     <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
       <xsl:if test="contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">
