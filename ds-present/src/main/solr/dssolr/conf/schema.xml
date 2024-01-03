@@ -583,13 +583,21 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
 
-
   <!-- =========================================================================== -->
   <!-- ====== Internal fields, primarily used by the Royal Danish Library   ====== -->
   <!-- ====== All fields for internal use are to be prefixed with internal_ ====== -->
   <!-- =========================================================================== -->
 
   <!-- Internal fields for radio/tv. Primarily used by the Royal Danish Library. -->
+
+  <field name="internal_storage_mTime" type="plong" stored="true">
+    <?description Milliseconds since 1st of January 1970 (epoch) with three added digits representing the last time a
+                  record has been modified in the backing ds-storage. This value does not neccesarily represent when the
+                  metadata inside a record has been modified. It represents when the DS Record has been modified.
+                  The value is guaranteed to be unique.?>
+    <?example 1701261949625000?>
+  </field>
+
   <field name="internal_accession_ref" type="string">
     <?description Accession reference for preservica data. This reference points to the accession, where this resource
                   was ingested to preservica.?>

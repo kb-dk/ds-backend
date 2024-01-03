@@ -345,6 +345,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
+    void testDateInjection() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        Assertions.assertTrue(transformedJSON.contains("\"kb:storage_mTime\":"));
+        TestUtil.prettyPrintJson(transformedJSON);
+    }
+
+
+    @Test
     void testErrorCatching() throws IOException {
         Map<String, String> fakeManifestation = Map.of("manifestation", "test");
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda, fakeManifestation);

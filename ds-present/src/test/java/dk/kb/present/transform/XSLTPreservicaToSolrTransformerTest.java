@@ -348,6 +348,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testMTime() {
+        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"internal_storage_mTime\":\"");
+    }
+
+    @Test
     public void prettyPrintTransformation() throws Exception {
         String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_2973e7fa);
         TestUtil.prettyPrintJson(solrJson);
