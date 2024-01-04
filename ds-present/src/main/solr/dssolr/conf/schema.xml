@@ -25,7 +25,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.0.1: Added text_shingles
 1.0.2: Defined 'snowball' for all stopword filters
   -->
-  <field name="_ds_1.0.2_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.0.3_" type="string" indexed="false" stored="false"/>
 
   <uniqueKey>id</uniqueKey>
 
