@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Encapsulates assess to a Solr server.
@@ -45,6 +46,7 @@ public class SolrService {
     public static final String SELECT = "select";
     public static final String SUGGEST = "suggest";
     public static final String MLT = "mlt";
+    public static final String SCHEMA = "schema";
 
     public static final String Q = "q";
     public static final String SUGGEST_Q = "suggest.q";
@@ -95,7 +97,9 @@ public class SolrService {
             }
         }
     }
-    public enum WT_ENUM {json, csv, xml;
+    public enum WT_ENUM {
+        json, csv, xml;
+
         static WT_ENUM safeParse(String wt) {
             if (wt == null || wt.isEmpty()) {
                 return json;
@@ -112,10 +116,56 @@ public class SolrService {
                 case json: return "application/json";
                 case xml: return "application/xml";
                 case csv: return "text/csv";
-                default: throw new UnsupportedOperationException("The WT '" + this + "' has no MIME type defined");
+                default: throw new UnsupportedOperationException(
+                        "The WT '" + this + "' has no MIME type defined");
             }
         }
     }
+
+    public enum WT_SCHEMA_ENUM {
+        json("json"),
+        xml("xml"),
+        schema("schema.xml");
+
+        public final String label;
+        WT_SCHEMA_ENUM(String label) {
+            this.label = label;
+        }
+        public String getLabel() {
+            return label;
+        }
+
+        static WT_SCHEMA_ENUM safeParse(String wt) {
+            if (wt == null || wt.isEmpty()) {
+                return json;
+            }
+            for (WT_SCHEMA_ENUM e: values()) {
+                if (e.label.equals(wt)) {
+                    return e;
+                }
+            }
+            throw new InvalidArgumentServiceException(
+                    "Unsupported schema wt='" + wt + "'. Supported values are " +
+                            Arrays.stream(WT_SCHEMA_ENUM.values()).
+                                    map(WT_SCHEMA_ENUM::getLabel).
+                                    collect(Collectors.toList()));
+        }
+        String getMIME() {
+            switch (this) {
+                case json: return "application/json";
+                case xml: return "application/xml";
+                case schema: return "application/xml";
+                default: throw new UnsupportedOperationException(
+                        "The schema WT '" + this + "' has no MIME type defined");
+            }
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
+
     public enum DEBUG_ENUM {query, timing, results, all;
         static DEBUG_ENUM safeParse(String debug) {
             if (debug == null) {
@@ -253,7 +303,7 @@ public class SolrService {
     /**
      * Issue a Solr suggest and return the result.
      *
-     * @param suggestDictonary A suggest dictionary defined in the solr configuration. 
+     * @param suggestDictionary A suggest dictionary defined in the solr configuration.
      * @param suggestQuery The prefix text that the suggest compontent will try to autocomplete. 
      * @param suggestCount Number of results to return. 10 is the default value.
      * @param wt The return format from solr. (json, xml etc.) 
@@ -274,6 +324,20 @@ public class SolrService {
                
         UriBuilder builder = createSuggestRequestBuilder(SUGGEST, suggestDictionary, suggestQuery,suggestCount,wt);                
         return performCall(suggestQuery, builder, "suggest");
+    }
+
+    /**
+     * Issue a Solr request for the schema and rturn the result.
+     * @param wt the representation format for the schema. Defined in {@link WT_SCHEMA_ENUM}, with possible values
+     *           {@code json}, @{code xml} and {@code schema.xml}. Note that {@code schema.xml} is created from the
+     *           abstract schema, so comments and structure from the original {@code schema.xml} file are lost.
+     *           Can be {@code null}, with default {@code json}.
+     * @return the Solr schema in the requested representation.
+     */
+    public String schema(String wt){
+        WT_SCHEMA_ENUM wt_enum = WT_SCHEMA_ENUM.safeParse(wt);
+        UriBuilder builder = schemaRequestBuilder(wt_enum);
+        return performCall("", builder, "schema");
     }
     
     /**
@@ -314,6 +378,20 @@ public class SolrService {
                 .queryParam(WT, WT_ENUM.safeParse(wt));
                                     
         return builder;
+    }
+
+
+
+    /**
+     * Create a {@code UriBuilder} for fetching the schema behind the solr collection
+     * @return a ready to use builder.
+     */
+    public UriBuilder schemaRequestBuilder(WT_SCHEMA_ENUM wt){
+        return UriBuilder.fromUri(server)
+                .path(path)
+                .path(solrCollection)
+                .path(SCHEMA)
+                .queryParam(WT, wt.toString());
     }
 
     
@@ -358,6 +436,19 @@ public class SolrService {
     public String getResponseMIMEType(String wt) {
         return WT_ENUM.safeParse(wt).getMIME();
     }
+
+    /**
+     * Return the MIME type corresponding to the given Solr schema wt, defaulting to JSON.
+     * <p>
+     * The schema WT differs from standard WT by missing {@code csv} and adding {@code schema.xml}.
+     * @param wt the Solr param wt. Can be null, which will result in {@code application/json}.
+     * @return the MIME type corresponding to the wt.
+     * @throws InvalidArgumentServiceException if the wt is unsupported.
+     */
+    public String getSchemaResponseMIMEType(String wt) {
+        return WT_SCHEMA_ENUM.safeParse(wt).getMIME();
+    }
+
 
     /**
      * Disables function calls and catch-all regexp.
