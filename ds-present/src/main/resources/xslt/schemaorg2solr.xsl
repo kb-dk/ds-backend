@@ -234,24 +234,17 @@
 
         <!-- Using danish "normal time" which is the european winter time for timezone GMT+1 -->
         <xsl:variable name="startTimeDK" as="xs:dateTime">
-          <xsl:value-of select="f:adjust-dateTime-to-timezone($startTimeZulu, xs:dayTimeDuration('PT1H'))"/>
+          <!--<xsl:value-of select="f:adjust-dateTime-to-timezone($startTimeZulu, xs:dayTimeDuration('PT1H'))"/>-->
+          <xsl:value-of select="format-dateTime($startTimeZulu, '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]', (), (), 'Europe/Copenhagen')"/>
         </xsl:variable>
         
         <f:string key="startTime">
           <xsl:value-of select="$schemaorg-xml('startTime')"/>
         </f:string>
-        
-        <f:string key="startTime_in_summertime">
-
-          <xsl:value-of select="format-dateTime($startTimeZulu, '', 'en', 'en', 'en')"/>
-<!--
-          <xsl:value-of select="in-summer-time($startTimeDK, 'dk')"/>
--->
-        </f:string>
 
         <!-- Extracts the time from the datetime variable in danish normal time. -->
         <xsl:variable name="temporal_start_time_da_string">
-          <xsl:value-of select="substring-before(xs:string(xs:time($startTimeDK)),'+')"/>
+          <xsl:value-of select="xs:string(xs:time($startTimeDK))"/>
         </xsl:variable>
 
         <!-- The string value of the danish time. -->
@@ -276,7 +269,8 @@
 
         <!-- Using danish "normal time" which is the european winter time for timezone GMT+1 -->
         <xsl:variable name="endTimeDK" as="xs:dateTime">
-          <xsl:value-of select="f:adjust-dateTime-to-timezone($endTimeZulu, xs:dayTimeDuration('PT1H'))"/>
+          <!--<xsl:value-of select="f:adjust-dateTime-to-timezone($endTimeZulu, xs:dayTimeDuration('PT1H'))"/>-->
+          <xsl:value-of select="format-dateTime($endTimeZulu, '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]', (), (), 'Europe/Copenhagen')"/>
         </xsl:variable>
 
         <f:string key="endTime">
@@ -285,7 +279,7 @@
 
         <!-- Extracts the time from the datetime variable in danish normal time. -->
         <xsl:variable name="temporal_end_time_da_string">
-          <xsl:value-of select="substring-before(xs:string(xs:time($endTimeDK)),'+')"/>
+          <xsl:value-of select="xs:string(xs:time($endTimeDK))"/>
         </xsl:variable>
 
         <!-- The string value of the danish time. -->
