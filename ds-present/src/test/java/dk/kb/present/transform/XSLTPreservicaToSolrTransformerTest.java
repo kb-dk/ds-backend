@@ -353,8 +353,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testOriginForFailedTransformation(){
+        assertPvicaContains(TestFiles.PVICA6_RECORD_d4ea826f, "\"origin\":");
+    }
+    @Test
     public void prettyPrintTransformation() throws Exception {
-        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_2973e7fa);
+        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA6_RECORD_d4ea826f);
         TestUtil.prettyPrintJson(solrJson);
     }
 
