@@ -45,6 +45,14 @@
         <xsl:choose>
           <!--Check if an error has occurred in hte previous transformer. Otherwise, continue with this transformation -->
           <xsl:when test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:transformation_error') = 'true'">
+            <xsl:for-each select="$identifers">
+              <xsl:if test="map:get(., 'PropertyID') = 'Origin'">
+                <f:string key="origin">
+                  <xsl:value-of select="map:get(., 'value')"/>
+                </f:string>
+              </xsl:if>
+            </xsl:for-each>
+
             <f:string key="internal_transformation_error">
               <xsl:value-of select="f:true()"/>
             </f:string>

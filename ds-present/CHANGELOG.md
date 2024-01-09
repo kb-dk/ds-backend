@@ -5,9 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Added
+### Added [1.3.0]
 - Added ReflectUtil class containing methods used for testing. Using these methods instead of internal mockito methods makes the project not depend on mockitos old internal class.
 - Add mTime from ds-storage to solr documents
+- Add support for XSLT transformation of Preservica records from preservica 6.
 
 ### Changed
 - Updated OpenAPI YAML with new example values
