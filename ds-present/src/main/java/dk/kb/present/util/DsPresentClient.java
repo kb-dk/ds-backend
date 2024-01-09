@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Locale;
 
 /**
  * Client for the service. Intended for use by other projects that calls this service.

@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_05fea810;
@@ -613,6 +614,11 @@ public class EmbeddedSolrTest {
     @Test
     void testBroadcaster() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_accf8d1c, "broadcaster", "DR");
+    }
+
+    @Test
+    void testDateModified() throws Exception {
+        testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "internal_storage_mTime", 1701261949625000L);
     }
 
     /*

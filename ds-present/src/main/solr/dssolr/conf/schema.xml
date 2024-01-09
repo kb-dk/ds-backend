@@ -25,7 +25,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.0.1: Added text_shingles
 1.0.2: Defined 'snowball' for all stopword filters
   -->
-  <field name="_ds_1.0.2_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.0.3_" type="string" indexed="false" stored="false"/>
 
   <uniqueKey>id</uniqueKey>
 
@@ -619,13 +619,21 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example Friday?>
   </field>
 
-
   <!-- =========================================================================== -->
   <!-- ====== Internal fields, primarily used by the Royal Danish Library   ====== -->
   <!-- ====== All fields for internal use are to be prefixed with internal_ ====== -->
   <!-- =========================================================================== -->
 
   <!-- Internal fields for radio/tv. Primarily used by the Royal Danish Library. -->
+
+  <field name="internal_storage_mTime" type="plong" stored="true">
+    <?description Milliseconds since 1st of January 1970 (epoch) with three added digits representing the last time a
+                  record has been modified in the backing ds-storage. This value does not neccesarily represent when the
+                  metadata inside a record has been modified. It represents when the DS Record has been modified.
+                  The value is guaranteed to be unique.?>
+    <?example 1701261949625000?>
+  </field>
+
   <field name="internal_accession_ref" type="string">
     <?description Accession reference for preservica data. This reference points to the accession, where this resource
                   was ingested to preservica.?>
