@@ -429,6 +429,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString;
         try {
             solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
+            TestUtil.prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);

@@ -240,6 +240,14 @@
         <f:string key="startTime">
           <xsl:value-of select="$schemaorg-xml('startTime')"/>
         </f:string>
+        
+        <f:string key="startTime_in_summertime">
+
+          <xsl:value-of select="format-dateTime($startTimeZulu, '', 'en', 'en', 'en')"/>
+<!--
+          <xsl:value-of select="in-summer-time($startTimeDK, 'dk')"/>
+-->
+        </f:string>
 
         <!-- Extracts the time from the datetime variable in danish normal time. -->
         <xsl:variable name="temporal_start_time_da_string">
