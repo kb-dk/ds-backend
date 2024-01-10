@@ -87,7 +87,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?query_example ?>
   </field>
 
-  <field name="title" type="text_general" multiValued="true"> <!-- Only present in maps collection test data-->
+  <field name="title" type="text_general" multiValued="true" stored="true"> <!-- Only present in maps collection test data-->
     <?description The object title.?>
     <?example     Den grimme ælling.?>
   </field>
