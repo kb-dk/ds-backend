@@ -171,8 +171,8 @@
             </f:string>
           </xsl:if>
 
-          <xsl:if test="not(f:empty(my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
-                                                            'publishedOn', 'broadcaster', 'legalName')))">
+          <xsl:if test="my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
+                                                    'publishedOn', 'broadcaster', 'legalName') != ''">
             <f:string key="broadcaster">
               <xsl:value-of select="my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
                                                               'publishedOn', 'broadcaster', 'legalName')"/>
