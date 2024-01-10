@@ -3,6 +3,7 @@ package dk.kb.present.transform;
 import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.present.util.TestFileProvider;
+import dk.kb.util.Files;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,9 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
@@ -313,6 +315,37 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testTemporalSearchFields(){
+        // Sanity check time zone conversions at https://www.worldtimebuddy.com/
+        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_start_time_da_string\":\"18:15:00\"," +
+                                                                        "\"temporal_start_time_da_date\":\"9999-01-01T18:15:00Z\"," +
+                                                                        "\"temporal_start_day_da\":\"Saturday\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_end_time_da_string\":\"18:40:00\"," +
+                                                                        "\"temporal_end_time_da_date\":\"9999-01-01T18:40:00Z\"," +
+                                                                        "\"temporal_end_day_da\":\"Saturday\"");
+    }
+
+    // Adjusted version of testTemporalSearchFields, where the month has been changed from April to February to
+    // check if Danish summer/winter time is obeyed.
+    @Test
+    void testTemporalSearchFieldsWinther() throws IOException {
+        String winter = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_1f3a6a66)
+                .replace("2012-04-28T", "2012-02-28T");
+        File winterFile = Path.of(Resolver.resolveURL("ds-present-openapi_v1.yaml").getPath())
+                .getParent()
+                .resolve("1f3a6a66_winther.xml")
+                .toFile();
+        Files.saveString(winter, winterFile);
+
+        assertPvicaContains(winterFile.getAbsolutePath(), "\"temporal_start_time_da_string\":\"17:15:00\"," +
+                                                                        "\"temporal_start_time_da_date\":\"9999-01-01T17:15:00Z\"," +
+                                                                        "\"temporal_start_day_da\":\"Tuesday\"");
+        assertPvicaContains(winterFile.getAbsolutePath(), "\"temporal_end_time_da_string\":\"17:40:00\"," +
+                                                                        "\"temporal_end_time_da_date\":\"9999-01-01T17:40:00Z\"," +
+                                                                        "\"temporal_end_day_da\":\"Tuesday\"");
+    }
+
+    @Test
     void testNoNotes(){
         assertPvicaNotContains(TestFiles.PVICA_RECORD_b346acc8, "\"notes\":");
     }
@@ -364,7 +397,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void prettyPrintTransformation() throws Exception {
-        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_53ce4817);
+        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_1f3a6a66);
         TestUtil.prettyPrintJson(solrJson);
     }
 
@@ -413,7 +446,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
         }
-
         Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
 
