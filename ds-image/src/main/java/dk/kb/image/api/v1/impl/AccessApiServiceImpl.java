@@ -3,9 +3,11 @@ package dk.kb.image.api.v1.impl;
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
 import dk.kb.image.api.v1.AccessApi;
+import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.DeepzoomDZIDto;
 import dk.kb.image.model.v1.IIIFInfoDto;
 import dk.kb.image.util.ImageAccessValidation;
+import dk.kb.util.Pair;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -156,7 +158,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
                       imageid, layer, tiles, format,
                       CNT, GAM, CMP, CTW, INV, COL,
                       getCallDetails());
-            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(imageid, httpServletResponse);
+            //This will always be fullsize image check            
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(imageid, httpServletResponse, true); 
             if (handleNoAccessOrNoImage != null) {
                 return handleNoAccessOrNoImage;
             }
@@ -212,6 +215,9 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private javax.ws.rs.core.StreamingOutput rawGetImageInformation(String identifier, String format) throws ServiceException {
         try {
             // This replace handles double encoding (%252F) of '/' being single-decoded to '%2F'
+            log.info("IIIF Called");
+            System.out.println("IIIF called");
+            
             identifier = identifier.replace("%2F", "/");
             log.debug("getImageInformation(identifier='{}' format='{}') called with call details: {}",
                       identifier, format, getCallDetails());
@@ -302,8 +308,12 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             httpServletResponse.setContentType(getMIME(format));
             httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
 
+            //We only have size and region, from IIIF spec we have to calcuate height/width
+            
+            boolean thumbnail=isThumbnailIIIF(identifier, region,  size,rotation, quality, format);
+            
             //Will return null if there is access to the image.
-            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse);
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse, thumbnail);
             if (handleNoAccessOrNoImage != null) {
                 return handleNoAccessOrNoImage;
             }
@@ -317,7 +327,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         
     }
 
-
+    
+    
     /**
      * Internet Imaging Protocol 
      * 
@@ -377,7 +388,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String filename = elements[elements.length - 1] + "." + CVT;
          
             //Will return null if there is access to the image.
-            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(FIF, httpServletResponse);
+            boolean thumbnail=isThumbnailIIP(FIF,WID,HEI,  RGN, QLT, CNT,  ROT,GAM, CMP,  PFL,  CTW,INV, COL, JTL, PTL,CVT);
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(FIF, httpServletResponse, thumbnail);
             if (handleNoAccessOrNoImage != null) {                 
                 return handleNoAccessOrNoImage;
             }
@@ -395,6 +407,67 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         }
     }
      
+    
+    private boolean isThumbnailIIIF(String identifier, String region, String size, String rotation, String quality, String format) {
+         if (!"full".equals(region)  || rotation != null || quality != null) {
+             log.debug("Fullsize for IIIF request since a custom parameter was defined");
+             return false;                
+         }
+         else if (size == null) {
+             log.debug("Fullsize for IIIF request since size parameter was not defined");
+             return false;
+         }                           
+         
+            //Only allow size as "w,h" parameter. Etc. "100,100"
+         String[] tokens = size.split(",");
+         if (tokens.length != 2) {
+             log.debug("Fullsize for IIIF request since size parameter not width,hight");             
+         }
+         int width;
+         int height;         
+         try {
+             width=Integer.parseInt(tokens[0].trim());
+             height=Integer.parseInt(tokens[1].trim());
+         }
+         catch(Exception e) {
+             log.debug("Fullsize for IIIF request since size parameter could not be parsed as (width,height) integers");
+             return false;
+         }
+                  
+        if ( width > ServiceConfig.getConfig().getInteger("thumbnail.maxWidth") || height > ServiceConfig.getConfig().getInteger("thumbnail.maxHeight")){         
+             log.debug("Fullsize for IIIF request since size parameter was over thumbnail size");
+             return false;
+         }
+         
+        return true;
+    }
+
+
+    
+    /* Is request classified as a thumbnail or fullsize?
+     * 
+     * Will be full size if any other parameters than WID and HEI are defined. Also WID and HEI must be below a defined limit
+     * or it will also be fullSize  
+     */
+    private boolean isThumbnailIIP( String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
+            List<Integer> JTL, List<Integer> PTL, String CVT) {
+
+        if (RGN != null || QLT != null || CNT != null || ROT != null || GAM != null || CMP != null || PFL != null || INV != null || COL != null  || JTL != null || CVT != null) {
+            log.debug("Fullsize for IIP request since a custom parameter was defined");
+            return false;
+        }
+        else if (WID == null && HEI == null) {
+            log.debug("Fullsize for IIP request since size parameter was not defined");
+            return false;
+        }
+        else if (WID > ServiceConfig.getConfig().getInteger("thumbnail.maxWidth") || HEI > ServiceConfig.getConfig().getInteger("thumbnail.maxHeight")) {
+            log.debug("Fullsize for IIP request since size parameter was over thumbnail size");
+            return false;
+        }
+        
+        return true;
+    }
+
     /**
      * Derives the MIME type for replies. Only supports formats from IIIF Image and IIP protocols.
      * @param format simple form, e.g. {@code jpeg}, {@code pdf}...

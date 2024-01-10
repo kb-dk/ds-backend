@@ -19,6 +19,7 @@ import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.util.DsLicenseClient;
+import dk.kb.util.Pair;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
 
@@ -31,11 +32,11 @@ public class ImageAccessValidation {
     };
 
         
-    public static ACCESS_TYPE accessTypeForImage(String resource_id) throws ApiException {
+    public static ACCESS_TYPE accessTypeForImage(String resource_id, boolean thumbnail) throws ApiException {
 
         // Add filter query from license module.
         DsLicenseApi licenseClient = getDsLicenseApiClient();
-        CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(resource_id);
+        CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(resource_id, thumbnail);
         CheckAccessForIdsOutputDto checkAccessForIds;
         try {
            checkAccessForIds = licenseClient.checkAccessForResourceIds(licenseQueryDto); // Use
@@ -66,9 +67,14 @@ public class ImageAccessValidation {
 
     }
 
-    private static CheckAccessForIdsInputDto getCheckAccessForIdsInputDto(String resource_id) {
-
+    private static CheckAccessForIdsInputDto getCheckAccessForIdsInputDto(String resource_id, boolean thumbnail) {
+                
         CheckAccessForIdsInputDto idsDto = new CheckAccessForIdsInputDto();
+
+
+        String presentationType  = thumbnail ?   "Thumbnails" :  "Fullsize";                             
+        idsDto.setPresentationType(presentationType);                  
+                
         // TODO these attributes must come from Keycloak
         UserObjAttributeDto everybodyUserAttribute = new UserObjAttributeDto();
         everybodyUserAttribute.setAttribute("everybody");
@@ -77,8 +83,7 @@ public class ImageAccessValidation {
         everybodyUserAttribute.setValues(values);
 
         List<UserObjAttributeDto> allAttributes = new ArrayList<UserObjAttributeDto>();
-        allAttributes.add(everybodyUserAttribute);
-        idsDto.setPresentationType("Thumbnails"); //TODO when we know more about architecture (and OaUth)
+        allAttributes.add(everybodyUserAttribute);        
         idsDto.setAttributes(allAttributes);
 
         List<String> ids = new ArrayList<String>();
@@ -99,8 +104,8 @@ public class ImageAccessValidation {
      */
 
     
-    public static StreamingOutput handleNoAccessOrNoImage(String resource_id , HttpServletResponse httpServletResponse) throws ApiException, IOException {
-        ACCESS_TYPE type = accessTypeForImage( resource_id);
+    public static StreamingOutput handleNoAccessOrNoImage(String resource_id , HttpServletResponse httpServletResponse, boolean  thumbnail) throws ApiException, IOException {
+        ACCESS_TYPE type = accessTypeForImage( resource_id, thumbnail);
 
         log.debug("Access type:" + type + " for resource_id:" +  resource_id);
 
@@ -149,5 +154,9 @@ public class ImageAccessValidation {
         }
     }
 
+    
+    
 
+    
+    
 }
