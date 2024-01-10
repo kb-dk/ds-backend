@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_05fea810;
@@ -406,6 +407,25 @@ public class EmbeddedSolrTest {
     }
 
     @Test
+    void testPvicaTemporalFields() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_time_da_string", "18:15:00" );
+        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_time_da_string", "18:40:00");
+        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_day_da", "Saturday");
+        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_day_da", "Saturday");
+
+        Date startDate = new Date(253370830500000L);
+        testDateValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_time_da_date", startDate);
+
+        Date endDate = new Date(253370832000000L);
+        testDateValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_time_da_date", endDate);
+
+    /*
+    <field name="temporal_start_time_da_date" type="pdate">
+    <field name="temporal_end_time_da_date" type="pdate">
+    */
+    }
+
+    @Test
     void testColor() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_44979f67, "color", true );
     }
@@ -594,6 +614,11 @@ public class EmbeddedSolrTest {
     @Test
     void testBroadcaster() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_accf8d1c, "broadcaster", "DR");
+    }
+
+    @Test
+    void testDateModified() throws Exception {
+        testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "internal_storage_mTime", 1701261949625000L);
     }
 
     /*

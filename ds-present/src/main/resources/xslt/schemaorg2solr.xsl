@@ -45,6 +45,14 @@
         <xsl:choose>
           <!--Check if an error has occurred in hte previous transformer. Otherwise, continue with this transformation -->
           <xsl:when test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:transformation_error') = 'true'">
+            <xsl:for-each select="$identifers">
+              <xsl:if test="map:get(., 'PropertyID') = 'Origin'">
+                <f:string key="origin">
+                  <xsl:value-of select="map:get(., 'value')"/>
+                </f:string>
+              </xsl:if>
+            </xsl:for-each>
+
             <f:string key="internal_transformation_error">
               <xsl:value-of select="f:true()"/>
             </f:string>
@@ -173,8 +181,8 @@
             </f:string>
           </xsl:if>
 
-          <xsl:if test="not(f:empty(my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
-                                                            'publishedOn', 'broadcaster', 'legalName')))">
+          <xsl:if test="my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
+                                                    'publishedOn', 'broadcaster', 'legalName') != ''">
             <f:string key="broadcaster">
               <xsl:value-of select="my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
                                                               'publishedOn', 'broadcaster', 'legalName')"/>
@@ -263,17 +271,73 @@
         </xsl:if>
       </xsl:if>
 
-      <!-- extract start time-->
+      <!-- If statement creating all fields related to the schema.org value startTime -->
       <xsl:if test="$schemaorg-xml('startTime')">
+        <xsl:variable name="startTimeZulu" as="xs:dateTime">
+          <xsl:value-of select="$schemaorg-xml('startTime')"/>
+        </xsl:variable>
+
+        <!-- Using danish "normal time" which is the european winter time for timezone GMT+1 -->
+        <xsl:variable name="startTimeDK" as="xs:dateTime">
+          <!--<xsl:value-of select="f:adjust-dateTime-to-timezone($startTimeZulu, xs:dayTimeDuration('PT1H'))"/>-->
+          <xsl:value-of select="format-dateTime($startTimeZulu, '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]', (), (), 'Europe/Copenhagen')"/>
+        </xsl:variable>
+        
         <f:string key="startTime">
           <xsl:value-of select="$schemaorg-xml('startTime')"/>
         </f:string>
+
+        <!-- Extracts the time from the datetime variable in danish normal time. -->
+        <xsl:variable name="temporal_start_time_da_string">
+          <xsl:value-of select="xs:string(xs:time($startTimeDK))"/>
+        </xsl:variable>
+
+        <!-- The string value of the danish time. -->
+        <f:string key="temporal_start_time_da_string">
+          <xsl:value-of select="$temporal_start_time_da_string"/>
+        </f:string>
+
+        <f:string key="temporal_start_time_da_date">
+          <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_start_time_da_string, 'Z'))"/>
+        </f:string>
+
+        <f:string key="temporal_start_day_da">
+          <xsl:value-of select="format-dateTime($startTimeDK, '[F]')"/>
+        </f:string>
       </xsl:if>
 
-      <!-- extract end time-->
+      <!-- If statement creating all fields related to the schema.org value endTime -->
       <xsl:if test="$schemaorg-xml('endTime')">
+        <xsl:variable name="endTimeZulu" as="xs:dateTime">
+          <xsl:value-of select="$schemaorg-xml('endTime')"/>
+        </xsl:variable>
+
+        <!-- Using danish "normal time" which is the european winter time for timezone GMT+1 -->
+        <xsl:variable name="endTimeDK" as="xs:dateTime">
+          <!--<xsl:value-of select="f:adjust-dateTime-to-timezone($endTimeZulu, xs:dayTimeDuration('PT1H'))"/>-->
+          <xsl:value-of select="format-dateTime($endTimeZulu, '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]', (), (), 'Europe/Copenhagen')"/>
+        </xsl:variable>
+
         <f:string key="endTime">
           <xsl:value-of select="$schemaorg-xml('endTime')"/>
+        </f:string>
+
+        <!-- Extracts the time from the datetime variable in danish normal time. -->
+        <xsl:variable name="temporal_end_time_da_string">
+          <xsl:value-of select="xs:string(xs:time($endTimeDK))"/>
+        </xsl:variable>
+
+        <!-- The string value of the danish time. -->
+        <f:string key="temporal_end_time_da_string">
+          <xsl:value-of select="$temporal_end_time_da_string"/>
+        </f:string>
+
+        <f:string key="temporal_end_time_da_date">
+          <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_end_time_da_string, 'Z'))"/>
+        </f:string>
+
+        <f:string key="temporal_end_day_da">
+          <xsl:value-of select="format-dateTime($endTimeDK, '[F]')"/>
         </f:string>
       </xsl:if>
 
@@ -372,7 +436,7 @@
       </xsl:if>
 
       <!-- Extract sub genre -->
-      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:genre_sub')">
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:genre_sub') != '' ">
         <f:string key="genre_sub">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:genre_sub')"/>
         </f:string>
@@ -445,6 +509,11 @@
   <xsl:template name="kbInternal">
     <xsl:param name="internalMap"/>
 
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:storage_mTime') != ''">
+      <f:string key="internal_storage_mTime">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:storage_mTime')"/>
+      </f:string>
+    </xsl:if>
 
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:format_identifier_ritzau') != ''">
       <f:string key="internal_format_identifier_ritzau">

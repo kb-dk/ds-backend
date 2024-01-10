@@ -22,8 +22,6 @@ import dk.kb.util.webservice.stream.ContinuationStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.stream.Stream;
-
 /**
  * Storage that always fails. Can  used for signalling unsupported formats.
  */

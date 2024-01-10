@@ -36,7 +36,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
     @Test
     public void testSetup() throws IOException {
-        printSchemaOrgJson(TestFiles.PVICA_RECORD_74e22fd8);
+        printSchemaOrgJson(TestFiles.PVICA6_RECORD_00a9e71c);
         //printSchemaOrgJson(TestFiles.PVICA_RECORD_4f706cda);
         //printSchemaOrgJson(PVICA_RECORD_1F3A6A66);
         //printSchemaOrgJson(PVICA_RECORD_44979f67);
@@ -183,6 +183,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testNoNullKeywords() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3006e2f8);
+        TestUtil.prettyPrintJson(transformedJSON);
         Assertions.assertFalse(transformedJSON.contains("null"));
     }
 
@@ -343,6 +344,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertFalse(transformedJSON.contains("\"kb:internal\":{}"));
 
     }
+
+    @Test
+    void testDateInjection() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        Assertions.assertTrue(transformedJSON.contains("\"kb:storage_mTime\":"));
+        TestUtil.prettyPrintJson(transformedJSON);
+    }
+
 
     @Test
     void testErrorCatching() throws IOException {
