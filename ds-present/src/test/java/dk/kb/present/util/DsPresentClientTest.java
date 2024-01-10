@@ -65,9 +65,9 @@ public class DsPresentClientTest {
             return;
         }
         try (ContinuationInputStream<Long> recordsIS = remote.getRecordsJSON(
-                "ds.radiotv", 0L, 3L, FormatDto.JSON_LD)) {
+                "ds.tv", 0L, 3L, FormatDto.JSON_LD)) {
             String recordsStr = IOUtils.toString(recordsIS, StandardCharsets.UTF_8);
-            assertTrue(recordsStr.contains("\"id\":\"ds.radiotv:oai"),
+            assertTrue(recordsStr.contains("\"id\":\"ds.tv:oai"),
                     "At least 1 JSON block for a record should be returned");
             assertNotNull(recordsIS.getContinuationToken(),
                     "The continuation header '" + ContinuationUtil.HEADER_PAGING_CONTINUATION_TOKEN +
@@ -82,7 +82,7 @@ public class DsPresentClientTest {
        if (remote == null) {
             return;
         }
-        try (ContinuationStream<DsRecordDto, Long> records = remote.getRecordsRawStream("ds.radiotv", 0L, 3L)) {
+        try (ContinuationStream<DsRecordDto, Long> records = remote.getRecordsRawStream("ds.tv", 0L, 3L)) {
             List<DsRecordDto> recordList = records.collect(Collectors.toList());
 
             assertEquals(3L, recordList.size(), "The requested number of records should be received");
