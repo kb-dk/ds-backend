@@ -330,7 +330,7 @@
       </xsl:if>
 
       <!-- Extract sub genre -->
-      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:genre_sub')">
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:genre_sub') != '' ">
         <f:string key="genre_sub">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:genre_sub')"/>
         </f:string>
