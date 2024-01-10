@@ -854,6 +854,7 @@
       <str name="field">title</str>      
       <str name="suggestAnalyzerFieldType">string</str>
       <str name="buildOnStartup">true</str>         <!-- Good enough for now -->
+      <str name="buildOnCommit">true</str>
     </lst>
   </searchComponent>
 
