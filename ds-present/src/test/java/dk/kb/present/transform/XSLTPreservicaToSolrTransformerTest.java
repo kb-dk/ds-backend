@@ -316,9 +316,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testTemporalSearchFields(){
-        // TODO: This unit test fails as the timestamps are offset with 1 hour, where they should be offset by 2
-        // due to Sanish summer time. This is not an error in the unit test (check at https://www.worldtimebuddy.com/)
-        // but a conversion error in the code
+        // Sanity check time zone conversions at https://www.worldtimebuddy.com/
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_start_time_da_string\":\"18:15:00\"," +
                                                                         "\"temporal_start_time_da_date\":\"9999-01-01T18:15:00Z\"," +
                                                                         "\"temporal_start_day_da\":\"Saturday\"");
