@@ -389,6 +389,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testOriginForFailedTransformation(){
         assertPvicaContains(TestFiles.PVICA6_RECORD_d4ea826f, "\"origin\":");
     }
+
+    @Test
+    void testNoEmptyGenreSubField(){
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_53ce4817, "\"genre_sub\"");
+    }
+
     @Test
     public void prettyPrintTransformation() throws Exception {
         String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_1f3a6a66);

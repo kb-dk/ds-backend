@@ -636,11 +636,15 @@
       </xsl:if>
       <!-- Extracts PID as identifier if present.-->
       <xsl:if test="$metadataPath//pidhandle:pidhandle/handle">
+        <xsl:variable name="pidHandles">
+          <xsl:value-of select="distinct-values($metadataPath//pidhandle:pidhandle/handle)"/>
+        </xsl:variable>
+
         <f:map>
           <f:string key="@type">PropertyValue</f:string>
           <f:string key="PropertyID">PID</f:string>
           <f:string key="value">
-            <xsl:value-of select="substring-after($metadataPath//pidhandle:pidhandle/handle, 'hdl:')"/>
+            <xsl:value-of select="substring-after($pidHandles, 'hdl:')"/>
           </f:string>
         </f:map>
       </xsl:if>
