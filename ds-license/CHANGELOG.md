@@ -6,11 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Added service endpoints to webapp, which makes the service endpoints reachable.
+
  
 ### Changed 
+
+## [1.3.1]((https://github.com/kb-dk/ds-license/releases/tag/v1.0.0)) 2024-01-11
 - Update exception throwing and catching throughout the service.
 - Client jar not longer has logback.xml included. Using maven jar-plugin instead that can handle exclusions.
+- Added service endpoints to webapp, which makes the service endpoints reachable.
+
 
 ## [1.3.0]((https://github.com/kb-dk/ds-license/releases/tag/v1.0.0)) 2023-12-05
 ### Changed
