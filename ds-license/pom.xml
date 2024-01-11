@@ -433,6 +433,29 @@
         </resources>
         <plugins>
 
+      <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-jar-plugin</artifactId>        
+          <configuration>
+          <excludes>
+            <exclude>**/logback.xml*</exclude>
+          </excludes>
+        </configuration>
+        <executions>          
+          <execution>            
+              <id>make-a-jar</id>                            
+              <phase>compile</phase>
+              <goals>
+                 <goal>jar</goal>
+              </goals>              
+            <configuration>
+            <finalName>${project.artifactId}-${version}-classes</finalName> <!--  Same name as before -->
+           </configuration>
+          </execution>
+       </executions>
+     </plugin>
+
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.3.1</version>
@@ -465,6 +488,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+
 
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -643,7 +668,8 @@
                     </archive>
                     
                     <!-- Generate a JAR with client classes and openapi-YAML for easy use by other services -->
-                    <attachClasses>true</attachClasses>
+                    <!-- This is now done with the jar plugin since logback.xml needs to be excluded -->     
+                    <!--   <attachClasses>true</attachClasses> -->
 
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
