@@ -433,29 +433,6 @@
         </resources>
         <plugins>
 
-      <plugin>
-       <groupId>org.apache.maven.plugins</groupId>
-       <artifactId>maven-jar-plugin</artifactId>        
-          <configuration>
-          <excludes>
-            <exclude>**/logback.xml*</exclude>
-          </excludes>
-        </configuration>
-        <executions>          
-          <execution>            
-              <id>make-a-jar</id>                            
-              <phase>compile</phase>
-              <goals>
-                 <goal>jar</goal>
-              </goals>              
-            <configuration>
-            <finalName>${project.artifactId}-${version}-classes</finalName> <!--  Same name as before -->
-           </configuration>
-          </execution>
-       </executions>
-     </plugin>
-
-
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.3.1</version>
@@ -694,6 +671,27 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>        
+                <configuration>
+                    <excludes>
+                        <exclude>**/logback.xml*</exclude>
+                    </excludes>
+                </configuration>
+                <executions>          
+                    <execution>            
+                        <id>make-a-jar</id>                            
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>              
+                        <configuration>
+                            <finalName>${project.artifactId}-${version}-classes</finalName> <!--  Same name as before -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- Used only for mvn jetty:run jetty:run-war -->
             <plugin>
