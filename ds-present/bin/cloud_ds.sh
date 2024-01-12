@@ -159,18 +159,33 @@ create_new_collection() {
 }
 
 update_existing_collection() {
-    echo "Assigning config $CONFIG_NAME to collection $COLLECTION"
-    $SOLR_SCRIPTS/zkcli.sh -zkhost $ZOOKEEPER -cmd linkconfig -collection $COLLECTION -confname $CONFIG_NAME &> $LOG
+    echo "Collection $COLLECTION already exist. Assigning config $CONFIG_NAME"
 
+    # ZooKeepers linkconfig does change part of the state in Solr 9, but does not result
+    # in an effective config change
+    #$SOLR_SCRIPTS/zkcli.sh -zkhost $ZOOKEEPER -cmd linkconfig -collection $COLLECTION -confname $CONFIG_NAME
+
+    # Solr API v1 index config change should work, according to
+    # https://solr.apache.org/guide/solr/latest/deployment-guide/collection-management.html#modifycollection
+    # Calling this throws
+    # java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class java.lang.String...
+    # URL="http://$SOLR/solr/admin/collections?action=MODIFYCOLLECTION&collection=${COLLECTION}&collection.configName=${CONFIG_NAME}&collection.configName=${CONFIG_NAME}"
+    # curl -s "$URL"
+
+    # Solr API v2 index config change DOES work. At least for Solr 9.4
+    curl -X POST "http://${SOLR}/api/collections/${COLLECTION}" -H 'Content-Type: application/json' \
+         -d '{"modify":{"config": "'$CONFIG_NAME'" } }'
+    
     echo "Reloading collection $COLLECTION"
     RESPONSE=`curl -m 120 -s "http://$SOLR/solr/admin/collections?action=RELOAD&name=$COLLECTION"`
     if [ -z "$(grep 'status":0,' <<< "$RESPONSE")" ]; then
-        >&2 echo "Failed to reload collection '$COLLECTION':"
+        >&2 echo "Failed to reload collection ${COLLECTION}:"
         >&2 echo "$RESPONSE"
         exit 1
     fi
     echo "Collection with config '$CONFIG_NAME' available at http://$SOLR/solr/$COLLECTION"
 }
+
 
 # Input: Collection name
 # Set EXISTS=<if collection exists>
