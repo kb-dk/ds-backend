@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added [1.4.0]
 - Add solr fields for temporal searching. 
 
+### Fixed
+- Configuration update of existing collection now works: bin/cloud_ds.sh update
+
 ### Added [1.3.0]
 - Added ReflectUtil class containing methods used for testing. Using these methods instead of internal mockito methods makes the project not depend on mockitos old internal class.
 - Add mTime from ds-storage to solr documents
