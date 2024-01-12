@@ -173,12 +173,18 @@ update_existing_collection() {
     # curl -s "$URL"
 
     # Solr API v2 index config change DOES work. At least for Solr 9.4
-    curl -X POST "http://${SOLR}/api/collections/${COLLECTION}" -H 'Content-Type: application/json' \
-         -d '{"modify":{"config": "'$CONFIG_NAME'" } }'
+    local RESPONSE=$(curl -X POST "http://${SOLR}/api/collections/${COLLECTION}" -H 'Content-Type: application/json' \
+                          -d '{"modify":{"config": "'$CONFIG_NAME'" } }')
+    if [[ -z $(grep '"status":0' <<< "$RESPONSE") ]]; then
+        >&2 echo "Error assigning config '$CONFIG_NAME' to collection '$COLLECTION'"
+        >&2 echo ""
+        >&2 echo "$REPONSE"
+        exit 4
+    fi
     
     echo "Reloading collection $COLLECTION"
     RESPONSE=`curl -m 120 -s "http://$SOLR/solr/admin/collections?action=RELOAD&name=$COLLECTION"`
-    if [ -z "$(grep 'status":0,' <<< "$RESPONSE")" ]; then
+    if [ -z "$(grep '"status":0,' <<< "$RESPONSE")" ]; then
         >&2 echo "Failed to reload collection ${COLLECTION}:"
         >&2 echo "$RESPONSE"
         exit 1
