@@ -637,93 +637,64 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
+
+                <!-- Shared configuration -->
+                <configuration>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+
+                    <!--Enable maven filtering for the web.xml-->
+                    <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+                    <webResources>
+                        <webResource> <!-- Store application name, version and build time -->
+                            <directory>${basedir}/src/main/resources/</directory>
+                            <includes>
+                                <include>build.properties</include>
+                            </includes>
+                            <filtering>true</filtering>
+                        </webResource>
+                        <resource>
+                            <!--Include the openapi spec files so we can serve them-->
+                            <directory>${project.build.outputDirectory}</directory>
+                            <targetPath>.</targetPath>
+                            <includes>
+                                <include>ds-license-openapi_v1.json</include>
+                                <include>ds-license-openapi_v1.yaml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+
+                <!-- This build uses multiple executions to ensure that
+                     * The produced JAR does NOT have an active logback.xml
+                     * The produced WAR does have an active logback.xml -->
                 <executions>
 
+                    <!-- First execution builds the JAR with logback.xml hidden in a sub-folder, where it is inactive.
+                         It also builds a WAR, but that will be immediately overridden by the second execution. -->
                     <execution>
                         <id>client-jar</id>
                         <phase>prepare-package</phase>
                         <goals><goal>war</goal></goals>
 
                         <configuration>
-                            <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-                            <archive>
-                                <manifest>
-                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                </manifest>
-                            </archive>
-
                             <attachClasses>true</attachClasses>
-<!--                            <packagingExcludes>**/logback.xml</packagingExcludes>-->
-                            <classesClassifier>classes</classesClassifier>
-
-                            <!--Enable maven filtering for the web.xml-->
-                            <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
-                            <webResources>
-                                <webResource> <!-- Store application name, version and build time -->
-                                    <directory>${basedir}/src/main/resources/</directory>
-                                    <includes>
-                                        <include>build.properties</include>
-                                    </includes>
-                                    <filtering>true</filtering>
-                                </webResource>
-                                <resource>
-                                    <!--Include the openapi spec files so we can serve them-->
-                                    <directory>${project.build.outputDirectory}</directory>
-                                    <targetPath>.</targetPath>
-                                    <includes>
-                                        <include>ds-license-openapi_v1.json</include>
-                                        <include>ds-license-openapi_v1.yaml</include>
-                                    </includes>
-                                </resource>
-                                <resource>
-                                    <!--Include the openapi spec files so we can serve them-->
-                                    <directory>${project.build.outputDirectory}/hidden/</directory>
-                                    <targetPath>WEB-INF/classes/</targetPath>
-                                    <excludes>
-                                        <exclude>**/logback.xml</exclude>
-                                    </excludes>
-                                </resource>
-                            </webResources>
                         </configuration>
                     </execution>
 
+                    <!-- Second execution copies the hidden logback.xml to the root, where it will be active.
+                         It only generates a WAR, which will override the WAR from the first execution. -->
                     <execution>
                         <id>default-war</id>
                         <phase>package</phase>
                         <goals><goal>war</goal></goals>
 
                         <configuration>
-<!--                            <classifier>barwar</classifier>-->
-                            <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-                            <archive>
-                                <manifest>
-                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                </manifest>
-                            </archive>
-
-                            <attachClasses>false</attachClasses>
-<!--                            <packagingExcludes>**/logback.xml</packagingExcludes>-->
-                            <classesClassifier>bar</classesClassifier>
-
-                            <!--Enable maven filtering for the web.xml-->
-                            <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                             <webResources>
-                                <webResource> <!-- Store application name, version and build time -->
-                                    <directory>${basedir}/src/main/resources/</directory>
-                                    <includes>
-                                        <include>build.properties</include>
-                                    </includes>
-                                    <filtering>true</filtering>
-                                </webResource>
-                                <resource>
-                                    <!--Include the openapi spec files so we can serve them-->
-                                    <directory>${project.build.outputDirectory}</directory>
-                                    <targetPath>.</targetPath>
-                                    <includes>
-                                        <include>ds-license-openapi_v1.json</include>
-                                        <include>ds-license-openapi_v1.yaml</include>
-                                    </includes>
-                                </resource>
                                 <resource>
                                     <!--Include the openapi spec files so we can serve them-->
                                     <directory>${project.build.outputDirectory}/hidden/</directory>
@@ -738,78 +709,6 @@
 
                 </executions>
             </plugin>
-
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-jar-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <excludes>-->
-<!--                        <exclude>**/logback.xml*</exclude>-->
-<!--                    </excludes>-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>make-a-jar</id>-->
-<!--                        <phase>prepare-package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>jar</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <finalName>${project.artifactId}-${version}-classes</finalName> &lt;!&ndash;  Same name as before &ndash;&gt;-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-
-
-<!--&lt;!&ndash; All this to deploy the classes jar &ndash;&gt;-->
-<!--<plugin>-->
-<!--    <groupId>org.apache.maven.plugins</groupId>-->
-<!--    <artifactId>maven-install-plugin</artifactId>-->
-<!--    <executions>-->
-<!--        <execution>-->
-<!--            <phase>install</phase>-->
-<!--            <goals>-->
-<!--                <goal>install-file</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--                <packaging>jar</packaging>-->
-<!--                <artifactId>${project.artifactId}-classes</artifactId>-->
-<!--                <groupId>${project.groupId}</groupId>-->
-<!--                <version>${project.version}</version>-->
-<!--                <file>-->
-<!--                   target/${project.artifactId}-${project.version}-classes.jar-->
-<!--                </file>-->
-<!--            </configuration>-->
-<!--        </execution>-->
-<!--    </executions>-->
-<!--</plugin>-->
-
-<!--<plugin>-->
-<!--    <groupId>org.apache.maven.plugins</groupId>-->
-<!--    <artifactId>maven-deploy-plugin</artifactId>-->
-<!--    <version>3.1.1</version>-->
-<!--    <executions>-->
-<!--        <execution>-->
-<!--            <phase>deploy</phase>-->
-<!--            <goals>-->
-<!--                <goal>deploy-file</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--                <packaging>jar</packaging>-->
-<!--                <generatePom>true</generatePom>-->
-<!--                 &lt;!&ndash;  <url>${project.distributionManagement.repository.url}</url>  This should work but does not&ndash;&gt;                    -->
-<!--                <url>https://sbforge.org/nexus/content/repositories/snapshots</url> &lt;!&ndash; Works with hardcoded for snapshot, but what if it is not a snapshot? &ndash;&gt;-->
-<!--                <repositoryId>sbforge-nexus</repositoryId> &lt;!&ndash;  this is ignored &ndash;&gt;-->
-<!--                <artifactId>${project.artifactId}-classes</artifactId> &lt;!&ndash; Another artifactO than the war-release  &ndash;&gt;-->
-<!--                <groupId>${project.groupId}</groupId>-->
-<!--                <version>${project.version}</version>-->
-<!--                <file>target/${project.artifactId}-${project.version}-classes.jar</file>-->
-<!--            </configuration>-->
-<!--        </execution>-->
-<!--    </executions>-->
-<!--</plugin>-->
-
 
             <!-- Used only for mvn jetty:run jetty:run-war -->
             <plugin>
