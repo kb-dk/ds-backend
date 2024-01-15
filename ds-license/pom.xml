@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.3.4</version>
     
     <packaging>war</packaging>
 <description>
@@ -173,7 +173,7 @@
         <url>https://github.com/kb-dk/ds-license</url>
         <connection>scm:git:git@github.com:kb-dk/ds-license.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds-license.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>ds-license-1.3.4</tag>
     </scm>
 
 
