@@ -636,111 +636,179 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                    
-                    <!-- Generate a JAR with client classes and openapi-YAML for easy use by other services -->
-                    <!-- This is now done with the jar plugin since logback.xml needs to be excluded -->     
-                    <!--   <attachClasses>true</attachClasses> -->
+                <version>3.4.0</version>
+                <executions>
 
-                    <!--Enable maven filtering for the web.xml-->
-                    <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
-                    <webResources>
-                        <webResource> <!-- Store application name, version and build time -->
-                            <directory>${basedir}/src/main/resources/</directory>
-                            <includes>
-                                <include>build.properties</include>
-                            </includes>
-                            <filtering>true</filtering>
-                        </webResource>
-                        <resource>
-                            <!--Include the openapi spec files so we can serve them-->
-                            <directory>${project.build.outputDirectory}</directory>
-                            <targetPath>.</targetPath>
-                            <includes>
-                                <include>ds-license-openapi_v1.json</include>
-                                <include>ds-license-openapi_v1.yaml</include>
-                            </includes>
-                        </resource>
-                    </webResources>
-                </configuration>
-            </plugin>
+                    <execution>
+                        <id>client-jar</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>war</goal></goals>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>        
-                <configuration>
-                    <excludes>
-                        <exclude>**/logback.xml*</exclude>
-                    </excludes>
-                </configuration>
-                <executions>          
-                    <execution>            
-                        <id>make-a-jar</id>                            
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>              
                         <configuration>
-                            <finalName>${project.artifactId}-${version}-classes</finalName> <!--  Same name as before -->
+                            <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                            <archive>
+                                <manifest>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                            </archive>
+
+                            <attachClasses>true</attachClasses>
+<!--                            <packagingExcludes>**/logback.xml</packagingExcludes>-->
+                            <classesClassifier>classes</classesClassifier>
+
+                            <!--Enable maven filtering for the web.xml-->
+                            <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+                            <webResources>
+                                <webResource> <!-- Store application name, version and build time -->
+                                    <directory>${basedir}/src/main/resources/</directory>
+                                    <includes>
+                                        <include>build.properties</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </webResource>
+                                <resource>
+                                    <!--Include the openapi spec files so we can serve them-->
+                                    <directory>${project.build.outputDirectory}</directory>
+                                    <targetPath>.</targetPath>
+                                    <includes>
+                                        <include>ds-license-openapi_v1.json</include>
+                                        <include>ds-license-openapi_v1.yaml</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <!--Include the openapi spec files so we can serve them-->
+                                    <directory>${project.build.outputDirectory}/hidden/</directory>
+                                    <targetPath>WEB-INF/classes/</targetPath>
+                                    <excludes>
+                                        <exclude>**/logback.xml</exclude>
+                                    </excludes>
+                                </resource>
+                            </webResources>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>default-war</id>
+                        <phase>package</phase>
+                        <goals><goal>war</goal></goals>
+
+                        <configuration>
+<!--                            <classifier>barwar</classifier>-->
+                            <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                            <archive>
+                                <manifest>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                            </archive>
+
+                            <attachClasses>false</attachClasses>
+<!--                            <packagingExcludes>**/logback.xml</packagingExcludes>-->
+                            <classesClassifier>bar</classesClassifier>
+
+                            <!--Enable maven filtering for the web.xml-->
+                            <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+                            <webResources>
+                                <webResource> <!-- Store application name, version and build time -->
+                                    <directory>${basedir}/src/main/resources/</directory>
+                                    <includes>
+                                        <include>build.properties</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </webResource>
+                                <resource>
+                                    <!--Include the openapi spec files so we can serve them-->
+                                    <directory>${project.build.outputDirectory}</directory>
+                                    <targetPath>.</targetPath>
+                                    <includes>
+                                        <include>ds-license-openapi_v1.json</include>
+                                        <include>ds-license-openapi_v1.yaml</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <!--Include the openapi spec files so we can serve them-->
+                                    <directory>${project.build.outputDirectory}/hidden/</directory>
+                                    <targetPath>WEB-INF/classes/</targetPath>
+                                    <includes>
+                                        <include>logback.xml</include>
+                                    </includes>
+                                </resource>
+                            </webResources>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
 
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jar-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <excludes>-->
+<!--                        <exclude>**/logback.xml*</exclude>-->
+<!--                    </excludes>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>make-a-jar</id>-->
+<!--                        <phase>prepare-package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <finalName>${project.artifactId}-${version}-classes</finalName> &lt;!&ndash;  Same name as before &ndash;&gt;-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
-<!-- All this to deploy the classes jar -->
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-install-plugin</artifactId>
-    <executions>
-        <execution>
-            <phase>install</phase>
-            <goals>
-                <goal>install-file</goal>
-            </goals>
-            <configuration>
-                <packaging>jar</packaging>
-                <artifactId>${project.artifactId}-classes</artifactId>
-                <groupId>${project.groupId}</groupId>
-                <version>${project.version}</version>
-                <file>
-                   target/${project.artifactId}-${project.version}-classes.jar
-                </file>
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
 
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-deploy-plugin</artifactId>
-    <version>3.1.1</version>
-    <executions>
-        <execution>
-            <phase>deploy</phase>
-            <goals>
-                <goal>deploy-file</goal>
-            </goals>
-            <configuration>
-                <packaging>jar</packaging>
-                <generatePom>true</generatePom>
-                 <!--  <url>${project.distributionManagement.repository.url}</url>  This should work but does not-->                    
-                <url>https://sbforge.org/nexus/content/repositories/snapshots</url> <!-- Works with hardcoded for snapshot, but what if it is not a snapshot? -->
-                <repositoryId>sbforge-nexus</repositoryId> <!--  this is ignored -->
-                <artifactId>${project.artifactId}-classes</artifactId> <!-- Another artifactO than the war-release  -->
-                <groupId>${project.groupId}</groupId>
-                <version>${project.version}</version>
-                <file>target/${project.artifactId}-${project.version}-classes.jar</file>
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
+<!--&lt;!&ndash; All this to deploy the classes jar &ndash;&gt;-->
+<!--<plugin>-->
+<!--    <groupId>org.apache.maven.plugins</groupId>-->
+<!--    <artifactId>maven-install-plugin</artifactId>-->
+<!--    <executions>-->
+<!--        <execution>-->
+<!--            <phase>install</phase>-->
+<!--            <goals>-->
+<!--                <goal>install-file</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--                <packaging>jar</packaging>-->
+<!--                <artifactId>${project.artifactId}-classes</artifactId>-->
+<!--                <groupId>${project.groupId}</groupId>-->
+<!--                <version>${project.version}</version>-->
+<!--                <file>-->
+<!--                   target/${project.artifactId}-${project.version}-classes.jar-->
+<!--                </file>-->
+<!--            </configuration>-->
+<!--        </execution>-->
+<!--    </executions>-->
+<!--</plugin>-->
+
+<!--<plugin>-->
+<!--    <groupId>org.apache.maven.plugins</groupId>-->
+<!--    <artifactId>maven-deploy-plugin</artifactId>-->
+<!--    <version>3.1.1</version>-->
+<!--    <executions>-->
+<!--        <execution>-->
+<!--            <phase>deploy</phase>-->
+<!--            <goals>-->
+<!--                <goal>deploy-file</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--                <packaging>jar</packaging>-->
+<!--                <generatePom>true</generatePom>-->
+<!--                 &lt;!&ndash;  <url>${project.distributionManagement.repository.url}</url>  This should work but does not&ndash;&gt;                    -->
+<!--                <url>https://sbforge.org/nexus/content/repositories/snapshots</url> &lt;!&ndash; Works with hardcoded for snapshot, but what if it is not a snapshot? &ndash;&gt;-->
+<!--                <repositoryId>sbforge-nexus</repositoryId> &lt;!&ndash;  this is ignored &ndash;&gt;-->
+<!--                <artifactId>${project.artifactId}-classes</artifactId> &lt;!&ndash; Another artifactO than the war-release  &ndash;&gt;-->
+<!--                <groupId>${project.groupId}</groupId>-->
+<!--                <version>${project.version}</version>-->
+<!--                <file>target/${project.artifactId}-${project.version}-classes.jar</file>-->
+<!--            </configuration>-->
+<!--        </execution>-->
+<!--    </executions>-->
+<!--</plugin>-->
 
 
             <!-- Used only for mvn jetty:run jetty:run-war -->
