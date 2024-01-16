@@ -215,7 +215,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private javax.ws.rs.core.StreamingOutput rawGetImageInformation(String identifier, String format) throws ServiceException {
         try {
             // This replace handles double encoding (%252F) of '/' being single-decoded to '%2F'
-            log.info("IIIF Called");
             
             identifier = identifier.replace("%2F", "/");
             log.debug("getImageInformation(identifier='{}' format='{}') called with call details: {}",
@@ -311,9 +310,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             
             boolean thumbnail=isThumbnailIIIF(identifier, region,  size,rotation, quality, format);
             log.debug("Image presentation type was parsed as thumbnail={} from parameters for identifer={}",thumbnail,identifier);
-            log.info("Image presentation type was parsed as thumbnail={} from parameters for identifer={}",thumbnail,identifier);
-            
-        
+                    
             //Will return null if there is access to the image.
             StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse, thumbnail);
             if (handleNoAccessOrNoImage != null) {
@@ -391,8 +388,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
          
             //Will return null if there is access to the image.
             boolean thumbnail=isThumbnailIIP(FIF,WID,HEI,  RGN, QLT, CNT,  ROT,GAM, CMP,  PFL,  CTW,INV, COL, JTL, PTL,CVT);
-            log.debug("Image presentation type was parsed as thumbnail={} from parameters for FIF={}",thumbnail,FIF);
-            log.info("Image presentation type was parsed as thumbnail={} from parameters for FIF={}",thumbnail,FIF);
+            log.debug("Image presentation type was parsed as thumbnail={} from parameters for FIF={}",thumbnail,FIF);            
             
             StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(FIF, httpServletResponse, thumbnail);
             if (handleNoAccessOrNoImage != null) {                 
