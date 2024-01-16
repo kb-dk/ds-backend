@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- A IIIF or IIIP  call will determine it the image call is a thumbnail or fullsize call. If height/width is over a given limit it
+will be classified a fullsize. Call to the licence module for access will then use "Thumbnails" or "Fullsize" as presentationtype for the call.
+So it will be possible only to allow thumbnail calls etc. This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.  It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
+
+- new properties to defines maximum size of height/width that defines thumbnail limit.
+
 
 ## [1.1.0](https://github.com/kb-dk/ds-image/releases/tag/v1.1.0) - 2023-12-05
 ### Added
