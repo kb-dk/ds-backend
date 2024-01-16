@@ -94,7 +94,7 @@ public class ImageAccessValidation {
     }
 
     /**
-     * Will return a default image with propery HTTP status code if there is no access to the image.
+     * Will return a default image with property HTTP status code if there is no access to the image.
      * If there is access to the image, return null.
      * 
      * @param httpServletResponse used for setting MIME type.

@@ -216,7 +216,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         try {
             // This replace handles double encoding (%252F) of '/' being single-decoded to '%2F'
             log.info("IIIF Called");
-            System.out.println("IIIF called");
             
             identifier = identifier.replace("%2F", "/");
             log.debug("getImageInformation(identifier='{}' format='{}') called with call details: {}",
@@ -311,7 +310,10 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             //We only have size and region, from IIIF spec we have to calcuate height/width
             
             boolean thumbnail=isThumbnailIIIF(identifier, region,  size,rotation, quality, format);
+            log.debug("Image presentation type was parsed as thumbnail={} from parameters for identifer={}",thumbnail,identifier);
+            log.info("Image presentation type was parsed as thumbnail={} from parameters for identifer={}",thumbnail,identifier);
             
+        
             //Will return null if there is access to the image.
             StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse, thumbnail);
             if (handleNoAccessOrNoImage != null) {
@@ -389,6 +391,9 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
          
             //Will return null if there is access to the image.
             boolean thumbnail=isThumbnailIIP(FIF,WID,HEI,  RGN, QLT, CNT,  ROT,GAM, CMP,  PFL,  CTW,INV, COL, JTL, PTL,CVT);
+            log.debug("Image presentation type was parsed as thumbnail={} from parameters for FIF={}",thumbnail,FIF);
+            log.info("Image presentation type was parsed as thumbnail={} from parameters for FIF={}",thumbnail,FIF);
+            
             StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(FIF, httpServletResponse, thumbnail);
             if (handleNoAccessOrNoImage != null) {                 
                 return handleNoAccessOrNoImage;
@@ -407,10 +412,16 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         }
     }
      
-    
+    /* Is request classified as a thumbnail or fullsize for IIIF requests.
+     * 
+     * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
+     * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
+     * 
+     * Will be full size if any other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.   
+     */
     private boolean isThumbnailIIIF(String identifier, String region, String size, String rotation, String quality, String format) {
-         if (!"full".equals(region)  || rotation != null || quality != null) {
-             log.debug("Fullsize for IIIF request since a custom parameter was defined");
+         if (!"full".equals(region)  ||  !rotation.equals("0") || !quality.equals("default")) {        	         	
+        	 log.debug("Fullsize for IIIF request since a custom parameter was defined");             
              return false;                
          }
          else if (size == null) {
@@ -418,10 +429,11 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
              return false;
          }                           
          
-            //Only allow size as "w,h" parameter. Etc. "100,100"
-         String[] tokens = size.split(",");
+            //Only allow size as "w,h" parameter. Etc. "100,100". Value is default 'max' when requesting the full image.
+         String[] tokens = size.substring(1).split(","); //First character is !
          if (tokens.length != 2) {
-             log.debug("Fullsize for IIIF request since size parameter not width,hight");             
+             log.debug("Fullsize for IIIF request since size parameter not width,hight");                          
+             return false;
          }
          int width;
          int height;         
@@ -430,12 +442,12 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
              height=Integer.parseInt(tokens[1].trim());
          }
          catch(Exception e) {
-             log.debug("Fullsize for IIIF request since size parameter could not be parsed as (width,height) integers");
+             log.debug("Fullsize for IIIF request since size parameter could not be parsed as (width,height) integers:"+size);
              return false;
          }
                   
         if ( width > ServiceConfig.getConfig().getInteger("thumbnail.maxWidth") || height > ServiceConfig.getConfig().getInteger("thumbnail.maxHeight")){         
-             log.debug("Fullsize for IIIF request since size parameter was over thumbnail size");
+             log.debug("Fullsize for IIIF request since size parameter was over thumbnail size");             
              return false;
          }
          
@@ -444,23 +456,26 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
 
 
     
-    /* Is request classified as a thumbnail or fullsize?
+    /* Is request classified as a thumbnail or fullsize for IIP requests.
      * 
-     * Will be full size if any other parameters than WID and HEI are defined. Also WID and HEI must be below a defined limit
-     * or it will also be fullSize  
+     * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
+     * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
+     * 
+     * Will be full size if most other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.   
      */
     private boolean isThumbnailIIP( String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) {
-
-        if (RGN != null || QLT != null || CNT != null || ROT != null || GAM != null || CMP != null || PFL != null || INV != null || COL != null  || JTL != null || CVT != null) {
-            log.debug("Fullsize for IIP request since a custom parameter was defined");
+    	
+    	//FIF and CVT allowed. WID and HEI checked below
+        if (  (RGN != null && RGN.size() !=0) || QLT != null || CNT != null || ROT != null || GAM != null || CMP != null || PFL != null || INV != null || COL != null  || (JTL != null && JTL.size() >0 )) {        	
+        	log.debug("Fullsize for IIP request since a custom parameter was defined");
             return false;
         }
         else if (WID == null && HEI == null) {
-            log.debug("Fullsize for IIP request since size parameter was not defined");
+            log.debug("Fullsize for IIP request since size parameter was not defined");            
             return false;
         }
-        else if (WID > ServiceConfig.getConfig().getInteger("thumbnail.maxWidth") || HEI > ServiceConfig.getConfig().getInteger("thumbnail.maxHeight")) {
+        else if ( (WID != null && WID > ServiceConfig.getConfig().getInteger("thumbnail.maxWidth")) || (HEI != null && HEI > ServiceConfig.getConfig().getInteger("thumbnail.maxHeight")) ) {
             log.debug("Fullsize for IIP request since size parameter was over thumbnail size");
             return false;
         }
