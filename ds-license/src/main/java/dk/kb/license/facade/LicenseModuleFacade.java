@@ -116,8 +116,20 @@ public class LicenseModuleFacade {
 
     
     /**
+     * Create a new grouptype 
+     * A group type be one of of the two types  access-giving(pakke) or restriction(klausulering).
+     * The group type must define a solr query string. In case of access-giving(pakke) the query will include
+     * addition content. In case of a restriction, the query will remove content unless the user has a license that will remove the restriction. 
+     *     
+     * After creating the GroupType is not added to any licences, but can be used by creating or editing an existing license.
      * 
-     * 
+     *  @param key This is the name seen from the license page when selecting amoung grouptypes
+     *  @param value Small description (danish). Often just given same text as key
+     *  @param value_en Small description (English). Often just given same text as key
+     *  @param description A long more detailed description that will only be showing on the create/edit page for group types. 
+     *  @param description_en A long more detailed description(english) that will only be showing on the create/edit page for group types.
+     *  @param query A solr query that will define the given material covered by this grouptype. As access-giving or restriction. Make sure the query is correct and has all parentheses matched!
+     *  @param isRestriction if false the type be access-giving(pakke). If true it will be a restriction(klausulering).
      */
     public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean isRestriction) {
  
@@ -134,6 +146,14 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
 
+    
+    /**
+     * Update all fields for a given grouptype. It is possible to edit a grouptype that is already be used by one or more licences.
+     * 
+     * @param id The unique id that defines the grouptype.
+     * 
+     * For all other params see  {@link LicenseModuleFacade#persistLicenseGroupType())}  
+     */        
     public static void updateLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean  isRestriction) {
       
         performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+ isRestriction+")", storage -> {
@@ -148,12 +168,18 @@ public class LicenseModuleFacade {
             return null;
         
         });
-        LicenseCache.reloadCache(); // Database changed, so reload cache
-        
-       
-
+        LicenseCache.reloadCache(); // Database changed, so reload cache       
     }
 
+    /**
+     * Update a presentationtype. It is possible to update a presentationtype that is already used by licences. 
+     * It is not possible to change the 'key' field, only the descriptions.
+     * 
+     * @param id the for presentationtype
+     * @param value_dk the danish short description
+     * @param value_en the english short description
+     * 
+     */
     public static void updatePresentationType(long id, String value_dk, String value_en) {
        
         performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +")", storage -> {
@@ -168,9 +194,14 @@ public class LicenseModuleFacade {
            return null;        
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
-
     }
     
+    
+    /** Delete a Grouptype.
+     *  It is not possible to delete a grouptype that is using by any license. Licences using this group type must remove them, before the  grouptype can be deleted. 
+     * 
+     * @param groupName The given identifier for the grouptype 
+     */
     public static void deleteLicenseGroupType(String groupName) {
    
         performStorageAction("deleteLicenseGroupType(" + groupName +")", storage -> {
@@ -183,6 +214,11 @@ public class LicenseModuleFacade {
     }
     
     
+    /** Delete a presentationtype
+     *  It is not possible to delete a presentationtype that is using by any license. Licences using this presentationtype must remove them but the presentationtype can be deleted. 
+     * 
+     * @param presentationName The given identifier for the presentationtype 
+     */
     public static void deletePresentationType(String presentationName) {
         performStorageAction("deletePresentationType(" + presentationName +")", storage -> {
             PresentationType oldType = storage.getPresentationTypeByKey(presentationName);
@@ -199,11 +235,11 @@ public class LicenseModuleFacade {
       
 
     /**
+     * Create or update a license.  
      * If license id=0 a new will be created. Else it will update the license with the id
      * 
-     * @param license
-     */
-    
+     * @param license A licenseDTO having all information about date to/from, presentationtypes, attribute groups and grouptypes.
+     */    
     public static void persistLicense(License license) {
         
         performStorageAction("persistLicense(description_dk=" + license.getDescription_dk() +")", storage -> {
@@ -228,16 +264,26 @@ public class LicenseModuleFacade {
     }
     
 
-    
+    /**
+     * Retrieve all defined grouptypes.
+     * 
+     * @return List of alll grouptypes
+     */       
     public static ArrayList<GroupType> getLicenseGroupTypes() {
    
         return performStorageAction("getLicenseGroupTypes()", storage -> {
-            return storage.getLicenseGroupTypes();
-                    
-        });                        
-       
+            return storage.getLicenseGroupTypes();                    
+        });                               
     }
     
+    /**
+     * Persist a new attritibute name that can be used by licenses to identify users. 
+     * 
+     * @param attributeTypeName The new attribute. 
+     * 
+     * Example: wayf.mail
+     * 
+     */
     public static void persistAttributeType(String attributeTypeName) {
         performStorageAction("persistAttributeType("+attributeTypeName+")", storage -> {
             AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create attribute", attributeTypeName,"",attributeTypeName);
@@ -248,6 +294,13 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
     
+    
+    
+    /**
+     * Delete a attributetype from the configuration. It is not possible to delete a attributetype that is used by a license.
+     * 
+     * @param attributeTypeName The attributename to be deleted
+     */
     public static void deleteAttributeType(String attributeTypeName) {
         performStorageAction("deleteAttributeType("+attributeTypeName+")", storage -> {
             AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete attribute", attributeTypeName,attributeTypeName,"");
@@ -258,15 +311,23 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache              
     }
      
-    
+    /**
+    * Retrieve a list of all defined attributetypes.
+    *       
+    * @return List of all attributetypes
+    */
     public static ArrayList<AttributeType> getAttributeTypes() {
         return performStorageAction("getAttributeTypes()", storage -> {
             return storage.getAttributeTypes();                    
         });                                       
     }
     
-    
-    
+    /** Retrieve a list of all licenses for overview.
+     * The license will only have the name field and valid to/from date loaded.  
+     * 
+     * 
+     * @return List of license with that will have name and valid date to/from loaded.
+     */
     
     public static ArrayList<License> getAllLicenseNames() {
         return performStorageAction("getAllLicenseNames()", storage -> {
