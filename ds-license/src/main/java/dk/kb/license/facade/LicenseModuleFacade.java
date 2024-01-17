@@ -337,6 +337,12 @@ public class LicenseModuleFacade {
 
     }
     
+    
+    /**
+     * 
+     * @param licenseId
+     * @return
+     */
     public static License getLicense(long licenseId) {
         return performStorageAction("getLicense("+licenseId+")", storage -> {
             return storage.getLicense(licenseId);                    
@@ -401,7 +407,5 @@ public class LicenseModuleFacade {
          */
         T process(LicenseModuleStorage storage) throws Exception;
     }
-    
-    
         
 }
