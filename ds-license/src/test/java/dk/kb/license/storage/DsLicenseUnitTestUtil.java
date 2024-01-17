@@ -28,7 +28,12 @@ public abstract class DsLicenseUnitTestUtil {
 
 
 
-    
+    /**
+     * This will load the DDL (data) file licensemodule_default_configuration.ddl into the storage. 
+     * It will be too much work to add all these data programmatic 
+     * 
+     * @throws SQLException
+     */
     public static void insertDefaultConfigurationTypes() throws SQLException {
         File insert_ddl_file = new File(INSERT_DEFAULT_CONFIGURATION_DDL_FILE);
         storage.runDDLScript(insert_ddl_file);        
