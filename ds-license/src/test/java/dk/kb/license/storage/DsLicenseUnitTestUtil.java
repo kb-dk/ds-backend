@@ -30,7 +30,7 @@ public abstract class DsLicenseUnitTestUtil {
 
     /**
      * This will load the DDL (data) file licensemodule_default_configuration.ddl into the storage. 
-     * It will be too much work to add all these data programmatic 
+     * It will be too much work to add all these data programmatic. 
      * 
      * @throws SQLException
      */
