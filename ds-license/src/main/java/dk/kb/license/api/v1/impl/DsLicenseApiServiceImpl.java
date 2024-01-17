@@ -40,34 +40,7 @@ import java.util.ArrayList;
 public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 	private Logger log = LoggerFactory.getLogger(this.toString());
 
-
-	/**
-	 * Request a Hello World message, for testing purposes
-	 * 
-	 * @param alternateHello: Optional alternative to using the word &#39;Hello&#39; in the reply
-	 * 
-	 * @return <ul>
-	 *   <li>code = 200, message = "A JSON structure containing a Hello World message", response = HelloReplyDto.class</li>
-	 *   </ul>
-	 * @throws ServiceException when other http codes should be returned
-	 *
-	 * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
-	 */
-	@Override
-	public HelloReplyDto getGreeting(String alternateHello) throws ServiceException {
-		// TODO: Implement...
-
-
-		try { 
-			HelloReplyDto response = new HelloReplyDto();
-			response.setMessage("KbqLzzD6");
-			return response;
-		} catch (Exception e){
-			throw handleException(e);
-		}
-
-	}
-
+	
 	@Override
 	public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
 		log.debug("checkAccessForIds(...) called with call details: {}", getCallDetails());

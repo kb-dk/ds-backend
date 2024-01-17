@@ -24,6 +24,17 @@ public class LicenseModuleFacade {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacade.class);
 
+    
+    
+    
+    /**
+     * Create a new PresentationType that will be storage and available to be added to licences. A newly created
+     * presentationtype will be added the any existing licences.
+     *   
+     * @param key Unique identifier for the presentation type that is used when requesting access. Use alphanumeric value with no white spaces. Examples: Thumbnails, Search, Stream 
+     * @param value_dk This text (danish) will be shown when selected the presentation type and adding it to a license. Keep it short.
+     * @param value_en This text (english) will be shown when selected the presentation type and adding it to a license. Keep it short.
+     */
     public static void persistLicensePresentationType(String key, String value_dk, String value_en) {
         
         performStorageAction("persistLicensePresentationType(" + key + ","+value_dk +","+value_en+")", storage -> {
@@ -40,6 +51,13 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache
     }
 
+    /**
+     * Get a list of all defined Presentation types. This is only intended to be called from the admin GUI frontend for when creating/updating a license
+     * to show all posible presentation types that can be added to the licence.
+     * 
+     * 
+     * @return List of presentationtype DTO's
+     */
     public static ArrayList<PresentationType> getLicensePresentationTypes() {
        return performStorageAction("persistLicensePresentationType()", storage -> {
             return storage.getLicensePresentationTypes();                   
@@ -47,19 +65,38 @@ public class LicenseModuleFacade {
                 
     }
 
+    
+    /**
+     * Retrieve a specific audit log change by id. The id is millis at the time for the change.
+     * Call the getAllAuditLogs {@link #getAllAuditLogs() getAllAuditLogs} to see all entries with their ids
+     *  
+     * @param millis The ID of the log. 
+     * @return
+     */
     public static AuditLog getAuditLog(Long millis) {
         return performStorageAction("getAuditLog()", storage -> {
              return storage.getAuditLog(millis);
          });                
      }
      
-    
+    /**
+     * Returns a list of all auditlogs.
+     *   
+     * @return List of all auditlogs
+     */    
     public static ArrayList<AuditLog> getAllAuditLogs() {
        return performStorageAction("getAllAuditLogs()", storage -> {
             return storage.getAllAudit();                   
         });                
     }
     
+    
+    
+    /**
+     * Delete a license completely. Instead of deleting a license it is also a option to disable it by changing valid-to attribute.
+     *  
+     * @param licenseId
+     */    
     public static void deleteLicense(long licenseId) {
         performStorageAction("deleteLicense(" + licenseId + ")", storage -> {
 
@@ -77,6 +114,11 @@ public class LicenseModuleFacade {
      
     }
 
+    
+    /**
+     * 
+     * 
+     */
     public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean isRestriction) {
  
         performStorageAction("persistLicenseGroupType(" + key+","+value+","+value_en +","+description +","+description_en +","+query+","+ isRestriction+")", storage -> {                    

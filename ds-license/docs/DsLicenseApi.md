@@ -6,7 +6,6 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**checkAccessForIds**](DsLicenseApi.md#checkAccessForIds) | **POST** /checkAccessForIds | Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. ID filter field is defined in the YAML configuration
 [**checkAccessForResourceIds**](DsLicenseApi.md#checkAccessForResourceIds) | **POST** /checkAccessForResourceIds | Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration
-[**getGreeting**](DsLicenseApi.md#getGreeting) | **GET** /hello | Request a Hello World message, for testing purposes
 [**getUserGroups**](DsLicenseApi.md#getUserGroups) | **POST** /getUserGroups | Get the groups that the user has access to
 [**getUserGroupsAndLicenses**](DsLicenseApi.md#getUserGroupsAndLicenses) | **POST** /getUserGroupsAndLicenses | Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes
 [**getUserLicenseQuery**](DsLicenseApi.md#getUserLicenseQuery) | **POST** /getUserLicenseQuery | Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search
@@ -133,66 +132,6 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. IDs that exists but with no access will be return in nonAccessId field |  -  |
-
-<a name="getGreeting"></a>
-# **getGreeting**
-> HelloReplyDto getGreeting(alternateHello)
-
-Request a Hello World message, for testing purposes
-
-### Example
-```java
-// Import classes:
-import dk.kb.license.ApiClient;
-import dk.kb.license.ApiException;
-import dk.kb.license.Configuration;
-import dk.kb.license.models.*;
-import dk.kb.license.api.DsLicenseApi;
-
-public class Example {
-  public static void main(String[] args) {
-    ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
-
-    DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
-    String alternateHello = "\"World\""; // String | Optional alternative to using the word 'Hello' in the reply
-    try {
-      HelloReplyDto result = apiInstance.getGreeting(alternateHello);
-      System.out.println(result);
-    } catch (ApiException e) {
-      System.err.println("Exception when calling DsLicenseApi#getGreeting");
-      System.err.println("Status code: " + e.getCode());
-      System.err.println("Reason: " + e.getResponseBody());
-      System.err.println("Response headers: " + e.getResponseHeaders());
-      e.printStackTrace();
-    }
-  }
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **alternateHello** | **String**| Optional alternative to using the word &#39;Hello&#39; in the reply | [optional] [default to &quot;World&quot;]
-
-### Return type
-
-[**HelloReplyDto**](HelloReplyDto.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | A JSON structure containing a Hello World message |  -  |
 
 <a name="getUserGroups"></a>
 # **getUserGroups**
