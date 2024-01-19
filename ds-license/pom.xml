@@ -643,7 +643,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.4.0</version>
 
                 <!-- Shared configuration -->
                 <configuration>
@@ -653,6 +652,9 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
+                    
+                    <!-- Generate a JAR with client classes and openapi-YAML for easy use by other services -->
+                    <attachClasses>true</attachClasses>
 
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
@@ -676,24 +678,6 @@
                     </webResources>
                 </configuration>
 
-                <!-- This build uses multiple executions to ensure that
-                     * The produced JAR does NOT have an active logback.xml
-                     * The produced WAR does have an active logback.xml -->
-                <executions>
-
-                    <!-- First execution builds the JAR with logback.xml hidden in a sub-folder, where it is inactive.
-                         It also builds a WAR, but that will be immediately overridden by the second execution. -->
-                    <execution>
-                        <id>client-jar</id>
-                        <phase>prepare-package</phase>
-                        <goals><goal>war</goal></goals>
-
-                        <configuration>
-                            <attachClasses>true</attachClasses>
-                        </configuration>
-                    </execution>
-
-                </executions>
             </plugin>
 
             <!-- Used only for mvn jetty:run jetty:run-war -->
