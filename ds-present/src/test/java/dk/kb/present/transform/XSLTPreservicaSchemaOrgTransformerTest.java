@@ -36,7 +36,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
     @Test
     public void testSetup() throws IOException {
-        //printSchemaOrgJson(TestFiles.PVICA6_RECORD_00a9e71c); //TODO denne fejler hos mig victor
+        printSchemaOrgJson(TestFiles.PVICA6_RECORD_00a9e71c); 
         //printSchemaOrgJson(TestFiles.PVICA_RECORD_4f706cda);
         //printSchemaOrgJson(PVICA_RECORD_1F3A6A66);
         //printSchemaOrgJson(PVICA_RECORD_44979f67);

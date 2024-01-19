@@ -78,7 +78,6 @@ public class DsPresentClientTest {
     }
 
     
-    /* TODO denne fejler hos mig
     @Test
     public void testRemoteRecordsStream() throws IOException {
        if (remote == null) {
@@ -96,7 +95,6 @@ public class DsPresentClientTest {
                     "Received highest mTime should match stated highest mTime");
         }
     }
-*/
 
     @SuppressWarnings("unchecked")
     @Test
