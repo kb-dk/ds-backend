@@ -11,9 +11,13 @@ import org.slf4j.LoggerFactory;
 import dk.kb.license.validation.LicenseValidator;
 
 
-
-//Cache implementation that will reload all licenses every 15 minutes.
-//However when the DB changes, the H2Storage class will fire a reload to this cache.
+/** 
+*  Cache implementation that will reload all licenses every 15 minutes. This is an essential cache for performance. Loading the whole license configuration
+*  from the 10 different tables every time a license is called will be massive overhead
+*   
+*  When important license configuration is changed, the H2Storage class will fire a reload to this cache and the change be will be instantaneous.
+*   
+*/
 public class LicenseCache {
 
     // Cached instances

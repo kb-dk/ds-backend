@@ -12,6 +12,10 @@ import org.slf4j.LoggerFactory;
 import dk.kb.license.storage.LicenseContent;
 
 
+/**
+ * Util class for various small methods used in ds-license. A bit messy and lot of different things.
+ * 
+ */
 
 public class Util {
 
@@ -79,7 +83,7 @@ public class Util {
 		}
 	}
 
-	// For HTML TR CSS style...
+	// For HTML TR CSS style. Call from JSP page.
 	public static String getStyle(int row) {
 		if (row % 2 == 0) {
 			return "success";

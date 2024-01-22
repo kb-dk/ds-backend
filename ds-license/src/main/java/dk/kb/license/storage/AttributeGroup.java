@@ -2,6 +2,13 @@ package dk.kb.license.storage;
 
 import java.util.ArrayList;
 
+/**
+ * This is a persistent DTO.
+ * See the documentation and UML model:<br>
+ * licensemodule_uml.png<br>
+ * License_validation_logic.png <br>
+ * 
+ */
 public class AttributeGroup extends Persistent{
 
 	private int number;	
