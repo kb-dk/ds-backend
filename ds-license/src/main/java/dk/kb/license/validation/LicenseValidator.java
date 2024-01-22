@@ -24,6 +24,12 @@ import dk.kb.license.storage.*;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
 
+/**
+ * This class is the encapsulation of most of the business logic when validating access.
+ * 
+ * See the OpenApi documentation for ds-license module to understand the concepts.
+ *  
+ */
 public class LicenseValidator {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseValidator.class);		
@@ -33,12 +39,17 @@ public class LicenseValidator {
 
 
 
-    public static final List locales=
-            Collections.unmodifiableList(Arrays.asList(new String[] {LOCALE_DA,LOCALE_EN}));
+    public static final List<String> locales=Collections.unmodifiableList(Arrays.asList(new String[] {LOCALE_DA,LOCALE_EN}));
 
     // The following 3 methods are the API
 
-    //TODO shitload of javadoc
+
+    /**
+     * Extract all license that the user validates for. Licenses must also be be active. (date to-from check). 
+     * 
+     * @param input The input describing all information known about the user.
+     * @return List of all licenses that validates for the user  input.
+     */
     public static ArrayList<License> getUsersLicenses(GetUsersLicensesInputDto input) {
         //validate
         if (input.getAttributes() == null || input.getAttributes().size() == 0){
@@ -47,11 +58,12 @@ public class LicenseValidator {
         }
         validateLocale(input.getLocale());
 
-        // First filter by valid date
-        ArrayList<License> allLicenses = LicenseCache.getAllLicense();		
+        // Load all licences        
+        ArrayList<License> allLicenses = LicenseCache.getAllLicense();
+        //Filter by date first
         ArrayList<License> dateFilteredLicenses = filterLicenseByValidDate(allLicenses, System.currentTimeMillis());		
 
-        //Find licenses that give access (not checking groups) for the dateFiltered licenses
+        //Find licenses that give access for the dateFiltered licenses.
         ArrayList<License> accessLicenses = findLicensesValidatingAccess(input.getAttributes(),  dateFilteredLicenses);
 
         return accessLicenses;

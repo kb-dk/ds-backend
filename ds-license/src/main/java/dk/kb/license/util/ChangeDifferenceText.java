@@ -2,10 +2,7 @@ package dk.kb.license.util;
 
 public class ChangeDifferenceText {
 
-    
-  
-    
-    private String before;
+	private String before;
     private String after;
     
     
