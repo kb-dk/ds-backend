@@ -1097,6 +1097,10 @@ components:
           type: string
           description: 'Self diagnosed health'
           example: 'ok'
+        gitCommitChecksum:
+          type: string
+          description: 'The checksum of the deployed commit.'
+          example: 'ca82a6dff817ec66f44342007202690a93763949'
 
     Whoami:
       type: object
