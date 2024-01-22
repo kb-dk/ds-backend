@@ -18,14 +18,20 @@ import dk.kb.license.storage.LicenseModuleStorage;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
-
+/**
+ * @author Thomas Egense
+ * 
+ * The LicenseModuleFacade expose all methods that can be called on LicenceModule. This incluces both persistence logic and business logic resolving licence access. 
+ * 
+ * This facade class is also responsible for the storage transactional integrity. The storage model will never commit or rollback. All storage
+ * transactional logic is controlled by this class. This makes it possible to use several storage method as building blocks and rollback 
+ * everything if one of the steps fails. The method {@link #performStorageAction) performStorageAction} is used for all storage call and responsible for commit or rollback.
+ *  
+ */
 
 public class LicenseModuleFacade {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacade.class);
-
-    
-    
     
     /**
      * Create a new PresentationType that will be storage and available to be added to licences. A newly created
