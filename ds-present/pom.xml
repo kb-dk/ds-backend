@@ -51,7 +51,6 @@
         <!--Specify the licenses here, so they can be picked up by openAPI-->
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
-        <git.properties>property-from-git</git.properties>
 
         <project.package>dk.kb.present</project.package>
     </properties>
@@ -389,6 +388,8 @@
             </resource>
         </resources>
         <plugins>
+            <!-- Plugin used to extract information on the current git setup.
+                 See: https://github.com/git-commit-id/git-commit-id-maven-plugin -->
             <plugin>
               <groupId>io.github.git-commit-id</groupId>
               <artifactId>git-commit-id-maven-plugin</artifactId>
@@ -403,22 +404,22 @@
                 </execution>
               </executions>
             </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>properties-maven-plugin</artifactId>
-            <version>1.0.0</version>
-            <executions>
-              <execution>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>write-project-properties</goal>
-                </goals>
-                <configuration>
-                  <outputFile>${project.build.outputDirectory}/git.properties</outputFile>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>properties-maven-plugin</artifactId>
+              <version>1.0.0</version>
+              <executions>
+                <execution>
+                  <phase>generate-resources</phase>
+                  <goals>
+                    <goal>write-project-properties</goal>
+                  </goals>
+                  <configuration>
+                    <outputFile>${project.build.outputDirectory}/git.properties</outputFile>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
