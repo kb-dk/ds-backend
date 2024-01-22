@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Bugfix: Bumped slf4j and logback-classic to latest versions to re-enable logging
 
 - A IIIF or IIIP  call will determine it the image call is a thumbnail or fullsize call. If height/width is over a given limit it
 will be classified a fullsize. Call to the licence module for access will then use "Thumbnails" or "Fullsize" as presentationtype for the call.
