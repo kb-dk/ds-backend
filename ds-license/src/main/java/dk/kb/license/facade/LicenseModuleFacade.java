@@ -122,8 +122,15 @@ public class LicenseModuleFacade {
 
     
     /**
+     * Create a new group type that can be added to licenses.. The new group type will not be attached to any existing licenses
      * 
+     * Example key='Access to DR-arkiv' and query 'collection:dr'
      * 
+     * @param key example : 'Access to DR-arkiv'
+     * @param value Name (danish)
+     * @param value_en name (english)
+     * @param description Description (danish)
+     * @param description_en Description (english)
      */
     public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean isRestriction) {
  
@@ -140,6 +147,17 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
 
+    /**
+     * Update an existing group type. If query is changed it will have influence on all licenses giving access with this group.
+     * 
+     * @param The unique ID for the grouptype
+     * @param value_dk Name (Danish)
+     * @param value_en Name (English)
+     * @param description Description (danish)
+     * @param description_en Description (english)
+     * @param query Example: collection:dr
+     * @param isRestriction Is package (includes) or restriction(excludes)  
+     */
     public static void updateLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean  isRestriction) {
       
         performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+ isRestriction+")", storage -> {
@@ -160,6 +178,15 @@ public class LicenseModuleFacade {
 
     }
 
+    
+    /**
+    * Update an existing presentation type
+    * 
+    * @param The unique ID for the presetationType
+    * @param value_dk Name (Danish)
+    * @param value_en Name (English)
+    * 
+    */
     public static void updatePresentationType(long id, String value_dk, String value_en) {
        
         performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +")", storage -> {
@@ -177,6 +204,14 @@ public class LicenseModuleFacade {
 
     }
     
+    
+    /**
+     * Delete a grouptype. If the group type is active used in any license, it can not be deleted.
+     * 
+     * @param groupName The unique name of the grouptype
+     * 
+     */
+    
     public static void deleteLicenseGroupType(String groupName) {
    
         performStorageAction("deleteLicenseGroupType(" + groupName +")", storage -> {
@@ -189,6 +224,11 @@ public class LicenseModuleFacade {
     }
     
     
+   /**
+    * Delete a presentationtype. If the presentationtype  is active used in any license, it can not be deleted.
+    * 
+    * @param presentationName The unique name of the presentationtype
+    */    
     public static void deletePresentationType(String presentationName) {
         performStorageAction("deletePresentationType(" + presentationName +")", storage -> {
             PresentationType oldType = storage.getPresentationTypeByKey(presentationName);
@@ -208,8 +248,7 @@ public class LicenseModuleFacade {
      * If license id=0 a new will be created. Else it will update the license with the id
      * 
      * @param license
-     */
-    
+     */    
     public static void persistLicense(License license) {
         
         performStorageAction("persistLicense(description_dk=" + license.getDescription_dk() +")", storage -> {
@@ -234,7 +273,11 @@ public class LicenseModuleFacade {
     }
     
 
-    
+    /**
+     * Get a list of all defined grouptypes
+     * 
+     * @return List of all grouptypes
+     */
     public static ArrayList<GroupType> getLicenseGroupTypes() {
    
         return performStorageAction("getLicenseGroupTypes()", storage -> {
@@ -244,6 +287,11 @@ public class LicenseModuleFacade {
        
     }
     
+    /**
+     * Create a new attributetype that can be used when creating access in licenses
+     * 
+     * @param attributeTypeName The unique name of the new attributetype
+     */
     public static void persistAttributeType(String attributeTypeName) {
         performStorageAction("persistAttributeType("+attributeTypeName+")", storage -> {
             AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Create attribute", attributeTypeName,"",attributeTypeName);
@@ -254,6 +302,11 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
     
+    /**
+     * Delete a attributetype. 
+     * 
+     * @param attributeTypeName The unique name of the attributetype. If the attributetype is active used in any license, it can not be deleted.
+     */    
     public static void deleteAttributeType(String attributeTypeName) {
         performStorageAction("deleteAttributeType("+attributeTypeName+")", storage -> {
             AuditLog auditLog = new AuditLog(System.currentTimeMillis(),"anonymous","Delete attribute", attributeTypeName,attributeTypeName,"");
@@ -264,7 +317,11 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache              
     }
      
-    
+    /**
+     * Get a list of all attributetypes
+     * 
+     * @return List of attributetypes
+     */
     public static ArrayList<AttributeType> getAttributeTypes() {
         return performStorageAction("getAttributeTypes()", storage -> {
             return storage.getAttributeTypes();                    
@@ -272,22 +329,28 @@ public class LicenseModuleFacade {
     }
     
     
-    
-    
+    /**
+     * Get a list of all licenses. This will also include inactive licenses due to valid date range.
+     * 
+     * @return List of all licenses
+     */
     public static ArrayList<License> getAllLicenseNames() {
         return performStorageAction("getAllLicenseNames()", storage -> {
             return storage.getAllLicenseNames();                    
-        });            
-        
-
+        });                    
     }
     
+    /**
+     * Get a specific license.
+     * 
+     * @param licenseId The unique id of the license.
+     * @return
+     */
     public static License getLicense(long licenseId) {
         return performStorageAction("getLicense("+licenseId+")", storage -> {
             return storage.getLicense(licenseId);                    
         });           
-
-            }
+    }
     
     /**
      * Starts a storage transaction and performs the given action on it, returning the result from the action.
@@ -346,7 +409,5 @@ public class LicenseModuleFacade {
          */
         T process(LicenseModuleStorage storage) throws Exception;
     }
-    
-    
-        
+                
 }
