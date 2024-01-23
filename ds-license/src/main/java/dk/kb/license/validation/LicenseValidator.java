@@ -169,7 +169,7 @@ public class LicenseValidator {
 
 
     /**
-    * Get the filter query for a given user.
+    * Get the filter query-part for a given user.
     * <p>
     * The filter query is used when filtering ID's in solr.<br> 
     * The solr filtering is called with a query(list of IDS) and the filter query.<br>
@@ -376,6 +376,8 @@ public class LicenseValidator {
     * <p>
     * Each license has a valid from and valid to date. The date given must be between those.
     * 
+    * @param licenses The list of licenses to filter by the date
+    * @param date the date (millis) validated against license.
     * @return The subset of licences that are valid at the give date.
     */    
     public static ArrayList<License> filterLicenseByValidDate(ArrayList<License> licenses, long date){
@@ -394,16 +396,20 @@ public class LicenseValidator {
     }
 
 
-
-    //TODO shitload oof javadoc
-    /*
-     * This method only validates the access-part (tab #1 on the gui). For every licence every attributegroup
-     * is validated. If an attributegroup validates, the license is added to the return list.
+    /**
+     * Filter a list of licenses and return only those that validates from the user attributes. The method can be <br>
+     * used to show a user all licenses that he has access to. It does not validating against specific ID's.<br>
+     * There is also no presentationtype used in the filtering<br>
+     * <p>  
+     * The understand the license validation step from userattributes see the documentation.    
      * 
+     * @param attributes The userattribus defining the user
+     * @param allLicenses The licences to validate against the user attributes
+     * @return The subset of licenses that validates against the user attributes.
      */
     public static ArrayList<License> findLicensesValidatingAccess(List<UserObjAttributeDto> attributes, ArrayList<License> allLicenses){		
         ArrayList<License> licenses = new  ArrayList<License>();
-
+        
         //Iterate all licenses and test accesss
         boolean validatedForAtLeastOneLicense = false;
         for (License currentLicense : allLicenses){
@@ -436,6 +442,19 @@ public class LicenseValidator {
     }
 
     //Filter so only the UserObjAttribute that match the license are returned. Values that does not match are also removed.
+
+    
+    
+   /**
+   * Filter a list of userAttributes against a license attribute (name and list of values). Return only those userAttributes that matches.
+   * 
+   * <p>
+   * If the return list is not empty it means that the userattributes validates against the attributes
+   * 
+   * @param licenseattribute An attribute with a list of valid values
+   * @param userAttributes The userattributes defining the user
+   * @return The sublist of UserAttributes that validates
+   */
     public static ArrayList<UserObjAttributeDto> filterUserObjAttributesToValidatedOnly(Attribute licenseattribute,  List<UserObjAttributeDto> userAttributes){
         String name = licenseattribute.getAttributeName();
         ArrayList<AttributeValue> values = licenseattribute.getValues();		
@@ -463,7 +482,16 @@ public class LicenseValidator {
 
 
 
-    //For the restriction group situation. All groups must be matched (not necessary by same license, all groups having the given presentationtype)  	
+    //
+    /**
+     * Filter a list of licenses and return only those that has at least one of the grouptypes defined with the presentationtype.
+     * 
+     * @param licenses List of licenses to be filtered
+     * @param groups List groups where one must match with the presentationtype
+     * @param The presentationtype that will be used in the matching.
+     * 
+     * @return List of filtered licenses 
+     */    
     public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup(ArrayList<License> licenses,
             ArrayList<GroupType> groups, PresentationType presentationType){
 
@@ -491,8 +519,17 @@ public class LicenseValidator {
     }
 
 
-    //For the no restriction group situation. Just one of the groups has to be matched
-    //return when first license validate
+    
+    /**
+     * Validate if at least licenses that match one of the grouptypes and the presentationtype in the case there is only packages (no klausulations).  
+     * <p>
+     * For no restriction groups access is given if just one license validates.
+     * 
+     * @param licenses List licenses to filter
+     * @param groups List of grouptypes
+     * @param presentationType The presentationtype that must match
+     * @return List that will empty or always contain one license.
+     */
     public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeNoRestrictionGroup(ArrayList<License> licenses,
             ArrayList<GroupType> groups, PresentationType presentationType){
         ArrayList<License> filtered= new  ArrayList<License>();
@@ -509,10 +546,14 @@ public class LicenseValidator {
         return filtered; //Will be empty list
     }
 
-
-
-
-    //Will remove all non restriction-groups. 
+ 
+    /**
+     * Helper method <br>
+     * Filter a list of grouptype and only keep restrictions(klasulering)
+     * 
+     * @param groups List of groyptypes to filter
+     * @return List of grouptypes that are all restrictions
+     */
     public static ArrayList<GroupType> filterRestrictionGroups(ArrayList<GroupType> groups){
         ArrayList<GroupType> filteredGroups = new ArrayList<GroupType>();
 
@@ -526,6 +567,14 @@ public class LicenseValidator {
     }
 
     //Maps the groups(String names) to the configured objects. 
+    /**
+     * Return a list of grouptypes (DTO) from a list of groupnames (String)
+     * 
+     * @param groups The list of names
+     * @return List of GroupTypes
+     * 
+     * @throws InvalidArgumentServiceException if a grouptype  was found for a name in the list 
+     */        
     public static ArrayList<GroupType> buildGroups(List<String> groups){
         ArrayList<GroupType> filteredGroups = new ArrayList<GroupType>();
         ArrayList<GroupType> configuredGroups = LicenseCache.getConfiguredLicenseGroupTypes();
@@ -549,6 +598,15 @@ public class LicenseValidator {
         return filteredGroups;
     }
 
+    
+    /**
+     * Returns a given presentationtype the name of the presentation.
+     * 
+     * @param presentationTypeName String value of the nake
+     * @return The PresentationType DTO for the name
+     * 
+     * @throws InvalidArgumentServiceException if a no presentationtype with the name was not found 
+     */
     public static PresentationType matchPresentationtype(String presentationTypeName){
 
         ArrayList<PresentationType> configuredTypes = LicenseCache.getConfiguredLicenseTypes();
@@ -562,16 +620,28 @@ public class LicenseValidator {
     }
 
 
-    //Return true of any of the AttributeValues in the list has value =valueToFind
-    private static boolean containsName( ArrayList<AttributeValue> values, String valueToFind){
 
-        for (AttributeValue current : values){
-            if (current.getValue().equals(valueToFind)){
-                return true;
-            }
-        }
-        return false;
-    }
+    /**
+     * Generate the query that will be used when filtering ID's for access.<br> 
+     * <p>
+     * This is one of the fundamental purposes of the license module.
+     * Each of the access groups will contribute to giving more access by adding a positive term.
+     * Each of the missing Restrictiongroups will contribute ty restricting access by adding a negative term.
+     * 
+     * Simple Example:<br>
+     * 2 accessGroups can contribute to the query part: (collection:dr OR collection:images) <br>
+     * 2 missing restrictiongroups can contribute to the query part: -id:test123 -channel:dr5 <br>
+     * The query that is appended when filtering ID's will be: <br>
+     * <br>
+     *  (collection:dr OR collection:images) -id:test666 -channel:dr5<br>
+     *  <br>
+     *  And the full query with a single ID will be:
+     *  id:test111 AND  (collection:dr OR collection:images) -id:test666 -channel:dr5  <br>
+     *  
+     * @param accessGroups
+     * @param missingRestrictionGroups
+     * @return
+     */
 
     public static String generateQueryString(ArrayList<String> accessGroups, ArrayList<String> missingRestrictionGroups){
         if (accessGroups.size() == 0){
@@ -627,6 +697,14 @@ public class LicenseValidator {
         return query.toString();
     }
 
+    
+    /**
+     * Get the names of all presentationtypes in danish or english.
+     * 
+     * @param locale  On only 'da' and 'en' names are defined      
+     * @return List of names of all presentationtype name in the requested language
+     * 
+     */
     public static ArrayList<String> getAllPresentationtypeNames(String locale){
         ArrayList<String> allTypes = new ArrayList<String>(); 
 
@@ -643,7 +721,14 @@ public class LicenseValidator {
         return allTypes;
     }
 
-
+    
+    /**
+     * Get the names of all grouptypes in danish or english.
+     * 
+     * @param locale  On only 'da' and 'en' names are defined      
+     * @return List of names of all grouptype names in the requested language
+     * 
+     */
     public static ArrayList<String> getAllGroupeNames(String locale){
         ArrayList<String> allGroups = new ArrayList<String>(); 
 
@@ -659,6 +744,15 @@ public class LicenseValidator {
         }		
         return allGroups;
     }
+    
+    
+   /**
+   * Validate a locale (language) exists
+   * 
+   * @param locale
+   * 
+   * @throws InvalidArgumentServiceException if the locale is unknown. 
+   */
     public static void validateLocale(String locale){
         if (locale == null){
             return; // okie
@@ -670,6 +764,14 @@ public class LicenseValidator {
 
 
     //recursive fix group name and presentationtype names to the locale
+   
+    /**
+     * For a given list of UserGroups rename all names to a locale (danish or english)
+     * 
+     * 
+     * @param input List of UserGroups
+     * @param locale The locale. If locale is null it will default to 'da'
+     */
     public static void fixLocale( ArrayList<UserGroupDto> input, String locale){
         if (locale == null){
             locale = LOCALE_DA;
@@ -685,23 +787,53 @@ public class LicenseValidator {
         }		  
     }
 
-    private static ArrayList<String> filterIDs(List<String> noAccessIdList, String filterQuery, String solrIdField) throws org.apache.solr.client.solrj.SolrServerException, java.io.IOException {
+    
+    /**
+    * Filter a list of ID's with a filter query.<br>
+    * <p>
+    * The filtering method to determine access to IDs. The filter query is generated by the licensemodule from the userattributes for that user.<br>  
+    * If the filterQuery is empty it will return all ID's that does exists in Solr. This case is only used to find the noAccessId, so a user can be <br>
+    * informed that id does exist, but you do not have access to it.
+    * 
+    * @param ids The resource id's to filter. The filter field is define in the configuration.
+    * @param filterQuery FilterQuery. If null there is no filter query and this is used to if ID's does exist
+    * @param solrIdField The resource_id field defined in the configuration used for id filtering in Solr.
+    * @return
+    * @throws org.apache.solr.client.solrj.SolrServerException If communication with solr fails. Should not happen
+    * @throws java.io.IOException If there are IO errors. Should not happen
+    */
+    
+    private static ArrayList<String> filterIDs(List<String> ids, String filterQuery, String solrIdField) throws org.apache.solr.client.solrj.SolrServerException, java.io.IOException {
         List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
 
-        Set<String> noAccessfilteredIdsSet = new HashSet<String>();
-        if (noAccessIdList.size() >0) {
+        Set<String> accessfilteredIdsSet = new HashSet<String>();
+        if (ids.size() >0) {
             for (SolrServerClient server: servers){
-                //Call with no filter so results are not restriced by access
-                List<String> noAccessfilteredIds =server.filterIds(noAccessIdList, filterQuery, solrIdField);
+                //If filterquery is null, it will return the ID's that does exist in solr.
+                List<String> accessfilteredIds =server.filterIds(ids, filterQuery, solrIdField);
                 //log.info("#filtered id for server ("+input.getPresentationType()+") "+ server.getServerUrl() +" : "+filteredIds.size());
-                noAccessfilteredIdsSet.addAll(noAccessfilteredIds);
+                accessfilteredIdsSet.addAll(accessfilteredIds);
             }
         }
 
         ArrayList<String> noAccessfilteredIdsList = new ArrayList<String>();
-        noAccessfilteredIdsList.addAll(noAccessfilteredIdsSet);        
+        noAccessfilteredIdsList.addAll(accessfilteredIdsSet);        
         return noAccessfilteredIdsList;
 
     }
+    
+    
+    /*
+    * Return true of any of the AttributeValues in the list has value =valueToFind
+    */
+   private static boolean containsName( ArrayList<AttributeValue> values, String valueToFind){
+
+       for (AttributeValue current : values){
+           if (current.getValue().equals(valueToFind)){
+               return true;
+           }
+       }
+       return false;
+   }
 
 }
