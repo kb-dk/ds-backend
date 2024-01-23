@@ -122,15 +122,22 @@ public class LicenseModuleFacade {
 
     
     /**
-     * Create a new group type that can be added to licenses.. The new group type will not be attached to any existing licenses
+
+     * Create a new grouptype. The new group type will not be attached to any existing licenses.
+     
+     * A group type be one of of the two types  access-giving(pakke) or restriction(klausulering).
+     * The group type must define a solr query string. In case of access-giving(pakke) the query will include
+     * addition content. In case of a restriction, the query will remove content unless the user has a license that will remove the restriction. 
+     *     
+     * After creating the GroupType is not added to any licences, but can be used by creating or editing an existing license.
      * 
-     * Example key='Access to DR-arkiv' and query 'collection:dr'
-     * 
-     * @param key example : 'Access to DR-arkiv'
-     * @param value Name (danish)
-     * @param value_en name (english)
-     * @param description Description (danish)
-     * @param description_en Description (english)
+     *  @param key This is the name seen from the license page when selecting amoung grouptypes. Example:  'Access to DR-arkiv'
+     *  @param value Small description (danish). Often just given same text as key
+     *  @param value_en Small description (English). Often just given same text as key
+     *  @param description A long more detailed description that will only be showing on the create/edit page for group types. 
+     *  @param description_en A long more detailed description(english) that will only be showing on the create/edit page for group types.
+     *  @param query A solr query that will define the given material covered by this grouptype. As access-giving or restriction. Make sure the query is correct and has all parentheses matched!
+     *  @param isRestriction if false the type be access-giving(pakke). If true it will be a restriction(klausulering).
      */
     public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean isRestriction) {
  
@@ -147,6 +154,8 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
 
+
+       
     /**
      * Update an existing group type. If query is changed it will have influence on all licenses giving access with this group.
      * 
@@ -158,6 +167,7 @@ public class LicenseModuleFacade {
      * @param query Example: collection:dr
      * @param isRestriction Is package (includes) or restriction(excludes)  
      */
+
     public static void updateLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean  isRestriction) {
       
         performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +","+description +","+description_en +","+query+","+ isRestriction+")", storage -> {
@@ -172,21 +182,19 @@ public class LicenseModuleFacade {
             return null;
         
         });
-        LicenseCache.reloadCache(); // Database changed, so reload cache
-        
-       
-
+        LicenseCache.reloadCache(); // Database changed, so reload cache       
     }
 
-    
+
     /**
-    * Update an existing presentation type
-    * 
-    * @param The unique ID for the presetationType
-    * @param value_dk Name (Danish)
-    * @param value_en Name (English)
-    * 
-    */
+     * Update a presentationtype. It is possible to update a presentationtype that is already used by licences. 
+     * It is not possible to change the 'key' field, only the descriptions.
+     * 
+     * @param id the for presentationtype
+     * @param value_dk the danish short description
+     * @param value_en the english short description
+     * 
+     */
     public static void updatePresentationType(long id, String value_dk, String value_en) {
        
         performStorageAction("updateLicenseGroupType(" + id+","+value_dk+","+value_en +")", storage -> {
@@ -201,7 +209,6 @@ public class LicenseModuleFacade {
            return null;        
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
-
     }
     
     
@@ -210,8 +217,7 @@ public class LicenseModuleFacade {
      * 
      * @param groupName The unique name of the grouptype
      * 
-     */
-    
+     */   
     public static void deleteLicenseGroupType(String groupName) {
    
         performStorageAction("deleteLicenseGroupType(" + groupName +")", storage -> {
@@ -224,11 +230,12 @@ public class LicenseModuleFacade {
     }
     
     
-   /**
-    * Delete a presentationtype. If the presentationtype  is active used in any license, it can not be deleted.
-    * 
-    * @param presentationName The unique name of the presentationtype
-    */    
+
+    /** Delete a presentationtype
+     *  It is not possible to delete a presentationtype that is using by any license. Licences using this presentationtype must remove them but the presentationtype can be deleted. 
+     * 
+     * @param presentationName The given identifier for the presentationtype 
+     */
     public static void deletePresentationType(String presentationName) {
         performStorageAction("deletePresentationType(" + presentationName +")", storage -> {
             PresentationType oldType = storage.getPresentationTypeByKey(presentationName);
@@ -245,9 +252,10 @@ public class LicenseModuleFacade {
       
 
     /**
-     * If license id=0 a new will be created. Else it will update the license with the id
-     * 
-     * @param license
+     * Create or update a license.  
+     * If license id=0 a new will be created. Else it will update the license with the id     * 
+
+     * @param license A licenseDTO having all information about date to/from, presentationtypes, attribute groups and grouptypes.
      */    
     public static void persistLicense(License license) {
         
@@ -281,16 +289,16 @@ public class LicenseModuleFacade {
     public static ArrayList<GroupType> getLicenseGroupTypes() {
    
         return performStorageAction("getLicenseGroupTypes()", storage -> {
-            return storage.getLicenseGroupTypes();
-                    
-        });                        
-       
+            return storage.getLicenseGroupTypes();                    
+        });                               
     }
     
     /**
-     * Create a new attributetype that can be used when creating access in licenses
+     * Persist a new attritibute name that can be used by licenses to identify users. 
      * 
-     * @param attributeTypeName The unique name of the new attributetype
+     * @param attributeTypeName The new attribute. 
+     * 
+     * Example: wayf.mail
      */
     public static void persistAttributeType(String attributeTypeName) {
         performStorageAction("persistAttributeType("+attributeTypeName+")", storage -> {
@@ -302,6 +310,8 @@ public class LicenseModuleFacade {
         LicenseCache.reloadCache(); // Database changed, so reload cache        
     }
     
+    
+
     /**
      * Delete a attributetype. 
      * 
@@ -318,27 +328,31 @@ public class LicenseModuleFacade {
     }
      
     /**
-     * Get a list of all attributetypes
-     * 
-     * @return List of attributetypes
-     */
+    * Retrieve a list of all defined attributetypes.
+    *       
+    * @return List of all attributetypes
+    */
+
     public static ArrayList<AttributeType> getAttributeTypes() {
         return performStorageAction("getAttributeTypes()", storage -> {
             return storage.getAttributeTypes();                    
         });                                       
     }
     
-    
-    /**
-     * Get a list of all licenses. This will also include inactive licenses due to valid date range.
+
+    /** Retrieve a list of all licenses for overview.
+     * The license will only have the name field and valid to/from date loaded.  
      * 
-     * @return List of all licenses
-     */
+     * 
+     * @return List of license with that will have name and valid date to/from loaded.
+     */   
     public static ArrayList<License> getAllLicenseNames() {
         return performStorageAction("getAllLicenseNames()", storage -> {
             return storage.getAllLicenseNames();                    
         });                    
     }
+    
+
     
     /**
      * Get a specific license.
@@ -409,5 +423,4 @@ public class LicenseModuleFacade {
          */
         T process(LicenseModuleStorage storage) throws Exception;
     }
-                
 }
