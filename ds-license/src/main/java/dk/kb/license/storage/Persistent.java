@@ -1,5 +1,12 @@
 package dk.kb.license.storage;
 
+
+/**
+ * Superclass for all persistent DTO's. 
+ * 
+ * All DTO has an 'id' field in the database. The ID must be unique for each instance of that DTO type.
+ * 
+ */
 public abstract class Persistent {
 	protected long id;
 

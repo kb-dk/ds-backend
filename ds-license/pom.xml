@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
-    <version>1.3.9-SNAPSHOT</version>
+    <version>1.4.1-SNAPSHOT</version>
     <packaging>war</packaging>
 <description>
     # Ds-license(Digitale Samlinger) by the Royal Danish Library.    
@@ -347,6 +347,13 @@
             <groupId>org.openapitools</groupId>
             <artifactId>openapi-generator</artifactId>
             <version>7.1.0</version>
+              <exclusions>
+                <exclusion>
+                    <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
+                    <artifactId>slf4j-simple</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 
@@ -354,7 +361,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.36</version>
+            <version>2.0.11</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -374,7 +381,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.11</version>
+            <version>1.4.14</version>
         </dependency>
 
         <!-- Unit test -->
@@ -636,7 +643,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.4.0</version>
 
                 <!-- Shared configuration -->
                 <configuration>
@@ -646,6 +652,9 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
+                    
+                    <!-- Generate a JAR with client classes and openapi-YAML for easy use by other services -->
+                    <attachClasses>true</attachClasses>
 
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
@@ -669,45 +678,6 @@
                     </webResources>
                 </configuration>
 
-                <!-- This build uses multiple executions to ensure that
-                     * The produced JAR does NOT have an active logback.xml
-                     * The produced WAR does have an active logback.xml -->
-                <executions>
-
-                    <!-- First execution builds the JAR with logback.xml hidden in a sub-folder, where it is inactive.
-                         It also builds a WAR, but that will be immediately overridden by the second execution. -->
-                    <execution>
-                        <id>client-jar</id>
-                        <phase>prepare-package</phase>
-                        <goals><goal>war</goal></goals>
-
-                        <configuration>
-                            <attachClasses>true</attachClasses>
-                        </configuration>
-                    </execution>
-
-                    <!-- Second execution copies the hidden logback.xml to the root, where it will be active.
-                         It only generates a WAR, which will override the WAR from the first execution. -->
-                    <execution>
-                        <id>default-war</id>
-                        <phase>package</phase>
-                        <goals><goal>war</goal></goals>
-
-                        <configuration>
-                            <webResources>
-                                <resource>
-                                    <!--Include the openapi spec files so we can serve them-->
-                                    <directory>${project.build.outputDirectory}/hidden/</directory>
-                                    <targetPath>WEB-INF/classes/</targetPath>
-                                    <includes>
-                                        <include>logback.xml</include>
-                                    </includes>
-                                </resource>
-                            </webResources>
-                        </configuration>
-                    </execution>
-
-                </executions>
             </plugin>
 
             <!-- Used only for mvn jetty:run jetty:run-war -->

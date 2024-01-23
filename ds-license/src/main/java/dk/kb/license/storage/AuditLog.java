@@ -1,5 +1,13 @@
 package dk.kb.license.storage;
 
+/**
+ * Internal DTO used in the AUDITLOG table.
+ * 
+ * Every time a user changes any license or configuration definitions there will be generated an entry in the auditlog table.
+ * 
+ * The log-line will have a textual diff of the change in the license.
+ * 
+ */
 public class AuditLog {
 
     private long millis;

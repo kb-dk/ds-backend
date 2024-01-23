@@ -9,7 +9,13 @@ import org.slf4j.LoggerFactory;
 import dk.kb.license.Util;
 
 
-
+/**
+ * This is a persistent DTO.
+ * See the documentation and UML model:<br>
+ * licensemodule_uml.png<br>
+ * License_validation_logic.png <br>
+ * 
+ */
 public class License extends Persistent{
 
 	//Default to empty string for quick fix so GUI does not show 'null' when creating new license 	

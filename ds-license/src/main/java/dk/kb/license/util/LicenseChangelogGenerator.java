@@ -14,8 +14,9 @@ import dk.kb.license.storage.LicenseContent;
 import dk.kb.license.storage.PresentationType;
 
 /**
- * This class will generate changetext when a persistent object i updated
+ * This class will generate achange text when a persistent object is updated
  * 
+ * It will create a diff (text) from comparing before-dto and after-dto
  * 
  * 
  * @author teg

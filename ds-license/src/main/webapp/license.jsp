@@ -2,8 +2,7 @@
 <%@ page import="
     java.util.*,
      dk.kb.license.storage.*,
-     dk.kb.license.Util,
-     dk.kb.license.MonitorCache,
+     dk.kb.license.Util,     
      dk.kb.license.facade.LicenseModuleFacade"%>
 
 <!DOCTYPE html>

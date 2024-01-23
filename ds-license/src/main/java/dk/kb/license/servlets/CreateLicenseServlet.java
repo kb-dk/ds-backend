@@ -23,6 +23,11 @@ import dk.kb.license.storage.LicenseContent;
 import dk.kb.license.storage.Presentation;
 
 
+
+/**
+ * This is used by the JSP frontend when creating or editing a license   
+ * 
+ */
 public class CreateLicenseServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;

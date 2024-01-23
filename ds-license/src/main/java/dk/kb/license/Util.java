@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 import dk.kb.license.storage.LicenseContent;
 
 
+/**
+ * Util class for various small methods used in ds-license. A bit messy and lot of different things.
+ * Some of the methods here are also called from the JSP page.
+ * 
+ */
 
 public class Util {
 
@@ -37,10 +42,21 @@ public class Util {
 		return false;
 	}
 
-	// Used from JSP
-	public static boolean groupsContainsGroupWithLicense(ArrayList<LicenseContent> groups, String domGroupKey, String presentationTypeKey) {
+ 
+	/**
+	 * Validate if a list of licensecontents has a specific group and presentationtype allowed 
+	 * 
+	 * Method also used from Used from JSP
+	 * 
+	 * @param groups The ist licenseContent that will be tested agaist
+	 * @param The group key that must match
+	 * @param The presentionTypeKey that must match (and also match the groupKey)
+	 *  
+	 * @return Result of the at least one of the licensegroups having the both groupKey and presentationKey defined.  
+	 */	
+	public static boolean groupsContainsGroupWithLicense(ArrayList<LicenseContent> groups, String groupKey, String presentationTypeKey) {
 		for (int i = 0; i < groups.size(); i++) {
-			if (groups.get(i).getName().equalsIgnoreCase(domGroupKey)) {
+			if (groups.get(i).getName().equalsIgnoreCase(groupKey)) {
 				for (int j = 0; j < groups.get(i).getPresentations().size(); j++) {
 					if (groups.get(i).getPresentations().get(j).getKey().equalsIgnoreCase(presentationTypeKey)) {
 						return true;
@@ -52,6 +68,12 @@ public class Util {
 		return false;
 	}
 
+	/**
+	 * Validate a date is of the format: dd-MM-yyyy
+	 * 
+	 * @param dateFormat The string to valide is of form 'dd-MM-yyyy"'
+	 * @return
+	 */
 	public static boolean validateDateFormat(String dateFormat) {
 		try {
 			Date date = formatter.get().parse(dateFormat);
@@ -66,7 +88,15 @@ public class Util {
 		}
 
 	}
-
+   
+	/**
+    * Format a date of form 'dd-MM-yyyy"' to millis
+    * 
+    * @param dateFormat The date to format 
+    * @return The date in millis.
+    * 
+    * @throws IllegalArgumentException If date is not of the format 'dd-MM-yyyy'
+    */
 	public static long convertDateFormatToLong(String dateFormat) {
 		boolean valid = validateDateFormat(dateFormat);
 		if (!valid) {
@@ -79,7 +109,14 @@ public class Util {
 		}
 	}
 
-	// For HTML TR CSS style...
+
+	
+	/**
+	 * Called by JSP to color each new row different (zebra).  
+	 * 	
+	 * @param row
+	 * @return String Color value that is define in the CSS.
+	 */
 	public static String getStyle(int row) {
 		if (row % 2 == 0) {
 			return "success";

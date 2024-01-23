@@ -16,9 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-
-
-
 public class AbstractSolrJClient {
     private static final Logger log = LoggerFactory.getLogger(AbstractSolrJClient.class);
     
@@ -74,6 +71,7 @@ public class AbstractSolrJClient {
     }
        
     //Will also remove " from all ids to prevent Query-injection
+    //Public so it can be used by unittest
     public static String makeAuthIdPart (List<String> ids, String filterField){
         StringBuilder queryIdPart = new StringBuilder();
         queryIdPart.append("(");
@@ -91,7 +89,7 @@ public class AbstractSolrJClient {
         return queryIdPart.toString();
     }
 
-    public static ArrayList<String> getIdsFromResponse(QueryResponse response, String solrField){
+    private static ArrayList<String> getIdsFromResponse(QueryResponse response, String solrField){
         ArrayList<String> ids= new ArrayList<String>();
 
         for (SolrDocument current : response.getResults()){

@@ -30,6 +30,13 @@ import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.validation.LicenseValidator;
 
+
+/**
+ * This is used by the JSP frontend only. Create/edit a license has its own logic in
+ * {@link CreateLicenseServlet CreateLicenseServlet.class}
+ * 
+ * The methods here are all the minor methods such as editing on the configuration for presentationtypes, packages etc.
+ */
 public class ConfigurationServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
