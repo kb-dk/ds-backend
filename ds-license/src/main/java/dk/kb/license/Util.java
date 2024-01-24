@@ -13,9 +13,8 @@ import dk.kb.license.storage.LicenseContent;
 
 
 /**
- * Util class for various small methods used in ds-license. A bit messy and lot of different things.
+ * Util class for various small methods used in ds-license. A bit messy and lots of different use-cases.
  * Some of the methods here are also called from the JSP page.
- * 
  */
 
 public class Util {
@@ -44,13 +43,14 @@ public class Util {
 
  
 	/**
-	 * Validate if a list of licensecontents has a specific group and presentationtype allowed 
+	 * Validate if a list of {@link LicenseContent}s has a specific group
+	 * and {@link dk.kb.license.storage.PresentationType} allowed
+	 * <p>
+	 * Method also used from JSP application.
 	 * 
-	 * Method also used from Used from JSP
-	 * 
-	 * @param groups The ist licenseContent that will be tested agaist
-	 * @param The group key that must match
-	 * @param The presentionTypeKey that must match (and also match the groupKey)
+	 * @param groups The list of licenseContent that will be tested against.
+	 * @param groupKey The group key that must match.
+	 * @param presentationTypeKey The presentionTypeKey that must match (and also match the groupKey)
 	 *  
 	 * @return Result of the at least one of the licensegroups having the both groupKey and presentationKey defined.  
 	 */	
@@ -69,9 +69,9 @@ public class Util {
 	}
 
 	/**
-	 * Validate a date is of the format: dd-MM-yyyy
+	 * Validate that a date is of the format: dd-MM-yyyy.
 	 * 
-	 * @param dateFormat The string to valide is of form 'dd-MM-yyyy"'
+	 * @param dateFormat The string to valide is of form 'dd-MM-yyyy'.
 	 * @return
 	 */
 	public static boolean validateDateFormat(String dateFormat) {
@@ -90,11 +90,10 @@ public class Util {
 	}
    
 	/**
-    * Format a date of form 'dd-MM-yyyy"' to millis
-    * 
-    * @param dateFormat The date to format 
+    * Format a date of form 'dd-MM-yyyy"' to milliseconds.
+    * <p>
+    * @param dateFormat The date to format.
     * @return The date in millis.
-    * 
     * @throws IllegalArgumentException If date is not of the format 'dd-MM-yyyy'
     */
 	public static long convertDateFormatToLong(String dateFormat) {
@@ -112,10 +111,8 @@ public class Util {
 
 	
 	/**
-	 * Called by JSP to color each new row different (zebra).  
-	 * 	
-	 * @param row
-	 * @return String Color value that is define in the CSS.
+	 * Called by JSP to color each new row differently (zebra).
+	 * @return String Color value that is defined in the CSS.
 	 */
 	public static String getStyle(int row) {
 		if (row % 2 == 0) {
