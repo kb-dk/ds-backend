@@ -308,7 +308,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
 
             //We only have size and region, from IIIF spec we have to calcuate height/width
             
-            boolean thumbnail=isThumbnailIIIF(identifier, region,  size,rotation, quality, format);
+            boolean thumbnail=ImageAccessValidation.isThumbnailIIIF(identifier, region,  size,rotation, quality, format);
             log.debug("Image presentation type was parsed as thumbnail={} from parameters for identifer={}",thumbnail,identifier);
                     
             //Will return null if there is access to the image.
@@ -387,7 +387,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String filename = elements[elements.length - 1] + "." + CVT;
          
             //Will return null if there is access to the image.
-            boolean thumbnail=isThumbnailIIP(FIF,WID,HEI,  RGN, QLT, CNT,  ROT,GAM, CMP,  PFL,  CTW,INV, COL, JTL, PTL,CVT);
+            boolean thumbnail=ImageAccessValidation.isThumbnailIIP(FIF,WID,HEI,  RGN, QLT, CNT,  ROT,GAM, CMP,  PFL,  CTW,INV, COL, JTL, PTL,CVT);
             log.debug("Image presentation type was parsed as thumbnail={} from parameters for FIF={}",thumbnail,FIF);            
             
             StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(FIF, httpServletResponse, thumbnail);
@@ -408,77 +408,10 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         }
     }
      
-    /* Is request classified as a thumbnail or fullsize for IIIF requests.
-     * 
-     * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
-     * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
-     * 
-     * Will be full size if any other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.   
-     */
-    private boolean isThumbnailIIIF(String identifier, String region, String size, String rotation, String quality, String format) {
-         if (!"full".equals(region)  ||  !rotation.equals("0") || !quality.equals("default")) {        	         	
-        	 log.debug("Fullsize for IIIF request since a custom parameter was defined");             
-             return false;                
-         }
-         else if (size == null) {
-             log.debug("Fullsize for IIIF request since size parameter was not defined");
-             return false;
-         }                           
-         
-            //Only allow size as "w,h" parameter. Etc. "100,100". Value is default 'max' when requesting the full image.
-         String[] tokens = size.substring(1).split(","); //First character is !
-         if (tokens.length != 2) {
-             log.debug("Fullsize for IIIF request since size parameter not width,hight");                          
-             return false;
-         }
-         int width;
-         int height;         
-         try {
-             width=Integer.parseInt(tokens[0].trim());
-             height=Integer.parseInt(tokens[1].trim());
-         }
-         catch(Exception e) {
-             log.debug("Fullsize for IIIF request since size parameter could not be parsed as (width,height) integers:"+size);
-             return false;
-         }
-                  
-        if ( width > ServiceConfig.getConfig().getInteger("thumbnail.maxWidth") || height > ServiceConfig.getConfig().getInteger("thumbnail.maxHeight")){         
-             log.debug("Fullsize for IIIF request since size parameter was over thumbnail size");             
-             return false;
-         }
-         
-        return true;
-    }
-
+   
 
     
-    /* Is request classified as a thumbnail or fullsize for IIP requests.
-     * 
-     * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
-     * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
-     * 
-     * Will be full size if most other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.   
-     */
-    private boolean isThumbnailIIP( String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
-            List<Integer> JTL, List<Integer> PTL, String CVT) {
-    	
-    	//FIF and CVT allowed. WID and HEI checked below
-        if (  (RGN != null && RGN.size() !=0) || QLT != null || CNT != null || ROT != null || GAM != null || CMP != null || PFL != null || INV != null || COL != null  || (JTL != null && JTL.size() >0 )) {        	
-        	log.debug("Fullsize for IIP request since a custom parameter was defined");
-            return false;
-        }
-        else if (WID == null && HEI == null) {
-            log.debug("Fullsize for IIP request since size parameter was not defined");            
-            return false;
-        }
-        else if ( (WID != null && WID > ServiceConfig.getConfig().getInteger("thumbnail.maxWidth")) || (HEI != null && HEI > ServiceConfig.getConfig().getInteger("thumbnail.maxHeight")) ) {
-            log.debug("Fullsize for IIP request since size parameter was over thumbnail size");
-            return false;
-        }
-        
-        return true;
-    }
-
+    
     /**
      * Derives the MIME type for replies. Only supports formats from IIIF Image and IIP protocols.
      * @param format simple form, e.g. {@code jpeg}, {@code pdf}...
@@ -508,7 +441,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             case "json":
                 return "application/json";
             case "xml":
-                return "application/xml";
             default:
                 throw new InternalServiceException("Unknown format, unable to determine mime type: '" + format + "'");
         }

@@ -31,6 +31,86 @@ public class ImageAccessValidation {
         ACCESS, NO_ACCESS, ID_NON_EXISTING
     };
 
+    
+    /* Is request classified as a thumbnail or fullsize for IIP requests.
+     * 
+     * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
+     * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
+     * 
+     * Will be full size if most other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.   
+     */
+    public static boolean isThumbnailIIP( String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
+            List<Integer> JTL, List<Integer> PTL, String CVT) {
+        
+        //FIF and CVT allowed. WID and HEI checked below
+        if (  (RGN != null && RGN.size() !=0) || QLT != null || CNT != null ||  (ROT != null && !"0".equals(ROT)) || GAM != null || CMP != null || PFL != null || INV != null || COL != null  || (JTL != null && JTL.size() >0 ) || (PTL != null && PTL.size() >0 )) {            
+            log.debug("Fullsize for IIP request since a custom parameter was defined. Identifier={}", FIF);
+            return false;
+        }
+        else if (WID == null && HEI == null) {
+            log.debug("Fullsize for IIP request since size parameter was not defined. Identifier={}", FIF);            
+            return false;
+        }
+        else if ( (WID != null && WID > ServiceConfig.getConfig().getInteger("thumbnail.max-width")) || (HEI != null && HEI > ServiceConfig.getConfig().getInteger("thumbnail.max-height")) ) {
+            log.debug("Fullsize for IIP request since size parameter was over thumbnail size. Identifier={}, width={}, height={}", FIF, WID, HEI);
+            return false;
+        }
+        
+        return true;
+    }
+
+    
+    /** Is request classified as a thumbnail or fullsize for IIIF requests.
+     * 
+     * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
+     * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
+     * 
+     * Will be full size if any other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.   
+     */
+    public static boolean isThumbnailIIIF(String identifier, String region, String size, String rotation, String quality, String format) {
+         if (!"full".equals(region)  ||  !rotation.equals("0") || !quality.equals("default")) {                     
+             log.debug("Fullsize for IIIF request since a custom parameter was defined. Identifier={}", identifier);             
+             return false;                
+         }
+         else if (size == null) {
+             log.debug("Fullsize for IIIF request since size parameter was not defined Identifier={}", identifier);
+             return false;
+         }                           
+         
+            //Only allow size as "w,h" parameter. Etc. "100,100". Value is default 'max' when requesting the full image.
+       
+         String[] tokens= null;
+         if (size.startsWith("!")) {
+             tokens = size.substring(1).split(","); //First character is !. Example: !150,160
+         }
+         else {
+             tokens = size.split(",");  //  Example: 150,150 
+         }
+                   
+         if (tokens.length != 2) {
+             log.debug("Fullsize for IIIF request since size parameter not width,hight Identifier={},size={}", identifier, size);               
+             return false;
+         }
+         int width;
+         int height;         
+         try {
+             width=Integer.parseInt(tokens[0].trim());
+             height=Integer.parseInt(tokens[1].trim());
+         }
+         catch(Exception e) {
+             log.debug("Fullsize for IIIF request since size parameter could not be parsed as (width,height) integers value={} , identifier={}"+size,identifier);
+             return false;
+         }
+                  
+        if ( width > ServiceConfig.getConfig().getInteger("thumbnail.max-width") || height > ServiceConfig.getConfig().getInteger("thumbnail.max-height")){         
+             log.debug("Fullsize for IIIF request since size parameter was over thumbnail size. Identifier={}, width={}, height={}",identifier, width,height);
+             return false;
+         }
+         
+        return true;
+    }
+
+    
         
     public static ACCESS_TYPE accessTypeForImage(String resource_id, boolean thumbnail) throws ApiException {
 
@@ -131,14 +211,14 @@ public class ImageAccessValidation {
             return licenseClient;
         }
 
-        String dsLicenseUrl = ServiceConfig.getConfig().getString("licensemodule.url");
+        String dsLicenseUrl = ServiceConfig.getConfig().getString("license-module.url");
         log.info("license module url:"+dsLicenseUrl);
         licenseClient = new DsLicenseClient(dsLicenseUrl);
         return licenseClient;
     }
 
     private static StreamingOutput getImageForbidden() throws IOException {
-        String img=ServiceConfig.getConfig().getString("images.no_access");
+        String img=ServiceConfig.getConfig().getString("images.no-access");
         try (InputStream nonExisting= Resolver.resolveStream(img)){                                       
             StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
             return result; 
@@ -147,7 +227,7 @@ public class ImageAccessValidation {
 
 
     private static StreamingOutput getImageNotExist() throws IOException {
-        String img=ServiceConfig.getConfig().getString("images.non_existing");
+        String img=ServiceConfig.getConfig().getString("images.non-existing");
         try (InputStream nonExisting= Resolver.resolveStream(img)){                        
             StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
             return result;                
