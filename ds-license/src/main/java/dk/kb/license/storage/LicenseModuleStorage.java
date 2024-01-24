@@ -1018,7 +1018,7 @@ public class LicenseModuleStorage implements AutoCloseable {
             throws SQLException {
 
         if (presentations == null || presentations.size() == 0) {
-            throw new IllegalArgumentException("No presentationtypes defined for licensecontentId:" + licenseContentId);
+            throw new IllegalArgumentException("No presentationtypes defined.(licensecontentId:" + licenseContentId +")");
         }
 
         for (Presentation current : presentations) {
