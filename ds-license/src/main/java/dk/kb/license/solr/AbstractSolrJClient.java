@@ -34,15 +34,16 @@ public class AbstractSolrJClient {
     
     
     /**
-     * Filter ID for a given ID field. Both id and resource_id are used as id's
-     * This method is used for record resources such as images 
-     * Will only return ID's that is part of the query request. Due to multi fields, Solr can return values that was not in the request
+     * Filter ID for a given ID field. Both id and resource_id are used as id's.
+     * This method is used for record resources such as images.
+     * Will only return ID's that is part of the query request.
+     * Due to multi fields, Solr can return values that was not in the request
      * <p>
      * The Solr requests are issued using POST and in batches, ensuring that an arbitrary amount and size of IDs
      * (within Solr's limits for ID size) can be handled.
-     * @param ids List of id's that will be matched againg the solrIdField param
-     * @param queryPartAccess A filter query used to filter the ID's. If null there is no filter used
-     * @param solrIdField So far only options are id or resource_id field in Solr.
+     * @param ids List of id's that will be matched agaist the solrIdField param.
+     * @param queryPartAccess A filter query used to filter the ID's. If null then no filter is used.
+     * @param solrIdField So far only options are 'id' or 'resource_id' fields in Solr.
      */
     public List<String> filterIds(List<String> ids, String queryPartAccess, String solrIdField)
             throws SolrServerException, IOException {

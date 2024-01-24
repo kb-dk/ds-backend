@@ -52,8 +52,8 @@ public class LicenseChangelogGenerator {
     /**
      * Will generate a changeText. 
      * Will only add lines where the license has been changed. 
-     * For a new created license licenseOld must be null
-     * When deleting license set the licenseNew to null
+     * For a newly created license licenseOld must be null.
+     * When deleting licenses set the licenseNew to null.
      * The lines are name, valid dates, description, attributegroup(multiline) and licensecontent(multiline)
      * 
      */
@@ -99,8 +99,8 @@ public class LicenseChangelogGenerator {
 
     /**
      * Will generate a changeText.  
-     * For a new created presentationtype  before must be null
-     * When deleting prensentationtype set after to null
+     * For a newly created {@link PresentationType}  before must be null.
+     * When deleting a PresentationType set after to null.
      */
     public static ChangeDifferenceText getPresentationTypeChanges(PresentationType before,PresentationType after) {   
 
@@ -126,8 +126,8 @@ public class LicenseChangelogGenerator {
     
     /**
      * Will generate a changeText.  
-     * For a new created  groupType   before must be null
-     * When deleting a grouptype set after to null
+     * For a newly created {@link GroupType} before must be null.
+     * When deleting a GroupType set after to null.
      */
     public static ChangeDifferenceText getGroupTypeChanges(GroupType before,GroupType after) {   
 
@@ -157,8 +157,7 @@ public class LicenseChangelogGenerator {
     }
         
     /**
-     * Full changetext of a license. Used when creating a new license
-     * 
+     * Full changetext of a license. Used when creating a new license.
      */
     private static ChangeDifferenceText getNewLicenseChanges(License license) {   
         StringBuilder builder = new StringBuilder();
@@ -213,9 +212,7 @@ public class LicenseChangelogGenerator {
         String before = change.getBefore();       
         return new ChangeDifferenceText(after, before);        
     }
-    
-    
-  
+
     private static ChangeDifferenceText getDeleteLicenseChanges(License license) {    
         //Just switch change text from nrew
         ChangeDifferenceText change = getNewLicenseChanges(license);
@@ -233,8 +230,6 @@ public class LicenseChangelogGenerator {
 
     }
 
-
-
     private static String getValidDateText(License license) {
         return "Valid:"+license.getValidFrom() +" to "+license.getValidTo()+NEWLINE;
     }
@@ -251,8 +246,6 @@ public class LicenseChangelogGenerator {
     private static String getDescriptionText(License license) {
         return "License description DK/En:"+license.getDescription_dk() +" / "+ license.getDescription_en() +NEWLINE;
     }
-
-
 
     private static String getAttributeGroupsText(ArrayList<AttributeGroup> groups) {
         StringBuilder b = new StringBuilder();
@@ -277,7 +270,6 @@ public class LicenseChangelogGenerator {
 
         return b.toString();
     }
-
     
     private static String  getLicenseContentsText(ArrayList<LicenseContent> lcs) {
         StringBuilder b = new StringBuilder();
@@ -287,7 +279,6 @@ public class LicenseChangelogGenerator {
         }         
         return b.toString();
     }
-
 
     private static String getLicenseContentText(LicenseContent lc) {
         StringBuilder b = new StringBuilder();                
