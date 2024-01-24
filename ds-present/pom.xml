@@ -403,6 +403,12 @@
                   <phase>initialize</phase>
                 </execution>
               </executions>
+              <configuration>
+                <includeOnlyProperties>
+                  <includeOnlyProperty>git.commit.id</includeOnlyProperty>
+                  <includeOnlyProperty>git.branch</includeOnlyProperty>
+                </includeOnlyProperties>
+              </configuration>
             </plugin>
             <plugin>
               <groupId>org.codehaus.mojo</groupId>

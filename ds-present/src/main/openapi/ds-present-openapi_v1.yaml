@@ -1101,6 +1101,10 @@ components:
           type: string
           description: 'The checksum of the deployed commit.'
           example: 'ca82a6dff817ec66f44342007202690a93763949'
+        gitBranch:
+          type: string
+          description: 'The currenct deployed branch'
+          example: master
 
     Whoami:
       type: object

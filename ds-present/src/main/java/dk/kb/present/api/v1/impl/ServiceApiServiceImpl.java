@@ -64,10 +64,12 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
         log.debug("status() called with call details: {}", getCallDetails());
         String host = "N/A";
         String gitCommitChecksum = "";
+        String gitBranch = "";
 
         try {
             PropertiesReader propReader = new PropertiesReader("git.properties");
             gitCommitChecksum = propReader.getProperty("git.commit.id");
+            gitBranch = propReader.getProperty("git.branch");
             host = InetAddress.getLocalHost().getHostName();
 
         } catch (UnknownHostException e) {
@@ -83,6 +85,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
                 .heap(Runtime.getRuntime().maxMemory()/1048576L)
                 .server(host)
                 .gitCommitChecksum(gitCommitChecksum)
+                .gitBranch(gitBranch)
                 .health("ok");
     }
 
