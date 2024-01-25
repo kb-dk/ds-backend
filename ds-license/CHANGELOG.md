@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
- 
-### Fixed 
-- Hide logback.xml from generated JAR to avoid duplocate setups for logback
+ ### Fixed 
 
+
+
+## [1.4.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.4.0) 2024-01-11
+### Changed
+- logback template changes
 
 ## [1.3.1]((https://github.com/kb-dk/ds-license/releases/tag/v1.0.0)) 2024-01-11
 - Update exception throwing and catching throughout the service.
