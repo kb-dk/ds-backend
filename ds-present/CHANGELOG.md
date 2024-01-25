@@ -6,21 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added [1.4.0]
-- Add solr fields for temporal searching. 
 
-### Fixed
-- Configuration update of existing collection now works: bin/cloud_ds.sh update
+## [1.5.0](https://github.com/kb-dk/ds-present/releases/tag/v1.5.0) - 2024-01-22
+(Updated with all changes since 1.3)
 
-### Added [1.3.0]
+### Added
 - Added ReflectUtil class containing methods used for testing. Using these methods instead of internal mockito methods makes the project not depend on mockitos old internal class.
 - Add mTime from ds-storage to solr documents
 - Add support for XSLT transformation of Preservica records from preservica 6.
-
-### Changed [1.3.0]
 - Updated OpenAPI YAML with new example values
+- Add solr fields for temporal searching.  
 
+### Changed
+- logback template changes
 
+### Fixed
+- Configuration update of existing collection now works: bin/cloud_ds.sh update
+ 
 
 ## [1.2.2](https://github.com/kb-dk/ds-present/releases/tag/v1.2.2) - 2023-12-12
 ### Added
