@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-## [1.2.0](https://github.com/kb-dk/ds-discover/releases/tag/v1.1.0) - 2024-01-22
+## [1.2.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.2.0) - 2024-01-22
 ### Added
 - Client for the service, to be used by external projects
 - Solr Suggest API method
