@@ -65,7 +65,10 @@ public class LicenseValidator {
 
 
     /**
-     * Extract all groups(packages/exclusions(klausulering) that validates for the user data.
+     * Extract all {@link GroupType} and {@link PresentationType} that validates for the input that describes the user.
+     * The {@link UserGroupDto} is a wrapper for {@link GroupType} that also has the  {@link PresentationType} as a list.
+     * This method can be used to show a user what he has access to. 
+     * 
      * <p>
      * Different licenses can give access to the same group, but a group will only be added once.
      * The solr query can be constructing by 'adding' all queries from the packages and remove exclusions.
@@ -171,14 +174,20 @@ public class LicenseValidator {
 
 
     /**
-    * Get the filter query-part for a given user.
+    *   Get a {@link GetUserQueryOutputDto} object that has the following information about the user.
+    *   <ul>
+    *     <li>The filter query used when calling Solr to filter ID's</li>
+    *     <li>List of names for all {@link GroupType} of type 'package' (Pakke) that the user has access to </li>
+    *     <li>List of names for all {@link GroupType} of type 'exclusion' (Klausulering) that the user does NOT have access to </li>
+    *   </ul>
+    *  
     * <p>
     * The filter query is used when filtering ID's in solr.<br>
     * The solr filtering is called with a query (list of ID's) and the filter query.<br>
     * The id field is defined in the configuration.<br>
     * Example: Query= id:(id1 OR id2 ... OR idn), Filter query: collection:dr
     * @param input The input that defines the user.
-    * @return
+    * @return GetUserQueryOutputDto With the filterquery and the two list of names for packages and exclusions GroupTypes   
     */
     public static GetUserQueryOutputDto getUserQuery(GetUserQueryInputDto input) {
 
@@ -304,7 +313,10 @@ public class LicenseValidator {
 
 
     /**
-     * From a list of licenses extract all {@link GroupType}s with the {@link PresentationType}s which they give access to.
+     * This method is called with a list of licenses. Each license has information about access to {@link GroupType} and
+     * the allowed {@link PresentationType}s for that {@link GroupType} 
+     * 
+     * From the licences extract all {@link GroupType}s with the {@link PresentationType}s which they give access to. 
      * <p>
      * Multiple licenses can give access the same GroupType, and the group type will only be added once.
      * <br>
@@ -354,7 +366,7 @@ public class LicenseValidator {
     *<p>
     * @param licenses List of licenses.
     * @param presentationTypes List of PresentationTypes (name only)
-    * @return List of GroupTypes (name one) that has at least one of the PresentationTypes allowed.
+    * @return List of GroupTypes (names only) that has at least one of the PresentationTypes allowed.
     */
     public static ArrayList<String> filterGroups(ArrayList<License> licenses, ArrayList<String> presentationTypes) {
         HashSet<String> groups = new  HashSet<String>();
@@ -377,9 +389,9 @@ public class LicenseValidator {
     * Filter a list of licences and return those valid for a give date.
     * <p>
     * Each license has a valid from and valid to date. The date given must be between those values.
-    * @param licenses The list of licenses to apply date filtering to.
-    * @param date the date (millis) validated against license.
-    * @return The subset of licences that are valid at the give date.
+    * @param licenses The list of licenses to apply date filtering for.
+    * @param date the date (milliseconds) validated against license.
+    * @return The subset of licenses that are valid at the give date.
     */
     public static ArrayList<License> filterLicenseByValidDate(ArrayList<License> licenses, long date){
         ArrayList<License> filtered = new ArrayList<License>();
@@ -399,7 +411,7 @@ public class LicenseValidator {
 
     /**
      * Filter a list of licenses and return only those that validates from the user attributes. The method can be <br>
-     * used to show a user all licenses that she has access to. It does not validate against specific ID's.<br>
+     * used to show a user all licenses that he/she has access to.<br>
      * There is also no PresentationType used in the filtering.<br>
      * <p>
      * For a better understanding of license validation, please see either the OpenAPI spefication or POM documentation.
@@ -478,8 +490,11 @@ public class LicenseValidator {
     }
 
     /**
-     * Filter a list of licenses and return only those that has at
-     * least one of the GroupTypes defined with the PresentationType.
+     * From a list of licenses return only those that has at least one of the GroupTypes with given PresentationType.
+     * <p>
+     * Example: If a license does not have the GroupType it not be included. If a license does have the GroupType,
+     * but not the PresentationType it will also not be included.    
+     * 
      * <p>
      * @param licenses List of licenses to be filtered.
      * @param groups List groups where one must match with the PresentationType.
@@ -627,7 +642,7 @@ public class LicenseValidator {
      *
      * @param accessGroups
      * @param missingRestrictionGroups
-     * @return
+     * @return The filter query string will be used to filter ID's by calling Solr.
      */
     public static String generateQueryString(ArrayList<String> accessGroups, ArrayList<String> missingRestrictionGroups){
         if (accessGroups.size() == 0){
@@ -776,7 +791,7 @@ public class LicenseValidator {
     * @param ids The resource id's to filter. The filter field is define in the configuration.
     * @param filterQuery FilterQuery. If null there is no filter query and this is used to if ID's does exist
     * @param solrIdField The resource_id field defined in the configuration used for id filtering in Solr.
-    * @return
+    * @return The subset of ID's from the input that validated against the filter by calling Solr. 
     * @throws org.apache.solr.client.solrj.SolrServerException If communication with solr fails. Should not happen
     * @throws java.io.IOException If there are IO errors. Should not happen
     */

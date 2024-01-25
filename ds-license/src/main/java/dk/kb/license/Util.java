@@ -21,7 +21,11 @@ public class Util {
 
 	private static final Logger log = LoggerFactory.getLogger(Util.class);
 
-	// SimpleDateFormat is not thread-safe, so give one to each thread
+
+	/**
+	 * Defines a DateFormatter that is thread-safe 
+	 * 
+	 */
 	private static final ThreadLocal<SimpleDateFormat> formatter = new ThreadLocal<SimpleDateFormat>() {
 		@Override
 		protected SimpleDateFormat initialValue() {
@@ -31,10 +35,17 @@ public class Util {
 		}
 	};
 
-	// Used from JSP
-	public static boolean groupsContainGroupName(ArrayList<LicenseContent> groups, String domGroupName) {
+	// Used from JSP	
+	/**
+	 * Validate if a given group (by name) is in a list of {@link LicenseContent}s. 
+	 * 
+	 * @param groups The list of LicensContent each having a group name.
+	 * @param groupName The group name to find
+	 * @return True/False depending on if the groupName was matched
+	 */
+	public static boolean groupsContainGroupName(ArrayList<LicenseContent> groups, String groupName) {
 		for (int i = 0; i < groups.size(); i++) {
-			if (groups.get(i).getName().equalsIgnoreCase(domGroupName)) {
+			if (groups.get(i).getName().equalsIgnoreCase(groupName)) {
 				return true;
 			}
 		}
@@ -52,7 +63,7 @@ public class Util {
 	 * @param groupKey The group key that must match.
 	 * @param presentationTypeKey The presentionTypeKey that must match (and also match the groupKey)
 	 *  
-	 * @return Result of the at least one of the licensegroups having the both groupKey and presentationKey defined.  
+	 * @return  True/False depending on if the groupName and presentationType was matched 
 	 */	
 	public static boolean groupsContainsGroupWithLicense(ArrayList<LicenseContent> groups, String groupKey, String presentationTypeKey) {
 		for (int i = 0; i < groups.size(); i++) {
@@ -71,8 +82,8 @@ public class Util {
 	/**
 	 * Validate that a date is of the format: dd-MM-yyyy.
 	 * 
-	 * @param dateFormat The string to valide is of form 'dd-MM-yyyy'.
-	 * @return
+	 * @param dateFormat The string to validate is of form 'dd-MM-yyyy'.
+	 * @return True or false depending if the date format is valid 
 	 */
 	public static boolean validateDateFormat(String dateFormat) {
 		try {

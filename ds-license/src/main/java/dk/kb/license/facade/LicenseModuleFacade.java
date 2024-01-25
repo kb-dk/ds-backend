@@ -34,13 +34,13 @@ public class LicenseModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacade.class);
     
     /**
-     * Create a new {@link PresentationType} that will be storage and available to be added to licences. A newly created
-     * PresentationType will be added the any existing licences.
+     * Create a new {@link PresentationType} which can then be added to licences. A new created PresentationType will
+     * not be added the any existing licences. Licences can be edited and the new {@link PresentationType} can be added.
      *   
-     * @param key Unique identifier for the{@link PresentationType} that is used when requesting access.
+     * @param key Unique identifier for the {@link PresentationType} that is used when requesting access.
      *            Use alphanumeric values with no white spaces. Examples: Thumbnails, Search, Stream
-     * @param value_dk This text (danish) will be shown when selected the presentation type and adding it to a license. Keep it short.
-     * @param value_en This text (english) will be shown when selected the presentation type and adding it to a license. Keep it short.
+     * @param value_dk This text (danish) will be shown to end users. Keep it short.
+     * @param value_en This text (english) will be shown to end users. Keep it short.
      */
     public static void persistLicensePresentationType(String key, String value_dk, String value_en) {
         
@@ -74,12 +74,12 @@ public class LicenseModuleFacade {
 
     
     /**
-     * Retrieve a specific audit log change by id.
+     * Retrieve a specific audit log by id.
      * <p>
      * The id is milliseconds at the time for the change.
      * Call the getAllAuditLogs {@link #getAllAuditLogs()} to see all entries with their ids
      * @param millis The ID of the log. 
-     * @return
+     * @return AuditLog The auditlog with this id
      */
     public static AuditLog getAuditLog(Long millis) {
         return performStorageAction("getAuditLog()", storage -> {
@@ -103,7 +103,7 @@ public class LicenseModuleFacade {
     /**
      * Delete a license completely.
      * Instead of deleting a license it is also an option to disable it by changing the valid-to attribute.
-     * @param licenseId
+     * @param licenseId The unique id for the license. Instead of deleting a license, you can also change valid to/from for the license to disable it instead.
      */    
     public static void deleteLicense(long licenseId) {
         performStorageAction("deleteLicense(" + licenseId + ")", storage -> {
@@ -118,8 +118,7 @@ public class LicenseModuleFacade {
             return null;
         
         });
-        LicenseCache.reloadCache(); // Database changed, so reload cache
-     
+        LicenseCache.reloadCache(); // Database changed, so reload cache     
     }
 
     
@@ -357,7 +356,7 @@ public class LicenseModuleFacade {
     /**
      * Get a specific license.
      * @param licenseId The unique id of the license.
-     * @return
+     * @return License The unique license with this id. 
      */
     public static License getLicense(long licenseId) {
         return performStorageAction("getLicense("+licenseId+")", storage -> {

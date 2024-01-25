@@ -72,7 +72,16 @@ public class AbstractSolrJClient {
     }
        
     //Will also remove " from all ids to prevent Query-injection
-    //Public so it can be used by unittest
+   
+    /** 
+     * Will remove " from id's to remove query-injection (Little Bobby Tables). Each id will be a phrase search with '""' added.
+     * Example: give the ids (id1,id2,id3)  and the filter i field 'resource_id' the query string return will be:<br>
+     * resource_id:("id1" OR "id2" OR "id3")
+     * 
+     * @param ids List of ID's to filter
+     * @param filterField The solrfield to use for filtering. The solrfield are defined in the configuration
+     * @return Solr query searching for ID's in the defined filter field. 
+     */    
     public static String makeAuthIdPart (List<String> ids, String filterField){
         StringBuilder queryIdPart = new StringBuilder();
         queryIdPart.append("(");
