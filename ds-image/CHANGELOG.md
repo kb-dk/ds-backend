@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Bugfix: Bumped slf4j and logback-classic to latest versions to re-enable logging
 
+## [1.3.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.3.0) - 2023-12-05
+### Changed 
+- logback template changes
 
 ## [1.1.0](https://github.com/kb-dk/ds-image/releases/tag/v1.1.0) - 2023-12-05
 ### Added
