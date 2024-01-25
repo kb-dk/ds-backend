@@ -35,7 +35,7 @@ class ProxyHelperTest {
     @Test
     void anyBytes() throws IOException, URISyntaxException {
         try (ByteArrayOutputStream content = new ByteArrayOutputStream()) {
-            ProxyHelper.proxy("KB", new URI("https://www.kb.dk/"), new URI("http://example.com/irrelevantfortesting")).write(content);
+            ProxyHelper.proxy("KB", new URI("https://www.kb.dk/"), new URI("http://example.com/irrelevantfortesting"),null).write(content);
             assertTrue(content.size() >= 1, "The resulting content should have at least 1 byte");
         }
     }
@@ -48,7 +48,7 @@ class ProxyHelperTest {
             ProxyHelper.proxy("KB",
                               new URI("https://www.kb.dk/"),
                               new URI("http://example.com/irrelevantfortesting"),
-                              servletResponse).
+                              servletResponse,null).
                     write(content);
             assertTrue(content.size() >= 1, "The resulting content should have at least 1 byte");
         }

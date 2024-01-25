@@ -80,7 +80,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             setFilename(new File(imageid).getName() + ".dzi", false, false);
             return IIPFacade.getInstance().getDeepzoomDZI(
                     uriInfo.getRequestUri(), imageid,
-                    httpServletResponse);
+                    httpServletResponse,httpHeaders);
 
         } catch (Exception e){
             throw handleException(e);
@@ -165,7 +165,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
             return IIPFacade.getInstance().getDeepzoomTile(
                     uriInfo.getRequestUri(),
-                    imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
+                    imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL, httpHeaders);
 
         } catch (Exception e){
             throw handleException(e);
@@ -223,7 +223,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
 
             // TODO: Add support for XML when the OpenAPI specification has been corrected
-            return IIIFFacade.getInstance().getIIIFInfo(uriInfo.getRequestUri(), identifier, "json");
+            return IIIFFacade.getInstance().getIIIFInfo(uriInfo.getRequestUri(), identifier, "json",httpHeaders);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -310,7 +310,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
 
             return IIIFFacade.getInstance().getIIIFImage(
                     uriInfo.getRequestUri(),
-                    identifier, region, size, rotation, quality, format);
+                    identifier, region, size, rotation, quality, format,httpHeaders);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -391,7 +391,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
 
             return IIPFacade.getInstance().getIIPImage(
                     uriInfo.getRequestUri(),
-                    FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
+                    FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT,httpHeaders);
         } catch (Exception e) {
             throw handleException(e);
         }

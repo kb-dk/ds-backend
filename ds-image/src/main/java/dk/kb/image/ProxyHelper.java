@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
@@ -50,8 +51,8 @@ public class ProxyHelper {
      * @param clientRequestURI the original request URI from the client. Used only for logging.
      * @return a lambda providing the data from the given uri.
      */
-    public static StreamingOutput proxy(String request, URI uri, URI clientRequestURI) {
-            return proxy(request, uri, clientRequestURI, null);
+    public static StreamingOutput proxy(String request, URI uri, URI clientRequestURI,  HttpHeaders httpHeaders) {
+            return proxy(request, uri, clientRequestURI, null, httpHeaders);
     }
 
     /**
@@ -66,10 +67,10 @@ public class ProxyHelper {
      * @return a lambda providing the data from the given uri.
      */
     public static StreamingOutput proxy(
-            String request, URI uri, URI clientRequestURI, HttpServletResponse httpServletResponse) {
+            String request, URI uri, URI clientRequestURI, HttpServletResponse httpServletResponse, HttpHeaders httpHeaders) {
         log.debug("proxy(request='{}', uri='{}', clientRequestURI='{}', httpServletResponse={}) called",
                   request, uri, clientRequestURI, httpServletResponse == null ? "not present" : "present");
-        final HttpURLConnection connection = establishConnection(request, uri, clientRequestURI);
+        final HttpURLConnection connection = establishConnection(request, uri, clientRequestURI,httpHeaders);
         try {
             validateStatuscode(request, uri, clientRequestURI, connection.getResponseCode());
         } catch (IOException e) {
@@ -147,7 +148,7 @@ public class ProxyHelper {
      * @return a connection to uri.
      * @throws ServiceException is the connection could not be established.
      */
-    private static HttpURLConnection establishConnection(String request, URI uri, URI clientRequestURI) {
+    private static HttpURLConnection establishConnection(String request, URI uri, URI clientRequestURI,HttpHeaders httpHeaders) {
         HttpURLConnection connection;
         try  {
             connection = (HttpURLConnection) uri.toURL().openConnection();
@@ -166,6 +167,12 @@ public class ProxyHelper {
             throw new InternalServiceException("Unable to set 'GET' as request method for '" + request + "'");
         }
         connection.setRequestProperty("User-Agent", "ds-image");
+     
+        if (httpHeaders != null) { //The test code will call it without httpHeaders
+          connection.addRequestProperty("Accept",httpHeaders.getHeaderString("Accept"));
+          log.info("Transfering accept header to image server:"+httpHeaders.getHeaderString("Accept"));
+        }
+        
         // TODO: Add timeouts, but make them configurable
         //con.setConnectTimeout(1000);
         //con.setReadTimeout(1000);

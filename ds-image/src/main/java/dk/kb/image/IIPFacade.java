@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.List;
@@ -96,7 +97,7 @@ public class IIPFacade {
             URI requestURI,
             String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT,
             String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
-            List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
+            List<Integer> JTL, List<Integer> PTL, String CVT, HttpHeaders httpHeaders) throws ServiceException {
 
         IIPParamValidation.validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
 
@@ -130,12 +131,12 @@ public class IIPFacade {
 
         final URI uri = builder.build();
 
-        return ProxyHelper.proxy(FIF, uri, requestURI);
+        return ProxyHelper.proxy(FIF, uri, requestURI, httpHeaders);
     }
 
     public javax.ws.rs.core.StreamingOutput getDeepzoomDZI(
             URI requestURI, String imageid,
-            HttpServletResponse httpServletResponse) throws ServiceException {
+            HttpServletResponse httpServletResponse,  HttpHeaders httpHeaders) throws ServiceException {
         validateDeepzoomDZIRequest(imageid);
         final String idDZI = imageid + (imageid.endsWith(".dzi") ? "" : ".dzi");
         // Defaults
@@ -159,13 +160,13 @@ public class IIPFacade {
 
         final URI uri = builder.build();
 
-        return ProxyHelper.proxy(imageid, uri, requestURI, httpServletResponse);
+        return ProxyHelper.proxy(imageid, uri, requestURI, httpServletResponse, httpHeaders);
     }
 
     public javax.ws.rs.core.StreamingOutput getDeepzoomTile(
             URI requestURI,
             String imageid, Integer layer, String tiles, String format, Float CNT,
-            Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ServiceException {
+            Float GAM, String CMP, String CTW, Boolean INV, String COL, HttpHeaders httpHeaders) throws ServiceException {
         IIPParamValidation.validateDeepzoomTileRequest(imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
 
         // Defaults
@@ -204,7 +205,7 @@ public class IIPFacade {
 
         final URI uri = builder.build();
 
-        return ProxyHelper.proxy(imageid, uri, requestURI);
+        return ProxyHelper.proxy(imageid, uri, requestURI,httpHeaders);
     }
 
     /**

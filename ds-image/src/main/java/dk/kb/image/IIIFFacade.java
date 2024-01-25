@@ -15,12 +15,15 @@
 package dk.kb.image;
 
 import com.damnhandy.uri.template.UriTemplate;
+
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -77,7 +80,7 @@ public class IIIFFacade {
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     public StreamingOutput getIIIFImage(URI requestURI, String identifier, String region, String size,
-                                        String rotation, String quality, String format) {
+                                        String rotation, String quality, String format, HttpHeaders httpHeaders) {
         validateIIIFImageRequest(requestURI, identifier, region, size, rotation, quality, format);
         if (format == null) {
             format = "jpg";
@@ -98,7 +101,7 @@ public class IIIFFacade {
                 path(path);
 
         final URI uri = builder.build();
-        return ProxyHelper.proxy(identifier, uri, requestURI);
+        return ProxyHelper.proxy(identifier, uri, requestURI,httpHeaders);
     }
 
 
@@ -114,7 +117,7 @@ public class IIIFFacade {
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
-    public StreamingOutput getIIIFInfo(URI requestURI, String identifier, String extension) {
+    public StreamingOutput getIIIFInfo(URI requestURI, String identifier, String extension, HttpHeaders httpHeaders) {
         // TODO: Verify extension
         String path = UriTemplate.fromTemplate(IIIF_INFO3_TEMPLATE)
                 .set("identifier", identifier)
@@ -125,7 +128,7 @@ public class IIIFFacade {
                 path(path);
 
         final URI uri = builder.build();
-        return ProxyHelper.proxy(identifier, uri, requestURI);
+        return ProxyHelper.proxy(identifier, uri, requestURI,httpHeaders);
     }
 
     /**
