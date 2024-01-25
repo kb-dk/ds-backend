@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 
-## [1.3.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.3.0) - 2023-12-05
+## [1.3.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.3.0) - 2024-01-22
 ### Changed 
 - logback template changes
 
