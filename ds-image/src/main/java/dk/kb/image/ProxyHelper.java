@@ -75,7 +75,7 @@ public class ProxyHelper {
             String acceptHeader = (httpHeaders != null)  ? httpHeaders.getHeaderString(HEADER_ACCEPT) : null; 
 
         //If more headerfields besides Accept is transfered to proxy request add them to log.
-    	log.debug("proxy(request='{}', uri='{}', clientRequestURI='{}', httpServletResponse={}, acceptHeader{}) called",
+    	log.debug("proxy(request='{}', uri='{}', clientRequestURI='{}', httpServletResponse={}, acceptHeader={}) called",
                   request, uri, clientRequestURI, httpServletResponse == null ? "not present" : "present", acceptHeader);
         final HttpURLConnection connection = establishConnection(request, uri, clientRequestURI,httpHeaders);
         try {
