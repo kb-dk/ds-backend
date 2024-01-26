@@ -73,7 +73,7 @@ public class ImageAccessValidation {
             log.debug("Fullsize for IIP request since size parameter was not defined. Identifier={}", FIF);            
             return false;
         }
-        else if ( (WID != null && WID > ServiceConfig.getConfig().getInteger("thumbnail.max-width")) || (HEI != null && HEI > ServiceConfig.getConfig().getInteger("thumbnail.max-height")) ) {
+        else if ( (WID != null && WID > ServiceConfig.getConfig().getInteger("thumbnail.max_width")) || (HEI != null && HEI > ServiceConfig.getConfig().getInteger("thumbnail.max_height")) ) {
             log.debug("Fullsize for IIP request since size parameter was over thumbnail size. Identifier={}, width={}, height={}", FIF, WID, HEI);
             return false;
         }
@@ -120,7 +120,7 @@ public class ImageAccessValidation {
              return false;
          }
                   
-        if ( width > ServiceConfig.getConfig().getInteger("thumbnail.max-width") || height > ServiceConfig.getConfig().getInteger("thumbnail.max-height")){         
+        if ( width > ServiceConfig.getConfig().getInteger("thumbnail.max_width") || height > ServiceConfig.getConfig().getInteger("thumbnail.max_height")){         
              log.debug("Fullsize for IIIF request since size parameter was over thumbnail size. Identifier={}, width={}, height={}",identifier, width,height);
              return false;
          }
@@ -236,7 +236,7 @@ public class ImageAccessValidation {
     }
 
     private static StreamingOutput getImageForbidden() throws IOException {
-        String img=ServiceConfig.getConfig().getString("images.no-access");
+        String img=ServiceConfig.getConfig().getString("images.no_access");
         try (InputStream nonExisting= Resolver.resolveStream(img)){                                       
             StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
             return result; 
@@ -245,7 +245,7 @@ public class ImageAccessValidation {
 
 
     private static StreamingOutput getImageNotExist() throws IOException {
-        String img=ServiceConfig.getConfig().getString("images.non-existing");
+        String img=ServiceConfig.getConfig().getString("images.non_existing");
         try (InputStream nonExisting= Resolver.resolveStream(img)){                        
             StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
             return result;                
