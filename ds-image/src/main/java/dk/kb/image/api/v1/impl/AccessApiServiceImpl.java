@@ -366,9 +366,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     public StreamingOutput iIPImageRequest(
             String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) throws ServiceException {
-        try {
-     
-            log.info("ACCEPT HEADER:"+httpHeaders.getHeaderString("Accept"));
+        try {     
             log.debug("IIPImageRequest(FIF='{}', WID={}, HEI={}, RGN={}, QLT={}, CNT={}, " +
                       "ROT={}, GAM={}, CMP='{}', PFL='{}', CTW='{}', INV={}, COL='{}', " +
                       "JTL={}, PTL={}, CVT='{}') called with call details: {}",

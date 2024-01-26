@@ -71,6 +71,8 @@ public class IIIFFacade {
      *
      * @param format: The format of the returned image is expressed as a suffix, mirroring common filename extensions.
      *
+     * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
+     *
      * @return <ul>
       *   <li>code = 200, message = "Succes!", response = File.class</li>
       *   <li>code = 400, message = "Bad Request. Please check the formating of the parameters: region, size and rotation.  Check if the requested region’s height or width is zero, or if the region is entirely outside the bounds of the reported dimensions  Requests for sizes not prefixed with ^ that result in a scaled region with pixel dimensions greater than the pixel dimensions of the extracted region are errors that should result in a 400 (Bad Request) status code.  Check for syntax errors in size parameter  A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code."</li>
@@ -108,8 +110,11 @@ public class IIIFFacade {
     /**
      * IIIF Image Information
      *
-     * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.
-     *
+     * @param requestUri the original request URI from the client. Used only for logging.
+     * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.    
+     * @param extension Data format. 'json' or 'xml' allowed.
+     * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
+     * 
      * @return <ul>
       *   <li>code = 200, message = "Succes!", response = JsonldDto.class</li>
       *   </ul>

@@ -90,6 +90,8 @@ public class IIPFacade {
      *
      * @param CVT: Export the full image or a region in the specified format (JPEG and PNG currently supported)
      *
+     * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
+     * 
      * @return a bitmap.
      * @throws ServiceException when other http codes should be returned
      */

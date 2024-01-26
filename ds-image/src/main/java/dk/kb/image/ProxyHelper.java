@@ -35,12 +35,15 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.List;
 
+
 /**
  * Implementation of HTTP(S) proxying.
  */
 @SuppressWarnings("UnusedReturnValue")
 public class ProxyHelper {
-    private static final Logger log = LoggerFactory.getLogger(ProxyHelper.class);
+
+	final static String HEADER_ACCEPT="Accept";
+	private static final Logger log = LoggerFactory.getLogger(ProxyHelper.class);
 
     /**
      * Streams the content from the given uri. In the case of HTTP codes outside of the 200-299 range, a matching
@@ -49,6 +52,7 @@ public class ProxyHelper {
      *                The uri is NOT stated in any exception messages as that might be considered confidential.
      * @param uri the URI to proxy.
      * @param clientRequestURI the original request URI from the client. Used only for logging.
+     * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request. 
      * @return a lambda providing the data from the given uri.
      */
     public static StreamingOutput proxy(String request, URI uri, URI clientRequestURI,  HttpHeaders httpHeaders) {
@@ -62,14 +66,17 @@ public class ProxyHelper {
      *                The uri is NOT stated in any exception messages as that might be considered confidential.
      * @param uri the URI to proxy.
      * @param clientRequestURI the original request URI from the client. Used only for logging.
-     * @param httpServletResponse used for setting the {@code Content-Type} to match the one delivered form uri.
-     *                            Ignored if null.
+     * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
+     * @param httpServletResponse used for setting the {@code Content-Type} to match the one delivered form uri. Ignored if null.
      * @return a lambda providing the data from the given uri.
      */
     public static StreamingOutput proxy(
             String request, URI uri, URI clientRequestURI, HttpServletResponse httpServletResponse, HttpHeaders httpHeaders) {
-        log.debug("proxy(request='{}', uri='{}', clientRequestURI='{}', httpServletResponse={}) called",
-                  request, uri, clientRequestURI, httpServletResponse == null ? "not present" : "present");
+            String acceptHeader = (httpHeaders != null)  ? httpHeaders.getHeaderString(HEADER_ACCEPT) : null; 
+
+        //If more headerfields besides Accept is transfered to proxy request add them to log.
+    	log.debug("proxy(request='{}', uri='{}', clientRequestURI='{}', httpServletResponse={}, acceptHeader{}) called",
+                  request, uri, clientRequestURI, httpServletResponse == null ? "not present" : "present", acceptHeader);
         final HttpURLConnection connection = establishConnection(request, uri, clientRequestURI,httpHeaders);
         try {
             validateStatuscode(request, uri, clientRequestURI, connection.getResponseCode());
@@ -145,6 +152,7 @@ public class ProxyHelper {
      * @param request image ID or similar information used to construct error messages to the caller.
      * @param uri the URI to proxy.
      * @param clientRequestURI the original request URI from the client. Used only for logging.
+     * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
      * @return a connection to uri.
      * @throws ServiceException is the connection could not be established.
      */
@@ -168,9 +176,8 @@ public class ProxyHelper {
         }
         connection.setRequestProperty("User-Agent", "ds-image");
      
-        if (httpHeaders != null) { //The test code will call it without httpHeaders
-          connection.addRequestProperty("Accept",httpHeaders.getHeaderString("Accept"));
-          log.info("Transfering accept header to image server:"+httpHeaders.getHeaderString("Accept"));
+        if (httpHeaders != null && httpHeaders.getHeaderString(HEADER_ACCEPT) != null) { //The test code will call it without httpHeaders
+          connection.addRequestProperty("Accept",httpHeaders.getHeaderString(HEADER_ACCEPT));
         }
         
         // TODO: Add timeouts, but make them configurable
