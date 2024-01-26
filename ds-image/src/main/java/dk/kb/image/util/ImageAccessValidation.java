@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
@@ -31,13 +33,33 @@ public class ImageAccessValidation {
         ACCESS, NO_ACCESS, ID_NON_EXISTING
     };
 
+	/*
+	 * This pattern validates the IIIF size parameter, but has the additional restriction that both height and size must be defined.    
+	 * 
+	 * ^       : start of string
+	 * \\^?    : 0 or 1 of character '^'  (needs to be escaped)
+	 * !?      : 0 or 1 of character '!'
+	 * ([0-9]+): group #1 of digits, at least 1 digit
+	 * ,       : (must be be present)
+	 * ([0-9]+): group #2 of digits, at least 1 digit
+	 * $       : end of string 
+	 * 
+	 */				
+	public static final Pattern IIIF_SIZE_PATTERN = Pattern.compile("^\\^?!?([0-9]+),([0-9]+)$");
+	     			
     
-    /* Is request classified as a thumbnail or fullsize for IIP requests.
+    /**     
+     * Is request classified as a thumbnail or fullsize for IIP requests.
      * 
-     * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
+     * This implementation is very conservative and will determine if request is for a thumbnail. For thumbnail validation to succeed both width and height must be define,
+     * while most other control parameters must not be defined.    
      * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
      * 
-     * Will be full size if most other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.   
+     * Will be full size if most other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.
+     * 
+     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#iIPImageRequest() IIP-parameters}      
+     *    
+     * @return true if image request is classified as thumbnail request. Else false 
      */
     public static boolean isThumbnailIIP( String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT) {
@@ -47,7 +69,7 @@ public class ImageAccessValidation {
             log.debug("Fullsize for IIP request since a custom parameter was defined. Identifier={}", FIF);
             return false;
         }
-        else if (WID == null && HEI == null) {
+        else if (WID == null || HEI == null) {
             log.debug("Fullsize for IIP request since size parameter was not defined. Identifier={}", FIF);            
             return false;
         }
@@ -65,7 +87,10 @@ public class ImageAccessValidation {
      * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
      * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
      * 
-     * Will be full size if any other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.   
+     * Will be full size if any other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.
+
+     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#ifffImageRequest() IIUF-parameters} 
+     * @return true if image request is classified as thumbnail request. Else false.    
      */
     public static boolean isThumbnailIIIF(String identifier, String region, String size, String rotation, String quality, String format) {
          if (!"full".equals(region)  ||  !rotation.equals("0") || !quality.equals("default")) {                     
@@ -78,27 +103,20 @@ public class ImageAccessValidation {
          }                           
          
             //Only allow size as "w,h" parameter. Etc. "100,100". Value is default 'max' when requesting the full image.
-       
-         String[] tokens= null;
-         if (size.startsWith("!")) {
-             tokens = size.substring(1).split(","); //First character is !. Example: !150,160
+        
+         Matcher matcher = IIIF_SIZE_PATTERN.matcher(size);
+         if (!matcher.find()) {
+        	 return false;
          }
-         else {
-             tokens = size.split(",");  //  Example: 150,150 
-         }
-                   
-         if (tokens.length != 2) {
-             log.debug("Fullsize for IIIF request since size parameter not width,hight Identifier={},size={}", identifier, size);               
-             return false;
-         }
+                                                      
          int width;
          int height;         
          try {
-             width=Integer.parseInt(tokens[0].trim());
-             height=Integer.parseInt(tokens[1].trim());
+             width=Integer.parseInt(matcher.group(1));
+             height=Integer.parseInt(matcher.group(2));
          }
          catch(Exception e) {
-             log.debug("Fullsize for IIIF request since size parameter could not be parsed as (width,height) integers value={} , identifier={}"+size,identifier);
+             log.debug("Fullsize for IIIF request since size parameter could not be parsed as (width,height) integers value={} , identifier={}",size,identifier);
              return false;
          }
                   
@@ -211,7 +229,7 @@ public class ImageAccessValidation {
             return licenseClient;
         }
 
-        String dsLicenseUrl = ServiceConfig.getConfig().getString("license-module.url");
+        String dsLicenseUrl = ServiceConfig.getConfig().getString("licensemodule.url");
         log.info("license module url:"+dsLicenseUrl);
         licenseClient = new DsLicenseClient(dsLicenseUrl);
         return licenseClient;

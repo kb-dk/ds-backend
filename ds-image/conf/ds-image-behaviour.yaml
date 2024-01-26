@@ -24,7 +24,7 @@ userhome: "Home sweet ${user.home}"
 # Fallbacks for system properties can be defined with :-
 fallback: ${nonexisting.property:-87}
 #Url to licensemodule
-license-module:
+licensemodule:
   url: http://localhost:10001/ds-license/v1/
 
 
