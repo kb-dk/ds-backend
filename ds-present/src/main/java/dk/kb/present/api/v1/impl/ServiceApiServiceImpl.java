@@ -3,10 +3,8 @@ package dk.kb.present.api.v1.impl;
 import dk.kb.present.api.v1.ServiceApi;
 import dk.kb.present.model.v1.StatusDto;
 import dk.kb.present.model.v1.WhoamiDto;
-import dk.kb.present.util.PropertiesReader;
 import dk.kb.present.webservice.AccessUtil;
 import dk.kb.util.BuildInfoManager;
-import dk.kb.util.Resolver;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
@@ -63,21 +61,12 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     public StatusDto status() throws ServiceException {
         log.debug("status() called with call details: {}", getCallDetails());
         String host = "N/A";
-        String gitCommitChecksum = "";
-        String gitBranch = "";
-
 
         try {
-            PropertiesReader propReader = new PropertiesReader("build.properties");
-            gitCommitChecksum = propReader.getProperty("git.commit.id");
-            gitBranch = propReader.getProperty("git.branch");
             host = InetAddress.getLocalHost().getHostName();
 
         } catch (UnknownHostException e) {
             log.warn("Exception resolving hostname", e);
-        } catch (IOException e) {
-            gitCommitChecksum = "Error: " + e.getMessage();
-            gitBranch = "Error: " + e.getMessage();
         }
         return new StatusDto()
                 .application(BuildInfoManager.getName())
@@ -86,8 +75,8 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
                 .java(System.getProperty("java.version"))
                 .heap(Runtime.getRuntime().maxMemory()/1048576L)
                 .server(host)
-                .gitCommitChecksum(gitCommitChecksum)
-                .gitBranch(gitBranch)
+                .gitCommitChecksum(BuildInfoManager.getGitCommitChecksum())
+                .gitBranch(BuildInfoManager.getGitBranch())
                 .health("ok");
     }
 
