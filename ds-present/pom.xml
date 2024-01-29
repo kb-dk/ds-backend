@@ -59,7 +59,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.4.19</version>
+            <version>1.4.21</version>
             <exclusions>
                 <exclusion>
                     <!-- kb-util has 2.3.3, but transitive resolving has 2.4.0 somewhere-->
@@ -410,21 +410,36 @@
                 </includeOnlyProperties>
               </configuration>
             </plugin>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>properties-maven-plugin</artifactId>
-              <version>1.0.0</version>
-              <executions>
-                <execution>
-                  <phase>generate-resources</phase>
-                  <goals>
-                    <goal>write-project-properties</goal>
-                  </goals>
-                  <configuration>
-                    <outputFile>${project.build.outputDirectory}/git.properties</outputFile>
-                  </configuration>
-                </execution>
-              </executions>
+          <plugin>
+            <groupId>io.github.git-commit-id</groupId>
+            <artifactId>git-commit-id-maven-plugin</artifactId>
+            <version>7.0.0</version>
+            <executions>
+              <execution>
+                <id>get-the-git-infos</id>
+                <goals>
+                  <goal>revision</goal>
+                </goals>
+                <phase>initialize</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <includeOnlyProperties>
+                <includeOnlyProperty>git.commit.id</includeOnlyProperty>
+                <includeOnlyProperty>git.branch</includeOnlyProperty>
+                <includeOnlyProperty>git.tag</includeOnlyProperty>
+                <includeOnlyProperty>git.closest.tag.name</includeOnlyProperty>
+                <includeOnlyProperty>git.commit.author.time</includeOnlyProperty>
+              </includeOnlyProperties>
+              <replacementProperties>
+                <replacementProperty>
+                  <property>git.tag</property>
+                  <regex>false</regex>
+                  <token>git.tag</token>
+                  <value>unknown</value>
+                  </replacementProperty>
+                </replacementProperties>
+              </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
