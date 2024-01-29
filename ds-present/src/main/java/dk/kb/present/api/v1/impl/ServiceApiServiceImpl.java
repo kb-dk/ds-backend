@@ -66,8 +66,9 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
         String gitCommitChecksum = "";
         String gitBranch = "";
 
+
         try {
-            PropertiesReader propReader = new PropertiesReader("git.properties");
+            PropertiesReader propReader = new PropertiesReader("build.properties");
             gitCommitChecksum = propReader.getProperty("git.commit.id");
             gitBranch = propReader.getProperty("git.branch");
             host = InetAddress.getLocalHost().getHostName();
@@ -75,7 +76,8 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
         } catch (UnknownHostException e) {
             log.warn("Exception resolving hostname", e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            gitCommitChecksum = "Error: " + e.getMessage();
+            gitBranch = "Error: " + e.getMessage();
         }
         return new StatusDto()
                 .application(BuildInfoManager.getName())
