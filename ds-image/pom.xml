@@ -192,11 +192,12 @@
             <groupId>org.openapitools</groupId>
             <artifactId>openapi-generator</artifactId>
             <version>7.1.0</version>
-            <exclusions>
+
+             <exclusions>
                 <exclusion>
-                    <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
-                    <artifactId>slf4j-simple</artifactId>
-                    <groupId>org.slf4j</groupId>
+                     <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
+                    <artifactId>org.slf4j</artifactId>                              
+                    <groupId>slf4j-simple</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

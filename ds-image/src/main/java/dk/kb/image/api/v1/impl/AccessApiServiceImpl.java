@@ -3,9 +3,11 @@ package dk.kb.image.api.v1.impl;
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
 import dk.kb.image.api.v1.AccessApi;
+import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.DeepzoomDZIDto;
 import dk.kb.image.model.v1.IIIFInfoDto;
 import dk.kb.image.util.ImageAccessValidation;
+import dk.kb.util.Pair;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -156,7 +158,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
                       imageid, layer, tiles, format,
                       CNT, GAM, CMP, CTW, INV, COL,
                       getCallDetails());
-            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(imageid, httpServletResponse);
+            //This will always be fullsize image check            
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(imageid, httpServletResponse, true); 
             if (handleNoAccessOrNoImage != null) {
                 return handleNoAccessOrNoImage;
             }
@@ -212,6 +215,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private javax.ws.rs.core.StreamingOutput rawGetImageInformation(String identifier, String format) throws ServiceException {
         try {
             // This replace handles double encoding (%252F) of '/' being single-decoded to '%2F'
+            
             identifier = identifier.replace("%2F", "/");
             log.debug("getImageInformation(identifier='{}' format='{}') called with call details: {}",
                       identifier, format, getCallDetails());
@@ -302,8 +306,13 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             httpServletResponse.setContentType(getMIME(format));
             httpServletResponse.setHeader("Access-Control-Allow-Origin", "*"); // Access controlled by OAuth2
 
+            //We only have size and region, from IIIF spec we have to calcuate height/width
+            
+            boolean thumbnail=ImageAccessValidation.isThumbnailIIIF(identifier, region,  size,rotation, quality, format);
+            log.debug("Image presentation type was parsed as thumbnail={} from parameters for identifer={}",thumbnail,identifier);
+                    
             //Will return null if there is access to the image.
-            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse);
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(identifier, httpServletResponse, thumbnail);
             if (handleNoAccessOrNoImage != null) {
                 return handleNoAccessOrNoImage;
             }
@@ -317,7 +326,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         
     }
 
-
+    
+    
     /**
      * Internet Imaging Protocol 
      * 
@@ -377,7 +387,10 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String filename = elements[elements.length - 1] + "." + CVT;
          
             //Will return null if there is access to the image.
-            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(FIF, httpServletResponse);
+            boolean thumbnail=ImageAccessValidation.isThumbnailIIP(FIF,WID,HEI,  RGN, QLT, CNT,  ROT,GAM, CMP,  PFL,  CTW,INV, COL, JTL, PTL,CVT);
+            log.debug("Image presentation type was parsed as thumbnail={} from parameters for FIF={}",thumbnail,FIF);            
+            
+            StreamingOutput handleNoAccessOrNoImage = ImageAccessValidation.handleNoAccessOrNoImage(FIF, httpServletResponse, thumbnail);
             if (handleNoAccessOrNoImage != null) {                 
                 return handleNoAccessOrNoImage;
             }
@@ -395,6 +408,10 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         }
     }
      
+   
+
+    
+    
     /**
      * Derives the MIME type for replies. Only supports formats from IIIF Image and IIP protocols.
      * @param format simple form, e.g. {@code jpeg}, {@code pdf}...
@@ -424,7 +441,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             case "json":
                 return "application/json";
             case "xml":
-                return "application/xml";
             default:
                 throw new InternalServiceException("Unknown format, unable to determine mime type: '" + format + "'");
         }
