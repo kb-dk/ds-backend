@@ -56,6 +56,7 @@ public class ContextListener implements ServletContextListener {
     	 // Workaround for logback problem. This should be called before any logging takes place
         
     	initLogging();
+        BuildInfoManager.loadBuildInfo("ds-license.build.properties");
     	
     	try {
             RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
