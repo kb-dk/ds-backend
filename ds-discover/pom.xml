@@ -66,7 +66,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.4.21</version>
+            <version>1.4.22</version>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -483,7 +483,7 @@
                         <webResource> <!-- Store application name, version and build time -->
                           <directory>${basedir}/src/main/resources/</directory>
                           <includes>
-                            <include>build.properties</include>
+                            <include>ds-discover.build.properties</include>
                           </includes>
                           <filtering>true</filtering>
                         </webResource>
