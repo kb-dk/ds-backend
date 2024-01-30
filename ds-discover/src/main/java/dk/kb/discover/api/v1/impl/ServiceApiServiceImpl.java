@@ -2,7 +2,7 @@ package dk.kb.discover.api.v1.impl;
 
 import dk.kb.discover.api.v1.ServiceApi;
 import dk.kb.discover.model.v1.StatusDto;
-import dk.kb.discover.webservice.BuildInfoManager;
+import dk.kb.util.BuildInfoManager;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
@@ -68,6 +68,11 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
                     .java(System.getProperty("java.version"))
                     .heap(Runtime.getRuntime().maxMemory()/1048576L)
                     .server(host)
+                    .gitCommitChecksum(BuildInfoManager.getGitCommitChecksum())
+                    .gitBranch(BuildInfoManager.getGitBranch())
+                    .gitClosestTag(BuildInfoManager.getGitClosestTag())
+                    .gitCurrentTag(BuildInfoManager.getGitCurrentTag())
+                    .gitCommitTime(BuildInfoManager.getGitCommitTime())
                     .health("ok");
         } catch (Exception e){
             throw handleException(e);

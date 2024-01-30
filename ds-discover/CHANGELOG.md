@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+### Added
+- Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag
 
 ## [1.2.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.2.0) - 2024-01-22
 ### Added
