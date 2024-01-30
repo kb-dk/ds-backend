@@ -47,7 +47,8 @@ public class ContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
     	 // Workaround for logback problem. This should be called before any logging takes place
-        initLogging();    	
+        initLogging();
+        BuildInfoManager.loadBuildInfo("ds-present.build.properties");
     	try {
             RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
             if (mxBean.getInputArguments().stream().noneMatch(arg -> arg.startsWith("-Xmx"))) {
