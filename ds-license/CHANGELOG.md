@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag
 
  ### Fixed 
 
