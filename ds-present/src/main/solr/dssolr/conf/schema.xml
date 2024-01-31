@@ -884,6 +884,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description Field for strict title matching. Matches exact title?>
     <?example     Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
   </field>
+
+  <field name="spellcheck" type="text_general" indexed="true" stored="true" multiValued="true" 
+                   termVectors="true"
+                   termPositions="true"
+                   termOffsets="true"/>
+
   <!-- END FIELDS  -->
 
   <!-- START FIELDTYPE DEFINITIONS-->
@@ -1021,7 +1027,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>
   <copyField source="original_title" dest="freetext"/>
-
+  <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->
+  <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
   <copyField source="text" dest="text_shingles">
     <?description Copies the content of the basic text field to the shingles enabled text field, for better phrase search ranking and keyword extraction.?>
   </copyField>

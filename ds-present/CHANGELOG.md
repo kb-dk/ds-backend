@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Spellcheck compontent added to Solr search. If no results are found, the solr reply will come with query suggestions that will give results.
 
 ### Added
 - Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag

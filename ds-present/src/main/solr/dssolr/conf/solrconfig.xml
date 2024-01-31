@@ -807,9 +807,25 @@
        <str name="hl.encoder">html</str>
        <str name="f.notes.hl.preserveMulti">false</str>
        <str name="hl.fl">notes</str>
-        
+       
+       
+      
+      <!--  <str name="spellcheck">true</str> Enable to set it default. Must now be called with spellcheck=true parameter -->            
+      <str name="spellcheck.df">spellcheck</str>      
+      <str name="spellcheck.extendedResults">true</str> <!-- Probably disable later.But usefull to see what is in data -->
+      <str name="spellcheck.count">10</str>
+      <str name="spellcheck.alternativeTermCount">5</str>
+      <str name="spellcheck.maxResultsForSuggest">5</str>
+      <str name="spellcheck.collate">true</str>  <!-- Important this will combine words and give a full query back -->
+      <str name="spellcheck.collateExtendedResults">true</str> > <!-- Probably disable later.But usefull to see what is in data -->
+      <str name="spellcheck.maxCollationTries">10</str>
+      <str name="spellcheck.maxCollations">5</str>
+      <str name="spellcheck.build">true</str>              
+     
      </lst>
-         
+       <arr name="last-components">
+         <str>spellcheck</str> <!-- It is possible to add more spellchecker compontents than one -->
+       </arr>
     </requestHandler>
 
 
@@ -859,6 +875,24 @@
   </searchComponent>
 
   
+ <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
+    <str name="queryAnalyzerFieldType">text_general</str>
+    <lst name="spellchecker">
+      <str name="name">default</str> <!-- This is the default spellcheck compontent. Use names if more spellcheckers are defined -->
+      <str name="field">spellcheck</str> <!-- Custom field only used for spellcheck -->
+      <str name="classname">solr.DirectSolrSpellChecker</str>
+      <str name="distanceMeasure">internal</str>
+      <float name="accuracy">0.5</float> <!-- Not sure what is a good number. Depend on the analysis for the spellcheck field. -->
+      <int name="maxEdits">2</int> <!-- Important parameter. This limit is for each word. Value 2 seems sweet spot -->
+      <int name="minPrefix">1</int> <!-- First letter of word must be correct. People rarely misspell first letter. (ignores casing) -->
+      <int name="maxInspections">5</int>
+      <int name="minQueryLength">3</int> <!-- Important parameter. Maybe increase for 4 or 5 --> 
+      <float name="maxQueryFrequency">0.5</float>
+      <float name="thresholdTokenFrequency">0.001</float> <!-- Important parameter. This is set very low. Increase when we have a large corpus -->
+    </lst>
+  </searchComponent>
+ 
+ 
   <!-- The following are some of the implicit Update Request Handlers
   <requestHandler name="/update/json" class="solr.UpdateRequestHandler">
         <lst name="invariants">
