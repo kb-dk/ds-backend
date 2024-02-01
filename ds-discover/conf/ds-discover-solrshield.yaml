@@ -1,5 +1,15 @@
 # SolrShield setup
 
+#
+# Design goals are
+# 1) No requests should cause OOM or DOS (Out Of Memory or Denial Of Service)
+# 2) Allow as much request freedom as possible
+# 3) Estimate the cost (aka load) of a request and deny it if it is too heavy
+#
+# A weight is calculated for the separate parts of the query and added to a total weight.
+# The total weight goes from 0 and upwards, aiming for ~1000 as cutoff limit.
+#
+
 solr:
   shield:
 
@@ -34,9 +44,9 @@ solr:
       - name: freetext 
         weight: 100
       - name: text
-        weight: 1000
+        weight: 200
       - name: text_shingles
-        weight: 1000
+        weight: 400
 
     # How to handle parameters not specified in SolrShield.
     # This is shared between all components
@@ -52,36 +62,128 @@ solr:
       search:
         default_enabled: true
         allowed: true
-        # The base cost of using the component
-        weight_constant: 100
+        weight_constant: 100    # The base cost of using the component. params-specific weights will be added
 
         params:
           q:
+            weight_constant: 10
+
+          fq:
+            weight_factor: 10   # There can be multiple filter queries
+
           fl:
+            weight_factor: 1    # weight_factor will be multiplied to each field weight
             default_enabled: true
-            # weight_factor will be multiplied to each field weight
-            weight_factor: 1
-#            allowed_fields:
-#              - id
-#              - title
-#            denied_fields:
-#              - '*' # The asterisk is used for requesting all fields
-#              - text
-          # Explicit disabling of defType, overriding 
+            default_fields:     # Must match the ones defined in solrconfig.xml
+              - abstract
+              - description
+              - genre_sub
+              - title
+              - subtitle
+              - alternative_title
+              - creator_full_name
+              - area
+              - topic
+              - notes
+              - catalog
+              - production_place
+              - subject_full_name
+              - audience
+              - text
+            denied_fields:      # Blacklist filter (see facet for whitelist ditto)
+              - '*'             # The asterisk is used for requesting all fields
+              - text_shingles   # No real need for denying, this is just to demonstrate denied_value
+
+          rows:
+            default_enabled: true
+            default_value: 20   # Must match the one defined in solrconfig.xml
+            weight_factor: 0.1  # Multiplied to value and multiplied to fl compound weight
+            max_value: 5000     # Hard limit
+
+          start:
+            weight_factor: 0.01 # Multiplied to value
+            max_value: 1000     # Hard limit
+
+          # Zero cost arguments
+          q.op:
+          wt:
+          version:
+          indent:
+
+          # Debug is heavy and should not be widely used
+          debug:
+            weight_constant: 500
+            weight_factor: 1    # Multiplied to rows, as debug-results is processed for each returned document
+          debug.explain.structured:
+            weight_constant: 0
+
+          # Explicit disabling of defType, overriding a potential unlisted_params.allowed=true
           defType:
             allowed: false
 
-
-    # TODO: Remove this
-    # collection, q, fq, rows, Integer start, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
-
-      retrieval:
-        default_enabled: true
-        allowed: true
-
+      # Standard Solr faceting
       facet:
-        default_enabled: false
+        default_enabled: true   # Must match the one defined in solrconfig.xml
         allowed: true
-        denied_fields:
-          - text
-          - text_shingles
+        allowed_fields:
+          - genre_sub
+          - title
+          - subtitle
+          - alternative_title
+          - creator_full_name
+          - area
+          - topic
+          - notes
+          - catalog
+
+        params:
+
+          facet.query:          # Multiple queries
+            allowed: false
+          facet.field:          # List of fields
+            default_enabled: true
+            weight_factor: 1    # Multiplied to (limit multiplied to field weights)
+            default_fields:     # Must match the ones defined in solrconfig.xml
+              - catalog
+              - collection
+              - categories
+              - genre
+              - renre_sub
+              - resource_description
+              - resource_description_general
+              - creator_full_name
+              - creator_affiliation
+              - subject_full_name
+            allowed_fields:     # Must match the ones defined in solrconfig.xml
+              - id
+              - origin
+              - location
+              - catalog
+              - collection
+              - categories
+              - genre
+              - renre_sub
+              - resource_description
+              - resource_description_general
+              - creator_full_name
+              - creator_affiliation
+              - subject_full_name
+          facet.limit:          # Integer
+            default_enabled: true
+            default_value: 20   # Must match the one defined in solrconfig.xml
+            weight_factor: 0.01
+            max_value: 10000    # Hard limit
+
+          # Zero cost facet options
+          facet.sort:           # Ordered sort clauses
+          facet.mincount:       # Integer
+          facet.exists:         # Boolean (reduced load, but we don't want negative weights)
+
+          facet.excludeTerms:   # List of terms
+            weight_factor: 0.1
+
+# TODO: facet.range
+# TODO: group
+# TODO: hl
+# TODO: spellcheck
+# TODO: DidYouMean
