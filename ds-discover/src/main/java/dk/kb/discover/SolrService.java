@@ -65,7 +65,7 @@ public class SolrService {
     public static final String SPELLCHECK_DICTIONARY = "spellcheck.dictionary";
     public static final String SPELLCHECK_COUNT= "spellcheck.count";
     public static final String SPELLCHECK_ONLY_MORE_POPULAR= "spellcheck.onlyMorePopular";
-    public static final String SPELLCHECK_EXTENDED_RESULTS= "spellcheck.extendedResults ";
+    public static final String SPELLCHECK_EXTENDED_RESULTS= "spellcheck.extendedResults";
     public static final String SPELLCHECK_COLLATE= "spellcheck.collate";
     public static final String SPELLCHECK_MAX_COLLATIONS= "spellcheck.maxCollations";       
     public static final String SPELLCHECK_MAX_COLLATION_TRIES= "spellcheck.maxCollationTries";
