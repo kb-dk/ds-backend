@@ -235,6 +235,144 @@ paths:
 
         # TODO: Add more facet variables
 
+
+
+        # Spell check fields
+        - name: spellcheck
+          in: query
+          description: | 
+            Solr spellcheck enabling [spellcheck](https://solr.apache.org/guide/solr/latest/query-guide/spell-checking.html)
+            
+            If true, solr response will contain spellcheck information. Spellcheck will only be activated by Solr if no results are found
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+       
+        - name: spellcheck.build
+          in: query
+          description: | 
+            Setting to true will rebuild the spellcheck index. The dictionary will take some time to build, so this parameter should not be sent with every request.
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+
+        - name:  spellcheck.reload 
+          in: query
+          description: | 
+            Setting to true will reload the spellcheck index. 
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+
+        - name: spellcheck.q
+          in: query
+          description: 'Same as the query field, but use this value for spellcheck instead. If empty it will use the query parameter'
+          required: false
+          schema:
+            type: string
+            default: ''
+
+        - name: spellcheck.dictionary
+          in: query
+          description: 'Specific another spellcheck dictionary to use if several are defined'
+          required: false
+          schema:
+            type: string
+            default: ''
+
+        - name: spellcheck.count
+          in: query
+          description: | 
+            Maximum suggestion from the spellcheck compontent                      
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 5
+            default: 5
+        
+        - name: spellcheck.onlyMorePopular 
+          in: query
+          description: | 
+            If true, Solr will to return suggestions that result in more hits for the query than the existing query 
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+        
+        - name: spellcheck.extendedResults 
+          in: query
+          description: |
+            Causes Solr to return additional information about spellcheck results, such as the frequency of each original term in the index (origFreq) as well as the frequency of each suggestion in the index (frequency).
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+        
+        - name: spellcheck.collate 
+          in: query
+          description: |          
+            If true, this parameter directs Solr to take the best suggestion for each token (if one exists) and construct a new query from the suggestions.
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+
+        - name: spellcheck.maxCollations 
+          in: query
+          description: |
+            This parameter specifies the maximum number of collations to return.
+                        
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+        - name: spellcheck.maxCollationTries
+          in: query
+          description: |
+            This parameter specifies the number of collation possibilities for Solr to try before giving up.
+                        
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+
+        - name: spellcheck.accuracy 
+          in: query
+          description: |
+           Specifies an accuracy value to help decide whether a result is worthwhile. Tweaking the value is very depedant on corpus and size of corpus.
+                       
+          required: false
+          schema:
+            type: number
+            format: double
+            example: 0.01
+            default: 0.01
+        
         - name: q.op
           in: query
           description: | 

@@ -220,7 +220,34 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
-    public String solrSearch(String collection, String q, List<String> fq, Integer rows, Integer start, String fl, String facet, List<String> facetField, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) {
+    public String solrSearch(String collection,
+    		                 String q, 
+    		                 List<String> fq,
+    		                 Integer rows,
+    		                 Integer start,
+    		                 String fl,
+    		                 String facet,
+    		                 List<String> facetField,
+    		                 String spellcheck,
+    		                 String spellcheckBuild,
+    		                 String spellcheckReload,
+    		                 String spellcheckQuery,
+    		                 String spellcheckDictionary,    		                 
+    		                 Integer spellcheckCount,
+    		                 String spellchecKOnlyMorePopular,
+    		                 String spellcheckExtendedResults,
+    		                 String spellcheckCollate,
+    		                 Integer spellcheckMaxCollations,
+    		                 Integer spellcheckMaxCollationTries,
+    		                 Double spellcheckAccuracy,
+    		                 String qOp,
+    		                 String wt,
+    		                 String version,
+    		                 String indent,
+    		                 String debug,
+    		                 String debugExplainStructured) {
+    
+    	
     
         try {
 
@@ -242,7 +269,9 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             //Add filter query from license module.
             fq = addAccessFilter("solrSearch", fq);
 
-            String rawResponse = solr.query(q, fq, rows, start, fl, facet, facetField, qOp,
+            String rawResponse = solr.query(q, fq, rows, start, fl, facet, facetField,
+            		spellcheck,spellcheckBuild,spellcheckReload,spellcheckQuery,spellcheckDictionary,spellcheckCount,spellchecKOnlyMorePopular,spellcheckExtendedResults,spellcheckCollate,spellcheckMaxCollations,spellcheckMaxCollationTries,spellcheckAccuracy,
+            		qOp,
                     wt, version, indent, debug, debugExplainStructured, extra);
             return SolrService.removePrefixedFilters(rawResponse, FILTER_CACHE_PREFIX, wt);
         } catch (Exception e){
