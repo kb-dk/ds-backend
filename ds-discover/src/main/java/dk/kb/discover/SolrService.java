@@ -57,7 +57,7 @@ public class SolrService {
     public static final String ROWS = "rows";
     public static final String START = "start";
     public static final String FACET = "facet";
-    public static final String FACET_FIELD = "facet.field";    
+    public static final String FACET_FIELD = "facet.field";
     public static final String SPELLCHECK = "spellcheck";
     public static final String SPELLCHECK_BUILD = "spellcheck.build";
     public static final String SPELLCHECK_RELOAD = "spellcheck.reload";
