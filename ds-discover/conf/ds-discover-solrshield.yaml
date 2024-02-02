@@ -111,9 +111,11 @@ solr:
           version:
           indent:
 
-          # Debug is heavy and should not be widely used
+          # Debug is heavy and should not be widely used. The current weights are chosen so that only a single
+          # query debug (rows=1) is possible with a max_weight of 1000. In reality any request will always have
+          # some weight even before turning on debug so using debug with rows=2 will exceed the max_weight.
           debug:
-            weight_constant: 500
+            weight_constant: 500 
             weight_factor: 1    # Multiplied to rows, as debug-results is processed for each returned document
           debug.explain.structured:
             weight_constant: 0
