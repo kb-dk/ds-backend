@@ -543,15 +543,31 @@ public class SolrService {
     }
 
     /**
-     * If {@code value} is not null, {@code key=value} is added as a param to the builder.
+     * If {@code value} is not null, {@code key=value} is added as a param to the builder.<br>
+     * Also if String is empty or array is empty param will also not be added.  <br>
+     * Solr will fail on the query etc.: &spellcheck.dictionary=<br>
+     * This happens because openApi will set empty textboxes as 'parameter1='<br>
+     * The solr admin page does submit empty fields to parameter list<br>
+     * 
      * @param builder builder for a Solr query.
      * @param key     key for the param to add if a value is present.
      * @param value   value for the key.
      */
-    private void addParamIfAvailable(UriBuilder builder, String key, Object value) {
-        if (value != null) {
-            builder.queryParam(key, value);
-        }
+    private void addParamIfAvailable(UriBuilder builder, String key, Object value) {           
+    	if (value == null) {
+    		return;    		
+    	}
+    	else if (value instanceof String) {
+    		if ("".equals(value.toString().trim()));
+    	    return;
+    	}
+    	else if (value instanceof Object[]) {
+    		Object[] array = (Object[]) value;
+    		if (array.length == 0) {
+    			return;
+    		}
+    	}
+    	builder.queryParam(key, value); // There is some real value here.    	    	
     }
 
     /**
