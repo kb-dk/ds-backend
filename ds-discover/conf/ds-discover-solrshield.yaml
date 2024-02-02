@@ -8,6 +8,7 @@
 #
 # A weight is calculated for the separate parts of the query and added to a total weight.
 # The total weight goes from 0 and upwards, aiming for ~1000 as cutoff limit.
+# Weights are floating point, to allow for scaling factors to be less than 1.
 #
 
 solr:
@@ -20,14 +21,14 @@ solr:
       weight: 100
 
     # The fields section assign base weight to each field.
-    # The scale goes from 1.0 to 1000, where
+    # The scale goes from 1 to 1000, where
     # "An integer field" is 1
     # "A DocValued StrField, where the corpus holds a few thousand short unique values" is 5
     # "A DocValued StrField, where the values are mostly unique" is 10
     # "A TextField with a few words" is 50 (text fields are markedly heavier to process than StrFields)
     # "A TextField with a few hundred words" is 100
-    # "A TextField with a full transcription of hours of speech" is 1000
-    # "A TextField holding a full book of hundrede of pages" is 10000 (yes, it breaks the scale)
+    # "A TextField with a full transcription of hours of speech" is 1000 (about 50 book pages)
+    # "A TextField holding a full book of hundreds of pages" is 5000 (yes, it breaks the scale)
     fields:
       - name: id
         weight: 10
