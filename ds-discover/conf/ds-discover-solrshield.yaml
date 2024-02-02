@@ -25,8 +25,8 @@ solr:
     # "An integer field" is 1
     # "A DocValued StrField, where the corpus holds a few thousand short unique values" is 5
     # "A DocValued StrField, where the values are mostly unique" is 10
-    # "A TextField with a few words" is 50 (text fields are markedly heavier to process than StrFields)
-    # "A TextField with a few hundred words" is 100
+    # "A TextField with a 5-10 words" is 50 (text fields are markedly heavier to process than StrFields)
+    # "A TextField with a 100-1000 words" is 100
     # "A TextField with a full transcription of hours of speech" is 1000 (about 50 book pages)
     # "A TextField holding a full book of hundreds of pages" is 5000 (yes, it breaks the scale)
     fields:
