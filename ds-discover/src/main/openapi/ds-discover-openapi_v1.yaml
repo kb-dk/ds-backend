@@ -243,7 +243,9 @@ paths:
           description: | 
             Solr spellcheck enabling [spellcheck](https://solr.apache.org/guide/solr/latest/query-guide/spell-checking.html)
             
-            If true, solr response will contain spellcheck information. Spellcheck will only be activated by Solr if no results are found
+            If true, solr response will contain spellcheck information. Spellcheck will only be activated by Solr if no results are found.
+            
+            The spellcheck component will give a query suggesting for another query that will have hits and is close to the original query.
           required: false
           schema:
             type: string
@@ -305,7 +307,7 @@ paths:
         - name: spellcheck.onlyMorePopular 
           in: query
           description: | 
-            If true, Solr will to return suggestions that result in more hits for the query than the existing query 
+            If true, Solr will only return suggestions that result in more hits for the query than the existing query 
                         
           required: false
           schema:

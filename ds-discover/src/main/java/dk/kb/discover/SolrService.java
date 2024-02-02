@@ -314,22 +314,7 @@ public class SolrService {
         if (facetField != null) {
             facetField.forEach(ff -> builder.queryParam(FACET_FIELD, ff));
         }
-        
-        /*
-        //All the spellcheck parameters
-        if (spellcheck != null) {
-        	   builder.queryParam(SPELLCHECK, Boolean.parseBoolean(spellcheck));
-        }
-        
-        if (spellcheckBuild != null) {
-        	   builder.queryParam(SPELLCHECK_BUILD, Boolean.parseBoolean(spellcheckBuild));
-        }
-        
-        if (spellcheckReload != null) {
-     	   builder.queryParam(SPELLCHECK_RELOAD, Boolean.parseBoolean(spellcheckReload));
-        }
-        */
-        
+                      
         addParamIfAvailable(builder, SPELLCHECK, Boolean.parseBoolean(spellcheck));
         addParamIfAvailable(builder, SPELLCHECK_BUILD, Boolean.parseBoolean(spellcheckBuild));
         addParamIfAvailable(builder, SPELLCHECK_RELOAD, Boolean.parseBoolean(spellcheckReload));        
