@@ -92,6 +92,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Den grimme ælling.?>
   </field>
 
+  <field name="title_synonym" type="text_general_synonym">
+    <?description TV avisen.?>
+    <?example     tvavisen, tv avisen, tv-avisen will all match.?>
+  </field>
+
+
   <!-- Note: The title_sort_da field IS NOT automatically copied from title as title_sort_da is single valued -->
   <field name="title_sort_da" type="sort_da">
     <?description The object title, usable for sorting according to Danish locale.
@@ -939,6 +945,23 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
+  <fieldType name="text_general_synonym" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+    <analyzer type="index">
+       <tokenizer class="solr.StandardTokenizerFactory"/>
+       <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+       <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/dr_synonyms.txt"/>
+       <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
+       <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+        <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/dr_synonyms.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+
   <!-- TODO: Consider setting multi value distance fairly short for phrase search across
        timestamped Whisper output -->
   <!-- https://solr.apache.org/guide/solr/latest/indexing-guide/filters.html#shingle-filter -->
@@ -1028,6 +1051,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="alternative_title" dest="freetext"/>
   <copyField source="original_title" dest="freetext"/>
   <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->
+  <copyField source="title" dest="title_synomym"/> <!-- Improve search for different way to spell/misspell title.-->    
   <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
   <copyField source="text" dest="text_shingles">
     <?description Copies the content of the basic text field to the shingles enabled text field, for better phrase search ranking and keyword extraction.?>
