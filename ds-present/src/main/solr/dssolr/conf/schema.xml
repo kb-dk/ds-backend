@@ -945,7 +945,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
-  <fieldType name="text_general_synonym" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+  <fieldType name="text_general_synonym" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
     <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
        <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
