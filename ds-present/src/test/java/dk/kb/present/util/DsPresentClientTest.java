@@ -96,6 +96,18 @@ public class DsPresentClientTest {
         }
     }
 
+    @Test
+    public void testRecordCount() throws IOException {
+        if (remote == null){
+            return;
+        }
+        try (ContinuationInputStream<Long> records = remote.getRecordsJSON("ds.tv", 0L, 1L, FormatDto.JSON_LD)) {
+            // Here we are implying that there are at least 1 record in the backing storage,
+            // which are "Deliverable units", in other words, records that contain actual metadata and are delivered.
+            assertEquals(1L, records.getRecordCount());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     void getFixedHeaders() {
