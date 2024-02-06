@@ -8,6 +8,7 @@ hovede => hoved
 linie => linje
 fælleskab => fællesskab
 diciplin => disciplin
+
 # Collapse several terms into one (in this case a multiterm)
 tv-avisen, tvavis, tvavisen, tv-avis => tv avisen
 bamsekylling, bamse kylling => bamse og kylling

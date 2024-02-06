@@ -55,9 +55,6 @@ public class EmbeddedSolrFieldAnalyseTest {
 		coreContainer = new CoreContainer(solrHome, props);
 		coreContainer.load();
 		embeddedServer = new EmbeddedSolrServer(coreContainer, "dssolr");
-		
-		addTestDocuments();
-		
 	}
 
 	@AfterAll
@@ -72,6 +69,8 @@ public class EmbeddedSolrFieldAnalyseTest {
 	 */
 	@Test
     void testStrictTextField() throws Exception {
+		addSimpleFieldTestDocuments();
+		
         assertEquals(0,getCreatorNameStrictResultsForQuery("Thomas XEgenseX")); //Make sure default operator is AND and not OR.
         assertEquals(1,getCreatorNameStrictResultsForQuery("Thomas Egense"));
         assertEquals(1,getCreatorNameStrictResultsForQuery("Thomas"));
@@ -90,7 +89,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 	 */
 	@Test
 	void testDiacriticsStripping() throws Exception {
-		
+		addSimpleFieldTestDocuments();
 		// Test match with diacritic stripping in 'freetext' field
 		assertEquals(1,getFreeTextResultsForQuery("Thomas Grass")); // Combine names, should still match
 		//Diacritics
@@ -118,6 +117,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	@Test
 	public void testTitleStrict() throws SolrServerException, IOException {
+		addSimpleFieldTestDocuments();
 		assertEquals(1, getStrictTitleForQuery("\"Romeo og Julie\""));
 		assertEquals(1, getStrictTitleForQuery("\"Romeo and Juliet\""));
 		assertEquals(0, getStrictTitleForQuery("and"));
@@ -127,6 +127,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	@Test
 	public void testAnalysis() throws SolrServerException, IOException {
+		addSimpleFieldTestDocuments();
 		SolrQuery solrQuery = new SolrQuery();
 		solrQuery.setQuery("id:1");
 		solrQuery.setRows(10);
@@ -134,8 +135,19 @@ public class EmbeddedSolrFieldAnalyseTest {
 		//System.out.println(rsp.getResults().get(0).toString());
 	}
 	
-
-	private long getCreatorNameStrictResultsForQuery(String query) throws Exception{	    
+	@Test
+	public void testSynonymTest() throws SolrServerException, IOException {
+		addSynonymFieldTestDocuments();
+		assertEquals(1, getTitleSynonymQuery("tvavis"));
+		assertEquals(1, getTitleSynonymQuery("\"tvavis\"")); // "tvavis" in quotes
+		assertEquals(1, getTitleSynonymQuery("tv-avisen")); //"tv-avisen" in quotes
+		assertEquals(1, getTitleSynonymQuery("\"tv-avisen\""));
+		assertEquals(1, getTitleSynonymQuery("tvavisen"));								
+		assertEquals(1, getFreeTextQuery("tvavisen")); //Must also match here in the 'catch all field' Is indexed as 'tv-avisen'
+	}
+	
+	
+	private long getCreatorNameStrictResultsForQuery(String query) throws Exception{	    		
 		SolrQuery solrQuery = new SolrQuery();
 		solrQuery.setQuery("creator_full_name_strict:("+query +")");
 		solrQuery.setRows(10);           
@@ -145,7 +157,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	
 
-	private long getFreeTextResultsForQuery(String query) throws Exception{	    
+	private long getFreeTextResultsForQuery(String query) throws Exception{	    		
 		SolrQuery solrQuery = new SolrQuery();
 		solrQuery.setQuery("freetext:("+query +")");
 		solrQuery.setRows(10);           
@@ -153,7 +165,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 		return rsp.getResults().getNumFound();
 	}
 
-	private long getStrictTitleForQuery(String query) throws SolrServerException, IOException {
+	private long getStrictTitleForQuery(String query) throws SolrServerException, IOException {		
 		SolrQuery solrQuery = new SolrQuery();
 		solrQuery.setQuery("title_strict:"+query);
 		solrQuery.setRows(10);
@@ -163,9 +175,25 @@ public class EmbeddedSolrFieldAnalyseTest {
 	}
 
 
+	private long getTitleSynonymQuery(String query) throws SolrServerException, IOException {		
+		SolrQuery solrQuery = new SolrQuery();
+		solrQuery.setQuery("title_synonym:"+query);// Use edismax field defition which will also search in title_synonym
+		solrQuery.setRows(10);
+		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
+		return rsp.getResults().getNumFound();
+	}
+	
+	private long getFreeTextQuery(String query) throws SolrServerException, IOException {		
+		SolrQuery solrQuery = new SolrQuery();
+		solrQuery.setQuery(query);// Use edismax field defition which will also search in title_synonym
+		solrQuery.setRows(10);
+		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
+		return rsp.getResults().getNumFound();
+
+	}
 	
 	
-	private static void addTestDocuments() throws Exception {
+	private static void addSimpleFieldTestDocuments()  {
 
 	try {
 				SolrInputDocument document = new SolrInputDocument();
@@ -196,6 +224,31 @@ public class EmbeddedSolrFieldAnalyseTest {
 
 	}
 
+	
+
+	
+	private static void addSynonymFieldTestDocuments()  {
+
+	try {
+				SolrInputDocument document = new SolrInputDocument();
+				document.addField("id", "synonym1");
+				document.addField("origin", "ds.test");
+				document.addField("title", "Velkommen til TV avisen");  //Synonym file: tv-avisen, tvavis, tvavisen, tv-avis => tv avisen
+				
+				embeddedServer.add(document);
+				embeddedServer.commit();
+
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Error indexing test documents");
+		}
+
+	}
+
+
+	
 
 
 }

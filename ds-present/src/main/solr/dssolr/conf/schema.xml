@@ -87,14 +87,14 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?query_example ?>
   </field>
 
-  <field name="title" type="text_general" multiValued="true" stored="true"> <!-- Only present in maps collection test data-->
+  <field name="title" type="text_general" multiValued="true" stored="true"> <!-- Title will be made single value field at some time-->
     <?description The object title.?>
     <?example     Den grimme ælling.?>
   </field>
 
-  <field name="title_synonym" type="text_general_synonym">
-    <?description TV avisen.?>
-    <?example     tvavisen, tv avisen, tv-avisen will all match.?>
+  <field name="title_synonym" type="text_general_synonym" multiValued="true">  <!-- Title will be made single value field at some time-->
+    <?description Matching in title field is important for ranking. That is why title has is a specific synonym match field besides the freetext field?>
+    <?example  The text_general has synonym match. ?>
   </field>
 
 
@@ -931,7 +931,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
-    <!-- termVectors=true & storeTermVectors=true to get better MoreLikeThis and support the Unified Highlighter -->
+  <!-- termVectors=true & storeTermVectors=true to get better MoreLikeThis and support the Unified Highlighter -->
   <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
     <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -945,6 +945,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
+  <!-- This field is stored because highlights will then also work for synonyms. But can this be confusing? -->
   <fieldType name="text_general_synonym" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
     <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -992,17 +993,21 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
+  <!-- Field to 'catch em all' if not matched in specific fields. Last resort for matching. Ranking will be lower if they are only matched here. -->
    <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/dr_synonyms.txt"/>
+       <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
     <analyzer type="query">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/dr_synonyms.txt"/> 
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
@@ -1020,8 +1025,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </copyField>
 
   <copyField source="title" dest="title_strict">
-  <?description Copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
-  <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
+    <?description Copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
+    <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
+  </copyField>
+
+   <copyField source="title" dest="title_synonym"> <!-- Improve search for different way to spell/misspell title.-->
+     <?description Copies the title of the resource to a specific synonym field, which produces a higher ranking when queried.?>
+     <?example  Example: different spellings of tvavis,tv-avisen, tvavisen will all match .?>
   </copyField>
 
   <copyField source="subject_full_name" dest="subject_full_name_strict">
@@ -1050,8 +1060,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>
   <copyField source="original_title" dest="freetext"/>
-  <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->
-  <copyField source="title" dest="title_synonym"/> <!-- Improve search for different way to spell/misspell title.-->    
+  <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->    
   <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
   <copyField source="text" dest="text_shingles">
     <?description Copies the content of the basic text field to the shingles enabled text field, for better phrase search ranking and keyword extraction.?>
