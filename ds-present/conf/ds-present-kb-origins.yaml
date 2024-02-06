@@ -69,13 +69,37 @@ baseviews: &MODS_IMAGE_VIEWS
               - imageserver: ${path:imageservers[default=true].url}
               - old_imageserver: ${path:oldimageserver.url}
 
-# The origins available for this instance of ds-present
+# The origins available for this instance of ds-present. The first origin in the list is used as the example value in the OpenAPI interface.
 origins:
   # General note: All origins are expected to support at least the views raw, mods, jsonld and solrjson.
   # If any of those are not supported, the transformer 'fail' should be used with a telling message.
 
   # Royal Danish Library image collection with the core format being MODS
   # Uses the default storage, which connects to a running ds-storage instance
+  - 'ds.radio':
+      description: 'Radio records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.radio'
+      origin: 'ds.radio'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
+  - 'ds.tv':
+      description: 'TV records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.tv'
+      origin: 'ds.tv'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
+  - samlingsbilleder:
+      description: 'Diverse images from image collections at the Royal Danish Library'
+      prefix: 'ds.samlingsbilleder'
+      origin: 'ds.samlingsbilleder'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *MODS_IMAGE_VIEWS
+  - 'ds.radiotv':
+      description: 'Radio and television records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.radiotv'
+      origin: 'ds.radiotv'
+      recordrequesttype: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
   - imageshca:
       description: 'Hans Christian Andersen images from the collections at the Royal Danish Library'
       prefix: 'kb.images.billed.hca' # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
@@ -100,31 +124,6 @@ origins:
       origin: 'kb.pamphlets.dasmaa.smaatryk'
       recordrequesttype: 'DELIVERABLEUNIT'
       views: *MODS_IMAGE_VIEWS
-  - samlingsbilleder:
-      description: 'Diverse images from image collections at the Royal Danish Library'
-      prefix: 'ds.samlingsbilleder'
-      origin: 'ds.samlingsbilleder'
-      recordrequesttype: 'DELIVERABLEUNIT'
-      views: *MODS_IMAGE_VIEWS
-  - 'ds.radiotv':
-      description: 'Radio and television records from the Preservica system at the Royal Danish Library'
-      prefix: 'ds.radiotv'
-      origin: 'ds.radiotv'
-      recordrequesttype: 'DELIVERABLEUNIT'
-      views: *PRESERVICA_VIEWS
-  - 'ds.radio':
-      description: 'Radio records from the Preservica system at the Royal Danish Library'
-      prefix: 'ds.radio'
-      origin: 'ds.radio'
-      recordrequesttype: 'DELIVERABLEUNIT'
-      views: *PRESERVICA_VIEWS
-  - 'ds.tv':
-      description: 'TV records from the Preservica system at the Royal Danish Library'
-      prefix: 'ds.tv'
-      origin: 'ds.tv'
-      recordrequesttype: 'DELIVERABLEUNIT'
-      views: *PRESERVICA_VIEWS
-
 
 
   # Straight forward origin with the core format being MODS

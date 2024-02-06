@@ -722,7 +722,7 @@
                 </YamlResolver>
                 <YamlResolver>
                   <yamlType>Single-value</yamlType>
-                  <yamlPath>origins[7].'ds.tv'.origin</yamlPath>
+                  <yamlPath>origins[0].'ds.radio'.origin</yamlPath>
                   <destinationKey>example_origin</destinationKey>
                 </YamlResolver>
               </yamlResolvers>
