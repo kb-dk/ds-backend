@@ -12,17 +12,16 @@
  *  limitations under the License.
  *
  */
-package dk.kb.discover.util;
+package dk.kb.discover.util.solrshield;
 
-import java.util.List;
 import java.util.Map;
 
 /**
  * Encapsulates whether the request is allowed, along with a reason when it is not and
  * the weight of the request.
  */
-public class ShieldResponse {
-    public final Map<String, List<String>> request;
+public class Response {
+    public final Iterable<Map.Entry<String, String[]>> request;
     public final double maxWeight;
     public final boolean allowed;
     // TODO: Add warnings (large fields, high numbers) to the response
@@ -37,8 +36,8 @@ public class ShieldResponse {
      *                  {@code request} is not allowed.
      * @param weight    the weight of the {@code request}.
      */
-    public ShieldResponse(Map<String, List<String>> request, double maxWeight,
-                          boolean allowed, String reason, double weight) {
+    public Response(Iterable<Map.Entry<String, String[]>> request, double maxWeight,
+                    boolean allowed, String reason, double weight) {
         this.request = request;
         this.maxWeight = maxWeight;
         this.allowed = allowed;
@@ -48,33 +47,33 @@ public class ShieldResponse {
 
     /**
      * @param maxWeight the maxWeight of the {@link #request}.
-     * @return a copy of this ShieldResponse adjusted with the given value.
+     * @return a copy of this Response adjusted with the given value.
      */
-    public ShieldResponse maxWeight(double maxWeight) {
-        return new ShieldResponse(request, maxWeight, allowed, reason, weight);
+    public Response maxWeight(double maxWeight) {
+        return new Response(request, maxWeight, allowed, reason, weight);
     }
 
     /**
      * @param allowed whether the request is allowed to be issued to a Solr installation.
-     * @return a copy of this ShieldResponse adjusted with the given value.
+     * @return a copy of this Response adjusted with the given value.
      */
-    public ShieldResponse allowed(boolean allowed) {
-        return new ShieldResponse(request, maxWeight, allowed, reason, weight);
+    public Response allowed(boolean allowed) {
+        return new Response(request, maxWeight, allowed, reason, weight);
     }
 
     /**
      * @param reason the reason why the {@link #request} is not allowed.
-     * @return a copy of this ShieldResponse adjusted with the given value.
+     * @return a copy of this Response adjusted with the given value.
      */
-    public ShieldResponse reason(String reason) {
-        return new ShieldResponse(request, maxWeight, allowed, reason, weight);
+    public Response reason(String reason) {
+        return new Response(request, maxWeight, allowed, reason, weight);
     }
 
     /**
      * @param weight the weight of the {@link #request}.
-     * @return a copy of this ShieldResponse adjusted with the given value.
+     * @return a copy of this Response adjusted with the given value.
      */
-    public ShieldResponse reason(double weight) {
-        return new ShieldResponse(request, maxWeight, allowed, reason, weight);
+    public Response reason(double weight) {
+        return new Response(request, maxWeight, allowed, reason, weight);
     }
 }

@@ -15,7 +15,7 @@ solr:
   shield:
 
     # Ideally all fields are listed under 'fields'.
-    # 'unlisted_fields' controld handling of requests for unlisted fields
+    # 'unlisted_fields' controls handling of requests for unlisted fields
     unlisted_fields:
       allowed: true
       weight: 100
@@ -60,7 +60,7 @@ solr:
     components:
 
       # Search covers both the search and the retrieval part of a basic query based request
-      search:
+      - name: search
         default_enabled: true
         allowed: true
         weight_constant: 100    # The base cost of using the component. params-specific weights will be added
@@ -125,7 +125,7 @@ solr:
             allowed: false
 
       # Standard Solr faceting
-      facet:
+      - name: facet
         default_enabled: true   # Must match the one defined in solrconfig.xml
         allowed: true
         allowed_fields:

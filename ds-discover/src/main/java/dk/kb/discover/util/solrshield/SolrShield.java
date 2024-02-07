@@ -12,14 +12,13 @@
  *  limitations under the License.
  *
  */
-package dk.kb.discover.util;
+package dk.kb.discover.util.solrshield;
 
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +31,12 @@ import java.util.Map;
  * As of 2024-01-29 the architecture of SolrShield is simple on purpose, focusing of handling the current needs for
  * the Digitale Samlinger / DR Arkiv project at the Royal Danish Library. It is expected that future increase in
  * request complexity will cause rewriting of both code and configuration in the future.
+ * <p>
+ * The input for SolrShield is an {@code Iterable<Map.Entry<String, String[]>>}. This was chosen to align with
+ * {@code SolrParams} / {@code SolrQuery} from SolrJ, in anticipation of a future switch to SolrJ and/or reuse of
+ * SolrShield in a context where SolrJ is used.
+ * Since a basic {@code Map<String, String[]>} implements the iterable signature, the choice should not make the
+ * current use more cumbersome than other sane choices.
  */
 public class SolrShield {
     private static final Logger log = LoggerFactory.getLogger(SolrShield.class);
@@ -49,33 +54,37 @@ public class SolrShield {
     private static double defaultMaxWeight = -1;
 
     /**
-     * Estimate the weight of the {@code request} and construct a {@link ShieldResponse} with the weight as well
+     * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
      * as a boolean stated if the request is allowed to be issued.
-     * <p>
+     * <p>    
      * This method used {@link #defaultMaxWeight} as {@code maxWeight}.
      * @param request a Solr request.
      * @return calculated weight etc.
-     * @see #test(Map, double)
+     * @see #test(Iterable request, Double maxWeight)
      */
-    public static ShieldResponse test(Map<String, List<String>> request) {
+    public static Response test(Iterable<Map.Entry<String, String[]>> request) {
         return test(request, defaultMaxWeight);
     }
 
     /**
-     * Estimate the weight of the {@code request} and construct a {@link ShieldResponse} with the weight as well
+     * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
      * as a boolean stated if the request is allowed to be issued.
+     * <p>
+     * This method matches the Functional Interface
+     * {@code BiFunction<Iterable<Map.Entry<String, String[]>>, Double, Response>}
+     * and can be used directly as a filter for a stream.
      * @param request a Solr request.
      * @param maxWeight the maximum weight allowed.
      * @return calculated weight etc.
-     * @see #test(Map)
+     * @see #test(Iterable request)
      */
-    public static ShieldResponse test(Map<String, List<String>> request, double maxWeight) {
+    public static Response test(Iterable<Map.Entry<String, String[]>> request, Double maxWeight) {
         ensureConfig();
         if (!enabled) {
-            return new ShieldResponse(request, maxWeight, true, "enabled==false: All requests allowed", -1);
+            return new Response(request, maxWeight, true, "enabled==false: All requests allowed", -1);
         }
 
-        ShieldResponse response = weigh(request).maxWeight(maxWeight);
+        Response response = weigh(request).maxWeight(maxWeight);
 
         // Was a hard limit or an illegal argument ancounteres?
         if (!response.allowed) {
@@ -97,12 +106,12 @@ public class SolrShield {
      * Estimate the weight of the {@code request}.
      * <p>
      * This also checks for hard limits or non-allowed arguments. If any of those are triggered,
-     * {@link ShieldResponse#allowed} is set to false, else it is set to true.
+     * {@link Response#allowed} is set to false, else it is set to true.
      * @param request a Solr request.
      * @return calculated weight etc.
-     * @see #test(Map)
+     * @see #test(Iterable)
      */
-    static ShieldResponse weigh(Map<String, List<String>> request) {
+    static Response weigh(Iterable<Map.Entry<String, String[]>> request) {
         // TODO: Implement this
         throw new UnsupportedOperationException("Implement this");
     }
