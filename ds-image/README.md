@@ -25,10 +25,10 @@ Test the webservice with
 mvn jetty:run
 ```
 
-The default port is 8103 and the default Hello World service can be accessed at
-<http://localhost:8080/ds-image/v1/hello>
+The default port is 9077 and the default Hello World service can be accessed at
+<http://localhost:9077/ds-image/v1/hello>
 
-The Swagger UI is available at <http://localhost:8103/ds-image/api/>, providing access to both the `v1` and the 
+The Swagger UI is available at <http://localhost:9077/ds-image/api/>, providing access to both the `v1` and the 
 `devel` versions of the GUI. 
 
 ## Using a client to call the service 

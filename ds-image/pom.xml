@@ -513,7 +513,7 @@
                         <jettyEnvXml>${project.basedir}/target/jetty-res/jetty-env.xml</jettyEnvXml>
                     </webApp>
                     <httpConnector>
-                        <port>8103</port>
+                        <port>9077</port>
                     </httpConnector>
                 </configuration>
             </plugin>
