@@ -16,6 +16,7 @@ will be classified a fullsize. Call to the licence module for access will then u
 So it will be possible only to allow thumbnail calls etc. This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.  It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
 
 - new properties to defines maximum size of height/width that defines thumbnail limit.
+- Changed port to 9077 to better fit the selection of the other ds services.
 
 =======
 ## [1.3.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.3.0) - 2024-01-22
