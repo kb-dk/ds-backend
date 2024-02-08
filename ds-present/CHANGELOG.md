@@ -10,6 +10,7 @@ Spellcheck compontent added to Solr search. If no results are found, the solr re
 ### Added
 - Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag
 - Added support for referencing config values in OpenAPI specification through the maven plugin: _injection-maven-plugin_
+- Added the Paging-Record-Count header streaming of multiple results.
 
 ## [1.5.0](https://github.com/kb-dk/ds-present/releases/tag/v1.5.0) - 2024-01-22
 (Updated with all changes since 1.3)
