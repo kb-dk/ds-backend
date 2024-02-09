@@ -24,9 +24,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
 1.0.1: Added text_shingles
 1.0.2: Defined 'snowball' for all stopword filters
+1.6.0: Spellcheck + Suggest added
+1.6.1: Synonym added to general_text fieldtype that is used for most text fields.  
   -->
-  <field name="_ds_1.0.3_" type="string" indexed="false" stored="false"/>
-
+  <field name="_ds_1.6.1_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -997,7 +998,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
       <filter class="solr.LowerCaseFilterFactory"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
       <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt"/>
-       <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
+      <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
     </analyzer>
     <analyzer type="query">
       <tokenizer class="solr.StandardTokenizerFactory"/>
