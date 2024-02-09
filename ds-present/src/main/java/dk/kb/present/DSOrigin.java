@@ -202,7 +202,7 @@ public class DSOrigin {
                     .flatMap(accessFilter)
                     .map(safeView(format, view, stopOnError()))
                     .filter(Objects::nonNull);
-            return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore());
+            return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore(), allRecords.getRecordCount());
         } catch (Exception e) {
             log.warn("Exception calling getDSRecords with origin='{}', mTime={}, maxRecords={}, format='{}'",
                      getId(), mTime, maxRecords, format, e);

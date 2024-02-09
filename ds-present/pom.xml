@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.6.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
 
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.4.24</version>
+            <version>1.4.26</version>
             <exclusions>
                 <exclusion>
                     <!-- kb-util has 2.3.3, but transitive resolving has 2.4.0 somewhere-->
@@ -275,7 +275,7 @@
         <dependency>
           <groupId>dk.kb.storage</groupId>
           <artifactId>ds-storage</artifactId>
-            <version>1.14</version>
+            <version>1.15</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
@@ -670,7 +670,7 @@
                     <useTestScope>true</useTestScope>
                     <!-- https://www.eclipse.org/jetty/documentation/jetty-10/programming-guide/index.html#jetty-run-goal -->
                     <!-- https://stackoverflow.com/questions/12493798/jetty-maven-plugin-using-scan -->
-                    <scan>2</scan>
+                    <scan>0</scan>
                     <webApp>
                         <contextPath>/${project.artifactId}/</contextPath>
                         <descriptor>${project.basedir}/target/${project.build.finalName}/WEB-INF/web.xml</descriptor>
@@ -699,6 +699,35 @@
                     </execution>
                 </executions>
             </plugin>
+          <plugin>
+            <groupId>dk.kb.util</groupId>
+            <artifactId>injection-maven-plugin</artifactId>
+            <version>1.0.0</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>read-yaml-properties</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <filePath>conf/ds-present-kb-origins.yaml</filePath>
+              <yamlResolvers>
+                <YamlResolver>
+                  <yamlType>List</yamlType>
+                  <yamlPath>origins</yamlPath>
+                  <sourceKey>origin</sourceKey>
+                  <destinationKey>origins</destinationKey>
+                  <createEnum>true</createEnum>
+                </YamlResolver>
+                <YamlResolver>
+                  <yamlType>Single-value</yamlType>
+                  <yamlPath>origins[0].'ds.radio'.origin</yamlPath>
+                  <destinationKey>example_origin</destinationKey>
+                </YamlResolver>
+              </yamlResolvers>
+            </configuration>
+          </plugin>
         </plugins>
     </build>
 
