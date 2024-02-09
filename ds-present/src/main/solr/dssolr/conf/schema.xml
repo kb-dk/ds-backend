@@ -92,11 +92,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Den grimme ælling.?>
   </field>
 
-  <field name="title_synonym" type="text_general_synonym" multiValued="true">  <!-- Title will be made single value field at some time-->
-    <?description Matching in title field is important for ranking. That is why title has is a specific synonym match field besides the freetext field?>
-    <?example  The text_general has synonym match. ?>
-  </field>
-
 
   <!-- Note: The title_sort_da field IS NOT automatically copied from title as title_sort_da is single valued -->
   <field name="title_sort_da" type="sort_da">
@@ -932,7 +927,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </fieldType>
 
   <!-- termVectors=true & storeTermVectors=true to get better MoreLikeThis and support the Unified Highlighter -->
-  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+  <fieldType name="text_general_OLD" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
     <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
        <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
@@ -946,7 +941,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </fieldType>
 
   <!-- This field is stored because highlights will then also work for synonyms. But can this be confusing? -->
-  <fieldType name="text_general_synonym" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
     <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
        <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
@@ -1028,11 +1023,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description Copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
     <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
   </copyField>
-
-   <copyField source="title" dest="title_synonym"> <!-- Improve search for different way to spell/misspell title.-->
-     <?description Copies the title of the resource to a specific synonym field, which produces a higher ranking when queried.?>
-     <?example  Example: different spellings of tvavis,tv-avisen, tvavisen will all match .?>
-  </copyField>
+   
 
   <copyField source="subject_full_name" dest="subject_full_name_strict">
     <?description Copies the full name of the subject to a strict field, which produces a higher ranking when queried.?>

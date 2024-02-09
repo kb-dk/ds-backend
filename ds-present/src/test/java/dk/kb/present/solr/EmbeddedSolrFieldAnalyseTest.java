@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.apache.solr.client.solrj.SolrQuery;
@@ -12,7 +13,7 @@ import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
-
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 import org.apache.solr.core.*;
@@ -136,14 +137,21 @@ public class EmbeddedSolrFieldAnalyseTest {
 	}
 	
 	@Test
-	public void testSynonymTest() throws SolrServerException, IOException {
+	public void testSynonymTest() throws SolrServerException, IOException {	
+		//Synonyms on the title field.  
 		addSynonymFieldTestDocuments();
-		assertEquals(1, getTitleSynonymQuery("tvavis"));
-		assertEquals(1, getTitleSynonymQuery("\"tvavis\"")); // "tvavis" in quotes
-		assertEquals(1, getTitleSynonymQuery("tv-avisen")); //"tv-avisen" in quotes
-		assertEquals(1, getTitleSynonymQuery("\"tv-avisen\""));
-		assertEquals(1, getTitleSynonymQuery("tvavisen"));								
+		assertEquals(1, getTitleQuery("tvavis").getNumFound());
+		assertEquals(1, getTitleQuery("\"tvavis\"").getNumFound()); // "tvavis" in quotes
+		assertEquals(1, getTitleQuery("tv-avisen").getNumFound()); //"tv-avisen" in quotes
+		assertEquals(1, getTitleQuery("\"tv-avisen\"").getNumFound());
+		assertEquals(1, getTitleQuery("tvavisen").getNumFound());												
 		assertEquals(1, getFreeTextQuery("tvavisen")); //Must also match here in the 'catch all field' Is indexed as 'tv-avisen'
+		
+		
+		//test title stored field is not replaced with synonyms
+		ArrayList<String> titles = (ArrayList<String>) getTitleQuery("\"tv-avisen\"").get(0).getFieldValue("title");		
+		assertEquals("Velkommen til tvavisen",titles.get(0));
+		
 	}
 	
 	
@@ -175,12 +183,12 @@ public class EmbeddedSolrFieldAnalyseTest {
 	}
 
 
-	private long getTitleSynonymQuery(String query) throws SolrServerException, IOException {		
+	private SolrDocumentList getTitleQuery(String query) throws SolrServerException, IOException {		
 		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("title_synonym:"+query);// Use edismax field defition which will also search in title_synonym
+		solrQuery.setQuery("title:"+query);// Use edismax field defition which will also search in title_synonym
 		solrQuery.setRows(10);
 		QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
-		return rsp.getResults().getNumFound();
+		return rsp.getResults();
 	}
 	
 	private long getFreeTextQuery(String query) throws SolrServerException, IOException {		
@@ -233,7 +241,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 				SolrInputDocument document = new SolrInputDocument();
 				document.addField("id", "synonym1");
 				document.addField("origin", "ds.test");
-				document.addField("title", "Velkommen til TV avisen");  //Synonym file: tv-avisen, tvavis, tvavisen, tv-avis => tv avisen
+				document.addField("title", "Velkommen til tvavisen");  //Synonym file: tv-avisen, tvavis, tvavisen, tv-avis => tv avisen
 				
 				embeddedServer.add(document);
 				embeddedServer.commit();

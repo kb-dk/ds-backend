@@ -777,7 +777,6 @@
         text^0.75
         text_shingles^0.75
         freetext^0.5
-        title_synonym
        </str>
        
         <str name="pf">
