@@ -138,15 +138,14 @@ public class EmbeddedSolrFieldAnalyseTest {
         addSynonymFieldTestDocuments();
         assertEquals(1, getTitleQuery("tvavis").getNumFound());
         assertEquals(1, getTitleQuery("\"tvavis\"").getNumFound()); // "tvavis" in quotes
-        assertEquals(1, getTitleQuery("tv-avisen").getNumFound()); // "tv-avisen" in quotes
-        assertEquals(1, getTitleQuery("\"tv-avisen\"").getNumFound());
+        assertEquals(1, getTitleQuery("tv-avisen").getNumFound()); //no quotes
+        assertEquals(1, getTitleQuery("\"tv-avisen\"").getNumFound());  // "tv-avisen" in quotes
         assertEquals(1, getTitleQuery("tvavisen").getNumFound());
-        assertEquals(1, getFreeTextQuery("tvavisen")); // Must also match here in the 'catch all field' Is indexed as
-        // 'tv-avisen'
+        assertEquals(1, getFreeTextQuery("tvavisen")); //Must also be found as freetext search
 
         // test title stored field is not replaced with synonyms
         ArrayList<String> titles = (ArrayList<String>) getTitleQuery("\"tv-avisen\"").get(0).getFieldValue("title");
-        assertEquals("Velkommen til tvavisen", titles.get(0));
+        assertEquals("Velkommen til TVavisen", titles.get(0));
 
     }
 
@@ -177,7 +176,7 @@ public class EmbeddedSolrFieldAnalyseTest {
 
     private SolrDocumentList getTitleQuery(String query) throws SolrServerException, IOException {
         SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery("title:" + query);// Use edismax field defition which will also search in title_synonym
+        solrQuery.setQuery("title:" + query);  //text_general which has synonyms
         solrQuery.setRows(10);
         QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
         return rsp.getResults();
@@ -221,13 +220,14 @@ public class EmbeddedSolrFieldAnalyseTest {
 
     }
 
+
     private static void addSynonymFieldTestDocuments() {
 
         try {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "synonym1");
             document.addField("origin", "ds.test");
-            document.addField("title", "Velkommen til tvavisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
+            document.addField("title", "Velkommen til TVavisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
             // => tv avisen
 
             embeddedServer.add(document);
@@ -239,5 +239,6 @@ public class EmbeddedSolrFieldAnalyseTest {
         }
 
     }
+  
 
 }
