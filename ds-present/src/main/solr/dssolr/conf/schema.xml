@@ -946,7 +946,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
        <tokenizer class="solr.StandardTokenizerFactory"/>
        <filter class="solr.LowerCaseFilterFactory"/>
        <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
-       <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/dr_synonyms.txt" ignoreCase="true"/>
+       <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>
        <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
        
     </analyzer>
@@ -954,7 +954,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
-        <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/dr_synonyms.txt" ignoreCase="true"/>        
+        <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>        
     </analyzer>
   </fieldType>
 
@@ -995,7 +995,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
-      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/dr_synonyms.txt"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt"/>
        <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
@@ -1003,7 +1003,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
-      <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms/dr_synonyms.txt"/> 
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt"/> 
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>

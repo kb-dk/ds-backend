@@ -1,4 +1,5 @@
 # This pattern will fix  misspelling. This is often misspelled danish words. Only included somewhat relevant words for dr arkiv.
+# Use lowercase only
 selvskab => selskab
 yngling => yndling
 ærgelig => ærgerlig

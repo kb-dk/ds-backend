@@ -12,6 +12,7 @@
 
  | This is a ranked list (commonest to rarest) of stopwords derived from
  | a large text sample.
+ | Use lowercase only
 
 
 og           | and
