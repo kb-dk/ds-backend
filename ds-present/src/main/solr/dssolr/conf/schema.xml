@@ -940,7 +940,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
-  <!-- This field is stored because highlights will then also work for synonyms. But can this be confusing? -->
+  <!-- Highly analysed text field with stopwords and synonym. -->
   <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
     <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
