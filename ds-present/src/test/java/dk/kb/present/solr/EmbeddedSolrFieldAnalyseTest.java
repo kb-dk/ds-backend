@@ -133,9 +133,35 @@ public class EmbeddedSolrFieldAnalyseTest {
     }
 
     @Test
+    public void testSynonymTVAvisenIndexed() throws SolrServerException, IOException {
+        // Synonyms on the title field.
+        addSynonymFieldTestDocuments1();//Title : Velkommen til TV-avisen
+        assertEquals(1, getTitleQuery("tvavis").getNumFound());
+        assertEquals(1, getTitleQuery("\"tvavis\"").getNumFound()); // "tvavis" in quotes
+        assertEquals(1, getTitleQuery("tv-avisen").getNumFound()); //no quotes
+        assertEquals(1, getTitleQuery("\"tv-avisen\"").getNumFound());  // "tv-avisen" in quotes
+        assertEquals(1, getTitleQuery("tvavisen").getNumFound());
+        assertEquals(1, getFreeTextQuery("tvavisen")); //Must also be found as freetext search
+
+        // test title stored field is not replaced with synonyms
+        ArrayList<String> titles = (ArrayList<String>) getTitleQuery("\"tv-avisen\"").get(0).getFieldValue("title");
+        assertEquals("Velkommen til TVavisen", titles.get(0));        
+    }
+
+    @Test
+    public void testSynonymTV_AvisenIndexed() throws SolrServerException, IOException {
+        // Synonyms on the title field.
+        addSynonymFieldTestDocuments2(); // Title : Velkommen til TV avisen
+        assertEquals(1, getTitleQuery("tvavisen").getNumFound());        
+        assertEquals(1, getTitleQuery("tv-avisen").getNumFound());
+        assertEquals(1, getTitleQuery("tvavis").getNumFound());
+    }
+
+    
+    @Test
     public void testSynonymTest() throws SolrServerException, IOException {
         // Synonyms on the title field.
-        addSynonymFieldTestDocuments();
+        addSynonymFieldTestDocuments1();
         assertEquals(1, getTitleQuery("tvavis").getNumFound());
         assertEquals(1, getTitleQuery("\"tvavis\"").getNumFound()); // "tvavis" in quotes
         assertEquals(1, getTitleQuery("tv-avisen").getNumFound()); //no quotes
@@ -148,7 +174,8 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals("Velkommen til TVavisen", titles.get(0));
 
     }
-
+    
+    
     private long getCreatorNameStrictResultsForQuery(String query) throws Exception {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("creator_full_name_strict:(" + query + ")");
@@ -221,7 +248,10 @@ public class EmbeddedSolrFieldAnalyseTest {
     }
 
 
-    private static void addSynonymFieldTestDocuments() {
+    /*
+     * Title: Velkommen til TVavisen
+     */
+    private static void addSynonymFieldTestDocuments1() {
 
         try {
             SolrInputDocument document = new SolrInputDocument();
@@ -237,8 +267,30 @@ public class EmbeddedSolrFieldAnalyseTest {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
+    }
+  
+    /*
+     * Title: Velkommen til TV avisen
+     */
+    private static void addSynonymFieldTestDocuments2() {
+
+        try {
+            SolrInputDocument document = new SolrInputDocument();
+            document.addField("id", "synonym1");
+            document.addField("origin", "ds.test");
+            document.addField("title", "Velkommen til TV avisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
+            // => tv avisen
+
+            embeddedServer.add(document);
+            embeddedServer.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error indexing test documents");
+        }
 
     }
   
-
+    
+    
 }
