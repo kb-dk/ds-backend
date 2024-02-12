@@ -1,0 +1,25 @@
+#
+# This config holds production environment secrets: Servers, usernames, passwords etc.
+# If will be automatically merged with the base config when accesses through the application config system.
+#
+# In the code repository, this file is called bff-environment.yaml.sample and should not contain real
+# values, only the configuration structure containing the secrets. Due to the ".sample" extension, it will not be
+# loaded by ServiceConfig.
+#
+# When applied to production, the file should be copied, adjusted and renamed to bff-environment.yaml
+# The new file bff-environment.yaml should NOT be added to the code repository!
+#
+
+config:
+
+  batcher:
+    # In this case we change the fallback value, but keep the option of using environment variables or system
+    # properties open. This is probably flexibility at the cost of confusion and not something one would do
+    # very often
+    threads: ${env:BATCH_THREADS:-${batch.threads:-10}}
+
+  # Production machine setup
+  backend:
+    db: 'http://realmachine:8090/foobar/'
+    user: 'real_dbuser'
+    password: 'real_dbpassword'

@@ -1,0 +1,18 @@
+[*]
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+end_of_line = lf
+charset = utf-8
+
+# https://developers.google.com/style/html-formatting
+# https://www.w3schools.com/html/html5_syntax.asp
+# https://google.github.io/styleguide/xmlstyle.html
+# https://google.github.io/styleguide/htmlcssguide.html
+[*.{js,jsx,ts,tsx,vue,scss,html,xml,css}]
+indent_size = 2
+
+[*.{jsp,java}]
+# IntelliJ IDEA
+ij_visual_guides = 120
+indent_size = 4

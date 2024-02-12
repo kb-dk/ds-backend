@@ -1,0 +1,84 @@
+#
+# This is the base config for the project.
+#
+# It will be used when running 'mvn jetty:run' and is expected to be deployed along with the WAR when running under tomcat.
+#
+# The base config will be automatically merged with the 'environment' config when accessed through the
+# application config system.
+#
+# Sensitive information such as machine names and user/passwords MUST NOT be part of this config but should be stated
+# with placeholders and/or overridden in the 'environment' and 'local' configurations.
+#
+
+# Sample configuration values below. Remove from concrete application
+
+config:
+
+
+
+  limits:
+    min: 10
+    max: 100
+  mylist:
+    - Hello
+    - World
+    - from
+    - java-template
+
+
+  # Expansion is provided using https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/StringSubstitutor.html
+  # The two common ones are system properties and environment variables, as demonstrated below
+
+  # System properties are available: See https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html
+  # Application specific properties can be defined in a tomcat context or with -Dmy.property=foo as Java argument
+
+  # In general it is fine form to allow for multiple different ways of overriding the value when a property is dependent
+  # on the environment, e.g. hardware resources. Overriding through environment variables works very well for
+  # Docker/Kubernetes setups and overriding through system properties works well for tomcat deployments.
+
+  # See "batcher.threads", "backend.password" and "backend.db" below for realistic examples.
+
+  batcher:
+    # In this example, the number of threads can be controlled with environment BATCH_THREADS=7,
+    # system properties -Dbatch.threads=7 or explicit overriding in the 'environment' or 'local' YAML config files.
+    # If none of these are provided, the value 5 will be used
+
+    # When using this pattern, try and align environment and system properties keys to match each other:
+    # Environment is uppercase with underscore as delimiter, system properties are lowercase with dot as delimiter.
+    threads: ${env:BATCH_THREADS:-${batch.threads:-5}}
+
+  # Inline expansion works just as full value expansion. For "userhome", the system property "user.home" is used.
+  # As it has no default, an exception will be thrown by the configuration system if not defined and the value
+  # is requested. Note: Expansion is done at access time, not config load time. 
+  userhome: "Home sweet ${user.home}"
+
+  # Fallbacks for missing system properties can be defined with :-
+  # If "nonexisting.property" is not set, the value of "fallback" will be "87"
+  fallback: ${nonexisting.property:-87}
+
+  backend:
+    # Environment variables are available with the prefix env.
+    # Normally this would be written with fallback to system properties like the "password" case below
+    user: ${env:DB_USERNAME}
+    # Flexible definition of a password, checking first environment then system properties and throwing an exception if
+    # it is not provided in any of them. Note that the env: must come first.
+    # Not having a default is the standard way to define username/password as default password is often a security risks
+    password: ${env:DB_PASSWORD:-${db.password}}
+    # Flexible definition of an URL, with fallback to a concrete value. Note that the env: must come first:
+    # See the extended explanation for the "threads" case below
+    db: ${env:DB_URL:-${db.url:-http://localhost:12345/mydb}}
+
+  # Plain definition of values, which for demonstration purposes are overwritten in bff-local.yaml.
+  # Since expansion values can also be overwritten in subsequent YAML configs, there is rarely any reason for sticking
+  # to plain definitions of values. The principle used in "backend.password" and "backend.db" is preferred
+  alternative:
+    user: "altuser"
+    password: "altpassword"
+    db: "http://localhost:23456/mydb2"
+
+  # Auto update of the ServiceConfig when the YAML files changes on storage.
+  # Default is that auto updates are disabled. Read the JavaDoc for ServiceConfig.java for details.
+  # Do not blindly enable this as the concrete application needs to have support for changing configuration
+  autoupdate:
+    enabled: ${env:AUTOUPDATE_ENABLED:-${autoupdate.enabled:-false}}
+    intervalms: ${env:AUTOUPDATE_INTERVALMS:-${autoupdate.intervalms:-60000}}

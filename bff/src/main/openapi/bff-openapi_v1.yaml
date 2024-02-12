@@ -1,0 +1,176 @@
+openapi: 3.0.2
+info:
+  version: 'v1'
+  title: '${project.name}'
+  description: |
+    ${project.description}
+  contact:
+    email: '${user.name}@kb.dk'
+  license:
+    name: '${license.name}'
+    url: '${license.url}'
+servers:
+  #  /api must match servlet-mapping in web.xml
+  - url: '/${project.artifactId}/v1'
+    description: 'Version 1'
+
+paths:
+
+
+  # The ping service should be in all projects, should not do any advanced processing
+  # and should respond quickly with a simple message, e.g. "pong".
+  #
+  # Note that it is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  #
+  # Note that the more detailed /monitor/status is defined below.
+  /monitor/ping:
+    get:
+      tags:
+        - Service
+      summary: 'Ping the server to check if the server is reachable.'
+      operationId: ping
+      x-useGenericResponse: false # If enabled the method will return Response
+      x-streamingOutput: false # If enabled the method will return StreamingOutput.
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  # The status service should be in all projects and should provide a list of running jobs,
+  # the overall health of the service and similar. While the endpoint should be kept at
+  # /monitor/status, the response should be adjusted to fit the application.
+  #
+  # Note that it is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  #
+  # Note that the simple /monitor/ping is defined above.
+  /monitor/status:
+    get:
+      tags:
+        - Service
+      summary: 'Detailed status / health check for the service'
+      operationId: status
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: 'Internal Error'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+
+components:
+  schemas:
+
+    # TODO: Sample component. Remove when building a concrete application
+    HelloReply:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: 'Greeting from the API'
+
+    # TODO: Sample component. Remove when building a concrete application
+    Book:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          type: string
+          description: 'Book ID'
+          example: 'book_bookid87'
+          xml:
+            attribute: true
+        title:
+          type: string
+          description: 'Book title'
+          example: 'Disappeared by the Storm'
+        pages:
+          type: integer
+          format: int32
+          example: 43
+      xml:
+        name: book
+
+    # Basic status response component.
+    # TODO: Extend this to provide application specific status, such as a list of running jobs or free disk space
+    Status:
+      type: object
+      required:
+        - application
+        - version
+      properties:
+        application:
+          type: string
+          description: 'The name of the application'
+          example: 'MyService'
+        version:
+          type: string
+          description: 'The version of the application'
+          example: '1.2.3'
+        build:
+          type: string
+          description: 'When the application was build'
+          example: '2022-04-21T13:37:16Z'
+        java:
+          type: string
+          description: 'The Java version that runs the container'
+          example: '11.0.11'
+        heap:
+          type: integer
+          format: int64
+          description: 'The maximum number of bytes available to the container in megabytes'
+          example: '4096'
+        server:
+          type: string
+          description: 'The hostname for the server'
+          example: 'miaplacidus'
+        health:
+          type: string
+          description: 'Self diagnosed health'
+          example: 'ok'
+        gitCommitChecksum:
+          type: string
+          description: 'The checksum of the deployed commit.'
+          example: 'ca82a6dff817ec66f44342007202690a93763949'
+        gitBranch:
+          type: string
+          description: 'The current deployed branch.'
+          example: master
+        gitCurrentTag:
+          type: string
+          description: 'The current tag of the deployed branch.'
+        gitClosestTag:
+          type: string
+          description: 'The closest tag of the deployed branch.'
+        gitCommitTime:
+          type: string
+          description: 'The time for the latest commit of the deplyed branch.'
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
