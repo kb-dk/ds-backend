@@ -810,7 +810,7 @@
        
        
       
-      <!--  <str name="spellcheck">true</str> Enable to set it default. Must now be called with spellcheck=true parameter -->            
+      <str name="spellcheck">true</str> <!-- It not default enabled, can be enabled with spellcheck=true parameter -->            
       <str name="spellcheck.df">spellcheck</str>      
       <str name="spellcheck.extendedResults">true</str> <!-- Probably disable later.But usefull to see what is in data -->
       <str name="spellcheck.count">10</str>
