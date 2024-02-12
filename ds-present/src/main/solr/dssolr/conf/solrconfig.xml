@@ -753,9 +753,7 @@
        <str name="indent">true</str>
        <str name="df">freetext</str>
        <str name="q.op">AND</str>
-       <str name="defType">edismax</str>      
-       <str name="spellcheck">true</str>     
-       <str name="spellcheck.df">spellcheck</str>   
+       <str name="defType">edismax</str>                    
       
         <!-- Update qf for /mlt handler further down in the solrconfig.xml when changing this -->
         <str name="qf">
@@ -812,7 +810,8 @@
        <str name="hl.fl">notes</str>
        
        
-      
+      <str name="spellcheck">true</str>
+      <str name="spellcheck.df">spellcheck</str>
       <str name="spellcheck.extendedResults">true</str> <!-- Probably disable later.But usefull to see what is in data -->
       <str name="spellcheck.count">10</str>
       <str name="spellcheck.alternativeTermCount">5</str>
@@ -825,9 +824,7 @@
      
      </lst>
     
-       <arr name="last-components">
-         <str>spellcheck</str> <!-- It is possible to add more spellchecker compontents than one -->
-       </arr>
+     
     </requestHandler>
 
 
