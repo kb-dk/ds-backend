@@ -155,6 +155,8 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals(1, getTitleQuery("tvavisen").getNumFound());        
         assertEquals(1, getTitleQuery("tv-avisen").getNumFound());
         assertEquals(1, getTitleQuery("tvavis").getNumFound());
+        assertEquals(1, getTitleQuery("tv avisen").getNumFound());
+        assertEquals(1, getTitleQuery("\"tv avisen\"").getNumFound());
     }
 
     
@@ -167,6 +169,8 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals(1, getTitleQuery("tv-avisen").getNumFound()); //no quotes
         assertEquals(1, getTitleQuery("\"tv-avisen\"").getNumFound());  // "tv-avisen" in quotes
         assertEquals(1, getTitleQuery("tvavisen").getNumFound());
+        assertEquals(1, getTitleQuery("tv avisen").getNumFound());
+        assertEquals(1, getTitleQuery("\"tv avisen\"").getNumFound());
         assertEquals(1, getFreeTextQuery("tvavisen")); //Must also be found as freetext search
 
         // test title stored field is not replaced with synonyms
