@@ -820,7 +820,7 @@
       <str name="spellcheck.collateExtendedResults">true</str> > <!-- Probably disable later.But usefull to see what is in data -->
       <str name="spellcheck.maxCollationTries">10</str>
       <str name="spellcheck.maxCollations">5</str>
-      <str name="spellcheck.build">true</str>              
+      <str name="spellcheck.build">false</str>  <!-- Much overhead building it every query. Not recommended and will not scale -->              
      
      </lst>
        <arr name="last-components">
