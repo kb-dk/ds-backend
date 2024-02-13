@@ -88,7 +88,7 @@ origins:
       origin: 'ds.tv'
       recordrequesttype: 'DELIVERABLEUNIT'
       views: *PRESERVICA_VIEWS
-  - samlingsbilleder:
+  - 'ds.samlingsbilleder':
       description: 'Diverse images from image collections at the Royal Danish Library'
       prefix: 'ds.samlingsbilleder'
       origin: 'ds.samlingsbilleder'
