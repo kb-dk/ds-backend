@@ -758,6 +758,7 @@
         <str name="qf">
         filename_local^5.0
         title_strict^5.0
+        title
         creator_full_name_strict^5.0
         pid^5.0
         episode_title^4.0
@@ -972,6 +973,7 @@
       <!-- mlt.qf synchronized with edismax qf -->
       <str name="mlt.qf">
         filename_local^5.0
+        title
         title_strict^5.0
         creator_full_name_strict^5.0
         pid^5.0
@@ -991,7 +993,7 @@
         internal_showviewcode
         text^0.75
         text_shingles^0.75
-        freetext^0.5
+        freetext^0.5        
       </str>
       <str name="mlt.maxqt">25</str>
       <str name="mlt.maxdfpct">75</str>
@@ -1000,6 +1002,7 @@
       <str name="defType">edismax</str>
       <str name="qf">
           filename_local^5.0
+          title
           title_strict^5.0
           creator_full_name_strict^5.0
           topic^2.0

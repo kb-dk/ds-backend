@@ -1,0 +1,15 @@
+# This pattern will fix  misspelling. This is often misspelled danish words. Only included somewhat relevant words for dr arkiv.
+# Use lowercase only
+selvskab => selskab
+yngling => yndling
+ærgelig => ærgerlig
+financiere => finansiere
+brædt => bræt
+hovede => hoved 
+linie => linje
+fælleskab => fællesskab
+diciplin => disciplin
+
+# Collapse several terms into one (in this case a multiterm)
+tv-avisen, tvavis, tvavisen, tv-avis, tv avis=> tv avisen
+bamsekylling, bamse kylling => bamse og kylling

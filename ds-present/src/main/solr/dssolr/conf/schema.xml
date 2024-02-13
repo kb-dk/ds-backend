@@ -24,9 +24,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
 1.0.1: Added text_shingles
 1.0.2: Defined 'snowball' for all stopword filters
+1.6.0: Spellcheck + Suggest added
+1.6.1: Synonym added to general_text fieldtype that is used for most text fields.  
   -->
-  <field name="_ds_1.0.3_" type="string" indexed="false" stored="false"/>
-
+  <field name="_ds_1.6.1_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -87,10 +88,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?query_example ?>
   </field>
 
-  <field name="title" type="text_general" multiValued="true" stored="true"> <!-- Only present in maps collection test data-->
+  <field name="title" type="text_general" multiValued="true" stored="true"> <!-- Title will be made single value field at some time-->
     <?description The object title.?>
     <?example     Den grimme ælling.?>
   </field>
+
 
   <!-- Note: The title_sort_da field IS NOT automatically copied from title as title_sort_da is single valued -->
   <field name="title_sort_da" type="sort_da">
@@ -925,8 +927,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
-    <!-- termVectors=true & storeTermVectors=true to get better MoreLikeThis and support the Unified Highlighter -->
-  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+  <!-- termVectors=true & storeTermVectors=true to get better MoreLikeThis and support the Unified Highlighter -->
+  <fieldType name="text_general_OLD" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
     <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
        <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
@@ -938,6 +940,25 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
+
+  <!-- Highly analysed text field with stopwords and synonym. -->
+  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+    <analyzer type="index">
+       <tokenizer class="solr.StandardTokenizerFactory"/>
+       <filter class="solr.LowerCaseFilterFactory"/>
+       <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+       <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>
+       <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
+       
+    </analyzer>
+    <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+        <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>        
+    </analyzer>
+  </fieldType>
+
 
   <!-- TODO: Consider setting multi value distance fairly short for phrase search across
        timestamped Whisper output -->
@@ -969,18 +990,22 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     </analyzer>
   </fieldType>
 
+  <!-- Field to 'catch em all' if not matched in specific fields. Last resort for matching. Ranking will be lower if they are only matched here. -->
    <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
-      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
       <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt"/>
+      <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
     </analyzer>
     <analyzer type="query">
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
-      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
       <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt"/>       
     </analyzer>
   </fieldType>
 
@@ -997,9 +1022,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </copyField>
 
   <copyField source="title" dest="title_strict">
-  <?description Copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
-  <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
+    <?description Copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
+    <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
   </copyField>
+   
 
   <copyField source="subject_full_name" dest="subject_full_name_strict">
     <?description Copies the full name of the subject to a strict field, which produces a higher ranking when queried.?>
@@ -1027,7 +1053,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>
   <copyField source="original_title" dest="freetext"/>
-  <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->
+  <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->    
   <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
   <copyField source="text" dest="text_shingles">
     <?description Copies the content of the basic text field to the shingles enabled text field, for better phrase search ranking and keyword extraction.?>
