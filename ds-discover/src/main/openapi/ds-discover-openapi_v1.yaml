@@ -250,8 +250,8 @@ paths:
           schema:
             type: string
             enum: ['true', 'false']
-            default: 'false'
-            example: 'false'
+            default: 'true'
+            example: 'true'
        
         - name: spellcheck.build
           in: query
