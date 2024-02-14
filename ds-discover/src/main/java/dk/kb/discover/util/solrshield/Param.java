@@ -15,36 +15,106 @@
 package dk.kb.discover.util.solrshield;
 
 import dk.kb.util.yaml.YAML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generic representation of parameter config for a Solr component.
  */
-public class Param implements DeepCopyable<Param> {
-    public String key;
-    public boolean defaultEnabled = false;
+public class Param<T extends Param<T>> extends ProfileElement<T> {
+    public String name;
+    public boolean enabled = false;
     public boolean allowed = false;
     public double weightConstant = 1000;
     public double weightFactor = 1000;
-    public double maxValue = -1;
+    public double maxValue = -1; // For number based params
+    public int maxChars = 2000;  // For String based params
 
-    public Param(YAML config) {
-        key = config.getString("key"); // Mandatory
-        defaultEnabled = config.getBoolean("default_enabled", defaultEnabled);
+    public Param(Profile profile, YAML config) {
+        this(profile, null, config);
+    }
+    
+    public Param(Profile profile, String name, YAML config) {
+        super(profile, name);
+        this.name = name;
+        enabled = config.getBoolean("default_enabled", enabled);
         allowed = config.getBoolean("allowed", allowed);
         weightConstant = config.getDouble("weight_constant", weightConstant);
         weightFactor = config.getDouble("weight_factor", weightFactor);
         maxValue = config.getDouble("max_value", maxValue);
+        maxChars = config.getInteger("max_chars", maxChars);
     }
 
     @Override
-    public Param deepCopy() {
-        try {
-            return (Param) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException(
-                    "Got CloneNotSupportedException with super class Object. This should not happen", e);
+    double getWeight() {
+        return !enabled ? 0.0 :
+                weightConstant;
+    }
+
+    public static class StringParam extends Param<StringParam> {
+        public String value = null;
+
+        public StringParam(Profile profile, YAML config) {
+            super(profile, config);
+            value = config.getString("default_value", value);
+        }
+
+        public void apply(String value) {
+            this.value = value;
+            enabled = true;
+        }
+    }
+
+    public static class IntegerParam extends Param<IntegerParam> {
+        public Integer value = null;
+
+        public IntegerParam(Profile profile, YAML config) {
+            super(profile, config);
+            value = config.getInteger("default_value", value);
+        }
+
+        public void apply(Integer value) {
+            this.value = value;
+            enabled = true;
+        }
+
+        @Override
+        double getWeight() {
+            return !enabled ? 0.0 : super.getWeight() +
+                    weightFactor * value;
+        }
+    }
+
+    public static class FieldsParam extends Param<FieldsParam> {
+        public List<String> fields = null;
+        public List<String> allowedFields = null; // TODO: Check validity using allowed & denied
+        public List<String> deniedFields = null;
+
+        public FieldsParam(Profile profile, YAML config) {
+            super(profile, config);
+            fields = config.getList("default_fields", fields);
+            allowedFields = config.getList("allowed_fields", allowedFields);
+            deniedFields = config.getList("denied_fields", deniedFields);
+        }
+
+        @Override
+        protected void deepCopyNonAtomicAttributes(FieldsParam clone) {
+            super.deepCopyNonAtomicAttributes(clone);
+            clone.fields = fields == null ? null : new ArrayList<>(fields);
+            clone.allowedFields = allowedFields == null ? null : new ArrayList<>(allowedFields);
+            clone.deniedFields = deniedFields == null ? null : new ArrayList<>(deniedFields);
+        }
+
+        public void apply(List<String> fieldNames) {
+            fields = new ArrayList<>(fieldNames);
+            enabled = true;
+        }
+
+        @Override
+        double getWeight() {
+            return !enabled ? 0.0 : super.getWeight() +
+                    weightFactor * profile.getFieldsWeight(fields);
         }
     }
 }

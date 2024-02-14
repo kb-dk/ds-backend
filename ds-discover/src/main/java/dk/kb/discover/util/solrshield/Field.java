@@ -15,13 +15,11 @@
 package dk.kb.discover.util.solrshield;
 
 import dk.kb.util.yaml.YAML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Representation of a Solr field.
  */
-public class Field implements DeepCopyable<Field> {
+public class Field extends ProfileElement<Field> {
     String name;
     double weight;
 
@@ -30,10 +28,8 @@ public class Field implements DeepCopyable<Field> {
      *
      * @param fieldConfig configuration for a single field.
      */
-    public Field(YAML fieldConfig) {
-        if (!fieldConfig.containsKey("name")) {
-            throw new IllegalArgumentException("Every field must have a 'name'");
-        }
+    public Field(Profile profile, YAML fieldConfig) {
+        super(profile, fieldConfig.getString("name")); // Name is mandatory
         name = fieldConfig.getString("name");
         if (!fieldConfig.containsKey("weight")) {
             throw new IllegalArgumentException(
@@ -43,12 +39,7 @@ public class Field implements DeepCopyable<Field> {
     }
 
     @Override
-    public Field deepCopy() {
-        try {
-            return (Field) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException(
-                    "Got CloneNotSupportedException with super class Object. This should not happen", e);
-        }
+    double getWeight() {
+        return weight;
     }
 }

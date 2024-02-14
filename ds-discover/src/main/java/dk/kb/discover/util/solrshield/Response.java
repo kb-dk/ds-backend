@@ -76,4 +76,15 @@ public class Response {
     public Response reason(double weight) {
         return new Response(request, maxWeight, allowed, reason, weight);
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "request=" + request +
+                ", maxWeight=" + maxWeight +
+                ", allowed=" + allowed +
+                ", reason='" + reason + '\'' +
+                ", weight=" + weight +
+                '}';
+    }
 }

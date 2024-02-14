@@ -52,6 +52,7 @@ public class SolrShield {
     private static YAML conf = null;
     private static boolean enabled = true;
     private static double defaultMaxWeight = -1;
+    private static Profile profile;
 
     /**
      * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
@@ -107,13 +108,16 @@ public class SolrShield {
      * <p>
      * This also checks for hard limits or non-allowed arguments. If any of those are triggered,
      * {@link Response#allowed} is set to false, else it is set to true.
+     * <p>
+     * Note: {@link Response#maxWeight} is not set by this operation.
      * @param request a Solr request.
      * @return calculated weight etc.
      * @see #test(Iterable)
      */
     static Response weigh(Iterable<Map.Entry<String, String[]>> request) {
-        // TODO: Implement this
-        throw new UnsupportedOperationException("Implement this");
+        double weight = profile.apply(request).getWeight();
+        // TODO: Add isAllowed
+        return new Response(request, 0.0, true, null, weight);
     }
 
     /**
@@ -121,7 +125,7 @@ public class SolrShield {
      * in the overall application config, located at {@code solr.shield}.
      */
     static void ensureConfig() {
-        if (conf == null) {
+        if (conf != null) {
             return;
         }
         if (!ServiceConfig.getConfig().containsKey(ROOT_KEY)) {
@@ -150,8 +154,9 @@ public class SolrShield {
         }
         enabled = conf.getBoolean(ENABLED_KEY, enabled);
         defaultMaxWeight = conf.getDouble(MAX_WEIGHT_DEFAULT_KEY, defaultMaxWeight);
-        log.info("Initialized SolrShield: enabled={}, defaultMaxWeight={}",
-                enabled, defaultMaxWeight);
+        profile = new Profile(conf);
+        log.info("Initialized SolrShield: enabled={}, defaultMaxWeight={}, profile={}",
+                enabled, defaultMaxWeight, profile);
     }
 
 }

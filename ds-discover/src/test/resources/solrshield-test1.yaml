@@ -14,6 +14,9 @@
 solr:
   shield:
 
+    # Simply activating a call comes at a cost
+    weight_constant: 100
+
     # Ideally all fields are listed under 'fields'.
     # 'unlisted_fields' controls handling of requests for unlisted fields
     unlisted_fields:
@@ -42,7 +45,7 @@ solr:
       - name: abstract
         weight: 50
 
-      - name: freetext
+      - name: freetext 
         weight: 100
       - name: text
         weight: 200
@@ -68,9 +71,11 @@ solr:
         params:
           q:
             weight_constant: 10
+            max_chars: 1000
 
           fq:
             weight_factor: 10   # There can be multiple filter queries
+            max_chars: 1000
 
           fl:
             weight_factor: 1    # weight_factor will be multiplied to each field weight
@@ -115,7 +120,7 @@ solr:
           # query debug (rows=1) is possible with a max_weight of 1000. In reality any request will always have
           # some weight even before turning on debug so using debug with rows=2 will exceed the max_weight.
           debug:
-            weight_constant: 500
+            weight_constant: 500 
             weight_factor: 1    # Multiplied to rows, as debug-results is processed for each returned document
           debug.explain.structured:
             weight_constant: 0

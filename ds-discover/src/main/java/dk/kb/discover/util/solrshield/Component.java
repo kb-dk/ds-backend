@@ -15,50 +15,47 @@
 package dk.kb.discover.util.solrshield;
 
 import dk.kb.util.yaml.YAML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Representation of a Solr component, i.e. {@code search}, {@code facet}, {@code highlight}...
  */
-public class Component implements DeepCopyable<Component> {
-    public String name;
+public abstract class Component<T extends Component<T>> extends ProfileElement<T> {
     public boolean defaultEnabled = false;
     public boolean allowed = false;
     public double weightConstant = 100;
-    public Map<String, Param> params = new HashMap<>(); // Not set in base Component
+    public Map<String, Param<?>> params = new HashMap<>(); // Not set in base Component
 
-    public Component(YAML config) {
-        name = config.getString("name"); // Mandatory
+    public boolean enabled;
+
+    public Component(Profile profile, String name, YAML config) {
+        super(profile, name);
         defaultEnabled = config.getBoolean("default_enabled", defaultEnabled);
         allowed = config.getBoolean("allowed", allowed);
         weightConstant = config.getDouble("weight_constant", weightConstant);
+
+        enabled = defaultEnabled;
     }
 
     @Override
-    public Component deepCopy() {
-        Component clone;
-        try {
-            clone = (Component) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException(
-                    "Got CloneNotSupportedException with super class Object. This should not happen", e);
-        }
-        deepCopyNonAtomicAttributes(clone);
-        return clone;
+    protected void deepCopyNonAtomicAttributes(T clone) {
+        clone.params = params.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().deepCopy(clone.profile)));
     }
 
     /**
-     * Creates deep copies of all non-atomic attributes and assigns them to {@code dest}.
-     * @param dest the destination for the non-atomic attributes.
+     * Apply the parameters in the request.
+     * @param request a Solr request, represented as map of {@code key, values}.
+     * @return keys for the parameters that were applies.
      */
-    protected void deepCopyNonAtomicAttributes(Component dest) {
-        dest.params = params.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().deepCopy()));
-    }
+    public abstract Set<String> apply(Iterable<Map.Entry<String, String[]>> request);
 
+    @Override
+    double getWeight() {
+        return enabled ? weightConstant : 0.0;
+    }
 }

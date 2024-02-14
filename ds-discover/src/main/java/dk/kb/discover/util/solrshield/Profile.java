@@ -18,18 +18,27 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Representation of a given profile for SolrShield.
  * <p>
  * The implementation uses the <a href="https://en.wikipedia.org/wiki/Prototype_pattern">Prototype Pattern</a> to
  * avoid maintaining 1:1 mapped configuration and instance objects.
+ * <p>
+ * The profile is used for calculating the weight of a query. Different components (search, facet, highlight...)
+ * are dependent on each other and on the fields. To handle interdependency, all elements of the profile are aware
+ * of each other.
  */
-public class Profile implements DeepCopyable<Profile> {
+public class Profile extends ProfileElement<Profile> {
     private static final Logger log = LoggerFactory.getLogger(Profile.class);
+
+    /*
+    # Simply activating a call comes at a cost
+     */
+    public double weight_constant = 1000;
 
     /*
     # Ideally all fields are listed under 'fields'.
@@ -68,11 +77,15 @@ public class Profile implements DeepCopyable<Profile> {
      */
     public Map<String, Field> fields;
 
-    /*
-    # The component section covers the major Solr handlers, such as faceting and highlighting.
-    # It also covers grouping and faceting, which are technically not handlers but conceptually on par.
+    /**
+     * First class search component. Always present, always enabled.
      */
-    public Map<String, Component> components;
+    public SearchComponent search;
+
+    /**
+     * First class facet component. Always present, but might not be enabled.
+     */
+    public FacetComponent facet;
 
     /**
      * Create a base setup for SolrShield. and initialize based on the setup specified in {@code config}.
@@ -81,48 +94,101 @@ public class Profile implements DeepCopyable<Profile> {
      * @param config a SolrShield configuration.
      */
     public Profile(YAML config) {
+        super(null, "config");
+        weight_constant = config.getDouble("weight_constant", weight_constant);
+
         unlistedFieldsAllowed = config.getBoolean("unlisted_fields.allowed", unlistedFieldsAllowed);
         unlistedFieldsWeight = config.getDouble("unlisted_fields.weight", unlistedFieldsWeight);
         fields = config.containsKey("fields") ?
                 config.getYAMLList("fields").stream()
-                        .map(Field::new)
+                        .map(fieldMap -> new Field(this, fieldMap))
                         .collect(Collectors.toMap(k -> k.name, v -> v)) :
                 Collections.emptyMap();
 
-        unlistedParamsAllowed = config.getBoolean("unlisted_farams.allowed", unlistedParamsAllowed);
-        unlistedParamsWeight = config.getDouble("unlisted_farams.weight", unlistedParamsWeight);
-        components = config.containsKey("components") ?
-                config.getYAMLList("components").stream()
-                        .map(Profile::createComponent)
-                        .collect(Collectors.toMap(k -> k.name, v -> v)) :
-                Collections.emptyMap();
+        unlistedParamsAllowed = config.getBoolean("unlisted_params.allowed", unlistedParamsAllowed);
+        unlistedParamsWeight = config.getDouble("unlisted_params.weight", unlistedParamsWeight);
+
+        search = new SearchComponent(this, config.getSubMap("components.search")); // Mandatory
+        facet = new FacetComponent(this, config.getSubMap("components.facet"));    // Mandatory
+
+        log.info("Created base SorShield config " + this);
     }
 
-    private static Component createComponent(YAML config) {
-        String name = config.getString("name", null);
-        if (name == null) {
-            throw new IllegalArgumentException("No 'name' key defined for Component");
-        }
-        switch (name) {
-            case "search": return new SearchComponent(config);
-            default: throw new UnsupportedOperationException("Component '" + name + "' not supported");
-        }
+    /**
+     * @return an independent/deep copy of this Profile.
+     */
+    public Profile deepCopy() {
+        return super.deepCopy(null);
+    }
+
+    // TODO: Signal illegal request
+    /**
+     * Create a deep copy of this Profile, apply the parameters in the request and return the updated copy.
+     * @param request a Solr request, represented as map of {@code key, values}.
+     */
+    public Profile apply(Iterable<Map.Entry<String, String[]>> request) {
+        Profile clone = deepCopy();
+        Set<String> processedKeys = new HashSet<>();
+        processedKeys.addAll(clone.search.apply(request));
+        processedKeys.addAll(clone.facet.apply(request));
+
+        Map<String, String[]> unhandled =
+                StreamSupport.stream(request.spliterator(), false)
+                        .filter(e -> !processedKeys.contains(e.getKey()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        // TODO: Handle unhandled keys
+
+        return clone;
     }
 
     @Override
-    public Profile deepCopy() {
-        Profile clone;
-        try {
-            clone = (Profile) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException(
-                    "Got CloneNotSupportedException with super class Object. This should not happen", e);
-        }
+    protected void deepCopyNonAtomicAttributes(Profile clone) {
+        super.deepCopyNonAtomicAttributes(clone);
         clone.fields = fields.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().deepCopy()));
-        clone.components = components.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().deepCopy()));
+                .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().deepCopy(clone.profile)));
+        search = search.deepCopy(clone.profile);
+        facet = facet.deepCopy(clone.profile);
+    }
 
-        return clone;
+    @Override
+    public String toString() {
+        return "Profile{" +
+                "unlistedFieldsAllowed=" + unlistedFieldsAllowed +
+                ", unlistedFieldsWeight=" + unlistedFieldsWeight +
+                ", unlistedParamsAllowed=" + unlistedParamsAllowed +
+                ", unlistedParamsWeight=" + unlistedParamsWeight +
+                ", fields=" + fields +
+                ", components.search=" + search +
+                ", components.facet=" + facet +
+                '}';
+    }
+
+    @Override
+    double getWeight() {
+        return weight_constant + search.getWeight() + facet.getWeight();
+    }
+
+    /**
+     * Calculate the sum of weights for the given {@code fields}.
+     * @param fields a list of Solr fields.
+     * @return the sum of field weights.
+     */
+    public double getFieldsWeight(List<String> fields) {
+        return fields.stream()
+                .map(this::getFieldWeight)
+                .mapToDouble(Double::doubleValue)
+                .sum();
+    }
+
+    /**
+     * Resolve the field weight. If the field is not in {@link #fields}, the weight {@link #unlistedFieldsWeight}
+     * will be used.
+     * @param field a Solr field.
+     * @return the weight of the field.
+     */
+    public double getFieldWeight(String field) {
+        return this.fields.containsKey(field) ?
+                this.fields.get(field).getWeight() :
+                unlistedFieldsWeight;
     }
 }
