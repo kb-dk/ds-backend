@@ -15,18 +15,11 @@
 package dk.kb.discover.util.solrshield;
 
 import dk.kb.util.yaml.YAML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Representation of a Solr Facet component.
  */
 public class FacetComponent extends Component<FacetComponent> {
-    private static final Logger log = LoggerFactory.getLogger(FacetComponent.class);
 
     protected Param.StringParam facetQuery;
     protected Param.IntegerParam facetLimit;
@@ -39,35 +32,24 @@ public class FacetComponent extends Component<FacetComponent> {
 
     public FacetComponent(Profile profile, YAML config) {
         super(profile, "facet", config);
-        if (!config.containsKey("params")) {
-            log.warn("No configuration key 'params' for the search component. This is most likely an error");
-            return;
-        }
+
         YAML paramsConf = config.getSubMap("params");
-        addParam(paramsConf, "\"facet.query\"", paramConf -> this.facetQuery = new Param.StringParam(profile, paramConf));
+        addParam(paramsConf, "\"facet.query\"", paramConf -> this.facetQuery = new Param.StringParam(profile, paramConf, false));
         addParam(paramsConf, "\"facet.field\"", paramConf -> this.facetField = new Param.FieldsParam(profile, paramConf));
         addParam(paramsConf, "\"facet.limit\"", paramConf -> this.facetLimit = new Param.IntegerParam(profile, paramConf));
-        addParam(paramsConf, "\"facet.sort\"", paramConf -> this.facetSort = new Param.StringParam(profile, paramConf));
+        addParam(paramsConf, "\"facet.sort\"", paramConf -> this.facetSort = new Param.StringParam(profile, paramConf, false));
         addParam(paramsConf, "\"facet.mincount\"", paramConf -> this.facetMincount = new Param.IntegerParam(profile, paramConf));
         addParam(paramsConf, "\"facet.exists\"", paramConf -> this.facetExists = new Param.BooleanParam(profile, paramConf));
     }
 
     @Override
-    public Set<String> apply(Iterable<Map.Entry<String, String[]>> request) {
-        log.warn("Not implemented yet"); // TODO: Implement this
-        return Collections.emptySet();
-    }
-
-    @Override
     public double getWeight() {
-        if (!enabled) {
-            return 0.0;
-        }
-        return super.getWeight() +
-                facetQuery.getWeight() +
-                facetLimit.getWeight() + facetLimit.getValue() * facetLimit.weightFactor * facetField.getWeight() +
-                facetSort.getWeight() +
-                facetMincount.getWeight() +
-                facetExists.getWeight();
+        return !enabled ? 0.0 :
+                super.getWeight() +
+                        facetQuery.getWeight() +
+                        facetLimit.getWeight() + facetLimit.getValue() * facetLimit.weightFactor * facetField.getWeight() +
+                        facetSort.getWeight() +
+                        facetMincount.getWeight() +
+                        facetExists.getWeight();
     }
 }

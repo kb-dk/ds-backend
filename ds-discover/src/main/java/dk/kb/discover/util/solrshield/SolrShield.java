@@ -115,9 +115,9 @@ public class SolrShield {
      * @see #test(Iterable)
      */
     static Response weigh(Iterable<Map.Entry<String, String[]>> request) {
-        double weight = profile.apply(request).getWeight();
+        Profile applied = profile.apply(request);
         // TODO: Add isAllowed
-        return new Response(request, 0.0, true, null, weight);
+        return new Response(request, 0.0, true, null, applied.getWeight());
     }
 
     /**

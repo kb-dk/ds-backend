@@ -15,8 +15,11 @@
 package dk.kb.discover.util.solrshield;
 
 import dk.kb.util.yaml.YAML;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,27 +28,59 @@ import java.util.List;
  * @param <T> the inheriting class - needed for {@link ProfileElement#deepCopy(Profile)}.
  * @param <V> the value type for {@code Param}.
  */
-public class Param<T extends Param<?, ?>, V> extends ProfileElement<T> {
+public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> {
+    private static final Logger log = LoggerFactory.getLogger(Param.class);
+
     public String name;
     public boolean enabled = false;
     public boolean allowed = false;
-    public double weightConstant = 1000;
-    public double weightFactor = 1000;
+    public double weightConstant = 0.0;
+    public double weightFactor = 0.0;
 
+    public boolean multiValue = false;
     protected V value; // Set by inheriting classes
 
-    public Param(Profile profile, YAML config) {
-        this(profile, null, config);
+    public Param(Profile profile, YAML config, boolean multiValue) {
+        this(profile, null, config, multiValue);
     }
     
-    public Param(Profile profile, String name, YAML config) {
+    public Param(Profile profile, String name, YAML config, boolean multiValue) {
         super(profile, name);
         this.name = name;
         enabled = config.getBoolean("default_enabled", enabled);
         allowed = config.getBoolean("allowed", allowed);
         weightConstant = config.getDouble("weight_constant", weightConstant);
         weightFactor = config.getDouble("weight_factor", weightFactor);
+        this.multiValue = multiValue;
     }
+
+    /**
+     * Assign the given values to the Param.
+     * @param values array of values, represented as Strings.
+     */
+    public void apply(String[] values) {
+        if (values == null || values.length == 0) {
+            return;
+        }
+        if (!multiValue && values.length > 1) {
+            log.debug("Param {} is single value but got {} values. Only the first value is used",
+                    name, values.length);
+            // TODO: Flag as invalid
+        }
+        enabled = true;
+        applyTypes(values);
+    }
+
+    /**
+     * Assign the given values to the Param.
+     * <p>
+     * {@code values} are guaranteed to contain at least 1 element.
+     * <p>
+     * {@link #enabled} will be set to true before this method is called. If the concrete {@code values} require
+     * {@link #enabled} to be set to false, it is up to the method implementation to do so (e.g. for boolean switches).
+     * @param values array of values, represented as Strings.
+     */
+    protected abstract void applyTypes(String[] values);
 
     public V getValue() {
         return value;
@@ -57,18 +92,26 @@ public class Param<T extends Param<?, ?>, V> extends ProfileElement<T> {
     }
 
     // TODO: blacklist/whitelist regexp (filtering {!...} or /regexp/ from query
-    public static class StringParam extends Param<StringParam, String> {
+    public static class StringParam extends Param<StringParam, String[]> {
         public int maxChars = 2000;
 
-        public StringParam(Profile profile, YAML config) {
-            super(profile, config);
+        public StringParam(Profile profile, YAML config, boolean multiValue) {
+            super(profile, config, multiValue);
             maxChars = config.getInteger("max_chars", maxChars);
-            value = config.getString("default_value", value);
+            if (config.containsKey("default_value")) {
+                value = new String[]{config.getString("default_value")};
+            }
         }
 
-        public void apply(String value) {
-            this.value = value;
-            enabled = true;
+        @Override
+        protected void applyTypes(String[] values) {
+            value = multiValue ? values : new String[]{ values[0] };
+        }
+
+        @Override
+        double getWeight() {
+            return !enabled ? 0.0 :
+                    weightConstant + weightFactor*value.length;
         }
     }
 
@@ -76,17 +119,17 @@ public class Param<T extends Param<?, ?>, V> extends ProfileElement<T> {
      * Integer params have constant weight plus (weight factor * value).
      */
     public static class IntegerParam extends Param<IntegerParam, Integer> {
-        public double maxValue = -1;
+        public double maxValue = Double.MAX_VALUE;
 
         public IntegerParam(Profile profile, YAML config) {
-            super(profile, config);
+            super(profile, config, false); // Solr integer params are never multiValue
             maxValue = config.getDouble("max_value", maxValue);
             value = config.getInteger("default_value", value);
         }
 
-        public void apply(Integer value) {
-            this.value = value;
-            enabled = true;
+        @Override
+        protected void applyTypes(String[] values) {
+            value = Integer.parseInt(values[0]);
         }
 
         @Override
@@ -101,13 +144,14 @@ public class Param<T extends Param<?, ?>, V> extends ProfileElement<T> {
      */
     public static class BooleanParam extends Param<BooleanParam, Boolean> {
         public BooleanParam(Profile profile, YAML config) {
-            super(profile, config);
+            super(profile, config, false); // Solr boolean params are never multiValue
             value = config.getBoolean("default_value", value);
         }
 
-        public void apply(Boolean value) {
-            this.value = value;
-            enabled = value == null ? enabled : value;
+        @Override
+        protected void applyTypes(String[] values) {
+            this.value = Boolean.parseBoolean(values[0]);
+            enabled = value;
         }
     }
 
@@ -119,7 +163,7 @@ public class Param<T extends Param<?, ?>, V> extends ProfileElement<T> {
         public List<String> deniedFields = null;
 
         public FieldsParam(Profile profile, YAML config) {
-            super(profile, config);
+            super(profile, config, true); // Solr fields params are always multi valued
             value = config.getList("default_fields", value);
             allowedFields = config.getList("allowed_fields", allowedFields);
             deniedFields = config.getList("denied_fields", deniedFields);
@@ -133,9 +177,9 @@ public class Param<T extends Param<?, ?>, V> extends ProfileElement<T> {
             clone.deniedFields = deniedFields == null ? null : new ArrayList<>(deniedFields);
         }
 
-        public void apply(List<String> fieldNames) {
-            value = new ArrayList<>(fieldNames);
-            enabled = true;
+        @Override
+        protected void applyTypes(String[] values) {
+            value = Arrays.asList(values);
         }
 
         @Override

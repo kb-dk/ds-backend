@@ -15,48 +15,35 @@
 package dk.kb.discover.util.solrshield;
 
 import dk.kb.util.yaml.YAML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * Representation of a Solr Search component.
  */
 public class SearchComponent extends Component<SearchComponent> {
-    private static final Logger log = LoggerFactory.getLogger(SearchComponent.class);
 
     protected Param.StringParam q;
+    protected Param.StringParam fq;
     protected Param.IntegerParam rows;
     protected Param.IntegerParam start;
     protected Param.FieldsParam fields;
 
     public SearchComponent(Profile profile, YAML config) {
         super(profile, "search", config);
-        if (!config.containsKey("params")) {
-            log.warn("No configuration key 'params' for the search component. This is most likely an error");
-            return;
-        }
+
         YAML paramsConf = config.getSubMap("params");
-        addParam(paramsConf, "q", paramConf -> this.q = new Param.StringParam(profile, paramConf));
+        addParam(paramsConf, "q", paramConf -> this.q = new Param.StringParam(profile, paramConf, false));
+        addParam(paramsConf, "fq", paramConf -> this.fq = new Param.StringParam(profile, paramConf, true));
         addParam(paramsConf, "rows", paramConf -> this.rows = new Param.IntegerParam(profile, paramConf));
         addParam(paramsConf, "start", paramConf -> this.start = new Param.IntegerParam(profile, paramConf));
         addParam(paramsConf, "fl", paramConf -> this.fields = new Param.FieldsParam(profile, paramConf));
     }
 
     @Override
-    public Set<String> apply(Iterable<Map.Entry<String, String[]>> request) {
-        Set<String> usedKeys = new HashSet<>();
-        log.warn("Not implemented yet"); // TODO: Implement this
-
-        return usedKeys;
-    }
-
-    @Override
     public double getWeight() {
-        return super.getWeight() +
-                q.getWeight() +
-                start.getWeight() +
-                rows.getWeight() + rows.getValue() * rows.weightFactor * fields.getWeight();
+        return !enabled ? 0.0 :
+                super.getWeight() +
+                        q.getWeight() +
+                        start.getWeight() +
+                        rows.getWeight() + rows.getValue() * rows.weightFactor * fields.getWeight();
     }
 }

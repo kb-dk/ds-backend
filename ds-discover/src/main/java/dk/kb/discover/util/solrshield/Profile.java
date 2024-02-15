@@ -57,6 +57,12 @@ public class Profile extends ProfileElement<Profile> {
     public boolean unlistedParamsAllowed = false;
     public double unlistedParamsWeight = 1000.0;
 
+    /**
+     * Unhandled params after call to {@link #apply(Iterable)} are stored here.
+     * Each call overwrites the previous collection of unhandled params.
+     */
+    public Map<String, String[]> unhandledParams = new HashMap<>();
+
     /*
     # The fields section assign base weight to each field.
     # The scale goes from 1 to 1000, where
@@ -132,12 +138,10 @@ public class Profile extends ProfileElement<Profile> {
         processedKeys.addAll(clone.search.apply(request));
         processedKeys.addAll(clone.facet.apply(request));
 
-        Map<String, String[]> unhandled =
+        clone.unhandledParams =
                 StreamSupport.stream(request.spliterator(), false)
                         .filter(e -> !processedKeys.contains(e.getKey()))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        // TODO: Handle unhandled keys
-
         return clone;
     }
 

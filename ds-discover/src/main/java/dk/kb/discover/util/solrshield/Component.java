@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Representation of a Solr component, i.e. {@code search}, {@code facet}, {@code highlight}...
@@ -32,13 +33,16 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
 
     public boolean defaultEnabled = false;
     public boolean allowed = false;
-    public double weightConstant = 100;
+    public double weightConstant = 0.0;
     public Map<String, Param<?, ?>> params = new HashMap<>(); // Not set in base Component
 
     public boolean enabled;
 
     public Component(Profile profile, String name, YAML config) {
         super(profile, name);
+        if (!config.containsKey("params")) {
+            throw new IllegalArgumentException("No configuration sub map 'params' for the " + name + " component");
+        }
         defaultEnabled = config.getBoolean("default_enabled", defaultEnabled);
         allowed = config.getBoolean("allowed", allowed);
         weightConstant = config.getDouble("weight_constant", weightConstant);
@@ -74,9 +78,16 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
     /**
      * Apply the parameters in the request.
      * @param request a Solr request, represented as map of {@code key, values}.
-     * @return keys for the parameters that were applies.
+     * @return keys for the parameters that were applied.
      */
-    public abstract Set<String> apply(Iterable<Map.Entry<String, String[]>> request);
+    public Set<String> apply(Iterable<Map.Entry<String, String[]>> request) {
+        return StreamSupport.stream(request.spliterator(), true)
+                .filter(e -> params.containsKey(e.getKey()))
+                .peek(e -> params.get(e.getKey()).apply(e.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
 
     @Override
     double getWeight() {
