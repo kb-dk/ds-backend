@@ -21,15 +21,18 @@ import java.util.List;
 
 /**
  * Generic representation of parameter config for a Solr component.
+ *
+ * @param <T> the inheriting class - needed for {@link ProfileElement#deepCopy(Profile)}.
+ * @param <V> the value type for {@code Param}.
  */
-public class Param<T extends Param<T>> extends ProfileElement<T> {
+public class Param<T extends Param<?, ?>, V> extends ProfileElement<T> {
     public String name;
     public boolean enabled = false;
     public boolean allowed = false;
     public double weightConstant = 1000;
     public double weightFactor = 1000;
-    public double maxValue = -1; // For number based params
-    public int maxChars = 2000;  // For String based params
+
+    protected V value; // Set by inheriting classes
 
     public Param(Profile profile, YAML config) {
         this(profile, null, config);
@@ -42,21 +45,24 @@ public class Param<T extends Param<T>> extends ProfileElement<T> {
         allowed = config.getBoolean("allowed", allowed);
         weightConstant = config.getDouble("weight_constant", weightConstant);
         weightFactor = config.getDouble("weight_factor", weightFactor);
-        maxValue = config.getDouble("max_value", maxValue);
-        maxChars = config.getInteger("max_chars", maxChars);
+    }
+
+    public V getValue() {
+        return value;
     }
 
     @Override
     double getWeight() {
-        return !enabled ? 0.0 :
-                weightConstant;
+        return !enabled ? 0.0 : weightConstant;
     }
 
-    public static class StringParam extends Param<StringParam> {
-        public String value = null;
+    // TODO: blacklist/whitelist regexp (filtering {!...} or /regexp/ from query
+    public static class StringParam extends Param<StringParam, String> {
+        public int maxChars = 2000;
 
         public StringParam(Profile profile, YAML config) {
             super(profile, config);
+            maxChars = config.getInteger("max_chars", maxChars);
             value = config.getString("default_value", value);
         }
 
@@ -66,11 +72,15 @@ public class Param<T extends Param<T>> extends ProfileElement<T> {
         }
     }
 
-    public static class IntegerParam extends Param<IntegerParam> {
-        public Integer value = null;
+    /**
+     * Integer params have constant weight plus (weight factor * value).
+     */
+    public static class IntegerParam extends Param<IntegerParam, Integer> {
+        public double maxValue = -1;
 
         public IntegerParam(Profile profile, YAML config) {
             super(profile, config);
+            maxValue = config.getDouble("max_value", maxValue);
             value = config.getInteger("default_value", value);
         }
 
@@ -86,14 +96,31 @@ public class Param<T extends Param<T>> extends ProfileElement<T> {
         }
     }
 
-    public static class FieldsParam extends Param<FieldsParam> {
-        public List<String> fields = null;
+    /**
+     * Boolean params have constant weight if true and zero weight is not true.
+     */
+    public static class BooleanParam extends Param<BooleanParam, Boolean> {
+        public BooleanParam(Profile profile, YAML config) {
+            super(profile, config);
+            value = config.getBoolean("default_value", value);
+        }
+
+        public void apply(Boolean value) {
+            this.value = value;
+            enabled = value == null ? enabled : value;
+        }
+    }
+
+    /**
+     * Fields param have constant weight plus (weight factor * sum(fields weight)).
+     */
+    public static class FieldsParam extends Param<FieldsParam, List<String>> {
         public List<String> allowedFields = null; // TODO: Check validity using allowed & denied
         public List<String> deniedFields = null;
 
         public FieldsParam(Profile profile, YAML config) {
             super(profile, config);
-            fields = config.getList("default_fields", fields);
+            value = config.getList("default_fields", value);
             allowedFields = config.getList("allowed_fields", allowedFields);
             deniedFields = config.getList("denied_fields", deniedFields);
         }
@@ -101,20 +128,21 @@ public class Param<T extends Param<T>> extends ProfileElement<T> {
         @Override
         protected void deepCopyNonAtomicAttributes(FieldsParam clone) {
             super.deepCopyNonAtomicAttributes(clone);
-            clone.fields = fields == null ? null : new ArrayList<>(fields);
+            clone.value = value == null ? null : new ArrayList<>(value);
             clone.allowedFields = allowedFields == null ? null : new ArrayList<>(allowedFields);
             clone.deniedFields = deniedFields == null ? null : new ArrayList<>(deniedFields);
         }
 
         public void apply(List<String> fieldNames) {
-            fields = new ArrayList<>(fieldNames);
+            value = new ArrayList<>(fieldNames);
             enabled = true;
         }
 
         @Override
         double getWeight() {
             return !enabled ? 0.0 : super.getWeight() +
-                    weightFactor * profile.getFieldsWeight(fields);
+                    // TODO: Consider if weightFactor is correct here
+                    weightFactor * profile.getFieldsWeight(value);
         }
     }
 }

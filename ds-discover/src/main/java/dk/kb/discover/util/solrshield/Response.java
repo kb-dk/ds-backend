@@ -14,7 +14,10 @@
  */
 package dk.kb.discover.util.solrshield;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Encapsulates whether the request is allowed, along with a reason when it is not and
@@ -80,11 +83,19 @@ public class Response {
     @Override
     public String toString() {
         return "Response{" +
-                "request=" + request +
+                "request=" + toString(request) +
                 ", maxWeight=" + maxWeight +
                 ", allowed=" + allowed +
                 ", reason='" + reason + '\'' +
                 ", weight=" + weight +
                 '}';
     }
+
+    private String toString(Iterable<Map.Entry<String, String[]>> request) {
+        return StreamSupport.stream(request.spliterator(), false)
+                .map(e -> e.getKey() + "=" + Arrays.toString(e.getValue()))
+                .collect(Collectors.joining(", ", "[", "]"));
+    }
+
+
 }

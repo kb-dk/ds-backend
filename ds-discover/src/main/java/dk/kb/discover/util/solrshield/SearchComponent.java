@@ -19,9 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Representation of a Solr Search component.
@@ -47,14 +44,6 @@ public class SearchComponent extends Component<SearchComponent> {
         addParam(paramsConf, "fl", paramConf -> this.fields = new Param.FieldsParam(profile, paramConf));
     }
 
-    private void addParam(YAML config, String name, Function<YAML, Param<?>> constructor) {
-        if (config.containsKey(name)) {
-            Param<?> param = constructor.apply(config.getSubMap(name));
-            param.name = name;
-            params.put(name, param);
-        }
-    }
-
     @Override
     public Set<String> apply(Iterable<Map.Entry<String, String[]>> request) {
         Set<String> usedKeys = new HashSet<>();
@@ -64,10 +53,10 @@ public class SearchComponent extends Component<SearchComponent> {
     }
 
     @Override
-    double getWeight() {
+    public double getWeight() {
         return super.getWeight() +
                 q.getWeight() +
-                rows.getWeight() + rows.value * fields.getWeight() +
-                start.getWeight();
+                start.getWeight() +
+                rows.getWeight() + rows.getValue() * rows.weightFactor * fields.getWeight();
     }
 }

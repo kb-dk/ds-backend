@@ -56,7 +56,7 @@ solr:
     # This is shared between all components
     unlisted_params:
       allowed: false
-      weight: 1000 # Not used when allowed=false
+      weight_constant: 1000 # Not used when allowed=false
 
     # The component section covers the major Solr handlers, such as faceting and highlighting.
     # It also covers grouping and faceting, which are technically not handlers but conceptually on par.
@@ -74,12 +74,14 @@ solr:
             max_chars: 1000
 
           fq:
+            weight_constant: 0.0
             weight_factor: 10   # There can be multiple filter queries
             max_chars: 1000
 
           fl:
-            weight_factor: 1    # weight_factor will be multiplied to each field weight
             default_enabled: true
+            weight_constant: 0.0
+            weight_factor: 1    # weight_factor will be multiplied to each field weight
             default_fields:     # Must match the ones defined in solrconfig.xml
               - abstract
               - description
@@ -103,18 +105,24 @@ solr:
           rows:
             default_enabled: true
             default_value: 20   # Must match the one defined in solrconfig.xml
+            weight_constant: 0.0
             weight_factor: 0.1  # Multiplied to value and multiplied to fl compound weight
             max_value: 5000     # Hard limit
 
           start:
+            weight_constant: 0.0
             weight_factor: 0.01 # Multiplied to value
             max_value: 1000     # Hard limit
 
           # Zero cost arguments
           q.op:
+            weight_constant: 0.0
           wt:
+            weight_constant: 0.0
           version:
+            weight_constant: 0.0
           indent:
+            weight_constant: 0.0
 
           # Debug is heavy and should not be widely used. The current weights are chosen so that only a single
           # query debug (rows=1) is possible with a max_weight of 1000. In reality any request will always have
@@ -123,7 +131,7 @@ solr:
             weight_constant: 500 
             weight_factor: 1    # Multiplied to rows, as debug-results is processed for each returned document
           debug.explain.structured:
-            weight_constant: 0
+            weight_constant: 0.0
 
           # Explicit disabling of defType, overriding a potential unlisted_params.allowed=true
           defType:
@@ -132,6 +140,7 @@ solr:
       # Standard Solr faceting
       facet:
         default_enabled: true   # Must match the one defined in solrconfig.xml
+        weight_constant: 100
         allowed: true
         allowed_fields:
           - genre_sub
@@ -150,6 +159,7 @@ solr:
             allowed: false
           facet.field:          # List of fields
             default_enabled: true
+            weight_constant: 0.0
             weight_factor: 1    # Multiplied to (limit multiplied to field weights)
             default_fields:     # Must match the ones defined in solrconfig.xml
               - catalog
@@ -179,15 +189,23 @@ solr:
           facet.limit:          # Integer
             default_enabled: true
             default_value: 20   # Must match the one defined in solrconfig.xml
+            weight_constant: 0.0
             weight_factor: 0.01
             max_value: 10000    # Hard limit
 
           # Zero cost facet options
           facet.sort:           # Ordered sort clauses
+            weight_constant: 0.0
+            max_chars: 100
           facet.mincount:       # Integer
+            weight_constant: 0.0
+            default_value: 1
           facet.exists:         # Boolean (reduced load, but we don't want negative weights)
+            weight_constant: 0.0
+            default_value: false
 
           facet.excludeTerms:   # List of terms
+            weight_constant: 0.0
             weight_factor: 0.1
 
 # TODO: facet.range
