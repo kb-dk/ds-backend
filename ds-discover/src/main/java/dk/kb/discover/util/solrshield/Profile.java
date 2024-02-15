@@ -170,6 +170,19 @@ public class Profile extends ProfileElement<Profile> {
     @Override
     double getWeight() {
         return weight_constant + search.getWeight() + facet.getWeight();
+        // TODO: unlistedParamsWeight
+    }
+
+    @Override
+    public boolean isAllowed(List<String> reasons) {
+        boolean allowed = true;
+        allowed &= search.isAllowed(reasons);
+        allowed &= facet.isAllowed(reasons);
+        if (!unhandledParams.isEmpty() && !unlistedParamsAllowed) {
+            reasons.add("Unlisted params not allowed but got " + toString(unhandledParams));
+            allowed = false;
+        }
+        return allowed;
     }
 
     /**
@@ -194,5 +207,11 @@ public class Profile extends ProfileElement<Profile> {
         return this.fields.containsKey(field) ?
                 this.fields.get(field).getWeight() :
                 unlistedFieldsWeight;
+    }
+
+    private String toString(Map<String, String[]> map) {
+        return map.entrySet().stream()
+                .map(e -> e.getKey() + "=" + Arrays.toString(e.getValue()))
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 }

@@ -15,10 +15,9 @@
 package dk.kb.discover.util.solrshield;
 
 import dk.kb.util.yaml.YAML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -29,7 +28,6 @@ import java.util.stream.StreamSupport;
  * Representation of a Solr component, i.e. {@code search}, {@code facet}, {@code highlight}...
  */
 public abstract class Component<T extends Component<T>> extends ProfileElement<T> {
-    private static final Logger log = LoggerFactory.getLogger(Component.class);
 
     public boolean defaultEnabled = false;
     public boolean allowed = false;
@@ -92,5 +90,19 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
     @Override
     double getWeight() {
         return enabled ? weightConstant : 0.0;
+    }
+
+    @Override
+    public boolean isAllowed(List<String> reasons) {
+        if (!enabled) {
+            return true;
+        }
+        boolean allowed = true;
+        if (!this.allowed) {
+            reasons.add("Component " + name + " not allowed as the component itself is not allowed");
+            allowed = false;
+        }
+        return allowed & params.values().parallelStream() // Binary & as we want to collect all reasons for not allowed
+                .allMatch(param -> param.isAllowed(reasons));
     }
 }

@@ -19,7 +19,7 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * Gateway for Solr calls, using a combination of whitelisted arguments as well as weighing of queries with an upper
@@ -45,9 +45,9 @@ public class SolrShield {
     public static final String ENABLED_KEY = "enabled";
 
     /**
-     * If no explicit maxWeight is given when testing, whis weight is used.
+     * If no explicit maxWeight is given when testing, this weight is used.
      */
-    public static final String MAX_WEIGHT_DEFAULT_KEY = "default.maxweight";
+    public static final String MAX_WEIGHT_DEFAULT_KEY = "default_max_weight";
 
     private static YAML conf = null;
     private static boolean enabled = true;
@@ -64,6 +64,7 @@ public class SolrShield {
      * @see #test(Iterable request, Double maxWeight)
      */
     public static Response test(Iterable<Map.Entry<String, String[]>> request) {
+        ensureConfig();
         return test(request, defaultMaxWeight);
     }
 
@@ -82,24 +83,18 @@ public class SolrShield {
     public static Response test(Iterable<Map.Entry<String, String[]>> request, Double maxWeight) {
         ensureConfig();
         if (!enabled) {
-            return new Response(request, maxWeight, true, "enabled==false: All requests allowed", -1);
+            return new Response(request, maxWeight, true, List.of("enabled=false: All requests allowed"), -1);
         }
 
         Response response = weigh(request).maxWeight(maxWeight);
 
-        // Was a hard limit or an illegal argument ancounteres?
-        if (!response.allowed) {
-            return response;
-        }
-
         // Is the weight acceptable?
         if (response.maxWeight < response.weight) {
-            return response
+            response = response
                     .allowed(false)
-                    .reason("maxWeight " + response.maxWeight + " < " + response.weight + ": Weight exceeded");
+                    .addReason("maxWeight " + response.maxWeight + " < " + response.weight + ": Weight exceeded");
         }
 
-        // All OK
         return response;
     }
 
@@ -108,16 +103,16 @@ public class SolrShield {
      * <p>
      * This also checks for hard limits or non-allowed arguments. If any of those are triggered,
      * {@link Response#allowed} is set to false, else it is set to true.
-     * <p>
-     * Note: {@link Response#maxWeight} is not set by this operation.
      * @param request a Solr request.
      * @return calculated weight etc.
      * @see #test(Iterable)
      */
     static Response weigh(Iterable<Map.Entry<String, String[]>> request) {
         Profile applied = profile.apply(request);
-        // TODO: Add isAllowed
-        return new Response(request, 0.0, true, null, applied.getWeight());
+        List<String> reasons = new ArrayList<>();
+        boolean allowed = applied.isAllowed(reasons);
+
+        return new Response(request, defaultMaxWeight, allowed, reasons, applied.getWeight());
     }
 
     /**

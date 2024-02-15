@@ -14,6 +14,11 @@
 solr:
   shield:
 
+    # The default max weight should be kept conservative and perhaps even disabled by setting it to -1.
+    # Ideally the max weight is taken from general application properties or derived per user group
+    default_max_weight: 1000
+
+
     # Simply activating a call comes at a cost
     weight_constant: 100
 

@@ -18,9 +18,8 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Generic representation of parameter config for a Solr component.
@@ -33,11 +32,11 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
 
     public String name;
     public boolean enabled = false;
-    public boolean allowed = false;
+    public boolean allowed = true;
     public double weightConstant = 0.0;
     public double weightFactor = 0.0;
 
-    public boolean multiValue = false;
+    public boolean multiValue;
     protected V value; // Set by inheriting classes
 
     public Param(Profile profile, YAML config, boolean multiValue) {
@@ -91,9 +90,20 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
         return !enabled ? 0.0 : weightConstant;
     }
 
-    // TODO: blacklist/whitelist regexp (filtering {!...} or /regexp/ from query
+    @Override
+    public boolean isAllowed(List<String> reasons) {
+        if (enabled && !this.allowed) {
+            reasons.add("Param " + name + "=" + value + " not allowed as the param itself is not allowed");
+            return false;
+        }
+        return true;
+    }
+
+    /* ************************** Implementing classes below ************************** */
+
     public static class StringParam extends Param<StringParam, String[]> {
         public int maxChars = 2000;
+        // TODO: blacklist/whitelist regexp (filtering {!...} or /regexp/ from query
 
         public StringParam(Profile profile, YAML config, boolean multiValue) {
             super(profile, config, multiValue);
@@ -112,6 +122,28 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
         double getWeight() {
             return !enabled ? 0.0 :
                     weightConstant + weightFactor*value.length;
+        }
+
+        @Override
+        public boolean isAllowed(List<String> reasons) {
+            boolean allowed = super.isAllowed(reasons);
+            if (!enabled || value == null) {
+                return allowed;
+            }
+            if (!multiValue && value.length > 1) {
+                reasons.add("Param " + name + "=" + Arrays.toString(value) + " not allowed it takes a single value " +
+                        "but got " + value.length + " values");
+            }
+            long length = Arrays.stream(value)
+                    .map(String::length)
+                    .mapToInt(Integer::intValue)
+                    .sum();
+            if (length >= maxChars) {
+                reasons.add("Param " + name + "=" + Arrays.toString(value) + " not allowed as the values contained " +
+                        length + " characters with maxChars=" + maxChars);
+                allowed = false;
+            }
+            return allowed;
         }
     }
 
@@ -137,6 +169,19 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
             return !enabled ? 0.0 : super.getWeight() +
                     weightFactor * value;
         }
+
+        @Override
+        public boolean isAllowed(List<String> reasons) {
+            boolean allowed = super.isAllowed(reasons);
+            if (!enabled || value == null) {
+                return allowed;
+            }
+            if (value > maxValue) {
+                reasons.add("Param " + name + "=" + value + " not allowed as it is larger than maxValue=" + maxValue);
+                allowed = false;
+            }
+            return allowed;
+        }
     }
 
     /**
@@ -159,22 +204,22 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
      * Fields param have constant weight plus (weight factor * sum(fields weight)).
      */
     public static class FieldsParam extends Param<FieldsParam, List<String>> {
-        public List<String> allowedFields = null; // TODO: Check validity using allowed & denied
-        public List<String> deniedFields = null;
+        public Set<String> allowedFields;
+        public Set<String> deniedFields;
 
         public FieldsParam(Profile profile, YAML config) {
             super(profile, config, true); // Solr fields params are always multi valued
             value = config.getList("default_fields", value);
-            allowedFields = config.getList("allowed_fields", allowedFields);
-            deniedFields = config.getList("denied_fields", deniedFields);
+            allowedFields = new HashSet<>(config.getList("allowed_fields", Collections.emptyList()));
+            deniedFields = new HashSet<>(config.getList("denied_fields", Collections.emptyList()));
         }
 
         @Override
         protected void deepCopyNonAtomicAttributes(FieldsParam clone) {
             super.deepCopyNonAtomicAttributes(clone);
             clone.value = value == null ? null : new ArrayList<>(value);
-            clone.allowedFields = allowedFields == null ? null : new ArrayList<>(allowedFields);
-            clone.deniedFields = deniedFields == null ? null : new ArrayList<>(deniedFields);
+            clone.allowedFields = new HashSet<>(allowedFields);
+            clone.deniedFields = new HashSet<>(deniedFields);
         }
 
         @Override
@@ -187,6 +232,39 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
             return !enabled ? 0.0 : super.getWeight() +
                     // TODO: Consider if weightFactor is correct here
                     weightFactor * profile.getFieldsWeight(value);
+        }
+
+        @Override
+        public boolean isAllowed(List<String> reasons) {
+            boolean allowed = super.isAllowed(reasons);
+            if (!enabled || value == null) {
+                return allowed;
+            }
+            if (!profile.unlistedFieldsAllowed) {
+                List<String> unknown = value.stream()
+                        .filter(field -> !profile.fields.containsKey(field))
+                        .collect(Collectors.toList());
+                allowed &= unknown.isEmpty();
+                reasons.add("Param " + name + " contained fields " + unknown +
+                        " which are not defined in SolrShield. Defined fields are " + profile.fields.keySet());
+            }
+            if (!allowedFields.isEmpty()) {
+                List<String> notAllowed = value.stream()
+                        .filter(field -> !allowedFields.contains(field))
+                        .collect(Collectors.toList());
+                allowed &= notAllowed.isEmpty();
+                reasons.add("Param " + name + " contained fields " + notAllowed +
+                        " which are not on the allowed list. Allowed fields are " + allowedFields);
+            }
+            if (!deniedFields.isEmpty()) {
+                List<String> notAllowed = value.stream()
+                        .filter(field -> deniedFields.contains(field))
+                        .collect(Collectors.toList());
+                allowed &= notAllowed.isEmpty();
+                reasons.add("Param " + name + " contained fields " + notAllowed +
+                        " which are on the denied list. denied fields are " + deniedFields);
+            }
+            return allowed;
         }
     }
 }

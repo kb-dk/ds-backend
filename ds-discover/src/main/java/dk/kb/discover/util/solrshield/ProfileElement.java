@@ -14,6 +14,8 @@
  */
 package dk.kb.discover.util.solrshield;
 
+import java.util.List;
+
 /**
  * Implementors of this interface must create a deep copy, fully independent of the original object.
  */
@@ -40,7 +42,7 @@ public abstract class ProfileElement<T> implements Cloneable {
     }
 
     /**
-     * Performs a copy of this object, ensuring that the copy is fully independent.
+     * Perform a copy of this object, ensuring that the copy is fully independent.
      * @param profile the profile that this deep copy should belong to.
      * @return a fully independent copy of this object.
      */
@@ -76,4 +78,13 @@ public abstract class ProfileElement<T> implements Cloneable {
      * @return the combined weight of this element and its sub-elements.
      */
     abstract double getWeight();
+
+    /**
+     * Check whether the request is allowed, relative to the given position in the profile tree and downwards.
+     * @param reasons if the request is not allowed, the reason(s) should be added to {@code reason}.
+     * @return true if the request is allowed.
+     */
+    public boolean isAllowed(List<String> reasons) {
+        return true;
+    }
 }

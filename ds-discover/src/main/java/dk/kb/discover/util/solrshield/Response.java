@@ -14,8 +14,7 @@
  */
 package dk.kb.discover.util.solrshield;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -28,23 +27,23 @@ public class Response {
     public final double maxWeight;
     public final boolean allowed;
     // TODO: Add warnings (large fields, high numbers) to the response
-    public final String reason;
+    public final Collection<String> reasons;
     public final double weight;
 
     /**
      * @param request   the unmodified originating request.
      * @param maxWeight the maximum allowed weight.
      * @param allowed   true if the {@code request} is allowed, else false.
-     * @param reason    if {@code allowed == false}, this will hold a human readable reason as to why the
+     * @param reasons   if {@code allowed == false}, this will hold human readable reasons as to why the
      *                  {@code request} is not allowed.
      * @param weight    the weight of the {@code request}.
      */
     public Response(Iterable<Map.Entry<String, String[]>> request, double maxWeight,
-                    boolean allowed, String reason, double weight) {
+                    boolean allowed, Collection<String> reasons, double weight) {
         this.request = request;
         this.maxWeight = maxWeight;
         this.allowed = allowed;
-        this.reason = reason;
+        this.reasons = reasons == null ? Collections.emptyList() : reasons;
         this.weight = weight;
     }
 
@@ -53,7 +52,7 @@ public class Response {
      * @return a copy of this Response adjusted with the given value.
      */
     public Response maxWeight(double maxWeight) {
-        return new Response(request, maxWeight, allowed, reason, weight);
+        return new Response(request, maxWeight, allowed, reasons, weight);
     }
 
     /**
@@ -61,23 +60,35 @@ public class Response {
      * @return a copy of this Response adjusted with the given value.
      */
     public Response allowed(boolean allowed) {
-        return new Response(request, maxWeight, allowed, reason, weight);
+        return new Response(request, maxWeight, allowed, reasons, weight);
     }
 
     /**
-     * @param reason the reason why the {@link #request} is not allowed.
+     * @param reasons the reasons why the {@link #request} is not allowed.
      * @return a copy of this Response adjusted with the given value.
      */
-    public Response reason(String reason) {
-        return new Response(request, maxWeight, allowed, reason, weight);
+    public Response reasons(Collection<String> reasons) {
+        return new Response(request, maxWeight, allowed, reasons, weight);
     }
+
+    /**
+     * Add a single reason to the collection of reasons.
+     * @param reason a reasons why the {@link #request} is not allowed.
+     * @return a copy of this Response adjusted with the given value.
+     */
+    public Response addReason(String reason) {
+        List<String> newReasons = new ArrayList<>(reasons);
+        newReasons.add(reason);
+        return new Response(request, maxWeight, allowed, newReasons, weight);
+    }
+
 
     /**
      * @param weight the weight of the {@link #request}.
      * @return a copy of this Response adjusted with the given value.
      */
-    public Response reason(double weight) {
-        return new Response(request, maxWeight, allowed, reason, weight);
+    public Response weight(double weight) {
+        return new Response(request, maxWeight, allowed, reasons, weight);
     }
 
     @Override
@@ -86,8 +97,8 @@ public class Response {
                 "request=" + toString(request) +
                 ", maxWeight=" + maxWeight +
                 ", allowed=" + allowed +
-                ", reason='" + reason + '\'' +
                 ", weight=" + weight +
+                ", reasons=" + reasons +
                 '}';
     }
 
@@ -96,6 +107,5 @@ public class Response {
                 .map(e -> e.getKey() + "=" + Arrays.toString(e.getValue()))
                 .collect(Collectors.joining(", ", "[", "]"));
     }
-
 
 }

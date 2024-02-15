@@ -16,6 +16,11 @@ package dk.kb.discover.util.solrshield;
 
 import dk.kb.util.yaml.YAML;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.StreamSupport;
+
 /**
  * Representation of a Solr Facet component.
  */
@@ -43,6 +48,22 @@ public class FacetComponent extends Component<FacetComponent> {
     }
 
     @Override
+    public Set<String> apply(Iterable<Map.Entry<String, String[]>> request) {
+        Optional<Boolean> enabled = StreamSupport.stream(request.spliterator(), true)
+                .filter(e -> "facet".equals(e.getKey()))
+                .filter(e -> e.getValue() != null && e.getValue().length > 0)
+                .map(e -> Boolean.parseBoolean(e.getValue()[0]))
+                .findAny();
+        this.enabled = enabled.orElse(defaultEnabled);
+
+        Set<String> applied = super.apply(request);
+        if (enabled.isPresent()) {
+            applied.add("facet");
+        }
+        return applied;
+    }
+
+    @Override
     public double getWeight() {
         return !enabled ? 0.0 :
                 super.getWeight() +
@@ -52,4 +73,5 @@ public class FacetComponent extends Component<FacetComponent> {
                         facetMincount.getWeight() +
                         facetExists.getWeight();
     }
+
 }
