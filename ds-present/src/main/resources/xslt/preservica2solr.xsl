@@ -76,6 +76,9 @@
               </f:string>
             </xsl:for-each>
           </f:array>
+          <f:string key="file_id">
+            <xsl:value-of select="$manifestationRef"/>
+          </f:string>
           <f:string key="streaming_url">
             <xsl:value-of select="$streamingUrl"/>
           </f:string>
