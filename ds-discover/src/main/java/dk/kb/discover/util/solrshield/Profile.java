@@ -105,11 +105,7 @@ public class Profile extends ProfileElement<Profile> {
 
         unlistedFieldsAllowed = config.getBoolean("unlisted_fields.allowed", unlistedFieldsAllowed);
         unlistedFieldsWeight = config.getDouble("unlisted_fields.weight", unlistedFieldsWeight);
-        fields = config.containsKey("fields") ?
-                config.getYAMLList("fields").stream()
-                        .map(fieldMap -> new Field(this, fieldMap))
-                        .collect(Collectors.toMap(k -> k.name, v -> v)) :
-                Collections.emptyMap();
+        fields = getFields(config);
 
         unlistedParamsAllowed = config.getBoolean("unlisted_params.allowed", unlistedParamsAllowed);
         unlistedParamsWeight = config.getDouble("unlisted_params.weight", unlistedParamsWeight);
@@ -121,13 +117,31 @@ public class Profile extends ProfileElement<Profile> {
     }
 
     /**
+     * Extract the fields and their weights from the given {@code config}.
+     * @param config a SolrShield configuration.
+     * @return a map of Solr fields with corresponding weights.
+     */
+    private Map<String, Field> getFields(YAML config) {
+        if (!config.containsKey("fields")) {
+            log.warn("No 'fields' list in SolrShield config. This is probably an error");
+            return Collections.emptyMap();
+        }
+        double defaultWeight = config.getDouble("default_field.weight", 1000.0);
+        YAML EMPTY = new YAML();
+
+        return config.getSubMap("fields").entrySet().stream()
+                .map(e -> new Field(this, e.getKey(),
+                        e.getValue() == null ? EMPTY : new YAML((Map<String, Object>) e.getValue()), defaultWeight))
+                .collect(Collectors.toMap(k -> k.name, v -> v));
+    }
+
+    /**
      * @return an independent/deep copy of this Profile.
      */
     public Profile deepCopy() {
         return super.deepCopy(null);
     }
 
-    // TODO: Signal illegal request
     /**
      * Create a deep copy of this Profile, apply the parameters in the request and return the updated copy.
      * @param request a Solr request, represented as map of {@code key, values}.
@@ -185,6 +199,7 @@ public class Profile extends ProfileElement<Profile> {
         return allowed;
     }
 
+    // TODO: Handle score (free?) and * (expand to all known fields)
     /**
      * Calculate the sum of weights for the given {@code fields}.
      * @param fields a list of Solr fields.

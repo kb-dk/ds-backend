@@ -245,24 +245,30 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
                         .filter(field -> !profile.fields.containsKey(field))
                         .collect(Collectors.toList());
                 allowed &= unknown.isEmpty();
-                reasons.add("Param " + name + " contained fields " + unknown +
-                        " which are not defined in SolrShield. Defined fields are " + profile.fields.keySet());
+                if (!unknown.isEmpty()) {
+                    reasons.add("Param " + name + " contained fields " + unknown +
+                            " which are not defined in SolrShield. Defined fields are " + profile.fields.keySet());
+                }
             }
             if (!allowedFields.isEmpty()) {
                 List<String> notAllowed = value.stream()
                         .filter(field -> !allowedFields.contains(field))
                         .collect(Collectors.toList());
                 allowed &= notAllowed.isEmpty();
-                reasons.add("Param " + name + " contained fields " + notAllowed +
-                        " which are not on the allowed list. Allowed fields are " + allowedFields);
+                if (!notAllowed.isEmpty()) {
+                    reasons.add("Param " + name + " contained fields " + notAllowed +
+                            " which are not on the allowed list. Allowed fields are " + allowedFields);
+                }
             }
             if (!deniedFields.isEmpty()) {
-                List<String> notAllowed = value.stream()
+                List<String> isDenied = value.stream()
                         .filter(field -> deniedFields.contains(field))
                         .collect(Collectors.toList());
-                allowed &= notAllowed.isEmpty();
-                reasons.add("Param " + name + " contained fields " + notAllowed +
-                        " which are on the denied list. denied fields are " + deniedFields);
+                allowed &= isDenied.isEmpty();
+                if (!isDenied.isEmpty()) {
+                    reasons.add("Param " + name + " contained fields " + isDenied +
+                            " which are on the denied list. denied fields are " + deniedFields);
+                }
             }
             return allowed;
         }

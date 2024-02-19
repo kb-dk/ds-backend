@@ -24,18 +24,16 @@ public class Field extends ProfileElement<Field> {
     double weight;
 
     /**
-     * Construct the representation from the keys {@code name} and {@code weight} in the given {@code fieldConfig}.
+     * Construct the representation from {@code name} and {@code weight} in the given {@code fieldConfig}.
      *
+     * @param name the name of the field.
      * @param fieldConfig configuration for a single field.
+     * @param defaultWeight used if no {@code weight} is stated in {@code fieldConfig}.
      */
-    public Field(Profile profile, YAML fieldConfig) {
-        super(profile, fieldConfig.getString("name")); // Name is mandatory
-        name = fieldConfig.getString("name");
-        if (!fieldConfig.containsKey("weight")) {
-            throw new IllegalArgumentException(
-                    "Every field must have a 'weight' but field '" + name + "' did not have it");
-        }
-        weight = fieldConfig.getDouble("weight");
+    public Field(Profile profile, String name, YAML fieldConfig, double defaultWeight) {
+        super(profile, name);
+        this.name = name;
+        weight = fieldConfig.getDouble("weight", defaultWeight);
     }
 
     @Override

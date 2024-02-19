@@ -34,11 +34,14 @@ class SolrShieldTest {
         ServiceConfig.initialize(Resolver.resolveGlob("solrshield-test1.yaml").get(0).toString());
 
     }
+
     @Test
-    void basicLoad() {
+    void basicSearch() {
         Map<String, String[]> request = Map.of("q", new String[]{"*:*"}, "fl", new String[]{"title", "text"});
         Response response = SolrShield.test(request.entrySet());
         log.debug("Got " + response);
-        assertTrue(response.weight > 0.0, "Response should be > 0.0 but was " + response.weight);
+        assertTrue(response.allowed, "Request " + request + " should be allowed, but was not with reasons " +
+                response.reasons);
+        assertTrue(response.weight > 0.0, "Response should have weight > 0.0 but had " + response.weight);
     }
 }
