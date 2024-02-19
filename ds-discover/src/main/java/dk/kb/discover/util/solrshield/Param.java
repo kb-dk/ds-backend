@@ -204,12 +204,15 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
      * Fields param have constant weight plus (weight factor * sum(fields weight)).
      */
     public static class FieldsParam extends Param<FieldsParam, List<String>> {
+        public boolean supportsStar = false;
+        public boolean starEncountered = false;
         public Set<String> allowedFields;
         public Set<String> deniedFields;
 
         public FieldsParam(Profile profile, YAML config) {
             super(profile, config, true); // Solr fields params are always multi valued
             value = config.getList("default_fields", value);
+            this.supportsStar = config.getBoolean("supports_star", supportsStar);
             allowedFields = new HashSet<>(config.getList("allowed_fields", Collections.emptyList()));
             deniedFields = new HashSet<>(config.getList("denied_fields", Collections.emptyList()));
         }
@@ -224,7 +227,19 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
 
         @Override
         protected void applyTypes(String[] values) {
-            value = Arrays.asList(values);
+            if (values == null || values.length == 0) {
+                return;
+            }
+            value = new ArrayList<>(value);
+            if (value.contains("*")) { // '*' expands to all fields
+                starEncountered = true;
+                if (supportsStar) {
+                    Set<String> fields = new LinkedHashSet<>(value);
+                    fields.remove("*");
+                    fields.addAll(profile.fields.keySet());
+                    value = new ArrayList<>(fields);
+                }
+            }
         }
 
         @Override
@@ -239,6 +254,10 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
             boolean allowed = super.isAllowed(reasons);
             if (!enabled || value == null) {
                 return allowed;
+            }
+            if (!supportsStar && starEncountered) {
+                allowed = false;
+                reasons.add("Param '" + name + " contained '*' which is not allowed");
             }
             if (!profile.unlistedFieldsAllowed) {
                 List<String> unknown = value.stream()
