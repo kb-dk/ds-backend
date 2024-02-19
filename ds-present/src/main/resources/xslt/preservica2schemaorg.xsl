@@ -727,6 +727,15 @@
       <xsl:value-of select="format-number($mTime, '0')"/>
     </f:string>
 
+    <xsl:if test="$manifestation != ''">
+      <xsl:variable name="manifestationRef">
+        <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef"/>
+      </xsl:variable>
+      <f:string key="kb:file_id">
+        <xsl:value-of select="$manifestationRef"/>
+      </f:string>
+    </xsl:if>
+
     <!-- Extract subgenre if present -->
     <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
       <xsl:if test="contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">

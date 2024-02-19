@@ -243,6 +243,12 @@
           <xsl:value-of select="$schemaorg-xml('contentUrl')"/>
         </f:string>
       </xsl:if>
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:file_id') != ''">
+        <f:string key="file_id">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:file_id') "/>
+        </f:string>
+      </xsl:if>
+
 
       <!-- Extract data on the encoded creative work, if present-->
       <xsl:if test="map:contains($schemaorg-xml, 'encodesCreativeWork')">
