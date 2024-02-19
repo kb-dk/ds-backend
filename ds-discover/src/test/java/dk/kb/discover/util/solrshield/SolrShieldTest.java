@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -37,11 +39,35 @@ class SolrShieldTest {
 
     @Test
     void basicSearch() {
-        Map<String, String[]> request = Map.of("q", new String[]{"*:*"}, "fl", new String[]{"title", "text"});
+        Map<String, String[]> request = Map.of(
+                "q", new String[]{"*:*"},
+                "fl", new String[]{"title", "text"}
+        );
         Response response = SolrShield.test(request.entrySet());
         log.debug("Got " + response);
         assertTrue(response.allowed, "Request " + request + " should be allowed, but was not with reasons " +
                 response.reasons);
         assertTrue(response.weight > 0.0, "Response should have weight > 0.0 but had " + response.weight);
+    }
+
+    @Test
+    void basicFacet() {
+        Map<String, String[]> request = Map.of(
+                "q", new String[]{"*:*"},
+                "fl", new String[]{"id"},
+                "facet", new String[]{"true"},
+                "facet.field", new String[]{"location", "genre"}
+        );
+        Response response = SolrShield.test(request.entrySet());
+        log.debug("Got " + response);
+        assertTrue(response.allowed, "Request " + toString(request) + " should be allowed, but was not with reasons " +
+                response.reasons);
+        assertTrue(response.weight > 0.0, "Response should have weight > 0.0 but had " + response.weight);
+    }
+
+    private String toString(Map<String, String[]> map) {
+        return map.entrySet().stream()
+                .map(e -> e.getKey() + "=" + Arrays.toString(e.getValue()))
+                .collect(Collectors.joining("\", \"", "[\"", "\"]"));
     }
 }

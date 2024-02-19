@@ -18,7 +18,6 @@ solr:
     # Ideally the max weight is taken from general application properties or derived per user group
     default_max_weight: 1000
 
-
     # Simply activating a call comes at a cost
     weight_constant: 100
 
@@ -27,35 +26,6 @@ solr:
     unlisted_fields:
       allowed: true
       weight: 100
-
-    # The fields section assign base weight to each field.
-    # The scale goes from 1 to 1000, where
-    # "An integer field" is 1
-    # "A DocValued StrField, where the corpus holds a few thousand short unique values" is 5
-    # "A DocValued StrField, where the values are mostly unique" is 10
-    # "A TextField with a 5-10 words" is 50 (text fields are markedly heavier to process than StrFields)
-    # "A TextField with a 100-1000 words" is 100
-    # "A TextField with a full transcription of hours of speech" is 1000 (about 50 book pages)
-    # "A TextField holding a full book of hundreds of pages" is 5000 (yes, it breaks the scale)
-    fields:
-      - name: id
-        weight: 10
-      - name: resource_id
-        weight: 10
-      - name: origin
-        weight: 5
-
-      - name: title
-        weight: 50
-      - name: abstract
-        weight: 50
-
-      - name: freetext 
-        weight: 100
-      - name: text
-        weight: 200
-      - name: text_shingles
-        weight: 400
 
     # How to handle parameters not specified in SolrShield.
     # This is shared between all components
@@ -86,6 +56,7 @@ solr:
           fl:
             default_enabled: true
             weight_factor: 1    # weight_factor will be multiplied to each field weight
+            supports_star: true # If true, * is expanded to all fields by Solr
             default_fields:     # Must match the ones defined in solrconfig.xml
               - abstract
               - description
@@ -139,16 +110,6 @@ solr:
         default_enabled: true   # Must match the one defined in solrconfig.xml
         weight_constant: 100
         allowed: true
-        allowed_fields:
-          - genre_sub
-          - title
-          - subtitle
-          - alternative_title
-          - creator_full_name
-          - area
-          - topic
-          - notes
-          - catalog
 
         params:
 
@@ -157,6 +118,7 @@ solr:
           facet.field:          # List of fields
             default_enabled: true
             weight_factor: 1    # Multiplied to (limit multiplied to field weights)
+            supports_star: false # If true, * is expanded to all fields by Solr
             default_fields:     # Must match the ones defined in solrconfig.xml
               - catalog
               - collection
@@ -204,3 +166,431 @@ solr:
 # TODO: hl
 # TODO: spellcheck
 # TODO: DidYouMean
+
+
+    # To avoid excessive repetition under 'fields', default field params can be specified here.
+    # Currently only 'weight' is supported
+    default_field:
+      weight: 1
+
+    # The fields section assign base weight to each field.
+    # The scale goes from 1 to 1000, where
+    # "An integer field" is 1
+    # "A DocValued StrField, where the corpus holds a few thousand short unique values" is 5
+    # "A DocValued StrField, where the values are mostly unique" is 10
+    # "A TextField with a 5-10 words" is 50 (text fields are markedly heavier to process than StrFields)
+    # "A TextField with a 100-1000 words" is 100
+    # "A TextField with a full transcription of hours of speech" is 1000 (about 50 book pages)
+    # "A TextField holding a full book of hundreds of pages" is 5000 (yes, it breaks the scale)
+    #
+    # Get all text fields: grep '<field ' src/main/solr/dssolr/conf/schema.xml | grep -v '"\(pint\|plong\|boolean\|string\|pdate\)"' | sort | sed 's/.*name="\([^"]*\)".*/\1:\n  weight: 50/'
+    fields:
+      # Atomic fields
+      abstract_length:
+      access_billede_aftale:
+      access_blokeret:
+      access_ejermaerke:
+      access_foto_aftale:
+      access_ophavsperson_doedsaar:
+      access_pligtafleveret:
+      access_skabelsesaar:
+      categories_count:
+      color:
+      creator_count:
+      description_length:
+      duration_ms:
+      endTime:
+      episode:
+      file_byte_size:
+      has_subtitles_for_hearing_impaired:
+      has_subtitles:
+      image_height:
+      image_size_pixels:
+      image_width:
+      internal_is_teletext:
+      internal_program_ophold:
+      internal_program_structure_missing_seconds_end:
+      internal_program_structure_missing_seconds_start:
+      internal_program_structure_overlaps:
+      internal_program_structure_overlap_type_one_length_ms:
+      internal_program_structure_overlap_type_two_length_ms:
+      internal_storage_mTime:
+      internal_transformation_error:
+      live_broadcast:
+      notes_count:
+      notes_length:
+      number_of_episodes:
+      premiere:
+      retransmission:
+      startTime:
+      subject_count:
+      surround_sound:
+      temporal_end_time_da_date:
+      temporal_start_time_da_date:
+      title_count:
+      title_length:
+      topic_count:
+
+      # string fields
+      accession_number:
+        weight: 10
+      access_materiale_type:
+        weight: 10
+      access_note:
+        weight: 10
+      access_ophavsret_tekst:
+        weight: 10
+      access_searlige_visningsvilkaar:
+        weight: 10
+      aspect_ratio:
+        weight: 10
+      audience:
+        weight: 10
+      broadcaster:
+        weight: 10
+      cataloging_language:
+        weight: 10
+      catalog:
+        weight: 10
+      categories:
+        weight: 10
+      collection:
+        weight: 10
+      conditions_of_access:
+        weight: 10
+      creator_full_name:
+        weight: 10
+      episode_title:
+        weight: 10
+      filename_local:
+        weight: 10
+      genre_sub:
+        weight: 10
+      genre:
+        weight: 10
+      id:
+        weight: 10
+      image_iiif_id:
+        weight: 10
+      internal_access_claused:
+        weight: 10
+      internal_access_comments:
+        weight: 10
+      internal_access_individual_prohibition:
+        weight: 10
+      internal_accession_ref:
+        weight: 10
+      internal_access_malfunction:
+        weight: 10
+      internal_channel_id:
+        weight: 10
+      internal_country_of_origin_id:
+        weight: 10
+      internal_episode_id:
+        weight: 10
+      internal_format_identifier_nielsen:
+        weight: 10
+      internal_format_identifier_ritzau:
+        weight: 10
+      internal_maingenre_id:
+        weight: 10
+      internal_padding_seconds:
+        weight: 10
+      internal_program_structure_holes:
+        weight: 10
+      internal_program_structure_overlap_type_one_file1UUID:
+        weight: 10
+      internal_program_structure_overlap_type_one_file2UUID:
+        weight: 10
+      internal_program_structure_overlap_type_two_file1UUID:
+        weight: 10
+      internal_program_structure_overlap_type_two_file2UUID:
+        weight: 10
+      internal_ritzau_program_id:
+        weight: 10
+      internal_season_id:
+        weight: 10
+      internal_series_id:
+        weight: 10
+      internal_showviewcode:
+        weight: 10
+      internal_subgenre_id:
+        weight: 10
+      location:
+        weight: 10
+      manifestation_type:
+        weight: 10
+      map_scale:
+        weight: 10
+      original_title:
+        weight: 10
+      origin:
+        weight: 10
+      pid:
+        weight: 10
+      production_date_digital_surrogate:
+        weight: 10
+      production_date_end:
+        weight: 10
+      production_date_start:
+        weight: 10
+      production_date:
+        weight: 10
+      production_place:
+        weight: 10
+      published_in:
+        weight: 10
+      resource_description_general:
+        weight: 10
+      resource_description:
+        weight: 10
+      resource_id:
+        weight: 10
+      ritzau_id:
+        weight: 10
+      streaming_url:
+        weight: 10
+      subject_date_of_birth:
+        weight: 10
+      subject_date_of_death:
+        weight: 10
+      subject_full_name:
+        weight: 10
+      temporal_end_day_da:
+        weight: 10
+      temporal_end_time_da_string:
+        weight: 10
+      temporal_start_day_da:
+        weight: 10
+      temporal_start_time_da_string:
+        weight: 10
+      thumbnail:
+        weight: 10
+      tvmeter_id:
+        weight: 10
+      video_quality:
+        weight: 10
+
+      # Heavy text fields
+      freetext:
+        weight: 100
+      text:
+        weight: 200
+      text_shingles:
+        weight: 400
+
+      # Misc text fields
+      abstract:
+        weight: 50
+      alternative_title:
+        weight: 50
+      area:
+        weight: 50
+      creator_affiliation_description:
+        weight: 50
+      creator_affiliation_generic:
+        weight: 50
+      creator_affiliation:
+        weight: 50
+      creator_date_of_birth:
+        weight: 50
+      creator_date_of_death:
+        weight: 50
+      creator_family_name:
+        weight: 50
+      creator_full_name_strict:
+        weight: 50
+      creator_given_name:
+        weight: 50
+      creator_name:
+        weight: 50
+      creator_terms_of_address:
+        weight: 50
+      description:
+        weight: 50
+      internal_note:
+        weight: 50
+      internal_overlapping_files:
+        weight: 50
+      internal_transformation_error_description:
+        weight: 50
+      notes:
+        weight: 50
+      physical_description:
+        weight: 50
+      physical_location:
+        weight: 50
+      spellcheck:
+        weight: 50
+      subject_family_name:
+        weight: 50
+      subject_full_name_strict:
+        weight: 50
+      subject_given_name:
+        weight: 50
+      subject_name:
+        weight: 50
+      subject_terms_of_address:
+        weight: 50
+      subject:
+        weight: 50
+      subtitle:
+        weight: 50
+      title_sort_da:
+        weight: 50
+      title_strict:
+        weight: 50
+      title:
+        weight: 50
+      topic:
+        weight: 50
+
+    all_fields:
+      - id
+      - resource_id
+      - origin
+      - conditions_of_access
+      - collection
+      - genre
+      - resource_description
+      - categories
+      - categories_count
+      - title
+      - title_sort_da
+      - title_length
+      - creator_affiliation
+      - notes
+      - filename_local
+      - accession_number
+      - cataloging_language
+      - location
+      - physical_location
+      - published_in
+      - resource_description_general
+      - title_count
+      - subtitle
+      - alternative_title
+      - creator_name
+      - creator_full_name
+      - creator_full_name_strict
+      - creator_family_name
+      - creator_given_name
+      - creator_terms_of_address
+      - creator_affiliation_description
+      - creator_date_of_birth
+      - creator_date_of_death
+      - creator_count
+      - area
+      - subject
+      - topic
+      - topic_count
+      - physical_description
+      - notes_length
+      - notes_count
+      - internal_note
+      - catalog
+      - production_date
+      - production_date_start
+      - production_date_end
+      - production_place
+      - production_date_digital_surrogate
+      - subject_name
+      - subject_full_name
+      - subject_full_name_strict
+      - subject_family_name
+      - subject_given_name
+      - subject_date_of_birth
+      - subject_date_of_death
+      - subject_terms_of_address
+      - subject_count
+      - map_scale
+      - thumbnail
+      - file_byte_size
+      - image_iiif_id
+      - image_height
+      - image_width
+      - image_size_pixels
+      - audience
+      - original_title
+      - episode_title
+      - broadcaster
+      - creator_affiliation_generic
+      - ritzau_id
+      - tvmeter_id
+      - startTime
+      - endTime
+      - duration_ms
+      - color
+      - video_quality
+      - surround_sound
+      - premiere
+      - aspect_ratio
+      - manifestation_type
+      - episode
+      - number_of_episodes
+      - live_broadcast
+      - retransmission
+      - abstract
+      - abstract_length
+      - description
+      - description_length
+      - genre_sub
+      - has_subtitles
+      - has_subtitles_for_hearing_impaired
+      - pid
+      - streaming_url
+      - temporal_start_time_da_string
+      - temporal_end_time_da_string
+      - temporal_start_time_da_date
+      - temporal_end_time_da_date
+      - temporal_start_day_da
+      - temporal_end_day_da
+      - internal_storage_mTime
+      - internal_accession_ref
+      - internal_format_identifier_ritzau
+      - internal_format_identifier_nielsen
+      - internal_maingenre_id
+      - internal_channel_id
+      - internal_country_of_origin_id
+      - internal_ritzau_program_id
+      - internal_subgenre_id
+      - internal_episode_id
+      - internal_season_id
+      - internal_series_id
+      - internal_program_ophold
+      - internal_is_teletext
+      - internal_showviewcode
+      - internal_padding_seconds
+      - internal_access_individual_prohibition
+      - internal_access_claused
+      - internal_access_malfunction
+      - internal_access_comments
+      - internal_program_structure_missing_seconds_start
+      - internal_program_structure_missing_seconds_end
+      - internal_program_structure_holes
+      - internal_program_structure_overlaps
+      - internal_program_structure_overlap_type_one_length_ms
+      - internal_program_structure_overlap_type_one_file1UUID
+      - internal_program_structure_overlap_type_one_file2UUID
+      - internal_program_structure_overlap_type_two_length_ms
+      - internal_program_structure_overlap_type_two_file1UUID
+      - internal_program_structure_overlap_type_two_file2UUID
+      - internal_overlapping_files
+      - internal_transformation_error
+      - internal_transformation_error_description
+      - access_blokeret
+      - access_pligtafleveret
+      - access_ejermaerke
+      - access_note
+      - access_skabelsesaar
+      - access_ophavsperson_doedsaar
+      - access_searlige_visningsvilkaar
+      - access_materiale_type
+      - access_foto_aftale
+      - access_billede_aftale
+      - access_ophavsret_tekst
+      - text
+      - text_shingles
+      - freetext
+      - title_strict
+      - spellcheck
