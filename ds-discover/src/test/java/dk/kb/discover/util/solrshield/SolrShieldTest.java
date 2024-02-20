@@ -58,7 +58,7 @@ class SolrShieldTest {
                 "facet", new String[]{"true"},
                 "facet.field", new String[]{"location", "genre"}
         );
-        Response response = SolrShield.test(request.entrySet());
+        Response response = SolrShield.test(request.entrySet(), 5000.0);
         log.debug("Got " + response);
         assertTrue(response.allowed, "Request " + toString(request) + " should be allowed, but was not with reasons " +
                 response.reasons);

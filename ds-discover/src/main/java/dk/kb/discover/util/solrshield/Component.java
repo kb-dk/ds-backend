@@ -69,6 +69,8 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
         }
 
         Param<?, ?> param = constructor.apply(config.getSubMap(name));
+        // Handle YAML key escaping
+        name = name.startsWith("\"") && name.endsWith("\"") ? name.substring(1, name.length()-1) : name;
         param.name = name;
         params.put(name, param);
     }
