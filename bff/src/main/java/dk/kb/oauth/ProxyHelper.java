@@ -6,8 +6,10 @@ import dk.kb.util.webservice.exception.ServiceException;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -18,45 +20,8 @@ import java.util.Set;
 
 public class ProxyHelper {
 
-    public static Response.ResponseBuilder proxy(String method, String api, String path, String query, HttpHeaders headers, String accessToken) {
-        URI uri  = getApiUri(api, path, query);
-        HttpURLConnection connection = openConnection(method,uri, headers,accessToken);
-        try {
-            return createResponse(connection);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    private static Response.ResponseBuilder createResponse(HttpURLConnection connection) throws IOException {
-        int status = connection.getResponseCode();
-        Response.ResponseBuilder responseBuilder = Response.status(status);
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder responseBody = new StringBuilder();
-        String line;
-        while((line = in.readLine()) != null) {
-            responseBody.append(line);
-        }
-
-        //copy headers
-        responseBuilder.header("content-disposition",connection.getHeaderField("content-disposition"));
-        responseBuilder.header("content-type",connection.getHeaderField("content-type"));
-        return responseBuilder
-            .entity(responseBody.toString());
-    }
-
-    private static URI getApiUri(String api, String path,String query) {
-        String url = ServiceConfig.getConfig().getString("config.api-base-url")
-                +"/"+api+"/"+path;
-        if (query != null) {
-            url += "?"+query;
-        }
-        URI uri = URI.create(url);
-        return uri;
-    }
-
-    private static HttpURLConnection openConnection(String method, URI uri, HttpHeaders headers, String accessToken) {
+    public  static HttpURLConnection openConnection(String method, URI uri, HttpHeaders requestHeaders, String accessToken) {
         HttpURLConnection connection;
         try {
             connection = (HttpURLConnection) uri.toURL().openConnection();
@@ -82,4 +47,26 @@ public class ProxyHelper {
 
 
 
+    public static URI getApiUri(String api, String path,String query) {
+        String url = ServiceConfig.getConfig().getString("config.api-base-url")
+                +"/"+api+"/"+path;
+        if (query != null) {
+            url += "?"+query;
+        }
+        URI uri = URI.create(url);
+        return uri;
+    }
+
+    public static StreamingOutput createStreamingOutput(HttpURLConnection connection) throws IOException {
+        InputStream inputStream = connection.getInputStream();
+        return outputStream -> {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            inputStream.close();
+            outputStream.close();
+        };
+    }
 }

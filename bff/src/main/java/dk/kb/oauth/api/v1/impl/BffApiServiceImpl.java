@@ -13,8 +13,13 @@ import org.slf4j.LoggerFactory;
 import dk.kb.util.webservice.ImplBase;
 
 import javax.servlet.http.Cookie;
+
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
 
 
 /**
@@ -24,7 +29,6 @@ import javax.ws.rs.core.*;
  *
  */
 
-@Path("/")
 public class BffApiServiceImpl extends ImplBase implements BffApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
 
@@ -37,22 +41,20 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
     @GET
     @Path("/proxy/{api}/{path: .*}")
-    public Response proxyGetRequest(@PathParam("api") String api, @PathParam("path") String path, @CookieParam("Authorization") String authorization, @Context UriInfo uriInfo, @Context HttpHeaders headers) {
+    public StreamingOutput proxyGetRequest(@PathParam("api") String api, @PathParam("path") String path, @CookieParam("Authorization") String authorization) {
         if (StringUtils.isEmpty(authorization)) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+            throw new ServiceException(Response.Status.UNAUTHORIZED);
         }
-        return ProxyHelper.proxy("GET",api,path,uriInfo.getRequestUri().getRawQuery(),headers,authorization).build();
-    }
-
-    @POST
-    @Consumes({ "application/json", "application/xml" })
-    @Path("proxy/{api}/{path: .*}")
-    public Response proxyPostRequest(@PathParam("api") String api, @PathParam("path") String path, @CookieParam("Authorization") String authorization, @Context UriInfo uriInfo, @Context HttpHeaders headers, String body) {
-        if (StringUtils.isEmpty(authorization)) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+        try {
+            URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
+            HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, authorization);
+            httpServletResponse.setStatus(apiConnection.getResponseCode());
+            httpServletResponse.setHeader("Content-Type", apiConnection.getHeaderField("Content-Type"));
+            httpServletResponse.setHeader("Content-Disposition", apiConnection.getHeaderField("Content-Disposition"));
+            return ProxyHelper.createStreamingOutput(apiConnection);
+        } catch (IOException e) {
+            log.error("IOEXception",e);
+            throw new ServiceException(Response.Status.BAD_GATEWAY);
         }
-        return ProxyHelper.proxy("POST",api,path,uriInfo.getRequestUri().getRawQuery(),headers,authorization).build();
     }
-
-
 }
