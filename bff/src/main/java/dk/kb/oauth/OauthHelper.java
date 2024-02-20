@@ -36,7 +36,7 @@ public class OauthHelper {
         AccessTokenResponse accessTokenResponse = getAuthzClient().obtainAccessToken();
 
         boolean secure = ServiceConfig.getConfig().getBoolean("config.use-secure-cookie",true);
-        Cookie authCookie = new Cookie("Authentication",accessTokenResponse.getToken());
+        Cookie authCookie = new Cookie("Authorization",accessTokenResponse.getToken());
         authCookie.setHttpOnly(true);
         authCookie.setSecure(secure);
         return authCookie;
