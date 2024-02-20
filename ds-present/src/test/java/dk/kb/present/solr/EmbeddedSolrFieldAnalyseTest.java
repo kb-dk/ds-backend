@@ -13,9 +13,13 @@ import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.SuggesterResponse;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.core.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -178,6 +182,15 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals("Velkommen til TVavisen", titles.get(0));
 
     }
+
+    @Test
+    public void testSuggest() throws SolrServerException, IOException{
+        addSynonymFieldTestDocuments1();
+
+        SuggesterResponse response = getSuggestResult("tv");
+        int amountOfSuggestedTerms = response.getSuggestedTerms().get("dr_title_suggest").size();
+        assertTrue(amountOfSuggestedTerms > 0);
+    }
     
     
     private long getCreatorNameStrictResultsForQuery(String query) throws Exception {
@@ -219,6 +232,18 @@ public class EmbeddedSolrFieldAnalyseTest {
         solrQuery.setRows(10);
         QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
         return rsp.getResults().getNumFound();
+
+    }
+
+    private SuggesterResponse getSuggestResult(String query) throws SolrServerException, IOException{
+        SolrParams params = new ModifiableSolrParams().set("qt", "/suggest");
+
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.add(params);
+        solrQuery.add("suggest.q", query);
+        solrQuery.add("suggest.build", "true");
+        solrQuery.setRows(10);
+        return embeddedServer.query(solrQuery, METHOD.POST).getSuggesterResponse();
 
     }
 
