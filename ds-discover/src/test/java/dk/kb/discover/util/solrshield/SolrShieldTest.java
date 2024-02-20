@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*
@@ -43,11 +44,23 @@ class SolrShieldTest {
                 "q", new String[]{"*:*"},
                 "fl", new String[]{"title", "text"}
         );
-        Response response = SolrShield.test(request.entrySet());
-        log.debug("Got " + response);
+        Response response = SolrShield.test(request.entrySet(), 1000.0);
+        log.debug("SolrShield response: " + response);
         assertTrue(response.allowed, "Request " + request + " should be allowed, but was not with reasons " +
                 response.reasons);
         assertTrue(response.weight > 0.0, "Response should have weight > 0.0 but had " + response.weight);
+    }
+
+    @Test
+    void searchFieldsStar() {
+        Map<String, String[]> request = Map.of(
+                "q", new String[]{"*:*"},
+                "fl", new String[]{"*, score"} // * expands to all fields, making the request too heavy
+        );
+        Response response = SolrShield.test(request.entrySet(), 1000.0);
+        log.debug("SolrShield response: " + response);
+        assertFalse(response.allowed, "Request " + request + " should be allowed. Response: " + response);
+        assertTrue(response.weight > 1000.0, "Response should have weight > 1000.0 but had " + response.weight);
     }
 
     @Test
@@ -58,11 +71,46 @@ class SolrShieldTest {
                 "facet", new String[]{"true"},
                 "facet.field", new String[]{"location", "genre"}
         );
-        Response response = SolrShield.test(request.entrySet(), 5000.0);
-        log.debug("Got " + response);
-        assertTrue(response.allowed, "Request " + toString(request) + " should be allowed, but was not with reasons " +
-                response.reasons);
-        assertTrue(response.weight > 0.0, "Response should have weight > 0.0 but had " + response.weight);
+        Response response = SolrShield.test(request.entrySet(), 2000.0);
+        log.debug("SolrShield response: " + response);
+        assertTrue(response.allowed,
+                "Request " + toString(request) + " should be allowed, but was not with reasons " + response.reasons);
+        assertTrue(response.weight > 0.0,
+                "Response should have weight > 0.0 but had " + response.weight);
+    }
+
+    @Test
+    void facetTooHeavy() {
+        Map<String, String[]> request = Map.of(
+                "q", new String[]{"*:*"},
+                "fl", new String[]{"genre"},
+                "facet.limit", new String[]{"5000"},
+                "facet", new String[]{"true"},
+                "facet.field", new String[]{"location", "genre"}
+        );
+        Response response = SolrShield.test(request.entrySet(), 2000.0);
+        log.debug("SolrShield response: " + response);
+        assertFalse(response.allowed,
+                "Request " + toString(request) + " should not be allowed. Response: " + response);
+        assertTrue(response.weight > 2000.0,
+                "The weight of the response should be > 2000 but was " + response.weight);
+    }
+
+    @Test
+    void facetIllegal() {
+        Map<String, String[]> request = Map.of(
+                "q", new String[]{"*:*"},
+                "fl", new String[]{"genre"},
+                "facet.limit", new String[]{"50000"},
+                "facet", new String[]{"true"},
+                "facet.field", new String[]{"location"}
+        );
+        Response response = SolrShield.test(request.entrySet(), Double.MAX_VALUE);
+        log.debug("SolrShield response: " + response);
+        assertFalse(response.allowed,
+                "Request " + toString(request) + " should not be allowed. Response: " + response);
+        assertTrue(response.reasons.toString().contains("is larger than maxValue"),
+                "Response should contain clause stating that facet.limit is > maxValue. Response: " + response);
     }
 
     private String toString(Map<String, String[]> map) {
