@@ -3,6 +3,7 @@ package dk.kb.oauth.api.v1.impl;
 import dk.kb.oauth.OauthHelper;
 import dk.kb.oauth.ProxyHelper;
 
+import dk.kb.oauth.api.v1.BffApi;
 import dk.kb.util.webservice.exception.ServiceException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.util.webservice.ImplBase;
+
+import javax.servlet.http.Cookie;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
@@ -22,17 +25,14 @@ import javax.ws.rs.core.*;
  */
 
 @Path("/")
-public class BffApiServiceImpl extends ImplBase {
+public class BffApiServiceImpl extends ImplBase implements BffApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
 
 
-
-    @GET
-    @Path("/authenticate")
-    public Response login() throws ServiceException {
-        log.debug("Getting cookie");
-        NewCookie authzCookie = OauthHelper.getNewAuthzCookie();
-        return Response.ok().cookie(authzCookie).build();
+    public String authenticate() throws ServiceException {
+        Cookie authzCookie = OauthHelper.getNewAuthzCookie();
+        httpServletResponse.addCookie(authzCookie);
+        return "";
     }
 
     @GET

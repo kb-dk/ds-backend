@@ -16,6 +16,30 @@ servers:
 
 paths:
 
+  /authenticate:
+    get:
+      tags:
+        - '${project.name}'
+      operationId: authenticate
+      responses:
+        '200':
+          description: 'OK'
+          headers:
+            Set-Cookie:
+              description: 'Authentication cookie'
+              schema:
+                type: string
+              example: "Authentication=12345abcd; HttpOnly; secure"
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: 'KeyCloak error'
+          content:
+            text/plain:
+              schema:
+                type: string
 
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
