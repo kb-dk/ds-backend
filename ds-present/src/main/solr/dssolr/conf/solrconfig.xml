@@ -857,6 +857,7 @@
         <str name="suggest.dictionary">dr_title_suggest</str>
         <str name="suggest">true</str>
         <str name="suggest.count">10</str>
+        <str name="suggest.cfq">DR</str> <!-- Add default value for contextField. This means that all suggestions are filtered by broadcaster:DR as normal queries are.-->
       </lst>
       <arr name="components">
         <str>suggest</str>
