@@ -52,7 +52,7 @@ public class SolrShield {
     private static YAML conf = null;
     private static boolean enabled = true;
     private static double defaultMaxWeight = -1;
-    private static Profile profile;
+    static Profile profile;
 
     /**
      * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well

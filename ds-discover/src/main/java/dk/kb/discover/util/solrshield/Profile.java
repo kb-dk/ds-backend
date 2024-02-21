@@ -161,11 +161,12 @@ public class Profile extends ProfileElement<Profile> {
 
     @Override
     protected void deepCopyNonAtomicAttributes(Profile clone) {
+        clone.profile = clone; // Profile is the top element
         super.deepCopyNonAtomicAttributes(clone);
         clone.fields = fields.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().deepCopy(clone.profile)));
-        search = search.deepCopy(clone.profile);
-        facet = facet.deepCopy(clone.profile);
+        clone.search = search.deepCopy(clone.profile);
+        clone.facet = facet.deepCopy(clone.profile);
     }
 
     @Override

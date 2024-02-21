@@ -12,8 +12,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +38,32 @@ class SolrShieldTest {
     }
 
     @Test
+    void testDeepCopySearch() {
+        SolrShield.ensureConfig();
+        SearchComponent search = SolrShield.profile.search;
+        assertFalse(search.isCopy, "Origo Search should initially not be a copy");
+        SearchComponent searchCopy = search.deepCopy(null);
+        assertTrue(searchCopy.isCopy, "The deep copy of Search should be marked as a copy");
+        assertFalse(search.isCopy, "The origo Search should still not be a copy itself after deep copy");
+    }
+
+    @Test
+    void testDeepCopySearchApply() {
+        SolrShield.ensureConfig();
+        SearchComponent search = SolrShield.profile.search;
+        assertFalse(search.isCopy, "Origo Search should initially not be a copy");
+
+        Map<String, String[]> request = Map.of(
+                "q", new String[]{"*:*"},
+                "fl", new String[]{"title", "text"}
+        );
+        SolrShield.test(request.entrySet(), 1000.0);
+
+        assertSame(search, SolrShield.profile.search, "The base search should not have been replaced");
+        assertFalse(search.isCopy, "The origo Search should still not be a copy itself after test");
+    }
+
+    @Test
     void basicSearch() {
         Map<String, String[]> request = Map.of(
                 "q", new String[]{"*:*"},
@@ -46,7 +71,7 @@ class SolrShieldTest {
         );
         Response response = SolrShield.test(request.entrySet(), 1000.0);
         log.debug("SolrShield response: " + response);
-        assertTrue(response.allowed, "Request " + request + " should be allowed, but was not with reasons " +
+        assertTrue(response.allowed, "Request " + toString(request) + " should be allowed, but was not with reasons " +
                 response.reasons);
         assertTrue(response.weight > 0.0, "Response should have weight > 0.0 but had " + response.weight);
     }
@@ -59,7 +84,7 @@ class SolrShieldTest {
         );
         Response response = SolrShield.test(request.entrySet(), 1000.0);
         log.debug("SolrShield response: " + response);
-        assertFalse(response.allowed, "Request " + request + " should be allowed. Response: " + response);
+        assertFalse(response.allowed, "Request " + toString(request) + " should be allowed. Response: " + response);
         assertTrue(response.weight > 1000.0, "Response should have weight > 1000.0 but had " + response.weight);
     }
 
@@ -91,7 +116,7 @@ class SolrShieldTest {
         Response response = SolrShield.test(request.entrySet(), 2000.0);
         log.debug("SolrShield response: " + response);
         assertFalse(response.allowed,
-                "Request " + toString(request) + " should not be allowed. Response: " + response);
+                "Request " + toString(request) + " should not be allowed due to facet.limit. Response: " + response);
         assertTrue(response.weight > 2000.0,
                 "The weight of the response should be > 2000 but was " + response.weight);
     }

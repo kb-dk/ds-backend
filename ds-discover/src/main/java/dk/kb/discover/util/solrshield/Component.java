@@ -14,6 +14,7 @@
  */
 package dk.kb.discover.util.solrshield;
 
+import dk.kb.util.yaml.NotFoundException;
 import dk.kb.util.yaml.YAML;
 
 import java.util.HashMap;
@@ -63,16 +64,41 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
      * @param constructor produces a {@link Param} from the sub-configuration.
      */
     protected void addParam(YAML config, String name, Function<YAML, Param<?, ?>> constructor) {
-        if (!config.containsKey(name)) {
+        if (!containsKey(config, name)) {
             throw new NullPointerException(
                     "Attempted to construct the Param '" + name + "' but no sub-configuration was found");
         }
 
-        Param<?, ?> param = constructor.apply(config.getSubMap(name));
-        // Handle YAML key escaping
-        name = name.startsWith("\"") && name.endsWith("\"") ? name.substring(1, name.length()-1) : name;
+        Param<?, ?> param = constructor.apply(getSubMap(config, name));
         param.name = name;
         params.put(name, param);
+    }
+
+    /**
+     * Temporary hack to add support for null-value keys until kb-util gets up to speed.
+     * @param config a YAML config.
+     * @param name key used for lookup. Must only be a single level deep.
+     * @return true if the key exists in the {@code config}.
+     */
+    private boolean containsKey(YAML config, String name) {
+        return config.keySet().stream().anyMatch(name::equals);
+    }
+
+    /**
+     * Temporary hack to add support for null-value keys until kb-util gets up to speed.
+     * @param config a YAML config.
+     * @param key key used for lookup. Must only be a single level deep.
+     * @return the submap for the given key or an empty map if the value is null.
+     */
+    private YAML getSubMap(YAML config, String key) {
+        if (!containsKey(config, key)) {
+            throw new NullPointerException("The key '" + key + "' was not present in the config");
+        }
+        try {
+            return config.getSubMap('"' + key + '"'); // We know this is level 1 so we can escape the key safely
+        } catch (NotFoundException e) {
+            return new YAML();
+        }
     }
 
     /**

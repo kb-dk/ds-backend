@@ -14,12 +14,16 @@
  */
 package dk.kb.discover.util.solrshield;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 /**
  * Implementors of this interface must create a deep copy, fully independent of the original object.
  */
 public abstract class ProfileElement<T> implements Cloneable {
+    private static final Logger log = LoggerFactory.getLogger(ProfileElement.class);
 
     /**
      * All profile elements are aware of the profile they belong to.
@@ -30,6 +34,11 @@ public abstract class ProfileElement<T> implements Cloneable {
      * The name of the profile element, typically used as keys for maps or for debug.
      */
     protected String name;
+
+    /**
+     * Internal sanity checker to guard against deep copies that aren't.
+     */
+    boolean isCopy = false;
 
     /**
      * Construct an element belonging to the given {@code profile} and with the given {@code name}.
@@ -59,12 +68,15 @@ public abstract class ProfileElement<T> implements Cloneable {
                     "ClassCastException probably caused by implementing class T not extending ProfileElement<T>", e);
         }
         ((ProfileElement<T>)clone).profile = profile;
+        ((ProfileElement<T>)clone).isCopy = true;
 
         deepCopyNonAtomicAttributes(clone);
         return clone;
     }
 
     /**
+     * Copies fields requiring deep copy from this to the given {@code clone}.
+     * <p>
      * Inheriting classes must override this (with call to {@code super()}) to deep copy attributes that are not atomic.
      * <p>
      * This method is called from {@link #deepCopy(Profile)}.

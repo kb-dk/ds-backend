@@ -39,12 +39,12 @@ public class FacetComponent extends Component<FacetComponent> {
         super(profile, "facet", config);
 
         YAML paramsConf = config.getSubMap("params");
-        addParam(paramsConf, "\"facet.query\"", paramConf -> this.facetQuery = new Param.StringParam(profile, paramConf, false));
-        addParam(paramsConf, "\"facet.field\"", paramConf -> this.facetField = new Param.FieldsParam(profile, paramConf));
-        addParam(paramsConf, "\"facet.limit\"", paramConf -> this.facetLimit = new Param.IntegerParam(profile, paramConf));
-        addParam(paramsConf, "\"facet.sort\"", paramConf -> this.facetSort = new Param.StringParam(profile, paramConf, false));
-        addParam(paramsConf, "\"facet.mincount\"", paramConf -> this.facetMincount = new Param.IntegerParam(profile, paramConf));
-        addParam(paramsConf, "\"facet.exists\"", paramConf -> this.facetExists = new Param.BooleanParam(profile, paramConf));
+        addParam(paramsConf, "facet.query", paramConf -> this.facetQuery = new Param.StringParam(profile, paramConf, false));
+        addParam(paramsConf, "facet.field", paramConf -> this.facetField = new Param.FieldsParam(profile, paramConf));
+        addParam(paramsConf, "facet.limit", paramConf -> this.facetLimit = new Param.IntegerParam(profile, paramConf));
+        addParam(paramsConf, "facet.sort", paramConf -> this.facetSort = new Param.StringParam(profile, paramConf, false));
+        addParam(paramsConf, "facet.mincount", paramConf -> this.facetMincount = new Param.IntegerParam(profile, paramConf));
+        addParam(paramsConf, "facet.exists", paramConf -> this.facetExists = new Param.BooleanParam(profile, paramConf));
     }
 
     @Override

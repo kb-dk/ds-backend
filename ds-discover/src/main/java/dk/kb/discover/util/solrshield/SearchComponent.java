@@ -36,6 +36,11 @@ public class SearchComponent extends Component<SearchComponent> {
         addParam(paramsConf, "rows", paramConf -> this.rows = new Param.IntegerParam(profile, paramConf));
         addParam(paramsConf, "start", paramConf -> this.start = new Param.IntegerParam(profile, paramConf));
         addParam(paramsConf, "fl", paramConf -> this.fields = new Param.FieldsParam(profile, paramConf));
+        addParam(paramsConf, "q.op", paramConf -> this.q = new Param.StringParam(profile, paramConf, false));
+//        q.op:
+//        wt:
+//        version:
+//        indent:
     }
 
     @Override

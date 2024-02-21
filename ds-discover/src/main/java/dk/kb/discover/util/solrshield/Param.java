@@ -18,6 +18,7 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.Null;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,9 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
     
     public Param(Profile profile, String name, YAML config, boolean multiValue) {
         super(profile, name);
+        if (profile == null) {
+            throw new NullPointerException("Profile was null, but must be set for Params");
+        }
         this.name = name;
         enabled = config.getBoolean("default_enabled", enabled);
         allowed = config.getBoolean("allowed", allowed);
