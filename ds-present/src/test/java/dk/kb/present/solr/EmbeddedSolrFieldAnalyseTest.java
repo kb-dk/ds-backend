@@ -186,10 +186,11 @@ public class EmbeddedSolrFieldAnalyseTest {
     @Test
     public void testSuggest() throws SolrServerException, IOException{
         addSynonymFieldTestDocuments1();
+        addDocWithWrongBroadcaster();
 
         SuggesterResponse response = getSuggestResult("tv");
         int amountOfSuggestedTerms = response.getSuggestedTerms().get("dr_title_suggest").size();
-        assertTrue(amountOfSuggestedTerms > 0);
+        assertEquals(1, amountOfSuggestedTerms);
     }
 
     @Test
@@ -339,6 +340,24 @@ public class EmbeddedSolrFieldAnalyseTest {
             document.addField("origin", "ds.test");
             document.addField("title", "Velkommen til radioavisen");
             document.addField("broadcaster", "DR");
+
+            embeddedServer.add(document);
+            embeddedServer.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error indexing test documents");
+        }
+    }
+    private static void addDocWithWrongBroadcaster() {
+
+        try {
+
+            SolrInputDocument document = new SolrInputDocument();
+            document.addField("id", "negative1");
+            document.addField("origin", "ds.test");
+            document.addField("title", "Velkommen til radioavisen");
+            document.addField("broadcaster", "TV2");
 
             embeddedServer.add(document);
             embeddedServer.commit();
