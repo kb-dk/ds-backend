@@ -356,7 +356,7 @@ public class EmbeddedSolrFieldAnalyseTest {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "negative1");
             document.addField("origin", "ds.test");
-            document.addField("title", "Velkommen til radioavisen");
+            document.addField("title", "Velkommen til tvavisen hos TV2");
             document.addField("broadcaster", "TV2");
 
             embeddedServer.add(document);
