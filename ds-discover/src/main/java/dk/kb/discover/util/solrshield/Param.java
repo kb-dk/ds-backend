@@ -234,6 +234,10 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
             if (values == null || values.length == 0) {
                 return;
             }
+            if (values.length == 1 && values[0].contains(", ")) {
+                // Comma separated fields are supported by Solr
+                values = values[0].split(" *, *");
+            }
             value = new ArrayList<>(Arrays.asList(values));
             if (value.contains("*")) { // '*' expands to all fields
                 starEncountered = true;
