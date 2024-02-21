@@ -191,6 +191,14 @@ public class EmbeddedSolrFieldAnalyseTest {
         int amountOfSuggestedTerms = response.getSuggestedTerms().get("dr_title_suggest").size();
         assertTrue(amountOfSuggestedTerms > 0);
     }
+
+    @Test
+    public void testNegativeSuggest() throws SolrServerException, IOException{
+        addDocForNegativeSuggestTest();
+        SuggesterResponse response = getSuggestResult("tv");
+        int amountOfSuggestedTerms = response.getSuggestedTerms().get("dr_title_suggest").size();
+        assertEquals(0, amountOfSuggestedTerms);
+    }
     
     
     private long getCreatorNameStrictResultsForQuery(String query) throws Exception {
@@ -287,6 +295,7 @@ public class EmbeddedSolrFieldAnalyseTest {
             document.addField("id", "synonym1");
             document.addField("origin", "ds.test");
             document.addField("title", "Velkommen til TVavisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
+            document.addField("broadcaster", "DR");
             // => tv avisen
 
             embeddedServer.add(document);
@@ -308,6 +317,7 @@ public class EmbeddedSolrFieldAnalyseTest {
             document.addField("id", "synonym1");
             document.addField("origin", "ds.test");
             document.addField("title", "Velkommen til TV avisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
+            document.addField("broadcaster", "DR");
             // => tv avisen
 
             embeddedServer.add(document);
@@ -319,7 +329,27 @@ public class EmbeddedSolrFieldAnalyseTest {
         }
 
     }
-  
-    
-    
+
+    private static void addDocForNegativeSuggestTest() {
+
+        try {
+
+            SolrInputDocument document = new SolrInputDocument();
+            document.addField("id", "negative1");
+            document.addField("origin", "ds.test");
+            document.addField("title", "Velkommen til radioavisen");
+            document.addField("broadcaster", "DR");
+
+            embeddedServer.add(document);
+            embeddedServer.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error indexing test documents");
+        }
+    }
+
+
+
+
 }
