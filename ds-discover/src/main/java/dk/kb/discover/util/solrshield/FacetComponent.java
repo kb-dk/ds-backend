@@ -27,10 +27,10 @@ import java.util.stream.StreamSupport;
 public class FacetComponent extends Component<FacetComponent> {
 
     protected Param.StringParam facetQuery;
+    protected Param.FieldsParam facetField; // Multiple values, but the Solr param name is singular 'facet.field'
     protected Param.IntegerParam facetLimit;
     protected Param.StringParam facetSort;
     protected Param.IntegerParam facetMincount;
-    protected Param.FieldsParam facetField; // Multiple values, but the Solr param name is singular 'facet.field'
     protected Param.BooleanParam facetExists;
 
     // TODO: Handle field-specific tweaks (sort + limit)
@@ -45,6 +45,16 @@ public class FacetComponent extends Component<FacetComponent> {
         addParam(paramsConf, "facet.sort", paramConf -> this.facetSort = new Param.StringParam(profile, paramConf, false));
         addParam(paramsConf, "facet.mincount", paramConf -> this.facetMincount = new Param.IntegerParam(profile, paramConf));
         addParam(paramsConf, "facet.exists", paramConf -> this.facetExists = new Param.BooleanParam(profile, paramConf));
+    }
+
+    @Override
+    void alignParams() {
+        facetQuery = getParam("facet.query");
+        facetField = getParam("facet.field");
+        facetLimit = getParam("facet.limit");
+        facetSort = getParam("facet.sort");
+        facetMincount = getParam("facet.mincount");
+        facetExists = getParam("facet.exists");
     }
 
     @Override

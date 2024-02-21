@@ -53,6 +53,7 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
     protected void deepCopyNonAtomicAttributes(T clone) {
         clone.params = params.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().deepCopy(clone.profile)));
+        clone.alignParams();
     }
 
     /**
@@ -114,6 +115,27 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Utilty method for fetching params with implicit casting.
+     * @param name the name of a given param.
+     * @return the {@code param}, cast to the expected type.
+     * @param <C> a subclass of {@code Param}.
+     */
+    @SuppressWarnings("unchecked")
+    protected <C extends Param<?, ?>> C getParam(String name) {
+        if (!params.containsKey(name)) {
+            throw new NullPointerException(
+                    "No param with '" + name + "' exists im params. Available keys are " + params.keySet());
+        }
+        return (C)params.get(name);
+    }
+
+    /**
+     * Ensure that the {@link Param}s in {@link #params} are the same as their first class attributes.
+     * <p>
+     * Important: The {@link Param}s in {@link #params} are authoritative and should override all other pointers.
+     */
+    abstract void alignParams();
 
     @Override
     double getWeight() {

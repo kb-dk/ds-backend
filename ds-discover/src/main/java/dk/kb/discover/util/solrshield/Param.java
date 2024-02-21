@@ -234,7 +234,7 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
             if (values == null || values.length == 0) {
                 return;
             }
-            value = new ArrayList<>(value);
+            value = new ArrayList<>(Arrays.asList(values));
             if (value.contains("*")) { // '*' expands to all fields
                 starEncountered = true;
                 if (supportsStar) {

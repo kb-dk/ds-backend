@@ -25,7 +25,8 @@ public class SearchComponent extends Component<SearchComponent> {
     protected Param.StringParam fq;
     protected Param.IntegerParam rows;
     protected Param.IntegerParam start;
-    protected Param.FieldsParam fields;
+    protected Param.FieldsParam fl;
+    protected Param.StringParam qOp;
 
     public SearchComponent(Profile profile, YAML config) {
         super(profile, "search", config);
@@ -35,12 +36,22 @@ public class SearchComponent extends Component<SearchComponent> {
         addParam(paramsConf, "fq", paramConf -> this.fq = new Param.StringParam(profile, paramConf, true));
         addParam(paramsConf, "rows", paramConf -> this.rows = new Param.IntegerParam(profile, paramConf));
         addParam(paramsConf, "start", paramConf -> this.start = new Param.IntegerParam(profile, paramConf));
-        addParam(paramsConf, "fl", paramConf -> this.fields = new Param.FieldsParam(profile, paramConf));
-        addParam(paramsConf, "q.op", paramConf -> this.q = new Param.StringParam(profile, paramConf, false));
+        addParam(paramsConf, "fl", paramConf -> this.fl = new Param.FieldsParam(profile, paramConf));
+        addParam(paramsConf, "q.op", paramConf -> this.qOp = new Param.StringParam(profile, paramConf, false));
 //        q.op:
 //        wt:
 //        version:
 //        indent:
+    }
+
+    @Override
+    void alignParams() {
+        q = getParam("q");
+        fq = getParam("fq");
+        rows = getParam("rows");
+        start = getParam("start");
+        fl = getParam("fl");
+        qOp = getParam("q.op");
     }
 
     @Override
@@ -49,6 +60,6 @@ public class SearchComponent extends Component<SearchComponent> {
                 super.getWeight() +
                         q.getWeight() +
                         start.getWeight() +
-                        rows.getWeight() + rows.getValue() * rows.weightFactor * fields.getWeight();
+                        rows.getWeight() + rows.getValue() * rows.weightFactor * fl.getWeight();
     }
 }

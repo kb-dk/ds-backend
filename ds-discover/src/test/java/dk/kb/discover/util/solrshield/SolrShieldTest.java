@@ -41,10 +41,29 @@ class SolrShieldTest {
     void testDeepCopySearch() {
         SolrShield.ensureConfig();
         SearchComponent search = SolrShield.profile.search;
+        assertSearchParamSame(search, "origo");
         assertFalse(search.isCopy, "Origo Search should initially not be a copy");
+
         SearchComponent searchCopy = search.deepCopy(null);
+        System.out.println("Clone o: " + searchCopy.getClass().getName() + "@" + Integer.toHexString(searchCopy.hashCode()));
+        System.out.println("Q first: " + searchCopy.q);
+        System.out.println("Q: param " + searchCopy.getParam("q"));
+
+        assertSearchParamSame(searchCopy, "deep copy");
+
         assertTrue(searchCopy.isCopy, "The deep copy of Search should be marked as a copy");
         assertFalse(search.isCopy, "The origo Search should still not be a copy itself after deep copy");
+    }
+
+    // After deep copying, the first class attributes for search should match the ones in the params map
+    void assertSearchParamSame(SearchComponent search, String searchDesignation) {
+        assertSame(search.q, search.getParam("q"),
+                "The 'q' param from " + searchDesignation + " search should be the same");
+        assertSame(search.fq, search.getParam("fq"),
+                        "The 'fq' param from " + searchDesignation + " search should be the same");
+        assertSame(search.fl, search.getParam("fl"),
+                        "The 'fl' param from " + searchDesignation + " search should be the same");
+        // TODO: Add the rest of the search params
     }
 
     @Test
@@ -74,6 +93,25 @@ class SolrShieldTest {
         assertTrue(response.allowed, "Request " + toString(request) + " should be allowed, but was not with reasons " +
                 response.reasons);
         assertTrue(response.weight > 0.0, "Response should have weight > 0.0 but had " + response.weight);
+    }
+
+    @Test
+    void searchFields() {
+        Map<String, String[]> request = Map.of(
+                "q", new String[]{"*:*"},
+                "fl", new String[]{"title", "text"}
+        );
+        Response response = SolrShield.test(request.entrySet(), 100000.0);
+        double firstWeight = response.weight;
+
+        Map<String, String[]> request2 = Map.of(
+                "q", new String[]{"*:*"},
+                "fl", new String[]{"title"}
+        );
+        Response response2 = SolrShield.test(request2.entrySet(), 100000.0);
+        double secondWeight = response2.weight;
+
+        assertNotEquals(firstWeight, secondWeight, "The weights for searches with different fields should not be equal");
     }
 
     @Test
@@ -109,7 +147,7 @@ class SolrShieldTest {
         Map<String, String[]> request = Map.of(
                 "q", new String[]{"*:*"},
                 "fl", new String[]{"genre"},
-                "facet.limit", new String[]{"5000"},
+                "facet.limit", new String[]{"50000"},
                 "facet", new String[]{"true"},
                 "facet.field", new String[]{"location", "genre"}
         );
