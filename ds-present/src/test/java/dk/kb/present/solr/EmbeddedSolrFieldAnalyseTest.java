@@ -13,9 +13,13 @@ import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.SuggesterResponse;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.core.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -178,6 +182,24 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals("Velkommen til TVavisen", titles.get(0));
 
     }
+
+    @Test
+    public void testSuggest() throws SolrServerException, IOException{
+        addSynonymFieldTestDocuments1();
+        addDocWithWrongBroadcaster();
+
+        SuggesterResponse response = getSuggestResult("tv");
+        int amountOfSuggestedTerms = response.getSuggestedTerms().get("dr_title_suggest").size();
+        assertEquals(1, amountOfSuggestedTerms);
+    }
+
+    @Test
+    public void testNegativeSuggest() throws SolrServerException, IOException{
+        addDocForNegativeSuggestTest();
+        SuggesterResponse response = getSuggestResult("tv");
+        int amountOfSuggestedTerms = response.getSuggestedTerms().get("dr_title_suggest").size();
+        assertEquals(0, amountOfSuggestedTerms);
+    }
     
     
     private long getCreatorNameStrictResultsForQuery(String query) throws Exception {
@@ -222,6 +244,18 @@ public class EmbeddedSolrFieldAnalyseTest {
 
     }
 
+    private SuggesterResponse getSuggestResult(String query) throws SolrServerException, IOException{
+        SolrParams params = new ModifiableSolrParams().set("qt", "/suggest");
+
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.add(params);
+        solrQuery.add("suggest.q", query);
+        solrQuery.add("suggest.build", "true");
+        solrQuery.setRows(10);
+        return embeddedServer.query(solrQuery, METHOD.POST).getSuggesterResponse();
+
+    }
+
     private static void addSimpleFieldTestDocuments() {
 
         try {
@@ -262,6 +296,7 @@ public class EmbeddedSolrFieldAnalyseTest {
             document.addField("id", "synonym1");
             document.addField("origin", "ds.test");
             document.addField("title", "Velkommen til TVavisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
+            document.addField("broadcaster", "DR");
             // => tv avisen
 
             embeddedServer.add(document);
@@ -283,6 +318,7 @@ public class EmbeddedSolrFieldAnalyseTest {
             document.addField("id", "synonym1");
             document.addField("origin", "ds.test");
             document.addField("title", "Velkommen til TV avisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
+            document.addField("broadcaster", "DR");
             // => tv avisen
 
             embeddedServer.add(document);
@@ -294,7 +330,45 @@ public class EmbeddedSolrFieldAnalyseTest {
         }
 
     }
-  
-    
-    
+
+    private static void addDocForNegativeSuggestTest() {
+
+        try {
+
+            SolrInputDocument document = new SolrInputDocument();
+            document.addField("id", "negative1");
+            document.addField("origin", "ds.test");
+            document.addField("title", "Velkommen til radioavisen");
+            document.addField("broadcaster", "DR");
+
+            embeddedServer.add(document);
+            embeddedServer.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error indexing test documents");
+        }
+    }
+    private static void addDocWithWrongBroadcaster() {
+
+        try {
+
+            SolrInputDocument document = new SolrInputDocument();
+            document.addField("id", "negative1");
+            document.addField("origin", "ds.test");
+            document.addField("title", "Velkommen til tvavisen hos TV2");
+            document.addField("broadcaster", "TV2");
+
+            embeddedServer.add(document);
+            embeddedServer.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error indexing test documents");
+        }
+    }
+
+
+
+
 }
