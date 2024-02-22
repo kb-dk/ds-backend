@@ -13,12 +13,14 @@ limits:
   max: 10000
 
 solr:
-  # Whether SolrShield is enabled. If false, SolrShield evaluation is still performed but the response is only logged.
-  enabled: false
 
-  # Current max weight is very likely to be too low for practical use.
-  # More experimenting with SolrShield is needed in order to determine a proper max weight
-  default_max_weight: 2000
+  shield:
+    # Whether SolrShield is enabled. If false, SolrShield evaluation is still performed but the response is only logged.
+    enabled: false
+
+    # Current max weight is very likely to be too low for practical use.
+    # More experimenting with SolrShield is needed in order to determine a proper max weight
+    default_max_weight: 2000
 
   # If permissive is false, only vetted Solr parameters are accepted
   # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
