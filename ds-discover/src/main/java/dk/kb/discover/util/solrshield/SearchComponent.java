@@ -27,6 +27,11 @@ public class SearchComponent extends Component<SearchComponent> {
     protected Param.IntegerParam start;
     protected Param.FieldsParam fl;
     protected Param.StringParam qOp;
+    protected Param.StringParam wt;
+    protected Param.StringParam version;
+    protected Param.BooleanParam indent;
+    protected Param.StringParam debug;
+    protected Param.BooleanParam debugExplainStructured;
 
     public SearchComponent(Profile profile, YAML config) {
         super(profile, "search", config);
@@ -37,11 +42,13 @@ public class SearchComponent extends Component<SearchComponent> {
         addParam(paramsConf, "rows", paramConf -> this.rows = new Param.IntegerParam(profile, paramConf));
         addParam(paramsConf, "start", paramConf -> this.start = new Param.IntegerParam(profile, paramConf));
         addParam(paramsConf, "fl", paramConf -> this.fl = new Param.FieldsParam(profile, paramConf));
+        // TODO: Add support for enums
         addParam(paramsConf, "q.op", paramConf -> this.qOp = new Param.StringParam(profile, paramConf, false));
-//        q.op:
-//        wt:
-//        version:
-//        indent:
+        addParam(paramsConf, "wt", paramConf -> this.wt = new Param.StringParam(profile, paramConf, false));
+        addParam(paramsConf, "version", paramConf -> this.version = new Param.StringParam(profile, paramConf, false));
+        addParam(paramsConf, "indent", paramConf -> this.indent = new Param.BooleanParam(profile, paramConf));
+        addParam(paramsConf, "debug", paramConf -> this.debug = new Param.StringParam(profile, paramConf, false));
+        addParam(paramsConf, "debug.explain.structured", paramConf -> this.debugExplainStructured = new Param.BooleanParam(profile, paramConf));
     }
 
     @Override
@@ -52,6 +59,11 @@ public class SearchComponent extends Component<SearchComponent> {
         start = getParam("start");
         fl = getParam("fl");
         qOp = getParam("q.op");
+        wt = getParam("wt");
+        version = getParam("version");
+        indent = getParam("indent");
+        debug = getParam("debug");
+        debugExplainStructured = getParam("debug.explain.structured");
     }
 
     @Override
@@ -59,7 +71,16 @@ public class SearchComponent extends Component<SearchComponent> {
         return !enabled ? 0.0 :
                 super.getWeight() +
                         q.getWeight() +
+                        fq.getWeight() +
                         start.getWeight() +
-                        rows.getWeight() + rows.getValue() * rows.weightFactor * fl.getWeight();
+                        rows.getWeight() + rows.getValue() * rows.weightFactor * fl.getWeight() +
+                        qOp.getWeight() +
+                        wt.getWeight() +
+                        version.getWeight() +
+                        indent.getWeight() +
+                        debug.getWeight() +
+                        (debug.enabled ? debugExplainStructured.getWeight() : 0.0);
+
+
     }
 }

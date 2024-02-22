@@ -14,6 +14,8 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
+import dk.kb.discover.util.solrshield.Response;
+import dk.kb.discover.util.solrshield.SolrShield;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
@@ -262,6 +264,13 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
                     throw new InvalidArgumentServiceException("Unsupported parameters: " + toString(extra));
                 }
             }
+
+            Response shieldResponse = SolrShield.test(httpServletRequest.getParameterMap());
+            if (!shieldResponse.isAllowed()) {
+                throw new ServiceException("Call blocked by SolrShield: " + shieldResponse.getReasons(),
+                        javax.ws.rs.core.Response.Status.FORBIDDEN);
+            }
+
             SolrService solr = SolrManager.getSolrService(collection);
             // TODO: Pass the map of request parameters instead of all parameters as first class
             httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
@@ -356,12 +365,12 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
 
 
     private static GetUserQueryInputDto getLicenseQueryDto() {
-    	   GetUserQueryInputDto getQueryDto = new GetUserQueryInputDto(); 
-          
-    	   getQueryDto.setPresentationType("Search"); // Important. Must be defined in Licensemodule with same name           
-         
-    	   //"everybody=true" is a value everyone will (from keycloak?)
-    	   UserObjAttributeDto everybodyUserAttribute=new UserObjAttributeDto();         
+        GetUserQueryInputDto getQueryDto = new GetUserQueryInputDto();
+
+        getQueryDto.setPresentationType("Search"); // Important. Must be defined in Licensemodule with same name
+
+        //"everybody=true" is a value everyone will (from keycloak?)
+        UserObjAttributeDto everybodyUserAttribute=new UserObjAttributeDto();
            everybodyUserAttribute.setAttribute("everybody"); 
            ArrayList<String> values = new ArrayList<String>();
            values.add("yes");
@@ -372,8 +381,8 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
            
            getQueryDto.setAttributes(allAttributes);           
            return getQueryDto;
-    	
-    	
+
+
     }
     
     private static DsLicenseApi getDsLicenseApiClient() {

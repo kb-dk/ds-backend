@@ -91,6 +91,26 @@ public class Response {
         return new Response(request, maxWeight, allowed, reasons, weight);
     }
 
+    public Iterable<Map.Entry<String, String[]>> getRequest() {
+        return request;
+    }
+
+    public double getMaxWeight() {
+        return maxWeight;
+    }
+
+    public boolean isAllowed() {
+        return allowed;
+    }
+
+    public Collection<String> getReasons() {
+        return reasons;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
     @Override
     public String toString() {
         return "Response{" +

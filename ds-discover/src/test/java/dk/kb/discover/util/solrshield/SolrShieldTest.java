@@ -45,9 +45,6 @@ class SolrShieldTest {
         assertFalse(search.isCopy, "Origo Search should initially not be a copy");
 
         SearchComponent searchCopy = search.deepCopy(null);
-        System.out.println("Clone o: " + searchCopy.getClass().getName() + "@" + Integer.toHexString(searchCopy.hashCode()));
-        System.out.println("Q first: " + searchCopy.q);
-        System.out.println("Q: param " + searchCopy.getParam("q"));
 
         assertSearchParamSame(searchCopy, "deep copy");
 

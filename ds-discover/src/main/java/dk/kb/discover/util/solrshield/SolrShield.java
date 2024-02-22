@@ -63,6 +63,20 @@ public class SolrShield {
      * @return calculated weight etc.
      * @see #test(Iterable request, Double maxWeight)
      */
+    public static Response test(Map<String, String[]> request) {
+        ensureConfig();
+        return test(request.entrySet(), defaultMaxWeight);
+    }
+
+    /**
+     * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
+     * as a boolean stated if the request is allowed to be issued.
+     * <p>
+     * This method used {@link #defaultMaxWeight} as {@code maxWeight}.
+     * @param request a Solr request.
+     * @return calculated weight etc.
+     * @see #test(Iterable request, Double maxWeight)
+     */
     public static Response test(Iterable<Map.Entry<String, String[]>> request) {
         ensureConfig();
         return test(request, defaultMaxWeight);
@@ -82,10 +96,6 @@ public class SolrShield {
      */
     public static Response test(Iterable<Map.Entry<String, String[]>> request, Double maxWeight) {
         ensureConfig();
-        if (!enabled) {
-            return new Response(request, maxWeight, true, List.of("enabled=false: All requests allowed"), -1);
-        }
-
         Response response = weigh(request).maxWeight(maxWeight);
 
         // Is the weight acceptable?
@@ -93,6 +103,14 @@ public class SolrShield {
             response = response
                     .allowed(false)
                     .addReason("maxWeight " + response.maxWeight + " < " + response.weight + ": Weight exceeded");
+        }
+        if (!enabled) {
+            if (response.isAllowed()) {
+                log.info("Allowed: " + response);
+            } else {
+                log.warn("Not allowed, but SolrShield is not enabled and will not raise that signal: " + response);
+                response = response.allowed(true);
+            }
         }
 
         return response;
