@@ -506,7 +506,63 @@ paths:
               schema:
                 type: string
                 format: binary
+
+  /kaltura/tumbnails/:
+    get:
+      tags:
+        - 'Access'
+      summary: 'Get a list of url to thumbnail vidoe images at Kaltura for a record identified by file_id field in Solr.'
+      description: |-       
+       Get a list of url to thumbnail vidoe images at Kaltura for a record identified by file_id field in Solr.
           
+       The list will contain links to thumbnails. The first link will be a sprite of all images.
+          
+       The other entries will be links to that slice number of the video.
+      operationId: kalturaThumbnails
+      parameters:
+        - name: fileId
+          in: query
+          description: 'The external file reference to the kaltura'           
+          required: true
+          schema:            
+            type: string
+        - name: numberOfThumbnails
+          in: query
+          description: 'The number of thumbnails. The thumbnails will be spread evenly over the duration of the video. Maximum of 100 is allowed.'
+          required: true
+          schema:            
+            type: integer
+            minimum: 1
+            maximum: 100            
+            default: 10
+        - name: width
+          in: query
+          description: 'Width of the thumbnails'
+          required: false
+          schema:            
+            type: integer
+            minimum: 1
+            maximum: 10000
+        - name: height
+          in: query
+          description: 'Heigth of the thumbnails'
+          required: false
+          schema:            
+            type: integer
+            minimum: 1
+            maximum: 10000            
+                       
+      responses:
+        '200':
+          description: OK. List of links to thumbnail images. First link is a sprite containing all images
+          content:
+            application/json:
+             schema:
+              type: array
+              items: 
+                type: string
+                
+                 
                   
               
   # The ping service should be in all projects, should not do any advanced processing
@@ -545,6 +601,7 @@ paths:
               schema:
                 type: string
 
+  
   # The status service should be in all projects and should provide a list of running jobs,
   # the overall health of the service and similar. While the endpoint should be kept at
   # /monitor/status, the response should be adjusted to fit the application.
@@ -979,8 +1036,6 @@ components:
           type: string
           enum: ["gray", "grey", "binary"]
     
-  
-  
   
   
   

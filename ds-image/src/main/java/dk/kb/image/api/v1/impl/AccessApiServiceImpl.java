@@ -7,9 +7,11 @@ import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.DeepzoomDZIDto;
 import dk.kb.image.model.v1.IIIFInfoDto;
 import dk.kb.image.util.ImageAccessValidation;
+import dk.kb.image.util.KalturaUtil;
 import dk.kb.util.Pair;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -18,7 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.File;
 import java.util.List;
@@ -444,6 +450,23 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             default:
                 throw new InternalServiceException("Unknown format, unable to determine mime type: '" + format + "'");
         }
+    }
+
+    @Override
+    public List<String> kalturaThumbnails(String fileId,Integer numberOfThumbnails, Integer width, Integer height) throws  ServiceException{
+     
+        if ( fileId == null) {
+            throw new InvalidArgumentServiceException("FileId must not be null");
+        }
+        
+        try {
+            List<String> thumbnails = KalturaUtil.getThumbnails(fileId, numberOfThumbnails, width, height);
+            return thumbnails;
+        }
+        catch(Exception e) {
+            log.error("Error getting thumbnails from Kaltura",e);
+            throw new ServiceException("Error getting thumbnails from Kaltura",Response.Status.INTERNAL_SERVER_ERROR); 
+        }               
     }
 
 }

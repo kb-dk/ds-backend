@@ -40,3 +40,8 @@ thumbnail:
   max_height: 150
   max_width: 150
   
+kaltura: 
+  url:  https://kmc.kaltura.nordu.net
+  partnerId:  380
+  userId:  teg@kb.dk
+  adminSecret: very very secret
