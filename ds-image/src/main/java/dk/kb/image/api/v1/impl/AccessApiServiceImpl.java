@@ -452,6 +452,19 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         }
     }
 
+    
+    /**
+     * Return is a list of links that will generate thumbnail for the give program.<br>
+     * The first link in the list is the sprite containing all thumbnails.
+     * 
+     * @param fileId The externalId we have for the record. 
+     * @param numberOfSlices Number of thumbnails. They be divided uniform over the video.
+     * @param width Optional width parameter in pixels. Aspect ratio will be kept.
+     * @param height Optional height parameter in pixels. Aspect ratio will be kept. 
+     * 
+     * @return List of links. The first link in the list is the sprite containing all thumbnails.
+     * @throws Exception If the fileId is not found or internal server error with Kaltura
+     */
     @Override
     public List<String> kalturaThumbnails(String fileId,Integer numberOfThumbnails, Integer width, Integer height) throws  ServiceException{
      
