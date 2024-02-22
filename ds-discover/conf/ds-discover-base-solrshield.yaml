@@ -21,7 +21,7 @@ solr:
 
     # The default max weight should be kept conservative and perhaps even disabled by setting it to -1.
     # Ideally the max weight is taken from general application properties or derived per user group
-    default_max_weight: 1000
+    default_max_weight: 5000
 
     # Simply activating a call comes at a cost
     weight_constant: 100
@@ -78,9 +78,6 @@ solr:
               - subject_full_name
               - audience
               - text
-            denied_fields:      # Blacklist filter (see facet for whitelist ditto)
-              - '*'             # The asterisk is used for requesting all fields
-              - text_shingles   # No real need for denying, this is just to demonstrate denied_value
 
           rows:
             default_enabled: true

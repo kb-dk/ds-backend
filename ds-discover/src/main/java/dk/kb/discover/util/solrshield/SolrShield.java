@@ -106,9 +106,9 @@ public class SolrShield {
         }
         if (!enabled) {
             if (response.isAllowed()) {
-                log.info("Allowed: " + response);
+                log.info("Solr request allowed: " + response);
             } else {
-                log.warn("Not allowed, but SolrShield is not enabled and will not raise that signal: " + response);
+                log.warn("Solr request not allowed, but SolrShield is not enabled and will not raise that signal: " + response);
                 response = response.allowed(true);
             }
         }
