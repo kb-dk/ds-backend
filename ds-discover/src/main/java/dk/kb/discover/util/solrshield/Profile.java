@@ -35,24 +35,33 @@ import java.util.stream.StreamSupport;
 public class Profile extends ProfileElement<Profile> {
     private static final Logger log = LoggerFactory.getLogger(Profile.class);
 
-    /*
-    # Simply activating a call comes at a cost
+    /**
+     * The base cost of issuing a request, no matter the nature of the request.
      */
     public double weight_constant = 1000;
 
-    /*
-    # Ideally all fields are listed under 'fields'.
-    # 'unlisted_fields' controls handling of requests for unlisted fields
-    unlisted_fields:
-      allowed: true
-      weight: 100
+    /**
+     * Ideally all fields requested are defined in {@link #fields}. {@code unlistedFieldsAllowed} controls what
+     * action SolrShield takes if an unlisted/undefined field is requested.
+     * <p>
+     * If true, unknown fields are accepted. They will be assigned the weight {@link #unlistedFieldsWeight}.
+     * If false, specifying a field that is not in {@link #fields} will mark the request as not valid.
      */
     public boolean unlistedFieldsAllowed = false;
+    /**
+     * If a requested field is not present in {@link #fields}, it will be assigned this weight. 
+     */
     public double unlistedFieldsWeight = 100.0;
 
-    /*
-    # How to handle parameters not specified in SolrShield.
-    # This is shared between all components
+    /**
+     * Ideally all request parameters are known by SolrShield. {@code unlistedParamsAllowed} controls what
+     * action SolrShield takes is an unknown parameter is requested.
+     * <p>
+     * If true, unknown parameters are accepted. They will be assigned the weight {@link #unlistedParamsWeight}.
+     * If false, specifying a parameter that is unknown will mark the request as not valid.
+     * <p>
+     * It is highly recommended to set this to {@code false}, making the parameters is SolrShield act as a 
+     * whitelist of what is permissible.
      */
     public boolean unlistedParamsAllowed = false;
     public double unlistedParamsWeight = 1000.0;
@@ -63,23 +72,22 @@ public class Profile extends ProfileElement<Profile> {
      */
     public Map<String, String[]> unhandledParams = new HashMap<>();
 
-    /*
-    # The fields section assign base weight to each field.
-    # The scale goes from 1 to 1000, where
-    # "An integer field" is 1
-    # "A DocValued StrField, where the corpus holds a few thousand short unique values" is 5
-    # "A DocValued StrField, where the values are mostly unique" is 10
-    # "A TextField with a 5-10 words" is 50 (text fields are markedly heavier to process than StrFields)
-    # "A TextField with a 100-1000 words" is 100
-    # "A TextField with a full transcription of hours of speech" is 1000 (about 50 book pages)
-    # "A TextField holding a full book of hundreds of pages" is 5000 (yes, it breaks the scale)
-    fields:
-      - name: id
-        weight: 10
-      - name: resource_id
-        weight: 10
-      - name: origin
-        weight: 5
+    /**
+     * Fields known by SolrShield. This list should ideally contain all fields in the backing Solr(s).
+     * <p>
+     * {@code fields} maps from field name to field definition, where the definition currently holds the weight
+     * of the field. This might be extended at a later point.
+     * <p>
+     * Guidelines for the weight of a field is that the scale goes from 1 to 1000, where
+     * <ul>
+     *   <li>"An integer field" is 1</li>
+     *   <li>"A DocValued StrField, where the corpus holds a few thousand short unique values" is 5</li>
+     *   <li>"A DocValued StrField, where the values are mostly unique" is 10</li>
+     *   <li>"A TextField with a 5-10 words" is 50 (text fields are markedly heavier to process than StrFields)</li>
+     *   <li>"A TextField with a 100-1000 words" is 100</li>
+     *   <li>"A TextField with a full transcription of hours of speech" is 1000 (about 50 book pages)</li>
+     *   <li>"A TextField holding a full book of hundreds of pages" is 5000 (yes, it breaks the scale)</li>
+     * </ul>
      */
     public Map<String, Field> fields;
 

@@ -36,7 +36,7 @@ public abstract class ProfileElement<T> implements Cloneable {
     protected String name;
 
     /**
-     * Internal sanity checker to guard against deep copies that aren't.
+     * Internal sanity checker to guard against deep copies that aren't 100% de-coupled from the original element.
      */
     boolean isCopy = false;
 
