@@ -1,5 +1,6 @@
 package dk.kb.image.kaltura;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import com.kaltura.client.types.KalturaFilterPager;
 import com.kaltura.client.types.KalturaMediaEntry;
 import com.kaltura.client.types.KalturaMediaEntryFilter;
 import com.kaltura.client.types.KalturaMediaListResponse;
+
 
 /**
  * Kaltura client that can: 
@@ -30,8 +32,9 @@ public class DsKalturaClient {
      * @param userId The userId that must be defined in the kaltura, userId is email xxx@kb.dk in our kaltura
      * @param partnerId The partner id for kaltura. Kind of a collectionId. 
      * @param adminSecret The admin secret that must not be shared that gives access to API
+     * @throws IOException  If session could not be created at Kaltura
      */
-    public DsKalturaClient(String kalturaUrl, String userId, int partnerId, String adminSecret) throws Exception {
+    public DsKalturaClient(String kalturaUrl, String userId, int partnerId, String adminSecret) throws IOException {
         try {
             KalturaConfiguration config = new KalturaConfiguration();
             config.setEndpoint(kalturaUrl);
@@ -41,10 +44,9 @@ public class DsKalturaClient {
             this.client=client;
         }
         catch (Exception e) {
-            log.error("Connecting to Kaltura failed for kaltura url:"+kalturaUrl,e.getMessage());
-            throw new Exception (e);
+            log.warn("Connecting to Kaltura failed. KalturaUrl={},error={}",kalturaUrl,e.getMessage());
+            throw new IOException (e);
         }
-
     }
     
     
@@ -56,9 +58,9 @@ public class DsKalturaClient {
      *  
      * @param referenceId External reference ID given when uploading the entry to Kaltura.
      * @return The Kaltura id (internal id). Return null if the refId is not found.
-     * @throws  Throws KalturaApiException if kaltura called fails, or more than 1 entry was found with the referenceId.
+     * @throws IOException if Kaltura called failed, or more than 1 entry was found with the referenceId.
      */
-    public String getKulturaInternalId(String referenceId) throws   KalturaApiException{
+    public String getKulturaInternalId(String referenceId) throws IOException{
 
         KalturaFilterPager pager = new KalturaFilterPager();
         pager.pageSize = 10;
@@ -66,15 +68,22 @@ public class DsKalturaClient {
         KalturaMediaEntryFilter filter = new KalturaMediaEntryFilter();                
         //filter.searchTextMatchAnd="\""+referenceId+"\""; // Can also find with freetext search (quotes), but this can give false matches.
         filter.referenceIdEqual=referenceId;
-        KalturaMediaListResponse list = client.getMediaService().list(filter,pager);               
-
+        
+        KalturaMediaListResponse list=null;
+        try {
+          list = client.getMediaService().list(filter,pager);               
+        }
+        catch(KalturaApiException e) {            
+           throw new IOException("Error searching kaltura for referenceId:"+referenceId);
+        }
+        
         if (list.totalCount == 0) {
-            log.warn("No entry found at Kaltura for referenceId:"+referenceId);// warn since method it should happen if given a referenceId
+            log.warn("No entry found at Kaltura for referenceId:"+referenceId);// warn since method it should not happen if given a valid referenceId 
             return null;
         }
         if (list.totalCount >1) { //Sanity, has not happened yet.
-            log.error("More that one entry was found at Kaltura for referenceId:"+referenceId);
-            throw new KalturaApiException("More than 1 entry found at Kaltura for referenceId:"+referenceId);
+            log.error("More that one entry was found at Kaltura for referenceId:"+referenceId); // if this happens there is a logic error with uploading records
+            throw new IOException("More than 1 entry found at Kaltura for referenceId:"+referenceId);
         }
         
         ArrayList<KalturaMediaEntry> objects = list.objects;

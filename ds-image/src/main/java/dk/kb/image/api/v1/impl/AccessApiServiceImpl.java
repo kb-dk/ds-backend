@@ -6,6 +6,7 @@ import dk.kb.image.api.v1.AccessApi;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.DeepzoomDZIDto;
 import dk.kb.image.model.v1.IIIFInfoDto;
+import dk.kb.image.model.v1.ThumbnailsDto;
 import dk.kb.image.util.ImageAccessValidation;
 import dk.kb.image.util.KalturaUtil;
 import dk.kb.util.Pair;
@@ -462,22 +463,21 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      * @param width Optional width parameter in pixels. Aspect ratio will be kept.
      * @param height Optional height parameter in pixels. Aspect ratio will be kept. 
      * 
-     * @return List of links. The first link in the list is the sprite containing all thumbnails.
+     * @return ThumbnailsDto. Has a default thumbnail, a sprite and list of time sliced thumbnails.
      * @throws Exception If the fileId is not found or internal server error with Kaltura
      */
     @Override
-    public List<String> kalturaThumbnails(String fileId,Integer numberOfThumbnails, Integer width, Integer height) throws  ServiceException{
+    public ThumbnailsDto kalturaThumbnails(String fileId,Integer numberOfThumbnails, Integer width, Integer height) throws  ServiceException{
      
         if ( fileId == null) {
             throw new InvalidArgumentServiceException("FileId must not be null");
-        }
-        
+        }        
         try {
-            List<String> thumbnails = KalturaUtil.getThumbnails(fileId, numberOfThumbnails, width, height);
+           ThumbnailsDto thumbnails = KalturaUtil.getThumbnails(fileId, numberOfThumbnails, width, height);
             return thumbnails;
         }
         catch(Exception e) {
-            log.error("Error getting thumbnails from Kaltura",e);
+            log.warn("Error getting thumbnails from Kaltura for. Error={},fileId={},numberofThumbnails={},width={},height={}",e.getMessage(),fileId,numberOfThumbnails,width,height);
             throw new ServiceException("Error getting thumbnails from Kaltura",Response.Status.INTERNAL_SERVER_ERROR); 
         }               
     }

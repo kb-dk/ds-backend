@@ -116,7 +116,7 @@
         </dependency>
 
         
-        <!--For getting tumbnails from Kaltura -->
+        <!--For getting thumbnails from Kaltura -->
         <dependency>
             <groupId>com.kaltura</groupId>
             <artifactId>KalturaClient</artifactId>

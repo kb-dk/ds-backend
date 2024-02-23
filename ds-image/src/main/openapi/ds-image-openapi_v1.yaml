@@ -507,17 +507,15 @@ paths:
                 type: string
                 format: binary
 
-  /kaltura/tumbnails/:
+  /kaltura/thumbnails/:
     get:
       tags:
         - 'Access'
-      summary: 'Get a list of url to thumbnail vidoe images at Kaltura for a record identified by file_id field in Solr.'
+      summary: ' Get urls to thumbnail video images at Kaltura for a record identified by file_id field in Solr.'
       description: |-       
-       Get a list of url to thumbnail vidoe images at Kaltura for a record identified by file_id field in Solr.
-          
-       The list will contain links to thumbnails. The first link will be a sprite of all images.
-          
-       The other entries will be links to that slice number of the video.
+        Get a list of url to thumbnail vidoe images at Kaltura for a record identified by file_id field in Solr.          
+        Will contain a default thumbnail, a sprite and list of time sliced thumbnails.     
+        [Kaltura Thumbnail API](https://developer.kaltura.com/api-docs/Engage_and_Publish/kaltura-thumbnail-api.html)                     
       operationId: kalturaThumbnails
       parameters:
         - name: fileId
@@ -558,12 +556,7 @@ paths:
           content:
             application/json:
              schema:
-              type: array
-              items: 
-                type: string
-                
-                 
-                  
+                $ref: '#/components/schemas/Thumbnails'                    
               
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -893,6 +886,24 @@ components:
               xml:
                 attribute: true
               example: 4752
+
+ # Thumbnails to Kaltura
+    Thumbnails:
+      type: object
+      properties:
+        default:
+          type: string
+          description: 'Default thumbnail defined for the video. This is a thumbnail that can be changed by Kaltura administrators'      
+        sprite:
+          type: string
+          description: 'Link to image with all thumbnails.'            
+        thumbnails:        
+          type: array
+          description: 'List to the time slice thumbnails in chronological order ' 
+          items: 
+            type: string
+
+ 
     # Basic status response component.
     Status:
       type: object
