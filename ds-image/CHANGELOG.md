@@ -5,11 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Added
--  Accept header transfered to image server request
--  Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag
--  Method to get thumbnail links from Kaltura using our external referenceId as identifier. Kaltura thumbnail API only supports using internal Kaltura identifier.
 
+### Added
+
+### Changed
+
+
+
+=======
+## [1.3.1](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.3.1) - 2024-02-23
 ### Changed
 
 - A IIIF or IIIP  call will determine it the image call is a thumbnail or fullsize call. If height/width is over a given limit it
@@ -18,6 +22,13 @@ So it will be possible only to allow thumbnail calls etc. This implementation is
 
 - new properties to defines maximum size of height/width that defines thumbnail limit.
 - Changed port to 9077 to better fit the selection of the other ds services.
+
+### Added
+-  Accept header transfered to image server request
+-  Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag
+-  Method to get thumbnail links from Kaltura using our external referenceId as identifier. Kaltura thumbnail API only supports using internal Kaltura identifier.
+
+
 
 =======
 ## [1.3.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.3.0) - 2024-01-22
