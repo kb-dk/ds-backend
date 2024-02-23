@@ -265,7 +265,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
                 }
             }
 
-            Response shieldResponse = SolrShield.test(httpServletRequest.getParameterMap());
+            Response shieldResponse = SolrShield.evaluate(httpServletRequest.getParameterMap());
             if (!shieldResponse.isAllowed()) {
                 throw new ServiceException("Call blocked by SolrShield: " + shieldResponse.getReasons(),
                         javax.ws.rs.core.Response.Status.FORBIDDEN);

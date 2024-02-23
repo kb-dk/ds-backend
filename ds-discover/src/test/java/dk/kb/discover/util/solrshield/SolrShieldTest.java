@@ -73,7 +73,7 @@ class SolrShieldTest {
                 "q", new String[]{"*:*"},
                 "fl", new String[]{"title", "text"}
         );
-        SolrShield.test(request.entrySet(), 1000.0);
+        SolrShield.evaluate(request.entrySet(), 1000.0);
 
         assertSame(search, SolrShield.profile.search, "The base search should not have been replaced");
         assertFalse(search.isCopy, "The origo Search should still not be a copy itself after test");
@@ -85,7 +85,7 @@ class SolrShieldTest {
                 "q", new String[]{"*:*"},
                 "fl", new String[]{"title", "text"}
         );
-        Response response = SolrShield.test(request.entrySet(), 1000.0);
+        Response response = SolrShield.evaluate(request.entrySet(), 1000.0);
         log.debug("SolrShield response: " + response);
         assertTrue(response.allowed, "Request " + toString(request) + " should be allowed, but was not with reasons " +
                 response.reasons);
@@ -98,14 +98,14 @@ class SolrShieldTest {
                 "q", new String[]{"*:*"},
                 "fl", new String[]{"title", "text"}
         );
-        Response response = SolrShield.test(request.entrySet(), 100000.0);
+        Response response = SolrShield.evaluate(request.entrySet(), 100000.0);
         double firstWeight = response.weight;
 
         Map<String, String[]> request2 = Map.of(
                 "q", new String[]{"*:*"},
                 "fl", new String[]{"title"}
         );
-        Response response2 = SolrShield.test(request2.entrySet(), 100000.0);
+        Response response2 = SolrShield.evaluate(request2.entrySet(), 100000.0);
         double secondWeight = response2.weight;
 
         assertNotEquals(firstWeight, secondWeight, "The weights for searches with different fields should not be equal");
@@ -117,7 +117,7 @@ class SolrShieldTest {
                 "q", new String[]{"*:*"},
                 "fl", new String[]{"*, score"} // * expands to all fields, making the request too heavy
         );
-        Response response = SolrShield.test(request.entrySet(), 1000.0);
+        Response response = SolrShield.evaluate(request.entrySet(), 1000.0);
         log.debug("SolrShield response: " + response);
         assertFalse(response.allowed, "Request " + toString(request) + " should be allowed. Response: " + response);
         assertTrue(response.weight > 1000.0, "Response should have weight > 1000.0 but had " + response.weight);
@@ -131,7 +131,7 @@ class SolrShieldTest {
                 "facet", new String[]{"true"},
                 "facet.field", new String[]{"location", "genre"}
         );
-        Response response = SolrShield.test(request.entrySet(), 2000.0);
+        Response response = SolrShield.evaluate(request.entrySet(), 2000.0);
         log.debug("SolrShield response: " + response);
         assertTrue(response.allowed,
                 "Request " + toString(request) + " should be allowed, but was not with reasons " + response.reasons);
@@ -148,7 +148,7 @@ class SolrShieldTest {
                 "facet", new String[]{"true"},
                 "facet.field", new String[]{"location", "genre"}
         );
-        Response response = SolrShield.test(request.entrySet(), 2000.0);
+        Response response = SolrShield.evaluate(request.entrySet(), 2000.0);
         log.debug("SolrShield response: " + response);
         assertFalse(response.allowed,
                 "Request " + toString(request) + " should not be allowed due to facet.limit. Response: " + response);
@@ -165,7 +165,7 @@ class SolrShieldTest {
                 "facet", new String[]{"true"},
                 "facet.field", new String[]{"location"}
         );
-        Response response = SolrShield.test(request.entrySet(), Double.MAX_VALUE);
+        Response response = SolrShield.evaluate(request.entrySet(), Double.MAX_VALUE);
         log.debug("SolrShield response: " + response);
         assertFalse(response.allowed,
                 "Request " + toString(request) + " should not be allowed. Response: " + response);

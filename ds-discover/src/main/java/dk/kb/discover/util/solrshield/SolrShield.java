@@ -61,11 +61,11 @@ public class SolrShield {
      * This method used {@link #defaultMaxWeight} as {@code maxWeight}.
      * @param request a Solr request.
      * @return calculated weight etc.
-     * @see #test(Iterable request, Double maxWeight)
+     * @see #evaluate(Iterable request, Double maxWeight)
      */
-    public static Response test(Map<String, String[]> request) {
+    public static Response evaluate(Map<String, String[]> request) {
         ensureConfig();
-        return test(request.entrySet(), defaultMaxWeight);
+        return evaluate(request.entrySet(), defaultMaxWeight);
     }
 
     /**
@@ -75,11 +75,11 @@ public class SolrShield {
      * This method used {@link #defaultMaxWeight} as {@code maxWeight}.
      * @param request a Solr request.
      * @return calculated weight etc.
-     * @see #test(Iterable request, Double maxWeight)
+     * @see #evaluate(Iterable request, Double maxWeight)
      */
-    public static Response test(Iterable<Map.Entry<String, String[]>> request) {
+    public static Response evaluate(Iterable<Map.Entry<String, String[]>> request) {
         ensureConfig();
-        return test(request, defaultMaxWeight);
+        return evaluate(request, defaultMaxWeight);
     }
 
     /**
@@ -92,9 +92,9 @@ public class SolrShield {
      * @param request a Solr request.
      * @param maxWeight the maximum weight allowed.
      * @return calculated weight etc.
-     * @see #test(Iterable request)
+     * @see #evaluate(Iterable request)
      */
-    public static Response test(Iterable<Map.Entry<String, String[]>> request, Double maxWeight) {
+    public static Response evaluate(Iterable<Map.Entry<String, String[]>> request, Double maxWeight) {
         ensureConfig();
         Response response = weigh(request).maxWeight(maxWeight);
 
@@ -123,7 +123,7 @@ public class SolrShield {
      * {@link Response#allowed} is set to false, else it is set to true.
      * @param request a Solr request.
      * @return calculated weight etc.
-     * @see #test(Iterable)
+     * @see #evaluate(Iterable)
      */
     static Response weigh(Iterable<Map.Entry<String, String[]>> request) {
         Profile applied = profile.apply(request);
