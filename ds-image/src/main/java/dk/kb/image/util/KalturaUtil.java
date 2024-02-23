@@ -77,7 +77,7 @@ public class KalturaUtil {
     }
 
     
-    public static DsKalturaClient getClientInstance() throws IOException{
+    public synchronized DsKalturaClient getClientInstance() throws IOException{
         if (System.currentTimeMillis()-lastSessionStart >= reloadIntervalInMillis) {            
             //Create the client
             String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
