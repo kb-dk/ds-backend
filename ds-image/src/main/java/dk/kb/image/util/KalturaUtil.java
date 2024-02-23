@@ -77,17 +77,17 @@ public class KalturaUtil {
     }
 
     
-    public synchronized DsKalturaClient getClientInstance() throws IOException{
+    public  synchronized static DsKalturaClient getClientInstance() throws IOException{
         if (System.currentTimeMillis()-lastSessionStart >= reloadIntervalInMillis) {            
             //Create the client
             String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
             String adminSecret = ServiceConfig.getConfig().getString("kaltura.adminSecret"); //Must not be shared or exposed.
             Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
             String userId = ServiceConfig.getConfig().getString("kaltura.userId");
-            DsKalturaClient client = new DsKalturaClient(kalturaUrl,userId,partnerId,adminSecret);  
+            DsKalturaClient client = new DsKalturaClient(kalturaUrl,userId,partnerId,adminSecret);             
             clientInstance=client;
             log.info("Started a new Kaltura session");
-            lastSessionStart=System.currentTimeMillis(); //Reset timer
+            lastSessionStart=System.currentTimeMillis(); //Reset timer           
             return clientInstance;
         }
         return clientInstance; //Reuse existing connection.
