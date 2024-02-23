@@ -37,7 +37,7 @@ public class Field extends ProfileElement<Field> {
     }
 
     @Override
-    double getWeight() {
+    public double getWeight() {
         return weight;
     }
 }

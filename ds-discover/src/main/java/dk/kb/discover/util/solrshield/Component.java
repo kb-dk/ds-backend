@@ -82,6 +82,7 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
      * @param name key used for lookup. Must only be a single level deep.
      * @return true if the key exists in the {@code config}.
      */
+    // TODO: Remove this when kb-util has support for null values
     private boolean containsKey(YAML config, String name) {
         return config.keySet().stream().anyMatch(name::equals);
     }
@@ -92,6 +93,7 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
      * @param key key used for lookup. Must only be a single level deep.
      * @return the submap for the given key or an empty map if the value is null.
      */
+    // TODO: Remove this when kb-util has support for null values
     private YAML getSubMap(YAML config, String key) {
         if (!containsKey(config, key)) {
             throw new NullPointerException("The key '" + key + "' was not present in the config");
@@ -139,7 +141,7 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
     abstract void alignParams();
 
     @Override
-    double getWeight() {
+    public double getWeight() {
         return enabled ? weightConstant : 0.0;
     }
 

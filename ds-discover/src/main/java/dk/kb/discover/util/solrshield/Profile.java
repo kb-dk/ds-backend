@@ -192,7 +192,7 @@ public class Profile extends ProfileElement<Profile> {
     }
 
     @Override
-    double getWeight() {
+    public double getWeight() {
         return weight_constant + search.getWeight() + facet.getWeight();
         // TODO: unlistedParamsWeight
     }
@@ -200,6 +200,7 @@ public class Profile extends ProfileElement<Profile> {
     @Override
     public boolean isAllowed(List<String> reasons) {
         boolean allowed = true;
+        // Bitwise and to ensure that isAllowed is evaluated so that all reasons for not allowing are collected
         allowed &= search.isAllowed(reasons);
         allowed &= facet.isAllowed(reasons);
         if (!unhandledParams.isEmpty() && !unlistedParamsAllowed) {
