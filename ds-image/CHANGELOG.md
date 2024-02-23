@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 -  Accept header transfered to image server request
 -  Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag
+-  Method to get thumbnail links from Kaltura using our external referenceId as identifier. Kaltura thumbnail API only supports using internal Kaltura identifier.
 
 ### Changed
 
