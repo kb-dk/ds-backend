@@ -14,6 +14,7 @@
  */
 package dk.kb.discover.util.solrshield;
 
+import dk.kb.discover.util.solrshield.params.*;
 import dk.kb.util.yaml.YAML;
 
 import java.util.Map;
@@ -26,12 +27,12 @@ import java.util.stream.StreamSupport;
  */
 public class FacetComponent extends Component<FacetComponent> {
 
-    protected Param.StringParam facetQuery;
-    protected Param.FieldsParam facetField; // Multiple values, but the Solr param name is singular 'facet.field'
-    protected Param.IntegerParam facetLimit;
-    protected Param.StringParam facetSort;
-    protected Param.IntegerParam facetMincount;
-    protected Param.BooleanParam facetExists;
+    protected StringParam facetQuery;
+    protected FieldsParam facetField; // Multiple values, but the Solr param name is singular 'facet.field'
+    protected IntegerParam facetLimit;
+    protected StringParam facetSort;
+    protected IntegerParam facetMincount;
+    protected BooleanParam facetExists;
 
     // TODO: Handle field-specific tweaks (sort + limit)
 
@@ -39,12 +40,12 @@ public class FacetComponent extends Component<FacetComponent> {
         super(profile, "facet", config);
 
         YAML paramsConf = config.getSubMap("params");
-        addParam(paramsConf, "facet.query", paramConf -> this.facetQuery = new Param.StringParam(profile, paramConf, false));
-        addParam(paramsConf, "facet.field", paramConf -> this.facetField = new Param.FieldsParam(profile, paramConf));
-        addParam(paramsConf, "facet.limit", paramConf -> this.facetLimit = new Param.IntegerParam(profile, paramConf));
-        addParam(paramsConf, "facet.sort", paramConf -> this.facetSort = new Param.StringParam(profile, paramConf, false));
-        addParam(paramsConf, "facet.mincount", paramConf -> this.facetMincount = new Param.IntegerParam(profile, paramConf));
-        addParam(paramsConf, "facet.exists", paramConf -> this.facetExists = new Param.BooleanParam(profile, paramConf));
+        addParam(paramsConf, "facet.query", paramConf -> this.facetQuery = new StringParam(profile, paramConf, false));
+        addParam(paramsConf, "facet.field", paramConf -> this.facetField = new FieldsParam(profile, paramConf));
+        addParam(paramsConf, "facet.limit", paramConf -> this.facetLimit = new IntegerParam(profile, paramConf));
+        addParam(paramsConf, "facet.sort", paramConf -> this.facetSort = new StringParam(profile, paramConf, false));
+        addParam(paramsConf, "facet.mincount", paramConf -> this.facetMincount = new IntegerParam(profile, paramConf));
+        addParam(paramsConf, "facet.exists", paramConf -> this.facetExists = new BooleanParam(profile, paramConf));
     }
 
     @Override

@@ -14,6 +14,7 @@
  */
 package dk.kb.discover.util.solrshield;
 
+import dk.kb.discover.util.solrshield.params.Param;
 import dk.kb.util.yaml.NotFoundException;
 import dk.kb.util.yaml.YAML;
 

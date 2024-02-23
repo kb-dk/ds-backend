@@ -89,7 +89,7 @@ public abstract class ProfileElement<T> implements Cloneable {
     /**
      * @return the combined weight of this element and its sub-elements.
      */
-    abstract double getWeight();
+    public abstract double getWeight();
 
     /**
      * Check whether the request is allowed, relative to the given position in the profile tree and downwards.

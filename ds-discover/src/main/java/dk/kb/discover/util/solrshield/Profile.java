@@ -131,8 +131,9 @@ public class Profile extends ProfileElement<Profile> {
      */
     private Map<String, Field> getFields(YAML config) {
         if (!config.containsKey("fields")) {
-            log.warn("No 'fields' list in SolrShield config. This is probably an error");
-            return Collections.emptyMap();
+            throw new NullPointerException(
+                    "Attempted to construct the list of fields from 'fields', " +
+                            "but no list of field configurations was found");
         }
         double defaultWeight = config.getDouble("default_field.weight", 1000.0);
         YAML EMPTY = new YAML();
