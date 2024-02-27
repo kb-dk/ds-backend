@@ -5,8 +5,6 @@ import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.representations.AccessTokenResponse;
 
-import javax.servlet.http.Cookie;
-import java.util.Date;
 import java.util.Map;
 
 public class OauthHelper {
@@ -32,18 +30,10 @@ public class OauthHelper {
     }
 
 
-    public static Cookie getNewAuthzCookie() {
+    public static String getNewAccessToken() {
         AccessTokenResponse accessTokenResponse = getAuthzClient().obtainAccessToken();
-
-        boolean secure = ServiceConfig.getConfig().getBoolean("config.use-secure-cookie",true);
-        Cookie authCookie = new Cookie("Authorization",accessTokenResponse.getToken());
-        authCookie.setHttpOnly(true);
-        authCookie.setSecure(secure);
-        return authCookie;
+        return accessTokenResponse.getToken();
     }
 
-    public static String getAccessTokenFromAuthzCookie(Cookie cookie) {
-        return cookie.getValue();
-    }
 
 }
