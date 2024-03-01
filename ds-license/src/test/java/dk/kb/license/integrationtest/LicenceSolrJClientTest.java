@@ -1,39 +1,42 @@
 package dk.kb.license.integrationtest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import dk.kb.license.config.ServiceConfig;
+
 import dk.kb.license.solr.SolrServerClient;
+
 import org.apache.solr.client.solrj.SolrServerException;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
-//Integration test. Run manually to see solr integration is working
+/**
+ *  Integration test, will not be run by automatic build flow.
+ *  Notice data in Solr may change over time. For this unittest two ID's
+ */
 public class LicenceSolrJClientTest {
 
+    @Tag("integration")   
+    @Test
+    public void testIdFiltering() throws  IOException, SolrServerException{
+        ServiceConfig.initialize("conf/ds-license-behaviour.yaml"); //Load the ID filtering fields
+        SolrServerClient solrServer = new SolrServerClient("http://devel11:10007/solr/ds"); //Do not use the one in ds-license-behaviour.yaml
 
-     //Find url in property file on devel06 etc.
-	//private static SolrServerClient solrServer = new SolrServerClient("http://localhost:50001/solr/aviser.2.devel/");
-		
+        String idVideo="ds.tv:oai:du:3006e2f8-3f73-477a-a504-4d7cb1ae1e1c";
+        String idRadio="ds.radio:oai:du:e683b0b8-425b-45aa-be86-78ac2b4ef0ca";
+        ArrayList<String> ids = new ArrayList<String>(); 
+        ids.add(idVideo);// Video
+        ids.add(idRadio); //radio
+        ids.add("none_existing_id"); //not found
 
-    
-	public static void main(String[] args) throws IOException, SolrServerException {
-     ServiceConfig.initialize("conf/ds-license*.yaml"); 
-     SolrServerClient solrServer = new SolrServerClient("http://devel11:10001/ds-discover/v1/solr/ds/");
-	    
-		ArrayList<String> ids = new ArrayList<String>(); 
-		ids.add("doms_radioTVCollection:uuid:12efb195-194f-4795-bdc8-4efb2fa43152");//radio TV
-		ids.add("doms_reklamefilm:uuid:b12445f8-8b88-4d32-bc14-d7494debb491"); //reklame
-
-		
-		String queryPartAccess="title:doms_radioTVCollection";
-		List<String> filteredIds =solrServer.filterIds(ids, queryPartAccess, "id");		
-		System.out.println("Size:"+filteredIds.size());
-	    System.out.println(filteredIds);		
-	}
-	
-	
-	
-	
+        String queryPartAccess="resource_description:VideoObject"; //So radio will not be found
+        List<String> filteredIds =solrServer.filterIds(ids, queryPartAccess, "id");		
+        assertEquals(1,filteredIds.size());
+        assertEquals(idVideo, filteredIds.get(0));                
+    }
 }
