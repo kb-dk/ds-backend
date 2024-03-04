@@ -2,11 +2,18 @@ package dk.kb.license.integrationtest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.GetUserGroupsInputDto;
@@ -27,8 +34,21 @@ import dk.kb.license.util.DsLicenseClient;
  
 @Tag("integration")
 public class LicenseModuleClientTest {
-
-    private String dsLicenseUrl="http://devel11:10001/ds-license/v1"; 
+    private static final Logger log = LoggerFactory.getLogger( LicenseModuleClientTest.class);
+        
+    private static String dsLicenseUrl=null;
+    
+    @BeforeAll
+    static void setup() {
+        try {
+            ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml");                        
+            dsLicenseUrl= ServiceConfig.getConfig().getString("integration.devel.licensemodule");
+        } catch (IOException e) {          
+            log.error("Integration yaml 'ds-license-integration-test.yaml' file most be present. Call 'kb init'");            
+            fail();
+        }
+    }
+    
     
     @Test
     public void testValidateAccess() throws Exception {        
