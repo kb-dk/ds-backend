@@ -1,16 +1,13 @@
 package dk.kb.oauth.config;
 
 import dk.kb.util.Resolver;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Tag;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
