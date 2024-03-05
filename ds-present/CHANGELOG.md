@@ -5,14 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.7.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.0) - 2024-03-05
 ### Added
 -  New synonyms.txt file to solr configuruation. text_general fieldtype will not also use synonyms
 -  Bump sbforge-parent to V25
 -  Integration unittest uses aegis configuration
 ### Changed
 -  Spellcheck default enabled in edismax selecthandler in solrconfig.xml
+### Removed
+- Removed origin as enum in openAPI specification and interface.
 
-## [1.6.0](https://github.com/kb-dk/ds-present/releases/tag/v1.6.0) - 2024-02-09
+## [1.6.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.6.0) - 2024-02-09
 ### Added
 - Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag
 - Added support for referencing config values in OpenAPI specification through the maven plugin: _injection-maven-plugin_
