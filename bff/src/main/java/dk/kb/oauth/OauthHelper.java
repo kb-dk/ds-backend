@@ -18,10 +18,10 @@ public class OauthHelper {
 
     private static synchronized AuthzClient getAuthzClient() {
         if (authzClient == null) {
-            keyCloakUrl = ServiceConfig.getInstance().getConfig().getString("config.keycloak.url");
-            realm = ServiceConfig.getInstance().getConfig().getString("config.keycloak.realm");
-            clientId = ServiceConfig.getInstance().getConfig().getString("config.keycloak.client-id");
-            clientSecret = ServiceConfig.getInstance().getConfig().getString("config.keycloak.secret");
+            keyCloakUrl = ServiceConfig.getConfig().getString("config.keycloak.url");
+            realm = ServiceConfig.getConfig().getString("config.keycloak.realm");
+            clientId = ServiceConfig.getConfig().getString("config.keycloak.client-id");
+            clientSecret = ServiceConfig.getConfig().getString("config.keycloak.secret");
 
             Configuration authzClientConfig = new Configuration(keyCloakUrl,realm,clientId, Map.of("secret",clientSecret),null);
             authzClient = AuthzClient.create(authzClientConfig);

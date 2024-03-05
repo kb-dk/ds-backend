@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.*;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -22,7 +23,7 @@ public class EncryptionHelper {
             SecretKey key = generateKey(ServiceConfig.getConfig().getString("config.secretsalt"));
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, key);
-            byte[] encryptedBytes = cipher.doFinal(plain.getBytes());
+            byte[] encryptedBytes = cipher.doFinal(plain.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(encryptedBytes);
         } catch (UnsupportedEncodingException | NoSuchPaddingException | IllegalBlockSizeException |
                  NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
@@ -38,7 +39,7 @@ public class EncryptionHelper {
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] encryptedBytes = Base64.getDecoder().decode(encryptedString);
             byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-            return new String(decryptedBytes);
+            return new String(decryptedBytes,StandardCharsets.UTF_8);
         } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             log.error("decryption error ",e);
             throw new InternalServiceException("decryption error");
@@ -47,7 +48,7 @@ public class EncryptionHelper {
 
     private static SecretKey generateKey(String salt) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
-        secureRandom.setSeed(salt.getBytes());
+        secureRandom.setSeed(salt.getBytes(StandardCharsets.UTF_8));
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(256,secureRandom);
         return keyGenerator.generateKey();
