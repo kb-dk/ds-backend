@@ -27,6 +27,7 @@ import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -155,9 +156,10 @@ public class DsPresentApiServiceImplTest {
     }
 
     @Test
+    @Tag("integration")
     public void testMultiRecordsLicenseAllowAll() throws NoSuchFieldException, ApiException, IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            return;
+            fail("Missing internal_test_files");
         }
         // Setup mock license that allows 1 record
         final String RECORD_ID1 = "40221e30-1414-11e9-8fb8-00505688346e.xml";

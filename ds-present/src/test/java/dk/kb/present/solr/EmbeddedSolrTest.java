@@ -21,6 +21,7 @@ import org.apache.solr.core.CoreContainer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -350,6 +351,7 @@ public class EmbeddedSolrTest {
     }
 
     @Test
+    @Tag("integration")
     void testPreservicaDuration() throws Exception {
         testLongValuePreservicaField(PVICA_RECORD_44979f67, "duration_ms", 950000L);
     }
@@ -360,11 +362,13 @@ public class EmbeddedSolrTest {
         assertEquals("ds.test", record.getFieldValue("origin"));
     }
     @Test
+    @Tag("integration")
     void testOriginPreservica() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_44979f67, "origin", "ds.test");
     }
 
     @Test
+    @Tag("integration")
     void testOriginalTitle() throws Exception {
         // With the new transformation chain this field is not created records where titel and original title are identical
         // Here the value is only extracted to the title field in JSONLD and the solr field original_titel does not
@@ -373,16 +377,19 @@ public class EmbeddedSolrTest {
     }
 
     @Test
+    @Tag("integration")
     void testEpisodeTitel() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "episode_title", "Kagerester");
     }
     @Test
+    @Tag("integration")
     void testRitzauId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "ritzau_id",
                 "4aa3482b-a149-44d1-8715-f789e69f1a1e");
     }
 
     @Test
+    @Tag("integration")
     void testTvmeterId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_44979f67, "tvmeter_id",
                 "78e74634-bec1-4cea-a984-20192c97b743");
@@ -392,6 +399,7 @@ public class EmbeddedSolrTest {
     //The embedded solr is returning timestamps in CEST time, which is 2 hours in front of UTC, which is the indexed
     //format and the one available in the metadata
     @Test
+    @Tag("integration")
     void testPvicaStartTime() throws Exception {
         // Epoch value of 2018-07-11T18-06-33Z
         Date startTime = new Date(1531332393000L);
@@ -400,6 +408,7 @@ public class EmbeddedSolrTest {
 
 
     @Test
+    @Tag("integration")
     void testPvicaEndTime() throws Exception {
         // Epoch value of 2018-07-11T18-22-23Z
         Date endTime = new Date(1531333343000L);
@@ -407,6 +416,7 @@ public class EmbeddedSolrTest {
     }
 
     @Test
+    @Tag("integration")
     void testPvicaTemporalFields() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_time_da_string", "18:15:00" );
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_time_da_string", "18:40:00");
@@ -426,150 +436,179 @@ public class EmbeddedSolrTest {
     }
 
     @Test
+    @Tag("integration")
     void testColor() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_44979f67, "color", true );
     }
 
     @Test
+    @Tag("integration")
     void testVideoQuality() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_44979f67, "video_quality", "ikke hd" );
     }
 
     @Test
+    @Tag("integration")
     void testSurroundSound() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_44979f67, "surround_sound", false);
     }
 
     @Test
+    @Tag("integration")
     void testAspectRation() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_44979f67, "aspect_ratio", "16:9");
     }
 
     // TODO: Why are these not cast correctly.
     @Test
+    @Tag("integration")
     void testEpisodeNumber() throws Exception {
         testIntValuePreservicaField(PVICA_RECORD_44979f67, "episode", 3);
     }
 
     @Test
+    @Tag("integration")
     void testNumberOfEpisodes() throws Exception {
         testIntValuePreservicaField(PVICA_RECORD_3945e2d1, "number_of_episodes", 8);
     }
 
     @Test
+    @Tag("integration")
     void testLive() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "live_broadcast", false);
     }
 
     @Test
+    @Tag("integration")
     void testRetransmission() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "retransmission", false);
     }
 
 
     @Test
+    @Tag("integration")
     void testAbstract() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "abstract", "Dan. dok.-serie");
     }
 
     @Test
+    @Tag("integration")
     void testSubtitles() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_9d9785a8, "has_subtitles", false);
     }
 
     @Test
+    @Tag("integration")
     void testSubtitlesForImpaired() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_9d9785a8, "has_subtitles_for_hearing_impaired", false);
     }
 
     @Test
+    @Tag("integration")
     void testPreservicaPid() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "pid",
                 "109.1.4/9d9785a8-71f4-4b34-9a0e-1c99c13b001b");
     }
 
     @Test
+    @Tag("integration")
     void testGenreSub() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "genre_sub", "Alle");
     }
 
     @Test
+    @Tag("integration")
     void testInternalAccesssionRef() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_accession_ref",
                 "4eb00536-5efa-4346-9165-b13997b0ffd2");
     }
 
     @Test
+    @Tag("integration")
     void testInternalFormatIdentiferRitzau() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_format_identifier_ritzau",
                 "81318588");
     }
     @Test
+    @Tag("integration")
     void testInternalFormatIdentiferNielsen() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_format_identifier_nielsen",
                 "101|20220227|252839|255705|0|4d3a94a4-1ff0-4598-b593-034eacf1c77d|98");
     }
 
     @Test
+    @Tag("integration")
     void testInternalMaingenreId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_maingenre_id", "13");
     }
 
     @Test
+    @Tag("integration")
     void testInternalChannelId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_channel_id", "3");
     }
 
     @Test
+    @Tag("integration")
     void testInternalCountryOfOriginId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_country_of_origin_id", "0");
     }
     @Test
+    @Tag("integration")
     void testInternalRitzauProgramId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_ritzau_program_id", "25101143");
     }
 
     @Test
+    @Tag("integration")
     void testSubgenreId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_subgenre_id", "736");
     }
 
     @Test
+    @Tag("integration")
     void testEpisodeId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_episode_id", "0");
     }
 
     @Test
+    @Tag("integration")
     void testSeasonId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_season_id", "174278");
     }
 
     @Test
+    @Tag("integration")
     void testSeriesId() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_series_id", "146180");
     }
 
     @Test
+    @Tag("integration")
     void testProgramOphold() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_program_ophold", false);
     }
 
     @Test
+    @Tag("integration")
     void testIsTeletext() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_is_teletext", false);
     }
 
     @Test
+    @Tag("integration")
     void testShowviewcode() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_showviewcode", "0");
     }
 
     @Test
+    @Tag("integration")
     void testPadding() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_padding_seconds", "15");
     }
 
     @Test
+    @Tag("integration")
     void testInternalAccess() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_individual_prohibition", "Nej");
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_claused", "Nej");
@@ -578,6 +617,7 @@ public class EmbeddedSolrTest {
     }
 
     @Test
+    @Tag("integration")
     void testProgramStructure() throws Exception {
         testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_start", 0);
         testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_end", 0);
@@ -587,6 +627,7 @@ public class EmbeddedSolrTest {
     }
 
     @Test
+    @Tag("integration")
     void testOverlappingFiles() throws Exception {
         testStringPresentInPreservicaMultiField(PVICA_RECORD_2973e7fa, "internal_overlapping_files", "c8f496cf-4e0b-4682-8eee-67dfe07525d2,8ac98f6e-5653-492a-ab8c-c1462edaeb4a");
     }
@@ -602,21 +643,25 @@ public class EmbeddedSolrTest {
     }*/
 
     @Test
+    @Tag("integration")
     void testIndexingOfRadioRecord() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "resource_description", "AudioObject");
     }
 
     @Test
+    @Tag("integration")
     void testAccessConditions() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "conditions_of_access", "placeholderCondition");
     }
 
     @Test
+    @Tag("integration")
     void testBroadcaster() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_accf8d1c, "broadcaster", "DR");
     }
 
     @Test
+    @Tag("integration")
     void testDateModified() throws Exception {
         testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "internal_storage_mTime", 1701261949625000L);
     }
@@ -789,9 +834,8 @@ public class EmbeddedSolrTest {
 
     private void testStringValuePreservicaField(String preservicaRecord, String solrField, String fieldValue) throws Exception {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
-            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
-                    preservicaRecord, solrField);
-            return;
+           log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'.",preservicaRecord, solrField);
+           fail("Missing internal test files");
         }
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
@@ -800,9 +844,8 @@ public class EmbeddedSolrTest {
 
     private void testStringPresentInPreservicaMultiField(String preservicaRecord, String solrField, String... fieldValues) throws Exception {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null) {
-            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
-                    preservicaRecord, solrField);
-            return;
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'",preservicaRecord, solrField);
+            fail("Missing internal test files");
         }
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
         for (String value:fieldValues) {
@@ -812,9 +855,8 @@ public class EmbeddedSolrTest {
 
     private void testDateValuePreservicaField(String preservicaRecord, String solrField, Date fieldValue) throws Exception {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
-            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
-                    preservicaRecord, solrField);
-            return;
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'",preservicaRecord, solrField);
+            fail("Missing internal test files");
         }
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
@@ -822,9 +864,8 @@ public class EmbeddedSolrTest {
 
     private void testLongValuePreservicaField(String preservicaRecord, String solrField, Long fieldValue) throws Exception {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
-            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
-                    preservicaRecord, solrField);
-            return;
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'",preservicaRecord, solrField);
+            fail("Missing internal test files");            
         }
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
@@ -832,9 +873,8 @@ public class EmbeddedSolrTest {
 
     private void testIntValuePreservicaField(String preservicaRecord, String solrField, Integer fieldValue) throws Exception {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
-            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
-                    preservicaRecord, solrField);
-            return;
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'",preservicaRecord, solrField);
+            fail("Missing internal test files");        
         }
 
         SolrDocument record = singlePreservicaIndex(preservicaRecord);
@@ -843,9 +883,8 @@ public class EmbeddedSolrTest {
 
     private void testBooleanValuePreservicaField(String preservicaRecord, String solrField, boolean fieldValue) throws Exception {
         if (Resolver.getPathFromClasspath(preservicaRecord) == null){
-            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}' is not run.",
-                    preservicaRecord, solrField);
-            return;
+            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'",preservicaRecord, solrField);
+            fail("Missing internal test files");
         }
 
         SolrDocument record = singlePreservicaIndex(preservicaRecord);

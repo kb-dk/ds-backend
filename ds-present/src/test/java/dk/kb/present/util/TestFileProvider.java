@@ -42,6 +42,9 @@ import java.util.stream.Stream;
  * As of 2023-08-24, the recommended way to retrieve internal tets files is to run the aegis command 'kb init'
  * in the project checkout. This will copy the test files to the expected location. The aegis project is available at
  * <a href="https://github.com/kb-dk/aegis/">github.com/kb-dk/aegis</a> (KB Developer access only).
+ * 
+ * Notice with the new tag("Integration") marked for unittests, they will fail on run if file it not found and not using this class any longer.
+ * 
  */
 public class TestFileProvider {
     private static final Logger log = LoggerFactory.getLogger(TestFileProvider.class);

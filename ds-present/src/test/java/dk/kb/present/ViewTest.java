@@ -3,6 +3,8 @@ package dk.kb.present;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
+
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 
@@ -53,9 +55,10 @@ class ViewTest {
     }
 
     @Test
+    @Tag("integration")
     void jsonldPvica() throws Exception {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
-            return;
+            fail("Missing internal test files");
         }
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML radioConf = conf.getYAMLList("origins").get(2);
@@ -71,9 +74,10 @@ class ViewTest {
     }
 
     @Test
+    @Tag("integration")
     void pvicaEmptyChild() throws Exception {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
-            return;
+            fail("Missing internal test files");
         }
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML radioConf = conf.getYAMLList(".origins").get(2);
@@ -91,9 +95,10 @@ class ViewTest {
     }
 
     @Test
+    @Tag("integration")
     void solrFromPvica() throws Exception {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
-            return;
+            fail("Missing internal test files");
         }
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML tvConf = conf.getYAMLList(".origins").get(3);

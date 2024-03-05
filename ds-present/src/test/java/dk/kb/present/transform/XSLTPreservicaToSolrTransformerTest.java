@@ -7,6 +7,7 @@ import dk.kb.util.Files;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *  To run these tests, the test metadata has to be fetched from the internal aegis project.
  *  With aegis running this can be done by running 'kb init' in this repository.
  */
+
+@Tag("integration")
 public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase {
 
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
@@ -40,9 +44,9 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @BeforeAll
     public static void beforeMethod() {
         if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") == null){
-            log.warn("Internal test files are not present. Unittest 'XSLTPreservicaToSolrTransformerTest' is therefore not run.");
+            fail("Internal test files are not present. Unittest 'XSLTPreservicaToSolrTransformerTest' is therefore not run.");
         }
-        Assumptions.assumeTrue(Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null);
+        
     }
 
     @Test

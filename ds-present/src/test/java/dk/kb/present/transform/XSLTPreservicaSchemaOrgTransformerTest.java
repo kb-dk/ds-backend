@@ -8,15 +8,19 @@ import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.util.Map;
 
+
+@Tag("integration")
 public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestBase {
     private static final Logger log = LoggerFactory.getLogger(XSLTCumulusToSchemaDotOrgTransformerTest.class);
     public static final String PRESERVICA2SCHEMAORG = "xslt/preservica2schemaorg.xsl";
@@ -29,9 +33,9 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @BeforeAll
     public static void beforeMethod() {
         if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") == null){
-            log.warn("Internal test files are not present. Unittest 'XSLTPreservicaSchemaOrgTransformerTest' is therefore not run.");
+            fail("Internal test files are not present. Unittest 'XSLTPreservicaSchemaOrgTransformerTest'");
         }
-        Assumptions.assumeTrue(Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null);
+        
     }
 
     @Test

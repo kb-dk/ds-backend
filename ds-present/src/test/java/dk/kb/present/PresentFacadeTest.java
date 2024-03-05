@@ -18,6 +18,7 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -33,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,9 +57,10 @@ public class PresentFacadeTest {
     }
 
     @Test
+    @Tag("integration")
     void getRecordsMODS() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            return;
+           fail("Missing internal_test_files");
         }
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, FormatDto.MODS, ids -> ids);
         String result = toString(out);
@@ -65,9 +68,10 @@ public class PresentFacadeTest {
     }
 
     @Test
+    @Tag("integration")
     void accessFilterMultiRecords() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            return;
+            fail("Missing internal_test_files");
         }
 
         // Random subset of the sample files
@@ -91,9 +95,10 @@ public class PresentFacadeTest {
     }
 
     @Test
+    @Tag("integration")
     void solrPreservicaRecords() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            return;
+            fail("Missing internal_test_files");  
         }
 
         // No access checking
@@ -127,9 +132,10 @@ public class PresentFacadeTest {
     private static final Pattern METS_PATTERN = Pattern.compile("<mets:mets ");
 
     @Test
+    @Tag("integration")
     void getRecordsMODSDeclaration() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            return;
+            fail("Missing internal_test_files");                 
         }
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, FormatDto.MODS, ids -> ids);
         String result = toString(out);
@@ -144,9 +150,10 @@ public class PresentFacadeTest {
     }
 
     @Test
+    @Tag("integration")
     void getRecordsRaw() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            return;
+            fail("Missing internal_test_files");
         }
 
         try (MockedStatic<FormatDto> FormatDtoMockedStatic = Mockito.mockStatic(FormatDto.class)) {
@@ -175,9 +182,10 @@ public class PresentFacadeTest {
     }
 
     @Test
+    @Tag("integration")
     void getRecordsRawLines() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            return;
+            fail("Missing internal_test_files");      
         }
         try (MockedStatic<FormatDto> FormatDtoMockedStatic = Mockito.mockStatic(FormatDto.class)) {
             final FormatDto RAWBYPASS = Mockito.mock(FormatDto.class);
@@ -201,9 +209,10 @@ public class PresentFacadeTest {
     }
 
     @Test
+    @Tag("integration")
     void getRecordsSolr() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            return;
+            fail("Missing internal_test_files");
         }
         StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, FormatDto.SOLRJSON, ids -> ids);
         String result = toString(out);

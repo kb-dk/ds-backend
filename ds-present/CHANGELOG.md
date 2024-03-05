@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 -  New synonyms.txt file to solr configuruation. text_general fieldtype will not also use synonyms
-
+-  Bump sbforge-parent to V25
+-  Integration unittest uses aegis configuration
 ### Changed
 -  Spellcheck default enabled in edismax selecthandler in solrconfig.xml
 
