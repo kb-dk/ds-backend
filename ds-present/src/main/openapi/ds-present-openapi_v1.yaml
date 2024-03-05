@@ -106,7 +106,6 @@ paths:
           schema:
             type: string
             example: ${example_origin}
-            enum: [${origins}]
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
@@ -196,7 +195,6 @@ paths:
           schema:
             type: string
             example: ${example_origin}
-            enum: [${origins}]
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
@@ -253,7 +251,6 @@ paths:
             type: string
             minLength: 1
             example: ${example_origin}
-            enum: [${origins}]
       responses:
         '200':
           description: 'OK: The origin was known and a description is returned.'
