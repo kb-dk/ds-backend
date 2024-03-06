@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DocumentationExtractorTest {
 
+    // TODO: Use best practise aegis setup
     @BeforeAll
     public static void setup() throws IOException {
         ServiceConfig.initialize("conf/ds-discover-local.yaml");
@@ -39,7 +40,8 @@ public class DocumentationExtractorTest {
 
     @Test
     public void testSchemaTransformation() throws IOException {
-        System.out.println(DocumentationExtractor.transformSchema("ds"));
+        // TODO: Create actual test, making use of test setup
+        System.out.println(DocumentationExtractor.transformSchema("ds", "xml"));
     }
 
 

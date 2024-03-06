@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import dk.kb.present.transform.XSLTTransformer;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
 
@@ -17,10 +18,21 @@ public class DocumentationExtractor {
 
     private static final String SCHEMA2MARKDOWN = "schema2markdown.xsl";
 
-    public static String transformSchema(String collection) throws IOException {
+    public static String transformSchema(String collection, String format) throws IOException {
         String rawSchema= getRawSchema(collection);
 
-        return getTransformed(SCHEMA2MARKDOWN, rawSchema);
+        switch (format){
+            case "xml":
+                return getRawSchema(collection);
+            case "html":
+                return "HTML has not been implemented yet. Sorry";
+            case "markdown":
+                return getTransformed(SCHEMA2MARKDOWN, rawSchema);
+            default:
+                throw new InvalidArgumentServiceException("The format '" + format + "' is not supported.");
+        }
+
+
     }
 
     public static String getRawSchema(String collection) throws IOException {

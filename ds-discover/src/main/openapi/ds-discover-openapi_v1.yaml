@@ -95,7 +95,7 @@ paths:
         '200':
           description: 'Documented schema for solr collection.'
           content:
-            application/xml:
+            text/xml:
               schema:
                 description: |
                   Entire Solr schema in [XML or schema.xml format](https://solr.apache.org/guide/solr/9_0/indexing-guide/schema-api.html#retrieve-schema-examples)

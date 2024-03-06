@@ -212,7 +212,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     @Override
     public String documentedSchema(String collection, String format){
         try {
-            return DocumentationExtractor.transformSchema(collection);
+            return DocumentationExtractor.transformSchema(collection, format);
 
         } catch (Exception e){
             throw handleException(e);
