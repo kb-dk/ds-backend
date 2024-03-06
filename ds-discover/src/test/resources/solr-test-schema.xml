@@ -1,0 +1,1087 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Important! READ before making changes to the schema.
+Since we are using schema.xml and not managed-schema.xml all filters defined
+has to be loaded by class and not by name parameter.
+Read about this bug: https://issues.apache.org/jira/browse/SOLR-16203
+
+In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>
+-->
+
+<!-- TODO: Add query examples where they apply. -->
+<?summary Fields in this schema should be described with two metatags.
+        ?Description should contain a description of the field, while
+        ?Example should contain an example of how to use the field. If providing multiple
+        examples for a field, please encapsulate each example in their own ?Example tag.?>
+
+<schema name="example" version="1.6">
+
+  <!-- Digitale Samlinger specific version field.
+
+       Update this according to Semantic Versioning rules: https://semver.org/
+
+       Used by scripts for keeping track of versioning of Solr setup across time and Solr instances.
+
+1.0.1: Added text_shingles
+1.0.2: Defined 'snowball' for all stopword filters
+1.6.0: Spellcheck + Suggest added
+1.6.1: Synonym added to general_text fieldtype that is used for most text fields.
+1.6.2: Add fieldType for suggest component
+  -->
+  <field name="_ds_1.6.2_" type="string" indexed="false" stored="false"/>
+  <uniqueKey>id</uniqueKey>
+
+  <!-- START FIELDS  -->
+  <!-- Default solr field -->
+  <field name="_version_" type="plong" indexed="false" stored="false"/>
+
+  <!-- ====================================================-->
+  <!-- ====== FIELDS THAT APPLY TO ALL COLLECTIONS ======== -->
+  <!-- ====================================================-->
+  <field name="id" type="string" multiValued="false" required="true">
+    <?description The ID derived from UUID in database.?>
+    <?example     770379f0-8a0d-11e1-805f-0016357f605f?>
+  </field>
+
+  <field name="resource_id" type="string" multiValued="true" >
+    <?description ID used to construct URI for resource.?>
+    <?example     exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
+  </field>
+
+  <field name="origin" type="string" required="true">
+    <?description The origin of the record. Defines which collection the record originates from?>
+    <?example     ds.samlingsbilleder?>
+  </field>
+
+  <field name="conditions_of_access" type="string">
+    <?description A value that describes how the resource can be accessed?>
+    <?example ?> <!--TODO: What should the value of this field actually contain-->
+  </field>
+
+  <field name="collection" type="string" docValues="true">
+    <?description The original collection.?>
+    <?example     Billedsamlingen?>
+  </field>
+
+  <field name="genre" type="string" docValues="true">
+    <?description The genre of the resource?>
+    <?example     For a photograph: Portrait?>
+    <?example     For a book: novel?>
+  </field>
+
+  <field name="resource_description" type="string"  docValues="true">
+    <?description Specific description of the resource/object.?>
+    <?example     Poster?>
+    <?example     Photograph?>
+  </field>
+
+  <field name="categories" type="string"  multiValued="true" docValues="true">
+    <?description The categories field can contain many different values.
+            This field is multivalued and contains a single category per
+            entry in the list.?>
+    <?example     John R. Johnsen balletfotos?>
+    <?example     Den Kongelige Ballet?>
+  </field>
+
+  <field name="categories_count" type="pint">
+    <?description   ?>
+    <?example       ?>
+    <?query_example ?>
+  </field>
+
+  <field name="title" type="text_general" multiValued="true" stored="true"> <!-- Title will be made single value field at some time-->
+    <?description The object title.?>
+    <?example     Den grimme ælling.?>
+  </field>
+
+
+  <!-- Note: The title_sort_da field IS NOT automatically copied from title as title_sort_da is single valued -->
+  <field name="title_sort_da" type="sort_da">
+    <?description The object title, usable for sorting according to Danish locale.
+            Not readable for human eyes.?>
+    <?example     #432#2asFSSAFs?>
+  </field>
+
+  <field name="title_length" type="plong">
+    <?description The length of the title messured in characters.?>
+    <?example     12?>
+  </field>
+
+  <field name="creator_affiliation" type="text_general" multiValued="true">
+    <?description The name of an organization, institution, etc. with which
+            the entity was associated at the time that the resource was created.?>
+    <?example     Bisson frères?>
+    <?example     Danmarks Radio?>
+  </field>
+
+  <!-- Field name: For resources that contain persons in the content, these people are described in a field called
+       subject_name. It would be ideal to have this field and these subject fields be named in the same way. This can be
+       done by changing the name of this field to subject/subject_description or the like. However, the metadata entries
+       in this field seems to be describing way more than the subject of the resource.
+
+       TODO: There might be overlaps between notes and topic - maybe they should be combined as one field - subject?
+       -->
+  <field name="notes" type="text_general" multiValued="true">
+    <?description Used to describe the resource in any way possible. Contains multiple types of metadata. Notes works
+            like a catch-all field. In general the metadata in this field is messy and can contain multiple forms
+            of metadata ranging from dates over material types to specific descriptions. For radio and TV the
+            fields description and abstract are defined as well. These fields contain specific and precise
+            descriptions for radio and TV metadata.?>
+    <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
+    <?example     Daguerreotypi, mål: 81 x 70 mm?>
+  </field>
+
+  <!-- =======================================================-->
+  <!-- ====== Fields that only apply to billedesamlingen ===== -->
+  <!-- =======================================================-->
+
+  <field name="filename_local" type="string" >
+    <?description The name of the file, which contains the digital resource that this metadata is about.?>
+    <?examaple    JB000132_114.tif?>
+  </field>
+
+  <field name="accession_number" type="string">
+    <?description The unique number given to each new acquisition
+            as it is entered in the catalog of a library or museum ?>
+    <?example     1911-7507?>
+  </field>
+
+  <field name="cataloging_language" type="string">
+    <?description The language used for the catalogue entry.?>
+    <?example     da?>
+  </field>
+
+  <field name="location" type="string">
+    <?description Describes where the physical object is located.?>
+    <?example     KBK Depot?>
+    <?example     Billedsamlingen. John R. Johnsen. Balletfotografier?>
+  </field>
+
+  <!--  May not be in data. Don't know if it has been used at all or all location related metadata is present in
+        location field.-->
+  <field name="physical_location" type="text_general">
+    <?description Describes the location of the physical object.?>
+    <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept. -->
+  </field>
+
+  <field name="published_in" type="string" docValues="true">
+    <?description If the object has been published in a journal, newspaper, book etc.
+            this field contains the name of that publication.?>
+    <?example     Aktuelt?>
+  </field>
+
+  <field name="resource_description_general" type="string" docValues="true">
+    <?description General description of type of resource/object?>
+    <?example     Picture, two dimensional imagematerial?>
+  </field>
+
+  <!-- Fields on title -->
+  <field name="title_count" type="pint" stored="true">
+    <?description The number of titles related to the object.?>
+    <?example     2?>
+    <?query_example title_count:[2 TO *] can be used to query for resources, that have two or more titles.?>
+  </field>
+
+  <field name="subtitle" type="text_general"> <!--  May not be in data -->
+    <?description A subtitle for the resource?>
+    <?example     A tale by H.C. Andersen?>
+  </field>
+
+  <field name="alternative_title" type="text_general"> <!--  May not be in data -->
+    <?description An alternative titel for the resource.?>
+    <?example     Some other titel?>
+  </field>
+
+  <!-- Fields on creator -->
+  <field name="creator_name" type="text_strict" multiValued="true">
+    <?description The name of the creator written as family name, given name.?>
+    <?example     Johnsen, John R.?>
+  </field>
+
+  <field name="creator_full_name" type="string" multiValued="true"  docValues="true">
+    <?description The name of the creator written as given name family name.?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="creator_full_name_strict" type="text_strict" multiValued="true">
+    <?description The name of the creator written as givenName familyName.
+            This is a strict field, which produces a better ranking when querying.?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="creator_family_name" type="text_strict" multiValued="true">
+    <?description The family name/surname of the creator.?>
+    <?example     Johnsen?>
+  </field>
+
+  <field name="creator_given_name" type="text_strict" multiValued="true">
+    <?description The given name/firstname of the creator.?>
+    <?example     John?>
+  </field>
+
+  <field name="creator_terms_of_address" type="text_general" multiValued="true">
+    <?description The titel or occupation of the creator.?>
+    <?example     King?>
+    <?example     Photographer?>
+  </field>
+
+  <field name="creator_affiliation_description" type="text_general" multiValued="true">
+    <?description A description for a name when necessary,
+            for example, to distinguish between names.?>
+    <?example     British?>
+  </field>
+
+  <field name="creator_date_of_birth" type="text_general" multiValued="true">
+    <?description The date of birth for creators.?>
+    <?example     1748-11-29?>
+  </field>
+
+  <field name="creator_date_of_death" type="text_general" multiValued="true">
+    <?description The date of death for creators?>
+    <?example     1831-11-5?>
+  </field>
+
+  <field name="creator_count" type="pint" stored="true">
+    <?descripiton   The amount of creators for this resource.?>
+    <?example       2?>
+    <?query_example creator_count:[2 TO *] can be used to query for
+            resources that have been co-created by more than two people.?>
+    <?query_example creator_count:3 can be used to query for resources that have exactly three creators.?>
+  </field>
+
+  <field name="area" type="text_general" multiValued="false">
+    <?description A specific type of area?>
+    <?example     Danmark, København, Broderskabsvej?>
+    <?example     Vestindien, Sankt Thomas, Charlotte Amalie, Fort Christian?>
+  </field>
+
+  <!-- This has been split into several fields such as topic
+   <field name="subject" type="text_general" multiValued="true"/>
+
+   TODO: Should this be named subject, which it is in Dublin Core.
+         Library of Congress also uses the term subject for topical descriptions.
+   -->
+  <field name="topic" type="text_general" multiValued="true">
+    <?description Used as the tag for any topical subjects?>
+    <?example     balletfotos?>
+    <?example     O.J.Moltke  1770-1853?>
+  </field>
+
+  <field name="topic_count" type="pint" stored="true">
+    <?description The number of topics given to the ressource?>
+    <?example     12?>
+    <?query_example topic_count:[5 TO *] can be used to query for resources
+            that have had at least five topics added to them.?>
+  </field>
+
+  <!-- It seems like there is some kind of overlap between metadata delivered in the field notes,
+       where some of it might have fitted better in this field. The same goes for content in the internal_note field.
+       Maybe these three should be collapsed to notes? -->
+  <field name="physical_description" type="text_general" multiValued="true">
+    <?description Physical description of the resource?>
+    <!-- TODO: Investigate if this field is ever in use and add example if it is to be kept.-->
+  </field>
+
+  <field name="notes_length" type="pint">
+    <?description   The length of all content in the notes field measured in characters.?>
+    <?example       120?>
+    <?query_example notes_length:[10 TO *] returns results,
+            where there are more than 10 characters written in the note fields.?>
+    <?query_example notes_length:[5 TO 20] returns results,
+            where there are between 5 and 20 characters written in the note fields.?>
+  </field>
+
+  <field name="notes_count" type="pint">
+    <?description   The amount of notes for the given resource?>
+    <?example       8?>
+    <?query_example ?>
+  </field>
+
+  <!-- Should this be combined with notes? What is the difference between internal notes and notes in a KB context? -->
+  <field name="internal_note" type="text_general" multiValued="true">
+    <?description Internal notes, which can contain basicly anything. ?>
+    <?example     Montering: opklæbet på karton og monteret i passepartout?>
+  </field>
+
+  <field name="catalog" type="string" docValues="true">
+    <?description The catalog, which this resource is a part of.?>
+    <?example     Samlingsbilleder?>
+  </field>
+
+  <!-- Fields on production of physical and digital object. -->
+  <field name="production_date" type="string">
+    <?description   The date when the resource was produced.?>
+    <?example       1971?>
+    <?query_example production_date:[1980 TO 1991] can be used to query for resources that have been produced in the
+            period 1980-1991. Keep in mind, that this field is only used, when resources are produced during
+            a single year. Use production_date_start or production_date_end for more complex queries. See their
+            respective documentation for examples.?>
+  </field>
+
+  <field name="production_date_start" type="string">
+    <?description   The date when production of the resource started.?>
+    <?example       1850?>
+    <?query_example production_date_start:[1780 TO 1800] will return resources where production
+            started during the timespan 1780-1800?>
+    <?query_example If you are interested in resources, where production was started and finished during the years
+            1780-1800, these can be found by the following query:
+            production_date_start:[1780 TO 1800] AND production_date_end:[1780 TO 1800]?>
+  </field>
+
+  <field name="production_date_end" type="string">
+    <?description   The date when production of the resource finished.?>
+    <?example       1899?>
+    <?query_example production_date_end:[1780 TO 1800] will return resources where production ended during the
+            timespan 1780-1800?>
+    <?query_example If you are interested in resources, where production was started and finished during the years
+            1780-1800, these can be found by the following query:
+            production_date_start:[1780 TO 1800] AND production_date_end:[1780 TO 1800]?>
+  </field>
+
+  <field name="production_place" type="string">
+    <?description Info about where the resource was produced?>
+    <?example     Denmark?>
+  </field>
+
+  <field name="production_date_digital_surrogate" type="string">
+    <?description The date when the digital surrogate of the resource was produced.?>
+    <?example     2019-07-03T09:36:17.000+02:00?>
+  </field>
+
+  <!-- Fields on subject -->
+  <!-- Note on field name: SMK uess content_person, however standards as Dublin Core and Europeana Data Model don't have
+       this field, they operate with a generic subject field. Furthermore, Schema.org operates with Persons who can be
+       the subjectOf a creative work. I suggest we stick with subject_name, as this comes closest to other standards
+       used in european cultural heritage institutions. -->
+  <field name="subject_name" type="text_general" multiValued="true">
+    <?description The name of the subject written as family name, given name.?>
+    <?example     Johnsen, John R.?>
+  </field>
+
+  <field name="subject_full_name" type="string" multiValued="true" docValues="true">
+    <?description The name of the subject written as given name family name.?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="subject_full_name_strict" type="text_strict" multiValued="true">
+    <?description The name of the subject written as givenName familyName.
+            This is a strict field, which produces a better ranking when querying.?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="subject_family_name" type="text_general" multiValued="true">
+    <?description the family name/surname of the subject.?>
+    <?example     Hansen?>
+  </field>
+
+  <field name="subject_given_name" type="text_general" multiValued="true" >
+    <?description the given name/firstname of the subject.?>
+    <?example     Hans Christian?>
+  </field>
+
+  <field name="subject_date_of_birth" type="string" multiValued="true">
+    <?description the subjects date of birth?>
+    <?example     1748-11-29?>
+  </field>
+
+  <field name="subject_date_of_death" type="string" multiValued="true">
+    <?description the date of death of the subject.?>
+    <?example     1831-11-5?>
+  </field>
+
+  <field name="subject_terms_of_address" type="text_general" multiValued="true">
+    <?description The titel or occupation of the subject.?>
+    <?example     King?>
+    <?example     Photographer?>
+  </field>
+
+  <field name="subject_count" type="pint" stored="true">
+    <?description The number of subjects in the ressource?>
+    <?example     3?>
+  </field>
+
+  <field name="map_scale" type="string" >
+    <?description The scale of the resource map.?>
+    <?example     Målestok 1:75 000?>
+  </field>
+
+  <!-- TODO: Thumbnails should be available for all collections and not just billedesamlingen -->
+  <field name="thumbnail" type="string">
+    <?description URI pointing to the thumbnail representation of the resource.?>
+    <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456/full/400%2C/0/default.jpg?>
+  </field>
+
+
+  <field name="file_byte_size" type="plong">
+    <?description the size of the file in bytes.?>
+    <?example     252000?>
+  </field>
+
+  <field name="image_iiif_id" type="string">
+    <?description URI pointing to the IIIF base URI of the resource.?>
+    <?example     https://example.com/imageserver/exampleCollection/examplePart/exampleCatalog/0000/123/456/AA123456?>
+  </field>
+
+  <field name="image_height" type="pint">
+    <?description the height of the digital image in pixels.?>
+    <?example     800?>
+  </field>
+
+  <field name="image_width" type="pint">
+    <?description the width of the digital image in pixels.?>
+    <?example     1200?>
+  </field>
+
+  <field name="image_size_pixels" type="plong">
+    <?description the size of the digital image in pixels.?>
+    <?example     960000?>
+  </field>
+
+  <!-- Not in test data. Part of MODS and might be in other collections
+       Called 'Audience' in dublin core.-->
+  <field name="audience" type="string">
+    <?description The target audience for the resource.?>
+    <?example     Children?>
+  </field>
+
+  <!-- ============================================================= -->
+  <!-- ====== Fields that only apply to tv and radio metadata  ===== -->
+  <!-- ============================================================= -->
+
+  <field name="original_title" type="string">
+    <?description The original title of the resource.?>
+    <?example     TV-Avisen?>
+  </field>
+
+  <field name="episode_title" type="string">
+    <?description The name of a single episode.?>
+    <?example     Kagerester?>
+  </field>
+
+  <field name="broadcaster" type="string">
+    <?description The broadcast organization behind the resource. If the resource has been aired on DR1, then the
+            broadcaster is DR.?>
+    <?example     DR?>
+  </field>
+
+  <field name="creator_affiliation_generic" type="text_general" multiValued="true">
+    <?description The name of an organization, institution, etc. with which
+            the entity was associated at the time that the resource was created.
+            This value is a more generic version of the value available in the field 'creator_affiliation'.
+            This is needed as radio and TV channels change names over time. So to find all material from e.g.
+            DR P1 over time, these resources has the value drp1 in this field, while the channel has had names
+            as 'Program 1' and 'P1'. ?>
+    <?example     Bisson frères?>
+    <?example     Danmarks Radio?>
+  </field>
+
+  <field name="ritzau_id" type="string">
+    <?description Identifier from ritzau?>
+    <?example     7f42b813-690e-4897-9553-f6eefe9c4070?>
+  </field>
+
+  <field name="tvmeter_id" type="string">
+    <?description Identifier from tvmeter?>
+    <?example     78e74634-bec1-4cea-a984-20192c97b743?>
+  </field>
+
+  <field name="startTime" type="pdate">
+    <?description The point in time when, the broadcast of a resource started.
+            The timestamp in this field is in UTC time.?>
+    <?example     2012-04-28T16:15:00Z?>
+  </field>
+
+  <field name="endTime" type="pdate">
+    <?description The point in time when, the broadcast of a resource ended.
+            The timestamp in this field is in UTC time.?>
+    <?example     2012-04-28T16:15:00Z?>
+  </field>
+
+  <field name="duration_ms" type="plong" indexed="true" stored="true">
+    <?description The duration of the broadcast in milliseconds.?>
+    <?example     950000?>
+  </field>
+
+  <field name="color" type="boolean">
+    <?description Describes wether or not the broadcast is in color. color=true, greytone=false?>
+    <?example     true?>
+  </field>
+
+  <field name="video_quality" type="string">
+    <?description Describes the quality of the video. Values are 'hd' and 'ikke hd'?>
+    <?example     hd?>
+  </field>
+
+  <field name="surround_sound" type="boolean">
+    <?description A boolean value for the type of sound. If true then the sound is surround sound. If false it is not?>
+    <?example     true?>
+  </field>
+
+  <field name="premiere" type="boolean">
+    <?description Boolean that tells if this record is the first showing of the broadcast.?>
+    <?example     false?>
+  </field>
+
+  <field name="aspect_ratio" type="string">
+    <?description The aspect ratio of the video?>
+    <?example     16:9?>
+  </field>
+
+  <field name="manifestation_type" type="string">
+    <?description A manifestation describes the technical metadata related to a document.
+            The manifestation type describes what type of content the related file contains.?>
+    <?example     Video?>
+  </field>
+
+  <field name="episode" type="pint">
+    <?description A number determining the placement of a given episode in a ordered list of related episodes.?>
+    <?example     1?>
+  </field>
+
+  <field name="number_of_episodes" type="pint">
+    <?description The total number of episodes that are part of the same series as the given video.?>
+    <?example     24?>
+  </field>
+
+  <field name="live_broadcast" type="boolean">
+    <?descrition A boolean value for showing wether or not a video has been broadcasted live?>
+    <?example    true?>
+  </field>
+
+  <field name="retransmission" type="boolean">
+    <?description   A boolean value for showing wether or not a video is a retransmission of something else.?>
+    <?example       False?>
+    <?query_example "'horse AND retransmission:false' to query for resources about horses that aren't retransmissions.?>
+  </field>
+
+  <field name="abstract" type="text_general">
+    <?description A short, precise and general description of the resource not to be confused with the field description.?>
+    <?example     A danish commedy show.?>
+  </field>
+
+  <field name="abstract_length" type="pint">
+    <?description The length of the abstract meassured in characters. ?>
+    <?example     20?>
+  </field>
+
+  <field name="description" type="text_general">
+    <?description A description of the resource. For videos this description is often quite extensive.?>
+    <?example     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis consequat libero, quis ornare mi.?>
+  </field>
+
+  <field name="description_length" type="plong">
+    <?description The length of the description meassured in characters. ?>
+    <?example     256?>
+  </field>
+
+  <field name="genre_sub" type="string" docValues="true">
+    <?description A sub genre for the resource. This is a more specific category than the one specified in the field genre?>
+    <?example     Comedy series?>
+  </field>
+
+  <field name="has_subtitles" type="boolean">
+    <?description A boolean value for subtitles. If true, then the resource contains subtitles.?>
+    <?example     true?>
+  </field>
+
+  <field name="has_subtitles_for_hearing_impaired" type="boolean">
+    <?description A boolean value for subtitles for hearing impaired. If true, then the resource contains subtitles.?>
+    <?example     true?>
+  </field>
+
+  <field name="pid" type="string">
+    <?description A persistent identifier (PID) is a long lasting reference to the resource. These identifiers can be
+            resolved at http://hdl.handle.net/?>
+    <?example     109.1.4/3945e2d1-83a2-40d8-af1c-30f7b3b94390?>
+  </field>
+
+  <field name="streaming_url" type="string">
+    <?description An URL, where the resource can be streamed.?>
+    <?example     www.example.com/streaming/bart-access-copies-tv/00/00/00/000000e1-0000-462a-a2b4-7488244fcca7/playlist.m3u8"?>
+  </field>
+
+  <field name="file_id" type="string">
+    <?description An id, used as part of the streaming URL.?>
+    <?example     000000e1-0000-462a-a2b4-7488244fcca7?>
+  </field>
+
+  <field name="temporal_start_time_da_string" type="string">
+    <?description The start time of the broadcast in GMT+01:00 (Danish Normal Time) represented as a string?>
+    <?example 17:15:00?>
+  </field>
+
+  <field name="temporal_end_time_da_string" type="string">
+    <?description The end time of the broadcast in GMT+01:00 (Danish Normal Time) represented as a string?>
+    <?example 17:40:00?>
+  </field>
+
+  <!-- TODO: I dont know if this is a valid way to implement this field. -->
+  <field name="temporal_start_time_da_date" type="pdate">
+    <?description A solr date representation of the temporal_start_time_da_string. This date value does NOT represent a
+            valid datetime, as the date is always 9999-01-01. Furthermore the field and solr thinks that the value is in zulu
+            time, however the value is in fact in GMT+01:00 (Danish Normal Time). This field should not be used to
+            query for a specific date.?>
+    <?example 9999-01-01T17:15:00Z?>
+  </field>
+
+  <field name="temporal_end_time_da_date" type="pdate">
+    <?description A solr date representation of the temporal_end_time_da_string. This date value does NOT represent a
+            valid datetime, as the date is always 9999-01-01. Furthermore the field and solr thinks that the value is in zulu
+            time, however the value is in fact in GMT+01:00 (Danish Normal Time). This field should not be used to
+            query for a specific date.?>
+    <?example 9999-01-01T17:40:00Z?>
+  </field>
+
+  <field name="temporal_start_day_da" type="string">
+    <?description The day of the week when the broadcast started.?>
+    <?example Monday?>
+  </field>
+
+  <field name="temporal_end_day_da" type="string">
+    <?description The day of the week when the broadcast ended. ?>
+    <?example Friday?>
+  </field>
+
+  <!-- =========================================================================== -->
+  <!-- ====== Internal fields, primarily used by the Royal Danish Library   ====== -->
+  <!-- ====== All fields for internal use are to be prefixed with internal_ ====== -->
+  <!-- =========================================================================== -->
+
+  <!-- Internal fields for radio/tv. Primarily used by the Royal Danish Library. -->
+
+  <field name="internal_storage_mTime" type="plong" stored="true">
+    <?description Milliseconds since 1st of January 1970 (epoch) with three added digits representing the last time a
+            record has been modified in the backing ds-storage. This value does not neccesarily represent when the
+            metadata inside a record has been modified. It represents when the DS Record has been modified.
+            The value is guaranteed to be unique.?>
+    <?example 1701261949625000?>
+  </field>
+
+  <field name="internal_accession_ref" type="string">
+    <?description Accession reference for preservica data. This reference points to the accession, where this resource
+            was ingested to preservica.?>
+    <?example     4ad76681-9459-49a3-954c-64048ae36b16?>
+  </field>
+
+  <field name="internal_format_identifier_ritzau" type="string">
+    <?description ?> <!-- TODO: figure what this value represents -->
+    <?example     81318588?>
+  </field>
+
+  <field name="internal_format_identifier_nielsen" type="string">
+    <?description ?> <!-- TODO: figure what this value represents -->
+    <?example     101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69?>
+  </field>
+
+  <field name="internal_maingenre_id" type="string">
+    <?description ?> <!-- TODO: figure what this value represents -->
+    <?example     ?> <!-- TODO: figure if these IDs are always integers -->
+  </field>
+
+  <field name="internal_channel_id" type="string">
+    <?description ?> <!-- TODO: figure what this value represents -->
+    <?example     ?> <!-- TODO: figure if these IDs are always integers -->
+  </field>
+
+  <field name="internal_country_of_origin_id" type="string">
+    <?description An ID which determines which contry the resource has been created in.?>
+    <?example     0?>
+  </field>
+
+  <field name="internal_ritzau_program_id" type="string">
+    <?description An ID for a resource from ritzau.?>
+    <?example     25101143?>
+  </field>
+
+  <field name="internal_subgenre_id" type="string">
+    <?description An ID for a specific subgenre.?>
+    <?example     736?>
+  </field>
+
+  <field name="internal_episode_id" type="string">
+    <?description An ID for the specific episode.?>
+    <?example     2?>
+  </field>
+
+  <field name="internal_season_id" type="string">
+    <?description An ID for the specific season which the resource is part of.?>
+    <?example     174278?>
+  </field>
+
+  <field name="internal_series_id" type="string">
+    <?description An ID for the specific series which the resource is part of.?>
+    <?example     174278?>
+  </field>
+
+  <field name="internal_program_ophold" type="boolean">
+    <?description A value that indicates if there has been a break in the resource.?>
+    <?example     true?>
+  </field>
+
+  <!-- TODO: does this need to be internal? -->
+  <field name="internal_is_teletext" type="boolean">
+    <?description A boolean value that tells if the resource is teletext?>
+    <?example     false?>
+  </field>
+  <field name="internal_showviewcode" type="string">
+    <?description ShowView codes were codes used on videorecords before the advent of on-screen displays. These codes
+            were printed and distributed in magazines and newspapers and were input into a video recorder, which
+            would then record the correct channel at the correct time.?>
+    <?example     23122123?>
+  </field>
+  <!--TODO: Figure out what this field can contain-->
+  <field name="internal_padding_seconds" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <!--TODO: Figure out what this field can contain-->
+  <field name="internal_access_individual_prohibition" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <!--TODO: Figure out what this field can contain-->
+  <field name="internal_access_claused" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <!--TODO: Figure out what this field can contain-->
+  <field name="internal_access_malfunction" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <!--TODO: Figure out what this field can contain-->
+  <field name="internal_access_comments" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+
+  <field name="internal_program_structure_missing_seconds_start" type="pint">
+    <?description A value in seconds that shows if the resource is missing content at the beginning of the file.?>
+    <?example     12?>
+  </field>
+
+  <field name="internal_program_structure_missing_seconds_end" type="pint">
+    <?description A value in seconds that shows if the resource is missing content at the end of the file. ?>
+    <?example     15?>
+  </field>
+  <!--TODO: Figure out what this field can contain-->
+  <field name="internal_program_structure_holes" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="internal_program_structure_overlaps" type="boolean">
+    <?description A boolean value that indicates if there are overlaps between this resource and other resources.
+            An overlap occurs when two resources have walltime/durations, that intertwine with eachother. If one
+            resource ends at 14:30:00 on the 1st of January 2000 and another resource begins at 1st of January 2000
+            14:28:00, there would be a two minute overlap between the resources.?>
+    <?example     true?>
+  </field>
+  <!-- These fields are commented out as they are not used in the current setup. Hopefully they will be used at some
+       point in the future.
+  <field name="internal_program_structure_overlap_type_one_length_ms" type="plong">
+    <?description Indicates the length of an overlap of type one in ms. Types are from Preservica and properply defines
+            if the overlap is in the beginning or end of the queried resource.?>
+    <?example     3120?>
+  </field>
+  <field name="internal_program_structure_overlap_type_one_file1UUID" type="string">
+    <?description The UUID of the first file that is part of overlap one.?>
+    <?example     ca358239-2c1a-431e-84d9-d9c91642dae7?>
+  </field>
+  <field name="internal_program_structure_overlap_type_one_file2UUID" type="string">
+    <?description The UUID of the second file that is part of overlap one.?>
+    <?example     f73b69da-2bc0-4e06-b19b-95f24756804e?>
+  </field>
+  <field name="internal_program_structure_overlap_type_two_length_ms" type="plong">
+    <?description Indicates the length of an overlap of type one in ms. Types are from Preservica and properply defines
+                  if the overlap is in the beginning or end of the queried resource.?>
+    <?example     3120?>
+  </field>
+  <field name="internal_program_structure_overlap_type_two_file1UUID" type="string">
+    <?description The UUID of the first file that is part of overlap one.?>
+    <?example     ca358239-2c1a-431e-84d9-d9c91642dae7?>
+  </field>
+  <field name="internal_program_structure_overlap_type_two_file2UUID" type="string">
+    <?description The UUID of the second file that is part of overlap one.?>
+    <?example     f73b69da-2bc0-4e06-b19b-95f24756804e?>
+  </field>-->
+  <field name="internal_overlapping_files" type="text_general" multiValued="true">
+    <?description If there are overlaps between files related to a metadata resource. the UUIDs of the relevant files
+            will be listed in this field. These overlaps can be of all types and there is currently no possibility
+            for knowing how long the overlap is or what kind of overlap there are between the files. Overlapping
+            files are listed in comma seperated pairs.?>
+    <?example     c8f496cf-4e0b-4682-8eee-67dfe07525d2,8ac98f6e-5653-492a-ab8c-c1462edaeb4a?>
+  </field>
+
+  <field name="internal_transformation_error" type="boolean" default="false">
+    <?description This field tells if any of the XSLT transformations have failed during creation of the metadata document?>
+  </field>
+
+  <field name="internal_transformation_error_description" type="text_general">
+    <?description If any of the XSLT metadata transformations have failed during creation of the document, the error will be contained in this field.?>
+  </field>
+  <!-- ================================================================ -->
+  <!-- ====== Fields related to copyright and access conditions   ===== -->
+  <!-- ================================================================ -->
+  <!-- TODO: Documentation for access fields. -->
+  <field name="access_blokeret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_pligtafleveret" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_ejermaerke" type="boolean" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_note" type="string">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_skabelsesaar" type="pint" multiValued="false" indexed="true" required="false" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_ophavsperson_doedsaar" type="pint" multiValued="false" indexed="true" required="false" stored="true"><!--  TODO: is required -->
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_searlige_visningsvilkaar" type="string" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_materiale_type" type="string"  indexed="true" required="false"   docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_foto_aftale" type="boolean"   indexed="true" required="false"  docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_billede_aftale" type="boolean"  indexed="true" required="false" docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+  <field name="access_ophavsret_tekst" type="string" indexed="true"  docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+
+  <field name="text" type="text_general" multiValued="true" stored="true" >
+    <?description Content text field for newspaper article main text, book full text, television subtitles, radio transcriptions etc.?>
+    <?example     If a television recording with subtitles is indexed, this field will hold the subtitles and only the subtitles.?>
+  </field>
+
+  <field name="text_shingles" type="text_shingles">
+    <?description Content text field for newspaper article main text, book full text, television subtitles, radio transcriptions etc. This differs from "text" by being shingled up to 4 tokens, which should make it more useful for automatic keyword extraction.?>
+    <?example     If a television recording with subtitles is indexed, this field will hold the subtitles and only the subtitles.?>
+  </field>
+
+  <!-- Most fields are copied to this field for matching. -->
+  <field name="freetext" type="freetext" multiValued="true" stored="false">
+    <?description Freetext field, which contains text from multiple other fields.
+            Note: If the indexed material has 'body text', such as the main content of a book, a newspaper
+            article or subtitles for a TV-recording, it will be indexed in the 'text' field.?>
+    <?example     If a play with the titel 'Romeo and Juliet' written by the author 'William Shakespeare' is indexed,
+            then the freetext field for this play will contain content from multiple other fields, so that the
+            value of the freetext field could be something like this: "William Shakespeare Romeo and Juliet".?>
+  </field>
+
+  <field name="title_strict" type="title_strict" multiValued="true" stored="false">
+    <?description Field for strict title matching. Matches exact title?>
+    <?example     Query for "romeo" will return nothing, while a query for "romeo and juliet" will return the titel?>
+  </field>
+
+  <field name="spellcheck" type="text_general" indexed="true" stored="true" multiValued="true"
+         termVectors="true"
+         termPositions="true"
+         termOffsets="true"/>
+
+  <!-- END FIELDS  -->
+
+  <!-- START FIELDTYPE DEFINITIONS-->
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+  <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
+  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
+  <fieldType name="pint" class="solr.IntPointField" multiValued="false" indexed="true" required="false" stored="true" docValues="false"/>
+  <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+
+  <!-- Field is not analysed or tokenized. Used for author names, titles etc.
+   This field is not usefull as search field, but good for docValues  -->
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true" indexed="true" required="false" stored="true" multiValued="false" docValues="true"/>
+
+  <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory"  format="snowball" ignoreCase="true" words="lang/stopwords_da.txt"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="Danish"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- Very string field matching. Only lower case. diacritics  must match.  No matching cross multifields-->
+  <fieldType name="text_strict" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true" positionIncrementGap="0">
+    <analyzer type="index">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- termVectors=true & storeTermVectors=true to get better MoreLikeThis and support the Unified Highlighter -->
+  <fieldType name="text_general_OLD" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- Highly analysed text field with stopwords and synonym. -->
+  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>
+      <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
+
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- The suggest component needs its own field type. Currently, this is a copy of the text_general fieldType. -->
+  <!-- TODO: Figure how tho create the best suggest fieldType-->
+  <fieldType name="suggest_field"  class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>
+      <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>
+    </analyzer>
+  </fieldType>
+
+
+  <!-- TODO: Consider setting multi value distance fairly short for phrase search across
+       timestamped Whisper output -->
+  <!-- https://solr.apache.org/guide/solr/latest/indexing-guide/filters.html#shingle-filter -->
+  <fieldType name="text_shingles" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="false"  termVectors="true" storeOffsetsWithPositions="true">
+    <analyzer>
+      <tokenizer name="standard"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_da.txt" format="snowball" />
+      <!-- Max shingles size 4 is just a "best guess right now".
+           It should be tweaked when a corpus of tens of thousands of documents has been indexed.
+           Unigrams are kept for use with keyword extraction using MoreLikeThis -->
+      <!-- https://stackoverflow.com/questions/18885764/lucene-analyzer-chain-shinglefilter-without-filler-tokens -->
+      <filter name="shingle" maxShingleSize="4" outputUnigrams="true" fillerToken="___" />
+      <filter class="solr.PatternReplaceFilterFactory" pattern=".*___.*" replacement=""/>
+      <!-- Remove embedded timestamp tokens (only used in the 'text' field for temporal search via highlights) -->
+      <filter class="solr.PatternReplaceFilterFactory" pattern="ɣ[0-9]+ɣ" replacement=""/>
+    </analyzer>
+  </fieldType>
+
+  <fieldType name="title_strict" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="true">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- Field to 'catch em all' if not matched in specific fields. Last resort for matching. Ranking will be lower if they are only matched here. -->
+  <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt"/>
+      <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt"/>
+    </analyzer>
+  </fieldType>
+
+  <!-- https://solr.apache.org/guide/solr/9_3/indexing-guide/language-analysis.html#unicode-collation -->
+  <fieldType name="sort_da" class="solr.ICUCollationField" locale="da" strength="secondary"
+             indexed="true" stored="false" docValues="true" multiValued="false"/>
+
+  <!-- END FIELDTYPE DEFINITIONS-->
+
+  <!-- START COPYFIELDS  -->
+  <copyField source="creator_full_name" dest="creator_full_name_strict">
+    <?description Copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
+    <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
+  </copyField>
+
+  <copyField source="title" dest="title_strict">
+    <?description Copies the title of the resource to a strict field, which produces a higher ranking when queried.?>
+    <?example     A query for 'Romeo and Juliet' would produce a higher ranking than 'Romeo, Juliet'.?>
+  </copyField>
+
+
+  <copyField source="subject_full_name" dest="subject_full_name_strict">
+    <?description Copies the full name of the subject to a strict field, which produces a higher ranking when queried.?>
+    <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
+  </copyField>
+
+  <copyField source="creator_name" dest="freetext"/>
+  <copyField source="creator_full_name" dest="freetext"/>
+  <copyField source="creator_given_name" dest="freetext"/>
+  <copyField source="creator_terms_of_address" dest="freetext"/>
+  <copyField source="area" dest="freetext"/>
+  <copyField source="subject_name" dest="freetext"/>
+  <copyField source="subject_full_name" dest="freetext"/>
+  <copyField source="subject_family_name" dest="freetext"/>
+  <copyField source="subject_given_name" dest="freetext"/>
+  <copyField source="categories" dest="freetext"/>
+  <copyField source="catalog" dest="freetext"/>
+  <copyField source="collection" dest="freetext"/>
+  <copyField source="genre" dest="freetext"/>
+  <copyField source="resource_description" dest="freetext"/>
+  <copyField source="resource_description_general" dest="freetext"/>
+  <copyField source="notes" dest="freetext"/>
+  <copyField source="location" dest="freetext"/>
+  <copyField source="title" dest="freetext"/>
+  <copyField source="subtitle" dest="freetext"/>
+  <copyField source="alternative_title" dest="freetext"/>
+  <copyField source="original_title" dest="freetext"/>
+  <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->
+  <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
+  <copyField source="text" dest="text_shingles">
+    <?description Copies the content of the basic text field to the shingles enabled text field, for better phrase search ranking and keyword extraction.?>
+  </copyField>
+
+  <!-- END COPYFIELDS  -->
+</schema>
