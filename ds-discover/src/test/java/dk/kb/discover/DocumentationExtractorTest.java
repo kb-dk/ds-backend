@@ -1,5 +1,7 @@
 package dk.kb.discover;
 
+import dk.kb.discover.config.ServiceConfig;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -8,8 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DocumentationExtractorTest {
 
-    public static final String SCHEMA2DOC = "schema2markdown.xsl";
-    public static final String SCHEMA = "solr-test-schema.xml";
+    @BeforeAll
+    public static void setup() throws IOException {
+        ServiceConfig.initialize("conf/ds-discover-local.yaml");
+    }
+
+    private static final String SCHEMA2DOC = "schema2markdown.xsl";
+    private static final String SCHEMA = "solr-test-schema.xml";
 
     @Test
     public void testExtractionOfProcessingInstruction() throws IOException {
@@ -26,6 +33,11 @@ public class DocumentationExtractorTest {
                                             "Example: Billedsamlingen. John R. Johnsen. Balletfotografier"));
     }
 
+
+    @Test
+    public void testSchemaTransformation() throws IOException {
+        System.out.println(DocumentationExtractor.transformSchema("ds"));
+    }
 
 
 
