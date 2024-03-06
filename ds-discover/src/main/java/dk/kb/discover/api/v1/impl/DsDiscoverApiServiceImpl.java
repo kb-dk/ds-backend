@@ -207,6 +207,13 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         }
     }
 
+
+    @Override
+    public String documentedSchema(String collection, String format){
+        // TODO implement
+        return "";
+    }
+
     /**
      * Perform a Solr-compatible search in the stated collection
      * 
