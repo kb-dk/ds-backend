@@ -14,6 +14,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
+import dk.kb.discover.DocumentationExtractor;
 import dk.kb.discover.util.solrshield.Response;
 import dk.kb.discover.util.solrshield.SolrShield;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -210,8 +211,12 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
 
     @Override
     public String documentedSchema(String collection, String format){
-        // TODO implement
-        return "";
+        try {
+            return DocumentationExtractor.transformSchema(collection);
+
+        } catch (Exception e){
+            throw handleException(e);
+        }
     }
 
     /**
