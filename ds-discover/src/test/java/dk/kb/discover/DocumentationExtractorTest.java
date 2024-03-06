@@ -1,10 +1,12 @@
 package dk.kb.discover;
 
 import dk.kb.discover.config.ServiceConfig;
+import dk.kb.util.Resolver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,7 +22,8 @@ public class DocumentationExtractorTest {
 
     @Test
     public void testExtractionOfProcessingInstruction() throws IOException {
-        String documentation = DocumentationExtractor.getTransformed(SCHEMA2DOC, SCHEMA);
+
+        String documentation = DocumentationExtractor.getTransformed(SCHEMA2DOC, resolveTestSchema());
         assertTrue(documentation.contains("Fields in this schema should be described with two metatags. " +
                                             "?Description should contain a description of the field"));
     }
@@ -28,7 +31,7 @@ public class DocumentationExtractorTest {
     @Test
     public void testMultipleExamples() throws IOException {
         printDocumentation();
-        String documentation = DocumentationExtractor.getTransformed(SCHEMA2DOC, SCHEMA);
+        String documentation = DocumentationExtractor.getTransformed(SCHEMA2DOC, resolveTestSchema());
         assertTrue(documentation.contains("Example: KBK Depot\n" +
                                             "Example: Billedsamlingen. John R. Johnsen. Balletfotografier"));
     }
@@ -42,7 +45,11 @@ public class DocumentationExtractorTest {
 
 
     private void printDocumentation() throws IOException {
-        String documentation = DocumentationExtractor.getTransformed(SCHEMA2DOC, SCHEMA);
+        String documentation = DocumentationExtractor.getTransformed(SCHEMA2DOC, resolveTestSchema());
         System.out.println(documentation);
+    }
+
+    private String resolveTestSchema() throws IOException {
+        return Resolver.resolveString(SCHEMA, StandardCharsets.UTF_8);
     }
 }
