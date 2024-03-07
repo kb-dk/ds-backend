@@ -1,10 +1,12 @@
 package dk.kb.oauth.api.v1.impl;
 
+import dk.kb.oauth.EncryptionHelper;
 import dk.kb.oauth.OauthHelper;
 import dk.kb.oauth.ProxyHelper;
 
 import dk.kb.oauth.api.v1.BffApi;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.webservice.exception.ServiceException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +26,6 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.time.Instant;
 
 
 /**
@@ -35,12 +36,12 @@ import java.time.Instant;
  */
 
 public class BffApiServiceImpl extends ImplBase implements BffApi {
-    private Logger log = LoggerFactory.getLogger(this.toString());
+    private final Logger log = LoggerFactory.getLogger(this.toString());
 
-
+    @Override
     public String authenticate() throws ServiceException {
-        Cookie authzCookie = OauthHelper.getNewAuthzCookie();
-        httpServletResponse.addCookie(authzCookie);
+        String accessTokenString = OauthHelper.getNewAccessToken();
+        addCookieToResponse(accessTokenString);
         return "";
     }
 
@@ -59,16 +60,25 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
         try {
             URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
-            HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, authorization);
+            HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
             httpServletResponse.setStatus(apiConnection.getResponseCode());
             httpServletResponse.setHeader("Content-Type", apiConnection.getHeaderField("Content-Type"));
             httpServletResponse.setHeader("Content-Disposition", apiConnection.getHeaderField("Content-Disposition"));
             return ProxyHelper.createStreamingOutput(apiConnection);
         } catch (IOException e) {
-            log.error("IOEXception",e);
+            log.error("IO EXception",e);
             throw new ServiceException(Response.Status.BAD_GATEWAY);
         }
     }
+
+
+    private void addCookieToResponse(String accessTokenString) {
+        Cookie newCookie = new Cookie("Authorization", EncryptionHelper.encryptString(accessTokenString));
+        newCookie.setSecure(ServiceConfig.getConfig().getBoolean("config.use-secure-cookie",true));
+        newCookie.setHttpOnly(true);
+        httpServletResponse.addCookie(newCookie);
+    }
+
 
     private void sendRedirectToAuthentication() {
         try {
