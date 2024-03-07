@@ -34,7 +34,7 @@ import java.net.URI;
 public class BffApiServiceImpl extends ImplBase implements BffApi {
     private final Logger log = LoggerFactory.getLogger(this.toString());
 
-
+    @Override
     public String authenticate() throws ServiceException {
         String accessTokenString = OauthHelper.getNewAccessToken();
         addCookieToResponse(accessTokenString);
