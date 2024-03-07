@@ -19,7 +19,7 @@ config:
     url: "https://keycloak-devel-01.kb.dk"
     realm: "ds-poc"
     client-id: "bff-poc"
-    secret: "OOfHzeXu5h8hOw2N6lB9MlK2IO6VbYjG"
+    secret: ""
 
  # where are the api's installed
   api-base-url: "http://localhost:9061"
