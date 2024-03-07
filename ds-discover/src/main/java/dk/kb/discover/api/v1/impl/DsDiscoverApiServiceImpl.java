@@ -197,6 +197,13 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         }
     }
 
+    /**
+     * Return the solr schema through the original solr-endpoint for schema retrieval. The result from this method does
+     * not include documentation written in XML processing instructions.
+     * To retrieve the documented schema use {@link #documentedSchema(String collection, String format)}.
+     * @param collection to retrieve solr schema for.
+     * @param wt the format for the schema.
+     */
     @Override
     public String solrSchema(String collection, String wt) {
         try {
@@ -209,6 +216,14 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     }
 
 
+    /**
+     * Return the documented solr schema. This endpoint retrieves the raw solr schema and then transforms it to the
+     * specified format using an XSLT. This transformation retrieves processing instructions and includes these in the
+     * retrieved solr schema.
+     * @param collection the name of the solr collection to retrieve.
+     * @param format the format which the schema gets transformed to
+     * @return the transformed schema.
+     */
     @Override
     public String documentedSchema(String collection, String format){
         try {
