@@ -19,6 +19,7 @@ public class DocumentationExtractorTest {
     }
 
     private static final String SCHEMA2DOC = "schema2markdown.xsl";
+    private static final String SCHEMA2HTML = "schema2html.xsl";
     private static final String SCHEMA = "solr-test-schema.xml";
 
     @Test
@@ -45,6 +46,12 @@ public class DocumentationExtractorTest {
     }
 
 
+    // TOOD: Create individual tests for markdown, xml and html output
+    @Test
+    public void testHtmlTransformation() throws IOException {
+        System.out.println(DocumentationExtractor.transformSchema("ds", "html"));
+
+    }
 
     private void printDocumentation() throws IOException {
         String documentation = DocumentationExtractor.getTransformed(SCHEMA2DOC, resolveTestSchema());

@@ -1,7 +1,6 @@
 package dk.kb.discover;
 
 import dk.kb.discover.config.ServiceConfig;
-import dk.kb.util.Resolver;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,9 +13,11 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
 
+//TODO: Documentation
 public class DocumentationExtractor {
 
     private static final String SCHEMA2MARKDOWN = "schema2markdown.xsl";
+    private static final String SCHEMA2HTML = "schema2html.xsl";
 
     public static String transformSchema(String collection, String format) throws IOException {
         String rawSchema= getRawSchema(collection);
@@ -25,7 +26,7 @@ public class DocumentationExtractor {
             case "xml":
                 return getRawSchema(collection);
             case "html":
-                return "HTML has not been implemented yet. Sorry";
+                return getTransformed(SCHEMA2HTML, rawSchema);
             case "markdown":
                 return getTransformed(SCHEMA2MARKDOWN, rawSchema);
             default:
