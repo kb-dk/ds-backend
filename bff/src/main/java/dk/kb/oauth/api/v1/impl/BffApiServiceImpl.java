@@ -26,6 +26,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.time.Instant;
 
 
 /**
@@ -52,7 +53,7 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
             sendRedirectToAuthentication();
             return null;
         }
-        String accessTokenString = authorization;
+        String accessTokenString = EncryptionHelper.decryptString(authorization);
         if (!verifyAccessTokenString(accessTokenString)) {
             sendRedirectToAuthentication();
             return null;
@@ -82,7 +83,7 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
     private void sendRedirectToAuthentication() {
         try {
-            httpServletResponse.sendRedirect(uriInfo.getBaseUri()+"/authentication");
+            httpServletResponse.sendRedirect(uriInfo.getBaseUri()+"authenticate");
         } catch (IOException e) {
             log.error("Error sending redirect",e);
             throw new InternalServiceException();
@@ -92,7 +93,7 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
     private boolean verifyAccessTokenString(String accessTokenString) {
         try {
             AccessToken accessToken = TokenVerifier.create(accessTokenString, AccessToken.class).getToken();
-            return Instant.now().getEpochSecond() > accessToken.getExp() - 60;
+            return Instant.now().getEpochSecond() < accessToken.getExp() - 60;
         } catch (VerificationException e) {
             log.error("Unable to parse access token ", e);
             throw new InternalServiceException();
