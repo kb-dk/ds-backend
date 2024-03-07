@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xsl:transform xmlns:m="http://www.loc.gov/mods/v3"
-               xmlns:mets="http://www.loc.gov/METS/"
-               xmlns:t="http://www.tei-c.org/ns/1.0"
-               xmlns:f="http://www.w3.org/2005/xpath-functions"
-               xmlns:h="http://www.w3.org/1999/xhtml"
-               xmlns:xs="http://www.w3.org/2001/XMLSchema"
-               xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-               xmlns:my="urn:my"
-               xmlns:premis="http://www.loc.gov/premis/v3"
-               xmlns:mix="http://www.loc.gov/mix/v20"
+<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                version="3.0">
 
 
