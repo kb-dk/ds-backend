@@ -51,14 +51,11 @@ public class DocumentationExtractor {
     }
 
 
-    public static String getTransformed(String xsltResource, String xmlResource) throws IOException {
-        return getTransformed(xsltResource, xmlResource, null, null);
-    }
-    public static String getTransformed(String xsltResource, String xmlResource, Map<String,String> fixedInjections,
-                                        Map<String,String> metadata) throws IOException {
-        XSLTTransformer transformer = new XSLTTransformer(xsltResource, fixedInjections);
-        // Ensure metadata is defined and that it is mutable
-        metadata = metadata == null ? new HashMap<>() : new HashMap<>(metadata);
+
+     static String getTransformed(String xsltResource, String xmlResource) throws IOException {
+         Map<String, String> metadata = new HashMap<>();
+         XSLTTransformer transformer = new XSLTTransformer(xsltResource, metadata);
+         // Ensure metadata is defined and that it is mutable
         return transformer.apply(xmlResource, metadata);
     }
 }
