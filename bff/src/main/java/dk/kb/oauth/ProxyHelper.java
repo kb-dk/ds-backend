@@ -3,6 +3,8 @@ package dk.kb.oauth;
 import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
+import dk.kb.util.yaml.NotFoundException;
+import dk.kb.util.yaml.YAML;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -48,8 +50,16 @@ public class ProxyHelper {
 
 
     public static URI getApiUri(String api, String path,String query) {
-        String url = ServiceConfig.getConfig().getString("config.api-base-url")
-                +"/"+api+"/"+path;
+
+        YAML apiConfig;
+        try {
+            apiConfig = ServiceConfig.getConfig().getSubMap("config.apis." + api);
+        } catch (NotFoundException e) {
+            throw new ServiceException(Response.Status.NOT_FOUND);
+        }
+
+        String url = apiConfig.get("base-url")+"/"+api+"/"+path;
+
         if (query != null) {
             url += "?"+query;
         }
