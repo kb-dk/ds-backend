@@ -477,8 +477,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             return thumbnails;
         }
         catch(Exception e) {
-            log.warn("Error getting thumbnails from Kaltura for. Error={},fileId={},numberofThumbnails={},width={},height={}",e.getMessage(),fileId,numberOfThumbnails,width,height);
-            throw new ServiceException("Error getting thumbnails from Kaltura",Response.Status.INTERNAL_SERVER_ERROR); 
+            throw handleException(e); //Expected that the ID is not found at Kaltura with our test data and then a 404 will be returned.                        
         }               
     }
 
