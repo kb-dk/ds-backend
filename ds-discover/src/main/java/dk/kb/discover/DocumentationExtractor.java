@@ -6,11 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.StringJoiner;
 
-import dk.kb.present.transform.XSLTTransformer;
+import dk.kb.present.PresentFacade;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
@@ -28,9 +26,6 @@ import org.apache.commons.io.IOUtils;
  */
 public class DocumentationExtractor {
 
-    private static final String SCHEMA2MARKDOWN = "schema2markdown.xsl";
-    private static final String SCHEMA2HTML = "schema2html.xsl";
-
     /**
      * Get and transform the schema for the input {@code collection}.
      * This method includes comments and documentation in processing instructions ({@code <?instruction ?>}-tags).
@@ -41,17 +36,7 @@ public class DocumentationExtractor {
      */
     public static String transformSchema(String collection, String format) throws IOException {
         String rawSchema = getRawSchema(collection);
-
-        switch (format){
-            case "xml":
-                return rawSchema;
-            case "html":
-                return getTransformed(SCHEMA2HTML, rawSchema);
-            case "markdown":
-                return getTransformed(SCHEMA2MARKDOWN, rawSchema);
-            default:
-                throw new InvalidArgumentServiceException("The format '" + format + "' is not supported.");
-        }
+        return PresentFacade.transformSolrSchema(rawSchema, format);
     }
 
     /**
@@ -75,18 +60,6 @@ public class DocumentationExtractor {
         InputStream schema = rawSchemaUrl.openStream();
 
         return IOUtils.toString(schema, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Transform an XML resource by the specified XSLT.
-     * @param xsltResource used for transformation.
-     * @param xmlResource used for transformation.
-     * @return the transformed document
-     */
-     static String getTransformed(String xsltResource, String xmlResource) throws IOException {
-        Map<String, String> metadata = new HashMap<>();
-        XSLTTransformer transformer = new XSLTTransformer(xsltResource, metadata);
-        return transformer.apply(xmlResource, metadata);
     }
 
     /**
