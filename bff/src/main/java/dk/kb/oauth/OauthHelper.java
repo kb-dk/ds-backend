@@ -5,8 +5,6 @@ import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.representations.AccessTokenResponse;
 
-import javax.servlet.http.Cookie;
-import java.util.Date;
 import java.util.Map;
 
 public class OauthHelper {
@@ -20,10 +18,10 @@ public class OauthHelper {
 
     private static synchronized AuthzClient getAuthzClient() {
         if (authzClient == null) {
-            keyCloakUrl = ServiceConfig.getInstance().getConfig().getString("config.keycloak.url");
-            realm = ServiceConfig.getInstance().getConfig().getString("config.keycloak.realm");
-            clientId = ServiceConfig.getInstance().getConfig().getString("config.keycloak.client-id");
-            clientSecret = ServiceConfig.getInstance().getConfig().getString("config.keycloak.secret");
+            keyCloakUrl = ServiceConfig.getConfig().getString("config.keycloak.url");
+            realm = ServiceConfig.getConfig().getString("config.keycloak.realm");
+            clientId = ServiceConfig.getConfig().getString("config.keycloak.client-id");
+            clientSecret = ServiceConfig.getConfig().getString("config.keycloak.secret");
 
             Configuration authzClientConfig = new Configuration(keyCloakUrl,realm,clientId, Map.of("secret",clientSecret),null);
             authzClient = AuthzClient.create(authzClientConfig);
@@ -32,18 +30,10 @@ public class OauthHelper {
     }
 
 
-    public static Cookie getNewAuthzCookie() {
+    public static String getNewAccessToken() {
         AccessTokenResponse accessTokenResponse = getAuthzClient().obtainAccessToken();
-
-        boolean secure = ServiceConfig.getConfig().getBoolean("config.use-secure-cookie",true);
-        Cookie authCookie = new Cookie("Authorization",accessTokenResponse.getToken());
-        authCookie.setHttpOnly(true);
-        authCookie.setSecure(secure);
-        return authCookie;
+        return accessTokenResponse.getToken();
     }
 
-    public static String getAccessTokenFromAuthzCookie(Cookie cookie) {
-        return cookie.getValue();
-    }
 
 }
