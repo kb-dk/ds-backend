@@ -19,7 +19,9 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.ViewDto;
+import dk.kb.present.transform.XSLTTransformer;
 import dk.kb.present.util.DataCleanup;
+import dk.kb.present.util.SolrDocumentationExtractor;
 import dk.kb.util.webservice.stream.*;
 import dk.kb.storage.model.v1.DsRecordDto;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -175,6 +178,17 @@ public class PresentFacade {
                         httpServletResponse, ExportWriterFactory.FORMAT.jsonl, accessFilter) :
                 getRecordsFull(origin, mTime, maxRecords,
                         httpServletResponse, ExportWriterFactory.FORMAT.json, accessFilter);
+    }
+
+
+    /**
+     * Converts a raw solr schema to a human-readable version.
+     * @param rawSchema the schema to convert.
+     * @param format the format which it gets converted to.
+     * @return the transformed solr schema in the specified format.
+     */
+    public static String transformSolrSchema(String rawSchema, String format) throws IOException {
+        return SolrDocumentationExtractor.transformSchema(rawSchema, format);
     }
 
     /**
