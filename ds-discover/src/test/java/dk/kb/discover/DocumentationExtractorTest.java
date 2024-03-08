@@ -32,7 +32,6 @@ public class DocumentationExtractorTest {
 
     @Test
     public void testMultipleExamples() throws IOException {
-        printDocumentation();
         String documentation = DocumentationExtractor.getTransformed(SCHEMA2DOC, resolveTestSchema());
         assertTrue(documentation.contains("Example: KBK Depot\n" +
                                             "Example: Billedsamlingen. John R. Johnsen. Balletfotografier"));
@@ -40,22 +39,20 @@ public class DocumentationExtractorTest {
 
 
     @Test
-    public void testSchemaTransformation() throws IOException {
-        // TODO: Create actual test, making use of test setup
-        System.out.println(DocumentationExtractor.transformSchema("ds", "xml"));
+    public void testXmlSchema() throws IOException {
+        String xmlSchema = DocumentationExtractor.transformSchema("ds", "xml");
+        assertTrue(xmlSchema.contains("<?summary "));
+    }
+    @Test
+    public void testMarkdownSchemaTransformation() throws IOException {
+        String markdownSchema = DocumentationExtractor.transformSchema("ds", "markdown");
+        assertTrue(markdownSchema.contains("# Summary"));
     }
 
-
-    // TOOD: Create individual tests for markdown, xml and html output
     @Test
     public void testHtmlTransformation() throws IOException {
-        System.out.println(DocumentationExtractor.transformSchema("ds", "html"));
-
-    }
-
-    private void printDocumentation() throws IOException {
-        String documentation = DocumentationExtractor.getTransformed(SCHEMA2DOC, resolveTestSchema());
-        System.out.println(documentation);
+        String htmlSchema = DocumentationExtractor.transformSchema("ds", "html");
+        assertTrue(htmlSchema.contains("<h2>Summary</h2>"));
     }
 
     private String resolveTestSchema() throws IOException {
