@@ -3,24 +3,29 @@ package dk.kb.discover;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+@Tag("integration")
 public class DocumentationExtractorTest {
 
-    // TODO: Use best practise aegis setup
     @BeforeAll
-    public static void setup() throws IOException {
-        ServiceConfig.initialize("conf/ds-discover-local.yaml");
+    public static void setup() {
+        try {
+            ServiceConfig.initialize("ds-discover-integration-test.yaml");
+        } catch (IOException e) {
+            fail("Integration test setup not present. Try running the command kb init");
+        }
     }
 
     private static final String SCHEMA2DOC = "schema2markdown.xsl";
-    private static final String SCHEMA2HTML = "schema2html.xsl";
-    private static final String SCHEMA = "solr-test-schema.xml";
+    private static final String SOLR_TEST_SCHEMA_XML = "solr-test-schema.xml";
 
     @Test
     public void testExtractionOfProcessingInstruction() throws IOException {
@@ -36,7 +41,6 @@ public class DocumentationExtractorTest {
         assertTrue(documentation.contains("Example: KBK Depot\n" +
                                             "Example: Billedsamlingen. John R. Johnsen. Balletfotografier"));
     }
-
 
     @Test
     public void testXmlSchema() throws IOException {
@@ -56,6 +60,6 @@ public class DocumentationExtractorTest {
     }
 
     private String resolveTestSchema() throws IOException {
-        return Resolver.resolveString(SCHEMA, StandardCharsets.UTF_8);
+        return Resolver.resolveString(SOLR_TEST_SCHEMA_XML, StandardCharsets.UTF_8);
     }
 }
