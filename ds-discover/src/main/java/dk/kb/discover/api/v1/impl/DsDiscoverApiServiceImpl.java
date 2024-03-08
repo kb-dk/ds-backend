@@ -11,12 +11,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
 import dk.kb.discover.DocumentationExtractor;
-import dk.kb.discover.util.StringStreamingOutput;
 import dk.kb.discover.util.solrshield.Response;
 import dk.kb.discover.util.solrshield.SolrShield;
 import dk.kb.util.webservice.exception.InternalServiceException;
