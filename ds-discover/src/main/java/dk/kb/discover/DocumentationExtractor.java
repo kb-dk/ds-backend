@@ -88,4 +88,23 @@ public class DocumentationExtractor {
         XSLTTransformer transformer = new XSLTTransformer(xsltResource, metadata);
         return transformer.apply(xmlResource, metadata);
     }
+
+    /**
+     * Create filename with correct extension based on input format.
+     * @param format to create filename from.
+     * @return a name for the schema file with file extension.
+     */
+    public static String getSchemaFileName(String format){
+         switch (format){
+             case "xml":
+                 return "schema.xml";
+             case "html":
+                 return "schema.html";
+             case "markdown":
+                 return "schema.md";
+             default:
+                 throw new InvalidArgumentServiceException("The format '" + format + "' is not supported.");
+
+         }
+    }
 }

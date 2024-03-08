@@ -11,10 +11,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
 import dk.kb.discover.DocumentationExtractor;
+import dk.kb.discover.util.StringStreamingOutput;
 import dk.kb.discover.util.solrshield.Response;
 import dk.kb.discover.util.solrshield.SolrShield;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -221,12 +223,19 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
      * specified format using an XSLT. This transformation retrieves processing instructions and includes these in the
      * retrieved solr schema.
      * @param collection the name of the solr collection to retrieve.
-     * @param format the format which the schema gets transformed to
+     * @param format     the format which the schema gets transformed to
      * @return the transformed schema.
      */
     @Override
     public String documentedSchema(String collection, String format){
         try {
+            String filename = DocumentationExtractor.getSchemaFileName(format);
+
+            // Formats are applied correctly when calling the endpoint.
+            // However, the OpenAPI interface does not use the Content-Disposition header when downloaded manually.
+            httpServletResponse.setContentType("text/" + format);
+            httpServletResponse.setHeader("Content-Disposition", "inline; swaggerDownload=\"attachment\"; filename=\"" + filename + "\"");
+
             return DocumentationExtractor.transformSchema(collection, format);
 
         } catch (Exception e){
