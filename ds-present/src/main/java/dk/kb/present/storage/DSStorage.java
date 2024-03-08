@@ -86,7 +86,7 @@ public class DSStorage implements Storage {
     public DsRecordDto getDSRecord(String id){
         log.debug("getDSRecord(id='{}') called", id);
         try {
-            return storageClient.getRecord(id);
+            return storageClient.getRecord(id,false);
         } catch (ApiException e) {
             log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
             throw new NotFoundServiceException("Unable to retrieve record '" + id + "'", e);
@@ -97,7 +97,7 @@ public class DSStorage implements Storage {
     public DsRecordDto getDSRecordTreeLocal(String id) {
         log.debug("getDSRecordTreeLocal(id='{}') called", id);
         try {
-            DsRecordDto record = storageClient.getRecordTreeLocal(id);
+            DsRecordDto record = storageClient.getRecord(id,true);
             if (record.getRecordType() != RecordTypeDto.DELIVERABLEUNIT){
                 log.warn("Requests for anything else than deliverableUnits are not allowed.");
                 throw new IllegalArgumentException("Requests for anything else than deliverableUnits are not allowed.");
