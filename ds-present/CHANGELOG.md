@@ -6,10 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.2) - 2024-03-1
+
 ### Added
 - Support for transforming raw solr schemas with comments in processing instructions to HTML and Markdown.
-
-### Changed
 
 ## [1.7.1](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.1) - 2024-03-08
 
