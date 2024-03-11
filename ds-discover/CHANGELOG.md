@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.2.2) - 2024-03-11
 ### Added
 - SolrShield implemented for basic search + facet. Currently set to log the result instead of potentially rejecting calls to select/
 - Support for transforming raw solr schemas with comments in processing instructions to HTML and Markdown.
