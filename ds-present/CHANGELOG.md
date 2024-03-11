@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Support for transforming raw solr schemas with comments in processing instructions to HTML and Markdown.
 
 ### Changed
 
