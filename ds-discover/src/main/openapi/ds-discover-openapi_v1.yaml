@@ -67,6 +67,51 @@ paths:
               schema:
                 type: string
 
+  /documentation/solr/schema:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Get a rendered version of the schema for the given collection. This version of the schema contains documentation of all fields and examples of some usecases.'
+      operationId: documentedSchema
+      parameters:
+        - name: collection
+          in: query
+          description: 'The ID of the Solr collection to get schema for. Available collections can be requested from /solr/admin/collections'
+          required: true
+          schema:
+            type: string
+            default: 'ds'
+            example: 'ds'
+        - name: format
+          in: query
+          description: 'The format of the output document.'
+          required: true
+          schema:
+            type: string
+            default: 'xml'
+            enum: ['xml', 'html', 'markdown']
+            example: 'xml'
+      responses:
+        '200':
+          description: 'Documented schema for solr collection.'
+          content:
+            text/xml:
+              schema:
+                description: |
+                  Entire Solr schema in [XML or schema.xml format](https://solr.apache.org/guide/solr/9_0/indexing-guide/schema-api.html#retrieve-schema-examples)
+                type: string
+            text/html:
+              schema:
+                description: |
+                  Entire Solr schema in HTML format.
+                type: string
+            text/markdown:
+              schema:
+                description: |
+                  Entire Solr schema in markdown format.
+                type: string
+
+
   /solr/{collection}/schema:
     get:
       tags:
