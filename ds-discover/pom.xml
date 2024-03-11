@@ -92,7 +92,7 @@
         <dependency>
             <groupId>dk.kb.present</groupId>
             <artifactId>ds-present</artifactId>
-            <version>1.7.2-SNAPSHOT</version>
+            <version>1.7.2</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
@@ -101,11 +101,6 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>Saxon-HE</artifactId>
-            <version>10.6</version>
         </dependency>
 
         <!-- Apache CXF and servlet stuff -->
