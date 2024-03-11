@@ -95,12 +95,6 @@
             <version>1.7.2</version>
             <type>jar</type>
             <classifier>classes</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Apache CXF and servlet stuff -->
