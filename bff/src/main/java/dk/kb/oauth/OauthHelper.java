@@ -29,7 +29,10 @@ public class OauthHelper {
         return authzClient;
     }
 
-
+    /**
+     * Get a new access-token from the keyCloak server
+     * @return the accessToken-string
+     */
     public static String getNewAccessToken() {
         AccessTokenResponse accessTokenResponse = getAuthzClient().obtainAccessToken();
         return accessTokenResponse.getToken();
