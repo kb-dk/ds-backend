@@ -9,16 +9,12 @@ import dk.kb.util.yaml.YAML;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 
 public class ProxyHelper {
 
@@ -48,7 +44,14 @@ public class ProxyHelper {
     }
 
 
-
+    /**
+     * Get the URI for a backend api to proxy
+     *
+     * @param api the api to proxy
+     * @param path the path to proxy
+     * @param query query parameters
+     * @return the URI to the API call
+     */
     public static URI getApiUri(String api, String path,String query) {
 
         YAML apiConfig;
@@ -67,6 +70,13 @@ public class ProxyHelper {
         return uri;
     }
 
+    /**
+     * Streams the content for a given httpURLConnection to the api to proxy
+     *
+     * @param connection
+     * @return
+     * @throws IOException
+     */
     public static StreamingOutput createStreamingOutput(HttpURLConnection connection) throws IOException {
         InputStream inputStream = connection.getInputStream();
         return outputStream -> {

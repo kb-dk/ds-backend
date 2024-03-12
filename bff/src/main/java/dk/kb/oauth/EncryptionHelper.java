@@ -17,7 +17,12 @@ public class EncryptionHelper {
 
     private static final Logger log = LoggerFactory.getLogger(EncryptionHelper.class);
 
-
+    /**
+     * Encrypt a string using AES and the configured secret salt
+     *
+     * @param plain the string to encrypt
+     * @return the encrypted string
+     */
     public static String encryptString(String plain) {
         try {
             SecretKey key = generateKey(ServiceConfig.getConfig().getString("config.secretsalt"));
@@ -32,6 +37,12 @@ public class EncryptionHelper {
         }
     }
 
+    /**
+     * Decrypts an encrypted string
+     *
+     * @param encryptedString the string to decrypt
+     * @return the
+     */
     public static String decryptString(String encryptedString){
         try {
             SecretKey key = generateKey(ServiceConfig.getConfig().getString("config.secretsalt"));
