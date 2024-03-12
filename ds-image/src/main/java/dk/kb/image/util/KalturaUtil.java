@@ -49,6 +49,9 @@ public class KalturaUtil {
         if (kalturaId == null) {
             throw new InvalidArgumentServiceException("FileId not found at Kaltura:"+fileId);
         }                
+        
+        log.debug("ReferenceId lookup at kaltura resolved to internalId {} -> {}",fileId,kalturaId);
+        
         String baseUrl=kalturaUrl+"/p/"+partnerId+"/thumbnail/entry_id/"+kalturaId;
       
         if (width != null && width.intValue() > 0) {
@@ -86,7 +89,7 @@ public class KalturaUtil {
             String userId = ServiceConfig.getConfig().getString("kaltura.userId");
             DsKalturaClient client = new DsKalturaClient(kalturaUrl,userId,partnerId,adminSecret);             
             clientInstance=client;
-            log.info("Started a new Kaltura session");
+        q;
             lastSessionStart=System.currentTimeMillis(); //Reset timer           
             return clientInstance;
         }
