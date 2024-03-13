@@ -517,6 +517,9 @@ paths:
         Will contain a default thumbnail, a sprite and list of time sliced thumbnails.     
         [Kaltura Thumbnail API](https://developer.kaltura.com/api-docs/Engage_and_Publish/kaltura-thumbnail-api.html)                     
       operationId: kalturaThumbnails
+      security:
+        - KBOAuth:
+          - any
       parameters:
         - name: fileId
           in: query
@@ -1047,12 +1050,28 @@ components:
           type: string
           enum: ["gray", "grey", "binary"]
     
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+  # TODO: Inject this from properties when DRA-139 has been implemented
+  securitySchemes:
+
+    KBOAuth:
+      type: oauth2
+      description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
+      flows:
+        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+          authorizationUrl: 'https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/auth'
+          #authorizationUrl: https://api.example.com/oauth2/authorize # Overridden by the configuration
+          scopes:
+            generic_ds: 'Scope used for all Digitale Samlinger services'
+            # Project specific roles
+            read: 'read data'
+            write: 'modify or delete data'
+
+            # General roles at the Royal Danish Library
+            devel: 'broad read access'
+            admin: 'all rights'
+
+            # Meta role controlling authorization behaviour
+            public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
+            any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
+
