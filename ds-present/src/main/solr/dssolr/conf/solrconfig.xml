@@ -818,7 +818,7 @@
       <str name="spellcheck.maxResultsForSuggest">5</str>
       <str name="spellcheck.collate">true</str>  <!-- Important this will combine words and give a full query back -->
       <str name="spellcheck.collateExtendedResults">true</str> > <!-- Probably disable later.But usefull to see what is in data -->
-      <str name="spellcheck.maxCollationTries">10</str>
+      <!-- <str name="spellcheck.maxCollationTries">10</str>  This will crash reload of core after configuration change--> 
       <str name="spellcheck.maxCollations">5</str>
       <str name="spellcheck.build">false</str>  <!-- Much overhead building it every query. Not recommended and will not scale -->              
      
