@@ -17,6 +17,7 @@ import dk.kb.util.webservice.exception.ServiceException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.cxf.interceptor.InInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ import java.util.List;
  * <p>This API implements the functionality of the IIPImage API into the OpenAPI framework used at KB.  The goal is to implement all four of the APIs from [IIPImage](https://iipimage.sourceforge.io/documentation/protocol/). These are as follows: - [Internet Imaging Protocol](https://iipimage.sourceforge.io/IIPv105.pdf) - [IIIF API](https://iiif.io/api/image/3.0/) - Deepzoom - Zoomify  Specification for OpenAPI can be found [here](https://swagger.io/docs/specification/about/).
  *
  */
+@InInterceptors(interceptors = "dk.kb.image.webservice.KBAuthorizationInterceptor")
 public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private static final Logger log = LoggerFactory.getLogger(AccessApiServiceImpl.class);
     

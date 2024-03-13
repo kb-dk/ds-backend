@@ -12,17 +12,16 @@
  *  limitations under the License.
  *
  */
-package dk.kb.poc.webservice;
+package dk.kb.image.webservice;
 
-import dk.kb.poc.config.ServiceConfig;
+import org.json.JSONObject;
+import org.json.JSONArray;
+import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.interceptor.Fault;
-import org.jose4j.json.internal.json_simple.JSONArray;
-import org.jose4j.json.internal.json_simple.JSONObject;
-import org.jose4j.json.internal.json_simple.parser.JSONParser;
-import org.jose4j.json.internal.json_simple.parser.ParseException;
+import org.json.JSONTokener;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
 import org.keycloak.jose.jws.JWSInput;
@@ -51,7 +50,10 @@ import java.util.regex.Pattern;
 
 /**
  * Caching of public keys, validation of accessTokens etc. with a focus on the parts used at the Royal Danish Library.
- *
+ * <p>
+ * The implementation uses the <a href="https://github.com/scribejava/scribejava">Scribe library</a> for the
+ * OAuth-specific handling.
+ * <p>
  * This class is thread safe.
  */
 public class KBOAuth2Handler {
@@ -75,12 +77,12 @@ public class KBOAuth2Handler {
      */
     private KBOAuth2Handler() {
         YAML conf;
-        if (!ServiceConfig.getConfig().containsKey(".config.security")) {
+        if (!ServiceConfig.getConfig().containsKey(".security")) {
             log.warn("Authorization interceptor enabled, but there is no security setup in configuration at " +
-                     "key .config.security");
+                     "key .security");
             conf = new YAML();
         } else {
-            conf = ServiceConfig.getConfig().getSubMap(".config.security");
+            conf = ServiceConfig.getConfig().getSubMap(".security");
         }
 
         mode = MODE.valueOf(conf.getString(".mode", MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
@@ -259,13 +261,13 @@ public class KBOAuth2Handler {
         JSONObject header = decodeJSONObject(tokenParts[0]);
         JSONObject payload = decodeJSONObject(tokenParts[1]);
 
-        log.info("HACK_header\n" + header.toJSONString());
-        log.info("HACK_payload\n" + payload.toJSONString());
+        log.info("HACK_header\n" + header);
+        log.info("HACK_payload\n" + payload);
 
-        if (!header.containsKey("kid")) {
+        if (!header.has("kid")) {
             throw new VerificationException("No key ID (kid) present in access token header");
         }
-        if (!payload.containsKey("iss")) {
+        if (!payload.has("iss")) {
             throw new VerificationException("No issuer (iss) present in access token payload");
         }
         if (mode == MODE.OFFLINE) {
@@ -332,7 +334,7 @@ public class KBOAuth2Handler {
      * @throws VerificationException if the realm cannot be verified.
      */
     private String getRealm(JSONObject payload) throws VerificationException {
-        String issuer = payload.get("iss").toString();
+        String issuer = payload.getString("iss");
         Matcher issuerMatcher = ISSUER.matcher(issuer);
         if (!issuerMatcher.matches()) {
             String error = "Unable to determine realm from token payload iss '" + issuer + "'";
@@ -354,12 +356,10 @@ public class KBOAuth2Handler {
 
     private JSONObject decodeJSONObject(String base64JSON) throws VerificationException {
         String jsonString = new String(base64Decode(base64JSON), StandardCharsets.UTF_8);
-        JSONParser parser = new JSONParser();
-        // TODO: Switch to org.json
         try {
-            return (JSONObject) parser.parse(jsonString);
-        } catch (ParseException e) {
-            log.warn("Unable to parse JSON in access token '{}'", jsonString);
+            return new JSONObject(new JSONTokener(jsonString));
+        } catch (Exception e) {
+            log.warn("Unable to parse JSON in access token '{}'", jsonString, e);
             throw new VerificationException("Unable to parse JSON in access token");
         }
     }
@@ -429,8 +429,7 @@ public class KBOAuth2Handler {
         String modulusStr = null;
         String exponentStr = null;
         try {
-            JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(publicKeysString);
+            JSONObject json = new JSONObject(new JSONTokener(publicKeysString));
             // extract the kid value from the header
             JSONArray keylist = (JSONArray) json.get("keys");
             for (Object keyObject : keylist) {

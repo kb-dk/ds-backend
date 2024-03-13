@@ -12,7 +12,7 @@
  *  limitations under the License.
  *
  */
-package dk.kb.poc.webservice;
+package dk.kb.image.webservice;
 
 import io.swagger.annotations.AuthorizationScope;
 

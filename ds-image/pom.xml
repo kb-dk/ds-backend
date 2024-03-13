@@ -216,6 +216,21 @@
           <version>2.1.7</version>
         </dependency>
 
+        <!-- OAuth  support -->
+        <!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-core -->
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
+            <version>24.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <!-- mockserver-junit-jupiter has 1.1, but transitive resolving has 1.2.2 somewhere-->
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
