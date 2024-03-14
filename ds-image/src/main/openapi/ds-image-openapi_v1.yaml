@@ -985,6 +985,8 @@ components:
       properties:
         token:
           type: object
+          required:
+            - present
           properties:
             present:
               type: boolean

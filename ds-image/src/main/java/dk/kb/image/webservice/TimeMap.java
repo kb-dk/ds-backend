@@ -21,17 +21,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Map where entries are removed (lazily) when they have been kept for more than a given amount of seconds.
+ * Map where entries are removed (lazily) when they have been kept for more than a given amount of milliseconds.
  */
 class TimeMap<K, V> extends AbstractMap<K, V> {
-    private final long ttlSeconds;
+    private final long ttlMS;
     private final Map<K, TimeValue<V>> inner = new HashMap<>();
 
     /**
-     * @param ttlSeconds time to live in seconds, -1 means forever.
+     * @param ttlMS time to live in milliseconds, -1 means forever.
      */
-    public TimeMap(long ttlSeconds) {
-        this.ttlSeconds = ttlSeconds;
+    public TimeMap(long ttlMS) {
+        this.ttlMS = ttlMS;
     }
 
     @Override
@@ -103,7 +103,7 @@ class TimeMap<K, V> extends AbstractMap<K, V> {
          */
         public TimeValue(V value) {
             this.value = value;
-            this.expiryTime = ttlSeconds == -1 ? Long.MAX_VALUE : System.currentTimeMillis() + ttlSeconds;
+            this.expiryTime = ttlMS == -1 ? Long.MAX_VALUE : System.currentTimeMillis() + ttlMS;
         }
 
         /**

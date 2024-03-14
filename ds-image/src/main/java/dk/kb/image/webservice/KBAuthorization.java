@@ -23,11 +23,12 @@ import java.lang.annotation.Target;
 
 /**
  * Mark a given method as requiring OAuth2 authorization with the given roles.
- *
+ * <p>
  * The role "public" always means "access for all" and is not checked against user roles.
  * The role "any" means that any user role is accepted when verifying the access token:
- * It is up to the implementation to determine access based on user roles.
- *
+ * It is up to the implementation to determine access based on user roles or other
+ * information from the access token.
+ * <p>
  * Copied and slightly adjusted from the standard swagger Authorization.
  */
 @Target({ElementType.METHOD})

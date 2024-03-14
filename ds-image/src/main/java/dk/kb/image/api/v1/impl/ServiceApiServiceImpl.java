@@ -41,6 +41,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     }
 
     /**
+     * Extract info from OAUth2 accessTokens.
      * @return OAUth2 roles from the caller's accessToken, if present.
      */
     @SuppressWarnings("unchecked")

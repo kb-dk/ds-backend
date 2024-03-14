@@ -135,17 +135,21 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         // TODO: Mark the Message as authenticated
         try {
             AccessToken accessToken = validateAuthorization(message);
+            // No logging of the actual access token as it is long and will spam the log
+            log.debug("Access token successfully validated, performing role checking");
             message.put(ACCESS_TOKEN, accessToken);
             message.put(TOKEN_ROLES, handler.getTokenRoles(accessToken));
             message.put(VALID_TOKEN, true);
             handler.validateRoles(endpoint, accessToken, endpointRoles);
         } catch (VerificationException e) {
-            log.warn("VerificationException validating authorization for endpoint '" + endpoint + "'", e);
+            log.warn("VerificationException validating authorization for endpoint '{}' for raw token '{}'",
+                    endpoint, accessTokenString, e);
             message.put(VALID_TOKEN, false);
             message.put(FAILED_REASON, e.getMessage());
             handler.handleNoAuthorization(endpoint, endpointRoles, true, e.getMessage());
         } catch (Exception e) {
-            log.warn("Non-VerificationException validating authorization for endpoint '" + endpoint + "'", e);
+            log.warn("non-VerificationException validating authorization for endpoint '{}' for raw token '{}'",
+                    endpoint, accessTokenString, e);
             message.put(VALID_TOKEN, false);
             message.put(FAILED_REASON, "Unknown");
             handler.handleNoAuthorization(endpoint, endpointRoles, true, null);

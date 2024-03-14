@@ -105,7 +105,7 @@ public class KBOAuth2Handler {
 
         keysTTL = conf.getInteger(".public_keys.ttl_seconds", 600);
 
-        realmKeys = new TimeMap<>(keysTTL);
+        realmKeys = new TimeMap<>(keysTTL*1000L); // The TimeMap operates in milliseconds
 
         log.info("Created " + this);
     }
@@ -470,8 +470,6 @@ public class KBOAuth2Handler {
     public static String trimTrailingSlash(String s) {
         return s == null || !s.endsWith("/") ? s : s.substring(0, s.length()-1);
     }
-
-
 
     public MODE getMode() {
         return mode;
