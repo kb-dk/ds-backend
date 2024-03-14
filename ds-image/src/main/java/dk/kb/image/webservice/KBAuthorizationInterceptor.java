@@ -38,8 +38,9 @@ import java.util.stream.Collectors;
 
 /**
  * Intercepts webservices endpoints where the OpenAPI generated interface is annotated with {@link KBAuthorization}.
- * It works in tandem with {@link KBOAuth2Handler} to validate access tokens versus endpoint annotations.
- * The end result is either a
+ * Works in tandem with {@link KBOAuth2Handler} to validate access tokens versus endpoint annotations.
+ * The end result is either an up-front rejection in the case of required credentials not being present or extension
+ * of the {@link Message} with roles from the access token.
  * <p>
  * The KBInterceptor expects that {@code config.security.baseurl} and {@code config.security.realms}
  * are defined in the setup. If not, all calls to endpoints annotated with {@link KBAuthorization} will fail.
@@ -61,6 +62,11 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
     private static final Logger log = LoggerFactory.getLogger(KBAuthorizationInterceptor.class);
     private static final String AUTHORIZATION = "Authorization";
     private static final KBOAuth2Handler handler = KBOAuth2Handler.getInstance();
+
+    /**
+     * Key for storing the raw accessToken (everything after 'Authorization: Bearer ') from the Message headers.
+     */
+    public static final String ACCESS_TOKEN_STRING = "AccessTokenString"; // Raw accessToken value
 
     /**
      * Key for storing a validated AccessToken parsed from the Message headers.
@@ -122,6 +128,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
             handler.handleNoAuthorization(endpoint, endpointRoles, false, null);
             return;
         }
+        message.put(ACCESS_TOKEN_STRING, accessTokenString);
 
         // If authorization is defined we validate it, even if one of the endpoint roles is 'public'
         // TODO: Inject the Authorization token in the context of the call (put it in the Message)

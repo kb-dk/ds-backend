@@ -2,14 +2,22 @@ package dk.kb.image.api.v1.impl;
 
 import dk.kb.image.api.v1.ServiceApi;
 import dk.kb.image.model.v1.StatusDto;
+import dk.kb.image.model.v1.WhoamiDto;
+import dk.kb.image.model.v1.WhoamiTokenDto;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.ServiceException;
+import dk.kb.image.webservice.KBAuthorizationInterceptor;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Basic endpoints relevant for all services.
@@ -33,8 +41,32 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     }
 
     /**
+     * @return OAUth2 roles from the caller's accessToken, if present.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public WhoamiDto probeWhoami() {
+        WhoamiDto whoami = new WhoamiDto();
+        WhoamiTokenDto token = new WhoamiTokenDto();
+        whoami.setToken(token);
+
+        Message message = JAXRSUtils.getCurrentMessage();
+
+        token.setPresent(message.containsKey(KBAuthorizationInterceptor.ACCESS_TOKEN_STRING));
+        token.setValid(Boolean.TRUE.equals(message.get(KBAuthorizationInterceptor.VALID_TOKEN)));
+        if (message.containsKey(KBAuthorizationInterceptor.FAILED_REASON)) {
+            token.setError(message.get(KBAuthorizationInterceptor.FAILED_REASON).toString());
+        }
+        Object roles = message.get(KBAuthorizationInterceptor.TOKEN_ROLES);
+        if (roles != null) {
+            token.setRoles(new ArrayList<>((Set<String>)roles));
+        }
+        return whoami;
+    }
+
+    /**
      * Detailed status / health check for the service.
-     *
+     * <p>
      * The default implementation presents status information available to all web applications.
      * This should be extended with application specific information, such as number of running jobs or
      * current load.
@@ -67,4 +99,6 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
             throw handleException(e);
         }
     }
+
+    
 }
