@@ -261,9 +261,6 @@ public class KBOAuth2Handler {
         JSONObject header = decodeJSONObject(tokenParts[0]);
         JSONObject payload = decodeJSONObject(tokenParts[1]);
 
-        log.info("HACK_header\n" + header);
-        log.info("HACK_payload\n" + payload);
-
         if (!header.has("kid")) {
             throw new VerificationException("No key ID (kid) present in access token header");
         }
