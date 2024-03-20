@@ -1,10 +1,11 @@
 package dk.kb.discover.webservice;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -36,25 +37,14 @@ public class OpenApiResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/ds-discover-openapi_v1.json")
+    @Path("/{path: (ds-discover-openapi_v1.json|openapi.json)}")
     public Response getJsonSpec(){
         try {
             InputStream yamlStream = Resolver.openFileFromClasspath("ds-discover-openapi_v1.yaml");
             String openApiSpec = YAML.parse(yamlStream).toString();
-
             String correctString = OpenApiResource.replaceConfigPlaceholders(openApiSpec);
 
-            // Create ObjectMapper for YAML
-            ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-
-            // Read YAML string
-            Object yamlObject = yamlMapper.readValue(correctString, Object.class);
-
-            // Create ObjectMapper for JSON
-            ObjectMapper jsonMapper = new ObjectMapper();
-
-            // Convert YAML object to JSON
-            String jsonString = jsonMapper.writeValueAsString(yamlObject);
+            String jsonString = getJsonString(correctString);
 
             Response.ResponseBuilder builder = Response.ok(jsonString).header("Content-Disposition", "inline; filename=openapi.json");
             return builder.build();
@@ -86,6 +76,13 @@ public class OpenApiResource {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static String getJsonString(String correctString) throws JsonProcessingException {
+        Yaml yaml = new Yaml();
+        Object yamlObject = yaml.load(correctString);
+        ObjectMapper jsonMapper = new ObjectMapper();
+        return jsonMapper.writeValueAsString(yamlObject);
     }
 }
 
