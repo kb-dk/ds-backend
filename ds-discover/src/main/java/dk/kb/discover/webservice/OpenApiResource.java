@@ -63,7 +63,6 @@ public class OpenApiResource {
            String matchedGroup = matcher.group(1);
            String replacement = getReplacementForMatch(matchedGroup);
            matcher.appendReplacement(replacedText, replacement);
-           System.out.println("Found a match for: " + matchedGroup);
         }
         matcher.appendTail(replacedText);
         return replacedText.toString();
