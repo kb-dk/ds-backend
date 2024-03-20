@@ -21,7 +21,7 @@ public class Application_v1 extends javax.ws.rs.core.Application {
                 DsDiscoverApiServiceImpl.class,
                 ServiceApiServiceImpl.class,
                 ServiceExceptionMapper.class,
-                OpenApiSpecResource.class
+                OpenApiResource.class
         ));
     }
 
