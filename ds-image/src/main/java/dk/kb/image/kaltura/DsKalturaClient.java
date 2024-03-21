@@ -67,8 +67,7 @@ public class DsKalturaClient {
                 
         KalturaMediaEntryFilter filter = new KalturaMediaEntryFilter();                
         //filter.searchTextMatchAnd="\""+referenceId+"\""; // Can also find with freetext search (quotes), but this can give false matches.
-        filter.referenceIdEqual=referenceId;
-        filter.
+        filter.referenceIdEqual=referenceId;        
         KalturaMediaListResponse list=null;
         try {
           list = client.getMediaService().list(filter,pager);               
