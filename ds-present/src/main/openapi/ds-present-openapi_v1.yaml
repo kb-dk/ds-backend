@@ -1113,7 +1113,10 @@ components:
           description: 'The closest tag of the deployed branch.'
         gitCommitTime:
           type: string
-          description: 'The time for the latest commit of the deplyed branch.'
+          description: 'The time for the latest commit of the deployed branch.'
+        stats:
+          type: string
+          description: 'Assorted performance statistics'
 
     Whoami:
       type: object

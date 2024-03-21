@@ -23,8 +23,6 @@ import org.slf4j.LoggerFactory;
  * Holds statistics for operations.
  */
 public class Stats {
-    private static final Logger log = LoggerFactory.getLogger(Stats.class);
-
     /**
      * Empty stats for timing parents that defer all measuring to children.
      */
