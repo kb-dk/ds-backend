@@ -11,4 +11,5 @@ README_OLD.md
 .openapi-generator/
 conf/ds-image-environment.yaml
 conf/ds-image-local.yaml
+conf/ds-image-kaltura-integration-test.yaml
 /deploy2Devel11.sh
