@@ -1,6 +1,7 @@
 package dk.kb.present.api.v1.impl;
 
 import dk.kb.present.PresentFacade;
+import dk.kb.present.Stats;
 import dk.kb.present.api.v1.DsPresentApi;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
@@ -109,11 +110,12 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
      */
     @Override
     public String getRecord(String id, FormatDto format) throws ServiceException {
+        long startNS = System.nanoTime();
         try {
             log.debug("getRecord(id='{}', format='{}') called with groups {} and call details: {}",
                     id, format, AccessUtil.getGroups(httpHeaders), getCallDetails());
-            ACCESS access =
-                    AccessUtil.createAccessChecker(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE).apply(id);
+            ACCESS access = Stats.RECORD_ACCESS.measure(() ->
+                    AccessUtil.createAccessChecker(AccessUtil.getGroups(httpHeaders), RECORD_ACCESS_TYPE).apply(id));
             switch (access) {
                 case ok:
                     return PresentFacade.getRecord(id, format);
@@ -129,6 +131,10 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
             }
         } catch (Exception e){
             throw handleException(e);
+        } finally {
+            Stats.GET_RECORD.addNS(System.nanoTime()-startNS);
+            log.debug("getRecord(id='{}', format='{}') finished with stats {}",
+                    id, format, Stats.GET_RECORD);
         }
     }
 

@@ -21,6 +21,7 @@ import dk.kb.present.transform.RuntimeTransformerException;
 import dk.kb.storage.model.v1.DsRecordDto;
 
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.util.Timing;
 import dk.kb.util.other.ExtractionUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -155,12 +156,18 @@ public class DSOrigin {
      * @throws ServiceException if the record could not be retrieved or transformed.
      */
     public String getRecord(String recordID, FormatDto format) throws ServiceException {
-        View view = getView(format);
-        DsRecordDto record = storage.getDSRecordTreeLocal(recordID);
+        Timing timing = Stats.GET_RECORD.
+                getChild("origin_" + id, null, null, Stats.EMPTY_STATS).
+                getChild(format.getValue(), null, "record", Stats.DEFAULT_STATS);
 
-        return view.apply(record);
+        // Timing is both overall and with sub-timings for retrieval and transformation
+        return timing.measure(() -> {
+            DsRecordDto record = timing.getChild("retrieve").measure(() ->
+                    storage.getDSRecordTreeLocal(recordID));
+            return timing.getChild("transform").measure(() ->
+                    getView(format).apply(record));
+        });
     }
-
 
     /**
      * Retrieve a record with the given ID in ds-storage record format.
