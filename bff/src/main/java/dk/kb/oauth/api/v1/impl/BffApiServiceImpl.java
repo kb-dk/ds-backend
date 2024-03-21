@@ -6,7 +6,6 @@ import dk.kb.oauth.ProxyHelper;
 
 import dk.kb.oauth.api.v1.BffApi;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.webservice.exception.ServiceException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.util.webservice.ImplBase;
 
-import javax.servlet.http.Cookie;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -74,10 +72,8 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
 
     private void addCookieToResponse(String accessTokenString) {
-        Cookie newCookie = new Cookie("Authorization", EncryptionHelper.encryptString(accessTokenString));
-        newCookie.setSecure(ServiceConfig.getConfig().getBoolean("config.use-secure-cookie",true));
-        newCookie.setHttpOnly(true);
-        httpServletResponse.addCookie(newCookie);
+        String cookieString = "Authorization="+EncryptionHelper.encryptString(accessTokenString)+"; Secure; HttpOnly; SameSite=Strict";
+        httpServletResponse.setHeader("Set-Cookie",cookieString);
     }
 
 
