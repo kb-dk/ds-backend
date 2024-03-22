@@ -3,12 +3,17 @@ package dk.kb.discover.webservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dk.kb.discover.util.DsDiscoverClient;
 import dk.kb.util.Resolver;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.yaml.YAML;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -18,6 +23,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class OpenApiResource {
+    private static final Logger log = LoggerFactory.getLogger(OpenApiResource.class);
+
 
     public static final String APPLICATION_YAML = "application/yaml";
 
@@ -32,15 +39,24 @@ public class OpenApiResource {
      */
     @GET
     @Produces(APPLICATION_YAML)
-    @Path("/ds-discover-openapi_v1.yaml")
-    public Response getYamlSpec() {
-        InputStream yamlStream = Resolver.openFileFromClasspath("ds-discover-openapi_v1.yaml");
-        String openApiSpec = YAML.parse(yamlStream).toString();
+    @Path("/{path}.yaml")
+    public Response getYamlSpec(@PathParam("path") String path) {
+        try {
+            String inputYaml = Resolver.readFileFromClasspath(path + ".yaml");
 
-        String replacedText = replaceConfigPlaceholders(openApiSpec);
+            if (inputYaml == null){
+                throw new InvalidArgumentServiceException("No OpenAPI specification with path '" + path + ".yaml' was found.");
+            }
 
-        Response.ResponseBuilder builder = Response.ok(replacedText).header("Content-Disposition", "inline; filename=ds-discover-openapi_v1.yaml");
-        return builder.build();
+            String replacedText = replaceConfigPlaceholders(inputYaml);
+
+            Response.ResponseBuilder builder = Response.ok(replacedText)
+                    .header("Content-Disposition", "inline; filename=ds-discover-openapi_v1.yaml");
+
+            return builder.build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
