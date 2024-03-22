@@ -10,6 +10,7 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,10 +66,18 @@ public class OpenApiResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{path: (ds-discover-openapi_v1.json|openapi.json)}")
-    public Response getJsonSpec(){
+    @Path("/{path}.json")
+    public Response getJsonSpec(@PathParam("path") String path){
         try {
-            InputStream yamlStream = Resolver.openFileFromClasspath("ds-discover-openapi_v1.yaml");
+            return createJson(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Response createJson(String path) throws JsonProcessingException {
+        try {
+            InputStream yamlStream = Resolver.openFileFromClasspath(path + ".yaml");
             String openApiSpec = YAML.parse(yamlStream).toString();
             String correctString = OpenApiResource.replaceConfigPlaceholders(openApiSpec);
 
@@ -75,12 +85,21 @@ public class OpenApiResource {
 
             Response.ResponseBuilder builder = Response.ok(jsonString).header("Content-Disposition", "inline; filename=openapi.json");
             return builder.build();
+        } catch (YAMLException | IOException e){
+            throw new InvalidArgumentServiceException("No OpenAPI specification with path '" + path + ".yaml' was found.");
+        }
+    }
+
+    /*@GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/openapi.json")
+    public Response getJsonShorthand(){
+        try {
+            return createJson("ds-discover-openapi_v1");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
-    }
+    }*/
 
     /**
      * Replace placeholders in the original OpenAPI YAML specification. These placeholders have the format ${config.yamlpath},

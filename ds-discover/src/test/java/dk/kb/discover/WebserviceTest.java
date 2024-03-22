@@ -15,7 +15,7 @@ public class WebserviceTest {
         String yamlSpec = apiResource.getYamlSpec("ds-discover-openapi_v1")
                             .getEntity().toString();
 
-        assertFalse(yamlSpec.contains("${config."));
+        assertFalse(yamlSpec.contains("${config:"));
 
     }
 
@@ -42,11 +42,31 @@ public class WebserviceTest {
     @Test
     public void testGetJsonSpec(){
         OpenApiResource apiResource = new OpenApiResource();
-        String jsonSpec = apiResource.getJsonSpec()
+        String jsonSpec = apiResource.getJsonSpec("ds-discover-openapi_v1")
                             .getEntity().toString();
 
-        assertFalse(jsonSpec.contains("${config."));
+        assertFalse(jsonSpec.contains("${config:"));
 
+    }
+
+    @Test
+    public void testGettingConfigWithPathJson(){
+        OpenApiResource apiResource = new OpenApiResource();
+
+        assertThrows(InvalidArgumentServiceException.class, () -> {
+            apiResource.getJsonSpec("conf/ds-discover-behaviour")
+                    .getEntity().toString();
+        });
+    }
+
+    @Test
+    public void testGettingConfigWithoutPathJson(){
+        OpenApiResource apiResource = new OpenApiResource();
+
+        assertThrows(InvalidArgumentServiceException.class, () -> {
+            apiResource.getJsonSpec("ds-discover-behaviour")
+                    .getEntity().toString();
+        });
     }
 
 }
