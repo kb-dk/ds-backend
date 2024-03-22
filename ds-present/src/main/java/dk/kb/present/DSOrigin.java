@@ -156,9 +156,7 @@ public class DSOrigin {
      * @throws ServiceException if the record could not be retrieved or transformed.
      */
     public String getRecord(String recordID, FormatDto format) throws ServiceException {
-        Timing timing = Stats.GET_RECORD.
-                getChild("origin_" + id, null, null, Stats.EMPTY_STATS).
-                getChild(format.getValue(), null, "record", Stats.DEFAULT_STATS);
+        Timing timing = Stats.getViewTimer(id, format.getValue().toLowerCase(Locale.ROOT));
 
         // Timing is both overall and with sub-timings for retrieval and transformation
         return timing.measure(() -> {

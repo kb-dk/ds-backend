@@ -6,6 +6,7 @@ import dk.kb.present.model.v1.StatusDto;
 import dk.kb.present.model.v1.WhoamiDto;
 import dk.kb.present.webservice.AccessUtil;
 import dk.kb.util.BuildInfoManager;
+import dk.kb.util.Timing;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
                 .gitCurrentTag(BuildInfoManager.getGitCurrentTag())
                 .gitCommitTime(BuildInfoManager.getGitCommitTime())
                 .health("ok")
-                .stats(Stats.GET_RECORD.toString(false, true));
+                .stats(Stats.GET_RECORD.toString((Timing.STATS[])null, true));
     }
 
     // Test with curl -X GET "http://localhost:9073/ds-present/v1/probe/whoami" -H  "Simulated-OAuth2-Group: foo"

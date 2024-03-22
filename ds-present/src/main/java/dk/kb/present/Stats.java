@@ -25,8 +25,10 @@ import org.slf4j.LoggerFactory;
 public class Stats {
     /**
      * Empty stats for timing parents that defer all measuring to children.
+     * <p>
+     * Note: Not truly empty as {@link Timing.STATS#name} is still there, but without any other values.
      */
-    public static final Timing.STATS[] EMPTY_STATS = new Timing.STATS[]{};
+    public static final Timing.STATS[] EMPTY_STATS = new Timing.STATS[]{Timing.STATS.name};
 
     /**
      * The elements to display when displaying stats. Performance is not affected, only verbosity.
@@ -52,4 +54,15 @@ public class Stats {
     public static final Timing RECORD_ACCESS =
             GET_RECORD.getChild("access", null, "checks", DEFAULT_STATS);
 
+    /**
+     * Deliver the {@link Timing} responsible for tracting the specified origin with the specified view.
+     * @param origin {@link DSOrigin#getId()}.
+     * @param view {@link View#getId()}.
+     * @return a {@link Timing} for tracking {@link View} processing.
+     */
+    public static Timing getViewTimer(String origin, String view) {
+        return Stats.GET_RECORD.
+                getChild("origin_" + origin, null, null, Stats.EMPTY_STATS).
+                getChild(view, null, "record", Stats.DEFAULT_STATS);
+    }
 }
