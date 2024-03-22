@@ -1,13 +1,22 @@
 package dk.kb.discover;
 
+import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.webservice.OpenApiResource;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WebserviceTest {
+
+    @BeforeAll
+    public static void setup() throws IOException {
+        ServiceConfig.initialize("conf/ds-discover-*.yaml");
+    }
 
     @Test
     public void testGetYamlSpec(){

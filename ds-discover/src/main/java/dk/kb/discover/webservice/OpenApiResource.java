@@ -3,6 +3,7 @@ package dk.kb.discover.webservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.util.DsDiscoverClient;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -127,12 +128,7 @@ public class OpenApiResource {
      * @return the value at the given path in the configuration files.
      */
     private static String getReplacementForMatch(String yPath) {
-        try {
-            YAML conf = YAML.resolveLayeredConfigs("conf/ds-discover-*.yaml");
-            return conf.get(yPath).toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return ServiceConfig.getConfig().get(yPath).toString();
     }
 
     /**
