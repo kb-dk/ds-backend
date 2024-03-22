@@ -39,6 +39,16 @@ public class WebserviceTest {
     }
 
     @Test
+    public void testPathHacking(){
+        OpenApiResource apiResource = new OpenApiResource();
+
+        assertThrows(InvalidArgumentServiceException.class, () -> {
+            apiResource.getYamlSpec("secret/very")
+                    .getEntity().toString();
+        });
+    }
+
+    @Test
     public void testGettingConfigWithoutPath(){
         OpenApiResource apiResource = new OpenApiResource();
 
