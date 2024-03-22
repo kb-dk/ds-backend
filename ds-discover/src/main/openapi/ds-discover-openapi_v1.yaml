@@ -9,7 +9,7 @@ info:
     url: '${license.url}'
 servers:
   #  /api must match servlet-mapping in web.xml
-  - url: '${config.url}'
+  - url: '${config:url}'
     description: 'Version 1'
 
 paths:

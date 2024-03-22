@@ -25,7 +25,7 @@ public class OpenApiResource {
      * Pattern to allow search-replace for variabels defined as ${config.yaml.path} in OpenAPI specifications.
      * Everything after 'config.' is treated as a path to an entry in the backing configuration.
      */
-    private static final Pattern CONFIG_REPLACEMENT= Pattern.compile("\\$\\{config\\.([^}]+)\\}");
+    private static final Pattern CONFIG_REPLACEMENT= Pattern.compile("\\$\\{config:([^}]+)\\}");
 
     /**
      * Deliver the OpenAPI specification with substituted configuration values as a YAML file.
