@@ -3,6 +3,7 @@ package dk.kb.discover.webservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.util.DsDiscoverClient;
 import dk.kb.util.Resolver;
@@ -82,9 +83,9 @@ public class OpenApiResource {
 
     private static Response createJson(String path) throws JsonProcessingException {
         try {
-            InputStream yamlStream = Resolver.openFileFromClasspath(path + ".yaml");
-            String openApiSpec = YAML.parse(yamlStream).toString();
-            String correctString = OpenApiResource.replaceConfigPlaceholders(openApiSpec);
+            path = new File(path).getName();
+            String inputYaml = Resolver.readFileFromClasspath(path + ".yaml");
+            String correctString = OpenApiResource.replaceConfigPlaceholders(inputYaml);
 
             String jsonString = getJsonString(correctString);
 
@@ -144,7 +145,7 @@ public class OpenApiResource {
         Yaml yaml = new Yaml();
         Object yamlObject = yaml.load(yamlString);
         ObjectMapper jsonMapper = new ObjectMapper();
-        return jsonMapper.writeValueAsString(yamlObject);
+        return jsonMapper.enable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(yamlObject);
     }
 }
 
