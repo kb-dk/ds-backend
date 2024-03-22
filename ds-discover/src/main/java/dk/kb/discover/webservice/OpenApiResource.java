@@ -7,7 +7,9 @@ import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.util.DsDiscoverClient;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
+import org.mockserver.model.Not;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -19,6 +21,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -45,16 +48,17 @@ public class OpenApiResource {
     @Path("/{path}.yaml")
     public Response getYamlSpec(@PathParam("path") String path) {
         try {
+            path = new File(path).getName();
             String inputYaml = Resolver.readFileFromClasspath(path + ".yaml");
 
             if (inputYaml == null){
-                throw new InvalidArgumentServiceException("No OpenAPI specification with path '" + path + ".yaml' was found.");
+                throw new NotFoundServiceException("No OpenAPI specification with path '" + path + ".yaml' was found.");
             }
 
             String replacedText = replaceConfigPlaceholders(inputYaml);
 
             Response.ResponseBuilder builder = Response.ok(replacedText)
-                    .header("Content-Disposition", "inline; filename=ds-discover-openapi_v1.yaml");
+                    .header("Content-Disposition", "inline; filename=" + path + ".yaml");
 
             return builder.build();
         } catch (IOException e) {
@@ -84,10 +88,10 @@ public class OpenApiResource {
 
             String jsonString = getJsonString(correctString);
 
-            Response.ResponseBuilder builder = Response.ok(jsonString).header("Content-Disposition", "inline; filename=openapi.json");
+            Response.ResponseBuilder builder = Response.ok(jsonString).header("Content-Disposition", "inline; filename=" + path + ".json");
             return builder.build();
         } catch (YAMLException | IOException e){
-            throw new InvalidArgumentServiceException("No OpenAPI specification with path '" + path + ".yaml' was found.");
+            throw new NotFoundServiceException("No OpenAPI specification with path '" + path + ".yaml' was found.");
         }
     }
 
