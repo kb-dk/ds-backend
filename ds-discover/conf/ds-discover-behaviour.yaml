@@ -7,7 +7,7 @@
 #
 # This config is controlled by the individual developer and is not part of the code repository.
 #
-url: http://localhost:9074/ds-discover/
+url: http://localhost:9074/ds-discover/v1
 # Local experimenting with limits
 limits:
   max: 10000
