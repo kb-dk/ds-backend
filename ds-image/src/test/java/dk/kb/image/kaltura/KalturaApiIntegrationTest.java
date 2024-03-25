@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.image.config.ServiceConfig;
-import dk.kb.image.util.DsImageClientTest;
 import dk.kb.image.util.KalturaUtil;
 
 /**
@@ -30,9 +29,15 @@ public class KalturaApiIntegrationTest {
     public void callKalturaApi() throws Exception{
         ServiceConfig.getInstance().initialize("conf/ds-image-kaltura-integration-test.yaml"); //Load Kaltura API access properties. This file is in aegis and not the project.
         
-        String referenceId="9ad1d1aa-be25-4466-ada7-1e3c1e140e98";
-        String kalturaInternallId="0_g9ys622b";
- 
+        
+      //Always WORKS! 
+        String referenceId="7f7ffcbc-58dc-40bd-8ca9-12d0f9cf3ed7";
+        String kalturaInternallId="0_vvp1ozjl";
+        
+      //Sometimes fails! WFT
+       // String referenceId="9ad1d1aa-be25-4466-ada7-1e3c1e140e98";        
+       // String kalturaInternallId="0_g9ys622b";
+        
                 
         int success=0;
         for (int i = 0;i<20;i++) {
