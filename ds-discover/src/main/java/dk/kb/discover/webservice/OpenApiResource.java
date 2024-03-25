@@ -91,7 +91,7 @@ public class OpenApiResource {
 
             Response.ResponseBuilder builder = Response.ok(jsonString).header("Content-Disposition", "inline; filename=" + path + ".json");
             return builder.build();
-        } catch (YAMLException | IOException e){
+        } catch (YAMLException | IOException  | NullPointerException e){
             throw new NotFoundServiceException("No OpenAPI specification with path '" + path + ".yaml' was found.");
         }
     }

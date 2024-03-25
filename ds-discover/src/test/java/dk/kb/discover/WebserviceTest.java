@@ -3,6 +3,7 @@ package dk.kb.discover;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.webservice.OpenApiResource;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +33,7 @@ public class WebserviceTest {
     public void testGettingConfigWithPath(){
         OpenApiResource apiResource = new OpenApiResource();
 
-        assertThrows(InvalidArgumentServiceException.class, () -> {
+        assertThrows(NotFoundServiceException.class, () -> {
             apiResource.getYamlSpec("conf/ds-discover-behaviour")
                     .getEntity().toString();
         });
@@ -42,7 +43,7 @@ public class WebserviceTest {
     public void testPathHacking(){
         OpenApiResource apiResource = new OpenApiResource();
 
-        assertThrows(InvalidArgumentServiceException.class, () -> {
+        assertThrows(NotFoundServiceException.class, () -> {
             apiResource.getYamlSpec("secret/very")
                     .getEntity().toString();
         });
@@ -52,7 +53,7 @@ public class WebserviceTest {
     public void testGettingConfigWithoutPath(){
         OpenApiResource apiResource = new OpenApiResource();
 
-        assertThrows(InvalidArgumentServiceException.class, () -> {
+        assertThrows(NotFoundServiceException.class, () -> {
             apiResource.getYamlSpec("ds-discover-behaviour")
                     .getEntity().toString();
         });
@@ -72,7 +73,7 @@ public class WebserviceTest {
     public void testGettingConfigWithPathJson(){
         OpenApiResource apiResource = new OpenApiResource();
 
-        assertThrows(InvalidArgumentServiceException.class, () -> {
+        assertThrows(NotFoundServiceException.class, () -> {
             apiResource.getJsonSpec("conf/ds-discover-behaviour")
                     .getEntity().toString();
         });
@@ -82,7 +83,7 @@ public class WebserviceTest {
     public void testGettingConfigWithoutPathJson(){
         OpenApiResource apiResource = new OpenApiResource();
 
-        assertThrows(InvalidArgumentServiceException.class, () -> {
+        assertThrows(NotFoundServiceException.class, () -> {
             apiResource.getJsonSpec("ds-discover-behaviour")
                     .getEntity().toString();
         });
