@@ -12,10 +12,7 @@ import dk.kb.image.util.KalturaUtil;
 
 /**
  * Unittest that will call the API search method. Search for a local refenceId to get the Kaltura internal id for the record.
- * This API call fails often when running in a web-container (Tomcat/Jetty) and we do not know why. 
- * It fails both when reusing the same session or always creating a new session.
- * But it works when called from a minimal maven project with only Kaltura Dependency
- *
+ * Using Kaltura client v.19.3.3 there is no longer sporadic errors when calling the API.
  * API call from devel that can fail: http://<devel-server>:10001/ds-image/v1/kaltura/thumbnails/?fileId=9ad1d1aa-be25-4466-ada7-1e3c1e140e98&numberOfThumbnails=10
  *
  * Call 'kb init' to fetch YAML property file with server url for Kaltura
@@ -28,17 +25,10 @@ public class KalturaApiIntegrationTest {
     @Test
     public void callKalturaApi() throws Exception{
         ServiceConfig.getInstance().initialize("conf/ds-image-kaltura-integration-test.yaml"); //Load Kaltura API access properties. This file is in aegis and not the project.
-        
-        
-      //Always WORKS! 
+                
         String referenceId="7f7ffcbc-58dc-40bd-8ca9-12d0f9cf3ed7";
         String kalturaInternallId="0_vvp1ozjl";
         
-      //Sometimes fails! WFT
-       // String referenceId="9ad1d1aa-be25-4466-ada7-1e3c1e140e98";        
-       // String kalturaInternallId="0_g9ys622b";
-        
-                
         int success=0;
         for (int i = 0;i<20;i++) {
             DsKalturaClient client = KalturaUtil.getClientInstance(); //This will reuse the session as it is configured in KalturaUtil.                  

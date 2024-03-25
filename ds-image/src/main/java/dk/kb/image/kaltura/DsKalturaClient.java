@@ -1,7 +1,6 @@
 package dk.kb.image.kaltura;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,6 +15,7 @@ import com.kaltura.client.types.FilterPager;
 import com.kaltura.client.types.ListResponse;
 import com.kaltura.client.types.MediaEntryFilter;
 import com.kaltura.client.types.MediaEntry;
+import com.kaltura.client.Client;
 import com.kaltura.client.utils.request.RequestElement;
 import com.kaltura.client.utils.response.*;
 import com.kaltura.client.utils.response.base.Response;
@@ -44,7 +44,7 @@ public class DsKalturaClient {
             //KalturaConfiguration config = new KalturaConfiguration();
             Configuration config = new Configuration();
             config.setEndpoint(kalturaUrl);
-             com.kaltura.client.Client client = new com.kaltura.client.Client(config);                          
+             Client client = new Client(config);                          
              String ks = client.generateSession(adminSecret, userId, SessionType.ADMIN, partnerId);
             client.setKs(ks);         
             this.client=client;
@@ -69,8 +69,7 @@ public class DsKalturaClient {
      */
     @SuppressWarnings("unchecked")
     public String getKulturaInternalId(String referenceId) throws IOException{
-        
-        System.out.println("calling with referenceId:"+referenceId);
+                
         MediaEntryFilter filter = new MediaEntryFilter();
         filter.setReferenceIdEqual(referenceId);
         //filter.idEqual("0_g9ys622b"); //Example to search for id
@@ -81,6 +80,7 @@ public class DsKalturaClient {
         ListMediaBuilder request =  MediaService.list(filter);               
                                 
         //Getting this line correct was very hard. Little documentation and has to know which object to cast to.                
+        //For some documentation about the "Kaltura search" api see: https://developer.kaltura.com/api-docs/service/media/action/list        
         Response <ListResponse<MediaEntry>> response = (Response <ListResponse<MediaEntry>>) APIOkRequestsExecutor.getExecutor().execute(request.build(client));
         List<MediaEntry> mediaEntries = response.results.getObjects();           
         
