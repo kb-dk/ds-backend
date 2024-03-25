@@ -7,8 +7,12 @@
 #
 # This config is controlled by the individual developer and is not part of the code repository.
 #
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
 openapi:
-  url: http://localhost:9074/ds-discover/v1
+  serverurl: http://localhost:9074/ds-discover/v1
+
 # Local experimenting with limits
 limits:
   max: 10000
