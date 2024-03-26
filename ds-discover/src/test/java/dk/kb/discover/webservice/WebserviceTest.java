@@ -22,7 +22,6 @@ public class WebserviceTest {
         OpenApiResource apiResource = new OpenApiResource();
         String yamlSpec = apiResource.getYamlSpec("ds-discover-openapi_v1")
                             .getEntity().toString();
-        System.out.println(yamlSpec);
         assertFalse(yamlSpec.contains("${config:"));
 
     }
