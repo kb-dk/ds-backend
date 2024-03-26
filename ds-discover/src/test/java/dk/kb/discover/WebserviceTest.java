@@ -2,7 +2,6 @@ package dk.kb.discover;
 
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.webservice.OpenApiResource;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ public class WebserviceTest {
         OpenApiResource apiResource = new OpenApiResource();
         String yamlSpec = apiResource.getYamlSpec("ds-discover-openapi_v1")
                             .getEntity().toString();
-
+        System.out.println(yamlSpec);
         assertFalse(yamlSpec.contains("${config:"));
 
     }
