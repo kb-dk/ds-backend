@@ -20,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -54,7 +55,9 @@ public class OpenApiResource extends ImplBase {
             String inputYaml = Resolver.readFileFromClasspath(path + ".yaml");
 
             if (inputYaml == null){
-                throw new NotFoundServiceException("No OpenAPI specification with path '" + path + ".yaml' was found.");
+                // We want to see if people are trying to hack their way in by trying different paths
+                log.warn("No OpenAPI specification with path '{}' was found.", path);
+                throw new FileNotFoundException("No OpenAPI specification with path '" + path + ".yaml' was found.");
             }
 
             String replacedText = replaceConfigPlaceholders(inputYaml);
@@ -63,8 +66,10 @@ public class OpenApiResource extends ImplBase {
                     .header("Content-Disposition", "inline; filename=" + path + ".yaml");
 
             return builder.build();
-        } catch (Exception e) {
-            throw handleException(e);
+        } catch (IOException | RuntimeException e){
+            log.warn("Unable to dynamically enhance the YAML OpenAPI specification with path '{}'", path, e);
+            throw new NotFoundServiceException(
+                    "Unable to dynamically enhance the YAML OpenAPI specification with path '" + path + ".yaml'");
         }
     }
 
@@ -82,10 +87,17 @@ public class OpenApiResource extends ImplBase {
         }
     }
 
-    private static Response createJson(String path) throws JsonProcessingException {
+    static Response createJson(String path) {
         try {
             path = new File(path).getName();
             String inputYaml = Resolver.readFileFromClasspath(path + ".yaml");
+
+            if (inputYaml == null){
+                // We want to see if people are trying to hack their way in by trying different paths
+                log.warn("No OpenAPI specification with path '{}' was found.", path);
+                throw new FileNotFoundException("No OpenAPI specification with path '" + path + ".yaml' was found.");
+            }
+
             String correctString = OpenApiResource.replaceConfigPlaceholders(inputYaml);
 
             String jsonString = getJsonString(correctString);
@@ -93,7 +105,9 @@ public class OpenApiResource extends ImplBase {
             Response.ResponseBuilder builder = Response.ok(jsonString).header("Content-Disposition", "inline; filename=" + path + ".json");
             return builder.build();
         } catch (IOException | RuntimeException e){
-            throw new NotFoundServiceException("No OpenAPI specification with path '" + path + ".yaml' was found.");
+            log.warn("Unable to dynamically enhance the YAML OpenAPI specification with path '{}'", path, e);
+            throw new NotFoundServiceException(
+                    "Unable to dynamically enhance the YAML OpenAPI specification with path '" + path + ".yaml'");
         }
     }
 
