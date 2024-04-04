@@ -73,6 +73,42 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
     }
 
     /**
+     * Convenience method that adds the given value to the existing values (if any) for the given key.
+     * @param key key with which the specified value is to be associated.
+     * @param value value to be associated with the specified key. If null, it will be ignored.
+     * @return the previous values that were associated with the key.
+     */
+    public List<String> add(String key, Object value) {
+        failIfFrozen();
+        if (value == null) {
+            return super.get(key);
+        }
+        ArrayList<String> values = super.containsValue(key) ?
+                new ArrayList<>(super.get(key)) :
+                new ArrayList<>();
+        values.add(Objects.toString(value));
+        return super.put(key, values);
+    }
+
+    /**
+     * Convenience method that adds the given values to the existing values (if any) for the given key.
+     * @param key key with which the specified value is to be associated.
+     * @param values value to be associated with the specified key. If null, it will be ignored.
+     * @return the previous values that were associated with the key.
+     */
+    public List<String> add(String key, List<String> values) {
+        failIfFrozen();
+        if (values == null || values.isEmpty()) {
+            return super.get(key);
+        }
+        ArrayList<String> merged = super.containsValue(key) ?
+                new ArrayList<>(super.get(key)) :
+                new ArrayList<>();
+        merged.addAll(values);
+        return super.put(key, merged);
+    }
+
+    /**
      * Convenience method for adding all single value parameters in the given {@code map}
      * as lists of String representations.
      * @param map mappings to added.
@@ -265,6 +301,9 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
         frozen = true;
     }
 
+    public boolean isFrozen() {
+        return frozen;
+    }
 
     /**
      * Cached default- and forced-params for cheap construction of {@link SolrParamMerger}s.

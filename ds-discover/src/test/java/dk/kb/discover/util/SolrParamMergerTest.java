@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,6 +42,24 @@ class SolrParamMergerTest {
         SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
         merger.put("foo", "bar");
         merger.put("boom", "baz");
+    }
+
+    @Test
+    public void testAddSingle() {
+        SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
+        assertFalse(merger.isFrozen());
+        merger.add("foo", "bar");
+        merger.add("foo", "baz");
+        assertEquals("[bar, baz]", merger.get("foo").toString());
+    }
+
+    @Test
+    public void testAddMulti() {
+        SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
+        assertFalse(merger.isFrozen());
+        merger.add("foo", "bar");
+        merger.add("foo", List.of("baz", "zoo"));
+        assertEquals("[bar, baz, zoo]", merger.get("foo").toString());
     }
 
     @Test
