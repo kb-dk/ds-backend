@@ -59,25 +59,25 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
     }
 
     /**
-     * Convenience method that wraps the given value as a list.
+     * Convenience method that wraps the String representation of the given value as a list.
      * @param key key with which the specified value is to be associated.
-     * @param value value to be associated with the specified key.
+     * @param value value to be associated with the specified key. If null, it will be ignored.
      * @return the previous value that was associated with the key.
      */
-    public List<String> put(String key, String value) {
+    public List<String> put(String key, Object value) {
         failIfFrozen();
         if (value == null) {
             return super.get(key);
         }
-        return super.put(key, Collections.singletonList(value));
+        return super.put(key, Collections.singletonList(Objects.toString(value)));
     }
 
     /**
      * Convenience method for adding all single value parameters in the given {@code map}
-     * as lists of String.
+     * as lists of String representations.
      * @param map mappings to added.
      */
-    public void putAllSingle(Map<? extends String, ? extends String> map) {
+    public void putAllSingle(Map<? extends String, ?> map) {
         failIfFrozen();
         map.forEach(this::put);
     }

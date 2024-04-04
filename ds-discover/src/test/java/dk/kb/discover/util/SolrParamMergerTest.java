@@ -53,10 +53,19 @@ class SolrParamMergerTest {
     }
 
     @Test
+    public void testPutInteger() {
+        SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
+        merger.put("foo", 10);
+        assertEquals("[10]", merger.get("foo").toString());
+    }
+
+    @Test
     public void testPutPutList() {
         SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
         merger.put("foo", Collections.singletonList("bar"));
         merger.put("boom", Collections.singletonList("baz"));
+        assertEquals("[bar]", merger.get("foo").toString());
+        assertEquals("[baz]", merger.get("boom").toString());
     }
 
     @Test
