@@ -699,35 +699,6 @@
                     </execution>
                 </executions>
             </plugin>
-          <plugin>
-            <groupId>dk.kb.util</groupId>
-            <artifactId>injection-maven-plugin</artifactId>
-            <version>1.0.0</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>read-yaml-properties</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <filePath>conf/ds-present-kb-origins.yaml</filePath>
-              <yamlResolvers>
-                <YamlResolver>
-                  <yamlType>List</yamlType>
-                  <yamlPath>origins</yamlPath>
-                  <sourceKey>origin</sourceKey>
-                  <destinationKey>origins</destinationKey>
-                  <createEnum>true</createEnum>
-                </YamlResolver>
-                <YamlResolver>
-                  <yamlType>Single-value</yamlType>
-                  <yamlPath>origins[0].'ds.radio'.origin</yamlPath>
-                  <destinationKey>example_origin</destinationKey>
-                </YamlResolver>
-              </yamlResolvers>
-            </configuration>
-          </plugin>
         </plugins>
     </build>
 
