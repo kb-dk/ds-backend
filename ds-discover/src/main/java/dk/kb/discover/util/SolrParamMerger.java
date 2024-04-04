@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
  * The map is Solr-aware and treats {@code fq} as special-case, where default {@code fq}s are overridden by
  * user {@code fq}s and forced {@code fq}s merges with all other {@code fq}s.
  * <p>
+ * The map ignores attempts of adding {@code null} values.
+ * <p>
  * Standard use case for the merger is to request an instance from {@link SolrParamMerger.Factory},
  * add user-provided parameters and used the resulting param map for sending a request to Solr.
  * <p>
@@ -64,6 +66,9 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
      */
     public List<String> put(String key, String value) {
         failIfFrozen();
+        if (value == null) {
+            return super.get(key);
+        }
         return super.put(key, Collections.singletonList(value));
     }
 
@@ -157,37 +162,49 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
     @Override
     public List<String> put(String key, List<String> value) {
         failIfFrozen();
+        if (value == null || value.isEmpty()) {
+            return super.get(key);
+        }
         return super.put(key, value);
     }
 
     @Override
     public void putAll(Map<? extends String, ? extends List<String>> m) {
         failIfFrozen();
-        super.putAll(m);
+        m.forEach(this::put);
     }
 
     @Override
     public List<String> putIfAbsent(String key, List<String> value) {
         failIfFrozen();
+        if (value == null || value.isEmpty()) {
+            return super.get(key);
+        }
         return super.putIfAbsent(key, value);
-    }
-
-    @Override
-    public boolean remove(Object key, Object value) {
-        failIfFrozen();
-        return super.remove(key, value);
     }
 
     @Override
     public boolean replace(String key, List<String> oldValue, List<String> newValue) {
         failIfFrozen();
+        if (newValue == null || newValue.isEmpty()) {
+            return false;
+        }
         return super.replace(key, oldValue, newValue);
     }
 
     @Override
     public List<String> replace(String key, List<String> value) {
         failIfFrozen();
+        if (value == null || value.isEmpty()) {
+            return super.get(key);
+        }
         return super.replace(key, value);
+    }
+
+    @Override
+    public boolean remove(Object key, Object value) {
+        failIfFrozen();
+        return super.remove(key, value);
     }
 
     @Override

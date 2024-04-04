@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,6 +34,29 @@ class SolrParamMergerTest {
     public void testDefaultsNoExtra() {
         SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
         assertEquals("foo", merger.get("fq").get(0));
+    }
+
+    @Test
+    public void testPutPutSingle() {
+        SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
+        merger.put("foo", "bar");
+        merger.put("boom", "baz");
+    }
+
+    @Test
+    public void testPutNothing() {
+        SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
+        merger.put("foo", "bar");
+        merger.put("foo", (String)null);
+        merger.put("foo", Collections.emptyList());
+        assertEquals("[bar]", merger.get("foo").toString());
+    }
+
+    @Test
+    public void testPutPutList() {
+        SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
+        merger.put("foo", Collections.singletonList("bar"));
+        merger.put("boom", Collections.singletonList("baz"));
     }
 
     @Test
