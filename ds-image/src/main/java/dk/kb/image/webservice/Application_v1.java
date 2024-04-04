@@ -19,6 +19,7 @@ public class Application_v1 extends javax.ws.rs.core.Application {
                 JacksonXMLProvider.class,
                 AccessApiServiceImpl.class,
                 ServiceApiServiceImpl.class,
+                OpenApiResource.class,
                 dk.kb.util.webservice.exception.ServiceExceptionMapper.class
         ));
     }
