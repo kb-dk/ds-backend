@@ -22,7 +22,8 @@ public class Application_v1 extends javax.ws.rs.core.Application {
                 DsPresentApiServiceImpl.class,
                 ServiceApiServiceImpl.class,
                 IiifPresentationApiServiceImpl.class,
-                ServiceExceptionMapper.class
+                ServiceExceptionMapper.class,
+                OpenApiResource.class
         ));
     }
 
