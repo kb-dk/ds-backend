@@ -15,6 +15,8 @@ license_solr_servers:
 license_solr_filter_field: id
 license_solr_resource_filter_field: resource_id
 
+openapi:
+  serverurl: http://localhost:9076/ds-license/v1
 
 #change URL path to local h2 storage for unittest
 db:

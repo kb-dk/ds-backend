@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag
 - Bumb sb-parent to v.25
 - Added 'integration' tag to some unittests.
+- Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139).
 
  ### Fixed 
 

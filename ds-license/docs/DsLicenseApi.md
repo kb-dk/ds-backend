@@ -1,6 +1,6 @@
 # DsLicenseApi
 
-All URIs are relative to *http://localhost/ds-license/v1*
+All URIs are relative to *http://$*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -31,7 +31,7 @@ import dk.kb.license.api.DsLicenseApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     CheckAccessForIdsInputDto checkAccessForIdsInputDto = new CheckAccessForIdsInputDto(); // CheckAccessForIdsInputDto | 
@@ -91,7 +91,7 @@ import dk.kb.license.api.DsLicenseApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     CheckAccessForIdsInputDto checkAccessForIdsInputDto = new CheckAccessForIdsInputDto(); // CheckAccessForIdsInputDto | 
@@ -151,7 +151,7 @@ import dk.kb.license.api.DsLicenseApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     GetUserGroupsInputDto getUserGroupsInputDto = new GetUserGroupsInputDto(); // GetUserGroupsInputDto | 
@@ -211,7 +211,7 @@ import dk.kb.license.api.DsLicenseApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto = new GetUserGroupsAndLicensesInputDto(); // GetUserGroupsAndLicensesInputDto | 
@@ -271,7 +271,7 @@ import dk.kb.license.api.DsLicenseApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     GetUserQueryInputDto getUserQueryInputDto = new GetUserQueryInputDto(); // GetUserQueryInputDto | 
@@ -331,7 +331,7 @@ import dk.kb.license.api.DsLicenseApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     GetUsersLicensesInputDto getUsersLicensesInputDto = new GetUsersLicensesInputDto(); // GetUsersLicensesInputDto | 
@@ -391,7 +391,7 @@ import dk.kb.license.api.DsLicenseApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     ValidateAccessInputDto validateAccessInputDto = new ValidateAccessInputDto(); // ValidateAccessInputDto | 

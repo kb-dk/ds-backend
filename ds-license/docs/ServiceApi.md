@@ -1,6 +1,6 @@
 # ServiceApi
 
-All URIs are relative to *http://localhost/ds-license/v1*
+All URIs are relative to *http://$*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -27,7 +27,7 @@ import dk.kb.license.api.ServiceApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     ServiceApi apiInstance = new ServiceApi(defaultClient);
     try {
@@ -83,7 +83,7 @@ import dk.kb.license.api.ServiceApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     ServiceApi apiInstance = new ServiceApi(defaultClient);
     try {
@@ -139,7 +139,7 @@ import dk.kb.license.api.ServiceApi;
 public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
-    defaultClient.setBasePath("http://localhost/ds-license/v1");
+    defaultClient.setBasePath("http://$");
 
     ServiceApi apiInstance = new ServiceApi(defaultClient);
     try {
