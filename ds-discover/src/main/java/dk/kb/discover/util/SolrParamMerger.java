@@ -52,7 +52,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
     private SolrParamMerger(Map<String, List<String>> defaultParams,
                             Map<String, List<String>> forcedParams) {
         this.defaultParams = defaultParams;
-        putAll(defaultParams);
+        super.putAll(defaultParams);
         this.forcedParams = forcedParams;
     }
 
@@ -96,7 +96,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
         frozen = false;
         super.clear();
         if (addDefaultValues) {
-            putAll(defaultParams);
+            super.putAll(defaultParams);
         }
     }
 
@@ -120,7 +120,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
     @Override
     protected boolean removeEldestEntry(Map.Entry<String, List<String>> eldest) {
-        freeze();
+        failIfFrozen();
         return super.removeEldestEntry(eldest);
     }
 
@@ -236,14 +236,14 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
         }
         forcedParams.forEach((k, v) -> {
             if ("fq".equals(k)) { // Forced fq is additive as Solr fq's always stack
-                if (containsKey("fq")) {
-                    List<String> fq = new ArrayList<>(get("fq")); // Ensure the list is mutable
+                if (super.containsKey("fq")) {
+                    List<String> fq = new ArrayList<>(super.get("fq")); // Ensure the list is mutable
                     fq.addAll(v);
-                    put("fq", fq);
+                    super.put("fq", fq);
                     return;
                 }
             }
-            put(k, v);
+            super.put(k, v);
         });
         frozen = true;
     }
@@ -283,8 +283,12 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
          * @param handler a Solr handler as specified in the configuration, i.e. {@code select} or {@code mlt}.
          */
         public Factory(String handler) {
-            defaultParams = getParams(handler + ".defaultparams");
-            forcedParams = getParams(handler + ".forcedparams");
+            if (!ServiceConfig.getConfig().containsKey("solr." + handler)) {
+                log.info("No configuration entry for 'solr.{}'. " +
+                         "There will be no default or forced parameters", handler);
+            }
+            defaultParams = getParams("solr." + handler + ".defaultparams");
+            forcedParams = getParams("solr." + handler + ".forcedparams");
         }
 
         /**
