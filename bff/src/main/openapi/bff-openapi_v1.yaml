@@ -3,7 +3,20 @@ info:
   version: 'v1'
   title: '${project.name}'
   description: |
-    ${project.description}
+    This is a stateless Backend for Frontend/Oauth agent for SPA's at the Royal Danish Library.
+    It follows the best practices descriped here: (https://curity.io/resources/learn/spa-best-practices/).
+
+    ***Example of usage***
+
+    retrieve Authentication cookie with:
+    > `http://devel11.statsbiblioteket.dk:10001/bff/v1/authenticate`
+
+    example call of proxied api:
+    > `http://devel11.statsbiblioteket.dk:10001/bff/v1/proxy/ds-image/...`
+
+
+
+
   contact:
     email: '${user.name}@kb.dk'
   license:
