@@ -20,6 +20,7 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -83,7 +84,16 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
         if (value == null) {
             return super.get(key);
         }
-        ArrayList<String> values = super.containsValue(key) ?
+        if (value instanceof List) {
+            return add(key, (List<?>)value);
+        }
+        if (value instanceof Object[]) {
+            return addArray(key, (Object[])value);
+        }
+        if (value.getClass().isArray()) { // int[], boolean[] etc.
+            throw new UnsupportedOperationException("Adding atomic arrays is not currently supported");
+        }
+        ArrayList<String> values = super.containsKey(key) ?
                 new ArrayList<>(super.get(key)) :
                 new ArrayList<>();
         values.add(Objects.toString(value));
@@ -96,26 +106,52 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
      * @param values value to be associated with the specified key. If null, it will be ignored.
      * @return the previous values that were associated with the key.
      */
-    public List<String> add(String key, List<String> values) {
+    public List<String> addArray(String key, Object[] values) {
+        failIfFrozen();
+        if (values == null || values.length == 0) {
+            return super.get(key);
+        }
+        return add(key, Arrays.asList(values));
+    }
+
+    /**
+     * Convenience method that adds the given values to the existing values (if any) for the given key.
+     * @param key key with which the specified value is to be associated.
+     * @param values value to be associated with the specified key. If null, it will be ignored.
+     * @return the previous values that were associated with the key.
+     */
+    public List<String> add(String key, List<?> values) {
         failIfFrozen();
         if (values == null || values.isEmpty()) {
             return super.get(key);
         }
-        ArrayList<String> merged = super.containsValue(key) ?
+        ArrayList<String> merged = super.containsKey(key) ?
                 new ArrayList<>(super.get(key)) :
                 new ArrayList<>();
-        merged.addAll(values);
+        values.stream()
+                .filter(Objects::nonNull)
+                .map(Objects::toString)
+                .forEach(merged::add);
         return super.put(key, merged);
     }
 
     /**
-     * Convenience method for adding all single value parameters in the given {@code map}
+     * Convenience method for putting all single value parameters in the given {@code map}
      * as lists of String representations.
-     * @param map mappings to added.
+     * @param map mappings to put.
      */
     public void putAllSingle(Map<? extends String, ?> map) {
         failIfFrozen();
         map.forEach(this::put);
+    }
+
+    /**
+     * Add the values from {@code map} to the existing values for the matching parameters.
+     * @param map mappings to add.
+     */
+    public void addAll(Map<? extends String, ?> map) {
+        failIfFrozen();
+        map.forEach(this::add);
     }
 
     /**

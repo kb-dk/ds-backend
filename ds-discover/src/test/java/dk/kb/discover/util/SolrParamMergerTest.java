@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -108,7 +109,7 @@ class SolrParamMergerTest {
     }
 
     @Test
-    public void testDefaultAndForceNoExra() {
+    public void testDefaultAndForceNoExtra() {
         SolrParamMerger merger = new SolrParamMerger.Factory("select3").createMerger();
         assertEquals("[foo, bar]", merger.get("fq").toString());
     }
@@ -157,4 +158,15 @@ class SolrParamMergerTest {
         assertTrue(merger.containsKey("maxCollationRetries"),
                     "After clear(true) there should be a maxCollationRetries");
     }
+
+    @Test
+    public void testAddMixedMap() {
+        SolrParamMerger merger = new SolrParamMerger.Factory("select1").createMerger();
+        merger.addAll(Map.of("fq", "bar"));
+        merger.addAll(Map.of("fq", new Integer[]{1, 2}));
+        //merger.addAll(Map.of("fq", new int[]{3, 4})); // Not supported (yet)
+        merger.addAll(Map.of("fq", List.of(true, false)));
+        assertEquals("[foo, bar, 1, 2, true, false]", merger.get("fq").toString());
+    }
+
 }
