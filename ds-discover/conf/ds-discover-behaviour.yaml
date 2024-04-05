@@ -32,7 +32,7 @@ solr:
       # parameter as default for the /select handler.
       # This param should be made part of solrconfig.xml when the Solr bug
       # has been resolved
-      maxCollationRetries: 10
+      spellcheck.maxCollationRetries: 10
     # Parameters that are forced for all queries, overriding params from the request.
     # The values of the params are either scalars or lists of scalars.
     # The param 'fq' is special as it appends to any existing 'fq' while all other

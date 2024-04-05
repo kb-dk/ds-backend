@@ -67,7 +67,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
      */
     public List<String> put(String key, Object value) {
         failIfFrozen();
-        if (value == null) {
+        if (value == null || Objects.toString(value).isEmpty()) {
             return super.get(key);
         }
         return super.put(key, Collections.singletonList(Objects.toString(value)));
@@ -92,6 +92,9 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
         }
         if (value.getClass().isArray()) { // int[], boolean[] etc.
             throw new UnsupportedOperationException("Adding atomic arrays is not currently supported");
+        }
+        if (Objects.toString(value).isEmpty()) {
+            return super.get(key);
         }
         ArrayList<String> values = super.containsKey(key) ?
                 new ArrayList<>(super.get(key)) :
