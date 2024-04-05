@@ -5,6 +5,7 @@ import dk.kb.oauth.OauthHelper;
 import dk.kb.oauth.ProxyHelper;
 
 import dk.kb.oauth.api.v1.BffApi;
+import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 
@@ -72,7 +73,14 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
 
     private void addCookieToResponse(String accessTokenString) {
-        String cookieString = "Authorization="+EncryptionHelper.encryptString(accessTokenString)+"; Secure; HttpOnly; SameSite=Strict";
+        String cookieString = "Authorization="+EncryptionHelper.encryptString(accessTokenString);
+        if (ServiceConfig.getConfig().getBoolean("config.httponly-cookie",true)) {
+            cookieString += "; HttpOnly";
+        }
+        if (ServiceConfig.getConfig().getBoolean("config.secure-cookie",true)) {
+            cookieString += "; secure";
+        }
+        cookieString += "; SameSite="+ServiceConfig.getConfig().getString("config.samesite-cookie","Strict");
         httpServletResponse.setHeader("Set-Cookie",cookieString);
     }
 
