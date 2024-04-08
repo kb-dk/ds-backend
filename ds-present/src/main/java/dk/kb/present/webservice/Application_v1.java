@@ -9,6 +9,8 @@ import dk.kb.present.PresentFacade;
 import dk.kb.present.api.v1.impl.DsPresentApiServiceImpl;
 import dk.kb.present.api.v1.impl.IiifPresentationApiServiceImpl;
 import dk.kb.present.api.v1.impl.ServiceApiServiceImpl;
+import dk.kb.present.config.ServiceConfig;
+import dk.kb.util.webservice.OpenApiResource;
 import dk.kb.util.webservice.exception.ServiceExceptionMapper;
 
 
@@ -17,6 +19,8 @@ public class Application_v1 extends javax.ws.rs.core.Application {
     @Override
     public Set<Class<?>> getClasses() {
         PresentFacade.warmUp(); // Fail early
+        OpenApiResource.setConfig(ServiceConfig.getConfig());
+
         return new HashSet<>(Arrays.asList(
                 JacksonJsonProvider.class,
                 DsPresentApiServiceImpl.class,
