@@ -19,11 +19,12 @@ import dk.kb.discover.util.SolrParamMerger;
 import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
- import org.slf4j.Logger;
+import org.apache.http.client.utils.URIBuilder;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -270,7 +271,7 @@ public class SolrService {
      * @param fq                     Solr filter query.
      * @param rows                   Maximum number of documents or groups to return.
      * @param fl                     Solr field list.
-     * @param facet                  Whether or not to facet.
+     * @param facet                  Whether to facet.
      * @param facetField             Fields to facet on.
      * @param qOp                    Solr default boolean operator.
      * @param wt                     Solr response format.
@@ -354,12 +355,12 @@ public class SolrService {
         }
 
     	int minimumSuggestLength=ServiceConfig.getConfig().getInteger("solr.suggestminimumlength");
-        if (suggestQuery == null || suggestQuery.trim().length() < minimumSuggestLength ) {
+        if (suggestQuery.trim().length() < minimumSuggestLength ) {
            throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
         }
-               
-        UriBuilder builder = createSuggestRequestBuilder(suggestDictionary, suggestQuery,suggestCount,wt);
-        return performCall(suggestQuery, builder.build(), "suggest");
+
+        URI suggestURI = createSuggestRequestBuilder(suggestDictionary, suggestQuery,suggestCount,wt);
+        return performCall(suggestQuery, suggestURI, "suggest");
     }
 
     /**
@@ -372,8 +373,8 @@ public class SolrService {
      */
     public String schema(String wt){
         WT_SCHEMA_ENUM wt_enum = WT_SCHEMA_ENUM.safeParse(wt);
-        UriBuilder builder = schemaRequestBuilder(wt_enum);
-        return performCall("", builder.build(), "schema");
+        URI schemaURI = schemaRequestBuilder(wt_enum);
+        return performCall("", schemaURI, "schema");
     }
 
     /**
@@ -411,44 +412,57 @@ public class SolrService {
      * @return an URI ready for use with a HTTP component.
      */
     private URI createRequest(String handler, SolrParamMerger params) {
-        UriBuilder builder = UriBuilder.fromUri(server)
-                .path(path)
-                .path(solrCollection)
-                .path(handler);
-        params.forEach((key, values) ->
-                values.forEach(value ->
-                        builder.queryParam(key, value)));
-        return builder.build();
+        try {
+            URIBuilder builder = new URIBuilder(server)
+                    .setPathSegments(path, solrCollection, handler);
+            params.forEach((key, values) ->
+                    values.forEach(value ->
+                            builder.addParameter(key, value)));
+            return builder.build();
+        } catch (URISyntaxException e) {
+            log.error("Unable to construct URL for Solr select call to server='{}', collection='{}' with parameters {}",
+                    server, solrCollection, params, e);
+            throw new InternalServiceException("Unable to construct URL for Solr request");
+        }
     }
-
 
     /**
      * Creates a Solr oriented URI builder specific for suggest
      * @return a pre-filled builder ready to be extended with caller specific parameters.
      */
-    private UriBuilder createSuggestRequestBuilder(String suggestDictionary,String suggestQuery, Integer suggestCount, String wt) {
-        return UriBuilder.fromUri(server)
-                .path(path)
-                .path(solrCollection)
-                .path(SUGGEST)
-                .queryParam(SUGGEST_Q, suggestQuery)
-                .queryParam(SUGGEST_DICTIONARY, suggestDictionary)
-                .queryParam(SUGGEST_COUNT, suggestCount)
-                .queryParam(WT, WT_ENUM.safeParse(wt));
+    private URI createSuggestRequestBuilder(String suggestDictionary, String suggestQuery, Integer suggestCount, String wt) {
+        try {
+            return new URIBuilder(server)
+                    .setPathSegments(path, solrCollection, SUGGEST)
+                    .addParameter(SUGGEST_Q, suggestQuery)
+                    .addParameter(SUGGEST_DICTIONARY, suggestDictionary)
+                    .addParameter(SUGGEST_COUNT, suggestCount.toString())
+                    .addParameter(WT, WT_ENUM.safeParse(wt).toString())
+                    .build();
+        } catch (URISyntaxException e) {
+            log.error("Unable to construct URL for Solr suggest call to server='{}', collection='{}' with " +
+                            "dict='{}', query='{}', count={}, wt='{}'",
+                    server, solrCollection, suggestDictionary, suggestQuery, suggestCount, wt, e);
+            throw new InternalServiceException(
+                    "Unable to construct URL for Solr suggest call for '" + suggestQuery + "'");
+        }
     }
 
-
-
     /**
-     * Create a {@code UriBuilder} for fetching the schema behind the solr collection
+     * Create a {@code URIBuilder} for fetching the schema behind the solr collection
      * @return a ready to use builder.
      */
-    public UriBuilder schemaRequestBuilder(WT_SCHEMA_ENUM wt){
-        return UriBuilder.fromUri(server)
-                .path(path)
-                .path(solrCollection)
-                .path(SCHEMA)
-                .queryParam(WT, wt.toString());
+    public URI schemaRequestBuilder(WT_SCHEMA_ENUM wt){
+        try {
+            return new URIBuilder(server)
+                    .setPathSegments(path, solrCollection, SCHEMA)
+                    .addParameter(WT, wt.toString())
+                    .build();
+        } catch (URISyntaxException e) {
+            log.error("Unable to construct URL for Solr schema call call to server='{}', collection='{}' with wt='{}'",
+                    server, solrCollection, wt, e);
+            throw new InternalServiceException("Unable to construct URL for Solr schema call");
+        }
     }
 
     /**
@@ -520,8 +534,8 @@ public class SolrService {
     private String sanitiseQuery(String q) {
         return SANITISE_PATTERN.matcher(q).replaceFirst(SANITISE_REPLACEMENT);
     }
-    private final Pattern SANITISE_PATTERN = Pattern.compile("^([{/])");
-    private final String SANITISE_REPLACEMENT = "\\$1";
+    private final static Pattern SANITISE_PATTERN = Pattern.compile("^([{/])");
+    private final static String SANITISE_REPLACEMENT = "\\$1";
 
     /**
      * @return the ID for the Solr service.
@@ -537,34 +551,6 @@ public class SolrService {
     public void shutdown() {
         log.info("Shutting down " + this);
         // Currently does nothing as there is no locked resources between calls
-    }
-
-    /**
-     * If {@code value} is not null, {@code key=value} is added as a param to the builder.<br>
-     * Also if String is empty or array is empty param will also not be added.  <br>
-     * Solr will fail on the query etc.: &spellcheck.dictionary=<br>
-     * This happens because openApi will set empty textboxes as 'parameter1='<br>
-     * The solr admin page does submit empty fields to parameter list<br>
-     * 
-     * @param builder builder for a Solr query.
-     * @param key     key for the param to add if a value is present.
-     * @param value   value for the key.
-     */
-    private void addParamIfAvailable(UriBuilder builder, String key, Object value) {           
-    	if (value == null) {
-    		return;    		
-    	}
-    	else if (value instanceof String) {
-    		if ("".equals(value.toString().trim()));
-    	    return;
-    	}
-    	else if (value instanceof Object[]) {
-    		Object[] array = (Object[]) value;
-    		if (array.length == 0) {
-    			return;
-    		}
-    	}
-    	builder.queryParam(key, value); // There is some real value here.    	    	
     }
 
     /**
