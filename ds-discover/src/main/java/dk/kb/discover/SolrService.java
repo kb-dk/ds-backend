@@ -15,6 +15,7 @@
 package dk.kb.discover;
 
 import dk.kb.discover.config.ServiceConfig;
+import dk.kb.discover.util.SolrParamMerger;
 import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -96,6 +97,10 @@ public class SolrService {
     private final String solrCollection;
 
     private final HttpClient client = HttpClient.newHttpClient();
+
+    // Factories for creating param mergers, handling default- and forced-parameters
+    private final SolrParamMerger.Factory selectFactory = new SolrParamMerger.Factory("select");
+    private final SolrParamMerger.Factory mltFactory = new SolrParamMerger.Factory("mlt");
 
     public enum QOP_ENUM {OR, AND;
         static QOP_ENUM safeParse(String qOP) {
@@ -239,40 +244,34 @@ public class SolrService {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
         // TODO: Catch extra arguments and throw "not supported"
-        UriBuilder builder = createBaseRequestBuilder(MLT, q, fq, rows, start, fl, qOp, wt);
+        SolrParamMerger merger = createBaseParams(MLT, q, fq, rows, start, fl, qOp, wt);
 
-        addParamIfAvailable(builder, MLT_FL, mltFl);
-        addParamIfAvailable(builder, MLT_MINTF, mltMintf);
-        addParamIfAvailable(builder, MLT_MINDF, mltMindf);
-        addParamIfAvailable(builder, MLT_MAXDF, mltMaxdf);
-        addParamIfAvailable(builder, MLT_MAXDFPCT, mltMaxdfpct);
-        addParamIfAvailable(builder, MLT_MINWL, mltMinwl);
-        addParamIfAvailable(builder, MLT_MAXWL, mltMaxwl);
-        addParamIfAvailable(builder, MLT_MAXQT, mltMaxqt);
-        addParamIfAvailable(builder, MLT_BOOST, mltBoost);
-        if (mltInterestingTerms != null) {
-            builder.queryParam(MLT_INTERESTING_TERMS, MLT_INTERESTING_TERMS_ENUM.safeParse(mltInterestingTerms));
-        }
-        if (extra != null) {
-            extra.forEach((key, values) ->
-                    Arrays.stream(values).forEach(
-                            value -> builder.queryParam(key, value)));
-        }
+        merger.put(MLT_FL, mltFl);
+        merger.put(MLT_MINTF, mltMintf);
+        merger.put(MLT_MINDF, mltMindf);
+        merger.put(MLT_MAXDF, mltMaxdf);
+        merger.put(MLT_MAXDFPCT, mltMaxdfpct);
+        merger.put(MLT_MINWL, mltMinwl);
+        merger.put(MLT_MAXWL, mltMaxwl);
+        merger.put(MLT_MAXQT, mltMaxqt);
+        merger.put(MLT_BOOST, mltBoost);
+        merger.put(MLT_INTERESTING_TERMS, MLT_INTERESTING_TERMS_ENUM.safeParse(mltInterestingTerms));
+        merger.addAll(extra); // Extras might contain keys that has already been put, so we use addAll
 
-        return performCall(q, builder, "mlt");
+        URI uri = createRequest(MLT, merger);
 
+        return performCall(q, uri, "mlt");
     }
 
-   
-    
     /**
      * Issue a Solr query and return the result.
      *
      * @param q                      Solr query.
      * @param fq                     Solr filter query.
-     * @param rows
+     * @param rows                   Maximum number of documents or groups to return.
      * @param fl                     Solr field list.
-     * @param facetField
+     * @param facet                  Whether or not to facet.
+     * @param facetField             Fields to facet on.
      * @param qOp                    Solr default boolean operator.
      * @param wt                     Solr response format.
      * @param indent                 if true, Solr response is indented (if possible).
@@ -301,53 +300,42 @@ public class SolrService {
     	    Integer spellcheckMaxCollations,
     	    Integer spellcheckMaxCollationTries,
     	    Double spellcheckAccuracy,
-    	    String qOp, String wt, String version, String indent, String debug, String debugExplainStructured, Map<String, String[]> extra) {
+    	    String qOp, String wt, String version, String indent, String debug, String debugExplainStructured,
+                        Map<String, String[]> extra) {
         if (q == null) {
             throw new InvalidArgumentServiceException("q is mandatory but was missing");
         }
         // TODO: Catch extra arguments and throw "not supported"
-        UriBuilder builder = createBaseRequestBuilder(SELECT, q, fq, rows, start, fl, qOp, wt);
+        SolrParamMerger merger = createBaseParams(SELECT, q, fq, rows, start, fl, qOp, wt);
 
-        if (facet != null) {
-            builder.queryParam(FACET, Boolean.parseBoolean(facet));
-        }
-        if (facetField != null) {
-            facetField.forEach(ff -> builder.queryParam(FACET_FIELD, ff));
-        }
-                      
-        addParamIfAvailable(builder, SPELLCHECK, Boolean.parseBoolean(spellcheck));
-        addParamIfAvailable(builder, SPELLCHECK_BUILD, Boolean.parseBoolean(spellcheckBuild));
-        addParamIfAvailable(builder, SPELLCHECK_RELOAD, Boolean.parseBoolean(spellcheckReload));        
-        addParamIfAvailable(builder, SPELLCHECK_QUERY, spellcheckQuery);
-        addParamIfAvailable(builder, SPELLCHECK_DICTIONARY, spellcheckDictionary);
-        addParamIfAvailable(builder, SPELLCHECK_COUNT, spellcheckCount);
-        addParamIfAvailable(builder, SPELLCHECK_ONLY_MORE_POPULAR, spellchecKOnlyMorePopular);
-        addParamIfAvailable(builder, SPELLCHECK_EXTENDED_RESULTS, spellcheckExtendedResults);               
-        addParamIfAvailable(builder, SPELLCHECK_COLLATE, spellcheckCollate);
-        addParamIfAvailable(builder, SPELLCHECK_MAX_COLLATIONS, spellcheckMaxCollations);
-        addParamIfAvailable(builder, SPELLCHECK_MAX_COLLATION_TRIES, spellcheckMaxCollationTries);
-        addParamIfAvailable(builder, SPELLCHECK_ACCURACY, spellcheckAccuracy);
+        merger.put(FACET, facet);
+        merger.put(FACET_FIELD, facetField);
+
+        merger.put(SPELLCHECK, spellcheck);
+        merger.put(SPELLCHECK_BUILD, spellcheckBuild);
+        merger.put(SPELLCHECK_RELOAD, spellcheckReload);
+        merger.put(SPELLCHECK_QUERY, spellcheckQuery);
+        merger.put(SPELLCHECK_DICTIONARY, spellcheckDictionary);
+        merger.put(SPELLCHECK_COUNT, spellcheckCount);
+        merger.put(SPELLCHECK_ONLY_MORE_POPULAR, spellchecKOnlyMorePopular);
+        merger.put(SPELLCHECK_EXTENDED_RESULTS, spellcheckExtendedResults);               
+        merger.put(SPELLCHECK_COLLATE, spellcheckCollate);
+        merger.put(SPELLCHECK_MAX_COLLATIONS, spellcheckMaxCollations);
+        merger.put(SPELLCHECK_MAX_COLLATION_TRIES, spellcheckMaxCollationTries);
+        merger.put(SPELLCHECK_ACCURACY, spellcheckAccuracy);
         
-        addParamIfAvailable(builder, VERSION, version);
-        addParamIfAvailable(builder, INDENT, indent);
+        merger.put(VERSION, version);
+        merger.put(INDENT, indent);
 
-        if (debug != null) {
-            builder.queryParam(DEBUG, DEBUG_ENUM.safeParse(debug));
-        }
-        if (debugExplainStructured != null || debug != null) {
-            builder.queryParam(DEBUG_EXPLAIN_STRUCTURED, Boolean.parseBoolean(debugExplainStructured));
-        }
+        merger.put(DEBUG, DEBUG_ENUM.safeParse(debug));
+        merger.put(DEBUG_EXPLAIN_STRUCTURED, Boolean.parseBoolean(debugExplainStructured));
 
-        if (extra != null) {
-            extra.forEach((key, values) ->
-                    Arrays.stream(values).forEach(
-                            value -> builder.queryParam(key, value)));
-        }
+        merger.addAll(extra); // Extras might contain keys that has already been put, so we use addAll
 
-        return performCall(q, builder, "search");
+        URI uri = createRequest(SELECT, merger);
+        return performCall(q, uri, "search");
     }
 
-    
     /**
      * Issue a Solr suggest and return the result.
      *
@@ -370,8 +358,8 @@ public class SolrService {
            throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
         }
                
-        UriBuilder builder = createSuggestRequestBuilder(SUGGEST, suggestDictionary, suggestQuery,suggestCount,wt);                
-        return performCall(suggestQuery, builder, "suggest");
+        UriBuilder builder = createSuggestRequestBuilder(suggestDictionary, suggestQuery,suggestCount,wt);
+        return performCall(suggestQuery, builder.build(), "suggest");
     }
 
     /**
@@ -385,47 +373,68 @@ public class SolrService {
     public String schema(String wt){
         WT_SCHEMA_ENUM wt_enum = WT_SCHEMA_ENUM.safeParse(wt);
         UriBuilder builder = schemaRequestBuilder(wt_enum);
-        return performCall("", builder, "schema");
+        return performCall("", builder.build(), "schema");
     }
-    
+
     /**
-     * Creates a Solr oriented URI builder with basic parameters shared by standard search and More Like This requests.
-     * @return a pre-filled builder ready to be extended with caller specific parameters.
+     * Create a param merger for the given {@code handler} and add the given parameters to it.
+     * @return a handler-specific param merger, filled wit the given parameters.
      */
-    private UriBuilder createBaseRequestBuilder(
+    private SolrParamMerger createBaseParams(
             String handler, String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
+        SolrParamMerger merger;
+        switch (handler) {
+            case "select":
+                merger = selectFactory.createMerger();
+                break;
+            case "mlt":
+                merger = mltFactory.createMerger();
+                break;
+            default: throw new UnsupportedOperationException(
+                    "Unable to create a param merger for handler '" + handler +
+                            "'. Supported handlers are 'select' and 'mlt'");
+        }
+        merger.put(Q, sanitiseQuery(q));
+        merger.put(FQ, fq);
+        merger.put(ROWS, rows);
+        merger.put(START, start);
+        merger.put(FL, fl);
+        merger.put(QOP, QOP_ENUM.safeParse(qOp));
+        merger.put(WT, WT_ENUM.safeParse(wt));
+        return merger;
+    }
+
+    /**
+     * Build an URI for the given Solr handler with the given parameters.
+     * @param handler the Solr handler to use.
+     * @param params the parameters for the call.
+     * @return an URI ready for use with a HTTP component.
+     */
+    private URI createRequest(String handler, SolrParamMerger params) {
         UriBuilder builder = UriBuilder.fromUri(server)
                 .path(path)
                 .path(solrCollection)
-                .path(handler)
-                .queryParam(Q, sanitiseQuery(q))
-                .queryParam(QOP, QOP_ENUM.safeParse(qOp))
-                .queryParam(WT, WT_ENUM.safeParse(wt));
-        // TODO: Add role based filters
-        if (fq != null) {
-            fq.forEach(fqs -> builder.queryParam(FQ, fqs));
-        }
-        addParamIfAvailable(builder, ROWS, rows);
-        addParamIfAvailable(builder, START, start);
-        addParamIfAvailable(builder, FL, fl);
-        return builder;
+                .path(handler);
+        params.forEach((key, values) ->
+                values.forEach(value ->
+                        builder.queryParam(key, value)));
+        return builder.build();
     }
+
 
     /**
      * Creates a Solr oriented URI builder specific for suggest
      * @return a pre-filled builder ready to be extended with caller specific parameters.
      */
-    private UriBuilder createSuggestRequestBuilder(String handler, String suggestDictionary,String suggestQuery, Integer suggestCount, String wt) {
-        UriBuilder builder = UriBuilder.fromUri(server)
+    private UriBuilder createSuggestRequestBuilder(String suggestDictionary,String suggestQuery, Integer suggestCount, String wt) {
+        return UriBuilder.fromUri(server)
                 .path(path)
                 .path(solrCollection)
-                .path(handler)
+                .path(SUGGEST)
                 .queryParam(SUGGEST_Q, suggestQuery)
                 .queryParam(SUGGEST_DICTIONARY, suggestDictionary)
                 .queryParam(SUGGEST_COUNT, suggestCount)
                 .queryParam(WT, WT_ENUM.safeParse(wt));
-                                    
-        return builder;
     }
 
 
@@ -442,18 +451,21 @@ public class SolrService {
                 .queryParam(WT, wt.toString());
     }
 
-    
-    
-    private String performCall(String q, UriBuilder builder, String callType) {
-        URI solrCall = builder.build();
-
+    /**
+     * Perform a HTTP(S) request for the given URI and return the response.
+     * @param q Solr query used for logging only.
+     * @param uri the full URI to request.
+     * @param callType the overall type of call (search/facet/...) used for logging only.
+     * @return the response from the request for {@code uri}
+     */
+    private String performCall(String q, URI uri, String callType) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(solrCall)
+                .uri(uri)
                 .build();
 
         HttpResponse<String> response;
         try {
-            log.debug("Calling " + solrCall);
+            log.debug("Calling " + uri);
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             log.warn(String.format(

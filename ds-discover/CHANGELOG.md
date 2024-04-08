@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 
 - Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139). 
+- spellcheck.maxCollationRetries=10 is injected per default for Solr /select [DRA-319](https://kb-dk.atlassian.net/browse/DRA-319)
 
 ## [1.2.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.2.2) - 2024-03-11
 ### Added
