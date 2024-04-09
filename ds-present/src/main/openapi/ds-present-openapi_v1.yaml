@@ -194,7 +194,7 @@ paths:
           required: true
           schema:
             type: string
-            example: ${config:origins[0].'ds.radio'.origin}
+            enum: ["${config:origins[*].*.origin}"]
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
