@@ -1,21 +1,32 @@
 package dk.kb.image;
 
+import com.damnhandy.uri.template.UriTemplate;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import org.apache.http.client.utils.URIBuilder;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IIPValidationTest {
     // TODO: Add logging for all tests
     private static final Logger log = LoggerFactory.getLogger(IIPValidationTest.class);
+
+    @Test
+    public void templateTest() {
+        // Check to see if the UriTemplate properly escapes arguments
+        String path = UriTemplate.fromTemplate("http://example.com/{foo}/{bar}")
+                .set("foo", "&%+ {/")
+                .set("bar", "zoo")
+                .expand();
+        assertEquals("http://example.com/%26%25%2B%20%7B%2F/zoo", path);
+    }
 
     @Test
     public void rgnTest(){

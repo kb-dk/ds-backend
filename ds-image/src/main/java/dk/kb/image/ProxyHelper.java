@@ -14,9 +14,11 @@
  */
 package dk.kb.image;
 
+import dk.kb.util.string.Strings;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,15 +27,12 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
+import java.net.*;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -57,6 +56,29 @@ public class ProxyHelper {
      */
     public static StreamingOutput proxy(String request, URI uri, URI clientRequestURI,  HttpHeaders httpHeaders) {
             return proxy(request, uri, clientRequestURI, null, httpHeaders);
+    }
+
+    /**
+     * Streams the content from the given uri. In the case of HTTP codes outside of the 200-299 range, a matching
+     * {@link ServiceException} is thrown.
+     * @param request image ID or similar information used to construct exception messages to the caller.
+     *                The uri is NOT stated in any exception messages as that might be considered confidential.
+     * @param uri the URI to proxy.
+     * @param clientRequestURI the original request URI from the client. Used only for logging.
+     * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
+     * @return a lambda providing the data from the given uri.
+     */
+    public static StreamingOutput proxy(String request, String uri, URI clientRequestURI,  HttpHeaders httpHeaders) {
+        URI realURI;
+        try {
+            realURI = new URI(uri);
+        } catch (URISyntaxException e) {
+            log.warn("Error processing '{}': Unable to create URI from '{}' for user request '{}'",
+                    request, uri, clientRequestURI, e);
+            throw new InternalServerErrorException(
+                    "Invalid internally generated proxy-URI for request '" + clientRequestURI + "'");
+        }
+        return proxy(request, realURI, clientRequestURI, null, httpHeaders);
     }
 
     /**
@@ -227,9 +249,9 @@ public class ProxyHelper {
      * Add a query param to the UriBuilder if a value is present.
      * @return the given builder for chaining.
      */
-    public static UriBuilder addIfPresent(UriBuilder builder, String key, Object value) {
+    public static URIBuilder addIfPresent(URIBuilder builder, String key, Object value) {
         if (value != null) {
-            builder.queryParam(key, value);
+            builder.addParameter(key, value.toString());
         }
         return builder;
     }
@@ -239,16 +261,9 @@ public class ProxyHelper {
      * The value will be serialized as comma-deparated values.
      * @return the given builder for chaining.
      */
-    public static UriBuilder addIfPresent(UriBuilder builder, String key, List<? extends Object> values) {
+    public static URIBuilder addIfPresent(URIBuilder builder, String key, List<? extends Object> values) {
         if (values != null && !values.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (Object value: values) {
-                if (sb.length() != 0) {
-                    sb.append(",");
-                }
-                sb.append(value.toString());
-            }
-            builder.queryParam(key, sb.toString());
+            builder.addParameter(key, Strings.join(values, ","));
         }
         return builder;
     }

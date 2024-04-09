@@ -18,13 +18,15 @@ import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -110,57 +112,77 @@ public class IIPFacade {
 
         // TODO: Use the UriTemplate system like IIIFFacade
         // http://example.com/iipsrv.fcgi?FIF=/mymount/85/c1/85c1df89-bffe-48e0-8813-111f6f0fba50.jp2&CVT=jpeg
-        UriBuilder builder = UriBuilder.
-                fromUri(ServiceConfig.getConfig().getString(KEY_IIP_SERVER)).
-                queryParam("FIF", FIF); // Mandatory
-        ProxyHelper.addIfPresent(builder, "WID", WID);
-        ProxyHelper.addIfPresent(builder, "HEI", HEI);
-        ProxyHelper.addIfPresent(builder, "RGN", RGN);
-        ProxyHelper.addIfPresent(builder, "QLT", QLT);
-        ProxyHelper.addIfPresent(builder, "CNT", CNT);
+        try {
+            URIBuilder builder = new URIBuilder(ServiceConfig.getConfig().getString(KEY_IIP_SERVER))
+                    .addParameter("FIF", FIF); // Mandatory. Note that slashes will be encoded
+            ProxyHelper.addIfPresent(builder, "WID", WID);
+            ProxyHelper.addIfPresent(builder, "HEI", HEI);
+            ProxyHelper.addIfPresent(builder, "RGN", RGN);
+            ProxyHelper.addIfPresent(builder, "QLT", QLT);
+            ProxyHelper.addIfPresent(builder, "CNT", CNT);
 
-        ProxyHelper.addIfPresent(builder, "ROT", ROT);
-        ProxyHelper.addIfPresent(builder, "GAM", GAM);
-        ProxyHelper.addIfPresent(builder, "CMP", CMP);
-        ProxyHelper.addIfPresent(builder, "PFL", PFL);
-        ProxyHelper.addIfPresent(builder, "CTW", CTW);
-        ProxyHelper.addIfPresent(builder, "INV", INV); // TODO: Figure out how to add INV as a value-less param
-        ProxyHelper.addIfPresent(builder, "COL", COL);
+            ProxyHelper.addIfPresent(builder, "ROT", ROT);
+            ProxyHelper.addIfPresent(builder, "GAM", GAM);
+            ProxyHelper.addIfPresent(builder, "CMP", CMP);
+            ProxyHelper.addIfPresent(builder, "PFL", PFL);
+            ProxyHelper.addIfPresent(builder, "CTW", CTW);
+            ProxyHelper.addIfPresent(builder, "INV", INV); // TODO: Figure out how to add INV as a value-less param
+            ProxyHelper.addIfPresent(builder, "COL", COL);
 
-        ProxyHelper.addIfPresent(builder, "JTL", JTL);
-        ProxyHelper.addIfPresent(builder, "PTL", PTL);
-        ProxyHelper.addIfPresent(builder, "CVT", CVT);
+            ProxyHelper.addIfPresent(builder, "JTL", JTL);
+            ProxyHelper.addIfPresent(builder, "PTL", PTL);
+            ProxyHelper.addIfPresent(builder, "CVT", CVT);
 
-        final URI uri = builder.build();
+            final URI uri = builder.build();
 
-        return ProxyHelper.proxy(FIF, uri, requestURI, httpHeaders);
+            return ProxyHelper.proxy(FIF, uri, requestURI, httpHeaders);
+        } catch (URISyntaxException e) {
+            log.warn("getIIPImage: Unable to construct URL requestURI='{}'", requestURI, e);
+            throw new InternalServiceException(
+                    "Unable to construct getIIPImage URL for request '" + requestURI + "'");
+        }
     }
 
     public javax.ws.rs.core.StreamingOutput getDeepzoomDZI(
             URI requestURI, String imageid,
-            HttpServletResponse httpServletResponse,  HttpHeaders httpHeaders) throws ServiceException {
+            HttpServletResponse httpServletResponse, HttpHeaders httpHeaders) throws ServiceException {
         validateDeepzoomDZIRequest(imageid);
         final String idDZI = imageid + (imageid.endsWith(".dzi") ? "" : ".dzi");
-        // Defaults
-        UriBuilder builder;
+
+        URI uri;
+
         if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
-            builder = UriBuilder.
-            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PATH)).
-            path(idDZI); // Mandatory
-        } 
-        else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
-            builder = UriBuilder.
-            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM)).
-            queryParam("DeepZoom", idDZI); // Mandatory
-        }
-        else {
-            log.error("No Deepzoom server defined");
-            throw new InternalServiceException("No Deepzoom server defined");
+            // Path based DeepZoom server: http://example.com:1234/image_identifier.dzi
+            try {
+                uri = new URIBuilder(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PATH))
+                        .setPath(idDZI)
+                        .build();
+            } catch (URISyntaxException e) {
+                log.warn("Error creating DeepZoom-DZI path based proxy URI for image ID '{}' from request '{}'",
+                        imageid, requestURI, e);
+                throw new InternalServerErrorException(
+                        "Error creating DeepZoom-DZI path based proxy URI for request '" + requestURI + "'");
+            }
+
+        } else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
+            // Param based DeepZoom server: http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
+            try {
+                uri = new URIBuilder(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM))
+                        .addParameter("DeepZoom", idDZI)
+                        .build();
+            } catch (URISyntaxException e) {
+                log.warn("Error creating DeepZoom-DZI param based proxy URI for image ID '{}' from request '{}'",
+                        imageid, requestURI, e);
+                throw new InternalServerErrorException(
+                        "Error creating DeepZoom-DZI param based proxy URI for request '" + requestURI + "'");
+            }
+
+        } else {
+            log.error("No DeepZoom server defined");
+            throw new InternalServiceException("No DeepZoom server defined");
         }
         // TODO: Use the UriTemplate system like IIIFFacade
         // http://example.com//fcgi-bin/iipsrv.fcgi?DeepZoom=/your/image/path.tif.dzi
-
-        final URI uri = builder.build();
 
         return ProxyHelper.proxy(imageid, uri, requestURI, httpServletResponse, httpHeaders);
     }
@@ -178,18 +200,33 @@ public class IIPFacade {
 
         // TODO: Use the UriTemplate system like IIIFFacade
         // http://example.com//fcgi-bin/iipsrv.fcgi?DeepZoom=/your/image/path.tif.dzi
-        UriBuilder builder;
-        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
-            builder = UriBuilder.
-            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PATH)).
-            path(imageid + "_files").path("" + layer).path(tiles + "." + format);
-        } 
-        else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
-            builder = UriBuilder.
-            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM)).
-            queryParam("DeepZoom", imageid + "_files/" + layer + "/" + tiles + "." + format);
-        }
-        else {
+        URIBuilder builder;
+
+        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)) {
+            // Path based DeepZoom server
+            try {
+                builder = new URIBuilder(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PATH))
+                        .setPathSegments(imageid + "_files", String.valueOf(layer), tiles + "." + format);
+            } catch (URISyntaxException e) {
+                log.warn("Error creating DeepZoom-tile path based proxy URI for image ID '{}' from request '{}'",
+                        imageid, requestURI, e);
+                throw new InternalServerErrorException(
+                        "Error creating DeepZoom-tile path based proxy URI for request '" + requestURI + "'");
+            }
+
+        } else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)) {
+            // Param based DeepZoom server
+            try {
+                builder = new URIBuilder(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM))
+                        .addParameter("DeepZoom", imageid + "_files/" + layer + "/" + tiles + "." + format);
+            } catch (URISyntaxException e) {
+                log.warn("Error creating DeepZoom-tile param based proxy URI for image ID '{}' from request '{}'",
+                        imageid, requestURI, e);
+                throw new InternalServerErrorException(
+                        "Error creating DeepZoom-tile param based proxy URI for request '" + requestURI + "'");
+            }
+
+        } else {
             log.error("No Deepzoom server defined");
             throw new InternalServiceException("No Deepzoom server defined");
         }
@@ -205,7 +242,16 @@ public class IIPFacade {
         ProxyHelper.addIfPresent(builder, "INV", INV); // TODO: Figure out how to add INV as a value-less param
         ProxyHelper.addIfPresent(builder, "COL", COL);
 
-        final URI uri = builder.build();
+        final URI uri;
+
+        try {
+            uri = builder.build();
+        } catch (URISyntaxException e) {
+            log.warn("Error finalizing DeepZoom-tile proxy URI for image ID '{}' from request '{}'",
+                    imageid, requestURI, e);
+            throw new InternalServerErrorException(
+                    "Error finalizing DeepZoom-tile proxy URI for request '" + requestURI + "'");
+        }
 
         return ProxyHelper.proxy(imageid, uri, requestURI,httpHeaders);
     }

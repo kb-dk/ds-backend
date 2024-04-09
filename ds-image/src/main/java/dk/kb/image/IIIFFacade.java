@@ -15,19 +15,16 @@
 package dk.kb.image;
 
 import com.damnhandy.uri.template.UriTemplate;
-
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.List;
 
 /**
  * Proxy for an image server that supports the <a href="https://iiif.io/api/image/3.0/">IIIF Image API</a>.
@@ -89,7 +86,7 @@ public class IIIFFacade {
         }
 
         // TODO: Add versioning to config so that default/standard for quality can be handled according to image server
-        String path = UriTemplate.fromTemplate(IIIF_IMAGE3_TEMPLATE)
+        String uri = UriTemplate.fromTemplate(getServer(KEY_IIIF_SERVER) + IIIF_IMAGE3_TEMPLATE)
                 .set("identifier", identifier)
                 .set("region", region)
                 .set("size", size)
@@ -97,20 +94,14 @@ public class IIIFFacade {
                 .set("quality", quality)
                 .set("format", format)
                 .expand();
-
-        UriBuilder builder = UriBuilder.
-                fromUri(ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)).
-                path(path);
-
-        final URI uri = builder.build();
+        // Not using URIBuilder as the UriTemplate already encodes the parameters
         return ProxyHelper.proxy(identifier, uri, requestURI,httpHeaders);
     }
-
 
     /**
      * IIIF Image Information
      *
-     * @param requestUri the original request URI from the client. Used only for logging.
+     * @param requestURI the original request URI from the client. Used only for logging.
      * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.    
      * @param extension Data format. 'json' or 'xml' allowed.
      * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
@@ -124,15 +115,10 @@ public class IIIFFacade {
      */
     public StreamingOutput getIIIFInfo(URI requestURI, String identifier, String extension, HttpHeaders httpHeaders) {
         // TODO: Verify extension
-        String path = UriTemplate.fromTemplate(IIIF_INFO3_TEMPLATE)
+        String uri = UriTemplate.fromTemplate(getServer(KEY_IIIF_SERVER) + IIIF_INFO3_TEMPLATE)
                 .set("identifier", identifier)
                 .set("ext", extension)
                 .expand();
-        UriBuilder builder = UriBuilder.
-                fromUri(ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)).
-                path(path);
-
-        final URI uri = builder.build();
         return ProxyHelper.proxy(identifier, uri, requestURI,httpHeaders);
     }
 
@@ -150,4 +136,21 @@ public class IIIFFacade {
         // TODO: Implement proper validation
     }
 
+    /**
+     * Equivalent to {@code ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)} but guarantees that
+     * the retrieved value ends with {@code /}.
+     * <p>
+     * This is used with {@link UriTemplate} to ensure valid URIs.
+     * @param serverKey key for a server stated in the configuration.
+     * @return the server for the given {@code serverKey}, guaranteeing that it ends in {@code /}.
+     */
+    private String getServer(String serverKey) {
+        String server = ServiceConfig.getConfig().getString(serverKey, null);
+        if (server == null) {
+            // log.error as the service does not work at all without knowing the servers
+            log.error("The server key '{}' was not defined in the configuration", serverKey);
+            throw new InternalServerErrorException("Unable to resolve server for operation");
+        }
+        return server.endsWith("/") ? server : server + "/";
+    }
 }
