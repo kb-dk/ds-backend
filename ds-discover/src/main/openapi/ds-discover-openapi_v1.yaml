@@ -81,7 +81,7 @@ paths:
           schema:
             type: string
             default: 'ds'
-            example: 'ds'
+            enum: ["${config:solr.collections[*].*.collection}"]
         - name: format
           in: query
           description: 'The format of the output document.'
@@ -126,8 +126,8 @@ paths:
           required: true
           schema:
             type: string
+            enum: ["${config:solr.collections[*].*.collection}"]
             default: 'ds'
-            example: 'ds'
 
         - name: wt
           in: query
@@ -174,7 +174,7 @@ paths:
           schema:
             type: string
             default: 'ds'
-            example: 'ds'
+            enum: ["${config:solr.collections[*].*.collection}"]
 
         - name: q
           in: query
@@ -534,7 +534,7 @@ paths:
           schema:
             type: string
             default: 'ds'
-            example: 'ds'
+            enum: ["${config:solr.collections[*].*.collection}"]
 
         - name: q
           in: query
@@ -806,7 +806,7 @@ paths:
           schema:
             type: string
             default: 'ds'
-            example: 'ds'
+            enum: ["${config:solr.collections[*].*.collection}"]
                 
         - name: suggest.dictionary
           in: query
