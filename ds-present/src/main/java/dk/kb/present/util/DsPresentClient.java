@@ -21,17 +21,15 @@ import dk.kb.present.invoker.v1.ApiClient;
 import dk.kb.present.invoker.v1.Configuration;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import dk.kb.util.yaml.YAML;
-import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -148,24 +146,13 @@ public class DsPresentClient extends DsPresentApi {
      */
     public ContinuationInputStream<Long> getRecordsJSON(String origin, Long mTime, Long maxRecords, FormatDto format)
             throws IOException {
-        URI uri;
-        try {
-            uri = new URIBuilder(serviceURI)
-                    .setPath("records")
-                    .addParameter("origin", origin)
-                    .addParameter("mTime", Long.toString(mTime == null ? 0L : mTime))
-                    .addParameter("maxRecords", Long.toString(maxRecords == null ? 10 : maxRecords))
-                    .addParameter("format", format.getValue().toUpperCase(Locale.ROOT))
-                    .build();
-        } catch (URISyntaxException e) {
-            String message = String.format(Locale.ROOT,
-                    "getRecordsJSON(origin='%s', mTime=%d, maxRecords=%d, format='%s'): " +
-                            "Unable to construct URI",
-                    origin, mTime, maxRecords, format);
-            log.warn(message, e);
-            throw new InternalServiceException(message);
-        }
-
+        URI uri = UriBuilder.fromUri(serviceURI)
+                .path("records")
+                .queryParam("origin", origin)
+                .queryParam("mTime", mTime == null ? 0L : mTime)
+                .queryParam("maxRecords", maxRecords == null ? 10 : maxRecords)
+                .queryParam("format", format.getValue().toUpperCase(Locale.ROOT))
+                .build();
         log.debug("Opening streaming connection to '{}'", uri);
         return ContinuationInputStream.from(uri, Long::valueOf, headers);
     }
@@ -188,24 +175,13 @@ public class DsPresentClient extends DsPresentApi {
      */
     public ContinuationInputStream<Long> getRecordsRawJSON(
             String origin, Long mTime, Long maxRecords, Boolean asJsonLines) throws IOException {
-        URI uri;
-        try {
-            uri = new URIBuilder(serviceURI)
-                    .setPath("records")
-                    .addParameter("origin", origin)
-                    .addParameter("mTime", Long.toString(mTime == null ? 0L : mTime))
-                    .addParameter("maxRecords", Long.toString(maxRecords == null ? 10 : maxRecords))
-                    .addParameter("asJsonLines", Boolean.toString(asJsonLines != null && asJsonLines))
-                    .build();
-        } catch (URISyntaxException e) {
-            String message = String.format(Locale.ROOT,
-                    "getRecordsRawJSON(origin='%s', mTime=%d, maxRecords=%d, asJsonLines=%b): " +
-                            "Unable to construct URI",
-                    origin, mTime, maxRecords, asJsonLines != null && asJsonLines);
-            log.warn(message, e);
-            throw new InternalServiceException(message);
-        }
-
+        URI uri = UriBuilder.fromUri(serviceURI)
+                .path("recordsraw")
+                .queryParam("origin", origin)
+                .queryParam("mTime", mTime == null ? 0L : mTime)
+                .queryParam("maxRecords", maxRecords == null ? 10 : maxRecords)
+                .queryParam("asJsonLines", asJsonLines != null && asJsonLines)
+                .build();
         log.debug("Opening streaming connection to '{}'", uri);
         return ContinuationInputStream.from(uri, Long::valueOf, headers);
     }
