@@ -27,6 +27,7 @@ fallback: ${nonexisting.property:-87}
 
 openapi:
   serverurl: http://localhost:9077/ds-image/v1
+  exampleid: online_master_arkiv_5/non-archival/Manus/JUDSAM/2008/csh0004/csh0004_00528/
 
 #Url to licensemodule
 licensemodule:
