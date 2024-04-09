@@ -105,9 +105,7 @@ paths:
           required: true
           schema:
             type: string
-            # Nontrivial getting ENUMS to work with injections as the line below throws an internal snakeYaml error in swagger and ["${#config:#origins[*].*.origin}"] interprets all values as one combined string. leaving it as a single example for now.
-            #enum: [${#config:#origins[*].*.origin}]
-            example: ${config:origins[0].'ds.radio'.origin}
+            enum: ["${config:origins[*].*.origin}"]
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
@@ -252,7 +250,7 @@ paths:
           schema:
             type: string
             minLength: 1
-            example: ${config:origins[0].'ds.radio'.origin}
+            enum: ["${config:origins[*].*.origin}"]
       responses:
         '200':
           description: 'OK: The origin was known and a description is returned.'
