@@ -40,6 +40,7 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
     @Override
     public String authenticate() throws ServiceException {
+        log.debug("authenticate "+httpServletRequest.getRemoteHost());
         String accessTokenString = OauthHelper.getNewAccessToken();
         addCookieToResponse(accessTokenString);
         return "";
@@ -48,6 +49,7 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
     @GET
     @Path("/proxy/{api}/{path: .*}")
     public StreamingOutput proxyGetRequest(@PathParam("api") String api, @PathParam("path") String path, @CookieParam("Authorization") String authorization) {
+        log.debug("proxy request to: '{}/{}' authorization:'{}'",api,path,authorization);
         if (StringUtils.isEmpty(authorization)) {
             sendRedirectToAuthentication();
             return null;

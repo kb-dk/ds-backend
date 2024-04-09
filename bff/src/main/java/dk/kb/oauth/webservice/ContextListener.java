@@ -60,6 +60,10 @@ public class ContextListener implements ServletContextListener {
 
         logServiceInfo();
         initConfig();
+        log.info("cookie configuration secure:'{}', httponly:'{}', samesite:'{}'",
+            ServiceConfig.getConfig().getBoolean("config.secure-cookie",true),
+            ServiceConfig.getConfig().getBoolean("config.httponly-cookie",true),
+            ServiceConfig.getConfig().getString("config.samesite-cookie","Strict"));
     }
 
     /**
