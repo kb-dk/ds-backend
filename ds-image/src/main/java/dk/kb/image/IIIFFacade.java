@@ -138,10 +138,10 @@ public class IIIFFacade {
 
     /**
      * Equivalent to {@code ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)} but guarantees that
-     * the retrieved value ends with {@code /}.
+     * the retrieved value DOES NOT endwith {@code /}.
      * <p>
      * This is used with {@link UriTemplate} to ensure valid URIs.
-     * @param serverKey key for a server stated in the configuration.
+     * @param serverKey YAML key for a server stated in the configuration.
      * @return the server for the given {@code serverKey}, guaranteeing that it ends in {@code /}.
      */
     private String getServer(String serverKey) {
@@ -151,6 +151,6 @@ public class IIIFFacade {
             log.error("The server key '{}' was not defined in the configuration", serverKey);
             throw new InternalServerErrorException("Unable to resolve server for operation");
         }
-        return server.endsWith("/") ? server : server + "/";
+        return server.endsWith("/") ? server.substring(0, server.length()-1) : server;
     }
 }
