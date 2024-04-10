@@ -29,6 +29,26 @@ public class IIPValidationTest {
     }
 
     @Test
+    public void templateTestArguments() {
+        // Check to see if the UriTemplate properly escapes arguments
+        String path = UriTemplate.fromTemplate("http://example.com/{?foo}{?bar}")
+                .set("foo", "one")
+                .set("bar", "two") // Note that bar is defined at {?bar} instead of {&bar} but correctly expands to &bar
+                .expand();
+        assertEquals("http://example.com/?foo=one&bar=two", path);
+    }
+
+    @Test
+    public void templateTestArgumentsMissing() {
+        // Check to see if the UriTemplate properly escapes arguments
+        String path = UriTemplate.fromTemplate("http://example.com/{?foo}{?bar}")
+                // .set("foo", "one") // Intentionally not set
+                .set("bar", "two") // Note that bar is defined at {?bar} instead of {&bar}. Needed for proper ? prefix
+                .expand();
+        assertEquals("http://example.com/?bar=two", path);
+    }
+
+    @Test
     public void rgnTest(){
         // Wrong X
         List<Float> wrongRegionX = new ArrayList<>(Arrays.asList(2F,0.2F,0.7F,0.8F));

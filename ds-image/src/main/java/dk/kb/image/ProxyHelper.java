@@ -14,6 +14,7 @@
  */
 package dk.kb.image;
 
+import com.damnhandy.uri.template.UriTemplate;
 import dk.kb.util.string.Strings;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -246,14 +247,25 @@ public class ProxyHelper {
     }
 
     /**
-     * Add a query param to the UriBuilder if a value is present.
+     * Add a query param to the UriBuilder if a value is present and not the empty string.
      * @return the given builder for chaining.
      */
     public static URIBuilder addIfPresent(URIBuilder builder, String key, Object value) {
-        if (value != null) {
+        if (value != null && Objects.toString(value).isEmpty()) {
             builder.addParameter(key, value.toString());
         }
         return builder;
+    }
+
+    /**
+     * Add a query param to the UriTemplate if a value is present and not the empty string.
+     * @return the given template for chaining.
+     */
+    public static UriTemplate addIfPresent(UriTemplate template, String key, Object value) {
+        if (value != null && Objects.toString(value).isEmpty()) {
+            template.set(key, value.toString());
+        }
+        return template;
     }
 
     /**

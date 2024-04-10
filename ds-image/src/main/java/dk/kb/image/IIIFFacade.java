@@ -21,7 +21,6 @@ import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.StreamingOutput;
 import java.net.URI;
@@ -38,6 +37,7 @@ public class IIIFFacade {
     public static final String KEY_IIIF_SERVER = "imageservers.iiif.server";
 
     // https://iiif.io/api/image/3.0/
+    // https://datatracker.ietf.org/doc/html/rfc6570
     public static final String IIIF_IMAGE3_TEMPLATE = "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}";
     public static final String IIIF_INFO3_TEMPLATE = "/{identifier}/info.{ext}";
 
@@ -86,7 +86,7 @@ public class IIIFFacade {
         }
 
         // TODO: Add versioning to config so that default/standard for quality can be handled according to image server
-        String uri = UriTemplate.fromTemplate(getServer(KEY_IIIF_SERVER) + IIIF_IMAGE3_TEMPLATE)
+        String uri = UriTemplate.fromTemplate(ServiceConfig.getServer(KEY_IIIF_SERVER) + IIIF_IMAGE3_TEMPLATE)
                 .set("identifier", identifier)
                 .set("region", region)
                 .set("size", size)
@@ -115,7 +115,7 @@ public class IIIFFacade {
      */
     public StreamingOutput getIIIFInfo(URI requestURI, String identifier, String extension, HttpHeaders httpHeaders) {
         // TODO: Verify extension
-        String uri = UriTemplate.fromTemplate(getServer(KEY_IIIF_SERVER) + IIIF_INFO3_TEMPLATE)
+        String uri = UriTemplate.fromTemplate(ServiceConfig.getServer(KEY_IIIF_SERVER) + IIIF_INFO3_TEMPLATE)
                 .set("identifier", identifier)
                 .set("ext", extension)
                 .expand();
@@ -136,21 +136,4 @@ public class IIIFFacade {
         // TODO: Implement proper validation
     }
 
-    /**
-     * Equivalent to {@code ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)} but guarantees that
-     * the retrieved value DOES NOT endwith {@code /}.
-     * <p>
-     * This is used with {@link UriTemplate} to ensure valid URIs.
-     * @param serverKey YAML key for a server stated in the configuration.
-     * @return the server for the given {@code serverKey}, guaranteeing that it ends in {@code /}.
-     */
-    private String getServer(String serverKey) {
-        String server = ServiceConfig.getConfig().getString(serverKey, null);
-        if (server == null) {
-            // log.error as the service does not work at all without knowing the servers
-            log.error("The server key '{}' was not defined in the configuration", serverKey);
-            throw new InternalServerErrorException("Unable to resolve server for operation");
-        }
-        return server.endsWith("/") ? server.substring(0, server.length()-1) : server;
-    }
 }
