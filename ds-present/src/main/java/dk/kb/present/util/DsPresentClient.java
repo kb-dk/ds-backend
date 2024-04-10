@@ -191,7 +191,7 @@ public class DsPresentClient extends DsPresentApi {
         URI uri;
         try {
             uri = new URIBuilder(serviceURI)
-                    .setPath("records")
+                    .setPath("recordsraw")
                     .addParameter("origin", origin)
                     .addParameter("mTime", Long.toString(mTime == null ? 0L : mTime))
                     .addParameter("maxRecords", Long.toString(maxRecords == null ? 10 : maxRecords))
