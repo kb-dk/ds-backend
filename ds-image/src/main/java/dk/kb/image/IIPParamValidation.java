@@ -178,7 +178,7 @@ public class IIPParamValidation {
      * For example 1200
      */
     public static void widValidation(Long wid, String cvt) {
-        if (cvt == null || cvt.isEmpty() && wid != null) {
+        if ((cvt == null || cvt.isEmpty()) && wid != null) {
             throw new InvalidArgumentServiceException("The parameter WID is only to be set, when the parameter CVT is in use");
         }
     }
@@ -189,7 +189,7 @@ public class IIPParamValidation {
      * For example 800
      */
     public static void heiValidation(Long hei, String cvt) {
-        if (cvt == null || cvt.isEmpty() && hei != null) {
+        if ((cvt == null || cvt.isEmpty()) && hei != null) {
             throw new InvalidArgumentServiceException("The parameter HEI is only to be set, when the parameter CVT is in use");
         }
     }
@@ -374,7 +374,7 @@ public class IIPParamValidation {
      */
     public static void colValidation(String col){
         if (col != null) {
-            String[] values = {"grey", "gray", "binary"};
+            String[] values = {"grey", "gray", "binary", "GREY", "GRAY", "BINARY"};
             boolean b = Arrays.asList(values).contains(col);
             if (!b) {
                 throw new InvalidArgumentServiceException("COL has to be specified as one of the following values when set: grey, gray or binary");
@@ -391,7 +391,8 @@ public class IIPParamValidation {
         Matcher matcher = correctPattern.matcher(tiles);
         boolean matchFound = matcher.find();
         if(!matchFound) {
-            throw new InvalidArgumentServiceException("Deepzoom parameter 'tiles' is specified incorrectly. it has to be defined as x_y");
+            throw new InvalidArgumentServiceException(
+                    "Deepzoom parameter 'tiles' was '" + tiles + "' but must be specified as x_y");
         }
     }
 
