@@ -55,7 +55,7 @@ public class ProxyHelper {
      * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request. 
      * @return a lambda providing the data from the given uri.
      */
-    public static StreamingOutput proxy(String request, URI uri, URI clientRequestURI,  HttpHeaders httpHeaders) {
+    public static StreamingOutput proxy(String request, URI uri, URI clientRequestURI, HttpHeaders httpHeaders) {
             return proxy(request, uri, clientRequestURI, null, httpHeaders);
     }
 
@@ -69,7 +69,7 @@ public class ProxyHelper {
      * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
      * @return a lambda providing the data from the given uri.
      */
-    public static StreamingOutput proxy(String request, String uri, URI clientRequestURI,  HttpHeaders httpHeaders) {
+    public static StreamingOutput proxy(String request, String uri, URI clientRequestURI, HttpHeaders httpHeaders) {
         URI realURI;
         try {
             realURI = new URI(uri);
@@ -251,7 +251,7 @@ public class ProxyHelper {
      * @return the given builder for chaining.
      */
     public static URIBuilder addIfPresent(URIBuilder builder, String key, Object value) {
-        if (value != null && Objects.toString(value).isEmpty()) {
+        if (value != null && !Objects.toString(value).isEmpty()) {
             builder.addParameter(key, value.toString());
         }
         return builder;
@@ -262,7 +262,7 @@ public class ProxyHelper {
      * @return the given template for chaining.
      */
     public static UriTemplate addIfPresent(UriTemplate template, String key, Object value) {
-        if (value != null && Objects.toString(value).isEmpty()) {
+        if (value != null && !Objects.toString(value).isEmpty()) {
             template.set(key, value.toString());
         }
         return template;

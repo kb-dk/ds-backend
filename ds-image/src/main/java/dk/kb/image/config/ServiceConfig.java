@@ -64,6 +64,13 @@ public class ServiceConfig extends AutoYAML {
     }
 
     /**
+     * Set the instance. Typically used for testing.
+     */
+    public static synchronized void setInstance(ServiceConfig instance) {
+        ServiceConfig.instance = instance;
+    }
+
+    /**
      * Direct access to the backing YAML-class is used for configurations with more flexible content
      * and/or if the service developer prefers key-based property access.
      * @see #getHelloLines() for alternative.

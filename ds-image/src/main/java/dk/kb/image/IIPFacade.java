@@ -63,7 +63,7 @@ public class IIPFacade {
                     "{&PFL}" + // Export profile in JSON format at resolution r from position x1,y1 to x2, y2: PFL=r:x1,y1-x2,y2
                     // "{&MINMAX}" + // Define the range of input pixel values to use for a particular channel, c: MINMAX=c:min,max. Not supported here
                     "{&CTW}" + // Color twist / channel recombination: CTW=[r1,g1,b1;r2,g2,b2;r3,g3,b3]
-                    "{INV}" + // Invert image (no argument). Note missing &, which must be added if INV is set
+                    "{+INV}" + // Invert image (no argument). Note missing &, which must be added if INV is set
                     "{&COL}" +  // Color transformation to output space, c.
                     // Parameters below must be after all other parameters
                     "{&JTL}" + // Return a tile in JPEG format with index n at resolution level r: JTL=r,n
@@ -71,9 +71,10 @@ public class IIPFacade {
                     "{&CVT}"; // Export the full image or a region in the specified format (JPEG and PNG currently supported): CVT=jpeg
 
     // Path based DeepZoom server
+
     // http://example.com:1234/image_identifier.dzi
     public static final String DEEPZOOM_PATH_DZI_TEMPLATE =
-            "/{dzipath}";
+            "/{+dzipath}"; // Unescaped as it might be multi-path
     
     // https://example.com/example-images/fooimage_files/11/2_0.jpg
     // https://example.com/example-images/fooimage/fooimage_files/11/2_0.jpg
@@ -87,10 +88,13 @@ public class IIPFacade {
                     "{?GAM}" + // Apply gamma correction, g: GAM=g
                     "{?CMP}" + // Generate colormap using one of the standard colormap schemes, s: CMP=s
                     "{?CTW}" + // Color twist / channel recombination: CTW=[r1,g1,b1;r2,g2,b2;r3,g3,b3]
-                    "{INV}" + // Invert image (no argument). Note missing &, which must be added if INV is set
+                    "{+INV}" + // Invert image (no argument). Note missing &, which must be added if INV is set
                     "{?COL}";  // Color transformation to output space, c.
     
     // Param based DeepZoom server: http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
+    public static final String DEEPZOOM_PARAM_DZI_TEMPLATE =
+            "?DeepZoom={+dzipath}"; // Unescaped as it might be multi-path
+
     // https://example.com/fcgi-bin/iipsrv.fcgi?Deepzoom=hs-2007-16-a-full_tif.tif_files/12/2_4.jpg
     public static final String DEEPZOOM_PARAM_TEMPLATE =
             "?DeepZoom={+imageid}" + // Mandatory. No percent-escaping for imageid as it might include path
@@ -102,7 +106,7 @@ public class IIPFacade {
                     "{&GAM}" + // Apply gamma correction, g: GAM=g
                     "{&CMP}" + // Generate colormap using one of the standard colormap schemes, s: CMP=s
                     "{&CTW}" + // Color twist / channel recombination: CTW=[r1,g1,b1;r2,g2,b2;r3,g3,b3]
-                    "{INV}" + // Invert image (no argument). Note missing &, which must be added if INV is set
+                    "{+INV}" + // Invert image (no argument). Note missing &, which must be added if INV is set
                     "{&COL}";  // Color transformation to output space, c.
 
     public static synchronized IIPFacade getInstance() {
@@ -186,7 +190,7 @@ public class IIPFacade {
             ProxyHelper.addIfPresent(template, "CMP", CMP);
             ProxyHelper.addIfPresent(template, "PFL", PFL);
             ProxyHelper.addIfPresent(template, "CTW", CTW);
-            if (INV) {
+            if (Boolean.TRUE.equals(INV)) {
                 template.set("INV", "&INV"); // Special case as INV is without value
             }
             ProxyHelper.addIfPresent(template, "COL", COL);
@@ -215,19 +219,20 @@ public class IIPFacade {
         if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
             // Path based DeepZoom server: http://example.com:1234/image_identifier.dzi
             template = UriTemplate
-                    .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PATH) + DEEPZOOM_PATH_DZI_TEMPLATE)
-                    .set("dzipath", idDZI);
+                    .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PATH) + DEEPZOOM_PATH_DZI_TEMPLATE);
 
         } else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
             // Param based DeepZoom server: http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
             template = UriTemplate
-                    .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PARAM) + DEEPZOOM_PARAM_TEMPLATE)
-                    .set("DeepZoom", idDZI);
+                    .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PARAM) + DEEPZOOM_PARAM_DZI_TEMPLATE);
 
         } else {
             log.error("No DeepZoom server defined");
             throw new InternalServiceException("No DeepZoom server defined");
         }
+
+        template.set("dzipath", idDZI);
+
 
         final URI uri;
         try {
@@ -253,6 +258,7 @@ public class IIPFacade {
             format = "jpeg";
         }
 
+        boolean isPath = true;
         UriTemplate template;
         if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)) {
             // Path based DeepZoom server
@@ -265,6 +271,8 @@ public class IIPFacade {
             // https://example.com/fcgi-bin/iipsrv.fcgi?Deepzoom=hs-2007-16-a-full_tif.tif_files/12/2_4.jpg
             template = UriTemplate
                     .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PARAM) + DEEPZOOM_PARAM_TEMPLATE);
+            isPath = false;
+
         } else {
             log.error("No Deepzoom server defined");
             throw new InternalServiceException("No Deepzoom server defined");
@@ -281,7 +289,14 @@ public class IIPFacade {
         ProxyHelper.addIfPresent(template, "GAM", GAM);
         ProxyHelper.addIfPresent(template, "CMP", CMP);
         ProxyHelper.addIfPresent(template, "CTW", CTW);
-        ProxyHelper.addIfPresent(template, "INV", INV); // TODO: Figure out how to add INV as a value-less param
+        if (Boolean.TRUE.equals(INV)) {
+            // INV should start with '?' if this is the first parameter for an othwerwise path based request
+            if (isPath && CNT==null && GAM==null && CMP==null && CTW==null) {
+                template.set("INV", "?INV"); // Special case as INV is without value
+            } else {
+                template.set("INV", "&INV"); // Special case as INV is without value
+            }
+        }
         ProxyHelper.addIfPresent(template, "COL", COL);
 
         final URI uri;
@@ -294,7 +309,7 @@ public class IIPFacade {
                     "Error finalizing DeepZoom-tile proxy URI for request '" + requestURI + "'");
         }
 
-        return ProxyHelper.proxy(imageid, uri, requestURI,httpHeaders);
+        return ProxyHelper.proxy(imageid, uri, requestURI, httpHeaders);
     }
 
     /**
