@@ -1,25 +1,3 @@
-package dk.kb.image;
-
-import com.damnhandy.uri.template.UriTemplate;
-import dk.kb.image.config.ServiceConfig;
-import org.apache.http.client.utils.URIBuilder;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
-
-import javax.ws.rs.core.StreamingOutput;
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,6 +12,18 @@ import static org.mockito.ArgumentMatchers.anyString;
  *  limitations under the License.
  *
  */
+package dk.kb.image;
+
+import dk.kb.image.config.ConfigAdjuster;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class IIPFacadeTest {
 
     private final static URI SOURCE;
@@ -45,6 +35,7 @@ class IIPFacadeTest {
         }
     }
 
+    @Tag("fast")
     @Test
      public void iipImageTemplate() {
          final List<String> EXPECTED = List.of(
@@ -55,7 +46,7 @@ class IIPFacadeTest {
          );
 
          try (ConfigAdjuster ignored = new ConfigAdjuster("image_server_param.yaml")) {
-             List<URI> requestedURIs = collectProxyURIs(() -> {
+             List<URI> requestedURIs = ProxyHelperTest.collectProxyURIs(() -> {
                  IIPFacade.getInstance().getIIPImage( // Minimal call
                          SOURCE, "foo.jpg", null, null, null, null,
                          null, null, null, null, null,
@@ -80,6 +71,7 @@ class IIPFacadeTest {
          }
      }
 
+    @Tag("fast")
     @Test
     public void dziPathTemplate() {
         final List<String> IDS = List.of(
@@ -90,7 +82,7 @@ class IIPFacadeTest {
                 "http://example.com/foo/bar.png.tif.dzi");
 
         try (ConfigAdjuster ignored = new ConfigAdjuster("image_server_path.yaml")) {
-            List<URI> requestedURIs = collectProxyURIs(() -> {
+            List<URI> requestedURIs = ProxyHelperTest.collectProxyURIs(() -> {
                 for (String id : IDS) {
                     IIPFacade.getInstance().getDeepzoomDZI(SOURCE, id, null, null);
                 }
@@ -99,6 +91,7 @@ class IIPFacadeTest {
         }
     }
 
+    @Tag("fast")
     @Test
     public void dziPatternTemplate() {
         final List<String> IDS = List.of(
@@ -109,7 +102,7 @@ class IIPFacadeTest {
                 "http://example.com/iipsrv/iipsrv.fcgi?DeepZoom=foo/bar.png.tif.dzi");
 
         try (ConfigAdjuster ignored = new ConfigAdjuster("image_server_param.yaml")) {
-            List<URI> requestedURIs = collectProxyURIs(() -> {
+            List<URI> requestedURIs = ProxyHelperTest.collectProxyURIs(() -> {
                 for (String id : IDS) {
                     IIPFacade.getInstance().getDeepzoomDZI(SOURCE, id, null, null);
                 }
@@ -118,6 +111,7 @@ class IIPFacadeTest {
         }
     }
 
+    @Tag("fast")
     @Test
     public void tileDeepZoomPathTemplate() {
         final List<String> EXPECTED = List.of(
@@ -128,7 +122,7 @@ class IIPFacadeTest {
         );
 
         try (ConfigAdjuster ignored = new ConfigAdjuster("image_server_path.yaml")) {
-            List<URI> requestedURIs = collectProxyURIs(() -> {
+            List<URI> requestedURIs = ProxyHelperTest.collectProxyURIs(() -> {
                 IIPFacade.getInstance().getDeepzoomTile(
                         SOURCE, "foo.jpg", 11, "2_4", "jpg", null, null, null, null, null, null, null);
                 IIPFacade.getInstance().getDeepzoomTile(
@@ -142,6 +136,7 @@ class IIPFacadeTest {
         }
     }
 
+    @Tag("fast")
     @Test
     public void tileDeepZoomParamTemplate() {
         final List<String> EXPECTED = List.of(
@@ -152,7 +147,7 @@ class IIPFacadeTest {
         );
 
         try (ConfigAdjuster ignored = new ConfigAdjuster("image_server_param.yaml")) {
-            List<URI> requestedURIs = collectProxyURIs(() -> {
+            List<URI> requestedURIs = ProxyHelperTest.collectProxyURIs(() -> {
                 IIPFacade.getInstance().getDeepzoomTile(
                         SOURCE, "foo.jpg", 11, "2_4", "jpg", null, null, null, null, null, null, null);
                 IIPFacade.getInstance().getDeepzoomTile(
@@ -166,80 +161,4 @@ class IIPFacadeTest {
         }
     }
 
-    /**
-     * Mocks {@link ProxyHelper#proxy} to collect all given URIs and write the byte 87 as the answer.
-     * @param runnable action that triggers one or more calls to the proxy method.
-     * @return a list of the URIs that were supposed to be proxied.
-     */
-    private List<URI> collectProxyURIs(Runnable runnable) {
-        // https://www.baeldung.com/mockito-mock-static-methods
-        List<URI> requestedURIs = new ArrayList<>();
-        try (MockedStatic<ProxyHelper> mockProxy = Mockito.mockStatic(ProxyHelper.class)) {
-            // Mock the three overloads to the proxy method
-            mockProxy.when(() -> ProxyHelper.proxy(anyString(), any(URI.class), any(URI.class),
-                            any(), any()))
-                    .thenAnswer((Answer<StreamingOutput>) invocation -> {
-                        requestedURIs.add(invocation.getArgument(1)); // The URI to proxy
-                        return writer -> writer.write(87);
-                    });
-            mockProxy.when(() -> ProxyHelper.proxy(anyString(), any(URI.class), any(URI.class), any()))
-                    .thenAnswer((Answer<StreamingOutput>) invocation -> {
-                        requestedURIs.add(invocation.getArgument(1)); // The URI to proxy
-                        return writer -> writer.write(87);
-                    });
-            mockProxy.when(() -> ProxyHelper.proxy(anyString(), any(String.class), any(URI.class), any()))
-                    .thenAnswer((Answer<StreamingOutput>) invocation -> {
-                        URI uri;
-                        try {
-                            uri = new URI(invocation.getArgument(1));  // The URI to proxy
-                        } catch (URISyntaxException e) {
-                            throw new RuntimeException(
-                                    "Exception converting '" + invocation.getArgument(1) + "' to URI", e);
-                        }
-                        requestedURIs.add(uri);
-                        return writer -> writer.write(87);
-                    });
-
-            // Mockito.mockStatic(ProxyHelper.class, Answers.CALLS_REAL_METHODS) calls the original methods
-            // AND the mocked version, resulting in a lot of exceptions.
-            // To avoid this all non-mocked methods muct be mocked to call the real methods.
-            mockProxy.when(() -> ProxyHelper.addIfPresent(any(URIBuilder.class), anyString(), any()))
-                    .thenCallRealMethod();
-            mockProxy.when(() -> ProxyHelper.addIfPresent(any(UriTemplate.class), anyString(), any(List.class)))
-                    .thenCallRealMethod();
-            mockProxy.when(() -> ProxyHelper.addIfPresent(any(UriTemplate.class), anyString(), any()))
-                    .thenCallRealMethod();
-
-            // Run the proxy-using code
-            runnable.run();
-        }
-        return requestedURIs;
-    }
-
-    /**
-     * Helper class for temporarily changing the application config.
-     * Use the auto-closing try-catch mechanism around the test code using the temporary config:
-     * <pre>
-     *
-     * </pre>
-     */
-    public static class ConfigAdjuster implements Closeable {
-        private static ServiceConfig oldConfig;
-
-        public ConfigAdjuster(String temporaryConfigSource) {
-            try {
-                oldConfig = ServiceConfig.getInstance();
-                ServiceConfig tempConf = new ServiceConfig();
-                tempConf.initialize(temporaryConfigSource);
-                ServiceConfig.setInstance(tempConf);
-            } catch (IOException e) {
-                throw new RuntimeException("Exception creating temporary ServiceConfig", e);
-            }
-        }
-
-        @Override
-        public void close() {
-            ServiceConfig.setInstance(oldConfig);
-        }
-    }
 }
