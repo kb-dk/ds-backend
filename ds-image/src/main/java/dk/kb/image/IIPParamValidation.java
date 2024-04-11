@@ -227,9 +227,9 @@ public class IIPParamValidation {
         if (qlt != null) {
             if (qlt < 0) {
                 throw new InvalidArgumentServiceException("QLT has to be equal to or greater than 0.");
-            } else if (cvt.equals("jpeg") && qlt > 100) {
+            } else if ("jpeg".equals(cvt) && qlt > 100) {
                 throw new InvalidArgumentServiceException("QLT has to be less than or equal to 100, when CVT is set to JPEG");
-            } else if (cvt.equals("png") && qlt > 9) {
+            } else if ("png".equals(cvt) && qlt > 9) {
                 throw new InvalidArgumentServiceException("QLT has to be less than or equal to 9, when CVT is set to PNG");
             }
         }
