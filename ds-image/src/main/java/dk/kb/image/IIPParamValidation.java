@@ -374,7 +374,7 @@ public class IIPParamValidation {
      */
     public static void colValidation(String col){
         if (col != null) {
-            String[] values = {"grey", "gray", "binary", "GREY", "GRAY", "BINARY"};
+            String[] values = {"grey", "gray", "binary"};
             boolean b = Arrays.asList(values).contains(col);
             if (!b) {
                 throw new InvalidArgumentServiceException("COL has to be specified as one of the following values when set: grey, gray or binary");
