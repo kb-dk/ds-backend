@@ -289,16 +289,16 @@ public class IIPParamValidation {
             Matcher matcher = correctPattern.matcher(pfl);
             boolean matchFound = matcher.find();
             if(!matchFound) {
-                throw new InvalidArgumentServiceException("The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 by was: '" + pfl + "'");
+                throw new InvalidArgumentServiceException("The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 but was: '" + pfl + "'");
             }
 
             // Create map with values as string
             Map<String, String> values = new HashMap<>();
-            values.put("r", matcher.group(0));
-            values.put("x1", matcher.group(1));
-            values.put("y1", matcher.group(2));
-            values.put("x2", matcher.group(3));
-            values.put("y2", matcher.group(4));
+            values.put("r", matcher.group(1));
+            values.put("x1", matcher.group(2));
+            values.put("y1", matcher.group(3));
+            values.put("x2", matcher.group(4));
+            values.put("y2", matcher.group(5));
 
             // Convert string values to integers, throws exception when fails
             for (Map.Entry<String, String> entry : values.entrySet()) {
