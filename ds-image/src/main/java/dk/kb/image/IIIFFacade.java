@@ -38,8 +38,16 @@ public class IIIFFacade {
 
     // https://iiif.io/api/image/3.0/
     // https://datatracker.ietf.org/doc/html/rfc6570
-    public static final String IIIF_IMAGE3_TEMPLATE = "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}";
-    public static final String IIIF_INFO3_TEMPLATE = "/{identifier}/info.{ext}";
+    public static final String IIIF_IMAGE3_TEMPLATE =
+            "/{identifier}" + // Must be encoded as it might contain spaces or slashes
+                    "/{+region}" + // No encoding of the rest of the path elements as valid inputs don't need it
+                    "/{+size}" +
+                    "/{+rotation}" +
+                    "/{+quality}" +
+                    ".{+format}";
+    public static final String IIIF_INFO3_TEMPLATE =
+            "/{identifier}" +
+                    "/info.{ext}";
 
     public static synchronized IIIFFacade getInstance() {
         if (instance == null) {
