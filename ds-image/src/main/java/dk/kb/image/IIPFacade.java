@@ -97,7 +97,7 @@ public class IIPFacade {
 
     // https://example.com/fcgi-bin/iipsrv.fcgi?Deepzoom=hs-2007-16-a-full_tif.tif_files/12/2_4.jpg
     public static final String DEEPZOOM_PARAM_TEMPLATE =
-            "?DeepZoom={+imageid}" + // Mandatory. No percent-escaping for imageid as it might include path
+            "?DeepZoom={+imageid}_files" + // Mandatory. No percent-escaping for imageid as it might include path
                     "/{layer}" + // Integer: 12
                     "/{tile}" + // 2_4: 2_0
                     ".{format}"  + // Image format: jpg

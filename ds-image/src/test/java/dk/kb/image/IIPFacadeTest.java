@@ -140,10 +140,10 @@ class IIPFacadeTest {
     @Test
     public void tileDeepZoomParamTemplate() {
         final List<String> EXPECTED = List.of(
-                "http://example.com/iipsrv/iipsrv.fcgi?DeepZoom=foo.jpg/11/2_4.jpg",
-                "http://example.com/iipsrv/iipsrv.fcgi?DeepZoom=bar/foo.jpg/11/2_4.jpg&GAM=1.2&INV",
-                "http://example.com/iipsrv/iipsrv.fcgi?DeepZoom=bar/foo.jpg/11/2_4.jpg&INV",
-                "http://example.com/iipsrv/iipsrv.fcgi?DeepZoom=bar/foo.jpg/11/2_4.jpg&CNT=1.0&GAM=1.1&CMP=COLD&CTW=%5B0.1%2C0.2%2C0.3%3B0.4%2C0.5%2C0.6%3B0.7%2C0.8%2C0.9%5D&INV&COL=grey"
+                "http://example.com/iipsrv/iipsrv.fcgi?DeepZoom=foo.jpg_files/11/2_4.jpg",
+                "http://example.com/iipsrv/iipsrv.fcgi?DeepZoom=bar/foo.jpg_files/11/2_4.jpg&GAM=1.2&INV",
+                "http://example.com/iipsrv/iipsrv.fcgi?DeepZoom=bar/foo.jpg_files/11/2_4.jpg&INV",
+                "http://example.com/iipsrv/iipsrv.fcgi?DeepZoom=bar/foo.jpg_files/11/2_4.jpg&CNT=1.0&GAM=1.1&CMP=COLD&CTW=%5B0.1%2C0.2%2C0.3%3B0.4%2C0.5%2C0.6%3B0.7%2C0.8%2C0.9%5D&INV&COL=grey"
         );
 
         try (ConfigAdjuster ignored = new ConfigAdjuster("image_server_param.yaml")) {
