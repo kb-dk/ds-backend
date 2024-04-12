@@ -15,6 +15,7 @@
 package dk.kb.image;
 
 import dk.kb.image.config.ConfigAdjuster;
+import dk.kb.util.string.Strings;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -40,9 +41,9 @@ class IIPFacadeTest {
      public void iipImageTemplate() {
          final List<String> EXPECTED = List.of(
                  "http://example.com/iipsrv/iipsrv.fcgi?FIF=foo.jpg&CVT=png",
-                 "http://example.com/iipsrv/iipsrv.fcgi?FIF=foo.jpg&QLT=75&CNT=1.2&ROT=90&GAM=2.2&CMP=COLD&PFL=5%3A10%2C10-20%2C20&CTW=%5B0.1%2C0.2%2C0.3%3B0.4%2C0.5%2C0.6%3B0.7%2C0.8%2C0.9%5D&INV&COL=grey&JTL=%5B1%2C%202%5D&CVT=jpeg",
-                 "http://example.com/iipsrv/iipsrv.fcgi?FIF=foo.jpg&QLT=75&CNT=1.2&ROT=90&GAM=2.2&CMP=COLD&PFL=5%3A10%2C10-20%2C20&CTW=%5B0.1%2C0.2%2C0.3%3B0.4%2C0.5%2C0.6%3B0.7%2C0.8%2C0.9%5D&INV&COL=grey&PTL=%5B1%2C%202%5D&CVT=jpeg",
-                 "http://example.com/iipsrv/iipsrv.fcgi?FIF=foo.jpg&WID=640&HEI=480&RGN=%5B0.1%2C%200.2%2C%200.3%2C%200.4%5D&QLT=75&CNT=1.2&ROT=90&GAM=2.2&CMP=COLD&PFL=5%3A10%2C10-20%2C20&CTW=%5B0.1%2C0.2%2C0.3%3B0.4%2C0.5%2C0.6%3B0.7%2C0.8%2C0.9%5D&INV&COL=grey&CVT=jpeg"
+                 "http://example.com/iipsrv/iipsrv.fcgi?FIF=foo.jpg&QLT=75&CNT=1.2&ROT=90&GAM=2.2&CMP=COLD&PFL=5%3A10%2C10-20%2C20&CTW=%5B0.1%2C0.2%2C0.3%3B0.4%2C0.5%2C0.6%3B0.7%2C0.8%2C0.9%5D&INV&COL=grey&JTL=1%2C%202&CVT=jpeg",
+                 "http://example.com/iipsrv/iipsrv.fcgi?FIF=foo.jpg&QLT=75&CNT=1.2&ROT=90&GAM=2.2&CMP=COLD&PFL=5%3A10%2C10-20%2C20&CTW=%5B0.1%2C0.2%2C0.3%3B0.4%2C0.5%2C0.6%3B0.7%2C0.8%2C0.9%5D&INV&COL=grey&PTL=1%2C%202&CVT=jpeg",
+                 "http://example.com/iipsrv/iipsrv.fcgi?FIF=foo.jpg&WID=640&HEI=480&RGN=0.1%2C%200.2%2C%200.3%2C%200.4&QLT=75&CNT=1.2&ROT=90&GAM=2.2&CMP=COLD&PFL=5%3A10%2C10-20%2C20&CTW=%5B0.1%2C0.2%2C0.3%3B0.4%2C0.5%2C0.6%3B0.7%2C0.8%2C0.9%5D&INV&COL=grey&CVT=jpeg"
          );
 
          try (ConfigAdjuster ignored = new ConfigAdjuster("image_server_param.yaml")) {
@@ -67,7 +68,7 @@ class IIPFacadeTest {
                          "[0.1,0.2,0.3;0.4,0.5,0.6;0.7,0.8,0.9]", true, "grey",
                          null, null, "jpeg",null);
              });
-             assertEquals(EXPECTED.toString(), requestedURIs.toString());
+             assertEquals(Strings.join(EXPECTED, "\n"), Strings.join(requestedURIs, "\n"));
          }
      }
 
@@ -87,7 +88,7 @@ class IIPFacadeTest {
                     IIPFacade.getInstance().getDeepzoomDZI(SOURCE, id, null, null);
                 }
             });
-            assertEquals(EXPECTED.toString(), requestedURIs.toString());
+            assertEquals(Strings.join(EXPECTED, "\n"), Strings.join(requestedURIs, "\n"));
         }
     }
 
@@ -107,7 +108,7 @@ class IIPFacadeTest {
                     IIPFacade.getInstance().getDeepzoomDZI(SOURCE, id, null, null);
                 }
             });
-            assertEquals(EXPECTED.toString(), requestedURIs.toString());
+            assertEquals(Strings.join(EXPECTED, "\n"), Strings.join(requestedURIs, "\n"));
         }
     }
 
@@ -132,7 +133,7 @@ class IIPFacadeTest {
                 IIPFacade.getInstance().getDeepzoomTile(
                         SOURCE, "bar/foo.jpg", 11, "2_4", "jpg", 1.0f, 1.1f, "COLD", "[0.1,0.2,0.3;0.4,0.5,0.6;0.7,0.8,0.9]", true, "grey", null);
             });
-            assertEquals(EXPECTED.toString(), requestedURIs.toString());
+            assertEquals(Strings.join(EXPECTED, "\n"), Strings.join(requestedURIs, "\n"));
         }
     }
 
@@ -157,7 +158,7 @@ class IIPFacadeTest {
                 IIPFacade.getInstance().getDeepzoomTile(
                         SOURCE, "bar/foo.jpg", 11, "2_4", "jpg", 1.0f, 1.1f, "COLD", "[0.1,0.2,0.3;0.4,0.5,0.6;0.7,0.8,0.9]", true, "grey", null);
             });
-            assertEquals(EXPECTED.toString(), requestedURIs.toString());
+            assertEquals(Strings.join(EXPECTED, "\n"), Strings.join(requestedURIs, "\n"));
         }
     }
 

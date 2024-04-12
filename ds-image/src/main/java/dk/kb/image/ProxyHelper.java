@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -248,11 +249,17 @@ public class ProxyHelper {
 
     /**
      * Add a query param to the UriTemplate if a value is present and not the empty string.
+     * <p>
+     * If the value is a Collection, it is serialized as comma separated String-representation of the elements.
      * @return the given template for chaining.
      */
     public static UriTemplate addIfPresent(UriTemplate template, String key, Object value) {
         if (value != null && !Objects.toString(value).isEmpty()) {
-            template.set(key, value.toString());
+            if (value instanceof Collection) {
+                template.set(key, Strings.join((Collection<?>)value, ", "));
+            } else {
+                template.set(key, value.toString());
+            }
         }
         return template;
     }
