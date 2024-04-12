@@ -79,8 +79,6 @@ class ProxyHelperTest {
             // Mockito.mockStatic(ProxyHelper.class, Answers.CALLS_REAL_METHODS) calls the original methods
             // AND the mocked version, resulting in a lot of exceptions.
             // To avoid this all non-mocked methods muct be mocked to call the real methods.
-            mockProxy.when(() -> ProxyHelper.addIfPresent(any(URIBuilder.class), anyString(), any()))
-                    .thenCallRealMethod();
             mockProxy.when(() -> ProxyHelper.addIfPresent(any(UriTemplate.class), anyString(), any(List.class)))
                     .thenCallRealMethod();
             mockProxy.when(() -> ProxyHelper.addIfPresent(any(UriTemplate.class), anyString(), any()))

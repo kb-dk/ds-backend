@@ -247,17 +247,6 @@ public class ProxyHelper {
     }
 
     /**
-     * Add a query param to the UriBuilder if a value is present and not the empty string.
-     * @return the given builder for chaining.
-     */
-    public static URIBuilder addIfPresent(URIBuilder builder, String key, Object value) {
-        if (value != null && !Objects.toString(value).isEmpty()) {
-            builder.addParameter(key, value.toString());
-        }
-        return builder;
-    }
-
-    /**
      * Add a query param to the UriTemplate if a value is present and not the empty string.
      * @return the given template for chaining.
      */
@@ -268,15 +257,4 @@ public class ProxyHelper {
         return template;
     }
 
-    /**
-     * Add a query param to the UriBuilder if a value is present.
-     * The value will be serialized as comma-deparated values.
-     * @return the given builder for chaining.
-     */
-    public static URIBuilder addIfPresent(URIBuilder builder, String key, List<? extends Object> values) {
-        if (values != null && !values.isEmpty()) {
-            builder.addParameter(key, Strings.join(values, ","));
-        }
-        return builder;
-    }
 }
