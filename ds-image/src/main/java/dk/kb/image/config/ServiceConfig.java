@@ -99,7 +99,7 @@ public class ServiceConfig extends AutoYAML {
      * <p>
      * This is used with {@link UriTemplate} to ensure valid URIs.
      * @param serverKey YAML key for a server stated in the configuration.
-     * @return the server for the given {@code serverKey}, guaranteeing that it ends in {@code /}.
+     * @return the server for the given {@code serverKey}, guaranteeing that it does not end with {@code /}.
      */
     public static String getServer(String serverKey) {
         String server = getConfig().getString(serverKey, null);
