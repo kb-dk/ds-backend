@@ -109,7 +109,7 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
         try {
             URIBuilder uriBuilder = new URIBuilder(uriInfo.getBaseUri()+"authenticate");
             if (ServiceConfig.getConfig().getBoolean("config.redirect-after-authentication",false)) {
-                uriBuilder.addParameter("returnURL",uriInfo.getRequestUri().toString());
+                uriBuilder.addParameter("returnUrl",uriInfo.getRequestUri().toString());
             }
             httpServletResponse.sendRedirect(uriBuilder.build().toString());
         } catch (IOException | URISyntaxException e) {
