@@ -178,7 +178,7 @@ public class IIPParamValidation {
      * For example 1200
      */
     public static void widValidation(Long wid, String cvt) {
-        if (cvt == null || cvt.isEmpty() && wid != null) {
+        if ((cvt == null || cvt.isEmpty()) && wid != null) {
             throw new InvalidArgumentServiceException("The parameter WID is only to be set, when the parameter CVT is in use");
         }
     }
@@ -189,7 +189,7 @@ public class IIPParamValidation {
      * For example 800
      */
     public static void heiValidation(Long hei, String cvt) {
-        if (cvt == null || cvt.isEmpty() && hei != null) {
+        if ((cvt == null || cvt.isEmpty()) && hei != null) {
             throw new InvalidArgumentServiceException("The parameter HEI is only to be set, when the parameter CVT is in use");
         }
     }
@@ -227,9 +227,9 @@ public class IIPParamValidation {
         if (qlt != null) {
             if (qlt < 0) {
                 throw new InvalidArgumentServiceException("QLT has to be equal to or greater than 0.");
-            } else if (cvt.equals("jpeg") && qlt > 100) {
+            } else if ("jpeg".equals(cvt) && qlt > 100) {
                 throw new InvalidArgumentServiceException("QLT has to be less than or equal to 100, when CVT is set to JPEG");
-            } else if (cvt.equals("png") && qlt > 9) {
+            } else if ("png".equals(cvt) && qlt > 9) {
                 throw new InvalidArgumentServiceException("QLT has to be less than or equal to 9, when CVT is set to PNG");
             }
         }
@@ -289,16 +289,16 @@ public class IIPParamValidation {
             Matcher matcher = correctPattern.matcher(pfl);
             boolean matchFound = matcher.find();
             if(!matchFound) {
-                throw new InvalidArgumentServiceException("The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 by was: '" + pfl + "'");
+                throw new InvalidArgumentServiceException("The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 but was: '" + pfl + "'");
             }
 
             // Create map with values as string
             Map<String, String> values = new HashMap<>();
-            values.put("r", matcher.group(0));
-            values.put("x1", matcher.group(1));
-            values.put("y1", matcher.group(2));
-            values.put("x2", matcher.group(3));
-            values.put("y2", matcher.group(4));
+            values.put("r", matcher.group(1));
+            values.put("x1", matcher.group(2));
+            values.put("y1", matcher.group(3));
+            values.put("x2", matcher.group(4));
+            values.put("y2", matcher.group(5));
 
             // Convert string values to integers, throws exception when fails
             for (Map.Entry<String, String> entry : values.entrySet()) {
@@ -391,7 +391,8 @@ public class IIPParamValidation {
         Matcher matcher = correctPattern.matcher(tiles);
         boolean matchFound = matcher.find();
         if(!matchFound) {
-            throw new InvalidArgumentServiceException("Deepzoom parameter 'tiles' is specified incorrectly. it has to be defined as x_y");
+            throw new InvalidArgumentServiceException(
+                    "Deepzoom parameter 'tiles' was '" + tiles + "' but must be specified as x_y");
         }
     }
 

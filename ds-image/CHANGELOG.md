@@ -6,12 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-
 ### Added
+- Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139).
 
 ### Changed
 - bump sbforge-parent to v25
 
+### Fixed
+- Switch from Jersey to Handy URI Templates to handle parameters containing '{' and for cleaner code [DRA-338](https://kb-dk.atlassian.net/browse/DRA-338)
 
 =======
 ## [1.3.1](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.3.1) - 2024-02-23

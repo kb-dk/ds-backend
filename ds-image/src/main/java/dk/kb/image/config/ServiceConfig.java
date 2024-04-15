@@ -1,14 +1,14 @@
 package dk.kb.image.config;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.damnhandy.uri.template.UriTemplate;
 import dk.kb.util.yaml.AutoYAML;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.InternalServerErrorException;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Sample configuration class using the Singleton and Observer patterns.
@@ -64,6 +64,13 @@ public class ServiceConfig extends AutoYAML {
     }
 
     /**
+     * Set the instance. Typically used for testing.
+     */
+    public static synchronized void setInstance(ServiceConfig instance) {
+        ServiceConfig.instance = instance;
+    }
+
+    /**
      * Direct access to the backing YAML-class is used for configurations with more flexible content
      * and/or if the service developer prefers key-based property access.
      * @see #getHelloLines() for alternative.
@@ -86,4 +93,21 @@ public class ServiceConfig extends AutoYAML {
         return getConfig().getList("helloLines");
     }
 
+    /**
+     * Equivalent to {@code ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)} but guarantees that
+     * the retrieved value DOES NOT end with {@code /}.
+     * <p>
+     * This is used with {@link UriTemplate} to ensure valid URIs.
+     * @param serverKey YAML key for a server stated in the configuration.
+     * @return the server for the given {@code serverKey}, guaranteeing that it does not end with {@code /}.
+     */
+    public static String getServer(String serverKey) {
+        String server = getConfig().getString(serverKey, null);
+        if (server == null) {
+            // log.error as the service does not work at all without knowing the servers
+            log.error("The server key '{}' was not defined in the configuration", serverKey);
+            throw new InternalServerErrorException("Unable to resolve server for operation");
+        }
+        return server.endsWith("/") ? server.substring(0, server.length()-1) : server;
+    }
 }

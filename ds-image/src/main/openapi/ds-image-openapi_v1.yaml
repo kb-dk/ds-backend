@@ -21,7 +21,7 @@ info:
     url: '${license.url}'
 servers:
   #  /api must match servlet-mapping in web.xml
-  - url: '/${project.artifactId}/v1'
+  - url: '${config:openapi.serverurl}'
     description: 'Version 1'
 
 paths:
@@ -45,7 +45,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 'online_master_arkiv_5/non-archival/Manus/JUDSAM/2008/csh0004/csh0004_00528/'
+            example: '${config:openapi.exampleid}'
             
         - name: region
           in: path
@@ -198,6 +198,7 @@ paths:
         required: true
         schema:
           type: string
+          example: '${config:openapi.exampleid}'
       
       - name: format
         in: path
@@ -242,7 +243,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 'image.tif'
+            example: '${config:openapi.exampleid}'
 
         - name: WID
           in: query

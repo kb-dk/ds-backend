@@ -1,19 +1,24 @@
 package dk.kb.image.kaltura;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kaltura.client.KalturaApiException;
-import com.kaltura.client.KalturaClient;
-import com.kaltura.client.KalturaConfiguration;
-import com.kaltura.client.enums.KalturaSessionType;
-import com.kaltura.client.types.KalturaFilterPager;
-import com.kaltura.client.types.KalturaMediaEntry;
-import com.kaltura.client.types.KalturaMediaEntryFilter;
-import com.kaltura.client.types.KalturaMediaListResponse;
+import com.kaltura.client.APIOkRequestsExecutor;
+import com.kaltura.client.Configuration;
+import com.kaltura.client.enums.SessionType;
+import com.kaltura.client.services.MediaService;
+import com.kaltura.client.services.MediaService.ListMediaBuilder;
+import com.kaltura.client.types.FilterPager;
+import com.kaltura.client.types.ListResponse;
+import com.kaltura.client.types.MediaEntryFilter;
+import com.kaltura.client.types.MediaEntry;
+import com.kaltura.client.Client;
+import com.kaltura.client.utils.request.RequestElement;
+import com.kaltura.client.utils.response.*;
+import com.kaltura.client.utils.response.base.Response;
 
 
 /**
@@ -22,7 +27,7 @@ import com.kaltura.client.types.KalturaMediaListResponse;
  */
 public class DsKalturaClient {
 
-    private KalturaClient client = null;
+    private com.kaltura.client.Client client = null;
     private static final Logger log = LoggerFactory.getLogger(DsKalturaClient.class);
 
     /**
@@ -36,12 +41,14 @@ public class DsKalturaClient {
      */
     public DsKalturaClient(String kalturaUrl, String userId, int partnerId, String adminSecret) throws IOException {
         try {
-            KalturaConfiguration config = new KalturaConfiguration();
+            //KalturaConfiguration config = new KalturaConfiguration();
+            Configuration config = new Configuration();
             config.setEndpoint(kalturaUrl);
-            KalturaClient client = new KalturaClient(config);
-            String ks = client.generateSession(adminSecret, userId, KalturaSessionType.ADMIN, partnerId);
-            client.setKs(ks);
+             Client client = new Client(config);                          
+             String ks = client.generateSession(adminSecret, userId, SessionType.ADMIN, partnerId);
+            client.setKs(ks);         
             this.client=client;
+            
         }
         catch (Exception e) {
             log.warn("Connecting to Kaltura failed. KalturaUrl={},error={}",kalturaUrl,e.getMessage());
@@ -60,35 +67,36 @@ public class DsKalturaClient {
      * @return The Kaltura id (internal id). Return null if the refId is not found.
      * @throws IOException if Kaltura called failed, or more than 1 entry was found with the referenceId.
      */
+    @SuppressWarnings("unchecked")
     public String getKulturaInternalId(String referenceId) throws IOException{
-
-        KalturaFilterPager pager = new KalturaFilterPager();
-        pager.pageSize = 10;
                 
-        KalturaMediaEntryFilter filter = new KalturaMediaEntryFilter();                
-        //filter.searchTextMatchAnd="\""+referenceId+"\""; // Can also find with freetext search (quotes), but this can give false matches.
-        filter.referenceIdEqual=referenceId;
+        MediaEntryFilter filter = new MediaEntryFilter();
+        filter.setReferenceIdEqual(referenceId);
+        //filter.idEqual("0_g9ys622b"); //Example to search for id
+                
+        FilterPager pager = new FilterPager();
+        pager.setPageIndex(10);
         
-        KalturaMediaListResponse list=null;
-        try {
-          list = client.getMediaService().list(filter,pager);               
-        }
-        catch(KalturaApiException e) {            
-           throw new IOException("Error searching kaltura for referenceId:"+referenceId);
-        }
+        ListMediaBuilder request =  MediaService.list(filter);               
+                                
+        //Getting this line correct was very hard. Little documentation and has to know which object to cast to.                
+        //For some documentation about the "Kaltura search" api see: https://developer.kaltura.com/api-docs/service/media/action/list        
+        Response <ListResponse<MediaEntry>> response = (Response <ListResponse<MediaEntry>>) APIOkRequestsExecutor.getExecutor().execute(request.build(client));
+        List<MediaEntry> mediaEntries = response.results.getObjects();           
         
-        if (list.totalCount == 0) {
+        int numberResults = mediaEntries.size();
+     
+        if ( numberResults == 0) {
             log.warn("No entry found at Kaltura for referenceId:"+referenceId);// warn since method it should not happen if given a valid referenceId 
             return null;
         }
-        if (list.totalCount >1) { //Sanity, has not happened yet.
+        else if (numberResults >1) { //Sanity, has not happened yet.
             log.error("More that one entry was found at Kaltura for referenceId:"+referenceId); // if this happens there is a logic error with uploading records
             throw new IOException("More than 1 entry found at Kaltura for referenceId:"+referenceId);
         }
-        
-        ArrayList<KalturaMediaEntry> objects = list.objects;
-        KalturaMediaEntry entry = objects.get(0); //There is all meta information here if needed.
-        return entry.id;        
+         
+        return response.results.getObjects().get(0).getId();
+    
     }
     
 }

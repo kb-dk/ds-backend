@@ -1,21 +1,3 @@
-package dk.kb.image.config;
-
-import dk.kb.util.Resolver;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,7 +12,26 @@ import static org.junit.jupiter.api.Assertions.*;
  *  limitations under the License.
  *
  */
-class ServiceConfigTest {
+package dk.kb.image.config;
+
+import dk.kb.util.Resolver;
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ServiceConfigTest {
 
     /*
      * This unit-test probably fails when the template is applied and a proper project is taking form.
@@ -120,6 +121,6 @@ class ServiceConfigTest {
             Integer fallback = ServiceConfig.getConfig().getInteger("fallback");
             assertEquals(87, fallback, "Expanding a non-existing property with fallback should yield the fallback");
         }
-
     }
+
 }

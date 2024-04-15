@@ -15,19 +15,15 @@
 package dk.kb.image;
 
 import com.damnhandy.uri.template.UriTemplate;
-
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.List;
 
 /**
  * Proxy for an image server that supports the <a href="https://iiif.io/api/image/3.0/">IIIF Image API</a>.
@@ -41,8 +37,17 @@ public class IIIFFacade {
     public static final String KEY_IIIF_SERVER = "imageservers.iiif.server";
 
     // https://iiif.io/api/image/3.0/
-    public static final String IIIF_IMAGE3_TEMPLATE = "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}";
-    public static final String IIIF_INFO3_TEMPLATE = "/{identifier}/info.{ext}";
+    // https://datatracker.ietf.org/doc/html/rfc6570
+    public static final String IIIF_IMAGE3_TEMPLATE =
+            "/{identifier}" + // Must be encoded as it might contain spaces or slashes
+                    "/{+region}" + // No encoding of the rest of the path elements as valid inputs don't need it
+                    "/{+size}" +
+                    "/{+rotation}" +
+                    "/{+quality}" +
+                    ".{+format}";
+    public static final String IIIF_INFO3_TEMPLATE =
+            "/{identifier}" +
+                    "/info.{ext}";
 
     public static synchronized IIIFFacade getInstance() {
         if (instance == null) {
@@ -89,7 +94,7 @@ public class IIIFFacade {
         }
 
         // TODO: Add versioning to config so that default/standard for quality can be handled according to image server
-        String path = UriTemplate.fromTemplate(IIIF_IMAGE3_TEMPLATE)
+        String uri = UriTemplate.fromTemplate(ServiceConfig.getServer(KEY_IIIF_SERVER) + IIIF_IMAGE3_TEMPLATE)
                 .set("identifier", identifier)
                 .set("region", region)
                 .set("size", size)
@@ -97,20 +102,14 @@ public class IIIFFacade {
                 .set("quality", quality)
                 .set("format", format)
                 .expand();
-
-        UriBuilder builder = UriBuilder.
-                fromUri(ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)).
-                path(path);
-
-        final URI uri = builder.build();
+        // Not using URIBuilder as the UriTemplate already encodes the parameters
         return ProxyHelper.proxy(identifier, uri, requestURI,httpHeaders);
     }
-
 
     /**
      * IIIF Image Information
      *
-     * @param requestUri the original request URI from the client. Used only for logging.
+     * @param requestURI the original request URI from the client. Used only for logging.
      * @param identifier: The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded.    
      * @param extension Data format. 'json' or 'xml' allowed.
      * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
@@ -124,15 +123,10 @@ public class IIIFFacade {
      */
     public StreamingOutput getIIIFInfo(URI requestURI, String identifier, String extension, HttpHeaders httpHeaders) {
         // TODO: Verify extension
-        String path = UriTemplate.fromTemplate(IIIF_INFO3_TEMPLATE)
+        String uri = UriTemplate.fromTemplate(ServiceConfig.getServer(KEY_IIIF_SERVER) + IIIF_INFO3_TEMPLATE)
                 .set("identifier", identifier)
                 .set("ext", extension)
                 .expand();
-        UriBuilder builder = UriBuilder.
-                fromUri(ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)).
-                path(path);
-
-        final URI uri = builder.build();
         return ProxyHelper.proxy(identifier, uri, requestURI,httpHeaders);
     }
 

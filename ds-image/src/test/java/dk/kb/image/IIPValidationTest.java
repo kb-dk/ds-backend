@@ -1,21 +1,51 @@
 package dk.kb.image;
 
+import com.damnhandy.uri.template.UriTemplate;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import org.apache.http.client.utils.URIBuilder;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IIPValidationTest {
     // TODO: Add logging for all tests
     private static final Logger log = LoggerFactory.getLogger(IIPValidationTest.class);
+
+    @Test
+    public void templateTest() {
+        // Check to see if the UriTemplate properly escapes arguments
+        String path = UriTemplate.fromTemplate("http://example.com/{foo}/{bar}")
+                .set("foo", "&%+ {/")
+                .set("bar", "zoo")
+                .expand();
+        assertEquals("http://example.com/%26%25%2B%20%7B%2F/zoo", path);
+    }
+
+    @Test
+    public void templateTestArguments() {
+        String path = UriTemplate.fromTemplate("http://example.com/{?foo}{&bar}")
+                .set("foo", "one")
+                .set("bar", "two")
+                .expand();
+        assertEquals("http://example.com/?foo=one&bar=two", path);
+    }
+
+    // Disabled as it fails due to a problem with the UriTemplate library
+    // TODO: It is a problem that the first param must be mandatory to form valid URIs. This should be fixed
+    public void templateTestArgumentsMissing() {
+        String path = UriTemplate.fromTemplate("http://example.com/{?foo}{&bar}")
+                // .set("foo", "one") // Intentionally not set
+                .set("bar", "two")
+                .expand();
+        assertEquals("http://example.com/?bar=two", path);
+    }
 
     @Test
     public void rgnTest(){
@@ -238,10 +268,10 @@ public class IIPValidationTest {
             IIPParamValidation.pflValidation(pfl);
         });
 
-        String expectedMessage = "The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 by was: '" + pfl + "'";
+        String expectedMessage = "The value of PFL needs to be defined specifically as r:x1,y1-x2,y2 but was: '" + pfl + "'";
         String actualMessage = exception.getMessage();
 
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(expectedMessage, actualMessage);
 
     }
 
@@ -281,10 +311,10 @@ public class IIPValidationTest {
             IIPParamValidation.deepzoomTileValidation(testTiles);
         });
 
-        String expectedMessage = "Deepzoom parameter 'tiles' is specified incorrectly. it has to be defined as x_y";
+        String expectedMessage = "Deepzoom parameter 'tiles' was '3.4' but must be specified as x_y";
         String actualMessage = exception.getMessage();
 
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test

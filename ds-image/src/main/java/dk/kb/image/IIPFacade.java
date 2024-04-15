@@ -14,6 +14,7 @@
  */
 package dk.kb.image;
 
+import com.damnhandy.uri.template.UriTemplate;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -22,9 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -42,6 +44,70 @@ public class IIPFacade {
     public static final String KEY_DEEPZOOM_SERVER_PATH = "imageservers.deepzoom.path";
 
     public static final String KEY_DEEPZOOM_SERVER_PARAM = "imageservers.deepzoom.param";
+
+    // https://iipimage.sourceforge.io/documentation/protocol
+    // https://datatracker.ietf.org/doc/html/rfc6570
+    // https://www.emmanuelgautier.com/blog/uri-template-rfc-6570
+    public static final String IIP_TEMPLATE = 
+            "{?FIF}" + // Full image path (mandatory and must be first): FIF=/path/image.tif
+                    "{&WID}" + // Specify width in pixels, w, for exports with CVT request: WID=w
+                    "{&HEI}" + // Specify height in pixels, h, for exports with CVT requests: HEI=h
+                    "{&RGN}" + // Define a region of interest starting at relative coordinates x,y with width w and height h. For use with CVT: RGN=x,y,w,h
+                    "{&QLT}" + // Set the output compression level, q: QLT=q
+                    "{&CNT}" + // Contrast adjustment: multiplication of pixel values by factor, c.: CNT=c
+                    // "{&SHD}" + // Simulated hill-shading for image normal data: SHD=h,v. Only version 0.9.7. Not supported here
+                    // "{&LYR}" + // The number of quality layers, l, in an image to decode.: LYR=l. Only version 0.9.9. Not supported here
+                    "{&ROT}" + // Rotate (and flip) image by given number of degrees, r: ROT=r
+                    "{&GAM}" + // Apply gamma correction, g: GAM=g
+                    "{&CMP}" + // Generate colormap using one of the standard colormap schemes, s: CMP=s
+                    "{&PFL}" + // Export profile in JSON format at resolution r from position x1,y1 to x2, y2: PFL=r:x1,y1-x2,y2
+                    // "{&MINMAX}" + // Define the range of input pixel values to use for a particular channel, c: MINMAX=c:min,max. Not supported here
+                    "{&CTW}" + // Color twist / channel recombination: CTW=[r1,g1,b1;r2,g2,b2;r3,g3,b3]
+                    "{+INV}" + // Invert image (no argument). Note missing &, which must be added if INV is set
+                    "{&COL}" +  // Color transformation to output space, c.
+                    // Parameters below must be after all other parameters
+                    "{&JTL}" + // Return a tile in JPEG format with index n at resolution level r: JTL=r,n
+                    "{&PTL}" + // Return a tile in PNG format with index n at resolution level r: PTL=r,n
+                    "{&CVT}"; // Export the full image or a region in the specified format (JPEG and PNG currently supported): CVT=jpeg
+
+    // Path based DeepZoom server
+
+    // http://example.com:1234/image_identifier.dzi
+    public static final String DEEPZOOM_PATH_DZI_TEMPLATE =
+            "/{+dzipath}"; // Unescaped as it might be multi-path
+    
+    // https://example.com/example-images/fooimage_files/11/2_0.jpg
+    // https://example.com/example-images/fooimage/fooimage_files/11/2_0.jpg
+    public static final String DEEPZOOM_PATH_TEMPLATE =
+            "/{+imageid}_files" + // Mandatory. No percent-escaping for imageid as it might include path
+                    "/{layer}" + // Integer: 11
+                    "/{tile}" + // x_y: 2_0
+                    ".{format}" + // Image format: jpg
+                    // Params below are not DeepZoom per se, but are supported by IIPImage. All optional
+                    "{?CNT}" + // Contrast adjustment: multiplication of pixel values by factor, c.: CNT=c
+                    "{?GAM}" + // Apply gamma correction, g: GAM=g
+                    "{?CMP}" + // Generate colormap using one of the standard colormap schemes, s: CMP=s
+                    "{?CTW}" + // Color twist / channel recombination: CTW=[r1,g1,b1;r2,g2,b2;r3,g3,b3]
+                    "{+INV}" + // Invert image (no argument). Note missing &, which must be added if INV is set
+                    "{?COL}";  // Color transformation to output space, c.
+    
+    // Param based DeepZoom server: http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
+    public static final String DEEPZOOM_PARAM_DZI_TEMPLATE =
+            "?DeepZoom={+dzipath}"; // Unescaped as it might be multi-path
+
+    // https://example.com/fcgi-bin/iipsrv.fcgi?Deepzoom=hs-2007-16-a-full_tif.tif_files/12/2_4.jpg
+    public static final String DEEPZOOM_PARAM_TEMPLATE =
+            "?DeepZoom={+imageid}_files" + // Mandatory. No percent-escaping for imageid as it might include path
+                    "/{layer}" + // Integer: 12
+                    "/{tile}" + // 2_4: 2_0
+                    ".{format}"  + // Image format: jpg
+                    // Params below are not DeepZoom per se, but are supported by IIPImage. All optional
+                    "{&CNT}" + // Contrast adjustment: multiplication of pixel values by factor, c.: CNT=c
+                    "{&GAM}" + // Apply gamma correction, g: GAM=g
+                    "{&CMP}" + // Generate colormap using one of the standard colormap schemes, s: CMP=s
+                    "{&CTW}" + // Color twist / channel recombination: CTW=[r1,g1,b1;r2,g2,b2;r3,g3,b3]
+                    "{+INV}" + // Invert image (no argument). Note missing &, which must be added if INV is set
+                    "{&COL}";  // Color transformation to output space, c.
 
     public static synchronized IIPFacade getInstance() {
         if (instance == null) {
@@ -108,59 +174,75 @@ public class IIPFacade {
             CVT = "jpeg";
         }
 
-        // TODO: Use the UriTemplate system like IIIFFacade
         // http://example.com/iipsrv.fcgi?FIF=/mymount/85/c1/85c1df89-bffe-48e0-8813-111f6f0fba50.jp2&CVT=jpeg
-        UriBuilder builder = UriBuilder.
-                fromUri(ServiceConfig.getConfig().getString(KEY_IIP_SERVER)).
-                queryParam("FIF", FIF); // Mandatory
-        ProxyHelper.addIfPresent(builder, "WID", WID);
-        ProxyHelper.addIfPresent(builder, "HEI", HEI);
-        ProxyHelper.addIfPresent(builder, "RGN", RGN);
-        ProxyHelper.addIfPresent(builder, "QLT", QLT);
-        ProxyHelper.addIfPresent(builder, "CNT", CNT);
+        try {
+            UriTemplate template = UriTemplate.fromTemplate(ServiceConfig.getServer(KEY_IIP_SERVER) + IIP_TEMPLATE)
+                    .set("FIF", FIF); // Mandatory. Note that slashes will be encoded
 
-        ProxyHelper.addIfPresent(builder, "ROT", ROT);
-        ProxyHelper.addIfPresent(builder, "GAM", GAM);
-        ProxyHelper.addIfPresent(builder, "CMP", CMP);
-        ProxyHelper.addIfPresent(builder, "PFL", PFL);
-        ProxyHelper.addIfPresent(builder, "CTW", CTW);
-        ProxyHelper.addIfPresent(builder, "INV", INV); // TODO: Figure out how to add INV as a value-less param
-        ProxyHelper.addIfPresent(builder, "COL", COL);
+            ProxyHelper.addIfPresent(template, "WID", WID);
+            ProxyHelper.addIfPresent(template, "HEI", HEI);
+            ProxyHelper.addIfPresent(template, "RGN", RGN);
+            ProxyHelper.addIfPresent(template, "QLT", QLT);
+            ProxyHelper.addIfPresent(template, "CNT", CNT);
 
-        ProxyHelper.addIfPresent(builder, "JTL", JTL);
-        ProxyHelper.addIfPresent(builder, "PTL", PTL);
-        ProxyHelper.addIfPresent(builder, "CVT", CVT);
+            ProxyHelper.addIfPresent(template, "ROT", ROT);
+            ProxyHelper.addIfPresent(template, "GAM", GAM);
+            ProxyHelper.addIfPresent(template, "CMP", CMP);
+            ProxyHelper.addIfPresent(template, "PFL", PFL);
+            ProxyHelper.addIfPresent(template, "CTW", CTW);
+            if (Boolean.TRUE.equals(INV)) {
+                template.set("INV", "&INV"); // Special case as INV is without value
+            }
+            ProxyHelper.addIfPresent(template, "COL", COL);
 
-        final URI uri = builder.build();
+            ProxyHelper.addIfPresent(template, "JTL", JTL);
+            ProxyHelper.addIfPresent(template, "PTL", PTL);
+            ProxyHelper.addIfPresent(template, "CVT", CVT);
 
-        return ProxyHelper.proxy(FIF, uri, requestURI, httpHeaders);
+            final URI uri = new URI(template.expand());
+
+            return ProxyHelper.proxy(FIF, uri, requestURI, httpHeaders);
+        } catch (URISyntaxException e) {
+            log.warn("getIIPImage: Unable to construct URL requestURI='{}'", requestURI, e);
+            throw new InternalServiceException(
+                    "Unable to construct getIIPImage URL for request '" + requestURI + "'");
+        }
     }
 
     public javax.ws.rs.core.StreamingOutput getDeepzoomDZI(
             URI requestURI, String imageid,
-            HttpServletResponse httpServletResponse,  HttpHeaders httpHeaders) throws ServiceException {
+            HttpServletResponse httpServletResponse, HttpHeaders httpHeaders) throws ServiceException {
         validateDeepzoomDZIRequest(imageid);
         final String idDZI = imageid + (imageid.endsWith(".dzi") ? "" : ".dzi");
-        // Defaults
-        UriBuilder builder;
-        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
-            builder = UriBuilder.
-            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PATH)).
-            path(idDZI); // Mandatory
-        } 
-        else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
-            builder = UriBuilder.
-            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM)).
-            queryParam("DeepZoom", idDZI); // Mandatory
-        }
-        else {
-            log.error("No Deepzoom server defined");
-            throw new InternalServiceException("No Deepzoom server defined");
-        }
-        // TODO: Use the UriTemplate system like IIIFFacade
-        // http://example.com//fcgi-bin/iipsrv.fcgi?DeepZoom=/your/image/path.tif.dzi
 
-        final URI uri = builder.build();
+        UriTemplate template;
+        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
+            // Path based DeepZoom server: http://example.com:1234/image_identifier.dzi
+            template = UriTemplate
+                    .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PATH) + DEEPZOOM_PATH_DZI_TEMPLATE);
+
+        } else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
+            // Param based DeepZoom server: http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
+            template = UriTemplate
+                    .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PARAM) + DEEPZOOM_PARAM_DZI_TEMPLATE);
+
+        } else {
+            log.error("No DeepZoom server defined");
+            throw new InternalServiceException("No DeepZoom server defined");
+        }
+
+        template.set("dzipath", idDZI);
+
+
+        final URI uri;
+        try {
+            uri = new URI(template.expand());
+        } catch (URISyntaxException e) {
+            log.warn("Error finalizing DeepZoom-dzi proxy URI for image ID '{}' from request '{}'",
+                    imageid, requestURI, e);
+            throw new InternalServerErrorException(
+                    "Error finalizing DeepZoom-dzi proxy URI for request '" + requestURI + "'");
+        }
 
         return ProxyHelper.proxy(imageid, uri, requestURI, httpServletResponse, httpHeaders);
     }
@@ -176,38 +258,58 @@ public class IIPFacade {
             format = "jpeg";
         }
 
-        // TODO: Use the UriTemplate system like IIIFFacade
-        // http://example.com//fcgi-bin/iipsrv.fcgi?DeepZoom=/your/image/path.tif.dzi
-        UriBuilder builder;
-        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
-            builder = UriBuilder.
-            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PATH)).
-            path(imageid + "_files").path("" + layer).path(tiles + "." + format);
-        } 
-        else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
-            builder = UriBuilder.
-            fromUri(ServiceConfig.getConfig().getString(KEY_DEEPZOOM_SERVER_PARAM)).
-            queryParam("DeepZoom", imageid + "_files/" + layer + "/" + tiles + "." + format);
-        }
-        else {
+        boolean isPath = true;
+        UriTemplate template;
+        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)) {
+            // Path based DeepZoom server
+            // https://example.com/example-images/fooimage/fooimage_files/11/2_0.jpg
+            template = UriTemplate
+                    .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PATH) + DEEPZOOM_PATH_TEMPLATE);
+
+        } else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)) {
+            // Param based DeepZoom server
+            // https://example.com/fcgi-bin/iipsrv.fcgi?Deepzoom=hs-2007-16-a-full_tif.tif_files/12/2_4.jpg
+            template = UriTemplate
+                    .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PARAM) + DEEPZOOM_PARAM_TEMPLATE);
+            isPath = false;
+
+        } else {
             log.error("No Deepzoom server defined");
             throw new InternalServiceException("No Deepzoom server defined");
         }
 
-        ProxyHelper.addIfPresent(builder, "layer", layer);
-        ProxyHelper.addIfPresent(builder, "tiles", tiles);
-        ProxyHelper.addIfPresent(builder, "format", format);
-        ProxyHelper.addIfPresent(builder, "CNT", CNT);
+        // Mandatory arguments
+        template.set("imageid", imageid)
+                .set("layer", Integer.toString(layer))
+                .set("tile", tiles)
+                .set("format", format);
 
-        ProxyHelper.addIfPresent(builder, "GAM", GAM);
-        ProxyHelper.addIfPresent(builder, "CMP", CMP);
-        ProxyHelper.addIfPresent(builder, "CTW", CTW);
-        ProxyHelper.addIfPresent(builder, "INV", INV); // TODO: Figure out how to add INV as a value-less param
-        ProxyHelper.addIfPresent(builder, "COL", COL);
+        // Optional arguments
+        ProxyHelper.addIfPresent(template, "CNT", CNT);
+        ProxyHelper.addIfPresent(template, "GAM", GAM);
+        ProxyHelper.addIfPresent(template, "CMP", CMP);
+        ProxyHelper.addIfPresent(template, "CTW", CTW);
+        if (Boolean.TRUE.equals(INV)) {
+            // INV should start with '?' if this is the first parameter for an othwerwise path based request
+            if (isPath && CNT==null && GAM==null && CMP==null && CTW==null) {
+                template.set("INV", "?INV"); // Special case as INV is without value
+            } else {
+                template.set("INV", "&INV"); // Special case as INV is without value
+            }
+        }
+        ProxyHelper.addIfPresent(template, "COL", COL);
 
-        final URI uri = builder.build();
+        final URI uri;
+        try {
+            uri = new URI(template.expand());
+        } catch (URISyntaxException e) {
+            log.warn("Error finalizing DeepZoom-tile proxy URI for image ID '{}' from request '{}'",
+                    imageid, requestURI, e);
+            throw new InternalServerErrorException(
+                    "Error finalizing DeepZoom-tile proxy URI for request '" + requestURI + "'");
+        }
 
-        return ProxyHelper.proxy(imageid, uri, requestURI,httpHeaders);
+        return ProxyHelper.proxy(imageid, uri, requestURI, httpHeaders);
     }
 
     /**
