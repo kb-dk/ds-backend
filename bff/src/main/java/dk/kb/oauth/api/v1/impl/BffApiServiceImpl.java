@@ -92,6 +92,14 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
         if (ServiceConfig.getConfig().getBoolean("config.secure-cookie",true)) {
             cookieString += "; secure";
         }
+        if (ServiceConfig.getConfig().getString("config.cookie-domain",null) !=null ) {
+            cookieString += "; domain=";
+            cookieString += ServiceConfig.getConfig().getString("config.cookie-domain");
+        }
+        if (ServiceConfig.getConfig().getString("config.cookie-path",null) !=null ) {
+            cookieString += "; path=";
+            cookieString += ServiceConfig.getConfig().getString("config.cookie-path");
+        }
         cookieString += "; SameSite="+ServiceConfig.getConfig().getString("config.samesite-cookie","Strict");
         httpServletResponse.setHeader("Set-Cookie",cookieString);
     }
