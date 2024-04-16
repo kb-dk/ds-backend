@@ -3,6 +3,18 @@
   <formats>
     <format>tar.gz</format>
   </formats>
+  <files>
+    <file>
+      <source>conf/ocp/ds-present.xml</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>ds-present.xml.SAMPLE</destName>
+    </file>
+    <file>
+      <source>conf/ds-present-environment.yaml</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>ds-present-environment.yaml.SAMPLE</destName>
+    </file>
+  </files>
 
   <dependencySets>
     <dependencySet>
@@ -14,7 +26,6 @@
       </includes>
     </dependencySet>
   </dependencySets>
-
   <fileSets>
     <fileSet>
       <outputDirectory>conf</outputDirectory>
@@ -24,6 +35,7 @@
       <excludes>
 	      <exclude>ocp/</exclude>
 	      <exclude>ds-present-local.yaml</exclude>
+	      <exclude>ds-present-environment.yaml</exclude>
       </excludes>
     </fileSet>
     <fileSet>
@@ -32,6 +44,7 @@
       <fileMode>0744</fileMode>
       <includes>
           <include>CHANGELOG.md</include>
+          <include>README.md</include>
       </includes>
     </fileSet>
   </fileSets>
