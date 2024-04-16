@@ -9,11 +9,6 @@
       <outputDirectory>/</outputDirectory>
       <destName>ds-present.xml.SAMPLE</destName>
     </file>
-    <file>
-      <source>conf/ds-present-environment.yaml</source>
-      <outputDirectory>/</outputDirectory>
-      <destName>ds-present-environment.yaml.SAMPLE</destName>
-    </file>
   </files>
 
   <dependencySets>
@@ -35,7 +30,6 @@
       <excludes>
 	      <exclude>ocp/</exclude>
 	      <exclude>ds-present-local.yaml</exclude>
-	      <exclude>ds-present-environment.yaml</exclude>
       </excludes>
     </fileSet>
     <fileSet>

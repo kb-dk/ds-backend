@@ -10,6 +10,7 @@ target/
 README_OLD.md
 .openapi-generator/
 conf/ds-present-local.yaml
+conf/ds-present-behaviour.yaml
 setup_project.sh
 /579_test_billeder.zip
 /testdata/
