@@ -30,7 +30,8 @@ imageservers:
 
   - invalid:
       url: "invalid://url"
-      default: true
+      # The default is commented out here to force defining a default for a real imageserver in the local, devel or prod config
+      #default: true
 
 # Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
 # These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
@@ -49,11 +50,6 @@ streamingserver:
 licensemodule:
   url: http://localhost:9076/ds-license/v1
   allowall: false
-
-endpoints:
-  - example:
-      getrecord: 'http://example.com/ds-present/v1/record/'
-      default: true
 
 # List of backing storages. This information should be overridden in ds-present-environment.yaml
 

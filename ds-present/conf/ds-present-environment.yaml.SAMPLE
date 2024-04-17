@@ -22,6 +22,7 @@
      server: 'https://<iipimageserver>.kb.dk/'
    iiif:
      server: 'https://<iipimageserver>.kb.dk/'
+     default: true
    # deepzoom can be either path- or param-based and ONLY one must be specified
    deepzoom:
      # At KB, param is used
@@ -52,15 +53,10 @@ licensemodule:
   url: http://localhost:9076/ds-license/v1
   allowall: false
 
-endpoints:
-  - example:
-      getrecord: 'http://example.com/ds-present/v1/record/'
-      default: true
-
-# List of backing storages. This information should be overridden in ds-present-environment.yaml
+# List of backing storages.
 
 # The storages defined in this file are
-# * ds-storage, expecting https://github.com/kb-dk/ds-storage/ to be running locally with the default port
+# * ds-storage, expecting https://github.com/kb-dk/ds-storage/ to be running with the default port
 # * folder, serving sample files
 storages:
   # There can be multiple defined storages. The outer YAML key is used as the ID for the storage.
@@ -77,7 +73,7 @@ storages:
       backends:
         # The ds-storage backend connects to a running https://github.com/kb-dk/ds-storage/ instance
         - ds-storage:
-            # The name of the machine running the service. Mandatory
+            # The URL for the storage service. Mandatory
             dbserverurl: 'http://localhost:9072/ds-storage/v1/'
 
 # Settings for handling export of multiple records
@@ -86,40 +82,3 @@ records:
   # If false, failed records are logged and skipped
   # Default: true
   stoponerrors: true
-
-
-# Origins are to be set in ds-present-kb-collections-yaml if possible, as that file overwrites the origins defined here
-# The origins available for this instance of ds-present
-# General note: All origins are expected to support at least the views raw, mods, jsonld and solrjson.
-# If any of those are not supported, the transformer 'fail' should be used with a telling message.
-#origins:
-  # Straight forward origin with the core format being MODS
-  # Uses the default storage, which connects to a running ds-storage instance
-#  - remote: # ds-present internal
-#      prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
-#      description: 'Images from the collections at the Royal Danish Library'
-#   Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
-#      views:
-#        - raw:
-#            mime: 'text/plain'
-#            transformers:
-#              - identity:
-#        - MODS:
-#            mime: 'application/xml'
-#            transformers:
-#             - identity: # No transformation steps as mods is the core format for images-dsfl
-#        - JSON-LD:
-#            mime: 'application/json'
-#            transformers:
-#              - xslt:
-#                  stylesheet: 'xslt/mods2schemaorg.xsl'
-#                  injections:
-#                    - imageserver: 'https://example.com/imageserver'
-#        - SolrJSON:
-#            mime: 'application/json'
-#            transformers:
-#              - xslt:
-#                  stylesheet: 'xslt/mods2solr.xsl'
-#                  injections:
-#                    - imageserver: 'https://example.com/imageserver'
-
