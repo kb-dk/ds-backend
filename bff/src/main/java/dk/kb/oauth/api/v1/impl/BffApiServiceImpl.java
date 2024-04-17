@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -70,16 +71,19 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
             return null;
         }
 
+        URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
+        HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
         try {
-            URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
-            HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
             httpServletResponse.setStatus(apiConnection.getResponseCode());
             httpServletResponse.setHeader("Content-Type", apiConnection.getHeaderField("Content-Type"));
             httpServletResponse.setHeader("Content-Disposition", apiConnection.getHeaderField("Content-Disposition"));
             return ProxyHelper.createStreamingOutput(apiConnection);
+        } catch (SocketTimeoutException e) {
+                log.warn("Proxy Error: connection timeout uri:'{}'",uri.toString(),e);
+                throw new ServiceException("Proxy Error: connection timeout uri:'"+uri.toString(),Response.Status.GATEWAY_TIMEOUT);
         } catch (IOException e) {
-            log.error("IO EXception",e);
-            throw new ServiceException(Response.Status.BAD_GATEWAY);
+                log.warn("Proxy Error: unable to connect uri:'{}'",uri.toString(),e);
+                throw new ServiceException("Proxy Error: unable to connect to uri:'"+uri.toString(),Response.Status.BAD_GATEWAY);
         }
     }
 

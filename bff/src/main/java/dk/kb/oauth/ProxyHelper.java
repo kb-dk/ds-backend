@@ -5,42 +5,39 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.yaml.NotFoundException;
 import dk.kb.util.yaml.YAML;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.URI;
+import java.net.*;
 
 
 public class ProxyHelper {
 
+    private static final Logger log = LoggerFactory.getLogger(ProxyHelper.class);
 
-    public  static HttpURLConnection openConnection(String method, URI uri, HttpHeaders requestHeaders, String accessToken) {
-        HttpURLConnection connection;
+    public static HttpURLConnection openConnection(String method, URI uri, HttpHeaders requestHeaders, String accessToken) {
         try {
-            connection = (HttpURLConnection) uri.toURL().openConnection();
-        } catch (IOException e) {
-            throw new InternalServiceException("Unable to open connection to "+uri);
-        }
-
-        try {
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
             connection.setRequestMethod(method);
-        } catch (ProtocolException e) {
-            throw new InternalServiceException("Unable to set request method "+method);
-        }
-
-        connection.setRequestProperty("Authorization","Bearer "+accessToken);
-
-        try {
+            connection.setRequestProperty("Authorization","Bearer "+accessToken);
             connection.connect();
+            return connection;
+        } catch (ProtocolException e) {
+            throw new InternalServiceException("Unable to set request method " + method);
+        } catch (SocketTimeoutException e) {
+            log.warn("Proxy Error: connection timeout uri:'{}'",uri.toString(),e);
+            throw new ServiceException("Proxy Error: connection timeout uri:'"+uri.toString(),Response.Status.GATEWAY_TIMEOUT);
         } catch (IOException e) {
-            throw new ServiceException("Unable to open connection to "+uri,Response.Status.BAD_GATEWAY);
+            log.warn("Proxy Error: unable to connect uri:'{}'",uri.toString(),e);
+            throw new ServiceException("Proxy Error: unable to connect to uri:'"+uri.toString(),Response.Status.BAD_GATEWAY);
         }
-        return connection;
+
+
     }
 
 
