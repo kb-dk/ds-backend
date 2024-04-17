@@ -9,6 +9,11 @@
       <outputDirectory>/</outputDirectory>
       <destName>ds-present.xml.SAMPLE</destName>
     </file>
+    <file>
+      <source>src/main/resources/ds-present.build.properties</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>ds-present.build.properties</destName>
+    </file>
   </files>
 
   <dependencySets>
