@@ -9,11 +9,6 @@
       <outputDirectory>/</outputDirectory>
       <destName>ds-present.xml.SAMPLE</destName>
     </file>
-    <file>
-      <source>src/main/resources/ds-present.build.properties</source>
-      <outputDirectory>/</outputDirectory>
-      <destName>ds-present.build.properties</destName>
-    </file>
   </files>
 
   <dependencySets>
@@ -44,6 +39,15 @@
       <includes>
           <include>CHANGELOG.md</include>
           <include>README.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/ds-present-${version}</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0744</fileMode>
+      <includes>
+        <include>ds-present.build.properties</include>
       </includes>
     </fileSet>
   </fileSets>
