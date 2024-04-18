@@ -36,7 +36,7 @@ public class FieldsParam extends Param<FieldsParam, List<String>> {
         value = config.getList("defaultFields", value);
         this.supportsStar = config.getBoolean("supportsStar", supportsStar);
         allowedFields = new HashSet<>(config.getList("allowedFields", Collections.emptyList()));
-        deniedFields = new HashSet<>(config.getList("denied_fields", Collections.emptyList()));
+        deniedFields = new HashSet<>(config.getList("deniedFields", Collections.emptyList()));
     }
 
     @Override

@@ -73,13 +73,13 @@ solr:
               - subject_full_name
               - audience
               - text
-            denied_fields:      # Blacklist filter (see facet for whitelist ditto)
+            deniedFields:      # Blacklist filter (see facet for whitelist ditto)
               - '*'             # The asterisk is used for requesting all fields
               - text_shingles   # No real need for denying, this is just to demonstrate denied_value
 
           rows:
             defaultEnabled: true
-            default_value: 20   # Must match the one defined in solrconfig.xml
+            defaultValue: 20   # Must match the one defined in solrconfig.xml
             weightFactor: 0.1  # Multiplied to value and multiplied to fl compound weight
             maxValue: 5000     # Hard limit
 
@@ -146,7 +146,7 @@ solr:
               - subject_full_name
           facet.limit:          # Integer
             defaultEnabled: true
-            default_value: 20   # Must match the one defined in solrconfig.xml
+            defaultValue: 20   # Must match the one defined in solrconfig.xml
             weightFactor: 0.01
             maxValue: 10000    # Hard limit
 
@@ -154,9 +154,9 @@ solr:
           facet.sort:           # Ordered sort clauses
             maxChars: 100
           facet.mincount:       # Integer
-            default_value: 1
+            defaultValue: 1
           facet.exists:         # Boolean (reduced load, but we don't want negative weights)
-            default_value: false
+            defaultValue: false
 
           facet.excludeTerms:   # List of terms
             weightFactor: 0.1

@@ -165,7 +165,7 @@ class SolrShieldTest {
                 "facet", new String[]{"true"},
                 "facet.field", new String[]{"location"}
         );
-        Response response = SolrShield.evaluate(request.entrySet(), Double.maxValue);
+        Response response = SolrShield.evaluate(request.entrySet(), Double.MAX_VALUE);
         log.debug("SolrShield response: " + response);
         assertFalse(response.allowed,
                 "Request " + toString(request) + " should not be allowed. Response: " + response);

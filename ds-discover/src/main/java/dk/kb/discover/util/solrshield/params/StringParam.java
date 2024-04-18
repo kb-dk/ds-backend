@@ -32,8 +32,8 @@ public class StringParam extends Param<StringParam, String[]> {
     public StringParam(Profile profile, YAML config, boolean multiValue) {
         super(profile, config, multiValue);
         maxChars = config.getInteger("maxChars", maxChars);
-        if (config.containsKey("default_value")) {
-            value = new String[]{config.getString("default_value")};
+        if (config.containsKey("defaultValue")) {
+            value = new String[]{config.getString("defaultValue")};
         }
     }
 

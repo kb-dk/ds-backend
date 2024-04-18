@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class BooleanParam extends Param<BooleanParam, Boolean> {
     public BooleanParam(Profile profile, YAML config) {
         super(profile, config, false); // Solr boolean params are never multiValue
-        value = config.getBoolean("default_value", value);
+        value = config.getBoolean("defaultValue", value);
     }
 
     @Override
