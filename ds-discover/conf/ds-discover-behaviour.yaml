@@ -13,10 +13,6 @@
 openapi:
   serverurl: http://localhost:9074/ds-discover/v1
 
-# Local experimenting with limits
-limits:
-  max: 10000
-
 solr:
 
   # /select specific config
