@@ -16,22 +16,22 @@ solr:
 
     # The default max weight should be kept conservative and perhaps even disabled by setting it to -1.
     # Ideally the max weight is taken from general application properties or derived per user group
-    default_max_weight: 1000
+    defautMaxWeight: 1000
 
     # Simply activating a call comes at a cost
-    weight_constant: 100
+    weightConstant: 100
 
     # Ideally all fields are listed under 'fields'.
-    # 'unlisted_fields' controls handling of requests for unlisted fields
-    unlisted_fields:
+    # 'unlistedFields' controls handling of requests for unlisted fields
+    unlistedFields:
       allowed: true
       weight: 100
 
     # How to handle parameters not specified in SolrShield.
     # This is shared between all components
-    unlisted_params:
+    unlistedParams:
       allowed: false
-      weight_constant: 1000 # Not used when allowed=false
+      weightConstant: 1000 # Not used when allowed=false
 
     # The component section covers the major Solr handlers, such as faceting and highlighting.
     # It also covers grouping and faceting, which are technically not handlers but conceptually on par.
@@ -39,25 +39,25 @@ solr:
 
       # Search covers both the search and the retrieval part of a basic query based request
       search:
-        default_enabled: true
+        defaultEnabled: true
         allowed: true
-        weight_constant: 100    # The base cost of using the component. params-specific weights will be added
+        weightConstant: 100    # The base cost of using the component. params-specific weights will be added
 
         params:
           q:
-            weight_constant: 10
-            max_chars: 1000
+            weightConstant: 10
+            maxChars: 1000
 
           fq:
-            weight_constant: 0.0
-            weight_factor: 10   # There can be multiple filter queries
-            max_chars: 1000
+            weightConstant: 0.0
+            weightFactor: 10   # There can be multiple filter queries
+            maxChars: 1000
 
           fl:
-            default_enabled: true
-            weight_factor: 1    # weight_factor will be multiplied to each field weight
-            supports_star: true # If true, * is expanded to all fields by Solr
-            default_fields:     # Must match the ones defined in solrconfig.xml
+            defaultEnabled: true
+            weightFactor: 1    # weightFactor will be multiplied to each field weight
+            supportsStar: true # If true, * is expanded to all fields by Solr
+            defaultFields:     # Must match the ones defined in solrconfig.xml
               - abstract
               - description
               - genre_sub
@@ -78,14 +78,14 @@ solr:
               - text_shingles   # No real need for denying, this is just to demonstrate denied_value
 
           rows:
-            default_enabled: true
+            defaultEnabled: true
             default_value: 20   # Must match the one defined in solrconfig.xml
-            weight_factor: 0.1  # Multiplied to value and multiplied to fl compound weight
-            max_value: 5000     # Hard limit
+            weightFactor: 0.1  # Multiplied to value and multiplied to fl compound weight
+            maxValue: 5000     # Hard limit
 
           start:
-            weight_factor: 0.01 # Multiplied to value
-            max_value: 1000     # Hard limit
+            weightFactor: 0.01 # Multiplied to value
+            maxValue: 1000     # Hard limit
 
           # Zero cost arguments
           q.op:
@@ -97,18 +97,18 @@ solr:
           # query debug (rows=1) is possible with a max_weight of 1000. In reality any request will always have
           # some weight even before turning on debug so using debug with rows=2 will exceed the max_weight.
           debug:
-            weight_constant: 500 
-            weight_factor: 1    # Multiplied to rows, as debug-results is processed for each returned document
+            weightConstant: 500 
+            weightFactor: 1    # Multiplied to rows, as debug-results is processed for each returned document
           debug.explain.structured:
 
-          # Explicit disabling of defType, overriding a potential unlisted_params.allowed=true
+          # Explicit disabling of defType, overriding a potential unlistedParams.allowed=true
           defType:
             allowed: false
 
       # Standard Solr faceting
       facet:
-        default_enabled: true   # Must match the one defined in solrconfig.xml
-        weight_constant: 100
+        defaultEnabled: true   # Must match the one defined in solrconfig.xml
+        weightConstant: 100
         allowed: true
 
         params:
@@ -116,10 +116,10 @@ solr:
           facet.query:          # Multiple queries
             allowed: false
           facet.field:          # List of fields
-            default_enabled: true
-            weight_factor: 1    # Multiplied to (limit multiplied to field weights)
-            supports_star: false # If true, * is expanded to all fields by Solr
-            default_fields:     # Must match the ones defined in solrconfig.xml
+            defaultEnabled: true
+            weightFactor: 1    # Multiplied to (limit multiplied to field weights)
+            supportsStar: false # If true, * is expanded to all fields by Solr
+            defaultFields:     # Must match the ones defined in solrconfig.xml
               - catalog
               - collection
               - categories
@@ -130,7 +130,7 @@ solr:
               - creator_full_name
               - creator_affiliation
               - subject_full_name
-            allowed_fields:     # Must match the ones defined in solrconfig.xml
+            allowedFields:     # Must match the ones defined in solrconfig.xml
               - id
               - origin
               - location
@@ -145,21 +145,21 @@ solr:
               - creator_affiliation
               - subject_full_name
           facet.limit:          # Integer
-            default_enabled: true
+            defaultEnabled: true
             default_value: 20   # Must match the one defined in solrconfig.xml
-            weight_factor: 0.01
-            max_value: 10000    # Hard limit
+            weightFactor: 0.01
+            maxValue: 10000    # Hard limit
 
           # Zero cost facet options
           facet.sort:           # Ordered sort clauses
-            max_chars: 100
+            maxChars: 100
           facet.mincount:       # Integer
             default_value: 1
           facet.exists:         # Boolean (reduced load, but we don't want negative weights)
             default_value: false
 
           facet.excludeTerms:   # List of terms
-            weight_factor: 0.1
+            weightFactor: 0.1
 
 # TODO: facet.range
 # TODO: group
@@ -170,7 +170,7 @@ solr:
 
     # To avoid excessive repetition under 'fields', default field params can be specified here.
     # Currently only 'weight' is supported
-    default_field:
+    defaultField:
       weight: 1
 
     # The fields section assign base weight to each field.
@@ -445,7 +445,7 @@ solr:
       topic:
         weight: 50
 
-    all_fields:
+    allFields:
       - id
       - resource_id
       - origin

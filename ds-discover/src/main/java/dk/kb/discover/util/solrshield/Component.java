@@ -43,9 +43,9 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
         if (!config.containsKey("params")) {
             throw new IllegalArgumentException("No configuration sub map 'params' for the " + name + " component");
         }
-        defaultEnabled = config.getBoolean("default_enabled", defaultEnabled);
+        defaultEnabled = config.getBoolean("defaultEnabled", defaultEnabled);
         allowed = config.getBoolean("allowed", allowed);
-        weightConstant = config.getDouble("weight_constant", weightConstant);
+        weightConstant = config.getDouble("weightConstant", weightConstant);
 
         enabled = defaultEnabled;
     }

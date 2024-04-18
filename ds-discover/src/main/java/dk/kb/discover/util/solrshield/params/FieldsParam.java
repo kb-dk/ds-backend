@@ -33,9 +33,9 @@ public class FieldsParam extends Param<FieldsParam, List<String>> {
 
     public FieldsParam(Profile profile, YAML config) {
         super(profile, config, true); // Solr fields params are always multi valued
-        value = config.getList("default_fields", value);
-        this.supportsStar = config.getBoolean("supports_star", supportsStar);
-        allowedFields = new HashSet<>(config.getList("allowed_fields", Collections.emptyList()));
+        value = config.getList("defaultFields", value);
+        this.supportsStar = config.getBoolean("supportsStar", supportsStar);
+        allowedFields = new HashSet<>(config.getList("allowedFields", Collections.emptyList()));
         deniedFields = new HashSet<>(config.getList("denied_fields", Collections.emptyList()));
     }
 

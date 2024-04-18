@@ -362,8 +362,8 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
          *     # Unless there are special reasons not to, default params should be specified
          *     # in solrconfig.xml.
          *     # The 'fq' param has no special status here: If the request contains 1 or more fq
-         *     # values, they will override any fq specified under defaultparams.
-         *     defaultparams:
+         *     # values, they will override any fq specified under defaultParams.
+         *     defaultParams:
          *       # Compensate for a Solr bug causing crashes when the config has this
          *       # parameter as default for the /select handler.
          *       # This param should be made part of solrconfig.xml when the Solr bug
@@ -373,7 +373,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
          *     # The values of the params are either scalars or lists of scalars.
          *     # The param 'fq' is special as it appends to any existing 'fq' while all other
          *     # params are overwritten
-         *     forcedparams:
+         *     forcedParams:
          * </pre>
          * @param handler a Solr handler as specified in the configuration, i.e. {@code select} or {@code mlt}.
          */
@@ -382,8 +382,8 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
                 log.info("No configuration entry for 'solr.{}'. " +
                          "There will be no default or forced parameters", handler);
             }
-            defaultParams = getParams("solr." + handler + ".defaultparams");
-            forcedParams = getParams("solr." + handler + ".forcedparams");
+            defaultParams = getParams("solr." + handler + ".defaultParams");
+            forcedParams = getParams("solr." + handler + ".forcedParams");
         }
 
         /**

@@ -51,10 +51,10 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
             throw new NullPointerException("Profile was null, but must be set for Params");
         }
         this.name = name;
-        enabled = config.getBoolean("default_enabled", enabled);
+        enabled = config.getBoolean("defaultEnabled", enabled);
         allowed = config.getBoolean("allowed", allowed);
-        weightConstant = config.getDouble("weight_constant", weightConstant);
-        weightFactor = config.getDouble("weight_factor", weightFactor);
+        weightConstant = config.getDouble("weightConstant", weightConstant);
+        weightFactor = config.getDouble("weightFactor", weightFactor);
         this.multiValue = multiValue;
     }
 

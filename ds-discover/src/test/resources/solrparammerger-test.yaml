@@ -1,18 +1,18 @@
 solr:
   select1:
-    defaultparams:
+    defaultParams:
       fq: foo
       maxCollationRetries: 10
-    forcedparams:
+    forcedParams:
 
   select2:
-    forcedparams:
+    forcedParams:
       fq: bar
 
   select3:
-    defaultparams:
+    defaultParams:
       fq: foo
-    forcedparams:
+    forcedParams:
       fq: bar
       rows: 10
 

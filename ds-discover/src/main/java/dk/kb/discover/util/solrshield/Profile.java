@@ -38,7 +38,7 @@ public class Profile extends ProfileElement<Profile> {
     /**
      * The base cost of issuing a request, no matter the nature of the request.
      */
-    public double weight_constant = 1000;
+    public double weightConstant = 1000;
 
     /**
      * Ideally all fields requested are defined in {@link #fields}. {@code unlistedFieldsAllowed} controls what
@@ -109,14 +109,14 @@ public class Profile extends ProfileElement<Profile> {
      */
     public Profile(YAML config) {
         super(null, "config");
-        weight_constant = config.getDouble("weight_constant", weight_constant);
+        weightConstant = config.getDouble("weightConstant", weightConstant);
 
-        unlistedFieldsAllowed = config.getBoolean("unlisted_fields.allowed", unlistedFieldsAllowed);
-        unlistedFieldsWeight = config.getDouble("unlisted_fields.weight", unlistedFieldsWeight);
+        unlistedFieldsAllowed = config.getBoolean("unlistedFields.allowed", unlistedFieldsAllowed);
+        unlistedFieldsWeight = config.getDouble("unlistedFields.weight", unlistedFieldsWeight);
         fields = getFields(config);
 
-        unlistedParamsAllowed = config.getBoolean("unlisted_params.allowed", unlistedParamsAllowed);
-        unlistedParamsWeight = config.getDouble("unlisted_params.weight", unlistedParamsWeight);
+        unlistedParamsAllowed = config.getBoolean("unlistedParams.allowed", unlistedParamsAllowed);
+        unlistedParamsWeight = config.getDouble("unlistedParams.weight", unlistedParamsWeight);
 
         search = new SearchComponent(this, config.getSubMap("components.search")); // Mandatory
         facet = new FacetComponent(this, config.getSubMap("components.facet"));    // Mandatory
@@ -135,7 +135,7 @@ public class Profile extends ProfileElement<Profile> {
                     "Attempted to construct the list of fields from 'fields', " +
                             "but no list of field configurations was found");
         }
-        double defaultWeight = config.getDouble("default_field.weight", 1000.0);
+        double defaultWeight = config.getDouble("defaultField.weight", 1000.0);
         YAML EMPTY = new YAML();
 
         return config.getSubMap("fields").entrySet().stream()
@@ -193,7 +193,7 @@ public class Profile extends ProfileElement<Profile> {
 
     @Override
     public double getWeight() {
-        return weight_constant + search.getWeight() + facet.getWeight();
+        return weightConstant + search.getWeight() + facet.getWeight();
         // TODO: unlistedParamsWeight
     }
 

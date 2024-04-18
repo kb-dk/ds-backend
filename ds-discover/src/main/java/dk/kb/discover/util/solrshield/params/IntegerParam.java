@@ -25,11 +25,11 @@ import java.util.List;
  * Integer params have constant weight plus (weight factor * value).
  */
 public class IntegerParam extends Param<IntegerParam, Integer> {
-    public double maxValue = Double.MAX_VALUE;
+    public double maxValue = Double.maxValue;
 
     public IntegerParam(Profile profile, YAML config) {
         super(profile, config, false); // Solr integer params are never multiValue
-        maxValue = config.getDouble("max_value", maxValue);
+        maxValue = config.getDouble("maxValue", maxValue);
         value = config.getInteger("default_value", value);
     }
 
