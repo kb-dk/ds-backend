@@ -20,7 +20,7 @@
       <source>conf/ocp/ds-image.xml</source>
       <outputDirectory>conf/</outputDirectory>
       <fileMode>0644</fileMode>
-      <destName>ds-image.xml.sample</destName>
+      <destName>ds-image.xml.SAMPLE</destName>
     </file>
   </files>
 
@@ -33,6 +33,7 @@
       <excludes>
         <exclude>ocp/</exclude>
         <exclude>ds-image-local.yaml</exclude>
+        <exclude>ds-image-kaltura-integration-test.yaml</exclude> <!-- Not sute why this test file is in the main configuration folder. -->
       </excludes>
     </fileSet>
     <fileSet>
@@ -42,6 +43,15 @@
       <includes>
         <include>README.md</include>
         <include>CHANGELOG.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/ds-image-${version}</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>ds-image.build.properties</include>
       </includes>
     </fileSet>
   </fileSets>

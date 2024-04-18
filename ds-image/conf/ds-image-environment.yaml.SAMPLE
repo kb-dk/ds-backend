@@ -28,3 +28,9 @@ imageservers:
     path: 'http://example.com:1234/'
     # Full request URL sample: 'http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
     param: 'http://example.com:1234/iipsrv/iipsrv.fcgi'
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:
+  # This is the URL where this service is deployed appended with /v1
+  serverurl: http://localhost:9077/ds-image/v1
