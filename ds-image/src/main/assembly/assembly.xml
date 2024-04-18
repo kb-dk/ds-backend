@@ -33,7 +33,6 @@
       <excludes>
         <exclude>ocp/</exclude>
         <exclude>ds-image-local.yaml</exclude>
-        <exclude>ds-image-kaltura-integration-test.yaml</exclude> <!-- Not sute why this test file is in the main configuration folder. -->
       </excludes>
     </fileSet>
     <fileSet>
