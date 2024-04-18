@@ -1,0 +1,74 @@
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:
+  # This is the URL where this service is deployed appended with /v1
+  serverurl: http://localhost:9074/ds-discover/v1
+
+solr:
+  # /select specific config
+  select:
+    # Parameters that are default for all queries, but can be overridden by the request.
+    # The values of the params are either scalars or lists of scalars.
+    # Unless there are special reasons not to, default params should be specified
+    # in solrconfig.xml.
+    # The 'fq' param has no special status here: If the request contains 1 or more fq
+    # values, they will override any fq specified under defaultparams.
+    defaultparams:
+      # Compensate for a Solr bug causing crashes when the config has this
+      # parameter as default for the /select handler.
+      # This param should be made part of solrconfig.xml when the Solr bug
+      # has been resolved
+      spellcheck.maxCollationRetries: 10
+    # Parameters that are forced for all queries, overriding params from the request.
+    # The values of the params are either scalars or lists of scalars.
+    # The param 'fq' is special as it appends to any existing 'fq' while all other
+    # params are overwritten
+    forcedparams:
+
+  # /mlt specific config
+  mlt:
+    # Unless there are special reasons not to, default params should be specified
+    # in solrconfig.xml. See solr.select for description of default- and forced-params
+    defaultparams:
+    forcedparams:
+
+  shield:
+    # Whether SolrShield is enabled.
+    # If false, SolrShield evaluation is still performed but the response is only logged.
+    enabled: false
+
+    # Current max weight is very likely to be too low for practical use.
+    # More experimenting with SolrShield is needed in order to determine a proper max weight
+    default_max_weight: 2000
+
+  # If permissive is false, only vetted Solr parameters are accepted
+  # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
+  # Intended for development purposes.
+  # WARNING: This should never be true in production.
+  permissive: false
+
+  # Solr collections which this instance of ds-discover is connected with.
+  collections:
+    # Keys are collection names
+
+    # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost and needs to be configured with production values.
+    - ds: # http://localhost:10007/solr/ds/select?q=foo
+        # The Solr server, including port
+        # Mandatory
+        server: 'http://localhost:10007'
+        # The path for the Solr service
+        # Optional. Default is 'solr'
+        path: 'solr'
+        # The Solr collection ID
+        # Mandatory. Typically, the same as the abstract collection name
+        collection: 'ds'
+
+  #Minimum number of characters required for suggest
+  suggestminimumlength: 2
+
+
+#the license module is called to generate a filter query which is used when calling Solr
+licensemodule:
+  # This is the URL where the ds-license is deployed appended with /v1
+  url: http://localhost:9076/ds-license/v1
+
