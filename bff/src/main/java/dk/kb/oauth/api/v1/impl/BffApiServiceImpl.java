@@ -10,6 +10,7 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
@@ -24,7 +25,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
 
 
@@ -39,10 +42,18 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
     private final Logger log = LoggerFactory.getLogger(this.toString());
 
     @Override
-    public String authenticate() throws ServiceException {
+    public String authenticate(String returnUrl) throws ServiceException {
         log.debug("authenticate "+httpServletRequest.getRemoteHost());
         String accessTokenString = OauthHelper.getNewAccessToken();
         addCookieToResponse(accessTokenString);
+        if (!StringUtils.isEmpty(returnUrl)) {
+            try {
+                httpServletResponse.sendRedirect(returnUrl);
+            } catch (IOException e) {
+                log.error("Redirect error ",e);
+                throw new InternalServiceException("Invalid returnUrl "+returnUrl);
+            }
+        }
         return "";
     }
 
@@ -60,16 +71,19 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
             return null;
         }
 
+        URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
+        HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
         try {
-            URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
-            HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
             httpServletResponse.setStatus(apiConnection.getResponseCode());
             httpServletResponse.setHeader("Content-Type", apiConnection.getHeaderField("Content-Type"));
             httpServletResponse.setHeader("Content-Disposition", apiConnection.getHeaderField("Content-Disposition"));
             return ProxyHelper.createStreamingOutput(apiConnection);
+        } catch (SocketTimeoutException e) {
+                log.warn("Proxy Error: connection timeout uri:'{}'",uri.toString(),e);
+                throw new ServiceException("Proxy Error: connection timeout uri:'"+uri.toString(),Response.Status.GATEWAY_TIMEOUT);
         } catch (IOException e) {
-            log.error("IO EXception",e);
-            throw new ServiceException(Response.Status.BAD_GATEWAY);
+                log.warn("Proxy Error: unable to connect uri:'{}'",uri.toString(),e);
+                throw new ServiceException("Proxy Error: unable to connect to uri:'"+uri.toString(),Response.Status.BAD_GATEWAY);
         }
     }
 
@@ -82,6 +96,14 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
         if (ServiceConfig.getConfig().getBoolean("config.secure-cookie",true)) {
             cookieString += "; secure";
         }
+        if (ServiceConfig.getConfig().getString("config.cookie-domain",null) !=null ) {
+            cookieString += "; domain=";
+            cookieString += ServiceConfig.getConfig().getString("config.cookie-domain");
+        }
+        if (ServiceConfig.getConfig().getString("config.cookie-path",null) !=null ) {
+            cookieString += "; path=";
+            cookieString += ServiceConfig.getConfig().getString("config.cookie-path");
+        }
         cookieString += "; SameSite="+ServiceConfig.getConfig().getString("config.samesite-cookie","Strict");
         httpServletResponse.setHeader("Set-Cookie",cookieString);
     }
@@ -89,8 +111,12 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
     private void sendRedirectToAuthentication() {
         try {
-            httpServletResponse.sendRedirect(uriInfo.getBaseUri()+"authenticate");
-        } catch (IOException e) {
+            URIBuilder uriBuilder = new URIBuilder(uriInfo.getBaseUri()+"authenticate");
+            if (ServiceConfig.getConfig().getBoolean("config.redirect-after-authentication",false)) {
+                uriBuilder.addParameter("returnUrl",uriInfo.getRequestUri().toString());
+            }
+            httpServletResponse.sendRedirect(uriBuilder.build().toString());
+        } catch (IOException | URISyntaxException e) {
             log.error("Error sending redirect",e);
             throw new InternalServiceException();
         }

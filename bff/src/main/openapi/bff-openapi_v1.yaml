@@ -34,6 +34,12 @@ paths:
       tags:
         - '${project.name}'
       operationId: authenticate
+      parameters:
+        - name: returnUrl
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: 'OK'
