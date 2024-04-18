@@ -35,7 +35,7 @@
     <fileSet>
       <outputDirectory>.</outputDirectory>
       <directoryMode>0755</directoryMode>
-      <fileMode>0744</fileMode>
+      <fileMode>0644</fileMode>
       <includes>
           <include>CHANGELOG.md</include>
           <include>README.md</include>
@@ -45,7 +45,7 @@
       <directory>target/ds-present-${version}</directory>
       <outputDirectory>.</outputDirectory>
       <directoryMode>0755</directoryMode>
-      <fileMode>0744</fileMode>
+      <fileMode>0644</fileMode>
       <includes>
         <include>ds-present.build.properties</include>
       </includes>
