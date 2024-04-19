@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
-- Something
+- Added sample config files and documentation to distribution tar archive. [DRA-441](https://kb-dk.atlassian.net/browse/DRA-441)
+
+### Fixed
+- Correct resolving of maven build time in project properties. [DRA-441](https://kb-dk.atlassian.net/browse/DRA-441)
+
 
 
 ## [1.0.0] - YYYY-MM-DD

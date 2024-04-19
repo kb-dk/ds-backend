@@ -20,7 +20,7 @@
       <source>conf/ocp/bff.xml</source>
       <outputDirectory>conf/</outputDirectory>
       <fileMode>0644</fileMode>
-      <destName>bff.xml.sample</destName>
+      <destName>bff.xml.SAMPLE</destName>
     </file>
   </files>
 
@@ -42,6 +42,15 @@
       <includes>
         <include>README.md</include>
         <include>CHANGELOG.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/bff-${version}</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>bff.build.properties</include>
       </includes>
     </fileSet>
   </fileSets>

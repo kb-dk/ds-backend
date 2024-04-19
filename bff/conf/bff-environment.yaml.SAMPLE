@@ -1,0 +1,28 @@
+#
+# This config contains environment-data: Servers, usernames, passwords etc.
+# If will be automatically merged with the core config when accesses through the application config system.
+#
+# The environment config is normally controlled by operations and is not part of the code repository.
+
+config:
+
+  # Keycloak configuration
+  keycloak:
+    # URL should point to correct keycloak server
+    url: "https://keycloakserver.kb.dk"
+    realm: "ds-poc"
+    client-id: "bff-poc"
+    # Secret used by BFF to communicate with keycloack
+    secret: "someSecretSecret"
+  # Secretsalt used by BFF
+  secretsalt: "aVerySecretSalt"
+
+  # Base URL for all ds services
+  api-base-url: "http://localhost:9061"
+
+  # All configured APIs and their respective baseurls.
+  apis:
+    ds-image:
+      base-url: "https://localhost/"
+    poc-middleware:
+      base-url: "http://localhost:9061"
