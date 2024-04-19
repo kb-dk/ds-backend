@@ -34,3 +34,13 @@ imageservers:
 openapi:
   # This is the URL where this service is deployed appended with /v1
   serverurl: http://localhost:9077/ds-image/v1
+
+#Url to licensemodule
+licensemodule:
+  url: http://localhost:10001/ds-license/v1/
+
+kaltura:
+  url:  https://kmc.kaltura.nordu.net
+  partnerId:  380
+  userId:  xxx@kb.dk
+  adminSecret: very very secret
