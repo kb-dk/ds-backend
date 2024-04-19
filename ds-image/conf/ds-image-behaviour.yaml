@@ -33,18 +33,19 @@ openapi:
 licensemodule:
   url: http://localhost:10001/ds-license/v1/
 
-
 # Default images returned if there is no access to image or image(id) does not exist
 images:
-  no_access: no_access.jpg
-  non_existing: non_existing.jpg
+  noAccess: noAccess.jpg
+  nonExisting: nonExisting.jpg
 
 # Image sizes to determine thumbnail from full size. Licence module determine access to images.
 # 'Thumbnails' and 'Fullsize' are two different presentation types. 
 # If custom IIIF or IIP parameters except for size are defined it will always be fullsize. If only size are defined and smaller than these limit, then it will be thumbnail  
 thumbnail:
-  max_height: 150
-  max_width: 150
+  height:
+    max: 150
+  width:
+    max: 150
   
 kaltura: 
   url:  https://kmc.kaltura.nordu.net

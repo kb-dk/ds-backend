@@ -238,14 +238,14 @@ public class ImageAccessValidation {
     }
 
     private static StreamingOutput getImageForbidden() throws IOException {
-        String img = ServiceConfig.getConfig().getString("images.no_access");
+        String img = ServiceConfig.getConfig().getString("images.noAccess");
         try (InputStream forbidden = Resolver.resolveStream(img)){
             return output -> IOUtils.copy(forbidden, output);
         }
     }
 
     private static StreamingOutput getImageNotExist() throws IOException {
-        String img = ServiceConfig.getConfig().getString("images.non_existing");
+        String img = ServiceConfig.getConfig().getString("images.nonExisting");
         try (InputStream nonExisting = Resolver.resolveStream(img)){
             return output -> IOUtils.copy(nonExisting, output);
         }
