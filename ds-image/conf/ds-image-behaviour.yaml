@@ -10,7 +10,11 @@
 #
 #
 
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
 openapi:
+  # This is the URL where this service is deployed appended with /v1
   serverurl: http://localhost:9077/ds-image/v1
   exampleid: online_master_arkiv_5/non-archival/Manus/JUDSAM/2008/csh0004/csh0004_00528/
 

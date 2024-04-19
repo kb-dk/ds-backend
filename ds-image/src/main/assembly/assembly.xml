@@ -20,7 +20,7 @@
       <source>conf/ocp/ds-image.xml</source>
       <outputDirectory>conf/</outputDirectory>
       <fileMode>0644</fileMode>
-      <destName>ds-image.xml.sample</destName>
+      <destName>ds-image.xml.SAMPLE</destName>
     </file>
   </files>
 
@@ -42,6 +42,15 @@
       <includes>
         <include>README.md</include>
         <include>CHANGELOG.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/ds-image-${version}</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>ds-image.build.properties</include>
       </includes>
     </fileSet>
   </fileSets>
