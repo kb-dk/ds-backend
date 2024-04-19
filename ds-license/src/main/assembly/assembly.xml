@@ -4,6 +4,24 @@
     <format>tar.gz</format>
   </formats>
 
+  <files>
+    <file>
+      <source>conf/ocp/ds-license.xml</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>ds-license.xml.SAMPLE</destName>
+    </file>
+    <file>
+      <source>src/test/resources/ddl/licensemodule_create_db.ddl</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>licensemodule_create_db.ddl</destName>
+    </file>
+    <file>
+      <source>src/test/resources/ddl/licensemodule_default_configuration.ddl</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>licensemodule_default_configuration.ddl</destName>
+    </file>
+  </files>
+
   <dependencySets>
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
@@ -19,7 +37,7 @@
     <fileSet>
       <outputDirectory>conf</outputDirectory>
       <directoryMode>0755</directoryMode>
-      <fileMode>0744</fileMode>
+      <fileMode>0644</fileMode>
       <directory>conf</directory>
       <excludes>
 	      <exclude>ocp/</exclude>
@@ -29,9 +47,19 @@
     <fileSet>
       <outputDirectory>.</outputDirectory>
       <directoryMode>0755</directoryMode>
-      <fileMode>0744</fileMode>
+      <fileMode>0644</fileMode>
       <includes>
           <include>CHANGELOG.md</include>
+          <include>README.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/ds-license-${version}</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>ds-license.build.properties</include>
       </includes>
     </fileSet>
   </fileSets>
