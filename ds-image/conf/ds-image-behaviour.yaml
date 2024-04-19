@@ -10,21 +10,6 @@
 #
 #
 
-# Sample configuration values below. Remove from concrete application
-# TODO: remove samples and tests done in the template project for these samples
-limits:
-  min: 10
-  max: 100
-mylist:
-  - Hello
-  - World
-  - from
-  - java-template
-# The system properties are available. See https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html
-userhome: "Home sweet ${user.home}"
-# Fallbacks for system properties can be defined with :-
-fallback: ${nonexisting.property:-87}
-
 openapi:
   serverurl: http://localhost:9077/ds-image/v1
   exampleid: online_master_arkiv_5/non-archival/Manus/JUDSAM/2008/csh0004/csh0004_00528/
