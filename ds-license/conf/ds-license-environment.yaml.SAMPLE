@@ -12,13 +12,6 @@ solr:
   # It is possible to specify multiple servers: They will all be queried
   servers:
     - http://localhost:10007/solr/ds
-  # The field used to verify access based on the ID of a record/document
-  # Typically used to determine whether a user is allowed to see search or see metadata for a record
-  idField: 'id'
-  # The field used to verify access based on the resource ID of a TV-stream, bitmap or similar
-  # Typically used for callback from an image server or similar where the record ID is not known
-  resourceField: 'resource_id'
-
 
 # Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
 # These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
