@@ -9,7 +9,7 @@ licensemodule:
 
 records:
   # Default is true, so set to false here to check via debugging
-  errors:
+  errorHandling:
     # If true, export is stopped if a transformation fails for any record
     # If false, failed records are logged and skipped
     # Default: true
