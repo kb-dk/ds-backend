@@ -68,7 +68,6 @@ public class ServiceConfig extends AutoYAML {
     /**
      * Direct access to the backing YAML-class is used for configurations with more flexible content
      * and/or if the service developer prefers key-based property access.
-     * @see #getHelloLines() for alternative.
      * @return the backing YAML-handler for the configuration.
      */
     public static YAML getConfig() {
@@ -78,14 +77,4 @@ public class ServiceConfig extends AutoYAML {
         }
         return getInstance().getYAML();
     }
-
-    /**
-     * Demonstration of a first-class property, meaning that an explicit method has been provided.
-     * @see #getConfig() for alternative.
-     * @return the "Hello World" lines defined in the config file.
-     */
-    public static List<String> getHelloLines() {
-        return getConfig().getList("helloLines");
-    }
-
 }
