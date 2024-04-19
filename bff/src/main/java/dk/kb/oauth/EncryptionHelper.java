@@ -25,7 +25,7 @@ public class EncryptionHelper {
      */
     public static String encryptString(String plain) {
         try {
-            SecretKey key = generateKey(ServiceConfig.getConfig().getString("config.secretsalt"));
+            SecretKey key = generateKey(ServiceConfig.getConfig().getString("secretsalt"));
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] encryptedBytes = cipher.doFinal(plain.getBytes(StandardCharsets.UTF_8));
@@ -45,7 +45,7 @@ public class EncryptionHelper {
      */
     public static String decryptString(String encryptedString){
         try {
-            SecretKey key = generateKey(ServiceConfig.getConfig().getString("config.secretsalt"));
+            SecretKey key = generateKey(ServiceConfig.getConfig().getString("secretsalt"));
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] encryptedBytes = Base64.getDecoder().decode(encryptedString);

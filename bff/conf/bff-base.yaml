@@ -12,18 +12,16 @@
 
 # Sample configuration values below. Remove from concrete application
 
-config:
+# Keycloak configuration
+keycloak:
+  url: "https://keycloak-devel-01.kb.dk"
+  realm: "ds-poc"
+  client-id: "bff-poc"
+  secret: ""
 
-  # Keycloak configuration
-  keycloak:
-    url: "https://keycloak-devel-01.kb.dk"
-    realm: "ds-poc"
-    client-id: "bff-poc"
-    secret: ""
+# where are the api's installed
+api-base-url: "http://localhost:9061"
 
- # where are the api's installed
-  api-base-url: "http://localhost:9061"
-
-  autoupdate:
-    enabled: ${env:AUTOUPDATE_ENABLED:-${autoupdate.enabled:-false}}
-    intervalms: ${env:AUTOUPDATE_INTERVALMS:-${autoupdate.intervalms:-60000}}
+autoupdate:
+  enabled: ${env:AUTOUPDATE_ENABLED:-${autoupdate.enabled:-false}}
+  intervalms: ${env:AUTOUPDATE_INTERVALMS:-${autoupdate.intervalms:-60000}}

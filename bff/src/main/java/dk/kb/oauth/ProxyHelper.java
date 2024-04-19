@@ -53,7 +53,7 @@ public class ProxyHelper {
 
         YAML apiConfig;
         try {
-            apiConfig = ServiceConfig.getConfig().getSubMap("config.apis." + api);
+            apiConfig = ServiceConfig.getConfig().getSubMap("apis." + api);
         } catch (NotFoundException e) {
             throw new ServiceException(Response.Status.NOT_FOUND);
         }

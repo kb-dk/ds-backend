@@ -85,7 +85,7 @@ public class ServiceConfig extends AutoYAML {
      * @return the "Hello World" lines defined in the config file.
      */
     public static List<String> getHelloLines() {
-        return getConfig().getList("config.helloLines");
+        return getConfig().getList("helloLines");
     }
 
 }

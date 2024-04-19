@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
-- Something
+### Changed
+- Change configuration style to camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
 
 
 ## [1.0.0] - YYYY-MM-DD
