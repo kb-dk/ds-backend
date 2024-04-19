@@ -371,7 +371,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
         } catch (Exception e) {
             log.warn("Unable to get response from ds-license at URL '" +
-                    ServiceConfig.getConfig().getString("licenseModule.url") + "'", e);
+                    ServiceConfig.getConfig().getString("licensemodule.url") + "'", e);
             throw new InternalServiceException("Unable to contact license server");
         }
 
@@ -425,7 +425,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         return licenseClient;
       }
         
-      String dsLicenseUrl = ServiceConfig.getConfig().getString("licenseModule.url");
+      String dsLicenseUrl = ServiceConfig.getConfig().getString("licensemodule.url");
       licenseClient = new DsLicenseClient(dsLicenseUrl);               
       return licenseClient;
     }

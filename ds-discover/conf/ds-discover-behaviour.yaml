@@ -81,6 +81,6 @@ solr:
   suggestMinimumLength: 2
 
 #License module is called to generate a filter query that is used when calling Solr
-licenseModule:
+licensemodule:
   url: http://localhost:9076/ds-license/v1
 
