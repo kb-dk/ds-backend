@@ -91,7 +91,8 @@ storages:
             root: 'src/test/resources/xml/corpus' # Expected
             # Whether or not remove ID-prefix (the part from the beginning to the first `:` (inclusive) of the ID)
             # from the ID when perforaing the lookup. Optional, default is true.
-            stripprefix: true
+            prefix:
+              strip: true
         - folder:
             root: '../src/test/resources/xml/corpus' # Maybe PWD is target/
         - folder:

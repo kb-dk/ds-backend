@@ -34,7 +34,7 @@ public class FileStorageFactory implements StorageFactory {
     public static final String EXTENSION_KEY = "extension";
     public static final String EXTENSION_DEFAULT = ""; // All extensions
 
-    public static final String STRIP_PREFIX_KEY = "stripprefix";
+    public static final String STRIP_PREFIX_KEY = "prefix.strip";
     public static final boolean STRIP_PREFIX_DEFAULT = true;
 
     public static final String WHITELIST_KEY = "whitelist";
