@@ -73,8 +73,9 @@ storages:
       backends:
         # The ds-storage backend connects to a running https://github.com/kb-dk/ds-storage/ instance
         - ds-storage:
-            # The URL for the storage service. Mandatory
-            dbserverurl: 'http://localhost:9072/ds-storage/v1/'
+            # The URL for the DS storage service, complete with version. Mandatory
+            # Sample: http://localhost:9072/ds-storage/v1/
+            url: 'http://localhost:9072/ds-storage/v1/'
 
 # Settings for handling export of multiple records
 records:

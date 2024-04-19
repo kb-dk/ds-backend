@@ -71,8 +71,9 @@ storages:
       backends:
         # The ds-storage backend connects to a running https://github.com/kb-dk/ds-storage/ instance
         - ds-storage:
-            # The name of the machine running the service. Mandatory
-            dbserverurl: 'http://localhost:9072/ds-storage/v1/'
+            # The URL for the DS storage service, complete with version. Mandatory
+            # Sample: http://localhost:9072/ds-storage/v1/
+            url: 'http://localhost:9072/ds-storage/v1/'
 
   - test:
       # If there is more that one backend implementation, the property 'order' controls how they are queried:

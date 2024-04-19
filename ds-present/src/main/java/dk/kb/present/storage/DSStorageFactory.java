@@ -25,7 +25,7 @@ public class DSStorageFactory implements StorageFactory {
     private static final Logger log = LoggerFactory.getLogger(DSStorageFactory.class);
 
     private static final String RECORD_ORIGIN_KEY = "origin";
-    private static final String DBSERVERURL_KEY = "dbserverurl";
+    private static final String DBSERVERURL_KEY = "url";
     public static final String BATCH_COUNT_KEY = "batch.count";
     public static final int BATCH_COUNT_DEFAULT = 100;
 

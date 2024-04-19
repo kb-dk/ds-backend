@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139)
 - Added sample config files and documentation to distribution tar archive.
 
+### Changed
+- Switch configuration style to camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
+
 ### Removed
 - Removed spellcheck.maxCollationTries from spellcheck component. It crashed Solr on core reload (after configuration changes)
 
