@@ -3,7 +3,9 @@ package dk.kb.image.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
 import dk.kb.license.invoker.v1.ApiException;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +76,7 @@ public class ImageAccessValidation {
             log.debug("Fullsize for IIP request since size parameter was not defined. Identifier={}", FIF);            
             return false;
         }
-        else if ( (WID != null && WID > ServiceConfig.getConfig().getInteger("thumbnail.max_width")) || (HEI != null && HEI > ServiceConfig.getConfig().getInteger("thumbnail.max_height")) ) {
+        else if ( (WID != null && WID > ServiceConfig.getConfig().getInteger("thumbnail.max_width")) || (HEI != null && HEI > ServiceConfig.getConfig().getInteger("thumbnail.height.max")) ) {
             log.debug("Fullsize for IIP request since size parameter was over thumbnail size. Identifier={}, width={}, height={}", FIF, WID, HEI);
             return false;
         }
@@ -121,7 +124,7 @@ public class ImageAccessValidation {
              return false;
          }
                   
-        if ( width > ServiceConfig.getConfig().getInteger("thumbnail.max_width") || height > ServiceConfig.getConfig().getInteger("thumbnail.max_height")){         
+        if ( width > ServiceConfig.getConfig().getInteger("thumbnail.max_width") || height > ServiceConfig.getConfig().getInteger("thumbnail.height.max")){
              log.debug("Fullsize for IIIF request since size parameter was over thumbnail size. Identifier={}, width={}, height={}",identifier, width,height);
              return false;
          }
@@ -131,45 +134,46 @@ public class ImageAccessValidation {
 
     
         
-    public static ACCESS_TYPE accessTypeForImage(String resource_id, boolean thumbnail) throws ApiException {
+    @SuppressWarnings("DataFlowIssue") // licenseClient.checkAccessForResourceIds always sets all 3 lists
+    public static ACCESS_TYPE accessTypeForImage(String resourceID, boolean thumbnail) {
 
         // Add filter query from license module.
         DsLicenseApi licenseClient = getDsLicenseApiClient();
-        CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(resource_id, thumbnail);
-        CheckAccessForIdsOutputDto checkAccessForIds;
+        CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(resourceID, thumbnail);
+        CheckAccessForIdsOutputDto accessResponse;
         try {
-           checkAccessForIds = licenseClient.checkAccessForResourceIds(licenseQueryDto); // Use
+           accessResponse = licenseClient.checkAccessForResourceIds(licenseQueryDto); // Use
         }
         catch(Exception e) {
-            log.error("Error calling licensemodule with resource ID '" + resource_id + "'",e);
-            throw new InternalServiceException("Error calling licensemodule");            
+            String message = String.format(Locale.ROOT,
+                    "Error calling licensemodule with resource ID '%s'", resourceID);
+            log.error(message, e);
+            throw new InternalServiceException(message);
         }
         
-        List<String> access_ids = checkAccessForIds.getAccessIds();
-        List<String> non_access_ids = checkAccessForIds.getNonAccessIds();
-        List<String> non_existing_ids = checkAccessForIds.getNonExistingIds();
+        List<String> accessIDs = accessResponse.getAccessIds();
+        List<String> nonAccessIDs = accessResponse.getNonAccessIds();
+        List<String> nonExistingIDs = accessResponse.getNonExistingIds();
 
         // Check in other that happens most frequent.
-        if (access_ids.contains(resource_id)) {
+        if (accessIDs.contains(resourceID)) {
             return ACCESS_TYPE.ACCESS;
-        } else if (non_access_ids.contains(resource_id)) {
-            log.info("no access to resource_id:" + resource_id);
+        } else if (nonAccessIDs.contains(resourceID)) {
+            log.debug("No access to resource ID '{}'", resourceID);
             return ACCESS_TYPE.NO_ACCESS;
-        } else if (non_existing_ids.contains(resource_id)) {
-            log.info("none existing image resource_id:" + resource_id);
+        } else if (nonExistingIDs.contains(resourceID)) {
+            log.debug("Non-existing image resource ID '{}'", resourceID);
             return ACCESS_TYPE.ID_NON_EXISTING;
         } else { // Sanity check, should not happen
-            log.error("Could not match resource_id to access,no_access,non_existing: " + resource_id);
-            throw new InternalServiceException(
-                    "Could not match resource_id to access,no_access,non_existing: " + resource_id);
+            String message = String.format(Locale.ROOT, "Could not match resource ID '%s' to any access type %s",
+                    resourceID, Arrays.toString(ACCESS_TYPE.values()));
+            log.warn(message);
+            throw new InternalServiceException(message);
         }
-
     }
 
     private static CheckAccessForIdsInputDto getCheckAccessForIdsInputDto(String resource_id, boolean thumbnail) {
-                
         CheckAccessForIdsInputDto idsDto = new CheckAccessForIdsInputDto();
-
 
         String presentationType  = thumbnail ?   "Thumbnails" :  "Fullsize";                             
         idsDto.setPresentationType(presentationType);                  
@@ -193,20 +197,20 @@ public class ImageAccessValidation {
     }
 
     /**
-     * Will return a default image with property HTTP status code if there is no access to the image.
+     * Return a default image with property HTTP status code if there is no access to the image.
      * If there is access to the image, return null.
-     * 
+     *
+     * @param resourceID an identifier for an image.
      * @param httpServletResponse used for setting MIME type.
-     * @param identifier an identifier for an image.
-     * @return a streamed image or null
-     * @throws Exception in case of exception from license module client
+     * @param thumbnail if the request has been determined to be a thumbnail request.
+     * @return a streamed image or null.
+     * @throws IOException in case of exception from license module client
      */
+    public static StreamingOutput handleNoAccessOrNoImage(
+            String resourceID, HttpServletResponse httpServletResponse, boolean  thumbnail) throws IOException {
+        ACCESS_TYPE type = accessTypeForImage( resourceID, thumbnail);
 
-    
-    public static StreamingOutput handleNoAccessOrNoImage(String resource_id , HttpServletResponse httpServletResponse, boolean  thumbnail) throws ApiException, IOException {
-        ACCESS_TYPE type = accessTypeForImage( resource_id, thumbnail);
-
-        log.debug("Access type:" + type + " for resource_id:" +  resource_id);
+        log.debug("Access type {} for resource ID '{}'", type, resourceID);
 
         switch (type) {
         case NO_ACCESS:                        
@@ -220,42 +224,30 @@ public class ImageAccessValidation {
         case ACCESS:           
             return null; //this is the contract if no image is returned                
         default :
-            throw new UnsupportedOperationException("Unknown Access type:"+type);
+            throw new UnsupportedOperationException("Unknown Access type '"+type + "'");
         }            
 
     }
 
     private static DsLicenseApi getDsLicenseApiClient() {
-        if (licenseClient != null) {
-            return licenseClient;
+        if (licenseClient == null) {
+            licenseClient = new DsLicenseClient(ServiceConfig.getConfig());
         }
 
-        String dsLicenseUrl = ServiceConfig.getConfig().getString("licensemodule.url");
-        log.info("license module url:"+dsLicenseUrl);
-        licenseClient = new DsLicenseClient(dsLicenseUrl);
         return licenseClient;
     }
 
     private static StreamingOutput getImageForbidden() throws IOException {
-        String img=ServiceConfig.getConfig().getString("images.no_access");
-        try (InputStream nonExisting= Resolver.resolveStream(img)){                                       
-            StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
-            return result; 
+        String img = ServiceConfig.getConfig().getString("images.no_access");
+        try (InputStream forbidden = Resolver.resolveStream(img)){
+            return output -> IOUtils.copy(forbidden, output);
         }
     }
-
 
     private static StreamingOutput getImageNotExist() throws IOException {
-        String img=ServiceConfig.getConfig().getString("images.non_existing");
-        try (InputStream nonExisting= Resolver.resolveStream(img)){                        
-            StreamingOutput result= output -> output.write(nonExisting.readAllBytes()); 
-            return result;                
+        String img = ServiceConfig.getConfig().getString("images.non_existing");
+        try (InputStream nonExisting = Resolver.resolveStream(img)){
+            return output -> IOUtils.copy(nonExisting, output);
         }
     }
-
-    
-    
-
-    
-    
 }
