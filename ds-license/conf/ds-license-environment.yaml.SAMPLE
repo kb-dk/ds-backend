@@ -4,13 +4,21 @@
 #
 # The environment config is normally controlled by operations and is not part of the code repository.
 #
-# Backing Solr servers must be "true" Solr servers to avoid endless looping
-# The servers are represented as a list as there can be more than one
-# This needs to be the same solr servers as used in ds-present, ds-discover etc. 
-license_solr_servers:
-  - http://localhost:10007/solr/ds
-license_solr_filter_field: id
-license_solr_resource_filter_field: resource_id
+
+# Solr is used for access filtering by combining filter queries from ds-license with a search for
+# a given record- or resource-ID.
+solr:
+  # Backing Solr servers must be "true" Solr servers (as opposed to ds-discover services) to avoid endless looping
+  # It is possible to specify multiple servers: They will all be queried
+  servers:
+    - http://localhost:10007/solr/ds
+  # The field used to verify access based on the ID of a record/document
+  # Typically used to determine whether a user is allowed to see search or see metadata for a record
+  idField: 'id'
+  # The field used to verify access based on the resource ID of a TV-stream, bitmap or similar
+  # Typically used for callback from an image server or similar where the record ID is not known
+  resourceField: 'resource_id'
+
 
 # Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
 # These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
