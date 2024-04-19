@@ -25,7 +25,7 @@ public class OauthHelper {
             try {
                 keyCloakUrl = ServiceConfig.getConfig().getString("keycloak.url");
                 realm = ServiceConfig.getConfig().getString("keycloak.realm");
-                clientId = ServiceConfig.getConfig().getString("keycloak.client-id");
+                clientId = ServiceConfig.getConfig().getString("keycloak.clientID");
                 clientSecret = ServiceConfig.getConfig().getString("keycloak.secret");
 
                 Configuration authzClientConfig = new Configuration(keyCloakUrl, realm, clientId, Map.of("secret", clientSecret), null);

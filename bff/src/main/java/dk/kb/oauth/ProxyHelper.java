@@ -58,7 +58,7 @@ public class ProxyHelper {
             throw new ServiceException(Response.Status.NOT_FOUND);
         }
 
-        String url = apiConfig.get("base-url")+"/"+path;
+        String url = apiConfig.get("baseURL")+"/"+path;
 
         if (query != null) {
             url += "?"+query;
