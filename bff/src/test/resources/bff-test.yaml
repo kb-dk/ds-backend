@@ -1,8 +1,7 @@
-config:
-  keycloak:
-    url: "https://keycloak-devel-01.kb.dk"
-    realm: "ds-poc"
-    clientID: "bff-poc"
-    secret: ""
-  apiBaseUrl: "http://localhost:9061"
-  secretSalt: "thisisaverysecretsalt"
+keycloak:
+  url: "https://keycloak-devel-01.kb.dk"
+  realm: "ds-poc"
+  clientID: "bff-poc"
+  secret: ""
+apiBaseUrl: "http://localhost:9061"
+secretSalt: "thisisaverysecretsalt"
