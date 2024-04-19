@@ -104,7 +104,7 @@ origins:
       prefix: 'local.mods' # The prefix to match on incoming IDs
       origin: 'ds.test'
       description: 'Local records, mostly biographical'
-      recordrequesttype: 'DELIVERABLEUNIT'
+      recordRequestType: 'DELIVERABLEUNIT'
 
       # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
       views:
@@ -146,19 +146,19 @@ origins:
           prefix: 'local.radiotv' # The prefix to match on incoming IDs
           origin: 'ds.radiotv'
           description: 'Local records'
-          recordrequesttype: 'DELIVERABLEUNIT'
+          recordRequestType: 'DELIVERABLEUNIT'
           # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
           views: *PRESERVICA_VIEWS
   - "ds.radio": # ds-present internal
           prefix: 'local.radio' # The prefix to match on incoming IDs
           origin: 'ds.radio'
           description: 'Local records'
-          recordrequesttype: 'DELIVERABLEUNIT'
+          recordRequestType: 'DELIVERABLEUNIT'
           views: *PRESERVICA_VIEWS
   - "ds.tv": # ds-present internal
           prefix: 'local.tv' # The prefix to match on incoming IDs
           origin: 'ds.tv'
           description: 'Local records'
-          recordrequesttype: 'DELIVERABLEUNIT'
+          recordRequestType: 'DELIVERABLEUNIT'
           views: *PRESERVICA_VIEWS
 

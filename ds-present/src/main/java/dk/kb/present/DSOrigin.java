@@ -57,7 +57,7 @@ public class DSOrigin {
     private static final String STORAGE_KEY = "storage";
     private static final String ORIGIN_KEY = "origin";
     private static final String VIEWS_KEY = "views";
-    private static final String RECORDREQUESTTYPE_KEY = "recordrequesttype";
+    private static final String RECORDREQUESTTYPE_KEY = "recordRequestType";
 
     // General properties
     public static final String STOP_ON_ERROR_KEY = "records.stoponerrors";
