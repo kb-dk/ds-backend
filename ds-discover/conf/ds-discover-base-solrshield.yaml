@@ -15,13 +15,13 @@ solr:
   shield:
 
     # Whether SolrShield is enabled. If false, SolrShield evaluation is still performed but the response is only logged.
-    # It is recommended to control SolrShield 'enabled' and 'defautMaxWeight' in the general
+    # It is recommended to control SolrShield 'enabled' and 'defaultMaxWeight' in the general
     # configuration for the application
     enabled: false
 
     # The default max weight should be kept conservative and perhaps even disabled by setting it to -1.
     # Ideally the max weight is taken from general application properties or derived per user group
-    defautMaxWeight: 5000
+    defaultMaxWeight: 5000
 
     # Simply activating a call comes at a cost
     weightConstant: 100

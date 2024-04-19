@@ -47,7 +47,7 @@ public class SolrShield {
     /**
      * If no explicit maxWeight is given when testing, this weight is used.
      */
-    public static final String MAX_WEIGHT_DEFAULT_KEY = "defautMaxWeight";
+    public static final String MAX_WEIGHT_DEFAULT_KEY = "defaultMaxWeight";
 
     private static YAML conf = null;
     private static boolean enabled = true;

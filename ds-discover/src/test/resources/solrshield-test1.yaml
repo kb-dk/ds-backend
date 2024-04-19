@@ -16,7 +16,7 @@ solr:
 
     # The default max weight should be kept conservative and perhaps even disabled by setting it to -1.
     # Ideally the max weight is taken from general application properties or derived per user group
-    defautMaxWeight: 1000
+    defaultMaxWeight: 1000
 
     # Simply activating a call comes at a cost
     weightConstant: 100
