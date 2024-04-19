@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added 'integration' tag to some unittests.
 - Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139).
 
- ### Fixed 
-
+### Changed
+- Switch to nested properties camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
 
 
 ## [1.4.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.4.0) 2024-01-11
