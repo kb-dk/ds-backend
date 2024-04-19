@@ -60,7 +60,7 @@ public class DSOrigin {
     private static final String RECORDREQUESTTYPE_KEY = "recordRequestType";
 
     // General properties
-    public static final String STOP_ON_ERROR_KEY = "records.stoponerrors";
+    public static final String STOP_ON_ERROR_KEY = "records.errors.stop";
 
     private static final int LICENSE_BATCH_SIZE = 500;
 

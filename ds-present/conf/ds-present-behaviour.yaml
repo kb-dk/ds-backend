@@ -100,11 +100,11 @@ storages:
 
 # Settings for handling export of multiple records
 records:
-  # If true, export is stopped if a transformation fails for any record
-  # If false, failed records are logged and skipped
-  # Default: true
-  stoponerrors: true
-
+  errors:
+    # If true, export is stopped if a transformation fails for any record
+    # If false, failed records are logged and skipped
+    # Default: true
+    stop: true
 
 # Settings for handling at the record level
 record:
