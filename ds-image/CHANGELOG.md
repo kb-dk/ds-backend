@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - bump sbforge-parent to v25
+- Change configuration style to camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
 
 ### Fixed
 - Switch from Jersey to Handy URI Templates to handle parameters containing '{' and for cleaner code [DRA-338](https://kb-dk.atlassian.net/browse/DRA-338)

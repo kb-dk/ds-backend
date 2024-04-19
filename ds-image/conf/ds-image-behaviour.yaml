@@ -10,20 +10,6 @@
 #
 #
 
-# Sample configuration values below. Remove from concrete application
-# TODO: remove samples and tests done in the template project for these samples
-limits:
-  min: 10
-  max: 100
-mylist:
-  - Hello
-  - World
-  - from
-  - java-template
-# The system properties are available. See https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html
-userhome: "Home sweet ${user.home}"
-# Fallbacks for system properties can be defined with :-
-fallback: ${nonexisting.property:-87}
 
 # Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
 # These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
@@ -36,18 +22,19 @@ openapi:
 licensemodule:
   url: http://localhost:10001/ds-license/v1/
 
-
 # Default images returned if there is no access to image or image(id) does not exist
 images:
-  no_access: no_access.jpg
-  non_existing: non_existing.jpg
+  noAccess: noAccess.jpg
+  nonExisting: nonExisting.jpg
 
 # Image sizes to determine thumbnail from full size. Licence module determine access to images.
 # 'Thumbnails' and 'Fullsize' are two different presentation types. 
 # If custom IIIF or IIP parameters except for size are defined it will always be fullsize. If only size are defined and smaller than these limit, then it will be thumbnail  
 thumbnail:
-  max_height: 150
-  max_width: 150
+  height:
+    max: 150
+  width:
+    max: 150
   
 kaltura: 
   url:  https://kmc.kaltura.nordu.net
