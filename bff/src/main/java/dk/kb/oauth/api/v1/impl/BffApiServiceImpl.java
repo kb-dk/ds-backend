@@ -9,6 +9,7 @@ import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 
+import dk.kb.util.yaml.YAML;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.keycloak.TokenVerifier;
@@ -89,22 +90,24 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
 
     private void addCookieToResponse(String accessTokenString) {
+        final YAML cookieConf = ServiceConfig.getConfig().getSubMap("cookies");
         String cookieString = "Authorization="+EncryptionHelper.encryptString(accessTokenString);
-        if (ServiceConfig.getConfig().getBoolean("httponly-cookie",true)) {
+
+        if (cookieConf.getBoolean("httponly",true)) {
             cookieString += "; HttpOnly";
         }
-        if (ServiceConfig.getConfig().getBoolean("secure-cookie",true)) {
+        if (cookieConf.getBoolean("secure",true)) {
             cookieString += "; secure";
         }
-        if (ServiceConfig.getConfig().getString("cookie-domain",null) !=null ) {
+        if (cookieConf.containsKey("domain")) {
             cookieString += "; domain=";
-            cookieString += ServiceConfig.getConfig().getString("cookie-domain");
+            cookieString += cookieConf.getString("domain");
         }
-        if (ServiceConfig.getConfig().getString("cookie-path",null) !=null ) {
+        if (cookieConf.containsKey("path")) {
             cookieString += "; path=";
-            cookieString += ServiceConfig.getConfig().getString("cookie-path");
+            cookieString += cookieConf.getString("path");
         }
-        cookieString += "; SameSite="+ServiceConfig.getConfig().getString("samesite-cookie","Strict");
+        cookieString += "; SameSite="+cookieConf.getString("samesite","Strict");
         httpServletResponse.setHeader("Set-Cookie",cookieString);
     }
 
@@ -112,7 +115,7 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
     private void sendRedirectToAuthentication() {
         try {
             URIBuilder uriBuilder = new URIBuilder(uriInfo.getBaseUri()+"authenticate");
-            if (ServiceConfig.getConfig().getBoolean("redirect-after-authentication",false)) {
+            if (ServiceConfig.getConfig().getBoolean("redirectAfterAuthentication",false)) {
                 uriBuilder.addParameter("returnUrl",uriInfo.getRequestUri().toString());
             }
             httpServletResponse.sendRedirect(uriBuilder.build().toString());
