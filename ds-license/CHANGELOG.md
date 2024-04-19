@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  ### Fixed 
 - Correct resolving of maven build time in project properties. [DRA-415](https://kb-dk.atlassian.net/browse/DRA-415)
+- Switch to nested properties camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
 
 
 ## [1.4.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.4.0) 2024-01-11

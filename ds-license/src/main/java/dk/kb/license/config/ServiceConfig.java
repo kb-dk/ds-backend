@@ -39,9 +39,9 @@ public class ServiceConfig {
         serviceConfig = YAML.resolveLayeredConfigs(configFile);
         serviceConfig.setExtrapolate(true);
     
-        List<String> solr_servers = serviceConfig.getList("license_solr_servers");
-        SOLR_FILTER_ID_FIELD = serviceConfig.getString("license_solr_filter_field");
-        SOLR_FILTER_RESOURCE_ID_FIELD = serviceConfig.getString("license_solr_resource_filter_field");
+        List<String> solr_servers = serviceConfig.getList("solr.servers");
+        SOLR_FILTER_ID_FIELD = serviceConfig.getString("solr.idField");
+        SOLR_FILTER_RESOURCE_ID_FIELD = serviceConfig.getString("solr.resourceField");
         
         SOLR_SERVERS = solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
 
