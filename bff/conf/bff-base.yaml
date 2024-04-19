@@ -12,18 +12,28 @@
 
 # Sample configuration values below. Remove from concrete application
 
-config:
+# Keycloak configuration
+keycloak:
+  url: "https://keycloak-devel-01.kb.dk"
+  realm: "ds-poc"
+  clientID: "bff-poc"
+  secret: ""
 
-  # Keycloak configuration
-  keycloak:
-    url: "https://keycloak-devel-01.kb.dk"
-    realm: "ds-poc"
-    client-id: "bff-poc"
-    secret: ""
+#secretSalt: "must_be_overridden_so_no_default"
 
- # where are the api's installed
-  api-base-url: "http://localhost:9061"
+# where are the api's installed
+# TODO: Remove this as it does not seem to be used anymore
+apiBaseUrl: "http://localhost:9061"
 
-  autoupdate:
-    enabled: ${env:AUTOUPDATE_ENABLED:-${autoupdate.enabled:-false}}
-    intervalms: ${env:AUTOUPDATE_INTERVALMS:-${autoupdate.intervalms:-60000}}
+# Available APIs
+# baseURLs will be combined with the service ID: 'ds-image' + 'https://localhost/' = 'https://localhost/ds-image'
+apis:
+#  ds-image:
+#    baseURL: "https://localhost/"
+#  poc-middleware:
+#    baseURL: "http://localhost:9061"
+
+
+autoupdate:
+  enabled: ${env:AUTOUPDATE_ENABLED:-${autoupdate.enabled:-false}}
+  intervalms: ${env:AUTOUPDATE_INTERVALMS:-${autoupdate.intervalms:-60000}}

@@ -53,12 +53,12 @@ public class ProxyHelper {
 
         YAML apiConfig;
         try {
-            apiConfig = ServiceConfig.getConfig().getSubMap("config.apis." + api);
+            apiConfig = ServiceConfig.getConfig().getSubMap("apis." + api);
         } catch (NotFoundException e) {
             throw new ServiceException(Response.Status.NOT_FOUND);
         }
 
-        String url = apiConfig.get("base-url")+"/"+path;
+        String url = apiConfig.get("baseURL")+"/"+path;
 
         if (query != null) {
             url += "?"+query;
