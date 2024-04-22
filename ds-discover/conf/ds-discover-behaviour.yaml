@@ -12,6 +12,8 @@
 # These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
 openapi:
   serverurl: http://localhost:9074/ds-discover/v1
+  # SuggestComponent used by the backing solr. This sets the default and example suggester in the OpenAPI interface.
+  suggester: radiotv_title_suggest
 
 solr:
 
@@ -79,6 +81,7 @@ solr:
 
   #Minimum number of characters required for suggest
   suggestMinimumLength: 2
+
 
 #License module is called to generate a filter query that is used when calling Solr
 licensemodule:

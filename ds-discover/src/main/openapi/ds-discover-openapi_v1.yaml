@@ -814,8 +814,8 @@ paths:
           required: true
           schema:
             type: string
-            default: 'dr_title_suggest'
-            example: 'dr_title_suggest'
+            default: '${config:openapi.suggester}'
+            example: '${config:openapi.suggester}'
 
         - name: suggest.q
           in: query
