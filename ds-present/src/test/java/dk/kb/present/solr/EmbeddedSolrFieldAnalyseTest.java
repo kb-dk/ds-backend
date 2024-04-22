@@ -189,7 +189,7 @@ public class EmbeddedSolrFieldAnalyseTest {
         addDocWithWrongBroadcaster();
 
         SuggesterResponse response = getSuggestResult("tv");
-        int amountOfSuggestedTerms = response.getSuggestedTerms().get("dr_title_suggest").size();
+        int amountOfSuggestedTerms = response.getSuggestedTerms().get("radiotv_title_suggest").size();
         assertEquals(1, amountOfSuggestedTerms);
     }
 
@@ -197,7 +197,7 @@ public class EmbeddedSolrFieldAnalyseTest {
     public void testNegativeSuggest() throws SolrServerException, IOException{
         addDocForNegativeSuggestTest();
         SuggesterResponse response = getSuggestResult("tv");
-        int amountOfSuggestedTerms = response.getSuggestedTerms().get("dr_title_suggest").size();
+        int amountOfSuggestedTerms = response.getSuggestedTerms().get("radiotv_title_suggest").size();
         assertEquals(0, amountOfSuggestedTerms);
     }
     

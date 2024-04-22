@@ -27,8 +27,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.0: Spellcheck + Suggest added
 1.6.1: Synonym added to general_text fieldtype that is used for most text fields.
 1.6.2: Add fieldType for suggest component
+1.6.3: Rename suggestComponent to radiotv_title_suggest
   -->
-  <field name="_ds_1.6.2_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.3_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->

@@ -848,13 +848,13 @@
   Important: Suggest index will be build on start-up now. Change for large index
   
   Example calls:
-  http://devel-server:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=tv
-  http://devel-server:10007/solr/ds/suggest?suggest.dictionary=dr_title_suggest&suggest.q=Kendtes  
+  http://devel-server:10007/solr/ds/suggest?suggest.dictionary=radiotv_title_suggest&suggest.q=tv
+  http://devel-server:10007/solr/ds/suggest?suggest.dictionary=radiotv_title_suggest&suggest.q=Kendtes
 -->
 
     <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy">
       <lst name="defaults">
-        <str name="suggest.dictionary">dr_title_suggest</str>
+        <str name="suggest.dictionary">radiotv_title_suggest</str>
         <str name="suggest">true</str>
         <str name="suggest.count">10</str>
         <str name="suggest.cfq">DR</str> <!-- Add default value for contextField. This means that all suggestions are filtered by broadcaster:DR as normal queries are.-->
@@ -866,7 +866,7 @@
 
   <searchComponent name="suggest" class="solr.SuggestComponent">
     <lst name="suggester">
-      <str name="name">dr_title_suggest</str>
+      <str name="name">radiotv_title_suggest</str>
       <str name="lookupImpl">BlendedInfixLookupFactory</str> <!-- Using one of the two implementations that support Context fields  -->
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">title</str>
