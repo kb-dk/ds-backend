@@ -1,0 +1,46 @@
+#
+# This config contains environment-data: Servers, usernames, passwords etc.
+# If will be automatically merged with the core config when accesses through the application config system.
+#
+# The environment config is normally controlled by operations and is not part of the code repository.
+
+# Keycloak configuration
+keycloak:
+  # URL should point to correct keycloak server
+  url: "https://keycloak-devel-01.kb.dk"
+  realm: "ds-poc"
+  clientID: "bff-poc"
+  # Secret used by BFF to communicate with keycloack
+  secret: ""
+
+# Default: false
+redirectAfterAuthentication: false
+
+# Cookie settings
+cookies:
+  # Boolean, default: true
+  secure: true
+  # Boolean, default: true
+  httponly: true
+  # Valid values: none, lax, strict
+  # Enum, default: Strict
+  # See https://owasp.org/www-community/SameSite
+  samesite: 'Strict'
+  # String, optional
+#  domain: example.com
+  # String, optional
+#  path: '/'
+
+
+# Secretsalt used by BFF
+secretSalt: "aVerySecretSalt"
+
+# Base URL for all ds services
+apiBaseUrl: "http://localhost:9061"
+
+  # All configured APIs and their respective baseurls.
+apis:
+  ds-image:
+    baseURL: "https://localhost/"
+  poc-middleware:
+    baseURL: "http://localhost:9061"
