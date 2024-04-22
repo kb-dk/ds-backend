@@ -19,6 +19,25 @@ keycloak:
   clientID: "bff-poc"
   secret: ""
 
+# Default: false
+redirectAfterAuthentication: false
+
+# Cookie settings
+cookies:
+  # Boolean, default: true
+  secure: true
+  # Boolean, default: true
+  httponly: true
+  # Valid values: none, lax, strict
+  # Enum, default: Strict
+  # See https://owasp.org/www-community/SameSite
+  samesite: 'Strict'
+  # String, optional
+#  domain: example.com
+  # String, optional
+#  path: '/'
+
+
 #secretSalt: "must_be_overridden_so_no_default"
 
 # where are the api's installed
@@ -33,7 +52,3 @@ apis:
 #  poc-middleware:
 #    baseURL: "http://localhost:9061"
 
-
-autoupdate:
-  enabled: ${env:AUTOUPDATE_ENABLED:-${autoupdate.enabled:-false}}
-  intervalms: ${env:AUTOUPDATE_INTERVALMS:-${autoupdate.intervalms:-60000}}

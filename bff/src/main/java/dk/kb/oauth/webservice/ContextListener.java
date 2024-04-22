@@ -24,6 +24,7 @@ import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
 import dk.kb.util.Resolver;
+import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,10 +61,11 @@ public class ContextListener implements ServletContextListener {
 
         logServiceInfo();
         initConfig();
+        final YAML cookieConf = ServiceConfig.getConfig().getSubMap("cookies");
         log.info("cookie configuration secure:'{}', httponly:'{}', samesite:'{}'",
-            ServiceConfig.getConfig().getBoolean("secure-cookie",true),
-            ServiceConfig.getConfig().getBoolean("httponly-cookie",true),
-            ServiceConfig.getConfig().getString("samesite-cookie","Strict"));
+            cookieConf.getBoolean("secure",true),
+            cookieConf.getBoolean("httponly",true),
+            cookieConf.getString("samesite","Strict"));
     }
 
     /**
