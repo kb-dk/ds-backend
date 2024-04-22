@@ -12,6 +12,26 @@ keycloak:
   clientID: "bff-poc"
   # Secret used by BFF to communicate with keycloack
   secret: ""
+
+# Default: false
+redirectAfterAuthentication: false
+
+# Cookie settings
+cookies:
+  # Boolean, default: true
+  secure: true
+  # Boolean, default: true
+  httponly: true
+  # Valid values: none, lax, strict
+  # Enum, default: Strict
+  # See https://owasp.org/www-community/SameSite
+  samesite: 'Strict'
+  # String, optional
+#  domain: example.com
+  # String, optional
+#  path: '/'
+
+
 # Secretsalt used by BFF
 secretSalt: "aVerySecretSalt"
 
