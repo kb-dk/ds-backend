@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.3) - 2024-04-26
+
 ### Added
 - Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139)
 - Added sample config files and documentation to distribution tar archive.
@@ -19,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Correct resolving of maven build time in project properties.
 
-## [1.7.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.2) - 2024-03-1
+## [1.7.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.2) - 2024-03-01
 
 ### Added
 - Support for transforming raw solr schemas with comments in processing instructions to HTML and Markdown.
