@@ -8,7 +8,7 @@
   <fileSets>
     <fileSet>
       <directory>src/main/solr/dssolr/conf/</directory>
-      <outputDirectory>./ds_solr9_conf_${properties.solr.config.version}/conf</outputDirectory>
+      <outputDirectory>./ds_solr9_conf_${solr.config.version}/conf</outputDirectory>
       <directoryMode>0755</directoryMode>
       <fileMode>0644</fileMode>
     </fileSet>
