@@ -370,8 +370,8 @@ paths:
           schema:
             type: string
             enum: ['true', 'false']
-            default: 'false'
-            example: 'false'
+            default: 'true'
+            example: 'true'
         
         - name: spellcheck.collate 
           in: query
@@ -382,8 +382,8 @@ paths:
           schema:
             type: string
             enum: ['true', 'false']
-            default: 'false'
-            example: 'false'
+            default: 'true'
+            example: 'true'
 
         - name: spellcheck.maxCollations 
           in: query
