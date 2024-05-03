@@ -643,6 +643,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example Friday?>
   </field>
 
+  <field name="temporal_start_date_da_string" type="string">
+    <?description The date where the broadcast started in danish local time. format of the string is YYYY-MM-DD.?>
+    <?example 2012-12-20?>
+  </field>
+
+  <field name="temporal_end_date_da_string" type="string">
+    <?description The date where the broadcast ended in danish local time. format of the string is YYYY-MM-DD.?>
+    <?example 2012-12-20?>
+  </field>
+
+
   <!-- =========================================================================== -->
   <!-- ====== Internal fields, primarily used by the Royal Danish Library   ====== -->
   <!-- ====== All fields for internal use are to be prefixed with internal_ ====== -->
