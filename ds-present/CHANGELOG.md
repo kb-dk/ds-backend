@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139)
 - Added sample config files and documentation to distribution tar archive.
+- Added solr fields containing start and end dates as strings in Danish local time. [DRA-599](https://kb-dk.atlassian.net/browse/DRA-599)
 
 ### Changed
 - Switch configuration style to camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Correct resolving of maven build time in project properties.
+- Correct resolving of URL in DsPresentClient
 
 ## [1.7.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.2) - 2024-03-01
 
