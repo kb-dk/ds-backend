@@ -150,8 +150,9 @@ public class DsPresentClient extends DsPresentApi {
             throws IOException {
         URI uri;
         try {
-            uri = new URIBuilder(serviceURI)
-                    .setPath("records")
+            uri = new URIBuilder(serviceURI + "records")
+                    // .setPath overrides all paths given in the serviceURI. Should be changed using pathSegments in the future
+                    //.setPath("records")
                     .addParameter("origin", origin)
                     .addParameter("mTime", Long.toString(mTime == null ? 0L : mTime))
                     .addParameter("maxRecords", Long.toString(maxRecords == null ? 10 : maxRecords))
@@ -190,8 +191,9 @@ public class DsPresentClient extends DsPresentApi {
             String origin, Long mTime, Long maxRecords, Boolean asJsonLines) throws IOException {
         URI uri;
         try {
-            uri = new URIBuilder(serviceURI)
-                    .setPath("recordsraw")
+            uri = new URIBuilder(serviceURI + "recordsraw")
+                    // .setPath overrides all paths given in the serviceURI. Should be changed using pathSegments in the future
+                    //.setPath("recordsraw")
                     .addParameter("origin", origin)
                     .addParameter("mTime", Long.toString(mTime == null ? 0L : mTime))
                     .addParameter("maxRecords", Long.toString(maxRecords == null ? 10 : maxRecords))
