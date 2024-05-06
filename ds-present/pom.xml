@@ -52,6 +52,7 @@
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
+        <solr.config.version>1.6.3</solr.config.version> <!-- Semantic versioning of solr config and schema -->
 
         <project.package>dk.kb.present</project.package>
     </properties>
@@ -682,7 +683,7 @@
                     </httpConnector>
                 </configuration>
             </plugin>
-            <plugin>
+          <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.6.0</version>
                 <configuration>
@@ -697,6 +698,22 @@
                             <goal>single</goal>
                         </goals>
                         <phase>package</phase>
+                    </execution>
+                    <execution>
+                      <id>solr-assembly</id> <!-- Unique identifier for this execution -->
+                      <phase>package</phase>
+                      <goals>
+                        <goal>single</goal>
+                      </goals>
+                      <configuration>
+                        <descriptors>
+                          <descriptor>src/main/assembly/solrAssembly.xml</descriptor>
+                        </descriptors>
+                        <!-- Specify the finalName for the specific assembly -->
+                        <finalName>ds_solr9_conf_${solr.config.version}</finalName>
+                        <appendAssemblyId>false</appendAssemblyId>
+                        <attach>true</attach>
+                      </configuration>
                     </execution>
                 </executions>
             </plugin>

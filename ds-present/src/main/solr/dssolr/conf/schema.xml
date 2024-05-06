@@ -21,6 +21,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
        Update this according to Semantic Versioning rules: https://semver.org/
 
        Used by scripts for keeping track of versioning of Solr setup across time and Solr instances.
+       When updating version here, please update the version of pom.properties.solr.config.version as well, as this is
+       used to generate correct configset for production environment.
 
 1.0.1: Added text_shingles
 1.0.2: Defined 'snowball' for all stopword filters
