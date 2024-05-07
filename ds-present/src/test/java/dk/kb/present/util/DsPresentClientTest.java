@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.Provider;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -105,14 +108,14 @@ public class DsPresentClientTest {
     @SuppressWarnings("unchecked")
     @Test
     void getFixedHeaders() {
-        YAML config = new YAML(Map.of("present", Map.of("headers", List.of(
-                Map.of(AccessUtil.HEADER_SIMULATED_GROUP, "anonymous"),
-                Map.of("Some-Other-Header", "foo")))));
-        Map<String, String> headers = DsPresentClient.getAllHeaders(config);
+        YAML conf = ServiceConfig.getConfig();
+        Map<String, String> newHeaders= Map.of("Simulated-OAuth2-Group", "anonymous",
+                                        "Some-Other-Header", "foo");
+        Map<String, String> immutableHeaders = DsPresentClient.getAllHeaders(conf, newHeaders);
+        Map<String, String> headers = new HashMap<>(immutableHeaders);
         assertEquals(2, headers.size(),
                 "The right number of headers should be extracted");
         assertEquals("anonymous", headers.get(AccessUtil.HEADER_SIMULATED_GROUP),
                 "The group header should be correct");
     }
-  
 }

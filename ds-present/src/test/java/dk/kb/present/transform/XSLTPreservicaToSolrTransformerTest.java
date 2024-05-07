@@ -322,9 +322,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testTemporalSearchFields(){
         // Sanity check time zone conversions at https://www.worldtimebuddy.com/
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_start_time_da_string\":\"18:15:00\"," +
+                                                                        "\"temporal_start_date_da_string\":\"2012-04-28\"," +
                                                                         "\"temporal_start_time_da_date\":\"9999-01-01T18:15:00Z\"," +
                                                                         "\"temporal_start_day_da\":\"Saturday\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_end_time_da_string\":\"18:40:00\"," +
+                                                                        "\"temporal_end_date_da_string\":\"2012-04-28\"," +
                                                                         "\"temporal_end_time_da_date\":\"9999-01-01T18:40:00Z\"," +
                                                                         "\"temporal_end_day_da\":\"Saturday\"");
     }
@@ -332,7 +334,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     // Adjusted version of testTemporalSearchFields, where the month has been changed from April to February to
     // check if Danish summer/winter time is obeyed.
     @Test
-    void testTemporalSearchFieldsWinther() throws IOException {
+    void testTemporalSearchFieldsWinter() throws IOException {
         String winter = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_1f3a6a66)
                 .replace("2012-04-28T", "2012-02-28T");
         File winterFile = Path.of(Resolver.resolveURL("ds-present-openapi_v1.yaml").getPath())
@@ -342,9 +344,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         Files.saveString(winter, winterFile);
 
         assertPvicaContains(winterFile.getAbsolutePath(), "\"temporal_start_time_da_string\":\"17:15:00\"," +
+                                                                        "\"temporal_start_date_da_string\":\"2012-02-28\"," +
                                                                         "\"temporal_start_time_da_date\":\"9999-01-01T17:15:00Z\"," +
                                                                         "\"temporal_start_day_da\":\"Tuesday\"");
         assertPvicaContains(winterFile.getAbsolutePath(), "\"temporal_end_time_da_string\":\"17:40:00\"," +
+                                                                        "\"temporal_end_date_da_string\":\"2012-02-28\"," +
                                                                         "\"temporal_end_time_da_date\":\"9999-01-01T17:40:00Z\"," +
                                                                         "\"temporal_end_day_da\":\"Tuesday\"");
     }

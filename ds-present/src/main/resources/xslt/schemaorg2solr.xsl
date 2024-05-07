@@ -303,6 +303,11 @@
           <xsl:value-of select="$temporal_start_time_da_string"/>
         </f:string>
 
+        <!-- The string value of the danish date. -->
+        <f:string key="temporal_start_date_da_string">
+          <xsl:value-of select="xs:string(xs:date($startTimeDK))"/>
+        </f:string>
+
         <f:string key="temporal_start_time_da_date">
           <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_start_time_da_string, 'Z'))"/>
         </f:string>
@@ -336,6 +341,10 @@
         <!-- The string value of the danish time. -->
         <f:string key="temporal_end_time_da_string">
           <xsl:value-of select="$temporal_end_time_da_string"/>
+        </f:string>
+        <!-- The string value of the danish date. -->
+        <f:string key="temporal_end_date_da_string">
+          <xsl:value-of select="xs:string(xs:date($endTimeDK))"/>
         </f:string>
 
         <f:string key="temporal_end_time_da_date">

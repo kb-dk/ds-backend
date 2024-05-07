@@ -30,8 +30,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.1: Synonym added to general_text fieldtype that is used for most text fields.
 1.6.2: Add fieldType for suggest component
 1.6.3: Rename suggestComponent to radiotv_title_suggest
+1.6.4: Add temporal_start_date_da_string and temporal_end_date_da_string fields.
   -->
-  <field name="_ds_1.6.3_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.4_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -644,6 +645,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description The day of the week when the broadcast ended. ?>
     <?example Friday?>
   </field>
+
+  <field name="temporal_start_date_da_string" type="string">
+    <?description The date where the broadcast started in danish local time. format of the string is YYYY-MM-DD.?>
+    <?example 2012-12-20?>
+  </field>
+
+  <field name="temporal_end_date_da_string" type="string">
+    <?description The date where the broadcast ended in danish local time. format of the string is YYYY-MM-DD.?>
+    <?example 2012-12-20?>
+  </field>
+
 
   <!-- =========================================================================== -->
   <!-- ====== Internal fields, primarily used by the Royal Danish Library   ====== -->
