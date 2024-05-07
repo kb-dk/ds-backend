@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Switch configuration style to camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
+- Updated Solr schema version to 1.6.4
 
 ### Removed
 - Removed spellcheck.maxCollationTries from spellcheck component. It crashed Solr on core reload (after configuration changes)
