@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.sbforge</groupId>
-        <artifactId>sbforge-parent</artifactId>
-        <version>25</version>
+      <groupId>dk.statsbiblioteket.sbprojects</groupId>
+      <artifactId>sbprojects-parent</artifactId>
+      <version>79</version>
     </parent>
 
     <groupId>dk.kb.present</groupId>
@@ -56,6 +56,30 @@
 
         <project.package>dk.kb.present</project.package>
     </properties>
+
+    <profiles>
+      <profile>
+        <id>unitTestsOnly</id>
+        <properties>
+          <test.excludedGroups>slow,blocked,integration</test.excludedGroups>
+        </properties>
+        <activation>
+          <activeByDefault>true</activeByDefault>
+        </activation>
+      </profile>
+      <profile>
+        <id>integrationTests</id>
+        <properties>
+          <test.excludedGroups>slow,blocked</test.excludedGroups>
+        </properties>
+      </profile>
+      <profile>
+        <id>allTests</id>
+        <properties>
+          <test.excludedGroups>blocked</test.excludedGroups>
+        </properties>
+      </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -277,7 +301,7 @@
         <dependency>
           <groupId>dk.kb.storage</groupId>
           <artifactId>ds-storage</artifactId>
-            <version>1.18</version>
+            <version>1.19</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
@@ -508,7 +532,7 @@
                     <packageName>${project.package}</packageName>
                 </configuration>
 
-               
+
                     <!-- Version 1 -->
                     <!-- When a new version is needed, make a copy of two v1-related executions below, then change
                          v1 to v2 in the copy.
