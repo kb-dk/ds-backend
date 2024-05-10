@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Added sample config files and documentation to distribution tar archive. [DRA-441](https://kb-dk.atlassian.net/browse/DRA-441)
+- Added POM profiles for handling test levels
 
 ### Changed
 - Change configuration style to camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
+- Changed parent POM for release to internal nexus
 
 ### Fixed
 - Correct resolving of maven build time in project properties. [DRA-441](https://kb-dk.atlassian.net/browse/DRA-441)
