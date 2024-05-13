@@ -609,6 +609,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     000000e1-0000-462a-a2b4-7488244fcca7?>
   </field>
 
+  <field name="temporal_start_year" type="string">
+    <?description The start year of the broadcast ?>
+    <?example 2012?>
+  </field>
+
   <field name="temporal_start_time_da_string" type="string">
     <?description The start time of the broadcast in GMT+01:00 (Danish Normal Time) represented as a string?>
     <?example 17:15:00?>
