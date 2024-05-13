@@ -31,6 +31,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.2: Add fieldType for suggest component
 1.6.3: Rename suggestComponent to radiotv_title_suggest
 1.6.4: Add temporal_start_date_da_string and temporal_end_date_da_string fields.
+1.6.5: Add temporal_start_year field
   -->
   <field name="_ds_1.6.4_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -607,6 +608,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="file_id" type="string">
     <?description An id, used as part of the streaming URL.?>
     <?example     000000e1-0000-462a-a2b4-7488244fcca7?>
+  </field>
+
+  <field name="temporal_start_year" type="string">
+    <?description The start year of the broadcast ?>
+    <?example 2012?>
   </field>
 
   <field name="temporal_start_time_da_string" type="string">

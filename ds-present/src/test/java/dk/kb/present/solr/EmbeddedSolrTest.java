@@ -418,6 +418,7 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testPvicaTemporalFields() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_year", "2012");
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_time_da_string", "18:15:00" );
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_time_da_string", "18:40:00");
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_day_da", "Saturday");

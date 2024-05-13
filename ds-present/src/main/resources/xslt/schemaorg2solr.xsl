@@ -308,6 +308,11 @@
           <xsl:value-of select="xs:string(xs:date($startTimeDK))"/>
         </f:string>
 
+        <!-- Get year from datetime-->
+        <f:string key="temporal_start_year">
+          <xsl:value-of select="xs:string(f:year-from-dateTime($startTimeDK))"/>
+        </f:string>
+
         <f:string key="temporal_start_time_da_date">
           <xsl:value-of select="xs:dateTime(concat('9999-01-01T', $temporal_start_time_da_string, 'Z'))"/>
         </f:string>
