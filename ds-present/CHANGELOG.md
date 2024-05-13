@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.7.4](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.4) - 2024-05-13
 ## Added 
 - Added profiles in POM to control testing
 
