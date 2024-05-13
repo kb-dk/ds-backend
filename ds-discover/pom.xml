@@ -80,7 +80,7 @@
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>1.4.0</version>
+          <version>1.4.1</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>dk.kb.present</groupId>
             <artifactId>ds-present</artifactId>
-            <version>1.7.2</version>
+            <version>1.7.4</version>
             <type>jar</type>
             <classifier>classes</classifier>
         </dependency>
