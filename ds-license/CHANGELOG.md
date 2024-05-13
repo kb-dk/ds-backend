@@ -11,8 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added 'integration' tag to some unittests.
 - Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139).
 - Added sample config files and documentation to distribution tar archive. [DRA-415](https://kb-dk.atlassian.net/browse/DRA-415)
+- Added POM profiles to control testing
 
- ### Fixed 
+### Changed 
+- Changed parent POM and thereby nexus repository
+
+### Fixed 
 - Correct resolving of maven build time in project properties. [DRA-415](https://kb-dk.atlassian.net/browse/DRA-415)
 - Switch to nested properties camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
 
