@@ -29,9 +29,9 @@
     </repositories>
 
     <scm>
-        <url>https://sbprojects.statsbiblioteket.dk/stash/projects/ARK/repos/bff-template/browse</url>
-        <connection>scm:git:ssh://git@sbprojects.statsbiblioteket.dk:7999/ark/bff-template.git</connection>
-        <developerConnection>scm:git:ssh://git@sbprojects.statsbiblioteket.dk:7999/ark/bff-template.git</developerConnection>
+        <url>https://github.com/kb-dk/bff</url>
+        <connection>scm:git:git@github.com:kb-dk/bff.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/bff.git</developerConnection>
         <tag>bff-1.0.1</tag>
     </scm>
 
