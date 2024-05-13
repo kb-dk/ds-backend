@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Changed
 - Switch from snake_case and nospace to camelCase [DRA-431](https://kb-dk.atlassian.net/browse/DRA-431)
 - Changed default param values for /select endpoint to match default solr configuration. [DRA-564](https://kb-dk.atlassian.net/browse/DRA-564)
+- Changed parent POM [DRA-590](https://kb-dk.atlassian.net/browse/DRA-592)
 
 ### Fixed
 - Switch from Jersey to Apache URI Builder to handle parameters containing '{' [DRA-338](https://kb-dk.atlassian.net/browse/DRA-338)
