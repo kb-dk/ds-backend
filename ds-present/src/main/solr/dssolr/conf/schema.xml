@@ -33,7 +33,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.4: Add temporal_start_date_da_string and temporal_end_date_da_string fields.
 1.6.5: Add temporal_start_year field
   -->
-  <field name="_ds_1.6.4_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.5_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
