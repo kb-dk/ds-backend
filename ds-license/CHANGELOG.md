@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [1.4.1](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.4.1) 2024-05-13
 ### Added
 - Added git information to the status endpoint. It now delivers, deployed branch name, commit hash, time of latest commit and closest tag
 - Bumb sb-parent to v.25
