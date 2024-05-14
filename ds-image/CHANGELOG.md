@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.3.2](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.3.2) - 2024-05-14
 ### Added
 - Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139).
 - Added sample config files and documentation to distribution tar archive. [DRA-414](https://kb-dk.atlassian.net/browse/DRA-414)
