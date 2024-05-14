@@ -27,7 +27,7 @@ public class KalturaApiIntegrationTest {
         ServiceConfig.getInstance().initialize("conf/ds-image-kaltura-integration-test.yaml"); //Load Kaltura API access properties. This file is in aegis and not the project.
                 
         String referenceId="7f7ffcbc-58dc-40bd-8ca9-12d0f9cf3ed7";
-        String kalturaInternallId="0_vvp1ozjl";
+        String kalturaInternallId="0_6b20jihy";
         
         int success=0;
         for (int i = 0;i<20;i++) {
