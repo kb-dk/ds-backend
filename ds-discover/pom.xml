@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.sbforge</groupId>
-        <artifactId>sbforge-parent</artifactId>
-        <version>25</version>
+        <groupId>dk.statsbiblioteket.sbprojects</groupId>
+        <artifactId>sbprojects-parent</artifactId>
+        <version>80</version>
     </parent>
 
     <name>ds-discover</name> <!-- Human readable name, uppercase and spaces welcome -->
@@ -28,10 +28,6 @@
         </repository>
                
     </repositories>
-
-
-
-
 
     <scm>
         <url>https://github.com/kb-dk/ds-discover</url>
@@ -80,7 +76,7 @@
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>1.4.0</version>
+          <version>1.4.1</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
@@ -93,7 +89,7 @@
         <dependency>
             <groupId>dk.kb.present</groupId>
             <artifactId>ds-present</artifactId>
-            <version>1.7.2</version>
+            <version>1.7.4</version>
             <type>jar</type>
             <classifier>classes</classifier>
         </dependency>
