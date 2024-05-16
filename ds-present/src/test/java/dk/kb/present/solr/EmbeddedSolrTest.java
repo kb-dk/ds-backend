@@ -423,7 +423,7 @@ public class EmbeddedSolrTest {
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_time_da_string", "18:40:00");
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_day_da", "Saturday");
         testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_day_da", "Saturday");
-        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_month", "4");
+        testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_month", 4);
 
         Date startDate = new Date(253370830500000L);
         testDateValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_time_da_date", startDate);
