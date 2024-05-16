@@ -1,3 +1,5 @@
+<%@ include file="check_gui_enabled.jsp" %>
+
 <%ArrayList<AttributeType> configuredAttributeTypes = LicenseCache.getConfiguredAttributeTypes();%>
 <table class="table table-condensed table-hover">
    <thead>

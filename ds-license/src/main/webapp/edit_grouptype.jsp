@@ -2,8 +2,11 @@
 <%@ page import="
     java.util.*,
     dk.kb.license.storage.*,
-   org.apache.commons.lang3.StringEscapeUtils,
+    org.apache.commons.lang3.StringEscapeUtils,
     dk.kb.license.model.v1.*"%>
+
+<%@ include file="check_gui_enabled.jsp" %>    
+    
     
 <!DOCTYPE html>
 <html>

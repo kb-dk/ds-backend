@@ -1,3 +1,4 @@
+ <%@ include file="check_gui_enabled.jsp" %>
  
 <%
 // variable 'license' is allready known on this place

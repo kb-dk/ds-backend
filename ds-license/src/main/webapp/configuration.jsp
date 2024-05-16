@@ -3,7 +3,10 @@
      dk.kb.license.storage.*,     
      dk.kb.license.facade.LicenseModuleFacade"%>
 
+<%@ include file="check_gui_enabled.jsp" %>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
+
 
 <!DOCTYPE html>
 <html>

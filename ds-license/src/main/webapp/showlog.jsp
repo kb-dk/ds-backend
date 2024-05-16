@@ -6,6 +6,8 @@
      dk.kb.license.Util,    
      dk.kb.license.facade.LicenseModuleFacade"%>
 
+<%@ include file="check_gui_enabled.jsp" %>
+
     <%
      String auditId = request.getParameter("auditlogId");   
      AuditLog log = LicenseModuleFacade.getAuditLog(Long.parseLong(auditId));

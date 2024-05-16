@@ -5,6 +5,8 @@
      dk.kb.license.storage.AuditLog,
      dk.kb.license.facade.LicenseModuleFacade"%>
 
+<%@ include file="check_gui_enabled.jsp" %>
+
 <%  
    ArrayList<AuditLog> logs = LicenseModuleFacade.getAllAuditLogs();
    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

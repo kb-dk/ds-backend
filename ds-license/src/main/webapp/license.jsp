@@ -5,6 +5,8 @@
      dk.kb.license.Util,     
      dk.kb.license.facade.LicenseModuleFacade"%>
 
+<%@ include file="check_gui_enabled.jsp" %>
+
 <!DOCTYPE html>
 <html>
 <head>

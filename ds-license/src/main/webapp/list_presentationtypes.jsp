@@ -1,3 +1,5 @@
+<%@ include file="check_gui_enabled.jsp" %>
+
 <%ArrayList<PresentationType> configuredLicenseTypes = LicenseCache.getConfiguredLicenseTypes();%>
 <table class="table table-condensed table-hover">
    <thead>

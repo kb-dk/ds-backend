@@ -1,5 +1,6 @@
-<%ArrayList<GroupType> configuredGroupTypes = LicenseCache.getConfiguredLicenseGroupTypes();%>
+<%@ include file="check_gui_enabled.jsp" %>
 
+<%ArrayList<GroupType> configuredGroupTypes = LicenseCache.getConfiguredLicenseGroupTypes();%>
 
 <h2>Pakker:</h2>
 <table class="table table-condensed table-hover">

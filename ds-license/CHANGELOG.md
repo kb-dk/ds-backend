@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139).
 - Added sample config files and documentation to distribution tar archive. [DRA-415](https://kb-dk.atlassian.net/browse/DRA-415)
 - Added POM profiles to control testing
+- Added YAML property to disable all GUI: gui.adminGuiEnabled=true
 
 ### Changed 
 - Changed parent POM and thereby nexus repository

@@ -4,6 +4,8 @@
     dk.kb.license.storage.*,
     dk.kb.license.model.v1.*"%>
 
+<%@ include file="check_gui_enabled.jsp" %>
+
 <!DOCTYPE html>
 <html>
 <head>

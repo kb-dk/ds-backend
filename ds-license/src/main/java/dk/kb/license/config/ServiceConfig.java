@@ -89,5 +89,8 @@ public class ServiceConfig {
         return dbPassword;
     }
     
+    public static boolean isAdminGuiEnabled() {
+       return serviceConfig.getBoolean("gui.adminGuiEnabled",false); //Default not enabled if property not set       
+    }
     
 }

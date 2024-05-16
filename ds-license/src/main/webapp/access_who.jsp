@@ -1,3 +1,5 @@
+<%@ include file="check_gui_enabled.jsp" %>
+
 <%
 ArrayList<GroupType> configuredGroups = LicenseCache.getConfiguredLicenseGroupTypes();
  ArrayList<PresentationType> configuredLicenseTypes = LicenseCache.getConfiguredLicenseTypes();
