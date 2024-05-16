@@ -610,12 +610,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     000000e1-0000-462a-a2b4-7488244fcca7?>
   </field>
 
-  <field name="temporal_start_year" type="string">
+  <field name="temporal_start_year" type="string" docValues="true">
     <?description The start year of the broadcast ?>
     <?example 2012?>
   </field>
 
-  <field name="temporal_start_month" type="pint">
+  <field name="temporal_start_month" type="pint" docValues="true">
     <?description The start month of the broadcast as an integer in the range 1-12, where 1 equals January and 12 equals December.?>
     <?example January?>
   </field>
