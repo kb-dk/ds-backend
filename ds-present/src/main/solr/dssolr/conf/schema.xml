@@ -31,9 +31,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.2: Add fieldType for suggest component
 1.6.3: Rename suggestComponent to radiotv_title_suggest
 1.6.4: Add temporal_start_date_da_string and temporal_end_date_da_string fields.
-1.6.5: Add temporal_start_year field
+1.6.5: Add temporal_start_year field.
+1.6.6: Add temporal_start_month field and make temporal_start_year and temporal_star_month fq fields.
   -->
-  <field name="_ds_1.6.5_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.6_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
