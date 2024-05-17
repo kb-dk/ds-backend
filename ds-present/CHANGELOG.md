@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added 
+- Added solr field: temporal_start_month
+
+## Changed
+- Changed field type for solr field: temporal_start_year
+
 
 ## [1.7.4](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.4) - 2024-05-13
 ## Added 

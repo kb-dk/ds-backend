@@ -323,6 +323,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         // Sanity check time zone conversions at https://www.worldtimebuddy.com/
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_start_time_da_string\":\"18:15:00\"," +
                                                                         "\"temporal_start_date_da_string\":\"2012-04-28\"," +
+                                                                        "\"temporal_start_year\":\"2012\"," +
+                                                                        "\"temporal_start_month\":\"4\"," +
                                                                         "\"temporal_start_time_da_date\":\"9999-01-01T18:15:00Z\"," +
                                                                         "\"temporal_start_day_da\":\"Saturday\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_end_time_da_string\":\"18:40:00\"," +
@@ -345,6 +347,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
         assertPvicaContains(winterFile.getAbsolutePath(), "\"temporal_start_time_da_string\":\"17:15:00\"," +
                                                                         "\"temporal_start_date_da_string\":\"2012-02-28\"," +
+                                                                        "\"temporal_start_year\":\"2012\"," +
+                                                                        "\"temporal_start_month\":\"2\"," +
                                                                         "\"temporal_start_time_da_date\":\"9999-01-01T17:15:00Z\"," +
                                                                         "\"temporal_start_day_da\":\"Tuesday\"");
         assertPvicaContains(winterFile.getAbsolutePath(), "\"temporal_end_time_da_string\":\"17:40:00\"," +
