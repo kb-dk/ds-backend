@@ -93,4 +93,7 @@ public class ServiceConfig {
        return serviceConfig.getBoolean("gui.adminGuiEnabled",false); //Default not enabled if property not set       
     }
     
+    public static int getCacheRefreshTimeInSeconds() {
+        return serviceConfig.getInteger("cache.reloadInSeconds",300);
+    }
 }

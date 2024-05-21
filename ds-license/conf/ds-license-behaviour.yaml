@@ -37,6 +37,12 @@ db:
 gui:
   adminGuiEnabled: true
 
+#The license cache reload time. The replica database application needs to refresh cache since it will not be notified upon changes in configuration.
+#300 seconds=5 minutes is a good value.
+cache:
+  reloadInSeconds: 300  
+  
+
  # Example for postgres
  #url: jdbc:postgresql://localhost:5432/ds-storage
  #driver: org.postgresql.Driver

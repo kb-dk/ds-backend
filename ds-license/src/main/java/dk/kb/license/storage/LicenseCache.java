@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.validation.LicenseValidator;
 
 
@@ -29,8 +30,8 @@ public class LicenseCache {
     private static HashMap<String, GroupType> groupIdMap;
     private static HashMap<String, PresentationType> presentationTypeIdMap;
 
-    private static final Logger log = LoggerFactory.getLogger(LicenseCache.class);
-    private static final long reloadIntervalInSec = 15 * 1000 * 60L; // 15 minutes
+    private static final Logger log = LoggerFactory.getLogger(LicenseCache.class);    
+    private static final double reloadTimeInMillis=ServiceConfig.getCacheRefreshTimeInSeconds()*1000L;
     private static long lastReloadTime = 0;
 
     public static ArrayList<License> getAllLicense() {
@@ -59,9 +60,9 @@ public class LicenseCache {
         return cachedLicensePresentationTypes;
     }
 
-    private static synchronized void checkReload() {
-
-        if (System.currentTimeMillis() - lastReloadTime > reloadIntervalInSec) {
+    private static synchronized void checkReload() {        
+        
+        if (System.currentTimeMillis() - lastReloadTime > reloadTimeInMillis) {
             reloadCache();
         }
     }

@@ -150,12 +150,12 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 				
 		try {
 			GetUserQueryOutputDto output = LicenseValidator.getUserQuery(input);   
-
-			log.info("-------------------getUserLicenseQuery----------------");
-			log.info("input (presentationtype): "+input.getPresentationType());
-			log.info("input (attributes): "+input.getAttributes());         
-			log.info("output (User license query):"+output.getQuery());
-			log.info("output (groups)" + output.getUserLicenseGroups());
+ 
+			log.debug("-------------------getUserLicenseQuery----------------");
+			log.debug("input (presentationtype): "+input.getPresentationType());
+			log.debug("input (attributes): "+input.getAttributes());         
+			log.debug("output (User license query):"+output.getQuery());
+			log.debug("output (groups)" + output.getUserLicenseGroups());
 
 			GetUsersFilterQueryOutputDto filterQuery= new GetUsersFilterQueryOutputDto();
 			filterQuery.setFilterQuery(output.getQuery());
