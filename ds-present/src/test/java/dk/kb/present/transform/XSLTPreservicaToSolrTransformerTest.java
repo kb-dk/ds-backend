@@ -370,7 +370,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testUrlPreservica7()  {
-        assertPvicaContains(TestFiles.PVICA7_RECORD_8946d31d, "\"file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\"");
+        assertPvica7Contains(TestFiles.PVICA7_RECORD_8946d31d, "\"file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\"");
     }
 
     /* disabled as they are not represented in solr
@@ -426,11 +426,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"description_length\":\"374\"");
 
     }
-    @Test
-    public void prettyPrintTransformation() throws Exception {
-        String solrJson = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8aafb121);
-        TestUtil.prettyPrintJson(solrJson);
-    }
 
     /**
      * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
@@ -438,8 +433,21 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
      * @param recordFile the file to load, transform and test.
      * @param substring must be present in the transformed record.
      */
+    @Deprecated
     public void assertPvicaContains(String recordFile, String substring) {
         assertMultiTestsThroughSchemaTransformation(recordFile,
+                solrDoc -> assertTrue(solrDoc.contains(substring))
+        );
+    }
+
+    /**
+     * Wrapper for {@link #assertMultiTestsThroughSchemaTransformationPreservica7(String, Consumer[])} which verifies that the
+     * transformed record contains the given {@code substring}.
+     * @param recordFile the file to load, transform and test.
+     * @param substring must be present in the transformed record.
+     */
+    public void assertPvica7Contains(String recordFile, String substring) {
+        assertMultiTestsThroughSchemaTransformationPreservica7(recordFile,
                 solrDoc -> assertTrue(solrDoc.contains(substring))
         );
     }
@@ -465,6 +473,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
      * @param record file with a record that is to be transformed.
      * @param tests Zero or more tests to perform on the transformed record.
      */
+    @Deprecated
     @SafeVarargs
     public final void assertMultiTestsThroughSchemaTransformation(String record, Consumer<String>... tests){
         if (!TestFileProvider.hasSomeTestFiles()) {
@@ -473,6 +482,30 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString;
         try {
             solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
+        }
+        Arrays.stream(tests).forEach(test -> test.accept(solrString));
+    }
+
+    /**
+     * Checks that internal test files are available and if not, logs a warning and returns.
+     * <p>
+     * If the check passes, the content of the file {@code record} is transformed using two XSLTs.
+     * At first the XML record is transformed to Schema.org JSON and then the schema.org JSON is transformed to solr
+     * documents and the given tests are performed on the result.
+     * @param record file with a record that is to be transformed.
+     * @param tests Zero or more tests to perform on the transformed record.
+     */
+    @SafeVarargs
+    public final void assertMultiTestsThroughSchemaTransformationPreservica7(String record, Consumer<String>... tests){
+        if (!TestFileProvider.hasSomeTestFiles()) {
+            return;  // ensureTestFiles takes care of logging is there are no internal test files
+        }
+        String solrString;
+        try {
+            solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, record);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);

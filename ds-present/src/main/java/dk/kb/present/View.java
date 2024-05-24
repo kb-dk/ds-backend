@@ -66,7 +66,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * Defines the strategy used to construct the wanted view of the resource.
      * Strategy can be one of the following: <br/>
      * {@link #NONE} <br/>
-     * {@link #MANIFESTATION} <br/>
+     * {@link #MANIFESTATION5} <br/>
      */
     enum Strategy {
         /**
@@ -75,12 +75,20 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         NONE,
         /**
          * Manifestation strategy, used when the metadata to transform is dependent on one or more manifestations. This
-         * strategy is oriented towards metadata from preservica and expects the metadata to conform to the preservica
+         * strategy is oriented towards metadata from preservica 5 and expects the metadata to conform to the preservica 5
          * datamodel, where data is divided between DeliverableUnits and Manifestations. The DeliverableUnit contains
          * the metadata, while a manifestation contains metadata on a single representation of the resource described in
          * the DeliverableUnit.
-         * This strategy injects a manifestation into the XSLT,which is then used as part of the transformation.
+         * This strategy injects a manifestation into the XSLT, which is then used as part of the transformation.
          * The manifestation is needed to create streaming_urls for resources.
+         */
+        MANIFESTATION5,
+        /**
+         *  Manifestation strategy, used when the metadata to transform is dependent on one MANIFESTATION. This
+         *  strategy is oriented towards metadata from preservica 7 and expects the metadata to conform to the preservica 7
+         *  datamodel, where metadata delivered from OAI-PMH doesn't contain information on manifestations.
+         *  Manifestations for records have been extracted from the Preservica 7 REST API and are presented as
+         *  {@code referenceId}s in {@link DsRecordDto}s.
          */
         MANIFESTATION
     }
@@ -134,7 +142,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         switch (strategy) {
             case MANIFESTATION:
-                updateMetadataMapWithPreservicaManifestation(record, metadata);
+                updateMetadataMapWithPreservica7Manifestation(record, metadata);
+                break;
+            case MANIFESTATION5:
+                updateMetadataMapWithPreservica5Manifestation(record, metadata);
             case NONE:
                 break;
             default:
@@ -198,10 +209,22 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param record with an expanded tree containing manifestation childs.
      * @param metadata map that values from the record is extracted to.
      */
-    private void updateMetadataMapWithPreservicaManifestation(DsRecordDto record, Map<String, String> metadata) {
+    private void updateMetadataMapWithPreservica5Manifestation(DsRecordDto record, Map<String, String> metadata) {
         String child = getFirstPresentationManifestation(record);
         if (!child.isEmpty()){
             metadata.put("manifestation", child);
+        }
+    }
+
+    /**
+     * Update the map of metadata with manifestation from the input {@link DsRecordDto}s referenceId.
+     * @param record with a referenceId.
+     * @param metadata map that values from the record is extracted to.
+     */
+    private void updateMetadataMapWithPreservica7Manifestation(DsRecordDto record, Map<String, String> metadata) {
+        String manifestationName = record.getReferenceId();
+        if (!(manifestationName == null) && !manifestationName.isEmpty()){
+            metadata.put("manifestation", manifestationName);
         }
     }
 
@@ -229,7 +252,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         List<String> presentationManifestations = record.getChildren() == null ? Collections.singletonList("") :
                 record.getChildren().stream()
                         .map(this::getNonNullChild)
-                        //.filter(this::isPresentationManifestation) // Filter not needed for Preservica 7
+                        .filter(this::isPresentationManifestation) // Filter not needed for Preservica 7
                         .collect(Collectors.toList());
 
         return returnPresentationManifestationFromList(presentationManifestations, record.getId());
@@ -237,14 +260,19 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     /**
      * Determine if the input preservica manifestation is a presentation manifestation by looking for the XML tag
-     * {@code ManifestationRelRef} with a value of 2. This filter should only be used for legacy Preservica 5
+     * {@code ManifestationRelRef} with a value of 2. This filter should only be used for legacy Preservica 5.
+     * By looking at manifestation length it can be determined if it is a preservica 5 or 7 manifestation.
      * @param preservicaManifestation content from a ds-storage record, which is a child of the current DeliverableUnit
      *                                being processed.
      * @return true if the given manifestation is a presentation manifestation, otherwise return false.
      */
     private boolean isPresentationManifestation(String preservicaManifestation) {
-        Matcher m = PRESENTATION_MANIFESTATION_PATTERN.matcher(preservicaManifestation);
-        return m.find();
+        if (preservicaManifestation.length() > 42){
+            Matcher m = PRESENTATION_MANIFESTATION_PATTERN.matcher(preservicaManifestation);
+            return m.find();
+        } else {
+            return true;
+        }
     }
 
     /**

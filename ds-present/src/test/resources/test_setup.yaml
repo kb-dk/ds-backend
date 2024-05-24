@@ -86,6 +86,44 @@ pvicaviews: &PRESERVICA_VIEWS
       transformers:
         - identity:
 
+pvica5views: &PRESERVICA_VIEWS
+  - mods:
+      mime: 'application/xml'
+      strategy: 'NONE'
+      transformers:
+        - identity: # No transformation steps as mods is the core format for images-dsfl
+  - json-ld:
+      mime: 'application/json'
+      strategy: 'MANIFESTATION5'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              - imageserver: 'https://example.com/imageserver/'
+              - streamingserver: "here_should_be_a_wowza_url"
+  - solrjson:
+      mime: 'application/json'
+      strategy: 'MANIFESTATION5'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              - imageserver: 'https://example.com/imageserver/'
+              - streamingserver: "here_should_be_a_wowza_url"
+        - xsltsolr:
+            stylesheet: 'xslt/schemaorg2solr.xsl'
+  - raw:
+      mime: 'text/plain'
+      strategy: 'NONE'
+      transformers:
+        - fail:
+            message: 'Raw format contains confidential information and cannot be delivered'
+  # For testing purposes
+  - rawbypass:
+      mime: 'text/plain'
+      transformers:
+        - identity:
+
 # Settings for handling at the record level
 record:
   id:
