@@ -165,4 +165,10 @@ origins:
           description: 'Local records'
           recordRequestType: 'DELIVERABLEUNIT'
           views: *PRESERVICA_VIEWS
+  - "ds.tv.devel7": # ds-present internal
+          prefix: 'local.tv.devel' # The prefix to match on incoming IDs
+          origin: 'ds.tv.devel7'
+          description: 'Devel records'
+          recordRequestType: 'DELIVERABLEUNIT'
+          views: *PRESERVICA_VIEWS
 
