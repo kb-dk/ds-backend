@@ -69,12 +69,31 @@ public class TestUtil {
 	}
 
 
-	public static String getTransformedWithVideoChildAdded(
+	@Deprecated
+	public static String getTransformedWithVideoChildAddedPreservica5(
 			String xsltResource, String xmlResource, Map<String, String> injections) throws IOException {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
 		String xml = Resolver.resolveUTF8String(xmlResource);
 		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
 		String childData = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_33e30aa9);
+
+		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		metadata.put("streamingserver", "www.example.com/streaming/");
+		metadata.put("origin", "ds.test");
+		metadata.put("manifestation", childData);
+		metadata.put("conditionsOfAccess", "placeholderCondition");
+		metadata.put("mTime", "1701261949625000");
+		//System.out.println("access fields:"+metadata);
+		return transformer.apply(xml, metadata);
+	}
+
+	public static String getTransformedWithVideoChildAddedPreservica7(
+			String xsltResource, String xmlResource, Map<String, String> injections) throws IOException {
+		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
+		String xml = Resolver.resolveUTF8String(xmlResource);
+		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
+		// Preservica 7 delivers very small children, containing just the name of the file
+		String childData = "8946d31d-a81c-447f-b84d-ff80644353d2.mp4";
 
 		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		metadata.put("streamingserver", "www.example.com/streaming/");
