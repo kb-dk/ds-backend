@@ -220,7 +220,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * If record has children, the first presentation manifestation is returned.
      * If record have not got children an empty string is returned.
      * @param record to extract the newest presentation manifestation from.
-     * @return  the data from the first presentation manifestation related to the input record.
+     * @return the data from the first presentation manifestation related to the input record.
      */
     private String getFirstPresentationManifestation(DsRecordDto record) {
         // TODO: Figure how to choose correct manifestation for record, if more than one is present
@@ -229,7 +229,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         List<String> presentationManifestations = record.getChildren() == null ? Collections.singletonList("") :
                 record.getChildren().stream()
                         .map(this::getNonNullChild)
-                        .filter(this::isPresentationManifestation)
+                        //.filter(this::isPresentationManifestation) // Filter not needed for Preservica 7
                         .collect(Collectors.toList());
 
         return returnPresentationManifestationFromList(presentationManifestations, record.getId());
@@ -237,7 +237,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     /**
      * Determine if the input preservica manifestation is a presentation manifestation by looking for the XML tag
-     * {@code ManifestationRelRef} with a value of 2.
+     * {@code ManifestationRelRef} with a value of 2. This filter should only be used for legacy Preservica 5
      * @param preservicaManifestation content from a ds-storage record, which is a child of the current DeliverableUnit
      *                                being processed.
      * @return true if the given manifestation is a presentation manifestation, otherwise return false.
