@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Added 
 - Added solr field: temporal_start_month
+- Added solr field: temporal_start_hour_da
 
 ## Changed
 - Changed field type for solr field: temporal_start_year

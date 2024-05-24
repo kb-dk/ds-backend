@@ -303,6 +303,11 @@
           <xsl:value-of select="$temporal_start_time_da_string"/>
         </f:string>
 
+        <!-- The int value of the danish start hour. -->
+        <f:string key="temporal_start_hour_da">
+          <xsl:value-of select="hours-from-dateTime($startTimeDK)"/>
+        </f:string>
+
         <!-- The string value of the danish date. -->
         <f:string key="temporal_start_date_da_string">
           <xsl:value-of select="xs:string(xs:date($startTimeDK))"/>
