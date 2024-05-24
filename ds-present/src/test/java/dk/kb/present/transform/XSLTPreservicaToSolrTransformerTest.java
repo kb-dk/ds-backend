@@ -5,7 +5,7 @@ import dk.kb.present.TestUtil;
 import dk.kb.present.util.TestFileProvider;
 import dk.kb.util.Files;
 import dk.kb.util.Resolver;
-import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -364,9 +364,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testStreamingUrl() throws IOException {
-        String solrJson = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SOLR, TestFiles.PVICA_RECORD_1f3a6a66, null);
-        TestUtil.prettyPrintJson(solrJson);
+        String solrJson = TestUtil.getTransformedWithVideoChildAddedPreservica5(PRESERVICA2SOLR, TestFiles.PVICA_RECORD_1f3a6a66, null);
         assertTrue(solrJson.contains("\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
+    }
+
+    @Test
+    void testUrlPreservica7()  {
+        assertPvicaContains(TestFiles.PVICA7_RECORD_8946d31d, "\"file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\"");
     }
 
     /* disabled as they are not represented in solr
