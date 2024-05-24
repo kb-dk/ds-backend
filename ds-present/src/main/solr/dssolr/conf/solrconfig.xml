@@ -803,6 +803,7 @@
        <str name="facet.field">subject_full_name</str>
        <str name="facet.field">temporal_start_month</str>
        <str name="facet.field">temporal_start_year</str>
+       <str name="facet.field">temporal_start_hour_da</str>
 
         
        <str name="hl">on</str>
