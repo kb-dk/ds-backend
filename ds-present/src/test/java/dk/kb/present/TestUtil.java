@@ -148,6 +148,7 @@ public class TestUtil {
 	 * Transforms the inputted XML with the given transformer to schema.org compliant JSON, then transforms the
 	 * schema.org JSON to solr documents.
 	 * @param schemaOrgTransformer used to transform from origin specific format to general schema.org json.
+	 * @param record the record to transform.
 	 * @return a solr document ready for indexing, created from the schema.org representation of the inputted XML.
 	 */
 	public static String getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(String schemaOrgTransformer, String record) throws IOException {
