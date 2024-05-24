@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Added 
 - Added solr field: temporal_start_month
 - Added View strategy for Preservica 7, so that manifestations can be extracted correctly for Preservica 5 and 7. [DRA-662](https://kb-dk.atlassian.net/browse/DRA-662)
+- Added solr field: temporal_start_hour_da
 
 ## Changed
 - Changed field type for solr field: temporal_start_year

@@ -322,6 +322,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testTemporalSearchFields(){
         // Sanity check time zone conversions at https://www.worldtimebuddy.com/
         assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_start_time_da_string\":\"18:15:00\"," +
+                                                                        "\"temporal_start_hour_da\":\"18\"," +
                                                                         "\"temporal_start_date_da_string\":\"2012-04-28\"," +
                                                                         "\"temporal_start_year\":\"2012\"," +
                                                                         "\"temporal_start_month\":\"4\"," +
@@ -346,6 +347,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         Files.saveString(winter, winterFile);
 
         assertPvicaContains(winterFile.getAbsolutePath(), "\"temporal_start_time_da_string\":\"17:15:00\"," +
+                                                                        "\"temporal_start_hour_da\":\"17\"," +
                                                                         "\"temporal_start_date_da_string\":\"2012-02-28\"," +
                                                                         "\"temporal_start_year\":\"2012\"," +
                                                                         "\"temporal_start_month\":\"2\"," +
