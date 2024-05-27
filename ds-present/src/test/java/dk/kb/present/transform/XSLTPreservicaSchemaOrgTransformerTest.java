@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static dk.kb.present.TestUtil.prettyPrintJson;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -55,13 +56,19 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
     @Test
     void testContentUrl() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_5a5357be, null);
+        String transformedJSON = TestUtil.getTransformedWithVideoChildAddedPreservica5(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_5a5357be, null);
         Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
     }
     @Test
     void testConditionOfAccess() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_5a5357be, null);
+        String transformedJSON = TestUtil.getTransformedWithVideoChildAddedPreservica5(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_5a5357be, null);
         Assertions.assertTrue(transformedJSON.contains("\"conditionsOfAccess\":\"placeholderCondition\""));
+    }
+
+    @Test
+    void testUrlPreservica7() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithVideoChildAddedPreservica7(PRESERVICA2SCHEMAORG, TestFiles.PVICA7_RECORD_8946d31d, null);
+        Assertions.assertTrue(transformedJSON.contains("\"kb:file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\""));
     }
 
     @Test
@@ -187,7 +194,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testNoNullKeywords() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3006e2f8);
-        TestUtil.prettyPrintJson(transformedJSON);
+        prettyPrintJson(transformedJSON);
         Assertions.assertFalse(transformedJSON.contains("null"));
     }
 
@@ -353,7 +360,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void testDateInjection() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:storage_mTime\":"));
-        TestUtil.prettyPrintJson(transformedJSON);
+        prettyPrintJson(transformedJSON);
     }
 
 
@@ -364,6 +371,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:transformation_error_description\":" +
                 "\"First argument to parse-xml() is not a well-formed and namespace-well-formed XML document."));
+    }
+
+    @Test
+    void testManifestationNameFromPreservica7() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        prettyPrintJson(transformedJSON);
+
     }
 
     private static void printSchemaOrgJson(String xml) throws IOException {

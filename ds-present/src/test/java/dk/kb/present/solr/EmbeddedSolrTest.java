@@ -59,6 +59,7 @@ import static dk.kb.present.TestFiles.PVICA_RECORD_9d9785a8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_accf8d1c;
 import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_e683b0b8;
+import static dk.kb.present.TestUtil.prettyPrintJson;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -729,12 +730,22 @@ public class EmbeddedSolrTest {
         return getRecordByDerivedId(modsFile);
     }
 
+    @Deprecated
     private SolrDocument singlePreservicaIndex(String preservicaFile) throws Exception {
         indexPreservicaRecord(preservicaFile);
         assertEquals(1, getNumberOfTotalDocuments(),
                 "After indexing '" + preservicaFile + "' the index should only hold a single record");
         return getRecordByDerivedId(preservicaFile);
     }
+
+    private SolrDocument singlePreservica7Index(String preservicaFile) throws Exception {
+        indexPreservica7Record(preservicaFile);
+        assertEquals(1, getNumberOfTotalDocuments(),
+                "After indexing '" + preservicaFile + "' the index should only hold a single record");
+        return getRecordByDerivedId(preservicaFile);
+    }
+
+
 
     private void indexModsRecord(String recordXml) throws Exception {
         String yamlStr =
@@ -750,8 +761,16 @@ public class EmbeddedSolrTest {
         addRecordToEmbeddedServer(recordXml, solrString);
     }
 
+    @Deprecated
     private void indexPreservicaRecord(String preservicaRecord) throws Exception {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, preservicaRecord);
+        prettyPrintJson(solrString);
+        addRecordToEmbeddedServer(preservicaRecord, solrString);
+    }
+
+    private void indexPreservica7Record(String preservicaRecord) throws Exception {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, preservicaRecord);
+        prettyPrintJson(solrString);
         addRecordToEmbeddedServer(preservicaRecord, solrString);
     }
 

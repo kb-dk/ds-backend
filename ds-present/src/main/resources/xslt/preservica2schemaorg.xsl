@@ -43,7 +43,7 @@
          This is used to define which tag should be used as root tag for metadata extraction. -->
     <xsl:variable name="preservicaVersion">
       <xsl:choose>
-        <xsl:when test="/XIP">6</xsl:when>
+        <xsl:when test="/XIP">7</xsl:when>
         <xsl:when test="/xip:DeliverableUnit">5</xsl:when>
         <xsl:otherwise>Unknown</xsl:otherwise>
       </xsl:choose>
@@ -53,7 +53,7 @@
     <xsl:variable name="metadataPath">
       <xsl:choose>
         <xsl:when test="$preservicaVersion = '5'"><xsl:copy-of select="/xip:DeliverableUnit/Metadata"/></xsl:when>
-        <xsl:when test="$preservicaVersion = '6'"><xsl:copy-of select="/XIP/Metadata/Content"/></xsl:when>
+        <xsl:when test="$preservicaVersion = '7'"><xsl:copy-of select="/XIP/Metadata/Content"/></xsl:when>
       </xsl:choose>
     </xsl:variable>
 
@@ -161,13 +161,21 @@
         </xsl:for-each>
 
         <!-- Extract manifestation -->
-        <xsl:call-template name="extract-manifestation"/>
+        <xsl:choose>
+          <xsl:when test="$preservicaVersion = '7'">
+            <xsl:call-template name="extract-manifestation-preservica7"/>
+          </xsl:when>
+          <xsl:when test="$preservicaVersion = '5'">
+            <xsl:call-template name="extract-manifestation-preservica5"/>
+          </xsl:when>
+        </xsl:choose>
 
         <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
              available from the preservica records.-->
         <f:map key="kb:internal">
         <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
         <xsl:call-template name="kb-internal">
+          <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
           <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
           <xsl:with-param name="type" select="$type"/>
         </xsl:call-template>
@@ -282,13 +290,21 @@
         </xsl:choose>
 
         <!-- Extract manifestation -->
-        <xsl:call-template name="extract-manifestation"/>
+        <xsl:choose>
+          <xsl:when test="$preservicaVersion = '7'">
+            <xsl:call-template name="extract-manifestation-preservica7"/>
+          </xsl:when>
+          <xsl:when test="$preservicaVersion = '5'">
+            <xsl:call-template name="extract-manifestation-preservica5"/>
+          </xsl:when>
+        </xsl:choose>
 
         <!-- If type is MediaObject we don't create the internal map. -->
         <xsl:if test="$type != 'MediaObject'">
           <f:map key="kb:internal">
           <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
             <xsl:call-template name="kb-internal">
+              <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
               <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
               <xsl:with-param name="type" select="$type"/>
               <xsl:with-param name="metadataPath" select="$metadataPath"/>
@@ -321,7 +337,6 @@
   <!-- CREATE THREE FIRST FIELDS FOR SCHEMAORG JSON: CONTEXT, TYPE AND ID. These fields are present in every document.-->
   <xsl:template name="schema-context-and-type">
     <xsl:param name="type"/>
-
     <!-- First three fields for schema.org are these no matter which object the transformer transforms to. -->
     <f:string key="@context">http://schema.org/</f:string>
     <f:string key="@type"><xsl:value-of select="$type"/></f:string>
@@ -644,7 +659,7 @@
           <f:string key="@type">PropertyValue</f:string>
           <f:string key="PropertyID">PID</f:string>
           <f:string key="value">
-            <xsl:value-of select="substring-after($pidHandles, 'hdl:')"/>
+            <xsl:value-of select="normalize-space(substring-after($pidHandles, 'hdl:'))"/>
           </f:string>
         </f:map>
       </xsl:if>
@@ -676,8 +691,44 @@
   </xsl:template>
 
   <!-- EXTRACT MANIFESTATION FROM METADATA.-->
-  <!-- TODO: Figure out manifestation extraction from preservica 6-->
-  <xsl:template name="extract-manifestation">
+  <xsl:template name="extract-manifestation-preservica7">
+    <xsl:if test="$manifestation != ''">
+      <xsl:variable name="manifestationRef">
+        <xsl:value-of select="$manifestation"/>
+      </xsl:variable>
+      <xsl:variable name="urlPrefix">
+        <xsl:choose>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">mp4:bart-access-copies-tv/</xsl:when>
+          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">mp3:bart-access-copies-radio/</xsl:when>
+          <xsl:otherwise></xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:variable name="path">
+        <xsl:variable name="path_level1">
+          <xsl:value-of select="concat(substring($manifestationRef,1,2), '/')"/>
+        </xsl:variable>
+        <xsl:variable name="path_level2">
+          <xsl:value-of select="concat(substring($manifestationRef,3,2), '/')"/>
+        </xsl:variable>
+        <xsl:variable name="path_level3">
+          <xsl:value-of select="concat(substring($manifestationRef,5,2), '/')"/>
+        </xsl:variable>
+        <xsl:value-of select="concat($path_level1, $path_level2, $path_level3)"/>
+      </xsl:variable>
+      <xsl:variable name="streamingUrl">
+        <xsl:value-of select="concat($streamingserver, $urlPrefix,
+                                         $path, $manifestationRef,
+                                         '/playlist.m3u8')"/>
+      </xsl:variable>
+      <f:string key="contentUrl">
+        <!-- TODO: Add full url to content when possible-->
+        <xsl:value-of select="$streamingUrl"/>
+      </f:string>
+    </xsl:if>
+  </xsl:template>
+
+  <!-- EXTRACT MANIFESTATION FROM PRESERVICA5-->
+  <xsl:template name="extract-manifestation-preservica5">
     <xsl:if test="$manifestation != ''">
       <xsl:variable name="manifestationRef">
         <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef"/>
@@ -718,6 +769,7 @@
        This kb:internal map was how we've handled internal values in the past, see line 109 in this file:
        https://github.com/kb-dk/ds-present/blob/spolorm-now-works/src/main/resources/xslt/mods2schemaorg.xsl -->
   <xsl:template name="kb-internal">
+    <xsl:param name="preservicaVersion"/>
     <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
@@ -729,8 +781,16 @@
 
     <xsl:if test="$manifestation != ''">
       <xsl:variable name="manifestationRef">
-        <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef"/>
+        <xsl:choose>
+          <xsl:when test="$preservicaVersion = '7'">
+            <xsl:value-of select="$manifestation"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:variable>
+
       <f:string key="kb:file_id">
         <xsl:value-of select="$manifestationRef"/>
       </f:string>

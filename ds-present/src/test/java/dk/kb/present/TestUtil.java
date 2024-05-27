@@ -69,12 +69,31 @@ public class TestUtil {
 	}
 
 
-	public static String getTransformedWithVideoChildAdded(
+	@Deprecated
+	public static String getTransformedWithVideoChildAddedPreservica5(
 			String xsltResource, String xmlResource, Map<String, String> injections) throws IOException {
 		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
 		String xml = Resolver.resolveUTF8String(xmlResource);
 		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
 		String childData = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_33e30aa9);
+
+		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		metadata.put("streamingserver", "www.example.com/streaming/");
+		metadata.put("origin", "ds.test");
+		metadata.put("manifestation", childData);
+		metadata.put("conditionsOfAccess", "placeholderCondition");
+		metadata.put("mTime", "1701261949625000");
+		//System.out.println("access fields:"+metadata);
+		return transformer.apply(xml, metadata);
+	}
+
+	public static String getTransformedWithVideoChildAddedPreservica7(
+			String xsltResource, String xmlResource, Map<String, String> injections) throws IOException {
+		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
+		String xml = Resolver.resolveUTF8String(xmlResource);
+		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
+		// Preservica 7 delivers very small children, containing just the name of the file
+		String childData = "8946d31d-a81c-447f-b84d-ff80644353d2.mp4";
 
 		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		metadata.put("streamingserver", "www.example.com/streaming/");
@@ -111,6 +130,7 @@ public class TestUtil {
 	 * @param schemaOrgTransformer used to transform from origin specific format to general schema.org json.
 	 * @return a solr document ready for indexing, created from the schema.org representation of the inputted XML.
 	 */
+	@Deprecated
 	public static String getTransformedToSolrJsonThroughSchemaJson(String schemaOrgTransformer, String record) throws IOException {
 		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
 				"streamingserver" ,"https://www.example.com/streamingserver/");
@@ -120,6 +140,28 @@ public class TestUtil {
 		String placeholderXml = "placeholder.xml";
 		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);
 		String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, mapOfJson);
+		//prettyPrintJson(solrJson);
+		return solrJson;
+	}
+
+	/**
+	 * Transforms the inputted XML with the given transformer to schema.org compliant JSON, then transforms the
+	 * schema.org JSON to solr documents.
+	 * @param schemaOrgTransformer used to transform from origin specific format to general schema.org json.
+	 * @param record the record to transform.
+	 * @return a solr document ready for indexing, created from the schema.org representation of the inputted XML.
+	 */
+	public static String getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(String schemaOrgTransformer, String record) throws IOException {
+		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
+				"streamingserver" ,"https://www.example.com/streamingserver/",
+				"manifestation", "8946d31d-a81c-447f-b84d-ff80644353d2.mp4");
+		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
+		//prettyPrintJson(schemaOrgJson);
+
+		String placeholderXml = "placeholder.xml";
+		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);
+		String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, mapOfJson);
+		//prettyPrintJson(solrJson);
 		return solrJson;
 	}
 
