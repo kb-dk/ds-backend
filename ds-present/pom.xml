@@ -669,6 +669,9 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>10.0.12</version>
                 <configuration>
+                    <deployMode>FORK</deployMode>
+                    <jvmArgs>-Xmx1g -Djetty.port=9073</jvmArgs>
+                    <jettyXmls>${project.basedir}/target/jetty-res/jetty-env.xml</jettyXmls>
                     <useTestScope>true</useTestScope>
                     <!-- https://www.eclipse.org/jetty/documentation/jetty-10/programming-guide/index.html#jetty-run-goal -->
                     <!-- https://stackoverflow.com/questions/12493798/jetty-maven-plugin-using-scan -->
@@ -678,9 +681,6 @@
                         <descriptor>${project.basedir}/target/${project.build.finalName}/WEB-INF/web.xml</descriptor>
                         <jettyEnvXml>${project.basedir}/target/jetty-res/jetty-env.xml</jettyEnvXml>
                     </webApp>
-                    <httpConnector>
-                        <port>9073</port>
-                    </httpConnector>
                 </configuration>
             </plugin>
           <plugin>
