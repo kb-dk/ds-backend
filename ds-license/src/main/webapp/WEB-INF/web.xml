@@ -60,6 +60,15 @@
     <url-pattern>/configurationServlet</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>loginCallbackServlet</servlet-name>
+    <servlet-class>dk.kb.license.servlets.LoginCallbackServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>loginCallbackServlet</servlet-name>
+    <url-pattern>/loginCallbackServlet</url-pattern>
+  </servlet-mapping>
 
     <listener>
         <listener-class>dk.kb.license.webservice.ContextListener</listener-class>

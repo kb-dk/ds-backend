@@ -1,9 +1,11 @@
 <%@ page import="
     java.util.*,
      dk.kb.license.storage.*,     
+     dk.kb.license.config.ServiceConfig,
      dk.kb.license.facade.LicenseModuleFacade"%>
 
 <%@ include file="check_gui_enabled.jsp" %>
+<%@ include file="show_user.jsp" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
 

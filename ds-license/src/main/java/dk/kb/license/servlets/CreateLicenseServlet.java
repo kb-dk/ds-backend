@@ -33,8 +33,7 @@ public class CreateLicenseServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(CreateLicenseServlet.class);
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html; charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
 		
@@ -111,14 +110,14 @@ public class CreateLicenseServlet extends HttpServlet {
 		        	return;
 		        }
 						        
-		        LicenseModuleFacade.persistLicense(license);
+		        LicenseModuleFacade.persistLicense(license,request.getSession());
 				returnConfigurationPage(request, response);
 				return;
 			}
 			else if ("delete".equals(event)){			    				
 				log.info("delete license");		
-				LicenseModuleFacade.persistLicense(license);
-				LicenseModuleFacade.deleteLicense(licenseId);
+				LicenseModuleFacade.persistLicense(license,request.getSession());
+				LicenseModuleFacade.deleteLicense(licenseId,request.getSession());
 				returnConfigurationPage(request, response);
 				return;
 			}			

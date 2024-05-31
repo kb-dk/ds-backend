@@ -89,6 +89,26 @@ public class ServiceConfig {
         return dbPassword;
     }
     
+    public static  String getKeycloakRealmTokenUrl() {
+        String realmTokenUrl= serviceConfig.getString("keycloak.realmTokenUrl");
+        return realmTokenUrl;
+    }
+    
+    public static  String getKeycloakClientSecret() {
+        String clientSecret= serviceConfig.getString("keycloak.clientSecret");
+        return clientSecret;
+    }
+    
+    public static  String getKeycloakRedirectUrl() {
+        String redirectUrl= serviceConfig.getString("keycloak.redirectUrl");
+        return redirectUrl;
+    }
+    
+    public static  String getKeycloakLoginUrl() {
+        String loginUrl= serviceConfig.getString("keycloak.loginUrl");
+        return loginUrl;
+    }
+            
     public static boolean isAdminGuiEnabled() {
        return serviceConfig.getBoolean("gui.adminGuiEnabled",false); //Default not enabled if property not set       
     }
