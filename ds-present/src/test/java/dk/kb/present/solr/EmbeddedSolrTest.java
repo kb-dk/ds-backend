@@ -50,14 +50,16 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_ANSK;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_FM;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_aaf3b130;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
-import static dk.kb.present.TestFiles.PVICA_RECORD_1f3a6a66;
+import static dk.kb.present.TestFiles.PVICA_RECORD_3006e2f8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_2973e7fa;
 import static dk.kb.present.TestFiles.PVICA_RECORD_3945e2d1;
-import static dk.kb.present.TestFiles.PVICA_RECORD_44979f67;
+import static dk.kb.present.TestFiles.PVICA_RECORD_4b18d02d;
+import static dk.kb.present.TestFiles.PVICA_RECORD_53ce4817;
 import static dk.kb.present.TestFiles.PVICA_RECORD_74e22fd8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_9d9785a8;
-import static dk.kb.present.TestFiles.PVICA_RECORD_accf8d1c;
+import static dk.kb.present.TestFiles.PVICA_RECORD_a8aafb121;
 import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
+import static dk.kb.present.TestFiles.PVICA_RECORD_c6fde2f4;
 import static dk.kb.present.TestFiles.PVICA_RECORD_e683b0b8;
 import static dk.kb.present.TestUtil.prettyPrintJson;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
@@ -343,8 +345,8 @@ public class EmbeddedSolrTest {
 
     @Test
     void testPreservicaPremiere() throws Exception {
-        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") != null) {
-            SolrDocument record = singlePreservicaIndex(PVICA_RECORD_44979f67);
+        if (Resolver.getPathFromClasspath("internal_test_files/preservica7") != null) {
+            SolrDocument record = singlePreservicaIndex(PVICA_RECORD_b346acc8);
             assertFalse((Boolean) record.getFieldValue("premiere"));
         } else {
             log.info("Preservica test files are not present. Embedded Solr tests for preservica metadata are not run.");
@@ -354,7 +356,7 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testPreservicaDuration() throws Exception {
-        testLongValuePreservicaField(PVICA_RECORD_44979f67, "duration_ms", 950000L);
+        testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "duration_ms", 950000L);
     }
 
     @Test
@@ -365,7 +367,7 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testOriginPreservica() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_44979f67, "origin", "ds.test");
+        testStringValuePreservicaField(PVICA_RECORD_2973e7fa, "origin", "ds.test");
     }
 
     @Test
@@ -392,8 +394,8 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testTvmeterId() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_44979f67, "tvmeter_id",
-                "78e74634-bec1-4cea-a984-20192c97b743");
+        testStringValuePreservicaField(PVICA_RECORD_b346acc8, "tvmeter_id",
+                "9263cde1-77c9-4f8c-841b-99a330936dbd");
     }
 
 
@@ -404,7 +406,7 @@ public class EmbeddedSolrTest {
     void testPvicaStartTime() throws Exception {
         // Epoch value of 2018-07-11T18-06-33Z
         Date startTime = new Date(1531332393000L);
-        testDateValuePreservicaField(PVICA_RECORD_44979f67, "startTime", startTime);
+        testDateValuePreservicaField(PVICA_RECORD_b346acc8, "startTime", startTime);
     }
 
 
@@ -413,25 +415,25 @@ public class EmbeddedSolrTest {
     void testPvicaEndTime() throws Exception {
         // Epoch value of 2018-07-11T18-22-23Z
         Date endTime = new Date(1531333343000L);
-        testDateValuePreservicaField(PVICA_RECORD_44979f67, "endTime", endTime);
+        testDateValuePreservicaField(PVICA_RECORD_b346acc8, "endTime", endTime);
     }
 
     @Test
     @Tag("integration")
     void testPvicaTemporalFields() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_year", "2012");
-        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_time_da_string", "18:15:00" );
-        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_time_da_string", "18:40:00");
-        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_day_da", "Saturday");
-        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_day_da", "Saturday");
-        testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_month", 4);
-        testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_hour_da", 18);
+        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_year", "2012");
+        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_time_da_string", "18:15:00" );
+        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_end_time_da_string", "18:40:00");
+        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_day_da", "Saturday");
+        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_end_day_da", "Saturday");
+        testIntValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_month", 4);
+        testIntValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_hour_da", 18);
 
         Date startDate = new Date(253370830500000L);
-        testDateValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_start_time_da_date", startDate);
+        testDateValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_time_da_date", startDate);
 
         Date endDate = new Date(253370832000000L);
-        testDateValuePreservicaField(PVICA_RECORD_1f3a6a66, "temporal_end_time_da_date", endDate);
+        testDateValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_end_time_da_date", endDate);
 
     /*
     <field name="temporal_start_time_da_date" type="pdate">
@@ -442,32 +444,32 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testColor() throws Exception {
-        testBooleanValuePreservicaField(PVICA_RECORD_44979f67, "color", true );
+        testBooleanValuePreservicaField(PVICA_RECORD_4b18d02d, "color", true );
     }
 
     @Test
     @Tag("integration")
     void testVideoQuality() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_44979f67, "video_quality", "ikke hd" );
+        testStringValuePreservicaField(PVICA_RECORD_74e22fd8, "video_quality", "ikke hd" );
     }
 
     @Test
     @Tag("integration")
     void testSurroundSound() throws Exception {
-        testBooleanValuePreservicaField(PVICA_RECORD_44979f67, "surround_sound", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_c6fde2f4, "surround_sound", false);
     }
 
     @Test
     @Tag("integration")
     void testAspectRation() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_44979f67, "aspect_ratio", "16:9");
+        testStringValuePreservicaField(PVICA_RECORD_a8aafb121, "aspect_ratio", "16:9");
     }
 
     // TODO: Why are these not cast correctly.
     @Test
     @Tag("integration")
     void testEpisodeNumber() throws Exception {
-        testIntValuePreservicaField(PVICA_RECORD_44979f67, "episode", 3);
+        testIntValuePreservicaField(PVICA_RECORD_3945e2d1, "episode", 5);
     }
 
     @Test
@@ -623,11 +625,11 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testProgramStructure() throws Exception {
-        testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_start", 0);
-        testIntValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_missing_seconds_end", 0);
-        testStringValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_holes", null);
-        testBooleanValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", false);
-        testBooleanValuePreservicaField(PVICA_RECORD_1f3a6a66, "internal_program_structure_overlaps", false);
+        testIntValuePreservicaField(PVICA_RECORD_3006e2f8, "internal_program_structure_missing_seconds_start", 0);
+        testIntValuePreservicaField(PVICA_RECORD_3006e2f8, "internal_program_structure_missing_seconds_end", 0);
+        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "internal_program_structure_holes", null);
+        testBooleanValuePreservicaField(PVICA_RECORD_3006e2f8, "internal_program_structure_overlaps", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_3006e2f8, "internal_program_structure_overlaps", false);
     }
 
     @Test
@@ -661,7 +663,7 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testBroadcaster() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_accf8d1c, "broadcaster", "DR");
+        testStringValuePreservicaField(PVICA_RECORD_53ce4817, "broadcaster", "DR");
     }
 
     @Test
