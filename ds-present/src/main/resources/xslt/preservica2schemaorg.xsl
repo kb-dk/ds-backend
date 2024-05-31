@@ -165,9 +165,6 @@
           <xsl:when test="$preservicaVersion = '7'">
             <xsl:call-template name="extract-manifestation-preservica7"/>
           </xsl:when>
-          <xsl:when test="$preservicaVersion = '5'">
-            <xsl:call-template name="extract-manifestation-preservica5"/>
-          </xsl:when>
         </xsl:choose>
 
         <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
@@ -293,9 +290,6 @@
         <xsl:choose>
           <xsl:when test="$preservicaVersion = '7'">
             <xsl:call-template name="extract-manifestation-preservica7"/>
-          </xsl:when>
-          <xsl:when test="$preservicaVersion = '5'">
-            <xsl:call-template name="extract-manifestation-preservica5"/>
           </xsl:when>
         </xsl:choose>
 
@@ -698,8 +692,8 @@
       </xsl:variable>
       <xsl:variable name="urlPrefix">
         <xsl:choose>
-          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">mp4:bart-access-copies-tv/</xsl:when>
-          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">mp3:bart-access-copies-radio/</xsl:when>
+          <xsl:when test="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">mp4:bart-access-copies-tv/</xsl:when>
+          <xsl:when test="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">mp3:bart-access-copies-radio/</xsl:when>
           <xsl:otherwise></xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
@@ -727,42 +721,6 @@
     </xsl:if>
   </xsl:template>
 
-  <!-- EXTRACT MANIFESTATION FROM PRESERVICA5-->
-  <xsl:template name="extract-manifestation-preservica5">
-    <xsl:if test="$manifestation != ''">
-      <xsl:variable name="manifestationRef">
-        <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef"/>
-      </xsl:variable>
-      <xsl:variable name="urlPrefix">
-        <xsl:choose>
-          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">mp4:bart-access-copies-tv/</xsl:when>
-          <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">mp3:bart-access-copies-radio/</xsl:when>
-          <xsl:otherwise></xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
-      <xsl:variable name="path">
-        <xsl:variable name="path_level1">
-          <xsl:value-of select="concat(substring($manifestationRef,1,2), '/')"/>
-        </xsl:variable>
-        <xsl:variable name="path_level2">
-          <xsl:value-of select="concat(substring($manifestationRef,3,2), '/')"/>
-        </xsl:variable>
-        <xsl:variable name="path_level3">
-          <xsl:value-of select="concat(substring($manifestationRef,5,2), '/')"/>
-        </xsl:variable>
-        <xsl:value-of select="concat($path_level1, $path_level2, $path_level3)"/>
-      </xsl:variable>
-      <xsl:variable name="streamingUrl">
-        <xsl:value-of select="concat($streamingserver, $urlPrefix,
-                                         $path, $manifestationRef,
-                                         '/playlist.m3u8')"/>
-      </xsl:variable>
-      <f:string key="contentUrl">
-        <!-- TODO: Add full url to content when possible-->
-        <xsl:value-of select="$streamingUrl"/>
-      </f:string>
-    </xsl:if>
-  </xsl:template>
 
   <!-- TEMPLATE FOR EXTRACTING INTERNAL VALUES WHICH DON'T HAVE A SCHEMA.ORG DATA REPRESENTATION.
        These values can be almost anything ranging from identifiers to acces conditions.
@@ -797,7 +755,7 @@
     </xsl:if>
 
     <!-- Extract subgenre if present -->
-    <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
+    <xsl:for-each select="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
       <xsl:if test="contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">
         <f:string key="kb:genre_sub">
           <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
@@ -806,10 +764,10 @@
     </xsl:for-each>
     <!-- Create boolean for surround-->
     <xsl:choose>
-      <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'surround'">
+      <xsl:when test="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'surround'">
         <f:boolean key="kb:surround_sound"><xsl:value-of select="true()"/></f:boolean>
       </xsl:when>
-      <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'ikke surround'">
+      <xsl:when test="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'ikke surround'">
         <f:boolean key="kb:surround_sound"><xsl:value-of select="false()"/></f:boolean>
       </xsl:when>
     </xsl:choose>
@@ -827,7 +785,7 @@
       </xsl:when>
     </xsl:choose>
     <!-- Extract format identifiers -->
-    <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID">
+    <xsl:for-each select="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID">
       <xsl:choose>
         <xsl:when test="formatIdentifierSource = 'ritzau'">
           <f:string key="kb:format_identifier_ritzau">
@@ -857,26 +815,26 @@
     </xsl:choose>
     <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
          Some have external value, while others primarily are for internal usage.-->
-    <xsl:for-each select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+    <xsl:for-each select="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
       <xsl:call-template name="extension-extractor">
       <xsl:with-param name="type" select="$type"/>
       </xsl:call-template>
     </xsl:for-each>
 
     <!-- Extracts information on video padding. -->
-    <xsl:if test="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds">
+    <xsl:if test="/XIP/Metadata/Content/padding:padding/paddingSeconds">
       <f:number key="kb:padding_seconds">
-        <xsl:value-of select="/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds"/>
+        <xsl:value-of select="/XIP/Metadata/Content/padding:padding/paddingSeconds"/>
       </f:number>
     </xsl:if>
 
     <!-- Extracts access metadata to the internal kb map -->
-    <xsl:for-each select="/xip:DeliverableUnit/Metadata/access:access">
+    <xsl:for-each select="/XIP/Metadata/Content/access:access">
       <xsl:call-template name="access-template"/>
     </xsl:for-each>
 
     <!-- Extracts information on the structure of the video component. -->
-    <xsl:for-each select="/xip:DeliverableUnit/Metadata/program_structure:program_structure">
+    <xsl:for-each select="/XIP/Metadata/Content/program_structure:program_structure">
       <xsl:call-template name="program-structure"/>
     </xsl:for-each>
   </xsl:template>
@@ -885,15 +843,15 @@
        aspect_ratio and color.-->
   <xsl:template name="internal-video-fields">
     <!-- Extract aspect ratio-->
-    <xsl:if test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio">
+    <xsl:if test="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio">
       <f:string key="kb:aspect_ratio">
-        <xsl:value-of select="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
+        <xsl:value-of select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatAspectRatio"/>
       </f:string>
     </xsl:if>
 
     <!-- Create boolean for color for tv resources-->
     <xsl:choose>
-      <xsl:when test="/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
+      <xsl:when test="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatColors = 'farve'">
         <f:boolean key="kb:color"><xsl:value-of select="true()"/></f:boolean>
       </xsl:when>
       <xsl:otherwise>
@@ -1104,27 +1062,5 @@
 
 
   </xsl:template>
-
-  <!-- Specific function which checks for existence of any internal field in the incoming XML document. -->
-  <xsl:function name="my:doesInternalMapExist" as="xs:boolean">
-    <xsl:param name="rootElement"/>
-    <xsl:param name="pbcExtensions"/>
-    <xsl:value-of select="f:contains($rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre, 'undergenre:' ) or
-                          f:contains($rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration, 'surround') or
-                          $rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID/formatIdentifierSource = 'ritzau' or
-                          $rootElement/xip:DeliverableUnit/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID/formatIdentifierSource = 'nielsen' or
-                          $rootElement/xip:DeliverableUnit/Metadata/padding:padding/paddingSeconds or
-                          $rootElement/xip:DeliverableUnit/Metadata/access:access/individuelt_forbud or
-                          $rootElement/xip:DeliverableUnit/Metadata/access:access/klausuleret or
-                          $rootElement/xip:DeliverableUnit/Metadata/access:access/defekt or
-                          $rootElement/xip:DeliverableUnit/Metadata/access:access/kommentarer != '' or
-                          $rootElement/xip:DeliverableUnit/Metadata/program_structure:program_structure != '' or
-                          $pbcExtensions[f:contains(., 'premiere')] or
-                          $pbcExtensions[f:contains(., 'genudsendelse')] or
-                          $pbcExtensions[f:contains(., 'id')] or
-                          $pbcExtensions[f:contains(., 'program')]
-                      "/>
-
-  </xsl:function>
 
 </xsl:transform>
