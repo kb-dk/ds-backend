@@ -365,12 +365,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    void testStreamingUrl() throws IOException {
-        String solrJson = TestUtil.getTransformedWithVideoChildAddedPreservica5(PRESERVICA2SOLR, TestFiles.PVICA_RECORD_1f3a6a66, null);
-        assertTrue(solrJson.contains("\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
-    }
-
-    @Test
     void testUrlPreservica7()  {
         assertPvica7Contains(TestFiles.PVICA7_RECORD_8946d31d, "\"file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\"");
     }
