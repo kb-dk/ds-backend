@@ -755,7 +755,7 @@
     </xsl:if>
 
     <!-- Extract subgenre if present -->
-    <xsl:for-each select="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
+    <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
       <xsl:if test="contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">
         <f:string key="kb:genre_sub">
           <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
@@ -764,10 +764,10 @@
     </xsl:for-each>
     <!-- Create boolean for surround-->
     <xsl:choose>
-      <xsl:when test="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'surround'">
+      <xsl:when test="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'surround'">
         <f:boolean key="kb:surround_sound"><xsl:value-of select="true()"/></f:boolean>
       </xsl:when>
-      <xsl:when test="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'ikke surround'">
+      <xsl:when test="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatChannelConfiguration = 'ikke surround'">
         <f:boolean key="kb:surround_sound"><xsl:value-of select="false()"/></f:boolean>
       </xsl:when>
     </xsl:choose>
@@ -785,7 +785,7 @@
       </xsl:when>
     </xsl:choose>
     <!-- Extract format identifiers -->
-    <xsl:for-each select="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID">
+    <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreFormatID">
       <xsl:choose>
         <xsl:when test="formatIdentifierSource = 'ritzau'">
           <f:string key="kb:format_identifier_ritzau">
@@ -815,7 +815,7 @@
     </xsl:choose>
     <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
          Some have external value, while others primarily are for internal usage.-->
-    <xsl:for-each select="/XIP/Metadata/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+    <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
       <xsl:call-template name="extension-extractor">
       <xsl:with-param name="type" select="$type"/>
       </xsl:call-template>

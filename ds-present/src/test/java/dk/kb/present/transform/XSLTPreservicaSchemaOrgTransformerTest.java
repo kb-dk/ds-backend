@@ -49,7 +49,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testContentUrl() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3945e2d1, null);
-        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/89\\/46\\/d3\\/8946d31d-a81c-447f-b84d-ff80644353d2.mp4\\/playlist.m3u8\""));
+        prettyPrintJson(transformedJSON);
+        Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/89\\/46\\/d3\\/8946d31d-a81c-447f-b84d-ff80644353d2.mp4\\/playlist.m3u8\""));
     }
     @Test
     void testConditionOfAccess() throws IOException {
@@ -292,6 +293,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void testKBInternalMap() throws IOException {
         // TODO: Add individual tests for all params
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
+        prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"kb:surround_sound\":false"));
         Assertions.assertTrue(transformedJSON.contains("\"kb:color\":true"));
         Assertions.assertTrue(transformedJSON.contains("\"kb:premiere\":false"));
@@ -303,6 +305,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testInternalGenreSub() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
+        prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"kb:genre_sub\":\"Alle\""));
     }
     @Test
