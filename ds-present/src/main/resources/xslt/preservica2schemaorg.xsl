@@ -57,14 +57,8 @@
       </xsl:choose>
     </xsl:variable>
 
-    <!-- For preservica 5 records the AccessionRef is saved as a variable to be used later in the transformation.
-         Preservica 6 records contains this value inside the $metadataPath and is therefore not extracted here. -->
-    <xsl:variable name="preservica5AccessionRef">
-      <xsl:choose>
-        <xsl:when test="$preservicaVersion= '5'"><xsl:copy-of select="/xip:DeliverableUnit/AccessionRef"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="''"/></xsl:otherwise>
-      </xsl:choose>
-
+    <xsl:variable name="preservicaAccessionRef">
+      <xsl:value-of select="/XIP/Metadata/Content/LegacyXIP/AccessionRef"/>
     </xsl:variable>
 
     <!-- Determine the type of schema.org object in hand.-->
@@ -92,7 +86,7 @@
             <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
             <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
-            <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
+            <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:when test="$type = 'AudioObject'">
@@ -101,7 +95,7 @@
             <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
             <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
-            <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
+            <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
@@ -110,7 +104,7 @@
             <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
             <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
-            <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
+            <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
@@ -125,14 +119,14 @@
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation.
         preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
-        preservica5AccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
+        preservicaAccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
                                  If not, then the parameter contains an empty string.-->
   <xsl:template name="video-transformation">
     <xsl:param name="type"/>
     <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="preservicaVersion"/>
-    <xsl:param name="preservica5AccessionRef"/>
+    <xsl:param name="preservicaAccessionRef"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -148,7 +142,7 @@
             <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
             <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
-            <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
+            <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
 
           <!-- This is the only field directly present in pbc:PBCoreDescriptionDocument, which is only used for video
@@ -218,14 +212,14 @@
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation.
         preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
-        preservica5AccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
+        preservicaAccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
                                  If not, then the parameter contains an empty string.-->
   <xsl:template name="audio-transformation">
     <xsl:param name="type"/>
     <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="preservicaVersion"/>
-    <xsl:param name="preservica5AccessionRef"/>
+    <xsl:param name="preservicaAccessionRef"/>
 
     <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
     <xsl:call-template name="generic-transformation">
@@ -233,7 +227,7 @@
       <xsl:with-param name="metadataPath" select="$metadataPath"/>
       <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
       <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
-      <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
+      <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
 
     </xsl:call-template>
   </xsl:template>
@@ -244,14 +238,14 @@
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation.
         preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
-        preservica5AccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
+        preservicaAccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
                                  If not, then the parameter contains an empty string.-->
   <xsl:template name="generic-transformation">
     <xsl:param name="type"/>
     <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="preservicaVersion"/>
-    <xsl:param name="preservica5AccessionRef"/>
+    <xsl:param name="preservicaAccessionRef"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -271,7 +265,7 @@
                 <xsl:with-param name="metadataPath" select="$metadataPath"/>
                 <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
                 <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
-                <xsl:with-param name="preservica5AccessionRef" select="$preservica5AccessionRef"/>
+                <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
               </xsl:call-template>
             </xsl:for-each>
           </xsl:when>
@@ -351,7 +345,7 @@
     <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="preservicaVersion"/>
-    <xsl:param name="preservica5AccessionRef"/>
+    <xsl:param name="preservicaAccessionRef"/>
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
@@ -658,18 +652,10 @@
         </f:map>
       </xsl:if>
       <!-- Extract accession ref as schema.org identifier --> <!-- TODO: This could properly be done with loads of the identifiers in the kb:internal map.-->
-      <!-- TODO: This field is only extracted from preservica 5 records. However, it is present in preservica 6 records at XPATH: /XIP/Metadata[1]/Content/LegacyXIP/AccessionRef -->
       <f:map>
         <f:string key="@type">PropertyValue</f:string>
         <f:string key="PropertyID">InternalAccessionRef</f:string>
-        <xsl:choose>
-          <xsl:when test="$preservicaVersion = '5'">
-            <f:string key="value"><xsl:value-of select="$preservica5AccessionRef"/></f:string>
-          </xsl:when>
-          <xsl:when test="$preservicaVersion = '6'">
-            <f:string key="value"><xsl:value-of select="$metadataPath//LegacyXIP/AccessionRef"/></f:string>
-          </xsl:when>
-        </xsl:choose>
+        <f:string key="value"><xsl:value-of select="$preservicaAccessionRef"/></f:string>
       </f:map>
     </f:array>
 
