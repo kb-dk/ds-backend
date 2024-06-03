@@ -433,7 +433,7 @@
       </xsl:if>
 
       <!-- Extract boolean for retransmission -->
-      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:retransmission')">
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:retransmission') != ''">
         <f:string key="retransmission">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:retransmission')"/>
         </f:string>
@@ -474,7 +474,7 @@
       </xsl:if>
 
       <!-- Extract boolean for subtitles -->
-      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:has_subtitles')">
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:has_subtitles') != ''">
         <f:string key="has_subtitles">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:has_subtitles')"/>
         </f:string>
@@ -482,7 +482,7 @@
 
       <!-- Extract boolean for subtitles for hearing impaired  -->
       <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal',
-                                                        'kb:has_subtitles_for_hearing_impaired')">
+                                                        'kb:has_subtitles_for_hearing_impaired') != ''">
         <f:string key="has_subtitles_for_hearing_impaired">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal',
                                                                     'kb:has_subtitles_for_hearing_impaired')"/>
