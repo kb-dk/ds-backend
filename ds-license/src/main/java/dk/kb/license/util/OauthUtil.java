@@ -27,7 +27,8 @@ public class OauthUtil {
     private static final Logger log = LoggerFactory.getLogger(OauthUtil.class);
 
     /**
-     * Validate a JWT access code token against KeyCloak.
+     * Validate a JWT access code token against KeyCloak. To call KeyCloak you need to know the keycloakSecret for AD realm provider 
+     * TODO also validate the JWT encoded with the HS256 algorithm. (Jira created)
      * 
      * @param code The code parameter in the redirect url
      * @param keyCloakClientSecret The KeyCloak client secret for the realm provider
@@ -49,13 +50,14 @@ public class OauthUtil {
             log.error("Error calling KeyCloak:"+e.getMessage());
             throw new Exception(e);
         }          
-
-        //We used clientSecret for getting access token, so no need to validate HS256 JWT. 
+        log.info("JWT:"+JWT); 
 
         JSONObject jwtJson = new JSONObject(JWT);
         String accestoken= jwtJson.getString("access_token");
         log.info("Access token from KeyCloak:"+accestoken); //Not secret.                
 
+        //TODO validate the HS256 encoded JWT. See DRA-753
+        
         String[] chunks =  accestoken.split("\\."); //The Oath token contains 3 parts separated by comma
 
         Base64.Decoder decoder = Base64.getUrlDecoder();        
