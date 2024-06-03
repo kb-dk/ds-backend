@@ -44,7 +44,6 @@
     <xsl:variable name="preservicaVersion">
       <xsl:choose>
         <xsl:when test="/XIP">7</xsl:when>
-        <xsl:when test="/xip:DeliverableUnit">5</xsl:when>
         <xsl:otherwise>Unknown</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -52,7 +51,6 @@
     <!-- Defines the root path for metadata based on preservica version-->
     <xsl:variable name="metadataPath">
       <xsl:choose>
-        <xsl:when test="$preservicaVersion = '5'"><xsl:copy-of select="/xip:DeliverableUnit/Metadata"/></xsl:when>
         <xsl:when test="$preservicaVersion = '7'"><xsl:copy-of select="/XIP/Metadata/Content"/></xsl:when>
       </xsl:choose>
     </xsl:variable>
@@ -64,8 +62,8 @@
     <!-- Determine the type of schema.org object in hand.-->
     <xsl:variable name="type">
       <xsl:choose>
-        <xsl:when test="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
-        <xsl:when test="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
+        <xsl:when test="//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
+        <xsl:when test="//pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
         <xsl:otherwise>MediaObject</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -73,7 +71,7 @@
 
     <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
          This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
-    <xsl:variable name="pbcExtensions" select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension"/>
+    <xsl:variable name="pbcExtensions" select="//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension"/>
 
     <xsl:variable name="json">
       <!-- TODO: Generel todo: Figure how to determine language for the strings "@language" that can be used throughout the schema.-->
@@ -177,7 +175,7 @@
 
         <!-- This template also extracts internal fields only relevant for video. The rest of the extension extraction
              is handled in the kb-internal template called above. -->
-        <xsl:for-each select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+        <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
           <xsl:call-template name="video-extension-extractor"/>
         </xsl:for-each>
         </f:map>
@@ -351,10 +349,10 @@
          Determine if title and original title are alike. Both fields should always be in metadata -->
     <!-- TODO: Do some validation of titles - check with metadata schema when they are set.    -->
     <xsl:variable name="title">
-      <xsl:value-of select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreTitle[1]/title"/>
+      <xsl:value-of select="//pbc:PBCoreDescriptionDocument/pbcoreTitle[1]/title"/>
     </xsl:variable>
     <xsl:variable name="original-title">
-      <xsl:value-of select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreTitle[2]/title"/>
+      <xsl:value-of select="//pbc:PBCoreDescriptionDocument/pbcoreTitle[2]/title"/>
     </xsl:variable>
 
     <xsl:choose>
@@ -385,7 +383,8 @@
         <xsl:if test="./publisherRole ='kanalnavn'">
           <xsl:value-of select="./publisher"/>
         </xsl:if>
-      </xsl:for-each>    </xsl:variable>
+      </xsl:for-each>
+    </xsl:variable>
     <xsl:variable name="publisherGeneral">
       <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcorePublisher">
         <xsl:if test="./publisherRole ='channel_name'">
@@ -394,12 +393,12 @@
       </xsl:for-each>
     </xsl:variable>
 
-    <xsl:if test="$metadataPath//pbc:PBCoreDescriptionDocument/pbcorePublisher">
+    <xsl:if test="//pbc:PBCoreDescriptionDocument/pbcorePublisher">
       <f:map key="publication">
         <f:string key="@type">BroadcastEvent</f:string>
         <!-- Define isLiveBroadcast from live extension field.  -->
         <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
-        <xsl:for-each select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+        <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
           <xsl:if test="f:contains(., 'live:live') or f:contains(., 'live:ikke live')">
             <f:boolean key="isLiveBroadcast">
               <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
@@ -477,7 +476,7 @@
         </f:string>
 
         <!-- If episode titel is defined it is extracted here. -->
-        <xsl:for-each select="$metadataPath//pbc:PBCoreDescriptionDocument/pbcoreTitle">
+        <xsl:for-each select="//pbc:PBCoreDescriptionDocument/pbcoreTitle">
           <xsl:if test="titleType = 'episodetitel' and title != ''">
             <f:string key="name"><xsl:value-of select="title"/></f:string>
           </xsl:if>
@@ -638,9 +637,9 @@
         </xsl:for-each>
       </xsl:if>
       <!-- Extracts PID as identifier if present.-->
-      <xsl:if test="$metadataPath//pidhandle:pidhandle/handle">
+      <xsl:if test="//pidhandle:pidhandle/handle">
         <xsl:variable name="pidHandles">
-          <xsl:value-of select="distinct-values($metadataPath//pidhandle:pidhandle/handle)"/>
+          <xsl:value-of select="distinct-values(//pidhandle:pidhandle/handle)"/>
         </xsl:variable>
 
         <f:map>
