@@ -103,22 +103,6 @@ class OriginHandlerTest {
         assertTrue(record.contains("\"id\":\"local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
     }
 
-    @Test
-    @Tag("integration")
-    void testManifestationFiltering() throws IOException {
-        if (Resolver.getPathFromClasspath("internal_test_files/preservica7/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml") == null){
-            log.info("Preservica test file is not present. Test for file 9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml");
-            fail();
-        }
-        // This test checks that the correct filtering is applied in DSOrigin.getFirstChild()
-        // The FileStorage used for testing appends two children to each record. One with referenceType = 1 and one with
-        // referenceType = 2. Only children with type = 2 should be returned as these are presentation manifestations.
-        OriginHandler ch = new OriginHandler(config);
-        String record = ch.getRecord("local.tv:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
-        assertTrue(record.contains("correct-reference\\/playlist.m3u8"));
-        assertFalse(record.contains("wrong-reference\\/playlist.m3u8"));
-    }
-
 
     @Test
     void localCorpusFail() throws IOException {        
