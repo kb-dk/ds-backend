@@ -50,7 +50,7 @@ public class OauthUtil {
             log.error("Error calling KeyCloak:"+e.getMessage());
             throw new Exception(e);
         }          
-        log.info("JWT:"+JWT); 
+        //log.debug("JWT:"+JWT); 
 
         JSONObject jwtJson = new JSONObject(JWT);
         String accestoken= jwtJson.getString("access_token");
