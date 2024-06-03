@@ -299,7 +299,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testProgramStructure(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"internal_program_structure_missing_seconds_start\":\"0\"," +
+        assertPvicaContains(TestFiles.PVICA_RECORD_2b462c63, "\"internal_program_structure_missing_seconds_start\":\"0\"," +
                                                  "\"internal_program_structure_missing_seconds_end\":\"0\"");
 
         //TODO: add tests for fields 'holes' and 'overlaps' with a constructed test file.
@@ -456,7 +456,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString;
         try {
             solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, record);
-            prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);

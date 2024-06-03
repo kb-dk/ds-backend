@@ -36,6 +36,8 @@ public class TestFiles {
     public static final String PVICA_RECORD_2973e7fa = "internal_test_files/preservica7/2973e7fa-0531-4c37-8b8d-5726c553b30b.xml";
     public static final String PVICA_RECORD_53ce4817 = "internal_test_files/preservica7/53ce4817-56ce-4e41-bac4-ba2dda938199.xml";
 
+    public static final String PVICA_RECORD_2b462c63 = "internal_test_files/preservica7/2b462c63-8bb8-477a-89d9-70675c22c163.xml";
+
     // From preservica 6, not in preservica 7 stage
     public static final String PVICA6_RECORD_00a9e71c = "internal_test_files/preservica6/00a9e71c-1264-4e57-9238-b38ec5672fb2.xml";
 
