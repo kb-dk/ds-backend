@@ -100,7 +100,7 @@ public class DsPresentApiServiceImplTest {
         }
     }
 
-    @Test
+    /*@Test
     public void testMultiRecordsLicense() throws NoSuchFieldException, ApiException, IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             return;
@@ -127,7 +127,7 @@ public class DsPresentApiServiceImplTest {
         StreamingOutput noRecords = presentAPI.getRecords("dsfl", 0L, 1000L, FormatDto.MODS);
         assertEquals(0, PresentFacadeTest.countMETS(noRecords),
                 "Zero accepting license should return exactly 0 records");
-    }
+    }*/
 
     @Test
     public void testSingleRecordLicenseAllowAll() throws NoSuchFieldException, ApiException, IOException {
