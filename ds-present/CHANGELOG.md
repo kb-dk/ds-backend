@@ -6,8 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.6](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.6)
+### Added
+- Added solr configuration to distribution tar
 
-## [1.7.5](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.4)
+### Fixed
+- Fixed assembly descriptor to include solr configuration in distribution tar.
+
+
+## [1.7.5](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.5)
 ## Added 
 - Added solr field: temporal_start_month
 - Added View strategy for Preservica 7, so that manifestations can be extracted correctly for Preservica 5 and 7. [DRA-662](https://kb-dk.atlassian.net/browse/DRA-662)
