@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
-    <version>1.7.5-SNAPSHOT</version>
+    <version>1.7.7-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
 
@@ -31,7 +31,7 @@
         <url>https://github.com/kb-dk/ds-present</url>
         <connection>scm:git:git@github.com:kb-dk/ds-present.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds-present.git</developerConnection>
-        <tag>ds-present-1.0</tag>
+        <tag>ds-present-1.7.5</tag>
     </scm>
 
     <licenses>
@@ -67,6 +67,10 @@
                     <!-- kb-util has 2.3.3, but transitive resolving has 2.4.0 somewhere-->
                     <groupId>jakarta.xml.bind</groupId>
                     <artifactId>jakarta.xml.bind-api</artifactId>
+                </exclusion>
+                <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -189,34 +193,37 @@
             <scope>runtime</scope>
         </dependency>-->
 
-
         <!-- Logging dependencies -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.11</version>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>2.0.11</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>2.0.9</version>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jul-to-slf4j</artifactId>
+          <version>2.0.9</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>2.0.9</version>
+          <groupId>org.slf4j</groupId>
+          <artifactId>log4j-over-slf4j</artifactId>
+          <version>2.0.9</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>2.0.9</version>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <version>2.0.9</version>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.4.14</version>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-ext</artifactId>
+          <version>2.0.9</version>
         </dependency>
-
+        <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+          <version>1.4.14</version>
+        </dependency>
         <!-- Unit test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -308,23 +315,15 @@
              <exclusions>
                 <exclusion>
                       <groupId>org.slf4j</groupId>
-                      <artifactId>slf4j-log4j12-impl</artifactId>
-                  </exclusion>
-                  <exclusion>
-                      <groupId>org.slf4j</groupId>
-                      <artifactId>slf4j-log4j12</artifactId>
+                      <artifactId>*</artifactId>
                   </exclusion>
                   <exclusion>
                       <groupId>log4j</groupId>
-                      <artifactId>log4j</artifactId>
-                  </exclusion>
-                    <exclusion>
-                      <groupId>log4j</groupId>
-                      <artifactId>log4j-api</artifactId>
+                      <artifactId>*</artifactId>
                   </exclusion>
                   <exclusion>
                       <groupId>org.apache.logging.log4j</groupId>
-                      <artifactId>log4j-core</artifactId>
+                      <artifactId>*</artifactId>
                   </exclusion>
               </exclusions>
              </dependency>
@@ -337,27 +336,19 @@
                <exclusions>
                  <exclusion> <!-- Solves the "multiple slf bindings" warning -->
                     <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
+                    <artifactId>*</artifactId>
                  </exclusion>
                  <exclusion>
                     <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                 </exclusion>
-                 <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12-impl</artifactId>
+                    <artifactId>*</artifactId>
                  </exclusion>
                  <exclusion>
                     <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
+                    <artifactId>*</artifactId>
                  </exclusion>
                  <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j-api</artifactId>
-                 </exclusion>
-                 <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-core</artifactId>
+                   <groupId>org.xerial.snappy</groupId>
+                   <artifactId>snappy-java</artifactId>
                  </exclusion>
                 </exclusions>
               </dependency>
@@ -669,6 +660,9 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>10.0.12</version>
                 <configuration>
+                    <deployMode>FORK</deployMode>
+                    <jvmArgs>-Xmx1g -Djetty.port=9073</jvmArgs>
+                    <jettyXmls>${project.basedir}/target/jetty-res/jetty-env.xml</jettyXmls>
                     <useTestScope>true</useTestScope>
                     <!-- https://www.eclipse.org/jetty/documentation/jetty-10/programming-guide/index.html#jetty-run-goal -->
                     <!-- https://stackoverflow.com/questions/12493798/jetty-maven-plugin-using-scan -->
@@ -678,9 +672,6 @@
                         <descriptor>${project.basedir}/target/${project.build.finalName}/WEB-INF/web.xml</descriptor>
                         <jettyEnvXml>${project.basedir}/target/jetty-res/jetty-env.xml</jettyEnvXml>
                     </webApp>
-                    <httpConnector>
-                        <port>9073</port>
-                    </httpConnector>
                 </configuration>
             </plugin>
           <plugin>
@@ -688,17 +679,8 @@
                 <version>3.6.0</version>
                 <configuration>
                     <tarLongFileMode>posix</tarLongFileMode>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
                 </configuration>
                 <executions>
-                    <execution>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
                     <execution>
                       <id>solr-assembly</id> <!-- Unique identifier for this execution -->
                       <phase>package</phase>
@@ -714,6 +696,17 @@
                         <appendAssemblyId>false</appendAssemblyId>
                         <attach>true</attach>
                       </configuration>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                          <descriptors>
+                            <descriptor>src/main/assembly/assembly.xml</descriptor>
+                          </descriptors>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
