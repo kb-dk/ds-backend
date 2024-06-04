@@ -679,17 +679,8 @@
                 <version>3.6.0</version>
                 <configuration>
                     <tarLongFileMode>posix</tarLongFileMode>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
                 </configuration>
                 <executions>
-                    <execution>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
                     <execution>
                       <id>solr-assembly</id> <!-- Unique identifier for this execution -->
                       <phase>package</phase>
@@ -705,6 +696,17 @@
                         <appendAssemblyId>false</appendAssemblyId>
                         <attach>true</attach>
                       </configuration>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                          <descriptors>
+                            <descriptor>src/main/assembly/assembly.xml</descriptor>
+                          </descriptors>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
