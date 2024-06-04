@@ -1228,7 +1228,7 @@ public class LicenseModuleStorage implements AutoCloseable {
     // when server is shutdown,
     // Just to be sure the DB lock file is free.
     public static void shutdown() {
-        log.info("Shutdown ds-storage");
+        log.info("Shutdown ds-license");
         try {
             if (dataSource != null) {
                 dataSource.close();

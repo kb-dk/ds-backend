@@ -108,7 +108,12 @@ public class ServiceConfig {
         String loginUrl= serviceConfig.getString("keycloak.loginUrl");
         return loginUrl;
     }
-            
+ 
+    public static  String getKeycloakRsaPublicKey() {
+        String loginUrl= serviceConfig.getString("keycloak.rsaPublicKey");
+        return loginUrl;
+    }
+    
     public static boolean isAdminGuiEnabled() {
        return serviceConfig.getBoolean("gui.adminGuiEnabled",false); //Default not enabled if property not set       
     }

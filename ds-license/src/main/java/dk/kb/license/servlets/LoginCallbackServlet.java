@@ -43,12 +43,12 @@ public class LoginCallbackServlet extends HttpServlet {
         String keyCloakRealmTokenUrl=ServiceConfig.getKeycloakRealmTokenUrl();
         String keyCloakClientSecret=ServiceConfig.getKeycloakClientSecret();
         String redirectUrl=ServiceConfig.getKeycloakRedirectUrl();
-        
+        String rsaPublicKey=ServiceConfig.getKeycloakRsaPublicKey();
         String code = request.getParameter(CODE_PARAMETER);
         String combinedUserName=null;
         
         try {
-           combinedUserName=OauthUtil.validateCode(code,keyCloakClientSecret , redirectUrl, keyCloakRealmTokenUrl);
+           combinedUserName=OauthUtil.getUserInformation(code,keyCloakClientSecret , rsaPublicKey,redirectUrl, keyCloakRealmTokenUrl);
         }
         catch(Exception e) {
           log.error("Error validating redirect code against keycloak",e);

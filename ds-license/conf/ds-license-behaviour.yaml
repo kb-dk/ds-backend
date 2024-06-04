@@ -38,10 +38,12 @@ gui:
   adminGuiEnabled: true
   
 #KeyCloakClientSecret can be seen in the KeyCloak server admin page for the AD realm configuration
+#The rsaPublic key can also be seen at the KeyCloak server admin page
 #redirectUrl must be added to the whitelist in KeyCloak administration configuration
 keycloak:
-  realmTokenUrl: https://<keycloakServer>/realms/master/protocol/openid-connect/token
-  clientSecret: XXXXXX
+  realmTokenUrl: 'https://<keycloakServer>/realms/master/protocol/openid-connect/token'
+  clientSecret: 'XXXXXX'
+  rsaPublicKey: 'XXXXXX'
   redirectUrl: http://<keycloak_servername>/ds-license/loginCallbackServlet
   loginUrl: https://<keycloak_servername>/realms/master/protocol/openid-connect/auth?response_type=code&client_id=kb-ad&redirect_uri=http://<servername>/ds-license/loginCallbackServlet
 
