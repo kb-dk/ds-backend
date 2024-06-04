@@ -44,8 +44,8 @@ keycloak:
   realmTokenUrl: 'https://<keycloakServer>/realms/master/protocol/openid-connect/token'
   clientSecret: 'XXXXXX'
   rsaPublicKey: 'XXXXXX'
-  redirectUrl: http://<keycloak_servername>/ds-license/loginCallbackServlet
-  loginUrl: https://<keycloak_servername>/realms/master/protocol/openid-connect/auth?response_type=code&client_id=kb-ad&redirect_uri=http://<servername>/ds-license/loginCallbackServlet
+  redirectUrl: 'http://<keycloak_servername>/ds-license/loginCallbackServlet'
+  loginUrl: 'https://<keycloak_servername>/realms/master/protocol/openid-connect/auth?response_type=code&client_id=kb-ad&redirect_uri=http://<servername>/ds-license/loginCallbackServlet'
 
 #The license cache reload time. The replica database application needs to refresh cache since it will not be notified upon changes in configuration.
 #300 seconds=5 minutes is a good value.
