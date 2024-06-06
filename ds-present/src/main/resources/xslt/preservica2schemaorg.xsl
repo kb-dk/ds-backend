@@ -15,8 +15,7 @@
                xmlns:program_structure="http://doms.statsbiblioteket.dk/types/program_structure/0/1/#"
                xmlns:err="http://www.w3.org/2005/xqt-errors"
                version="3.0">
-
-
+  
   <xsl:output method="text"/>
 
   <!--INJECTIONS -->
@@ -33,8 +32,7 @@
   <xsl:param name="mTime"/>
   <!-- Access condition for DR material. Currently, this param contains a placeholder. -->
   <xsl:param name="conditionsOfAccess"/>
-
-
+  
   <!-- MAIN TEMPLATE. This template delegates, which fields are to be created for each schema.org object.
        Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
   <xsl:template match="/">
@@ -50,7 +48,7 @@
 
     <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
          This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
-    <xsl:variable name="pbcExtensions" select="//pbc:PBCoreDescriptionDocument/pbcoreExtension/extension"/>
+    <xsl:variable name="pbcExtensions" select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension"/>
 
     <xsl:variable name="json">
       <!-- TODO: Generel todo: Figure how to determine language for the strings "@language" that can be used throughout the schema.-->
@@ -81,7 +79,7 @@
     <xsl:value-of select="f:xml-to-json($json)"/>
   </xsl:template>
 
-  <!-- TEMPLATE FOR TRANSFORMING VIDEOOBJECTS. The template requires the following five parameters:
+  <!-- TEMPLATE FOR TRANSFORMING VIDEOOBJECTS. The template requires the following two parameters:
         type: The type of schema-org object in hand.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation. -->
@@ -97,7 +95,7 @@
 
       <xsl:try>
         <!-- Extract PBCore metadata-->
-        <xsl:for-each select=".">
+        <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument">
           <xsl:call-template name="pbc-metadata">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
@@ -113,7 +111,7 @@
         </xsl:for-each>
 
         <!-- Extract manifestation -->
-        <xsl:call-template name="extract-manifestation-preservica7"/>
+        <xsl:call-template name="extract-manifestation-preservica"/>
 
         <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
              available from the preservica records.-->
@@ -195,7 +193,7 @@
              We do need to set origin anyway, therefore this choose-statement. -->
         <xsl:choose>
           <xsl:when test="/XIP/Metadata/Content">
-            <xsl:for-each select=".">
+            <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument">
               <xsl:call-template name="pbc-metadata">
                 <xsl:with-param name="type" select="$type"/>
                 <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
@@ -214,7 +212,7 @@
         </xsl:choose>
 
         <!-- Extract manifestation -->
-        <xsl:call-template name="extract-manifestation-preservica7"/>
+        <xsl:call-template name="extract-manifestation-preservica"/>
 
         <!-- If type is MediaObject we don't create the internal map. -->
         <xsl:if test="$type != 'MediaObject'">
@@ -275,10 +273,10 @@
          Determine if title and original title are alike. Both fields should always be in metadata -->
     <!-- TODO: Do some validation of titles - check with metadata schema when they are set.    -->
     <xsl:variable name="title">
-      <xsl:value-of select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreTitle[1]/title"/>
+      <xsl:value-of select="./pbcoreTitle[1]/title"/>
     </xsl:variable>
     <xsl:variable name="original-title">
-      <xsl:value-of select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreTitle[2]/title"/>
+      <xsl:value-of select="./pbcoreTitle[2]/title"/>
     </xsl:variable>
 
     <xsl:choose>
@@ -305,26 +303,26 @@
     <!-- Publisher extraction. Some metadata has two pbcorePublisher/publisher/publisherRole.
          We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
     <xsl:variable name="publisherSpecific">
-      <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcorePublisher">
+      <xsl:for-each select="./pbcorePublisher">
         <xsl:if test="./publisherRole ='kanalnavn'">
           <xsl:value-of select="./publisher"/>
         </xsl:if>
       </xsl:for-each>
     </xsl:variable>
     <xsl:variable name="publisherGeneral">
-      <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcorePublisher">
+      <xsl:for-each select="./pbcorePublisher">
         <xsl:if test="./publisherRole ='channel_name'">
           <xsl:value-of select="./publisher"/>
         </xsl:if>
       </xsl:for-each>
     </xsl:variable>
 
-    <xsl:if test="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcorePublisher">
+    <xsl:if test="./pbcorePublisher">
       <f:map key="publication">
         <f:string key="@type">BroadcastEvent</f:string>
         <!-- Define isLiveBroadcast from live extension field.  -->
         <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
-        <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+        <xsl:for-each select="./pbcoreExtension/extension">
           <xsl:if test="f:contains(., 'live:live') or f:contains(., 'live:ikke live')">
             <f:boolean key="isLiveBroadcast">
               <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
@@ -377,7 +375,7 @@
 
     
     <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
-    <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and /XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
+    <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and ./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
       <f:string key="datePublished">
         <xsl:value-of select="f:substring-before(pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart, 'T')"/>
       </f:string>
@@ -402,14 +400,14 @@
         </f:string>
 
         <!-- If episode titel is defined it is extracted here. -->
-        <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreTitle">
+        <xsl:for-each select="./pbcoreTitle">
           <xsl:if test="titleType = 'episodetitel' and title != ''">
             <f:string key="name"><xsl:value-of select="title"/></f:string>
           </xsl:if>
         </xsl:for-each>
 
         <!-- Extract metadata from PBC extensions related to episodes -->
-        <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+        <xsl:for-each select="./pbcoreExtension/extension">
           <!-- Extract episode number if present.
                Checks for 'episodenr' in PBC extension and checks that there is a substring after the key.-->
           <xsl:if test="f:contains(., 'episodenr:') and f:string-length(substring-after(., 'episodenr:')) > 0">
@@ -420,7 +418,7 @@
         </xsl:for-each>
 
         <!-- Extract metadata from PBC extensions related to season length. -->
-        <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreExtension/extension">
+        <xsl:for-each select="./pbcoreExtension/extension">
           <!-- Extract number of episodes in a season, if present.
                Checks for 'antalepisoder' in PBC extension and checks that the value is not an empty string or 0.
                Create partOfSeason field, if any metadata is present. -->
@@ -451,7 +449,7 @@
     <!-- From the metadata it is clear, that 'kortomtale' and 'langomtale' can contain completely different values.
          'kortomtale' is therefore not just a shorter form of 'langomtale'.
          'kortomtale' maps to the schema.org value abstract, while 'langomtale' maps to description-->
-    <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreDescription">
+    <xsl:for-each select="./pbcoreDescription">
       <xsl:choose>
         <!-- Extract 'kortomtale' as abstract. -->
         <xsl:when test="./descriptionType = 'kortomtale' and description != ''">
@@ -468,13 +466,13 @@
     </xsl:for-each>
 
     <!-- Extract start and end times for broadcast  and calculate duration -->
-    <xsl:if test="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and
-                  /XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
+    <xsl:if test="./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and
+                  ./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
       <xsl:variable name="start-time">
-        <xsl:value-of select="xs:dateTime(normalize-space(/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart))"/>
+        <xsl:value-of select="xs:dateTime(normalize-space(./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart))"/>
       </xsl:variable>
       <xsl:variable name="end-time">
-        <xsl:value-of select="xs:dateTime(normalize-space(/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd))"/>
+        <xsl:value-of select="xs:dateTime(normalize-space(./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd))"/>
       </xsl:variable>
       <f:string key="startTime">
         <xsl:value-of select="$start-time"/>
@@ -494,7 +492,7 @@
          Also extracts maingenre to the schema.org field 'genre'-->
     <xsl:if test="//pbcoreGenre">
       <xsl:variable name="keywords">
-        <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
+        <xsl:for-each select="./pbcoreGenre/genre">
           <xsl:if test="substring-after(., ':') != '' and not(f:contains(., 'null'))">
             <xsl:value-of select="concat(normalize-space(f:substring-after(., ':')), ', ')"/>
           </xsl:if>
@@ -509,7 +507,7 @@
         </f:string>
       </xsl:if>
 
-      <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreGenre/genre">
+      <xsl:for-each select="./pbcoreGenre/genre">
         <xsl:if test="f:contains(., 'hovedgenre:') and substring-after(., 'hovedgenre:') != ''">
           <f:string key="genre">
             <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
@@ -532,7 +530,7 @@
         <f:string key="value"><xsl:value-of select="$recordID"/></f:string>
       </f:map>
       <xsl:if test="//pbcoreIdentifier">
-        <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreIdentifier">
+        <xsl:for-each select="./pbcoreIdentifier">
           <xsl:choose>
             <!-- Do nothing when identifierSource or identifier is empty. -->
             <xsl:when test="identifierSource = ''">
@@ -585,7 +583,7 @@
     </f:array>
 
     <!-- Extracts collection -->
-    <xsl:if test="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreInstantiation/formatLocation != ''">
+    <xsl:if test="./pbcoreInstantiation/formatLocation != ''">
       <f:array key="isPartOf">
         <f:map>
           <f:string key="@type">Collection</f:string>
@@ -596,7 +594,7 @@
   </xsl:template>
 
   <!-- EXTRACT MANIFESTATION FROM METADATA.-->
-  <xsl:template name="extract-manifestation-preservica7">
+  <xsl:template name="extract-manifestation-preservica">
     <xsl:if test="$manifestation != ''">
       <xsl:variable name="manifestationRef">
         <xsl:value-of select="$manifestation"/>
