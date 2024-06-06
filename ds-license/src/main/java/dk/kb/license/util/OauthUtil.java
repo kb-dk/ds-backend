@@ -81,18 +81,13 @@ public class OauthUtil {
         }
         log.debug("Access token validated");
         
-        String[] chunks =  accestoken.split("\\."); //The Oath token contains 3 parts separated by comma
-        Base64.Decoder decoder = Base64.getUrlDecoder();        
-        //String header = new String(decoder.decode(chunks[0]),Charset.forName("UTF-8"));
-        String payload = new String(decoder.decode(chunks[1]),Charset.forName("UTF-8"));
+        String[] base64DecodeToken = base64DecodeToken(accestoken);
+                        
+        //String header = base64DecodeToken[0]; //Example: {"alg":"RS256","typ" : "JWT","kid" : "5kW8sVLj3eUP3h2bey8Q4NPvP3q3YsYu8Q267zU_0Pc"}
+        String payload = base64DecodeToken[1];
 
-        JSONObject payLoadJson = new JSONObject(payload);       
-        String name= payLoadJson.getString("name");
-        String email= payLoadJson.getString("email");
-        String combinedUserName = name +"("+email+")"; //This will be shown in the GUI
-
-        log.info("Access Token verified for user:"+combinedUserName);
-        
+        String combinedUserName = extractNameAndEmail(payload);              
+        log.info("Access Token verified for user:"+combinedUserName);        
         return combinedUserName;
     }
 
@@ -117,6 +112,27 @@ public class OauthUtil {
         return result.toString();
     }
 
+    
+    /**
+     * Return a String[] with 2 entries. First is header and second is payload.
+     * 
+     * @param JWT The JWT encoded token. It must consist of 3 parts seperated by  dot '.'. First is header and second is payload. The third is has for validation.
+     * 
+     * @return String[] . Entry 0 is header entry 1 is payload
+     */
+    public static String[] base64DecodeToken(String JWT) {
+        String[] chunks =  JWT.split("\\."); //The Oath token contains 3 parts separated by comma
+        Base64.Decoder decoder = Base64.getUrlDecoder();        
+        String header = new String(decoder.decode(chunks[0]),Charset.forName("UTF-8"));
+        String payload = new String(decoder.decode(chunks[1]),Charset.forName("UTF-8"));
+        String[] tokenDecoded= new String[2];
+        tokenDecoded[0]=header;
+        tokenDecoded[1]=payload;
+        
+        return tokenDecoded;
+        
+    }
+    
     /**
      * Make a POST request to KeyCloak to  retrieve the accessToken using the codeToken 
      * 
@@ -186,6 +202,19 @@ public class OauthUtil {
         }
     }
     
+    
+    /**
+     * @param access_payload The decoded payload from the access token. The payload is a JSON object
+     * 
+     * @return Name and email combined. Example format: Thomas Egense (teg@kb.dk)
+     */
+    public static String extractNameAndEmail(String access_payload) {
+        JSONObject payLoadJson = new JSONObject(access_payload);       
+        String name= payLoadJson.getString("name");
+        String email= payLoadJson.getString("email");
+        String combinedUserName = name +"("+email+")"; //This will be shown in the GUI
+        return combinedUserName;        
+    }
     
     /*
      * Generate the RSAPublicKey object from the publicKey that is base64 encoded
