@@ -48,13 +48,6 @@
       </xsl:choose>
     </xsl:variable>
 
-    <!-- Defines the root path for metadata based on preservica version-->
-    <xsl:variable name="metadataPath">
-      <xsl:choose>
-        <xsl:when test="$preservicaVersion = '7'">/XIP/Metadata/Content/></xsl:when>
-      </xsl:choose>
-    </xsl:variable>
-
     <xsl:variable name="preservicaAccessionRef">
       <xsl:value-of select="/XIP/Metadata/Content/LegacyXIP/AccessionRef"/>
     </xsl:variable>
@@ -81,7 +74,6 @@
         <xsl:when test="$type = 'VideoObject'">
           <xsl:call-template name="video-transformation">
             <xsl:with-param name="type" select="$type"/>
-            <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
             <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
             <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
@@ -90,7 +82,6 @@
         <xsl:when test="$type = 'AudioObject'">
           <xsl:call-template name="audio-transformation">
             <xsl:with-param name="type" select="$type"/>
-            <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
             <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
             <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
@@ -99,7 +90,6 @@
         <xsl:otherwise>
           <xsl:call-template name="generic-transformation">
             <xsl:with-param name="type" select="$type"/>
-            <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
             <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
             <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
@@ -113,7 +103,6 @@
 
   <!-- TEMPLATE FOR TRANSFORMING VIDEOOBJECTS. The template requires the following five parameters:
         type: The type of schema-org object in hand.
-        metadataPath: The root tag for metadata from the preservica preservation system. This changes between version 5 and 6.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation.
         preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
@@ -121,7 +110,6 @@
                                  If not, then the parameter contains an empty string.-->
   <xsl:template name="video-transformation">
     <xsl:param name="type"/>
-    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="preservicaVersion"/>
     <xsl:param name="preservicaAccessionRef"/>
@@ -137,7 +125,6 @@
         <xsl:for-each select=".">
           <xsl:call-template name="pbc-metadata">
             <xsl:with-param name="type" select="$type"/>
-            <xsl:with-param name="metadataPath" select="$metadataPath"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
             <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
             <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
@@ -206,7 +193,6 @@
 
   <!-- TEMPLATE FOR TRANSFORMING AUDIOOBJECTS. The template requires the following five parameters:
         type: The type of schema-org object in hand.
-        metadataPath: The root tag for metadata from the preservica preservation system. This changes between version 5 and 6.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation.
         preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
@@ -214,7 +200,6 @@
                                  If not, then the parameter contains an empty string.-->
   <xsl:template name="audio-transformation">
     <xsl:param name="type"/>
-    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="preservicaVersion"/>
     <xsl:param name="preservicaAccessionRef"/>
@@ -222,7 +207,6 @@
     <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
     <xsl:call-template name="generic-transformation">
       <xsl:with-param name="type" select="$type"/>
-      <xsl:with-param name="metadataPath" select="$metadataPath"/>
       <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
       <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
       <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
@@ -232,7 +216,6 @@
 
   <!-- TEMPLATE FOR TRANSFORMING OBJECTS, WHICH ARE WRONGLY DEFINED. The template requires the following five parameters:
         type: The type of schema-org object in hand.
-        metadataPath: The root tag for metadata from the preservica preservation system. This changes between version 5 and 6.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation.
         preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
@@ -240,7 +223,6 @@
                                  If not, then the parameter contains an empty string.-->
   <xsl:template name="generic-transformation">
     <xsl:param name="type"/>
-    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="preservicaVersion"/>
     <xsl:param name="preservicaAccessionRef"/>
@@ -260,7 +242,6 @@
             <xsl:for-each select=".">
               <xsl:call-template name="pbc-metadata">
                 <xsl:with-param name="type" select="$type"/>
-                <xsl:with-param name="metadataPath" select="$metadataPath"/>
                 <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
                 <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
                 <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
@@ -293,7 +274,6 @@
               <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
               <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
               <xsl:with-param name="type" select="$type"/>
-              <xsl:with-param name="metadataPath" select="$metadataPath"/>
             </xsl:call-template>
           </f:map>
         </xsl:if>
@@ -340,7 +320,6 @@
        template.-->
   <xsl:template name="pbc-metadata">
     <xsl:param name="type"/>
-    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="preservicaVersion"/>
     <xsl:param name="preservicaAccessionRef"/>
@@ -354,11 +333,6 @@
     <xsl:variable name="original-title">
       <xsl:value-of select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbcoreTitle[2]/title"/>
     </xsl:variable>
-
-
-    <f:string key="variableContent">
-      <xsl:value-of select="$metadataPath"/>
-    </f:string>
 
     <xsl:choose>
       <xsl:when test="$title = $original-title and $title != '' or ($title != '' and $original-title = '')">
@@ -718,7 +692,6 @@
        https://github.com/kb-dk/ds-present/blob/spolorm-now-works/src/main/resources/xslt/mods2schemaorg.xsl -->
   <xsl:template name="kb-internal">
     <xsl:param name="preservicaVersion"/>
-    <xsl:param name="metadataPath"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
 
