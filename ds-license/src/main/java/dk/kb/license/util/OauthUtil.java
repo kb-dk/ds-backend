@@ -71,17 +71,17 @@ public class OauthUtil {
         //log.debug("JWT:"+JWT); 
 
         JSONObject jwtJson = new JSONObject(JWT);
-        String accestoken= jwtJson.getString("access_token");
-        log.debug("Access token from KeyCloak:"+accestoken);                
+        String accessToken= jwtJson.getString("access_token");
+        log.debug("Access token from KeyCloak:"+accessToken);                
 
         //Validate the JWT indeed has been issued by the KeyCloak server and not expired 
-        if (!isValidAccessToken(accestoken, rsaPublicKey)) {
-            log.error("AccessToken did not validate:"+accestoken);
+        if (!isValidAccessToken(accessToken, rsaPublicKey)) {
+            log.error("AccessToken did not validate:"+accessToken);
             throw new InvalidArgumentServiceException("AccessToken did not validate");
         }
         log.debug("Access token validated");
         
-        String[] base64DecodeToken = base64DecodeToken(accestoken);
+        String[] base64DecodeToken = base64DecodeToken(accessToken);
                         
         //String header = base64DecodeToken[0]; //Example: {"alg":"RS256","typ" : "JWT","kid" : "5kW8sVLj3eUP3h2bey8Q4NPvP3q3YsYu8Q267zU_0Pc"}
         String payload = base64DecodeToken[1];
