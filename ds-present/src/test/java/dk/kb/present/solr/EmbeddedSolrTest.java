@@ -766,7 +766,6 @@ public class EmbeddedSolrTest {
 
     private void indexPreservica7Record(String preservicaRecord) throws Exception {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, preservicaRecord);
-        prettyPrintJson(solrString);
         addRecordToEmbeddedServer(preservicaRecord, solrString);
     }
 

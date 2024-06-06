@@ -69,7 +69,6 @@ class ViewTest {
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
 
         String jsonld = jsonldView.apply(recordDto);
-        TestUtil.prettyPrintJson(jsonld);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
     }
 

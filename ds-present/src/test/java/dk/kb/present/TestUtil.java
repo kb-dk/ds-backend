@@ -116,12 +116,12 @@ public class TestUtil {
 		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
 				"streamingserver" ,"https://www.example.com/streamingserver/");
 		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
-		prettyPrintJson(schemaOrgJson);
+		//prettyPrintJson(schemaOrgJson);
 
 		String placeholderXml = "placeholder.xml";
 		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);
 		String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, mapOfJson);
-		prettyPrintJson(solrJson);
+		//prettyPrintJson(solrJson);
 		return solrJson;
 	}
 

@@ -49,7 +49,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testContentUrl() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3945e2d1, null);
-        prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"contentUrl\":\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/89\\/46\\/d3\\/8946d31d-a81c-447f-b84d-ff80644353d2.mp4\\/playlist.m3u8\""));
     }
     @Test
@@ -99,7 +98,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testIdentifiers() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
-        prettyPrintJson(transformedJSON);
 
         Assertions.assertTrue(transformedJSON.contains("\"identifier\":[{\"@type\":\"PropertyValue\",\"PropertyID\":\"Origin\",\"value\":\"ds.test\"}")
                 && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"ritzauId\",\"value\":\"926e730f-b3e6-44b9-aea7-a6ea27ec98ae\"}")
@@ -189,7 +187,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testNoNullKeywords() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3006e2f8);
-        prettyPrintJson(transformedJSON);
         Assertions.assertFalse(transformedJSON.contains("null"));
     }
 
@@ -227,7 +224,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testProgramStructure() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_0b3f6a54);
-        prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"kb:program_structure_missing_seconds_start\":\"0\"")
                                     && transformedJSON.contains("\"kb:program_structure_missing_seconds_end\":\"0\""));
         //TODO: add tests for fields 'holes' and 'overlaps' with a constructed test file.
@@ -236,7 +232,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testGenre() throws IOException {
         String hasGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3945e2d1);
-        System.out.println(hasGenre);
         Assertions.assertTrue(hasGenre.contains("\"genre\":\"Underholdning\""));
 
         String noGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda);
@@ -293,7 +288,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void testKBInternalMap() throws IOException {
         // TODO: Add individual tests for all params
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
-        prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"kb:surround_sound\":false"));
         Assertions.assertTrue(transformedJSON.contains("\"kb:color\":true"));
         Assertions.assertTrue(transformedJSON.contains("\"kb:premiere\":false"));
@@ -305,7 +299,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testInternalGenreSub() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
-        prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"kb:genre_sub\":\"Alle\""));
     }
     @Test
@@ -359,7 +352,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void testDateInjection() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:storage_mTime\":"));
-        prettyPrintJson(transformedJSON);
     }
 
 
@@ -368,7 +360,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         // This does not produce an error anymore, however I would like to produce an error to test the error handling.
         Map<String, String> fakeManifestation = Map.of("manifestation", "test");
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda, fakeManifestation);
-        prettyPrintJson(transformedJSON);
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:transformation_error_description\":" +
                 "\"First argument to parse-xml() is not a well-formed and namespace-well-formed XML document."));
@@ -377,7 +368,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testManifestationNameFromPreservica7() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
-        prettyPrintJson(transformedJSON);
 
     }
 
