@@ -159,33 +159,33 @@ origins:
                     - imageserver: ${path:imageservers[default=true].url}
 
   # Straight forward origin with the core format being MODS, using test data
-  - local: # ds-present internal
-      prefix: 'local.test' # The prefix to match on incoming IDs
-      origin: 'ds.local'
-      description: 'Selected image data from the collections at the Royal Danish Library'
-      storage: 'test' # Not production here
-      recordRequestType: 'DELIVERABLEUNIT'
+  #- local: # ds-present internal
+  #    prefix: 'local.test' # The prefix to match on incoming IDs
+  #    origin: 'ds.local'
+  #    description: 'Selected image data from the collections at the Royal Danish Library'
+  #    storage: 'test' # Not production here
+  #    recordRequestType: 'DELIVERABLEUNIT'
       # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
-      views:
-        - raw:
-            mime: 'text/plain'
-            transformers:
-              - identity:
-        - MODS:
-            mime: 'application/xml'
-            transformers:
-              - identity: # No transformation steps as mods is the core format for images-dsfl
-        - JSON-LD:
-            mime: 'application/json'
-            transformers:
-              - xslt:
-                  stylesheet: 'xslt/mods2schemaorg.xsl'
-                  injections:
-                    - imageserver: ${path:imageservers[default=true].url}
-        - SolrJSON:
-            mime: 'application/json'
-            transformers:
-              - xslt:
-                  stylesheet: 'xslt/mods2solr.xsl'
-                  injections:
-                    - imageserver: ${path:imageservers[default=true].url}
+  #    views:
+  #      - raw:
+  #          mime: 'text/plain'
+  #          transformers:
+  #            - identity:
+  #      - MODS:
+  #          mime: 'application/xml'
+  #          transformers:
+  #            - identity: # No transformation steps as mods is the core format for images-dsfl
+  #      - JSON-LD:
+  #          mime: 'application/json'
+  #          transformers:
+  #            - xslt:
+  #                stylesheet: 'xslt/mods2schemaorg.xsl'
+  #                injections:
+  #                  - imageserver: ${path:imageservers[default=true].url}
+  #      - SolrJSON:
+  #          mime: 'application/json'
+  #          transformers:
+  #            - xslt:
+  #                stylesheet: 'xslt/mods2solr.xsl'
+  #                injections:
+  #                  - imageserver: ${path:imageservers[default=true].url}
