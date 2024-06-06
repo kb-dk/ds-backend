@@ -38,11 +38,6 @@
   <!-- MAIN TEMPLATE. This template delegates, which fields are to be created for each schema.org object.
        Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
   <xsl:template match="/">
-
-    <xsl:variable name="preservicaAccessionRef">
-      <xsl:value-of select="/XIP/Metadata/Content/LegacyXIP/AccessionRef"/>
-    </xsl:variable>
-
     <!-- Determine the type of schema.org object in hand.-->
     <xsl:variable name="type">
       <xsl:choose>
@@ -66,21 +61,18 @@
           <xsl:call-template name="video-transformation">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:when test="$type = 'AudioObject'">
           <xsl:call-template name="audio-transformation">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
           <xsl:call-template name="generic-transformation">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
@@ -92,13 +84,10 @@
   <!-- TEMPLATE FOR TRANSFORMING VIDEOOBJECTS. The template requires the following five parameters:
         type: The type of schema-org object in hand.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
-                       the transformation.
-        preservicaAccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
-                                 If not, then the parameter contains an empty string.-->
+                       the transformation. -->
   <xsl:template name="video-transformation">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="preservicaAccessionRef"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -112,7 +101,6 @@
           <xsl:call-template name="pbc-metadata">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
 
           <!-- This is the only field directly present in pbc:PBCoreDescriptionDocument, which is only used for video
@@ -174,19 +162,15 @@
   <!-- TEMPLATE FOR TRANSFORMING AUDIOOBJECTS. The template requires the following five parameters:
         type: The type of schema-org object in hand.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
-                       the transformation.
-        preservicaAccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
-                                 If not, then the parameter contains an empty string.-->
+                       the transformation. -->
   <xsl:template name="audio-transformation">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="preservicaAccessionRef"/>
 
     <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
     <xsl:call-template name="generic-transformation">
       <xsl:with-param name="type" select="$type"/>
       <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-      <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
 
     </xsl:call-template>
   </xsl:template>
@@ -194,13 +178,10 @@
   <!-- TEMPLATE FOR TRANSFORMING OBJECTS, WHICH ARE WRONGLY DEFINED. The template requires the following five parameters:
         type: The type of schema-org object in hand.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
-                       the transformation.
-        preservicaAccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
-                                 If not, then the parameter contains an empty string.-->
+                       the transformation.-->
   <xsl:template name="generic-transformation">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="preservicaAccessionRef"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -218,7 +199,6 @@
               <xsl:call-template name="pbc-metadata">
                 <xsl:with-param name="type" select="$type"/>
                 <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-                <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
               </xsl:call-template>
             </xsl:for-each>
           </xsl:when>
@@ -290,7 +270,6 @@
   <xsl:template name="pbc-metadata">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="preservicaAccessionRef"/>
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
@@ -601,7 +580,7 @@
       <f:map>
         <f:string key="@type">PropertyValue</f:string>
         <f:string key="PropertyID">InternalAccessionRef</f:string>
-        <f:string key="value"><xsl:value-of select="$preservicaAccessionRef"/></f:string>
+        <f:string key="value"><xsl:value-of select="/XIP/Metadata/Content/LegacyXIP/AccessionRef"/></f:string>
       </f:map>
     </f:array>
 
