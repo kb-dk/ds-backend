@@ -39,15 +39,6 @@
        Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
   <xsl:template match="/">
 
-    <!-- Variable containing information on which version of preservica the record in hand origins from.
-         This is used to define which tag should be used as root tag for metadata extraction. -->
-    <xsl:variable name="preservicaVersion">
-      <xsl:choose>
-        <xsl:when test="/XIP">7</xsl:when>
-        <xsl:otherwise>Unknown</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-
     <xsl:variable name="preservicaAccessionRef">
       <xsl:value-of select="/XIP/Metadata/Content/LegacyXIP/AccessionRef"/>
     </xsl:variable>
@@ -75,7 +66,6 @@
           <xsl:call-template name="video-transformation">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
             <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
         </xsl:when>
@@ -83,7 +73,6 @@
           <xsl:call-template name="audio-transformation">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
             <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
         </xsl:when>
@@ -91,7 +80,6 @@
           <xsl:call-template name="generic-transformation">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
             <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
         </xsl:otherwise>
@@ -105,13 +93,11 @@
         type: The type of schema-org object in hand.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation.
-        preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
         preservicaAccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
                                  If not, then the parameter contains an empty string.-->
   <xsl:template name="video-transformation">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="preservicaVersion"/>
     <xsl:param name="preservicaAccessionRef"/>
 
     <f:map>
@@ -126,7 +112,6 @@
           <xsl:call-template name="pbc-metadata">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
             <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
           </xsl:call-template>
 
@@ -140,18 +125,13 @@
         </xsl:for-each>
 
         <!-- Extract manifestation -->
-        <xsl:choose>
-          <xsl:when test="$preservicaVersion = '7'">
-            <xsl:call-template name="extract-manifestation-preservica7"/>
-          </xsl:when>
-        </xsl:choose>
+        <xsl:call-template name="extract-manifestation-preservica7"/>
 
         <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
              available from the preservica records.-->
         <f:map key="kb:internal">
         <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
         <xsl:call-template name="kb-internal">
-          <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
           <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
           <xsl:with-param name="type" select="$type"/>
         </xsl:call-template>
@@ -195,20 +175,17 @@
         type: The type of schema-org object in hand.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation.
-        preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
         preservicaAccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
                                  If not, then the parameter contains an empty string.-->
   <xsl:template name="audio-transformation">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="preservicaVersion"/>
     <xsl:param name="preservicaAccessionRef"/>
 
     <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
     <xsl:call-template name="generic-transformation">
       <xsl:with-param name="type" select="$type"/>
       <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-      <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
       <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
 
     </xsl:call-template>
@@ -218,13 +195,11 @@
         type: The type of schema-org object in hand.
         pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
                        the transformation.
-        preservicaVersion: The version number of the preservica installation which the record in hand was retrieved from based on XIP tag.
         preservicaAccessionRef: If preservica version is 5, then this parameter contains the AccessionRef for the record.
                                  If not, then the parameter contains an empty string.-->
   <xsl:template name="generic-transformation">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="preservicaVersion"/>
     <xsl:param name="preservicaAccessionRef"/>
 
     <f:map>
@@ -243,7 +218,6 @@
               <xsl:call-template name="pbc-metadata">
                 <xsl:with-param name="type" select="$type"/>
                 <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-                <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
                 <xsl:with-param name="preservicaAccessionRef" select="$preservicaAccessionRef"/>
               </xsl:call-template>
             </xsl:for-each>
@@ -260,18 +234,13 @@
         </xsl:choose>
 
         <!-- Extract manifestation -->
-        <xsl:choose>
-          <xsl:when test="$preservicaVersion = '7'">
-            <xsl:call-template name="extract-manifestation-preservica7"/>
-          </xsl:when>
-        </xsl:choose>
+        <xsl:call-template name="extract-manifestation-preservica7"/>
 
         <!-- If type is MediaObject we don't create the internal map. -->
         <xsl:if test="$type != 'MediaObject'">
           <f:map key="kb:internal">
           <!-- Transforms values that does not fit directly into Schema.org into an internal map. -->
             <xsl:call-template name="kb-internal">
-              <xsl:with-param name="preservicaVersion" select="$preservicaVersion"/>
               <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
               <xsl:with-param name="type" select="$type"/>
             </xsl:call-template>
@@ -321,7 +290,6 @@
   <xsl:template name="pbc-metadata">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="preservicaVersion"/>
     <xsl:param name="preservicaAccessionRef"/>
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
@@ -691,7 +659,6 @@
        This kb:internal map was how we've handled internal values in the past, see line 109 in this file:
        https://github.com/kb-dk/ds-present/blob/spolorm-now-works/src/main/resources/xslt/mods2schemaorg.xsl -->
   <xsl:template name="kb-internal">
-    <xsl:param name="preservicaVersion"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
 
@@ -701,19 +668,8 @@
     </f:string>
 
     <xsl:if test="$manifestation != ''">
-      <xsl:variable name="manifestationRef">
-        <xsl:choose>
-          <xsl:when test="$preservicaVersion = '7'">
-            <xsl:value-of select="$manifestation"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="f:parse-xml($manifestation)/xip:Manifestation/ComponentManifestation/FileRef"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
-
       <f:string key="kb:file_id">
-        <xsl:value-of select="$manifestationRef"/>
+        <xsl:value-of select="$manifestation"/>
       </f:string>
     </xsl:if>
 
