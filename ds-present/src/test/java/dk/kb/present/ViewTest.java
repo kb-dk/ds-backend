@@ -69,7 +69,6 @@ class ViewTest {
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
 
         String jsonld = jsonldView.apply(recordDto);
-        TestUtil.prettyPrintJson(jsonld);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
     }
 
@@ -104,7 +103,7 @@ class ViewTest {
         YAML tvConf = conf.getYAMLList(".origins").get(3);
         View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
                                  tvConf.getSubMap("\"ds.tv\"").getString("origin"));
-        String pvica = Resolver.resolveUTF8String("internal_test_files/tvMetadata/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
+        String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
 

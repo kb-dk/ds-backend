@@ -5,7 +5,6 @@ import dk.kb.present.TestUtil;
 import dk.kb.present.util.TestFileProvider;
 import dk.kb.util.Files;
 import dk.kb.util.Resolver;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import static dk.kb.present.TestUtil.prettyPrintJson;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,8 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("integration")
 public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase {
-
-    public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
     public static final String SCHEMA2SOLR =  "xslt/schemaorg2solr.xsl";
     private static final Logger log = LoggerFactory.getLogger(XSLTPreservicaToSolrTransformerTest.class);
 
@@ -43,7 +41,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @BeforeAll
     public static void beforeMethod() {
-        if (Resolver.getPathFromClasspath("internal_test_files/tvMetadata") == null){
+        if (Resolver.getPathFromClasspath("internal_test_files/preservica7") == null){
             fail("Internal test files are not present. Unittest 'XSLTPreservicaToSolrTransformerTest' is therefore not run.");
         }
         
@@ -51,29 +49,29 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void testExtraction() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_44979f67, "\"id\":\"ds.test:44979f67-b563-462e-9bf1-c970167a5c5f.xml\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"id\":\"ds.test:e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml\"");
     }
 
     @Test
     public void testTitles() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_44979f67, "\"title\":\"Backstage II\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"title\":\"Ugen der gik\"");
 
-        assertPvicaContains(TestFiles.PVICA_RECORD_5a5357be, "\"title\":\"Dr. Pimple Popper: Before The Pop\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_df3dc9cf, "\"title\":\"Før Bjørnen Er Skudt\"");
     }
 
     @Test
     public void testDirectDuration() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_44979f67,"\"duration_ms\":\"950000\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8,"\"duration_ms\":\"1509000\"");
     }
 
     @Test
     public void testCalculatedDuration() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_5a5357be,"\"duration_ms\":\"1800000\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1,"\"duration_ms\":\"2700000\"");
     }
 
     @Test
     public void testGenrePresent() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_44979f67, "\"genre\":\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"genre\":\"");
     }
 
     @Test
@@ -84,8 +82,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testEmptyGenre(){
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_68b233c3, "\"categories\":");
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_68b233c3, "\"genre\":");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"categories\":");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"genre\":");
     }
 
     @Test
@@ -100,36 +98,36 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void testNoGenre() {
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_5a5357be, "\"genre\":[\"");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"genre\":[\"");
     }
 
     @Test
     public void testResourceDescription() {
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_5a5357be, "\"resource_description\": \"Moving Image\"");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_3006e2f8, "\"resource_description\": \"Moving Image\"");
     }
 
     @Test
     public void testCollection() {
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_5a5357be, "\"collection\": \"Det Kgl. Bibliotek; Radio/TV-Samlingen\"");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_3006e2f8, "\"collection\": \"Det Kgl. Bibliotek; Radio/TV-Samlingen\"");
     }
 
     @Test
     public void testCreatorAffiliation() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_5a5357be, "\"creator_affiliation\":\"TLC\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"creator_affiliation\":\"DR1\"");
     }
 
     @Test
     public void testNoCreatorAffiliation() {
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_4f706cda, "\"creator_affiliation\"");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"creator_affiliation\"");
     }
 
     @Test
     public void testBroadcaster() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_accf8d1c, "\"broadcaster\":\"DR\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"broadcaster\":\"DR\"");
     }
     @Test
     public void testCreatorAffiliationGeneric() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_accf8d1c, "\"creator_affiliation_generic\":\"drp1\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic\":\"drp1\"");
     }
 
     @Test
@@ -150,29 +148,26 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     public void testOrigin(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_5a5357be, "\"origin\":\"ds.test\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"origin\":\"ds.test\"");
     }
 
     @Test
     void testEpisode(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"episode\":");
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"episode\":");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_3006e2f8, "\"episode\":");
     }
 
     @Test
-    void testNumberOfEpisodes() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8aafb121);
-        TestUtil.prettyPrintJson(transformedJSON);
-
+    void testNumberOfEpisodes() {
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"number_of_episodes\":");
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_5a5357be, "\"number_of_episodes\":");
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"number_of_episodes\":");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"number_of_episodes\":");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_3006e2f8, "\"number_of_episodes\":");
     }
 
     @Test
     void testEpisodeButNoTotalNumberOfEpisodes(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_44979f67, "\"episode\"");
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_44979f67, "\"number_of_episode\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"episode\"");
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_b346acc8, "\"number_of_episode\"");
     }
 
     @Test
@@ -190,16 +185,17 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testVideoQuality(){
         //ikke hd
-        assertPvicaContains(TestFiles.PVICA_RECORD_5a5357be, "\"video_quality\":\"ikke hd\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"video_quality\":\"ikke hd\"");
         //Not defined
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"video_quality\":");
+        // TODO: find a test file where videoquality haven't been specified
+        //assertPvicaNotContains(TestFiles.PVICA_RECORD_3006e2f8, "\"video_quality\":");
         //TODO: We dont have any test files that are HD=true. Either find one when more data is available or create a mock
     }
 
     @Test
     void testSurround(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_5a5357be, "\"surround_sound\":\"false\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_4b18d02d, "\"surround_sound\":\"true\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"surround_sound\":\"false\"");
 
     }
 
@@ -210,7 +206,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testRetransmission(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_44979f67, "\"retransmission\":\"true\"");
+        // TODO: find a record which is a retransmission
+        //assertPvicaContains(TestFiles.PVICA_RECORD_44979f67, "\"retransmission\":\"true\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_4b18d02d, "\"retransmission\":\"false\"");
     }
 
@@ -302,7 +299,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testProgramStructure(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"internal_program_structure_missing_seconds_start\":\"0\"," +
+        assertPvicaContains(TestFiles.PVICA_RECORD_2b462c63, "\"internal_program_structure_missing_seconds_start\":\"0\"," +
                                                  "\"internal_program_structure_missing_seconds_end\":\"0\"");
 
         //TODO: add tests for fields 'holes' and 'overlaps' with a constructed test file.
@@ -310,53 +307,53 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testStartTime(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"startTime\":\"2012-04-28T16:15:00Z\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"startTime\":\"2022-02-28T17:29:55Z\"");
     }
 
     @Test
     void testEndTime(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"endTime\":\"2012-04-28T16:40:00Z\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"endTime\":\"2022-02-28T17:55:04Z\"");
     }
 
     @Test
-    void testTemporalSearchFields(){
+    void testTemporalSearchWinterFields(){
         // Sanity check time zone conversions at https://www.worldtimebuddy.com/
-        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_start_time_da_string\":\"18:15:00\"," +
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"temporal_start_time_da_string\":\"18:29:55\"," +
                                                                         "\"temporal_start_hour_da\":\"18\"," +
-                                                                        "\"temporal_start_date_da_string\":\"2012-04-28\"," +
-                                                                        "\"temporal_start_year\":\"2012\"," +
-                                                                        "\"temporal_start_month\":\"4\"," +
-                                                                        "\"temporal_start_time_da_date\":\"9999-01-01T18:15:00Z\"," +
-                                                                        "\"temporal_start_day_da\":\"Saturday\"");
-        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"temporal_end_time_da_string\":\"18:40:00\"," +
-                                                                        "\"temporal_end_date_da_string\":\"2012-04-28\"," +
-                                                                        "\"temporal_end_time_da_date\":\"9999-01-01T18:40:00Z\"," +
-                                                                        "\"temporal_end_day_da\":\"Saturday\"");
+                                                                        "\"temporal_start_date_da_string\":\"2022-02-28\"," +
+                                                                        "\"temporal_start_year\":\"2022\"," +
+                                                                        "\"temporal_start_month\":\"2\"," +
+                                                                        "\"temporal_start_time_da_date\":\"9999-01-01T18:29:55Z\"," +
+                                                                        "\"temporal_start_day_da\":\"Monday\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"temporal_end_time_da_string\":\"18:55:04\"," +
+                                                                        "\"temporal_end_date_da_string\":\"2022-02-28\"," +
+                                                                        "\"temporal_end_time_da_date\":\"9999-01-01T18:55:04Z\"," +
+                                                                        "\"temporal_end_day_da\":\"Monday\"");
     }
 
     // Adjusted version of testTemporalSearchFields, where the month has been changed from April to February to
     // check if Danish summer/winter time is obeyed.
     @Test
-    void testTemporalSearchFieldsWinter() throws IOException {
-        String winter = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_1f3a6a66)
-                .replace("2012-04-28T", "2012-02-28T");
-        File winterFile = Path.of(Resolver.resolveURL("ds-present-openapi_v1.yaml").getPath())
+    void testTemporalSearchSummer() throws IOException {
+        String summer = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_3006e2f8)
+                .replace("2022-02-28T", "2022-05-28T");
+        File summerFile = Path.of(Resolver.resolveURL("ds-present-openapi_v1.yaml").getPath())
                 .getParent()
-                .resolve("1f3a6a66_winther.xml")
+                .resolve("3006e2f8_summer.xml")
                 .toFile();
-        Files.saveString(winter, winterFile);
+        Files.saveString(summer, summerFile);
 
-        assertPvicaContains(winterFile.getAbsolutePath(), "\"temporal_start_time_da_string\":\"17:15:00\"," +
-                                                                        "\"temporal_start_hour_da\":\"17\"," +
-                                                                        "\"temporal_start_date_da_string\":\"2012-02-28\"," +
-                                                                        "\"temporal_start_year\":\"2012\"," +
-                                                                        "\"temporal_start_month\":\"2\"," +
-                                                                        "\"temporal_start_time_da_date\":\"9999-01-01T17:15:00Z\"," +
-                                                                        "\"temporal_start_day_da\":\"Tuesday\"");
-        assertPvicaContains(winterFile.getAbsolutePath(), "\"temporal_end_time_da_string\":\"17:40:00\"," +
-                                                                        "\"temporal_end_date_da_string\":\"2012-02-28\"," +
-                                                                        "\"temporal_end_time_da_date\":\"9999-01-01T17:40:00Z\"," +
-                                                                        "\"temporal_end_day_da\":\"Tuesday\"");
+        assertPvicaContains(summerFile.getAbsolutePath(), "\"temporal_start_time_da_string\":\"19:29:55\"," +
+                "\"temporal_start_hour_da\":\"19\"," +
+                "\"temporal_start_date_da_string\":\"2022-05-28\"," +
+                "\"temporal_start_year\":\"2022\"," +
+                "\"temporal_start_month\":\"5\"," +
+                "\"temporal_start_time_da_date\":\"9999-01-01T19:29:55Z\"," +
+                "\"temporal_start_day_da\":\"Saturday\"");
+        assertPvicaContains(summerFile.getAbsolutePath(), "\"temporal_end_time_da_string\":\"19:55:04\"," +
+                "\"temporal_end_date_da_string\":\"2022-05-28\"," +
+                "\"temporal_end_time_da_date\":\"9999-01-01T19:55:04Z\"," +
+                "\"temporal_end_day_da\":\"Saturday\"");
     }
 
     @Test
@@ -365,14 +362,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    void testStreamingUrl() throws IOException {
-        String solrJson = TestUtil.getTransformedWithVideoChildAddedPreservica5(PRESERVICA2SOLR, TestFiles.PVICA_RECORD_1f3a6a66, null);
-        assertTrue(solrJson.contains("\"www.example.com\\/streaming\\/mp4:bart-access-copies-tv\\/cf\\/1d\\/b0\\/cf1db0e1-ade2-462a-a2b4-7488244fcca7\\/playlist.m3u8\""));
-    }
-
-    @Test
     void testUrlPreservica7()  {
-        assertPvica7Contains(TestFiles.PVICA7_RECORD_8946d31d, "\"file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\"");
     }
 
     /* disabled as they are not represented in solr
@@ -396,12 +387,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testMTime() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_1f3a6a66, "\"internal_storage_mTime\":\"");
-    }
-       
-    @Test
-    void testOriginForFailedTransformation(){
-        assertPvicaContains(TestFiles.PVICA6_RECORD_d4ea826f, "\"origin\":");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"internal_storage_mTime\":\"");
     }
      
     @Test
@@ -411,7 +397,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     
     @Test
     void testNoSpecificOrigin(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_5b29fca1, "\"origin\"");
+        assertPvicaContains(TestFiles.PVICA_EMPTY_RECORD, "\"origin\"");
     }
 
     @Test
@@ -435,21 +421,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
      * @param recordFile the file to load, transform and test.
      * @param substring must be present in the transformed record.
      */
-    @Deprecated
     public void assertPvicaContains(String recordFile, String substring) {
         assertMultiTestsThroughSchemaTransformation(recordFile,
-                solrDoc -> assertTrue(solrDoc.contains(substring))
-        );
-    }
-
-    /**
-     * Wrapper for {@link #assertMultiTestsThroughSchemaTransformationPreservica7(String, Consumer[])} which verifies that the
-     * transformed record contains the given {@code substring}.
-     * @param recordFile the file to load, transform and test.
-     * @param substring must be present in the transformed record.
-     */
-    public void assertPvica7Contains(String recordFile, String substring) {
-        assertMultiTestsThroughSchemaTransformationPreservica7(recordFile,
                 solrDoc -> assertTrue(solrDoc.contains(substring))
         );
     }
@@ -475,33 +448,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
      * @param record file with a record that is to be transformed.
      * @param tests Zero or more tests to perform on the transformed record.
      */
-    @Deprecated
     @SafeVarargs
     public final void assertMultiTestsThroughSchemaTransformation(String record, Consumer<String>... tests){
-        if (!TestFileProvider.hasSomeTestFiles()) {
-            return;  // ensureTestFiles takes care of logging is there are no internal test files
-        }
-        String solrString;
-        try {
-            solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, record);
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
-        }
-        Arrays.stream(tests).forEach(test -> test.accept(solrString));
-    }
-
-    /**
-     * Checks that internal test files are available and if not, logs a warning and returns.
-     * <p>
-     * If the check passes, the content of the file {@code record} is transformed using two XSLTs.
-     * At first the XML record is transformed to Schema.org JSON and then the schema.org JSON is transformed to solr
-     * documents and the given tests are performed on the result.
-     * @param record file with a record that is to be transformed.
-     * @param tests Zero or more tests to perform on the transformed record.
-     */
-    @SafeVarargs
-    public final void assertMultiTestsThroughSchemaTransformationPreservica7(String record, Consumer<String>... tests){
         if (!TestFileProvider.hasSomeTestFiles()) {
             return;  // ensureTestFiles takes care of logging is there are no internal test files
         }

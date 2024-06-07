@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Changed a lot of transformation tests to use preservica 7 data instead of preservica 5.  
+
+### Removed
+- Removed XSLT support for Preservica 5 records.
+
+
 ## [1.7.6](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.7.6)
 ### Added
 - Added solr configuration to distribution tar

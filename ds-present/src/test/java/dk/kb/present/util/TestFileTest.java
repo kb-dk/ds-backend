@@ -42,6 +42,6 @@ public class TestFileTest {
         }
 
         log.info("Test files are available");
-        assertNotNull(Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_5a5357be));
+        assertNotNull(Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_3006e2f8));
     }
 }
