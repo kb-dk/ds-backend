@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139).
 - Added sample config files and documentation to distribution tar archive. [DRA-414](https://kb-dk.atlassian.net/browse/DRA-414)
+- Exception handling for unexpected response for Kaltura for id lookup.
 
 ### Changed
 - bump sbforge-parent to v25
