@@ -20,6 +20,8 @@ import com.kaltura.client.utils.request.RequestElement;
 import com.kaltura.client.utils.response.*;
 import com.kaltura.client.utils.response.base.Response;
 
+import dk.kb.util.webservice.exception.InternalServiceException;
+
 
 /**
  * Kaltura client that can: 
@@ -82,6 +84,12 @@ public class DsKalturaClient {
         //Getting this line correct was very hard. Little documentation and has to know which object to cast to.                
         //For some documentation about the "Kaltura search" api see: https://developer.kaltura.com/api-docs/service/media/action/list        
         Response <ListResponse<MediaEntry>> response = (Response <ListResponse<MediaEntry>>) APIOkRequestsExecutor.getExecutor().execute(request.build(client));
+       
+        //This is not normal situation. Normally Kaltura will return empty list: ({"objects":[],"totalCount":0,"objectType":"KalturaMediaListResponse"})
+        // When this happens something is wrong in kaltura and we dont know if there is results or not
+        if (response.results == null) {
+           throw new InternalServiceException("Unexpected null response from Kaltura for referenceId:"+referenceId);            
+        }
         List<MediaEntry> mediaEntries = response.results.getObjects();           
         
         int numberResults = mediaEntries.size();
