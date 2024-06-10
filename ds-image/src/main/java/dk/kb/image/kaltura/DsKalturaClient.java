@@ -88,7 +88,8 @@ public class DsKalturaClient {
         //This is not normal situation. Normally Kaltura will return empty list: ({"objects":[],"totalCount":0,"objectType":"KalturaMediaListResponse"})
         // When this happens something is wrong in kaltura and we dont know if there is results or not
         if (response.results == null) {
-           throw new InternalServiceException("Unexpected null response from Kaltura for referenceId:"+referenceId);            
+           log.error("Unexpected NULL response from Kaltura for referenceId:"+referenceId);
+            throw new InternalServiceException("Unexpected null response from Kaltura for referenceId:"+referenceId);            
         }
         List<MediaEntry> mediaEntries = response.results.getObjects();           
         
