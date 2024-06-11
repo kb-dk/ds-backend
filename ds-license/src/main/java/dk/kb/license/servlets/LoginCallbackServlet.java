@@ -57,8 +57,7 @@ public class LoginCallbackServlet extends HttpServlet {
         }        
         log.info("Login from KeyCloak success for user:"+combinedUserName);
         request.getSession().setAttribute("oauth_user", combinedUserName); //Save on session           
-        response.sendRedirect(request.getContextPath() + "/configuration.jsp"); //Default landing page
-        return;
+        response.sendRedirect(request.getContextPath() + "/configuration.jsp"); //Default landing page     
     }
 
 }
