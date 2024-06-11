@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Added YAML property to disable all GUI: gui.adminGuiEnabled=true
 - Added YAML property for cache refresh time : cache.reloadInSeconds=300
-
+- Audit log will now show name and email from AD loaded by KeyCloak.
+- Access to admin GUI will also required login via KeyCloak. AD realm is configured in the KeyCloak server. direct URL and clientSecret must be known my both KeyCloak and LicenseModule.
 
 ## [1.4.1](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.4.1) 2024-05-13
 ### Added

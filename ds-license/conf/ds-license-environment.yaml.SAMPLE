@@ -1,8 +1,12 @@
 #
-# This config contains environment-data: Servers, usernames, passwords etc.
-# If will be automatically merged with the core config when accesses through the application config system.
+# This config contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
 #
-# The environment config is normally controlled by operations and is not part of the code repository.
+# The behaviour config is normally controlled by developers and is part of the code repository.
+# Sensitive information such as machine names and user/passwords should not be part of this config.
+#
+# It will be automatically merged with the environment config when accessed through the
+# application config system.
+#
 #
 
 # Solr is used for access filtering by combining filter queries from ds-license with a search for
@@ -12,19 +16,45 @@ solr:
   # It is possible to specify multiple servers: They will all be queried
   servers:
     - http://localhost:10007/solr/ds
+  # The field used to verify access based on the ID of a record/document
+  # Typically used to determine whether a user is allowed to see search or see metadata for a record
+  idField: 'id'
+  # The field used to verify access based on the resource ID of a TV-stream, bitmap or similar
+  # Typically used for callback from an image server or similar where the record ID is not known
+  resourceField: 'resource_id'
 
-# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
-# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
 openapi:
-  # This is the URL where this service is deployed appended with /v1
   serverurl: http://localhost:9076/ds-license/v1
 
-# Configuration of the backing DB. In stage and production this is always a PostgreSQL database.
+#change URL path to local h2 storage for unittest
 db:
-  # URL for the DB
-  url: jdbc:postgresql://localhost:5432/database
-  driver: org.postgresql.Driver
-  # Username and password for the DB
+  url: jdbc:h2:${env:TMPDIR:-/tmp}/h2_ds_license;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+  driver: org.h2.Driver
   username: ''
   password: ''
 
+#Will disable all access to admin GUI jsp pages and instead show a info page that it has been disabled.
+gui:
+  adminGuiEnabled: true
+  
+#KeyCloakClientSecret can be seen in the KeyCloak server admin page for the AD realm configuration
+#The rsaPublic key can also be seen at the KeyCloak server admin page
+#redirectUrl must be added to the whitelist in KeyCloak administration configuration
+keycloak:
+  realmTokenUrl: 'https://<keycloakServer>/realms/master/protocol/openid-connect/token'
+  clientSecret: 'XXXXXX'
+  rsaPublicKey: 'XXXXXX'
+  redirectUrl: 'http://<keycloak_servername>/ds-license/loginCallbackServlet'
+  loginUrl: 'https://<keycloak_servername>/realms/master/protocol/openid-connect/auth?response_type=code&client_id=kb-ad&redirect_uri=http://<servername>/ds-license/loginCallbackServlet'
+
+#The license cache reload time. The replica database application needs to refresh cache since it will not be notified upon changes in configuration.
+#300 seconds=5 minutes is a good value.
+cache:
+  reloadInSeconds: 300  
+  
+
+ # Example for postgres
+ #url: jdbc:postgresql://localhost:5432/ds-storage
+ #driver: org.postgresql.Driver
+ #username: username
+ #password: password
