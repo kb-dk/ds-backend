@@ -23,7 +23,10 @@ solr:
   # Typically used for callback from an image server or similar where the record ID is not known
   resourceField: 'resource_id'
 
-openapi:
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:  
   serverurl: http://localhost:9076/ds-license/v1
 
 #change URL path to local h2 storage for unittest
@@ -31,9 +34,16 @@ db:
   url: jdbc:h2:${env:TMPDIR:-/tmp}/h2_ds_license;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
   driver: org.h2.Driver
   username: ''
-  password: ''
+  password: ''  
+ # Example for postgres
+  #url: jdbc:postgresql://localhost:5432/ds-storage
+  #driver: org.postgresql.Driver
+  #username: username
+  #password: password  
+  
 
 #Will disable all access to admin GUI jsp pages and instead show a info page that it has been disabled.
+#If GUI is enabled they keycloak properties below must be defined. 
 gui:
   adminGuiEnabled: true
   
@@ -53,8 +63,4 @@ cache:
   reloadInSeconds: 300  
   
 
- # Example for postgres
- #url: jdbc:postgresql://localhost:5432/ds-storage
- #driver: org.postgresql.Driver
- #username: username
- #password: password
+
