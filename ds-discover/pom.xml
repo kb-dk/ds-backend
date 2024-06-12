@@ -92,6 +92,12 @@
             <version>1.7.4</version>
             <type>jar</type>
             <classifier>classes</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Apache CXF and servlet stuff -->
@@ -202,8 +208,8 @@
                <exclusions>
                   <exclusion>
                     <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
-                    <artifactId>slf4j-simple</artifactId>
                     <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
                   </exclusion>
             </exclusions>
         </dependency>
@@ -226,6 +232,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-ext</artifactId>
             <version>2.0.9</version>
         </dependency>
         <dependency>
