@@ -133,7 +133,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Danmarks Radio?>
   </field>
 
-  <field name="creator_affiliation_facet" type="facet">
+  <field name="creator_affiliation_facet" type="facet" multiValued="true">
     <?description The name of an organization, institution, etc. with which
             the entity was associated at the time that the resource was created. This field should be used for faceting.?>
     <?example     Bisson frères?>
@@ -233,7 +233,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     John R. Johnsen?>
   </field>
 
-  <field name="creator_full_name_facet" type="facet">
+  <field name="creator_full_name_facet" type="facet" multiValued="true">
     <?description Field used for faceting on creator_full_name. Contains the same values as the field 'creator_full_name'.?>
   </field>
 
@@ -399,7 +399,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description The name of the subject written as given name family name.?>
     <?example     John R. Johnsen?>
   </field>
-  <field name="subject_full_name_facet" type="facet">
+  <field name="subject_full_name_facet" type="facet" multiValued="true">
     <?description Field used for faceting on subject_full_name. Contains the same values as the field 'subject_full_name'.?>
   </field>
 
