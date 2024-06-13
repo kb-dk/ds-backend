@@ -61,6 +61,7 @@ public class AccessUtil {
         return id -> {
             if (licenseAllowAll ||
                     groups.contains(GROUP_ADMIN) || groups.contains(GROUP_INTERNAL_SERVICE)) {
+                logAllowanceForGroups(groups);
                 return DsPresentApiServiceImpl.ACCESS.ok;
             }
 
@@ -84,12 +85,15 @@ public class AccessUtil {
                 throw new InternalServiceException(message + ". This error has been logged");
             }
             if (response.getAccessIds() != null && response.getAccessIds().contains(id)) {
+                log.debug("Access was resolved through DS-license and is 'ok'");
                 return DsPresentApiServiceImpl.ACCESS.ok;
             }
             if (response.getNonAccessIds() != null && response.getNonAccessIds().contains(id)) {
+                log.debug("Access was resolved through DS-license and is 'not_allowed'");
                 return DsPresentApiServiceImpl.ACCESS.not_allowed;
             }
             if (response.getNonExistingIds() != null && response.getNonExistingIds().contains(id)) {
+                log.debug("Access was resolved through DS-license and is 'not_exists'");
                 return DsPresentApiServiceImpl.ACCESS.not_exists;
             }
             throw new InternalServiceException("Unable to determine access for '" + id + "'");
@@ -110,6 +114,7 @@ public class AccessUtil {
         return ids -> {
             if (licenseAllowAll || ids.isEmpty() ||
                     groups.contains(GROUP_ADMIN) || groups.contains(GROUP_INTERNAL_SERVICE)) {
+                logAllowanceForGroups(groups);
                 return new ArrayList<>(ids);
             }
 
@@ -134,13 +139,16 @@ public class AccessUtil {
             }
             if (response.getAccessIds() != null) {
                 if (response.getAccessIds().size() == ids.size()) {
+                    log.debug("All requested IDs are available.");
                     // New array creation to ensure decoupling of input & output
                     return new ArrayList<>(ids);
                 }
                 Set<String> allowed = new HashSet<>(response.getAccessIds());
+                log.debug("Returning all allowed IDs from the requested IDs");
                 return ids.stream().filter(allowed::contains).collect(Collectors.toList());
             }
             // TODO: Should a warning be logged here? Will getAccessIds return null if no IDs are allowed?
+            log.warn("Current user does not have access to any of the requested IDs");
             return Collections.emptyList();
         };
     }
@@ -183,5 +191,18 @@ public class AccessUtil {
             return Collections.emptySet();
         }
         return new HashSet<>(groupHeaders);
+    }
+
+    /**
+     * Write to log on a debug level which groups are present.
+     * @param groups a set of groups to analyze.
+     */
+    private static void logAllowanceForGroups(Set<String> groups) {
+        if (licenseAllowAll){
+            log.debug("Access is OK as the property licenseAllowAll is true");
+        }
+        if (groups.contains(GROUP_ADMIN) || groups.contains(GROUP_INTERNAL_SERVICE)){
+            log.debug("Access is OK as user is part of the following groups: '{}'", groups);
+        }
     }
 }
