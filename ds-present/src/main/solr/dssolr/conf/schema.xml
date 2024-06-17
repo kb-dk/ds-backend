@@ -114,7 +114,21 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     12?>
   </field>
 
-  <field name="creator_affiliation" type="text_general" multiValued="true">
+  <field name="creator_affiliation" type="text_general">
+    <?description The name of an organization, institution, etc. with which
+            the entity was associated at the time that the resource was created.?>
+    <?example     Bisson frères?>
+    <?example     Danmarks Radio?>
+  </field>
+
+  <field name="creator_affiliation_facet" type="facet">
+    <?description The name of an organization, institution, etc. with which
+            the entity was associated at the time that the resource was created. This field should be used for faceting.?>
+    <?example     Bisson frères?>
+    <?example     Danmarks Radio?>
+  </field>
+
+  <field name="creator_affiliation_image" type="text_general" multiValued="true">
     <?description The name of an organization, institution, etc. with which
             the entity was associated at the time that the resource was created.?>
     <?example     Bisson frères?>
@@ -931,6 +945,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                    termPositions="true"
                    termOffsets="true"/>
 
+
   <!-- END FIELDS  -->
 
   <!-- START FIELDTYPE DEFINITIONS-->
@@ -944,6 +959,10 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- Field is not analysed or tokenized. Used for author names, titles etc.
    This field is not usefull as search field, but good for docValues  -->
   <fieldType name="string" class="solr.StrField" sortMissingLast="true" indexed="true" required="false" stored="true" multiValued="false" docValues="true"/>
+
+  <!-- Functionality wise, this field type almost represents the same as a string, just not being stored,
+        however having the name of facet implies, what the idea behind it is. -->
+  <fieldType name="facet" class="solr.StrField" indexed="true" docValues="true" stored="false"/>
 
   <fieldType name="text_da" class="solr.TextField" positionIncrementGap="100">
     <analyzer>
@@ -1089,6 +1108,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
   </copyField>
 
+  <copyField source="creator_affiliation" dest="creator_affiliation_facet"/>
   <copyField source="creator_name" dest="freetext"/>
   <copyField source="creator_full_name" dest="freetext"/>
   <copyField source="creator_given_name" dest="freetext"/>
@@ -1102,6 +1122,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="catalog" dest="freetext"/>
   <copyField source="collection" dest="freetext"/>
   <copyField source="genre" dest="freetext"/>
+  <copyField source="genre_sub" dest="freetext"/>
   <copyField source="resource_description" dest="freetext"/>
   <copyField source="resource_description_general" dest="freetext"/>
   <copyField source="notes" dest="freetext"/>
