@@ -469,7 +469,7 @@
             </xsl:if>
             <!-- If there is an affiliation for the creator it gets extracted here-->
             <xsl:if test="m:name/m:affiliation">
-              <f:array key="creator_affiliation">
+              <f:array key="creator_affiliation_image">
                 <xsl:for-each select="m:name/m:affiliation">
                   <xsl:if test=". != ''">
                     <f:string>

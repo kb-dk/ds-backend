@@ -92,7 +92,7 @@ class XSLTCumulusToSolrTransformerTest extends XSLTTransformerTestBase {
 	@Test
 	void testNoNameButAffiliation() {
 		assertContains(TestFiles.CUMULUS_RECORD_DNF,
-		"\"creator_affiliation\":[\"Bisson frères\"],\"creator_affiliation_description\":[\"fransk korporation\"]");
+		"\"creator_affiliation_image\":[\"Bisson frères\"],\"creator_affiliation_description\":[\"fransk korporation\"]");
 		assertNotContains(TestFiles.CUMULUS_RECORD_DNF, "creator_given_name");
 	}
 
@@ -134,17 +134,17 @@ class XSLTCumulusToSolrTransformerTest extends XSLTTransformerTestBase {
 	@Test
 	void testChineseTitels() {
 		assertContains(TestFiles.CUMULUS_RECORD_26d4dd60,
-                "\"creator_affiliation\":[\"Haidian Yangfang dian jiedao zhongxin xiaoxue (海淀区羊坊店街道中心小学)\"]");
+                "\"creator_affiliation_image\":[\"Haidian Yangfang dian jiedao zhongxin xiaoxue (海淀区羊坊店街道中心小学)\"]");
 	}
 
 	@Test
 	void testMultipleAffiliations() {
-		assertContains(TestFiles.CUMULUS_RECORD_9c17a440, "\"creator_affiliation\":[\"Billedbladet\",\"Nordisk Pressefoto\"]");
+		assertContains(TestFiles.CUMULUS_RECORD_9c17a440, "\"creator_affiliation_image\":[\"Billedbladet\",\"Nordisk Pressefoto\"]");
 	}
 
 	@Test
 	void testMultipleDescriptions() {
-		assertContains(TestFiles.CUMULUS_RECORD_3b03aa00, "\"creator_affiliation\":[\"Aftenbladet\",\"Associated Press\"]," +
+		assertContains(TestFiles.CUMULUS_RECORD_3b03aa00, "\"creator_affiliation_image\":[\"Aftenbladet\",\"Associated Press\"]," +
                 "\"creator_affiliation_description\":[\"dansk avis\",\"amerikansk nyhedsbureau\"]");
 	}
 
