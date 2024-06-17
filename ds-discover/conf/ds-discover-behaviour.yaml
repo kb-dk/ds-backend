@@ -17,6 +17,13 @@ openapi:
 
 solr:
 
+  #Additional parameters allowed to be sent to solr. 
+  extraAllowedParameters:
+    # queryUUID is returned to the frontend and used as session tracking.
+    - queryUUID 
+    # Frontend uses facet.limit this for timeline
+    - facet.limit
+
   # /select specific config
   select:
     # Parameters that are default for all queries, but can be overridden by the request.

@@ -172,12 +172,13 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             log.debug("solrMLT(collection='{}', q='{}', ...) called with call details: {}",
                       collection, q, getCallDetails());
             Map<String, String[]> extra = getExtraParams();
-            if (!extra.isEmpty()) {
+            Map<String, String[]> notValidParameters=filterAdditionalAllowedParameters(extra);
+            if (!notValidParameters.isEmpty()) {
                 if (ServiceConfig.getConfig().getBoolean(PERMISSIVE_KEY, PERMISSIVE_DEFAULT)) {
                     log.warn("solrMLT: ds-discover is configured to permit all Solr parameters. " +
                             "Non-vetted parameters passed on: {}", toString(extra));
                 } else {
-                    throw new InvalidArgumentServiceException("Unsupported parameters: " + toString(extra));
+                    throw new InvalidArgumentServiceException("Unsupported parameters: " + toString(notValidParameters));
                 }
             }
             SolrService solr = SolrManager.getSolrService(collection);
@@ -286,16 +287,18 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     	
     
         try {
-
+                      
             log.debug("solrSearch(collection='{}', q='{}', ...) called with call details: {}",
                     collection, q, getCallDetails());
             Map<String, String[]> extra = getExtraParams();
-            if (!extra.isEmpty()) {
+            Map<String, String[]> notValidParamters=filterAdditionalAllowedParameters(extra);
+            
+            if (!notValidParamters.isEmpty()) {
                 if (ServiceConfig.getConfig().getBoolean(PERMISSIVE_KEY, PERMISSIVE_DEFAULT)) {
                     log.warn("solrSearch: ds-discover is configured to permit all Solr parameters. " +
                             "Non-vetted parameters passed on: {}", toString(extra));
                 } else {
-                    throw new InvalidArgumentServiceException("Unsupported parameters: " + toString(extra));
+                    throw new InvalidArgumentServiceException("Unsupported parameters: " + toString(notValidParamters));
                 }
             }
 
@@ -314,8 +317,8 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
 
             String rawResponse = solr.query(q, fq, rows, start, fl, facet, facetField,
             		spellcheck,spellcheckBuild,spellcheckReload,spellcheckQuery,spellcheckDictionary,spellcheckCount,spellchecKOnlyMorePopular,spellcheckExtendedResults,spellcheckCollate,spellcheckMaxCollations,spellcheckMaxCollationTries,spellcheckAccuracy,
-            		qOp,
-                    wt, version, indent, debug, debugExplainStructured, extra);
+            		qOp, wt, version, indent, debug, debugExplainStructured, extra);
+            
             return SolrService.removePrefixedFilters(rawResponse, FILTER_CACHE_PREFIX, wt);
         } catch (Exception e){
             throw handleException(e);
@@ -342,9 +345,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     @Override   
     public String solrSuggest(String collection, String suggestDictionary, String suggestQuery, Integer suggestCount, String wt) {
 
-
-        log.debug("solrsuggest(collection='{}', q='{}', ...) called with call details: {}",
-                collection, suggestQuery, getCallDetails());
+        log.debug("solrsuggest(collection='{}', q='{}', ...) called with call details: {}", collection, suggestQuery, getCallDetails());
         
         SolrService solr = SolrManager.getSolrService(collection);
         httpServletResponse.setContentType(solr.getResponseMIMEType(wt)); // Needed by SolrJ
@@ -433,7 +434,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     
     /**
      * Subtracts parameters defined for the called endpoint from the total set of parameters in the called URI,
-     * resulting in a map of unhandled parameters.
+     * resulting in a map of unhandled parameters. These parameters has to be removed since all are set again in the solr call method.
      * @return a map of unhandled parameters.
      */
     private Map<String, String[]> getExtraParams() {
@@ -442,15 +443,32 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
 
         // Iterate defined params and remove them from the client params, leaving unhandled params
         // JAXRSUtils.getCurrentMessage() uses ThreadLocal, so it must be called from the caller Thread
-        JAXRSUtils.getCurrentMessage().getExchange().get(OperationResourceInfo.class).getParameters().stream()
+        List<Parameter> parameters = JAXRSUtils.getCurrentMessage().getExchange().get(OperationResourceInfo.class).getParameters();
+
+        parameters.stream()
                 .filter(param -> param.getType() == ParameterType.QUERY)
                 .map(Parameter::getName)
                 .forEach(extras::remove);
+     
         return extras;
     }
 
-  
-
-
+    /**
+     * Will remove the additional allowed parameters in a new map.  
+     * The remaining parameters in the map is values that are not allowed.  
+     *   
+     * @param The map to test if it has parameters not allowed. The input map object will not be modified.
+     */   
+    @SuppressWarnings("unchecked")
+    private Map<String , String[]> filterAdditionalAllowedParameters (Map<String , String[]> params) {
+        //Remove allowed parameters from the configuration.    
+        
+        HashMap<String, String[]>  hashMap =(HashMap<String, String[]>) params;  //Must cast to HashMap to clone      
+        HashMap<String, String[]>  cloned= (HashMap<String, String[]>) hashMap.clone();
+               
+        List<String> extraAllowedParameters = dk.kb.discover.config.ServiceConfig.getConfig().getList("solr.extraAllowedParameters");
+        extraAllowedParameters.stream().forEach(cloned::remove);
+        return cloned;              
+    }
 
 }

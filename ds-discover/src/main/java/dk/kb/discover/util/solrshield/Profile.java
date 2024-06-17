@@ -14,6 +14,7 @@
  */
 package dk.kb.discover.util.solrshield;
 
+import dk.kb.discover.config.ServiceConfig;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Representation of a given profile for SolrShield.
@@ -159,8 +162,10 @@ public class Profile extends ProfileElement<Profile> {
         Profile clone = deepCopy();
         Set<String> processedKeys = new HashSet<>();
         processedKeys.addAll(clone.search.apply(request));
-        processedKeys.addAll(clone.facet.apply(request));
-
+        processedKeys.addAll(clone.facet.apply(request));                
+        List<String> extraAllowedParameters = ServiceConfig.getConfig().getList("solr.extraAllowedParameters"); //The value are also checked when sending the solr request.
+        processedKeys.addAll(extraAllowedParameters);       
+        
         clone.unhandledParams =
                 StreamSupport.stream(request.spliterator(), false)
                         .filter(e -> !processedKeys.contains(e.getKey()))
