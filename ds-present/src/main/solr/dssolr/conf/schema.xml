@@ -69,26 +69,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description The original collection.?>
     <?example     Billedsamlingen?>
   </field>
-  <field name="collection_facet" type="facet">
-    <?description Field used for faceting on collection. Contains the same values as the field 'collection'.?>
-  </field>
 
   <field name="genre" type="string" docValues="true">
     <?description The genre of the resource?>
     <?example     For a photograph: Portrait?>
     <?example     For a book: novel?>
   </field>
-  <field name="genre_facet" type="facet">
-    <?description Field used for faceting on genre. Contains the same values as the field 'genre'.?>
-  </field>
 
   <field name="resource_description" type="string"  docValues="true">
     <?description Specific description of the resource/object.?>
     <?example     Poster?>
     <?example     Photograph?>
-  </field>
-  <field name="resource_description_facet" type="facet">
-    <?description Field used for faceting on resource_description. Contains the same values as the field 'resource_description'.?>
   </field>
 
   <field name="categories" type="string"  multiValued="true" docValues="true">
@@ -97,9 +88,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
             entry in the list.?>
     <?example     John R. Johnsen balletfotos?>
     <?example     Den Kongelige Ballet?>
-  </field>
-  <field name="categories_facet" type="facet" multiValued="true">
-    <?description Field used for faceting on categories. Contains the same values as the categories-field.?>
   </field>
 
   <field name="categories_count" type="pint">
@@ -200,10 +188,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description General description of type of resource/object?>
     <?example     Picture, two dimensional imagematerial?>
   </field>
-  <field name="resource_description_general_facet" type="facet">
-    <?description Field used for faceting on resource_description_general.
-                  Contains the same values as the field 'resource_description_general'.?>
-  </field>
 
   <!-- Fields on title -->
   <field name="title_count" type="pint" stored="true">
@@ -231,10 +215,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="creator_full_name" type="string" multiValued="true"  docValues="true">
     <?description The name of the creator written as given name family name.?>
     <?example     John R. Johnsen?>
-  </field>
-
-  <field name="creator_full_name_facet" type="facet" multiValued="true">
-    <?description Field used for faceting on creator_full_name. Contains the same values as the field 'creator_full_name'.?>
   </field>
 
   <field name="creator_full_name_strict" type="text_strict" multiValued="true">
@@ -341,9 +321,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description The catalog, which this resource is a part of.?>
     <?example     Samlingsbilleder?>
   </field>
-  <field name="catalog_facet" type="facet">
-    <?description Field used for faceting on catalog. Contains the same values as the field 'catalog'.?>
-  </field>
 
   <!-- Fields on production of physical and digital object. -->
   <field name="production_date" type="string">
@@ -398,9 +375,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="subject_full_name" type="string" multiValued="true" docValues="true">
     <?description The name of the subject written as given name family name.?>
     <?example     John R. Johnsen?>
-  </field>
-  <field name="subject_full_name_facet" type="facet" multiValued="true">
-    <?description Field used for faceting on subject_full_name. Contains the same values as the field 'subject_full_name'.?>
   </field>
 
   <field name="subject_full_name_strict" type="text_strict" multiValued="true">
@@ -617,9 +591,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="genre_sub" type="string" docValues="true">
     <?description A sub genre for the resource. This is a more specific category than the one specified in the field genre?>
     <?example     Comedy series?>
-  </field>
-  <field name="genre_sub_facet" type="facet">
-    <?description Field used for faceting on genre_sub. Contains the same values as the field 'genre_sub'.?>
   </field>
 
   <field name="has_subtitles" type="boolean">
@@ -1131,32 +1102,22 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </copyField>
 
   <copyField source="creator_affiliation" dest="creator_affiliation_facet"/>
-
   <copyField source="creator_name" dest="freetext"/>
   <copyField source="creator_full_name" dest="freetext"/>
-  <copyField source="creator_full_name" dest="creator_full_name_facet"/>
   <copyField source="creator_given_name" dest="freetext"/>
   <copyField source="creator_terms_of_address" dest="freetext"/>
   <copyField source="area" dest="freetext"/>
   <copyField source="subject_name" dest="freetext"/>
   <copyField source="subject_full_name" dest="freetext"/>
-  <copyField source="subject_full_name" dest="subject_full_name_facet"/>
   <copyField source="subject_family_name" dest="freetext"/>
   <copyField source="subject_given_name" dest="freetext"/>
   <copyField source="categories" dest="freetext"/>
-  <copyField source="categories" dest="categories_facet"/>
   <copyField source="catalog" dest="freetext"/>
-  <copyField source="catalog" dest="catalog_facet"/>
   <copyField source="collection" dest="freetext"/>
-  <copyField source="collection" dest="collection_facet"/>
   <copyField source="genre" dest="freetext"/>
-  <copyField source="genre" dest="genre_facet"/>
   <copyField source="genre_sub" dest="freetext"/>
-  <copyField source="genre_sub" dest="genre_sub_facet"/>
   <copyField source="resource_description" dest="freetext"/>
-  <copyField source="resource_description" dest="resource_description_facet"/>
   <copyField source="resource_description_general" dest="freetext"/>
-  <copyField source="resource_description_general" dest="resource_description_general_facet"/>
   <copyField source="notes" dest="freetext"/>
   <copyField source="location" dest="freetext"/>
   <copyField source="title" dest="freetext"/>

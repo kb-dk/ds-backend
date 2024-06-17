@@ -787,16 +787,16 @@
        <str name="facet.mincount">1</str>
        <str name="facet.limit">10</str>
 
-       <str name="facet.field">catalog_facet</str>
-       <str name="facet.field">collection_facet</str>
-       <str name="facet.field">categories_facet</str>
-       <str name="facet.field">genre_facet</str>
-       <str name="facet.field">genre_sub_facet</str>
+       <str name="facet.field">catalog</str>
+       <str name="facet.field">collection</str>
+       <str name="facet.field">categories</str>
+       <str name="facet.field">genre</str>
+       <str name="facet.field">genre_sub</str>
        <!-- Describes the type of material. Should be available across collections. -->
-       <str name="facet.field">resource_description_facet</str>
-       <str name="facet.field">resource_description_general_facet</str>
-       <str name="facet.field">creator_full_name_facet</str>
-       <str name="facet.field">subject_full_name_facet</str>
+       <str name="facet.field">resource_description</str>
+       <str name="facet.field">resource_description_general</str>
+       <str name="facet.field">creator_full_name</str>
+       <str name="facet.field">subject_full_name</str>
 
        <!-- For radio and TV creator_affiliation contains the channel, which aired the resource.
             If its present for images, it contains information on an institution, which the artist was/is related to -->
