@@ -363,7 +363,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     public void testTransformationOfDomsRecord() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_bd612d1e);
         assertTrue(transformedJSON.contains("\"@type\":\"VideoObject\""));
-        prettyPrintJson(transformedJSON);
     }
 
     @Test
@@ -378,10 +377,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertFalse(transformedJSON.contains("\"PropertyID\":\"InternalAccessionRef\",\"value\":\"\""));
     }
 
-    @Test public void testDoms() throws IOException {
+    @Test
+    public void testDomsEpisodeNumbers() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eaea0362);
-        prettyPrintJson(transformedJSON);
-
+        assertTrue(transformedJSON.contains("\"episodeNumber\":8,") && transformedJSON.contains("\"numberOfEpisodes\":24"));
     }
 
 

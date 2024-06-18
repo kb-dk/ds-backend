@@ -444,41 +444,69 @@
           </xsl:if>
         </xsl:for-each>
 
-        <!-- Extract metadata from PBC extensions related to episodes -->
         <xsl:for-each select="./pbcoreExtension/extension">
-          <!-- Extract episode number if present.
-               Checks for 'episodenr' in PBC extension and checks that there is a substring after the key.-->
-          <xsl:if test="f:contains(., 'episodenr:') and f:string-length(substring-after(., 'episodenr:')) > 0">
-            <f:number key="episodeNumber">
-              <xsl:value-of select="substring-after(., 'episodenr:')"/>
-            </f:number>
-          </xsl:if>
-        </xsl:for-each>
+          <xsl:choose>
+            <xsl:when test="f:contains(substring-after(., 'episodenr:'), ':')">
+                <xsl:variable name="episodeInfo">
+                  <xsl:value-of select="substring-after(., 'episodenr:')"/>
+                </xsl:variable>
 
-        <!-- Extract metadata from PBC extensions related to season length. -->
-        <xsl:for-each select="./pbcoreExtension/extension">
-          <!-- Extract number of episodes in a season, if present.
-               Checks for 'antalepisoder' in PBC extension and checks that the value is not an empty string or 0.
-               Create partOfSeason field, if any metadata is present. -->
-          <xsl:if test="f:contains(., 'antalepisoder:') and
-                        not(f:contains(., 'antalepisoder:0')) and
-                        f:string-length(substring-after(., 'antalepisoder:')) > 0">
-            <!-- TODO: Figure if  there is a difference between no value and 0.
-                 Could one mean that a series is related but no data on it and
-                 the other means individual program with no series? -->
-            <f:map key="partOfSeason">
-              <f:string key="@type">
-                <xsl:choose>
-                  <xsl:when test="$type = 'VideoObject'">TVSeason</xsl:when>
-                  <xsl:when test="$type = 'AudioObject'">RadioSeason</xsl:when>
-                  <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
-                </xsl:choose>
-              </f:string>
-                <f:number key="numberOfEpisodes">
-                  <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
+                <f:number key="episodeNumber">
+                  <xsl:value-of select="substring-before($episodeInfo, ':')"/>
                 </f:number>
-            </f:map>
-          </xsl:if>
+                <f:map key="partOfSeason">
+                  <f:string key="@type">
+                    <xsl:choose>
+                      <xsl:when test="$type = 'VideoObject'">TVSeason</xsl:when>
+                      <xsl:when test="$type = 'AudioObject'">RadioSeason</xsl:when>
+                      <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
+                    </xsl:choose>
+                  </f:string>
+                  <f:number key="numberOfEpisodes">
+                    <xsl:value-of select="substring-after($episodeInfo, ':')"/>
+                  </f:number>
+                </f:map>
+
+            </xsl:when>
+            <xsl:otherwise>
+              <!-- Extract metadata from PBC extensions related to episodes -->
+              <xsl:for-each select="./pbcoreExtension/extension">
+                <!-- Extract episode number if present.
+                     Checks for 'episodenr' in PBC extension and checks that there is a substring after the key.-->
+                <xsl:if test="f:contains(., 'episodenr:') and f:string-length(substring-after(., 'episodenr:')) > 0">
+                  <f:number key="episodeNumber">
+                    <xsl:value-of select="substring-after(., 'episodenr:')"/>
+                  </f:number>
+                </xsl:if>
+              </xsl:for-each>
+
+              <!-- Extract metadata from PBC extensions related to season length. -->
+              <xsl:for-each select="./pbcoreExtension/extension">
+                <!-- Extract number of episodes in a season, if present.
+                     Checks for 'antalepisoder' in PBC extension and checks that the value is not an empty string or 0.
+                     Create partOfSeason field, if any metadata is present. -->
+                <xsl:if test="f:contains(., 'antalepisoder:') and
+                          not(f:contains(., 'antalepisoder:0')) and
+                          f:string-length(substring-after(., 'antalepisoder:')) > 0">
+                  <!-- TODO: Figure if  there is a difference between no value and 0.
+                       Could one mean that a series is related but no data on it and
+                       the other means individual program with no series? -->
+                  <f:map key="partOfSeason">
+                    <f:string key="@type">
+                      <xsl:choose>
+                        <xsl:when test="$type = 'VideoObject'">TVSeason</xsl:when>
+                        <xsl:when test="$type = 'AudioObject'">RadioSeason</xsl:when>
+                        <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
+                      </xsl:choose>
+                    </f:string>
+                    <f:number key="numberOfEpisodes">
+                      <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
+                    </f:number>
+                  </f:map>
+                </xsl:if>
+              </xsl:for-each>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:for-each>
       </f:map>
     </xsl:if>
