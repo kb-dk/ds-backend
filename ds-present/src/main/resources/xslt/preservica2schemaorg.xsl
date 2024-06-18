@@ -46,6 +46,10 @@
           <xsl:value-of select="."/>
     </xsl:variable>
 
+    <xsl:variable name="pidHandles">
+      <xsl:value-of select="distinct-values(//pidhandle:pidhandle/handle)"/>
+    </xsl:variable>
+
     <!-- Determine the type of schema.org object in hand.-->
     <xsl:variable name="type">
       <xsl:choose>
@@ -71,6 +75,7 @@
             <xsl:with-param name="pbCore" select="$pbCore"/>
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            <xsl:with-param name="pidHandles" select="$pidHandles"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:when test="$type = 'AudioObject'">
@@ -78,6 +83,7 @@
             <xsl:with-param name="pbCore" select="$pbCore"/>
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            <xsl:with-param name="pidHandles" select="$pidHandles"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
@@ -85,6 +91,7 @@
             <xsl:with-param name="pbCore" select="$pbCore"/>
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            <xsl:with-param name="pidHandles" select="$pidHandles"/>
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
@@ -101,6 +108,7 @@
     <xsl:param name="pbCore"/>
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
+    <xsl:param name="pidHandles"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -114,6 +122,7 @@
           <xsl:call-template name="pbc-metadata">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+            <xsl:with-param name="pidHandles" select="$pidHandles"/>
           </xsl:call-template>
 
           <!-- This is the only field directly present in pbc:PBCoreDescriptionDocument, which is only used for video
@@ -185,13 +194,14 @@
     <xsl:param name="pbCore"/>
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
+    <xsl:param name="pidHandles"/>
 
     <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
     <xsl:call-template name="generic-transformation">
       <xsl:with-param name="pbCore" select="$pbCore"/>
       <xsl:with-param name="type" select="$type"/>
       <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-
+      <xsl:with-param name="pidHandles" select="$pidHandles"/>
     </xsl:call-template>
   </xsl:template>
 
@@ -203,6 +213,7 @@
     <xsl:param name="pbCore"/>
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
+    <xsl:param name="pidHandles"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -220,6 +231,7 @@
               <xsl:call-template name="pbc-metadata">
                 <xsl:with-param name="type" select="$type"/>
                 <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
+                <xsl:with-param name="pidHandles" select="$pidHandles"/>
               </xsl:call-template>
             </xsl:for-each>
           </xsl:when>
@@ -294,6 +306,7 @@
   <xsl:template name="pbc-metadata">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
+    <xsl:param name="pidHandles"/>
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
@@ -635,11 +648,7 @@
         </xsl:for-each>
       </xsl:if>
       <!-- Extracts PID as identifier if present.-->
-      <xsl:if test="//pidhandle:pidhandle/handle">
-        <xsl:variable name="pidHandles">
-          <xsl:value-of select="distinct-values(//pidhandle:pidhandle/handle)"/>
-        </xsl:variable>
-
+      <xsl:if test="$pidHandles != ''">
         <f:map>
           <f:string key="@type">PropertyValue</f:string>
           <f:string key="PropertyID">PID</f:string>
