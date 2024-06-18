@@ -798,6 +798,9 @@
        <str name="facet.field">creator_full_name</str>
        <str name="facet.field">subject_full_name</str>
 
+       <str name="facet.field">temporal_start_month</str>
+       <str name="facet.field">temporal_start_year</str>
+       <str name="facet.field">temporal_start_hour_da</str>
        <!-- For radio and TV creator_affiliation contains the channel, which aired the resource.
             If its present for images, it contains information on an institution, which the artist was/is related to -->
        <str name="facet.field">creator_affiliation_facet</str>
