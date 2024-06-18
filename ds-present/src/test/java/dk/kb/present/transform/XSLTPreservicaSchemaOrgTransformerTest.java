@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static dk.kb.present.TestUtil.prettyPrintJson;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -98,6 +100,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testIdentifiers() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+
+        prettyPrintJson(transformedJSON);
 
         Assertions.assertTrue(transformedJSON.contains("\"identifier\":[{\"@type\":\"PropertyValue\",\"PropertyID\":\"Origin\",\"value\":\"ds.test\"}")
                 && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"ritzauId\",\"value\":\"926e730f-b3e6-44b9-aea7-a6ea27ec98ae\"}")
@@ -193,6 +197,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testAbstractCreation() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8afb121);
+        prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"abstract\":\"Eng. krimiserie\""));
     }
 
@@ -352,6 +357,31 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void testDateInjection() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:storage_mTime\":"));
+    }
+
+    @Test
+    public void testTransformationOfDomsRecord() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_bd612d1e);
+        assertTrue(transformedJSON.contains("\"@type\":\"VideoObject\""));
+        prettyPrintJson(transformedJSON);
+    }
+
+    @Test
+    public void testDomsBroadcastAlternateName() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_bd612d1e);
+        assertFalse(transformedJSON.contains("\"broadcastDisplayName\":\"Kanal 4\",\"alternateName\":\"\""));
+    }
+
+    @Test
+    public void testDomsNoAccessionRef() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_bd612d1e);
+        assertFalse(transformedJSON.contains("\"PropertyID\":\"InternalAccessionRef\",\"value\":\"\""));
+    }
+
+    @Test public void testDoms() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eaea0362);
+        prettyPrintJson(transformedJSON);
+
     }
 
 
