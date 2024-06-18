@@ -16,6 +16,48 @@
   </xsl:param>
 
   <!-- FUNCTIONS -->
+
+  <!-- Convert a datetime from a given timezone to UTC time.-->
+  <xsl:function name="my:convertDatetimeToZulu">
+    <xsl:param name="datetime"/>
+
+    <xsl:variable name="wellFormatedDatetime">
+      <xsl:value-of select="my:getDatetimeWithValidTimezone($datetime)"/>
+    </xsl:variable>
+
+    <xsl:value-of select="f:adjust-dateTime-to-timezone($wellFormatedDatetime, xs:dayTimeDuration('PT0H'))"/>
+
+  </xsl:function>
+
+  <!-- Validate that the timezone in datetimes are present as +HH:MM. If not, then they are converted. -->
+  <xsl:function name="my:getDatetimeWithValidTimezone">
+    <xsl:param name="datetimeString"/>
+    <xsl:choose>
+      <xsl:when test="f:ends-with($datetimeString, 'Z')">
+        <xsl:value-of select="$datetimeString"/>
+      </xsl:when>
+      <xsl:when test="f:string-length(substring-after($datetimeString, '+')) != 5">
+        <xsl:variable name="datetimeNoTimezone">
+          <xsl:value-of select="substring-before($datetimeString, '+')"/>
+        </xsl:variable>
+        <xsl:variable name="timezoneInfo">
+          <xsl:value-of select="substring-after($datetimeString, '+')"/>
+        </xsl:variable>
+        <xsl:variable name="timezoneHour">
+          <xsl:value-of select="substring($timezoneInfo, 1, 2)"/>
+        </xsl:variable>
+        <xsl:variable name="timezoneMinute">
+          <xsl:value-of select="substring($timezoneInfo, 3,2)"/>
+        </xsl:variable>
+        <xsl:value-of select="concat($datetimeNoTimezone, '+', $timezoneHour, ':', $timezoneMinute)"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="xs:dateTime(normalize-space($datetimeString))"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
+
   <!-- Get milliseconds between two datetimes. -->
   <xsl:function name="my:toMilliseconds" as="xs:integer">
     <xsl:param name="startDate" as="xs:dateTime"/>
