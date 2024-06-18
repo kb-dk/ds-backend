@@ -1038,14 +1038,18 @@
     </xsl:choose>
   </xsl:template>
 
-        <!-- Template to strip namespace from elements -->
+  <!-- Template to strip namespace from elements.
+        This is needed as DOMS records are defining namespace prefixes for each and every child,
+        while preservica records only create them for parent records. -->
   <xsl:template match="*" mode="strip-ns">
   <xsl:element name="{local-name()}">
     <xsl:apply-templates select="@*|node()" mode="strip-ns"/>
   </xsl:element>
   </xsl:template>
 
-          <!-- Template to strip namespace from attributes -->
+  <!-- Template to strip namespace from attributes.
+        This is needed as DOMS records are defining namespace prefixes for each and every child,
+        while preservica records only create them for parent records.-->
   <xsl:template match="@*" mode="strip-ns">
   <xsl:attribute name="{local-name()}">
     <xsl:value-of select="."/>

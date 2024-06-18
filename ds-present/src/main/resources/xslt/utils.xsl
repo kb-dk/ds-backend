@@ -17,7 +17,11 @@
 
   <!-- FUNCTIONS -->
 
-  <!-- Convert a datetime from a given timezone to UTC time.-->
+  <!-- Convert a datetime from a given timezone to UTC time.
+        Datetimes harvested from Preservica can be both UTC and UTC+1. Schema.org and solr datetimes needs to
+        be in UTC time, therefore this conversion is needed.
+
+        This function also validates, that the datetime object is properly formatted.-->
   <xsl:function name="my:convertDatetimeToZulu">
     <xsl:param name="datetime"/>
 
@@ -26,10 +30,11 @@
     </xsl:variable>
 
     <xsl:value-of select="f:adjust-dateTime-to-timezone($wellFormatedDatetime, xs:dayTimeDuration('PT0H'))"/>
-
   </xsl:function>
 
-  <!-- Validate that the timezone in datetimes are present as +HH:MM. If not, then they are converted. -->
+  <!-- Validate that the timezone in datetimes are present as +HH:MM. If not, then they are converted.
+        XSLT requires timezones to contain timezones as +HH:MM. However, DOMS records contains the timezone as +HHMM.
+        This method converts the DOMS format to the format, which XSLT understands.-->
   <xsl:function name="my:getDatetimeWithValidTimezone">
     <xsl:param name="datetimeString"/>
     <xsl:choose>
