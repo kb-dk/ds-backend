@@ -12,6 +12,15 @@
 #
 
 solr:
+  #Additional parameters allowed to be sent to solr.
+  #This is defined in the behaviour yaml! But for the solrshield shield unittest it is required. 
+  extraAllowedParameters:
+    # queryUUID is returned to the frontend and used as session tracking.
+    - queryUUID 
+    # Frontend uses facet.limit this for timeline
+    - facet.limit
+
+
   shield:
 
     # The default max weight should be kept conservative and perhaps even disabled by setting it to -1.
