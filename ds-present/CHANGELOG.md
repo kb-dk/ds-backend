@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.8.0)
 ### Added
 - Added XSLT support for parsing Preservica and DOMS records through the same transformation.
 
