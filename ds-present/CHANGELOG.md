@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added XSLT support for parsing Preservica and DOMS records through the same transformation.
+
 ### Changed
 - Changed a lot of transformation tests to use preservica 7 data instead of preservica 5.  
 

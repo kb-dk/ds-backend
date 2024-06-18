@@ -37,6 +37,8 @@ public class TestFiles {
     public static final String PVICA_RECORD_53ce4817 = "internal_test_files/preservica7/53ce4817-56ce-4e41-bac4-ba2dda938199.xml";
 
     public static final String PVICA_RECORD_2b462c63 = "internal_test_files/preservica7/2b462c63-8bb8-477a-89d9-70675c22c163.xml";
+    public static final String PVICA_DOMS_MIG_bd612d1e = "internal_test_files/domsMigrated/bd612d1e-b90b-48f7-87ce-898da240950b-20240612T105945.xml";
+    public static final String PVICA_DOMS_MIG_eaea0362 = "internal_test_files/domsMigrated/eaea0362-bbad-43ec-8d5e-07df6957923b-20240612T112310.xml";
 
     // From preservica 6, not in preservica 7 stage
     public static final String PVICA6_RECORD_00a9e71c = "internal_test_files/preservica6/00a9e71c-1264-4e57-9238-b38ec5672fb2.xml";
