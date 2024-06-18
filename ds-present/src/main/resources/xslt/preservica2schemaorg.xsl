@@ -34,6 +34,13 @@
   <xsl:param name="conditionsOfAccess"/>
   <xsl:include href="xslt/utils.xsl"/>
 
+  <xsl:variable name="InternalAccessionRef">
+    <xsl:value-of select="/XIP/Metadata/Content/LegacyXIP/AccessionRef"/>
+  </xsl:variable>
+
+  <xsl:variable name="pidHandles">
+    <xsl:value-of select="distinct-values(//pidhandle:pidhandle/handle)"/>
+  </xsl:variable>
 
   <!-- MAIN TEMPLATE. This template delegates, which fields are to be created for each schema.org object.
        Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
@@ -44,10 +51,6 @@
             <xsl:apply-templates mode="strip-ns"/>
           </xsl:for-each>
           <xsl:value-of select="."/>
-    </xsl:variable>
-
-    <xsl:variable name="pidHandles">
-      <xsl:value-of select="distinct-values(//pidhandle:pidhandle/handle)"/>
     </xsl:variable>
 
     <!-- Determine the type of schema.org object in hand.-->
@@ -75,7 +78,6 @@
             <xsl:with-param name="pbCore" select="$pbCore"/>
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="pidHandles" select="$pidHandles"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:when test="$type = 'AudioObject'">
@@ -83,7 +85,6 @@
             <xsl:with-param name="pbCore" select="$pbCore"/>
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="pidHandles" select="$pidHandles"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
@@ -91,7 +92,6 @@
             <xsl:with-param name="pbCore" select="$pbCore"/>
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="pidHandles" select="$pidHandles"/>
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
@@ -108,7 +108,6 @@
     <xsl:param name="pbCore"/>
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="pidHandles"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -122,7 +121,6 @@
           <xsl:call-template name="pbc-metadata">
             <xsl:with-param name="type" select="$type"/>
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-            <xsl:with-param name="pidHandles" select="$pidHandles"/>
           </xsl:call-template>
 
           <!-- This is the only field directly present in pbc:PBCoreDescriptionDocument, which is only used for video
@@ -194,14 +192,12 @@
     <xsl:param name="pbCore"/>
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="pidHandles"/>
 
     <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
     <xsl:call-template name="generic-transformation">
       <xsl:with-param name="pbCore" select="$pbCore"/>
       <xsl:with-param name="type" select="$type"/>
       <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-      <xsl:with-param name="pidHandles" select="$pidHandles"/>
     </xsl:call-template>
   </xsl:template>
 
@@ -213,7 +209,6 @@
     <xsl:param name="pbCore"/>
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="pidHandles"/>
 
     <f:map>
       <!-- Creates the first three fields for docs. -->
@@ -231,7 +226,6 @@
               <xsl:call-template name="pbc-metadata">
                 <xsl:with-param name="type" select="$type"/>
                 <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
-                <xsl:with-param name="pidHandles" select="$pidHandles"/>
               </xsl:call-template>
             </xsl:for-each>
           </xsl:when>
@@ -306,7 +300,6 @@
   <xsl:template name="pbc-metadata">
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
-    <xsl:param name="pidHandles"/>
     <!-- TODO: Investigate relation between titel and originaltitel. Some logic related to metadata delivery type exists. -->
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
@@ -658,11 +651,11 @@
         </f:map>
       </xsl:if>
       <!-- Extract accession ref as schema.org identifier --> <!-- TODO: This could properly be done with loads of the identifiers in the kb:internal map.-->
-      <xsl:if test="/XIP/Metadata/Content/LegacyXIP/AccessionRef">
+      <xsl:if test="$InternalAccessionRef != ''">
         <f:map>
           <f:string key="@type">PropertyValue</f:string>
           <f:string key="PropertyID">InternalAccessionRef</f:string>
-          <f:string key="value"><xsl:value-of select="/XIP/Metadata/Content/LegacyXIP/AccessionRef"/></f:string>
+          <f:string key="value"><xsl:value-of select="$InternalAccessionRef"/></f:string>
         </f:map>
       </xsl:if>
     </f:array>
