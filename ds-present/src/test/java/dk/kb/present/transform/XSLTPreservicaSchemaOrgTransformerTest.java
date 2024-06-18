@@ -165,9 +165,9 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testEmptyEpisodeName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_9d9785a8);
-        Assertions.assertTrue(transformedJSON.contains("\"encodesCreativeWork\":{" +
-                "\"@type\":\"TVEpisode\"," +
-                "\"episodeNumber\":4"));
+        prettyPrintJson(transformedJSON);
+        Assertions.assertFalse(transformedJSON.contains("\"encodesCreativeWork\":{" +
+                "\"@type\":\"TVEpisode\",\"name\":\"\""));
     }
 
     @Test

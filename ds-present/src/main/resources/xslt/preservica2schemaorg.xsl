@@ -444,6 +444,7 @@
           </xsl:if>
         </xsl:for-each>
 
+
         <xsl:for-each select="./pbcoreExtension/extension">
           <xsl:choose>
             <xsl:when test="f:contains(substring-after(., 'episodenr:'), ':')">
@@ -466,11 +467,10 @@
                     <xsl:value-of select="substring-after($episodeInfo, ':')"/>
                   </f:number>
                 </f:map>
-
             </xsl:when>
             <xsl:otherwise>
               <!-- Extract metadata from PBC extensions related to episodes -->
-              <xsl:for-each select="./pbcoreExtension/extension">
+              <xsl:for-each select=".">
                 <!-- Extract episode number if present.
                      Checks for 'episodenr' in PBC extension and checks that there is a substring after the key.-->
                 <xsl:if test="f:contains(., 'episodenr:') and f:string-length(substring-after(., 'episodenr:')) > 0">
@@ -481,7 +481,7 @@
               </xsl:for-each>
 
               <!-- Extract metadata from PBC extensions related to season length. -->
-              <xsl:for-each select="./pbcoreExtension/extension">
+              <xsl:for-each select=".">
                 <!-- Extract number of episodes in a season, if present.
                      Checks for 'antalepisoder' in PBC extension and checks that the value is not an empty string or 0.
                      Create partOfSeason field, if any metadata is present. -->
