@@ -106,6 +106,9 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
         if (cookieConf.containsKey("path")) {
             cookieString += "; path=";
             cookieString += cookieConf.getString("path");
+        } else {
+            cookieString += "; path=";
+            cookieString += this.servletContext.getContextPath();
         }
         cookieString += "; SameSite="+cookieConf.getString("samesite","Strict");
         httpServletResponse.setHeader("Set-Cookie",cookieString);
