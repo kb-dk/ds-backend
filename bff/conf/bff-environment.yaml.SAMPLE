@@ -35,9 +35,6 @@ cookies:
 # Secretsalt used by BFF
 secretSalt: "aVerySecretSalt"
 
-# Base URL for all ds services
-apiBaseUrl: "http://localhost:9061"
-
   # All configured APIs and their respective baseurls.
 apis:
   ds-image:

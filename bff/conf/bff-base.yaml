@@ -40,10 +40,6 @@ cookies:
 
 #secretSalt: "must_be_overridden_so_no_default"
 
-# where are the api's installed
-# TODO: Remove this as it does not seem to be used anymore
-apiBaseUrl: "http://localhost:9061"
-
 # Available APIs
 # baseURLs will be combined with the service ID: 'ds-image' + 'https://localhost/' = 'https://localhost/ds-image'
 apis:

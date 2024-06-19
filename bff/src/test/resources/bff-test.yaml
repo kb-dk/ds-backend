@@ -3,5 +3,4 @@ keycloak:
   realm: "ds-poc"
   clientID: "bff-poc"
   secret: ""
-apiBaseUrl: "http://localhost:9061"
 secretSalt: "thisisaverysecretsalt"
