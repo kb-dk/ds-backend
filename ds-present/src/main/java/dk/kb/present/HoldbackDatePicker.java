@@ -116,6 +116,7 @@ public class HoldbackDatePicker {
             }
         }
 
+        log.warn("No purposeName could be found for PurposeID: '{}'", purposeID);
         return "";
     }
 
@@ -169,6 +170,7 @@ public class HoldbackDatePicker {
             }
         }
 
+        log.warn("No PurposeID could be extracted from content: '{}' and form: '{}'", content, formNrString);
         return "";
     }
 
