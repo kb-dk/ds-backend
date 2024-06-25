@@ -24,18 +24,20 @@ public class HoldbackTest {
 
     @Test
     public void getPurposeNameTest(){
-        System.out.println(HoldbackDatePicker.getPurposeNameFromNumber("2.05.01"));
+        assertEquals("Dansk Dramatik & Fiktion", HoldbackDatePicker.getPurposeNameFromNumber("2.05.01"));
+        assertEquals("Aktualitet & Debat", HoldbackDatePicker.getPurposeNameFromNumber("2.02"));
     }
 
     @Test
     public void getPurposeNumberTest(){
-        HoldbackDatePicker.getPurposeFromContentAndForm("3171", "Form10");
+        // TODO: More tests. Also negative tests for those fields that can be empty.
+        assertEquals("2.02", HoldbackDatePicker.getPurposeIdFromContentAndForm("1800", "Form10"));
     }
 
 
     @Test
     public void getFormString(){
-        assertEquals("Form3", HoldbackDatePicker.createFormString(3.0));
+        assertEquals("Form3", HoldbackDatePicker.createFormString(3));
     }
 
     @Test
@@ -56,7 +58,7 @@ public class HoldbackTest {
     }
 
     @Test
-    public void xslxSheetTest() throws ParserConfigurationException, SAXException {
+    public void xslxSheetTest(){
         HoldbackDatePicker datePicker = new HoldbackDatePicker();
         int rowIndex = 0;
 
