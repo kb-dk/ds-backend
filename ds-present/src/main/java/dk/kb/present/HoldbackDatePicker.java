@@ -75,33 +75,40 @@ public class HoldbackDatePicker {
     public static String apply(String xml) throws IOException {
         try (InputStream xmlStream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8)) {
             try {
-                // Get form value
-                String form = getFormValue(xmlStream);
+                String purposeName = getPurposeName(xmlStream);
 
-                // get formNr by looking up form in formIndexSheet.
-                int formNr = getFormNrFromForm(form);
-                String formString = createFormString(formNr);
-
-                // TODO: Why have i named this commonCode + do some logic on gallup/nielsen differences.
-                // get Common Code from xml
-                String commonCode = getCommonCode(xmlStream);
-
-                // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
-                String purposeNumber = getPurposeIdFromContentAndForm(commonCode, formString);
-                purposeNumber = validatePurpose(purposeNumber, xmlStream);
-
-                // Brug den fundne værdi i formåls arket til at finde formålNavn
-                String purposeName = getPurposeNameFromNumber(purposeNumber);
-
-                // TODO: Documentation for all already created methods.
-                // TODO: Move all above into own method
-                // TODO: Create holdback date from purpose and aired date.
+                // TODO: Create holdback date or amount of holdback days from purpose and aired date.
 
                 return purposeName;
             } catch (IOException | SAXException | ParserConfigurationException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     * Get purposeName for a preservica record containing metadata about a DR program.
+     * @param xmlStream containing the preservica record for analysis.
+     * @return the purposeName for a given program.
+     */
+    private static String getPurposeName(InputStream xmlStream) throws IOException, ParserConfigurationException, SAXException {
+        // Get form value
+        String form = getFormValue(xmlStream);
+
+        // get formNr by looking up form in formIndexSheet.
+        int formNr = getFormNrFromForm(form);
+        String formString = createFormString(formNr);
+
+        // TODO: Why have i named this commonCode + do some logic on gallup/nielsen differences.
+        // get Common Code from xml
+        String commonCode = getCommonCode(xmlStream);
+
+        // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
+        String purposeNumber = getPurposeIdFromContentAndForm(commonCode, formString);
+        purposeNumber = validatePurpose(purposeNumber, xmlStream);
+
+        // Brug den fundne værdi i formåls arket til at finde formålNavn
+        return getPurposeNameFromNumber(purposeNumber);
     }
 
     /**
