@@ -23,6 +23,12 @@ public class HoldbackTest {
         HoldbackDatePicker datePicker = new HoldbackDatePicker();
     }
 
+
+    @Test
+    public void getPurposeName() throws IOException, ParserConfigurationException, SAXException {
+        InputStream xmlStream = IOUtils.toInputStream(Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9779a1b2));
+        System.out.println(HoldbackDatePicker.getPurposeName(xmlStream));
+    }
     @Test
     public void getHoldbackDateTest() throws ParserConfigurationException, IOException, SAXException {
         InputStream xmlStream = IOUtils.toInputStream(Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9779a1b2));
@@ -68,7 +74,7 @@ public class HoldbackTest {
     @Test
     public void getCommoncodeTest() throws ParserConfigurationException, SAXException, IOException {
         InputStream xmlStream = IOUtils.toInputStream(Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9779a1b2));
-        assertEquals("3171",  HoldbackDatePicker.getCommonCode(xmlStream));
+        assertEquals("3171",  HoldbackDatePicker.getContentsItem(xmlStream));
     }
 
     @Test

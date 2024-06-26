@@ -11,7 +11,7 @@ import dk.kb.present.util.saxhandlers.FormHandler;
 import dk.kb.present.util.saxhandlers.ProductionCountryHandler;
 import dk.kb.present.util.saxhandlers.StartDateHandler;
 import dk.kb.util.Resolver;
-import dk.kb.present.util.saxhandlers.CommonCodeHandler;
+import dk.kb.present.util.saxhandlers.ContentsItemHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -78,16 +78,17 @@ public class HoldbackDatePicker {
      *
      * @param xml InformationObject from Preservica encapsulating a DR record/program, which holdback needs to be
      *            calculated for
-     * @return TODO: Figure if the method should return amount of days or the actual date.
+     * @return a string containing the date for when the holdback for the record has expired.
+     *         In the format: yyyy-MM-dd'T'HH:mm:ssZ
      */
-    public static String apply(String xml) throws IOException {
+    public static String getHoldbackDateForRecord(String xml) throws IOException {
         try (InputStream xmlStream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8)) {
             try {
                 String purposeName = getPurposeName(xmlStream);
 
                 int holdbackDays = getHoldbackDaysForPurpose(purposeName);
 
-                String holdbackDate = getHoldbackDateForRecord(xmlStream, holdbackDays);
+                String holdbackDate = addHoldbackDaysToRecordStartDate(xmlStream, holdbackDays);
 
                 return holdbackDate;
             } catch (IOException | SAXException | ParserConfigurationException e) {
@@ -96,11 +97,24 @@ public class HoldbackDatePicker {
         }
     }
 
-    private static String getHoldbackDateForRecord(InputStream xmlStream, int holdbackDays) throws ParserConfigurationException, IOException, SAXException {
+    /**
+     * Extract the start date from a Preservica record and add the input holdbackDays to the date to create the date,
+     * when the holdback period for the record has expired.
+     * @param xmlStream containing a preservica record with a dateAvailableStart value in the PB Core metadata.
+     * @param holdbackDays amount of days to be added to the start date
+     * @return the calculated date for when holdback expires for the record. In the format: yyyy-MM-dd'T'HH:mm:ssZ
+     */
+    private static String addHoldbackDaysToRecordStartDate(InputStream xmlStream, int holdbackDays) throws ParserConfigurationException, IOException, SAXException {
         ZonedDateTime startDate = getStartDate(xmlStream);
         return calculateHoldbackDate(startDate, holdbackDays);
     }
 
+    /**
+     * Apply the amount of holdback days to the start date and return the date for when holdback has expired.
+     * @param startDate a date representing the date when a program was broadcasted.
+     * @param holdbackDays the amount of days that has to parse before a program can be retrieved in the archive.
+     * @return the date, when the holdback period has expired as a string in the format: yyyy-MM-dd'T'HH:mm:ssZ.
+     */
     protected static String calculateHoldbackDate(ZonedDateTime startDate, int holdbackDays) {
         ZonedDateTime holdbackExpiredDate = startDate.plusDays(holdbackDays);
 
@@ -142,12 +156,12 @@ public class HoldbackDatePicker {
         int formNr = getFormNrFromForm(form);
         String formString = createFormString(formNr);
 
-        // TODO: Why have i named this commonCode + do some logic on gallup/nielsen differences.
-        // get Common Code from xml
-        String commonCode = getCommonCode(xmlStream);
+        // TODO: do some logic on gallup/nielsen differences.
+        // get contentsitem from xml
+        String contentsItem = getContentsItem(xmlStream);
 
         // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
-        String purposeNumber = getPurposeIdFromContentAndForm(commonCode, formString);
+        String purposeNumber = getPurposeIdFromContentAndForm(contentsItem, formString);
         purposeNumber = validatePurpose(purposeNumber, xmlStream);
 
         // Brug den fundne værdi i formåls arket til at finde formålNavn
@@ -297,6 +311,7 @@ public class HoldbackDatePicker {
         SAXParser saxParser = factory.newSAXParser();
         FormHandler handler = new FormHandler();
         saxParser.parse(xml, handler);
+        xml.reset();
         return handler.getCurrentValue();
     }
 
@@ -305,10 +320,11 @@ public class HoldbackDatePicker {
      * @param xml InputStream containing a preservica record as XML.
      * @return the value extracted from the following XPath in the given XML: {@code /XIP/Metadata/Content/ns2:record/source/tvmeter/contentsitem}
      */
-    protected static String getCommonCode(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
+    protected static String getContentsItem(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
         SAXParser saxParser = factory.newSAXParser();
-        CommonCodeHandler handler = new CommonCodeHandler();
+        ContentsItemHandler handler = new ContentsItemHandler();
         saxParser.parse(xml, handler);
+        xml.reset();
         return handler.getCurrentValue();
     }
 
@@ -321,6 +337,7 @@ public class HoldbackDatePicker {
         SAXParser saxParser = factory.newSAXParser();
         ProductionCountryHandler handler = new ProductionCountryHandler();
         saxParser.parse(xml, handler);
+        xml.reset();
         return handler.getCurrentValue();
     }
 
@@ -328,6 +345,7 @@ public class HoldbackDatePicker {
         SAXParser saxParser = factory.newSAXParser();
         StartDateHandler handler = new StartDateHandler();
         saxParser.parse(xml, handler);
+        xml.reset();
         String datetimeString =  handler.getCurrentValue();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
