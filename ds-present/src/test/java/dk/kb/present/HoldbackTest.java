@@ -25,9 +25,19 @@ public class HoldbackTest {
 
 
     @Test
+    public void getHoldbackDateFromXmlTest() throws IOException {
+        String xml = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9ed10d66);
+        assertEquals("2026-01-17T10:34:42+0100", HoldbackDatePicker.getHoldbackDateForRecord(xml));
+    }
+    @Test
+    public void getNoHoldbackDateFromXmlTest() throws IOException {
+        String xml = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9779a1b2);
+        assertEquals("9011-05-15T18:08:17+0100", HoldbackDatePicker.getHoldbackDateForRecord(xml));
+    }
+    @Test
     public void getPurposeName() throws IOException, ParserConfigurationException, SAXException {
         InputStream xmlStream = IOUtils.toInputStream(Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9779a1b2));
-        System.out.println(HoldbackDatePicker.getPurposeName(xmlStream));
+        assertEquals("Udenlandsk Dramatik & Fiktion", HoldbackDatePicker.getPurposeName(xmlStream));
     }
     @Test
     public void getHoldbackDateTest() throws ParserConfigurationException, IOException, SAXException {

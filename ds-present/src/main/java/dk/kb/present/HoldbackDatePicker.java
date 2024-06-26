@@ -139,8 +139,8 @@ public class HoldbackDatePicker {
             }
         }
 
-        log.warn("No holdback has been defined for purpose: '{}'. Returning -1.", purpose);
-        return -1;
+        log.warn("No holdback has been defined for purpose: '{}'. Returning 2555000.", purpose);
+        return 2555000;
     }
 
     /**
