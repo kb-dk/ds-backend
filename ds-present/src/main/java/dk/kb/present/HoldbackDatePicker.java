@@ -1,21 +1,17 @@
 package dk.kb.present;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
-import dk.kb.present.saxhandlers.FormHandler;
-import dk.kb.present.saxhandlers.ProductionCountryHandler;
-import dk.kb.present.saxhandlers.StartDateHandler;
+import dk.kb.present.util.saxhandlers.FormHandler;
+import dk.kb.present.util.saxhandlers.ProductionCountryHandler;
+import dk.kb.present.util.saxhandlers.StartDateHandler;
 import dk.kb.util.Resolver;
-import dk.kb.present.saxhandlers.CommonCodeHandler;
+import dk.kb.present.util.saxhandlers.CommonCodeHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;

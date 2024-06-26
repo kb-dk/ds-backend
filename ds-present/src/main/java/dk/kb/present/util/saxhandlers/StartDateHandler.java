@@ -1,4 +1,4 @@
-package dk.kb.present.saxhandlers;
+package dk.kb.present.util.saxhandlers;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

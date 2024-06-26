@@ -1,10 +1,10 @@
-package dk.kb.present.saxhandlers;
+package dk.kb.present.util.saxhandlers;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class FormHandler extends DefaultHandler {
+public class CommonCodeHandler extends DefaultHandler {
     private StringBuilder currentValue = new StringBuilder();
     private String currentPath = "";
     private boolean captureValue = false;
@@ -15,7 +15,7 @@ public class FormHandler extends DefaultHandler {
         currentPath += "/" + qName;
 
         // Check if the current path matches the target path
-        if ("/XIP/Metadata/Content/ns2:record/source/tvmeter/form".equals(currentPath)) {
+        if ("/XIP/Metadata/Content/ns2:record/source/tvmeter/contentsitem".equals(currentPath)) {
             captureValue = true;
         }
     }
@@ -23,7 +23,7 @@ public class FormHandler extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         // Check if we are at the end of the target element
-        if ("/XIP/Metadata/Content/ns2:record/source/tvmeter/form".equals(currentPath)) {
+        if ("/XIP/Metadata/Content/ns2:record/source/tvmeter/contentsitem".equals(currentPath)) {
             captureValue = false;
         }
 
