@@ -4,7 +4,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class CommonCodeHandler extends DefaultHandler {
+public class ContentsItemHandler extends DefaultHandler {
     private StringBuilder currentValue = new StringBuilder();
     private String currentPath = "";
     private boolean captureValue = false;
