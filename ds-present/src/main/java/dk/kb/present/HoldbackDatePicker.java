@@ -1,12 +1,19 @@
 package dk.kb.present;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import dk.kb.present.saxhandlers.FormHandler;
 import dk.kb.present.saxhandlers.ProductionCountryHandler;
+import dk.kb.present.saxhandlers.StartDateHandler;
 import dk.kb.util.Resolver;
 import dk.kb.present.saxhandlers.CommonCodeHandler;
 import org.apache.commons.io.IOUtils;
@@ -58,6 +65,11 @@ public class HoldbackDatePicker {
      */
     private static XSSFSheet purposeSheet;
 
+    /**
+     * Excel sheet containing table to find holdback days for a given purpose.
+     */
+    private static XSSFSheet holdbackSheet;
+
     private static final SAXParserFactory factory = SAXParserFactory.newInstance();
 
     HoldbackDatePicker() {
@@ -77,13 +89,48 @@ public class HoldbackDatePicker {
             try {
                 String purposeName = getPurposeName(xmlStream);
 
-                // TODO: Create holdback date or amount of holdback days from purpose and aired date.
+                int holdbackDays = getHoldbackDaysForPurpose(purposeName);
 
-                return purposeName;
+                String holdbackDate = getHoldbackDateForRecord(xmlStream, holdbackDays);
+
+                return holdbackDate;
             } catch (IOException | SAXException | ParserConfigurationException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private static String getHoldbackDateForRecord(InputStream xmlStream, int holdbackDays) throws ParserConfigurationException, IOException, SAXException {
+        ZonedDateTime startDate = getStartDate(xmlStream);
+        return calculateHoldbackDate(startDate, holdbackDays);
+    }
+
+    protected static String calculateHoldbackDate(ZonedDateTime startDate, int holdbackDays) {
+        ZonedDateTime holdbackExpiredDate = startDate.plusDays(holdbackDays);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+
+        String formattedHoldbackDate = holdbackExpiredDate.format(formatter);
+        return formattedHoldbackDate;
+
+    }
+
+    /**
+     * From a purposeName, get the amount of days which the program should be held back.
+     * This is looked up in the DR provided holdback sheet.
+     * @param purpose purposeName from {@link #purposeSheet} to lookup.
+     * @return amount of holdback days.
+     */
+    protected static int getHoldbackDaysForPurpose(String purpose) {
+        for (Row row : holdbackSheet) {
+            // Check the value against the 2019 and 2022 values.
+            if (purpose.equals(row.getCell(2).getStringCellValue()) || purpose.equals(row.getCell(0).getStringCellValue() )){
+                return (int) row.getCell(4).getNumericCellValue();
+            }
+        }
+
+        log.warn("No holdback has been defined for purpose: '{}'. Returning -1.", purpose);
+        return -1;
     }
 
     /**
@@ -91,7 +138,7 @@ public class HoldbackDatePicker {
      * @param xmlStream containing the preservica record for analysis.
      * @return the purposeName for a given program.
      */
-    private static String getPurposeName(InputStream xmlStream) throws IOException, ParserConfigurationException, SAXException {
+    public static String getPurposeName(InputStream xmlStream) throws IOException, ParserConfigurationException, SAXException {
         // Get form value
         String form = getFormValue(xmlStream);
 
@@ -225,17 +272,21 @@ public class HoldbackDatePicker {
      */
     private void readSheet() {
         try {
-            FileInputStream file = new FileInputStream(String.valueOf(Resolver.getPathFromClasspath("dr_formålstabeller.xlsx")));
+            FileInputStream purposeExcel = new FileInputStream(Resolver.getPathFromClasspath("dr_formålstabeller.xlsx").toString());
+            XSSFWorkbook purposeWorkbook = new XSSFWorkbook(purposeExcel);
 
-            //Create Workbook instance holding reference to .xlsx file
-            XSSFWorkbook workbook = new XSSFWorkbook(file);
+            formIndexSheet = purposeWorkbook.getSheetAt(0);
+            purposeMatrixSheet = purposeWorkbook.getSheetAt(1);
+            purposeSheet = purposeWorkbook.getSheetAt(2);
 
-            //Get first/desired sheet from the workbook
-            formIndexSheet = workbook.getSheetAt(0);
-            purposeMatrixSheet = workbook.getSheetAt(1);
-            purposeSheet = workbook.getSheetAt(2);
+            purposeExcel.close();
 
-            file.close();
+            FileInputStream holdbackExcel = new FileInputStream(Resolver.getPathFromClasspath("dr_holdback.xlsx").toString());
+            XSSFWorkbook holdbackWorkbook = new XSSFWorkbook(holdbackExcel);
+
+            holdbackSheet = holdbackWorkbook.getSheetAt(1);
+
+            holdbackExcel.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -275,6 +326,16 @@ public class HoldbackDatePicker {
         ProductionCountryHandler handler = new ProductionCountryHandler();
         saxParser.parse(xml, handler);
         return handler.getCurrentValue();
+    }
+
+    protected static ZonedDateTime getStartDate(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
+        SAXParser saxParser = factory.newSAXParser();
+        StartDateHandler handler = new StartDateHandler();
+        saxParser.parse(xml, handler);
+        String datetimeString =  handler.getCurrentValue();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+        return ZonedDateTime.parse(datetimeString, formatter);
     }
 
     /**

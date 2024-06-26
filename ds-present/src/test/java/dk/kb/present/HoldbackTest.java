@@ -12,14 +12,34 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HoldbackTest {
 
     @BeforeAll
-    static void setup() throws ParserConfigurationException, SAXException {
+    static void setup() {
         HoldbackDatePicker datePicker = new HoldbackDatePicker();
+    }
+
+    @Test
+    public void getHoldbackDateTest() throws ParserConfigurationException, IOException, SAXException {
+        InputStream xmlStream = IOUtils.toInputStream(Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9779a1b2));
+        ZonedDateTime startDate = HoldbackDatePicker.getStartDate(xmlStream);
+
+
+        String holdbackExpiredDate = HoldbackDatePicker.calculateHoldbackDate(startDate, 30);
+        assertEquals("2016-02-05T18:08:17+0100", holdbackExpiredDate);
+    }
+    @Test
+    public void getHoldbackDaysTest(){
+        assertEquals(30, HoldbackDatePicker.getHoldbackDaysForPurpose("Nyheder"));
+    }
+
+    @Test
+    public void getHoldbackDaysNonExistingTest(){
+        assertEquals(-1, HoldbackDatePicker.getHoldbackDaysForPurpose("Nyhed"));
     }
 
     @Test
@@ -55,6 +75,13 @@ public class HoldbackTest {
     public void getFormTest() throws ParserConfigurationException, SAXException, IOException {
         InputStream xmlStream = IOUtils.toInputStream(Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9779a1b2));
         assertEquals("4500",  HoldbackDatePicker.getFormValue(xmlStream));
+    }
+
+    @Test
+    public void getStartDate() throws IOException, ParserConfigurationException, SAXException {
+        InputStream xmlStream = IOUtils.toInputStream(Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9779a1b2));
+        System.out.println(HoldbackDatePicker.getStartDate(xmlStream));
+        //assertEquals("2016-01-06T18:08:17+0100", HoldbackDatePicker.getStartDate(xmlStream));
     }
 
     @Test
