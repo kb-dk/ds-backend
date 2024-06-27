@@ -50,7 +50,6 @@ public class HoldbackDatePicker {
 
     private static HoldbackDatePicker datePicker = new HoldbackDatePicker();
 
-
     /**
      * Excel sheet containing table to find FormNr in based on Form from the XML.
      */
@@ -73,6 +72,7 @@ public class HoldbackDatePicker {
     private static final SAXParserFactory factory = SAXParserFactory.newInstance();
 
     HoldbackDatePicker() {}
+
     public static void init(){
         readSheet();
     }
@@ -123,7 +123,7 @@ public class HoldbackDatePicker {
      * @param holdbackDays the amount of days that has to parse before a program can be retrieved in the archive.
      * @return the date, when the holdback period has expired as a string in the format: yyyy-MM-dd'T'HH:mm:ssZ.
      */
-    protected static String calculateHoldbackDate(ZonedDateTime startDate, int holdbackDays) {
+    private static String calculateHoldbackDate(ZonedDateTime startDate, int holdbackDays) {
         ZonedDateTime holdbackExpiredDate = startDate.plusDays(holdbackDays);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
@@ -139,7 +139,7 @@ public class HoldbackDatePicker {
      * @param purpose purposeName from {@link #purposeSheet} to lookup.
      * @return amount of holdback days.
      */
-    protected static int getHoldbackDaysForPurpose(String purpose) {
+    private static int getHoldbackDaysForPurpose(String purpose) {
         for (Row row : holdbackSheet) {
             // Check the value against the 2019 and 2022 values.
             if (purpose.equals(row.getCell(2).getStringCellValue()) || purpose.equals(row.getCell(0).getStringCellValue() )){
@@ -181,7 +181,7 @@ public class HoldbackDatePicker {
      * @param purposeID which maps to a textual name in the purposeSheet.
      * @return the purposeName for the input ID.
      */
-    protected static String getPurposeNameFromNumber(String purposeID) {
+    private static String getPurposeNameFromNumber(String purposeID) {
         for (Row row : purposeSheet) {
             if (row.getCell(1).getStringCellValue().equals(purposeID)) {
                 return row.getCell(2).getStringCellValue();
@@ -219,7 +219,7 @@ public class HoldbackDatePicker {
      * @param formNrString a string of the format: 'FormX' where x has been resolved through {@link #getFormNrFromForm(String)}
      * @return a PurposeID most likely in the format x.xx: An example could be the string '2.02'.
      */
-    protected static String getPurposeIdFromContentAndForm(String content, String formNrString) {
+    private static String getPurposeIdFromContentAndForm(String content, String formNrString) {
         double contentDouble = Double.parseDouble(content);
         for (Row row : purposeMatrixSheet) {
             Cell indholdFra = row.getCell(1);
@@ -252,7 +252,7 @@ public class HoldbackDatePicker {
      * @param formNr to prefix with "Form"
      * @return a formString of the format Form+formNr eg. Form1, Form2 etc.
      */
-    protected static String createFormString(int formNr) {
+    private static String createFormString(int formNr) {
         return "Form" + formNr;
     }
 
@@ -261,7 +261,7 @@ public class HoldbackDatePicker {
      * @param form four-digit number extracted from a preservica record.
      * @return the corresponding FormNr for the input form. Returns zero if no value has been extracted.
      */
-    protected static int getFormNrFromForm(String form) {
+    private static int getFormNrFromForm(String form) {
         double formDouble = Double.parseDouble(form);
         // TODO: Add warning logs for values below 1000 and above 7000.
 
@@ -315,7 +315,7 @@ public class HoldbackDatePicker {
      * @param xml InputStream containing a preservica record as XML.
      * @return the value extracted from the following XPath in the given XML: {@code /XIP/Metadata/Content/ns2:record/source/tvmeter/form}
      */
-    protected static String getFormValue(InputStream xml) throws IOException, ParserConfigurationException, SAXException {
+    private static String getFormValue(InputStream xml) throws IOException, ParserConfigurationException, SAXException {
         SAXParser saxParser = factory.newSAXParser();
         FormHandler handler = new FormHandler();
         saxParser.parse(xml, handler);
@@ -328,7 +328,7 @@ public class HoldbackDatePicker {
      * @param xml InputStream containing a preservica record as XML.
      * @return the value extracted from the following XPath in the given XML: {@code /XIP/Metadata/Content/ns2:record/source/tvmeter/contentsitem}
      */
-    protected static String getContentsItem(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
+    private static String getContentsItem(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
         SAXParser saxParser = factory.newSAXParser();
         ContentsItemHandler handler = new ContentsItemHandler();
         saxParser.parse(xml, handler);
@@ -341,7 +341,7 @@ public class HoldbackDatePicker {
      * @param xml InputStream containing a preservica record as XML.
      * @return the value extracted from the following XPath in the given XML: {@code /XIP/Metadata/Content/ns2:record/source/tvmeter/productioncountry}
      */
-    protected static String getProductionCountry(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
+    private static String getProductionCountry(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
         SAXParser saxParser = factory.newSAXParser();
         ProductionCountryHandler handler = new ProductionCountryHandler();
         saxParser.parse(xml, handler);
@@ -349,7 +349,7 @@ public class HoldbackDatePicker {
         return handler.getCurrentValue();
     }
 
-    protected static ZonedDateTime getStartDate(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
+    private static ZonedDateTime getStartDate(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
         SAXParser saxParser = factory.newSAXParser();
         StartDateHandler handler = new StartDateHandler();
         saxParser.parse(xml, handler);
