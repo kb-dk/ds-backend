@@ -151,12 +151,22 @@ public class HoldbackDatePicker {
         return 2555000;
     }
 
+    public static String getPurposeNameFromXml(String xml) throws IOException {
+        try (InputStream xmlStream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8)) {
+            try {
+                return getPurposeName(xmlStream);
+            } catch (ParserConfigurationException | SAXException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     /**
      * Get purposeName for a preservica record containing metadata about a DR program.
      * @param xmlStream containing the preservica record for analysis.
      * @return the purposeName for a given program.
      */
-    public static String getPurposeName(InputStream xmlStream) throws IOException, ParserConfigurationException, SAXException {
+    private static String getPurposeName(InputStream xmlStream) throws IOException, ParserConfigurationException, SAXException {
         // Get form value
         String form = getFormValue(xmlStream);
 
