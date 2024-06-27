@@ -323,7 +323,7 @@
           <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
-            <version>9.4.0</version>
+            <version>9.4.1</version>
             <scope>test</scope>
              <exclusions>
                 <exclusion>
@@ -344,7 +344,7 @@
              <dependency>
                <groupId>org.apache.solr</groupId>
                <artifactId>solr-test-framework</artifactId>
-               <version>9.4.0</version>
+               <version>9.4.1</version>
                <scope>test</scope>
                <exclusions>
                  <exclusion> <!-- Solves the "multiple slf bindings" warning -->
@@ -369,7 +369,7 @@
               <dependency>
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-analysis-extras</artifactId>
-                <version>9.4.0</version>
+                <version>9.4.1</version>
               </dependency>
     </dependencies>
 
