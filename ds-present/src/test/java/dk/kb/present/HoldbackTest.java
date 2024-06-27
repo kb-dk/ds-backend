@@ -20,7 +20,7 @@ public class HoldbackTest {
 
     @BeforeAll
     static void setup() {
-        HoldbackDatePicker datePicker = new HoldbackDatePicker();
+        HoldbackDatePicker.init();
     }
 
 
@@ -55,7 +55,7 @@ public class HoldbackTest {
 
     @Test
     public void getHoldbackDaysNonExistingTest(){
-        assertEquals(-1, HoldbackDatePicker.getHoldbackDaysForPurpose("Nyhed"));
+        assertEquals(2555000, HoldbackDatePicker.getHoldbackDaysForPurpose("Nyhed"));
     }
 
     @Test

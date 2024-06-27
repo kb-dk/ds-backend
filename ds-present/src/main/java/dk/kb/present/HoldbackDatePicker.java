@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import dk.kb.present.util.saxhandlers.FormHandler;
 import dk.kb.present.util.saxhandlers.ProductionCountryHandler;
@@ -47,6 +48,9 @@ import javax.xml.parsers.SAXParserFactory;
 public class HoldbackDatePicker {
     private static final Logger log = LoggerFactory.getLogger(HoldbackDatePicker.class);
 
+    private static HoldbackDatePicker datePicker = new HoldbackDatePicker();
+
+
     /**
      * Excel sheet containing table to find FormNr in based on Form from the XML.
      */
@@ -68,9 +72,13 @@ public class HoldbackDatePicker {
 
     private static final SAXParserFactory factory = SAXParserFactory.newInstance();
 
-    HoldbackDatePicker() {
-        // TODO: Convert to proper singleton
+    HoldbackDatePicker() {}
+    public static void init(){
         readSheet();
+    }
+
+    public static synchronized HoldbackDatePicker getInstance(){
+        return datePicker;
     }
 
     /**
@@ -118,7 +126,7 @@ public class HoldbackDatePicker {
     protected static String calculateHoldbackDate(ZonedDateTime startDate, int holdbackDays) {
         ZonedDateTime holdbackExpiredDate = startDate.plusDays(holdbackDays);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
 
         String formattedHoldbackDate = holdbackExpiredDate.format(formatter);
         return formattedHoldbackDate;
@@ -277,10 +285,10 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Setup of the HoldbackDatePicker. Fetches the Excel sheets for {@link #formIndexSheet}, {@link #purposeMatrixSheet}
-     * and {@link #purposeSheet}.
+     * Setup of the HoldbackDatePicker. Fetches the Excel sheets for {@link #formIndexSheet}, {@link #purposeMatrixSheet},
+     * {@link #purposeSheet} and {@link #holdbackSheet}.
      */
-    private void readSheet() {
+    private static void readSheet() {
         try {
             FileInputStream purposeExcel = new FileInputStream(Resolver.getPathFromClasspath("dr_formålstabeller.xlsx").toString());
             XSSFWorkbook purposeWorkbook = new XSSFWorkbook(purposeExcel);
@@ -348,7 +356,7 @@ public class HoldbackDatePicker {
         xml.reset();
         String datetimeString =  handler.getCurrentValue();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
         return ZonedDateTime.parse(datetimeString, formatter);
     }
 
