@@ -1,20 +1,16 @@
 package dk.kb.present;
 
 import dk.kb.util.Resolver;
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HoldbackTest {
 
@@ -22,13 +18,25 @@ public class HoldbackTest {
     static void setup() {
         HoldbackDatePicker.init();
     }
-    // TODO: introduce negative tests
     // TODO: introduce "chained" test
+    // TODO: introduce excel lookup tests with no results
 
     @Test
     public void getHoldbackDateFromXmlTest() throws IOException {
         String xml = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9ed10d66);
         assertEquals("2026-01-17T10:34:42+0100", HoldbackDatePicker.getHoldbackDateForRecord(xml));
+    }
+
+    @Test
+    public void holdbackNoValueTest() throws IOException {
+        String xml = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_3006e2f8);
+        assertEquals("9017-07-07T17:29:55+0000", HoldbackDatePicker.getHoldbackDateForRecord(xml));
+    }
+
+    @Test
+    public void holdbackNameNoValueTest() throws IOException {
+        String xml = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_3006e2f8);
+        assertTrue(HoldbackDatePicker.getPurposeNameFromXml(xml).isEmpty());
     }
 
     @Test

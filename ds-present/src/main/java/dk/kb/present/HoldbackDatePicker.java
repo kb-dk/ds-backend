@@ -8,11 +8,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import dk.kb.present.util.saxhandlers.FormHandler;
-import dk.kb.present.util.saxhandlers.ProductionCountryHandler;
-import dk.kb.present.util.saxhandlers.StartDateHandler;
+import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
+import dk.kb.util.DatetimeParser;
+import dk.kb.util.MalformedIOException;
 import dk.kb.util.Resolver;
-import dk.kb.present.util.saxhandlers.ContentsItemHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -69,11 +68,13 @@ public class HoldbackDatePicker {
      */
     private static XSSFSheet holdbackSheet;
 
-    private static final SAXParserFactory factory = SAXParserFactory.newInstance();
+    private static SAXParserFactory factory;
 
     HoldbackDatePicker() {}
 
     public static void init(){
+        factory = SAXParserFactory.newInstance();
+        factory.setNamespaceAware(false);
         readSheet();
     }
 
@@ -119,7 +120,7 @@ public class HoldbackDatePicker {
 
     /**
      * Apply the amount of holdback days to the start date and return the date for when holdback has expired.
-     * @param startDate a date representing the date when a program was broadcasted.
+     * @param startDate a date representing the date when a program was broadcast.
      * @param holdbackDays the amount of days that has to parse before a program can be retrieved in the archive.
      * @return the date, when the holdback period has expired as a string in the format: yyyy-MM-dd'T'HH:mm:ssZ.
      */
@@ -130,7 +131,6 @@ public class HoldbackDatePicker {
 
         String formattedHoldbackDate = holdbackExpiredDate.format(formatter);
         return formattedHoldbackDate;
-
     }
 
     /**
@@ -140,6 +140,11 @@ public class HoldbackDatePicker {
      * @return amount of holdback days.
      */
     private static int getHoldbackDaysForPurpose(String purpose) {
+        if (purpose.isEmpty()){
+            log.warn("purposeName is empty. Holdback days can't be calculated. Returning 2555000 so create a holdback " +
+                    "date around year 9000.");
+            return 2555000;
+        }
         for (Row row : holdbackSheet) {
             // Check the value against the 2019 and 2022 values.
             if (purpose.equals(row.getCell(2).getStringCellValue()) || purpose.equals(row.getCell(0).getStringCellValue() )){
@@ -192,6 +197,10 @@ public class HoldbackDatePicker {
      * @return the purposeName for the input ID.
      */
     private static String getPurposeNameFromNumber(String purposeID) {
+        if (purposeID.isEmpty()){
+            log.warn("PurposeID is empty. Returning an empty string as PurposeName.");
+            return "";
+        }
         for (Row row : purposeSheet) {
             if (row.getCell(1).getStringCellValue().equals(purposeID)) {
                 return row.getCell(2).getStringCellValue();
@@ -230,6 +239,11 @@ public class HoldbackDatePicker {
      * @return a PurposeID most likely in the format x.xx: An example could be the string '2.02'.
      */
     private static String getPurposeIdFromContentAndForm(String content, String formNrString) {
+        if (content.isEmpty()){
+            log.warn("The field 'content' is empty. PurposeID can't be calculated. Returning an empty string.");
+            return "";
+        }
+
         double contentDouble = Double.parseDouble(content);
         for (Row row : purposeMatrixSheet) {
             Cell indholdFra = row.getCell(1);
@@ -272,6 +286,11 @@ public class HoldbackDatePicker {
      * @return the corresponding FormNr for the input form. Returns zero if no value has been extracted.
      */
     private static int getFormNrFromForm(String form) {
+        if (form.isEmpty()){
+            log.warn("No FormNr could be extracted as form string is empty. Returning 0.");
+            return 0;
+        }
+
         double formDouble = Double.parseDouble(form);
         // TODO: Add warning logs for values below 1000 and above 7000.
 
@@ -327,7 +346,7 @@ public class HoldbackDatePicker {
      */
     private static String getFormValue(InputStream xml) throws IOException, ParserConfigurationException, SAXException {
         SAXParser saxParser = factory.newSAXParser();
-        FormHandler handler = new FormHandler();
+        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/record/source/tvmeter/form");
         saxParser.parse(xml, handler);
         xml.reset();
         return handler.getCurrentValue();
@@ -340,7 +359,7 @@ public class HoldbackDatePicker {
      */
     private static String getContentsItem(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
         SAXParser saxParser = factory.newSAXParser();
-        ContentsItemHandler handler = new ContentsItemHandler();
+        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/record/source/tvmeter/contentsitem");
         saxParser.parse(xml, handler);
         xml.reset();
         return handler.getCurrentValue();
@@ -353,7 +372,7 @@ public class HoldbackDatePicker {
      */
     private static String getProductionCountry(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
         SAXParser saxParser = factory.newSAXParser();
-        ProductionCountryHandler handler = new ProductionCountryHandler();
+        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/record/source/tvmeter/productioncountry");
         saxParser.parse(xml, handler);
         xml.reset();
         return handler.getCurrentValue();
@@ -361,13 +380,18 @@ public class HoldbackDatePicker {
 
     private static ZonedDateTime getStartDate(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
         SAXParser saxParser = factory.newSAXParser();
-        StartDateHandler handler = new StartDateHandler();
+        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart");
         saxParser.parse(xml, handler);
         xml.reset();
         String datetimeString =  handler.getCurrentValue();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
-        return ZonedDateTime.parse(datetimeString, formatter);
+        String dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss[XX][XXX]";
+        try {
+            return DatetimeParser.parseStringToZonedDateTime(datetimeString, dateTimeFormat);
+        } catch (MalformedIOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**
