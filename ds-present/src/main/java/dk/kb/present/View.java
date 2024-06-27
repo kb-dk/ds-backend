@@ -144,8 +144,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             case MANIFESTATION:
                 updateMetadataMapWithPreservica7Manifestation(record, metadata);
                 break;
-            case MANIFESTATION5:
-                updateMetadataMapWithPreservica5Manifestation(record, metadata);
             case NONE:
                 break;
             default:
@@ -205,18 +203,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Update the map of metadata with manifestation record from the deliverable unit contained in the input record.
-     * @param record with an expanded tree containing manifestation childs.
-     * @param metadata map that values from the record is extracted to.
-     */
-    private void updateMetadataMapWithPreservica5Manifestation(DsRecordDto record, Map<String, String> metadata) {
-        String child = getFirstPresentationManifestation(record);
-        if (!child.isEmpty()){
-            metadata.put("manifestation", child);
-        }
-    }
-
-    /**
      * Update the map of metadata with manifestation from the input {@link DsRecordDto}s referenceId.
      * @param record with a referenceId.
      * @param metadata map that values from the record is extracted to.
@@ -239,72 +225,4 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
                ')';
     }
 
-    /**
-     * If record has children, the first presentation manifestation is returned.
-     * If record have not got children an empty string is returned.
-     * @param record to extract the newest presentation manifestation from.
-     * @return the data from the first presentation manifestation related to the input record.
-     */
-    private String getFirstPresentationManifestation(DsRecordDto record) {
-        // TODO: Figure how to choose correct manifestation for record, if more than one is present
-        // Return first child record of manifestation type = 2. If there are multiple presentation manifestations,
-        // the rest are currently not added to the transformation
-        List<String> presentationManifestations = record.getChildren() == null ? Collections.singletonList("") :
-                record.getChildren().stream()
-                        .map(this::getNonNullChild)
-                        .filter(this::isPresentationManifestation) // Filter not needed for Preservica 7
-                        .collect(Collectors.toList());
-
-        return returnPresentationManifestationFromList(presentationManifestations, record.getId());
-    }
-
-    /**
-     * Determine if the input preservica manifestation is a presentation manifestation by looking for the XML tag
-     * {@code ManifestationRelRef} with a value of 2. This filter should only be used for legacy Preservica 5.
-     * By looking at manifestation length it can be determined if it is a preservica 5 or 7 manifestation.
-     * @param preservicaManifestation content from a ds-storage record, which is a child of the current DeliverableUnit
-     *                                being processed.
-     * @return true if the given manifestation is a presentation manifestation, otherwise return false.
-     */
-    private boolean isPresentationManifestation(String preservicaManifestation) {
-        if (preservicaManifestation.length() > 42){
-            Matcher m = PRESENTATION_MANIFESTATION_PATTERN.matcher(preservicaManifestation);
-            return m.find();
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * Returns the first presentation manifestation for a record. If there are more than one presentation manifestation
-     * for the record a warning will be logged.
-     * @param presentationManifestations list of all presentation manifestations for a record
-     * @return the first presentation manifestation for a record.
-     */
-    private String returnPresentationManifestationFromList(List<String> presentationManifestations, String recordId) {
-        if (presentationManifestations == null || presentationManifestations.isEmpty()){
-            log.warn("No presentation manifestations were delivered from DS-storage as children for record: '{}'", recordId);
-            return "";
-        }
-
-        if (presentationManifestations.size() > 1) {
-            log.warn("Multiple presentation manifestations were present for record with id: '{}'. " +
-                    "Only the first has been returned", recordId);
-            return presentationManifestations.get(0);
-        }
-
-        return presentationManifestations.get(0);
-    }
-
-    /**
-     * Check for the data of the child being null.
-     * @param child record to check for data in.
-     * @return the data from child if child is not null. Otherwise, return an empty string.
-     */
-    private String getNonNullChild(DsRecordDto child) {
-        if (child.getData() == null){
-            return "";
-        }
-        return child.getData();
-    }
 }
