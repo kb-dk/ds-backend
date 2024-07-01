@@ -48,6 +48,8 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_ANSK;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_FM;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_aaf3b130;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
+import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_9779a1b2;
+import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_eaea0362;
 import static dk.kb.present.TestFiles.PVICA_RECORD_0b3f6a54;
 import static dk.kb.present.TestFiles.PVICA_RECORD_2b462c63;
 import static dk.kb.present.TestFiles.PVICA_RECORD_3006e2f8;
@@ -664,6 +666,19 @@ public class EmbeddedSolrTest {
     @Tag("integration")
     void testDateModified() throws Exception {
         testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "internal_storage_mTime", 1701261949625000L);
+    }
+
+    @Test
+    @Tag("integration")
+    void testHoldbackDate() throws Exception {
+        Date holdbackExpireDate = new Date(1768642482000L);
+        testDateValuePreservicaField(PVICA_DOMS_MIG_eaea0362, "holdback_expired_date", holdbackExpireDate );
+    }
+
+    @Test
+    @Tag("integration")
+    void testHoldbackName() throws Exception {
+        testStringValuePreservicaField(PVICA_DOMS_MIG_eaea0362, "holdback_name", "Aktualitet og debat");
     }
 
     /*
