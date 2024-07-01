@@ -12,6 +12,7 @@ import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.Resolver;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -99,10 +100,8 @@ public class HoldbackDatePicker {
             return result;
         }
 
-
         if (record.getOrigin().equals("ds.tv")){
             return getHoldbackForTvRecord(record, result);
-
         } else if (record.getOrigin().equals("ds.radio")) {
             return getHoldbackForRadioRecord(record, result);
         } else {
@@ -152,9 +151,14 @@ public class HoldbackDatePicker {
             try {
                 result.setHoldbackPurposeName(getPurposeName(xmlStream));
 
-                int holdbackDays = getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
+                if (result.getHoldbackPurposeName().isEmpty()){
+                    log.warn("Purpose name was empty. Setting holdback date to 9999-01-01T00:00:00Z");
+                    result.setHoldbackDate("9999-01-01T00:00:00Z");
+                } else {
+                    int holdbackDays = getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
+                    result.setHoldbackDate(addHoldbackDaysToRecordStartDate(xmlStream, holdbackDays));
+                }
 
-                result.setHoldbackDate(addHoldbackDaysToRecordStartDate(xmlStream, holdbackDays));
 
                 return result;
             } catch (IOException | SAXException | ParserConfigurationException e) {
@@ -198,11 +202,6 @@ public class HoldbackDatePicker {
      * @return amount of holdback days.
      */
     private static int getHoldbackDaysForPurpose(String purpose) {
-        if (purpose.isEmpty()){
-            log.warn("purposeName is empty. Holdback days can't be calculated. Returning 2555000 so create a holdback " +
-                    "date around year 9000.");
-            return 2555000;
-        }
         for (Row row : holdbackSheet) {
             // Check the value against the 2019 and 2022 values.
             if (purpose.equals(row.getCell(2).getStringCellValue()) || purpose.equals(row.getCell(0).getStringCellValue() )){
@@ -210,8 +209,8 @@ public class HoldbackDatePicker {
             }
         }
 
-        log.warn("No holdback has been defined for purpose: '{}'. Returning 2555000.", purpose);
-        return 2555000;
+        log.error("No holdback has been defined for purpose: '{}'.", purpose);
+        throw new NotFoundServiceException("No holdback value cold be found for purpose: '" + purpose + "' in holdbackSheet: '" + holdbackSheet.getSheetName() + "' ");
     }
 
     /**

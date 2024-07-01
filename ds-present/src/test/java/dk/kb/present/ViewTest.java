@@ -118,7 +118,7 @@ class ViewTest {
         String solrdoc = solrView.apply(recordDto);
         prettyPrintJson(solrdoc);
         assertTrue(solrdoc.contains("\"title\":\"Før Bjørnen Er Skudt\""));
-        assertTrue(solrdoc.contains("\"holdback_expired_date\":\"9014-11-12T08:05:00Z\""));
+        assertTrue(solrdoc.contains("\"holdback_expired_date\":\"9999-01-01T00:00:00Z\""));
     }
 
     @Test

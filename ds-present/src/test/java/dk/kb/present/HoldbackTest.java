@@ -45,7 +45,7 @@ public class HoldbackTest {
 
     @Test
     public void holdbackNoValueTest() throws IOException {
-        assertEquals("9017-07-07T17:29:55Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackDate());
+        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackDate());
     }
 
     @Test
@@ -60,7 +60,7 @@ public class HoldbackTest {
 
     @Test
     public void getNoHoldbackDateFromXmlTest() throws IOException {
-        assertEquals("9017-07-07T17:29:55Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackDate());
+        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackDate());
     }
 
     @Test
