@@ -90,7 +90,7 @@ public class HoldbackDatePicker {
      * @return a string containing the date for when the holdback for the record has expired.
      *         In the format: yyyy-MM-dd'T'HH:mm:ssZ
      */
-    public static String getHoldbackDateForRecord(String xml) throws IOException {
+    public String getHoldbackDateForRecord(String xml) throws IOException {
         try (InputStream xmlStream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8)) {
             try {
                 String purposeName = getPurposeName(xmlStream);
@@ -156,7 +156,7 @@ public class HoldbackDatePicker {
         return 2555000;
     }
 
-    public static String getPurposeNameFromXml(String xml) throws IOException {
+    public String getPurposeNameFromXml(String xml) throws IOException {
         try (InputStream xmlStream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8)) {
             try {
                 return getPurposeName(xmlStream);
@@ -397,21 +397,21 @@ public class HoldbackDatePicker {
     /**
      * Get the formIndexSheet.
      */
-    protected XSSFSheet getFormIndexSheet() {
+    XSSFSheet getFormIndexSheet() {
         return formIndexSheet;
     }
 
     /**
      * Get the purposeMatrixSheet.
      */
-    protected XSSFSheet getPurposeMatrixSheet() {
+    XSSFSheet getPurposeMatrixSheet() {
         return purposeMatrixSheet;
     }
 
     /**
      * Get the purposeSheet.
      */
-    protected XSSFSheet getPurposeSheet() {
+    XSSFSheet getPurposeSheet() {
         return purposeSheet;
     }
 }

@@ -23,21 +23,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 
 /**
@@ -142,7 +139,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         switch (strategy) {
             case MANIFESTATION:
-                updateMetadataMapWithPreservica7Manifestation(record, metadata);
+                updateMetadataMapWithHoldback(content, metadata, record.getId());
+                updateMetadataMapWithPreservicaManifestation(record, metadata);
                 break;
             case NONE:
                 break;
@@ -207,10 +205,27 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param record with a referenceId.
      * @param metadata map that values from the record is extracted to.
      */
-    private void updateMetadataMapWithPreservica7Manifestation(DsRecordDto record, Map<String, String> metadata) {
+    private void updateMetadataMapWithPreservicaManifestation(DsRecordDto record, Map<String, String> metadata) {
         String manifestationName = record.getReferenceId();
         if (!(manifestationName == null) && !manifestationName.isEmpty()){
             metadata.put("manifestation", manifestationName);
+        }
+    }
+
+    /**
+     * Update the map of metadata with holdback values calculated from specific fields inside the content.
+     * @param content String representation of a preservica XML record.
+     * @param metadata map, which holds values that are to be used in the XSLT transformation later on.
+     *                 Holdback values are added to this map.
+     * @param recordId of the processed record. Used for logging.
+     */
+    private void updateMetadataMapWithHoldback(String content, Map<String, String> metadata, String recordId) {
+        try {
+            metadata.put("holdbackDate",  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(content));
+            metadata.put("holdbackPurposeName", HoldbackDatePicker.getInstance().getPurposeNameFromXml(content));
+        } catch (IOException e) {
+            log.warn("An IOException occurred during holdback calculation for record: '{}'.", recordId);
+            throw new RuntimeException(e);
         }
     }
 
