@@ -97,9 +97,10 @@ class OriginHandlerTest {
         if (Resolver.getPathFromClasspath("internal_test_files/preservica7/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml") == null){
             log.error("Preservica test file is not present. Test for file 9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml");
             fail();
-        }                
+        }
         OriginHandler ch = new OriginHandler(config);
-        String record = ch.getRecord("local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
+        System.out.println(ch.getOrigins());
+        String record = ch.getRecord("ds.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
         assertTrue(record.contains("\"id\":\"local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
     }
 

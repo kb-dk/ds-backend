@@ -92,6 +92,11 @@ public class HoldbackDatePicker {
      */
     public HoldbackDTO getHoldbackDateForRecord(DsRecordDto record) throws IOException {
         HoldbackDTO result = new HoldbackDTO();
+        if (record.getOrigin() == null){
+            log.error("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'.");
+            throw new RuntimeException("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'.");
+        }
+
 
         if (record.getOrigin().equals("ds.tv")){
             return getHoldbackForTvRecord(record, result);
@@ -120,6 +125,7 @@ public class HoldbackDatePicker {
         try (InputStream xmlStream = IOUtils.toInputStream(record.getData(), StandardCharsets.UTF_8)) {
             // Radio should be held back by three years by DR request.
             result.setHoldbackDate(addHoldbackDaysToRecordStartDate(xmlStream, 1096));
+            result.setHoldbackPurposeName("");
             return result;
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);

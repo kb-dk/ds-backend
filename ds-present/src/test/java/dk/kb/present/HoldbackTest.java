@@ -68,7 +68,7 @@ public class HoldbackTest {
         HoldbackDTO holdbackDTO =  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(radioRecord1);
 
         assertEquals("2021-04-03T08:03:00Z", holdbackDTO.getHoldbackDate());
-        assertNull(holdbackDTO.getHoldbackPurposeName());
+        assertEquals("", holdbackDTO.getHoldbackPurposeName());
     }
 
     @Test

@@ -4,6 +4,7 @@ import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,11 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  */
 class ViewTest {
+
+    @BeforeAll
+    public static void setup(){
+        HoldbackDatePicker.init();
+    }
 
     @Test
     void identity() throws Exception {
@@ -66,7 +72,7 @@ class ViewTest {
                                     radioConf.getSubMap("\"ds.radio\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.radio");
 
         String jsonld = jsonldView.apply(recordDto);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
@@ -84,7 +90,7 @@ class ViewTest {
                                     radioConf.getSubMap("\"ds.radio\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.radio");
 
         DsRecordDto emptyChildDto = new DsRecordDto().id("test.emptyChild").mTime(1701261949625000L);
         recordDto.setChildren(List.of(emptyChildDto));
@@ -105,7 +111,7 @@ class ViewTest {
                                  tvConf.getSubMap("\"ds.tv\"").getString("origin"));
         String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
 
         String solrdoc = solrView.apply(recordDto);
         assertTrue(solrdoc.contains("\"title\":\"Før Bjørnen Er Skudt\""));

@@ -402,7 +402,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         prettyPrintJson(transformedJSON);
 
         assertTrue(transformedJSON.contains("\"kb:holdback_date\":\"2026-01-17T09:34:42Z\""));
-        assertTrue(transformedJSON.contains(" \"kb:holdback_name\":\"Aktualitet og debat\""));
+        assertTrue(transformedJSON.contains("\"kb:holdback_name\":\"Aktualitet og debat\""));
     }
 
     private static void printSchemaOrgJson(String xml) throws IOException {
