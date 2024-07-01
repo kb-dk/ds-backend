@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bumped kb-util version
 
 ## [1.3.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.3.0) - 2024-07-01
-
+### Changed
+- Bumped kb-util version
 
 ## [1.2.5](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.2.5) - 2024-06-18
 ### Added
