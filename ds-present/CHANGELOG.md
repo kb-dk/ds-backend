@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
-## [1.9.1](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.1) 2024-07-01
+
+## [1.9.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.1) 2024-07-01
+### Changed
+- Bumped solr-config til v.1.6.8
+
+
 ### Changed
 - Update dependency ds-storage to version 2.0.0
 - Update dependency ds-license to version 1.4.2

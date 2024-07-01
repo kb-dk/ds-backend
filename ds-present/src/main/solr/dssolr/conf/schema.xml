@@ -34,8 +34,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.5: Add temporal_start_year field.
 1.6.6: Add temporal_start_month field and make temporal_start_year and temporal_star_month fq fields.
 1.6.7: Add temporal_start_hour_da field.
+1.6.8: Add creator_affiliation_facet field.
   -->
-  <field name="_ds_1.6.7_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.8_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
