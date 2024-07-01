@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Bumped KB-util version
 
+## [1.4.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.4.0) - 2024-07-01
+### Changed
+- Bumped KB-util version
 
 ## [1.3.2](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.3.2) - 2024-05-14
 ### Added
