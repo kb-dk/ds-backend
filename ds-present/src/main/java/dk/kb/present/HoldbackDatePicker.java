@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -107,7 +106,7 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Calculate holdback for a Radio record by adding 3 years to its aired time.
+     * Calculate holdback for a Radio record by adding 3 years to its aired time. This value has been requested/defined by DR.
      * @param record to calculate holdback for
      * @param result holdbackDTO object, which the calculated holdback date is added to. This will never contain a value
      *               for {@code holdbackPurposeName} as these are not present for radio records.
@@ -115,6 +114,9 @@ public class HoldbackDatePicker {
      * @return the updated HoldbackDTO.
      */
     private HoldbackDTO getHoldbackForRadioRecord(DsRecordDto record, HoldbackDTO result) throws IOException {
+        if (record.getData() == null){
+            throw new RuntimeException("Record with ID: '" + record.getId() + "' does not contain data");
+        }
         try (InputStream xmlStream = IOUtils.toInputStream(record.getData(), StandardCharsets.UTF_8)) {
             // Radio should be held back by three years by DR request.
             result.setHoldbackDate(addHoldbackDaysToRecordStartDate(xmlStream, 1096));
@@ -131,6 +133,10 @@ public class HoldbackDatePicker {
      * @return the result object with updated values.
      */
     private static HoldbackDTO getHoldbackForTvRecord(DsRecordDto record, HoldbackDTO result) throws IOException {
+        if (record.getData() == null){
+            throw new RuntimeException("Record with ID: '" + record.getId() + "' does not contain data");
+        }
+
         try (InputStream xmlStream = IOUtils.toInputStream(record.getData(), StandardCharsets.UTF_8)) {
             try {
                 result.setHoldbackPurposeName(getPurposeName(xmlStream));
@@ -415,6 +421,8 @@ public class HoldbackDatePicker {
         saxParser.parse(xml, handler);
         xml.reset();
         String datetimeString =  handler.getCurrentValue();
+
+        log.info(datetimeString);
 
         String dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss[XX][XXX]";
         try {
