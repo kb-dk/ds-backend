@@ -14,6 +14,7 @@
  */
 package dk.kb.present.transform;
 
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 /**
  * XSLT transformer using Saxon HE 3.
@@ -41,11 +43,15 @@ public class XSLTTransformer implements DSTransformer {
 
     public static final TransformerFactory transformerFactory;
 
+    protected static final Semaphore semaphore;
+
     static {
         System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
         transformerFactory = TransformerFactory.newInstance();
         // Ignoring base as it is always null in the ds-present code
         transformerFactory.setURIResolver((href, base) -> new StreamSource(Resolver.resolveStream(href)));
+
+        semaphore = new Semaphore(ServiceConfig.getConfig().getInteger("transformations.threads",0));
     }
     public final String stylesheet;
     public final Templates templates;
@@ -97,12 +103,22 @@ public class XSLTTransformer implements DSTransformer {
                     fixedInjections.forEach(transformer::setParameter);
                 }
                 metadata.forEach(transformer::setParameter);
+
+                if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+                    semaphore.acquire();
+                }
                 transformer.transform(new StreamSource(in), new StreamResult(out));
             }
             return out.toString(StandardCharsets.UTF_8);
         } catch (IOException | TransformerException e) {
             throw new RuntimeTransformerException(
                     "Exception transforming with stylesheet '" + stylesheet + "' and metadata '" + metadata + "'", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+                semaphore.release();
+            }
         }
     }
 

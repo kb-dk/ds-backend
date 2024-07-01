@@ -1,5 +1,6 @@
 package dk.kb.present.transform;
 
+import dk.kb.present.config.ServiceConfig;
 import net.sf.saxon.TransformerFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +65,9 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
             transformer.setParameter("schemaorgjson", s);
             metadata.forEach(transformer::setParameter);
 
+            if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+                semaphore.acquire();
+            }
             transformer.transform(new StreamSource(new ByteArrayInputStream(placeholderXml.getBytes(StandardCharsets.UTF_8))),
                                   new StreamResult(out));
 
@@ -71,6 +75,12 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
         } catch (IOException | TransformerException e) {
             throw new RuntimeTransformerException(
                     "Exception transforming with stylesheet '" + stylesheet + "' and metadata '" + metadata + "'", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+                semaphore.release();
+            }
         }
     }
 }
