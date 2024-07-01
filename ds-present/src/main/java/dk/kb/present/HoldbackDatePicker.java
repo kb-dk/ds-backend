@@ -93,8 +93,10 @@ public class HoldbackDatePicker {
     public HoldbackDTO getHoldbackDateForRecord(DsRecordDto record) throws IOException {
         HoldbackDTO result = new HoldbackDTO();
         if (record.getOrigin() == null){
-            log.error("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'.");
-            throw new RuntimeException("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'.");
+            log.error("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without values.");
+            result.setHoldbackPurposeName("");
+            result.setHoldbackDate("");
+            return result;
         }
 
 
@@ -104,8 +106,11 @@ public class HoldbackDatePicker {
         } else if (record.getOrigin().equals("ds.radio")) {
             return getHoldbackForRadioRecord(record, result);
         } else {
-            log.error("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'.");
-            throw new RuntimeException("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'.");
+            log.error("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'." +
+                    " Returning a result object without values.");
+            result.setHoldbackPurposeName("");
+            result.setHoldbackDate("");
+            return result;
         }
 
     }

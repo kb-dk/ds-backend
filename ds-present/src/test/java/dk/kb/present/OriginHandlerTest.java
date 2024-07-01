@@ -28,6 +28,7 @@ class OriginHandlerTest {
     static void setup() {
         try {
             ServiceConfig.initialize("test_setup.yaml");
+            HoldbackDatePicker.init();
             config = ServiceConfig.getConfig();
         } catch (IOException e) {          
             log.error("test_setup.yaml could not be loaded");            
@@ -99,8 +100,7 @@ class OriginHandlerTest {
             fail();
         }
         OriginHandler ch = new OriginHandler(config);
-        System.out.println(ch.getOrigins());
-        String record = ch.getRecord("ds.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
+        String record = ch.getRecord("local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
         assertTrue(record.contains("\"id\":\"local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
     }
 

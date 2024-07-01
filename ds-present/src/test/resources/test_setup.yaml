@@ -192,7 +192,7 @@ origins:
           # Different views on the material. Note that all collections has at least mods, jsonld and solrjson as views
           views: *PRESERVICA_VIEWS
   - "ds.radio": # ds-present internal
-          prefix: 'ds.radio' # The prefix to match on incoming IDs
+          prefix: 'local.radio' # The prefix to match on incoming IDs
           origin: 'ds.radio'
           description: 'Local records'
           recordRequestType: 'DELIVERABLEUNIT'
