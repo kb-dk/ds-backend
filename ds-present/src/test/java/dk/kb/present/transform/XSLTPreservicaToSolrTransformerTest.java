@@ -366,6 +366,15 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\"");
     }
 
+    @Test
+    void testHoldbackName() {
+        assertPvicaContains(TestFiles.PVICA_DOMS_MIG_eaea0362, "\"holdback_name\":\"Aktualitet og debat\"");
+    }
+    @Test
+    void testHoldbackDate() {
+        assertPvicaContains(TestFiles.PVICA_DOMS_MIG_eaea0362, "\"holdback_expired_date\":\"2026-01-17T09:34:42Z\"");
+    }
+
     /* disabled as they are not represented in solr
     @Test
     void testOverlaps() {

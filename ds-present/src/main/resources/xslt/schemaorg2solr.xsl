@@ -279,6 +279,19 @@
         </xsl:if>
       </xsl:if>
 
+      <!-- Extraction of holdback related fields. -->
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_name') != ''">
+        <f:string key="holdback_name">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_name')"/>
+        </f:string>
+      </xsl:if>
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_date') != ''">
+        <f:string key="holdback_expired_date">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_date')"/>
+        </f:string>
+      </xsl:if>
+
+
       <!-- If statement creating all fields related to the schema.org value startTime -->
       <xsl:if test="$schemaorg-xml('startTime')">
         <xsl:variable name="startTimeZulu" as="xs:dateTime">

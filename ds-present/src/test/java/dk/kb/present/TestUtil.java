@@ -135,14 +135,16 @@ public class TestUtil {
 	public static String getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(String schemaOrgTransformer, String record) throws IOException {
 		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
 				"streamingserver" ,"https://www.example.com/streamingserver/",
-				"manifestation", "8946d31d-a81c-447f-b84d-ff80644353d2.mp4");
+				"manifestation", "8946d31d-a81c-447f-b84d-ff80644353d2.mp4",
+				"holdbackDate", "2026-01-17T09:34:42Z",
+				"holdbackPurposeName","Aktualitet og debat");
 		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
-		//prettyPrintJson(schemaOrgJson);
+		prettyPrintJson(schemaOrgJson);
 
 		String placeholderXml = "placeholder.xml";
 		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);
 		String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, mapOfJson);
-		//prettyPrintJson(solrJson);
+		prettyPrintJson(solrJson);
 		return solrJson;
 	}
 
