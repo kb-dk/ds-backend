@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [1.3.1](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.3.1) - 2024-07-01
+### Changed
+- Update dependency ds-license to version 1.4.2
+- Update dependency ds-present to version 1.9.0
 
 ## [1.3.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.3.0) - 2024-07-01
 ### Changed
