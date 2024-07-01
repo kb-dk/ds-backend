@@ -89,7 +89,7 @@ public class XSLTTransformer implements DSTransformer {
     }
 
     @Override
-    public synchronized String apply(String s, Map<String, String> metadata) {
+    public String apply(String s, Map<String, String> metadata) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Transformer transformer = templates.newTransformer();
             try (Reader in = new StringReader(s)) {

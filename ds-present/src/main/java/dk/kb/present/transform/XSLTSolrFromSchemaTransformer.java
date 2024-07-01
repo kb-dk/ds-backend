@@ -55,7 +55,7 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
     }
 
     @Override
-    public synchronized String apply(String s, Map<String, String> metadata) {
+    public String apply(String s, Map<String, String> metadata) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Transformer transformer = templates.newTransformer();
             if (fixedInjections != null) {
