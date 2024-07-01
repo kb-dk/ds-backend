@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.9.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.1) 2024-07-01
 ### Changed
-- Bumped solr-config til v.1.6.8
+- Bumped solr-config to v.1.6.8
 
 
 ### Changed
