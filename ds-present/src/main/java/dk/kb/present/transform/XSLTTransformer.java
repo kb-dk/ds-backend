@@ -48,7 +48,7 @@ public class XSLTTransformer implements DSTransformer {
         transformerFactory.setURIResolver((href, base) -> new StreamSource(Resolver.resolveStream(href)));
     }
     public final String stylesheet;
-    public final Transformer transformer;
+    public final Templates templates;
     public final Map<String, String> fixedInjections;
 
     /**
@@ -69,7 +69,7 @@ public class XSLTTransformer implements DSTransformer {
             throw new FileNotFoundException("Unable to resolve stylesheet '" + stylesheet + "'");
         }
         try (InputStream is = stylesheetURL.openStream()) {
-            transformer = transformerFactory.newTransformer(new StreamSource(is));
+            templates = transformerFactory.newTemplates(new StreamSource(is));
         } catch (IOException e) {
             throw new IOException("Unable to retrieve stylesheet from '" + stylesheet + "'", e);
         } catch (TransformerConfigurationException e) {
@@ -91,8 +91,8 @@ public class XSLTTransformer implements DSTransformer {
     @Override
     public synchronized String apply(String s, Map<String, String> metadata) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Transformer transformer = templates.newTransformer();
             try (Reader in = new StringReader(s)) {
-                transformer.clearParameters();
                 if (fixedInjections != null) {
                     fixedInjections.forEach(transformer::setParameter);
                 }
