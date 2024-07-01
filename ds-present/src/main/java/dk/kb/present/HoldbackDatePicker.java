@@ -90,16 +90,17 @@ public class HoldbackDatePicker {
      * @return a string containing the date for when the holdback for the record has expired.
      *         In the format: yyyy-MM-dd'T'HH:mm:ssZ
      */
-    public String getHoldbackDateForRecord(String xml) throws IOException {
+    public HoldbackDTO getHoldbackDateForRecord(String xml) throws IOException {
+        HoldbackDTO result = new HoldbackDTO();
         try (InputStream xmlStream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8)) {
             try {
-                String purposeName = getPurposeName(xmlStream);
+                result.setHoldbackPurposeName(getPurposeName(xmlStream));
 
-                int holdbackDays = getHoldbackDaysForPurpose(purposeName);
+                int holdbackDays = getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
 
-                String holdbackDate = addHoldbackDaysToRecordStartDate(xmlStream, holdbackDays);
+                result.setHoldbackDate(addHoldbackDaysToRecordStartDate(xmlStream, holdbackDays));
 
-                return holdbackDate;
+                return result;
             } catch (IOException | SAXException | ParserConfigurationException e) {
                 throw new RuntimeException(e);
             }
@@ -154,16 +155,6 @@ public class HoldbackDatePicker {
 
         log.warn("No holdback has been defined for purpose: '{}'. Returning 2555000.", purpose);
         return 2555000;
-    }
-
-    public String getPurposeNameFromXml(String xml) throws IOException {
-        try (InputStream xmlStream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8)) {
-            try {
-                return getPurposeName(xmlStream);
-            } catch (ParserConfigurationException | SAXException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     /**

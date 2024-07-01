@@ -221,12 +221,15 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      */
     private void updateMetadataMapWithHoldback(String content, Map<String, String> metadata, String recordId) {
         try {
-            metadata.put("holdbackDate",  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(content));
-            metadata.put("holdbackPurposeName", HoldbackDatePicker.getInstance().getPurposeNameFromXml(content));
+            HoldbackDTO holdbackDTO = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(content);
+
+            metadata.put("holdbackDate", holdbackDTO.getHoldbackDate());
+            metadata.put("holdbackPurposeName", holdbackDTO.getHoldbackPurposeName());
         } catch (IOException e) {
             log.warn("An IOException occurred during holdback calculation for record: '{}'.", recordId);
             throw new RuntimeException(e);
         }
+
     }
 
     @Override
