@@ -76,7 +76,7 @@
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>1.4.1</version>
+          <version>1.4.2</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
