@@ -139,7 +139,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         switch (strategy) {
             case MANIFESTATION:
-                updateMetadataMapWithHoldback(content, metadata, record.getId());
+                updateMetadataMapWithHoldback(record, metadata);
                 updateMetadataMapWithPreservicaManifestation(record, metadata);
                 break;
             case NONE:
@@ -214,19 +214,18 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     /**
      * Update the map of metadata with holdback values calculated from specific fields inside the content.
-     * @param content String representation of a preservica XML record.
+     * @param record A DsStorage record containing a preservica XML record.
      * @param metadata map, which holds values that are to be used in the XSLT transformation later on.
      *                 Holdback values are added to this map.
-     * @param recordId of the processed record. Used for logging.
      */
-    private void updateMetadataMapWithHoldback(String content, Map<String, String> metadata, String recordId) {
+    private void updateMetadataMapWithHoldback(DsRecordDto record, Map<String, String> metadata) {
         try {
-            HoldbackDTO holdbackDTO = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(content);
+            HoldbackDTO holdbackDTO = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(record);
 
             metadata.put("holdbackDate", holdbackDTO.getHoldbackDate());
             metadata.put("holdbackPurposeName", holdbackDTO.getHoldbackPurposeName());
         } catch (IOException e) {
-            log.warn("An IOException occurred during holdback calculation for record: '{}'.", recordId);
+            log.warn("An IOException occurred during holdback calculation for record: '{}'.", record.getId());
             throw new RuntimeException(e);
         }
 

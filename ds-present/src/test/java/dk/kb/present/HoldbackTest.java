@@ -1,54 +1,74 @@
 package dk.kb.present;
 
+import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Tag("integration")
 public class HoldbackTest {
 
+    private static DsRecordDto tvRecord1 = new DsRecordDto();
+    private static DsRecordDto tvRecord2 = new DsRecordDto();
+    private static DsRecordDto radioRecord1 = new DsRecordDto();
+
     @BeforeAll
-    static void setup() {
+    static void setup() throws IOException {
         HoldbackDatePicker.init();
+
+        tvRecord1.setOrigin("ds.tv");
+        tvRecord1.setData(Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9ed10d66));
+
+        tvRecord2.setOrigin("ds.tv");
+        tvRecord2.setData(Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_3006e2f8));
+
+        radioRecord1.setOrigin("ds.radio");
+        radioRecord1.setData(Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_2b462c63));
     }
     // TODO: introduce "chained" test
     // TODO: introduce excel lookup tests with no results
 
     @Test
     public void getHoldbackDateFromXmlTest() throws IOException {
-        String xml = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9ed10d66);
-        assertEquals("2026-01-17T10:34:42+0100", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(xml).getHoldbackDate());
+        assertEquals("2026-01-17T09:34:42Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord1).getHoldbackDate());
     }
 
     @Test
     public void holdbackNoValueTest() throws IOException {
-        String xml = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_3006e2f8);
-        assertEquals("9017-07-07T17:29:55+0000", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(xml).getHoldbackDate());
+        assertEquals("9017-07-07T17:29:55Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackDate());
     }
 
     @Test
     public void holdbackNameNoValueTest() throws IOException {
-        String xml = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_3006e2f8);
-        assertTrue(HoldbackDatePicker.getInstance().getHoldbackDateForRecord(xml).getHoldbackPurposeName().isEmpty());
+        assertTrue(HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackPurposeName().isEmpty());
     }
 
     @Test
     public void getHoldbackPurposeFromXmlTest() throws IOException {
-        String xml = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9ed10d66);
-        assertEquals("Dansk Dramatik & Fiktion", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(xml).getHoldbackPurposeName());
+        assertEquals("Dansk Dramatik & Fiktion", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord1).getHoldbackPurposeName());
     }
 
     @Test
     public void getNoHoldbackDateFromXmlTest() throws IOException {
-        String xml = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9779a1b2);
-        assertEquals("9011-05-15T18:08:17+0100", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(xml).getHoldbackDate());
+        assertEquals("9017-07-07T17:29:55Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackDate());
+    }
+
+    @Test
+    public void radioHoldbackTest() throws IOException {
+        HoldbackDTO holdbackDTO =  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(radioRecord1);
+
+        assertEquals("2021-04-03T08:03:00Z", holdbackDTO.getHoldbackDate());
+        assertNull(holdbackDTO.getHoldbackPurposeName());
     }
 
     @Test

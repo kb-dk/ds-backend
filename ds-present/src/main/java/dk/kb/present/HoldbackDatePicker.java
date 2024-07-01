@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
+import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.Resolver;
@@ -85,14 +86,52 @@ public class HoldbackDatePicker {
     /**
      * Apply the HoldbackDatePicker to a string of XML representing a Preservica Information Object.
      *
-     * @param xml InformationObject from Preservica encapsulating a DR record/program, which holdback needs to be
-     *            calculated for
+     * @param record DsStorage record containing an InformationObject from Preservica encapsulating a DR record/program,
+     *              which holdback needs to be calculated for.
      * @return a string containing the date for when the holdback for the record has expired.
      *         In the format: yyyy-MM-dd'T'HH:mm:ssZ
      */
-    public HoldbackDTO getHoldbackDateForRecord(String xml) throws IOException {
+    public HoldbackDTO getHoldbackDateForRecord(DsRecordDto record) throws IOException {
         HoldbackDTO result = new HoldbackDTO();
-        try (InputStream xmlStream = IOUtils.toInputStream(xml, StandardCharsets.UTF_8)) {
+
+        if (record.getOrigin().equals("ds.tv")){
+            return getHoldbackForTvRecord(record, result);
+
+        } else if (record.getOrigin().equals("ds.radio")) {
+            return getHoldbackForRadioRecord(record, result);
+        } else {
+            log.error("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'.");
+            throw new RuntimeException("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'.");
+        }
+
+    }
+
+    /**
+     * Calculate holdback for a Radio record by adding 3 years to its aired time.
+     * @param record to calculate holdback for
+     * @param result holdbackDTO object, which the calculated holdback date is added to. This will never contain a value
+     *               for {@code holdbackPurposeName} as these are not present for radio records.
+     *
+     * @return the updated HoldbackDTO.
+     */
+    private HoldbackDTO getHoldbackForRadioRecord(DsRecordDto record, HoldbackDTO result) throws IOException {
+        try (InputStream xmlStream = IOUtils.toInputStream(record.getData(), StandardCharsets.UTF_8)) {
+            // Radio should be held back by three years by DR request.
+            result.setHoldbackDate(addHoldbackDaysToRecordStartDate(xmlStream, 1096));
+            return result;
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Calculate holdback for a TV record by comparing values in the record to the DR providede schemas.
+     * @param record to calculate holdback for.
+     * @param result holdbackDTO containing the purposeName and the holdbackDate for a record.
+     * @return the result object with updated values.
+     */
+    private static HoldbackDTO getHoldbackForTvRecord(DsRecordDto record, HoldbackDTO result) throws IOException {
+        try (InputStream xmlStream = IOUtils.toInputStream(record.getData(), StandardCharsets.UTF_8)) {
             try {
                 result.setHoldbackPurposeName(getPurposeName(xmlStream));
 
@@ -128,7 +167,8 @@ public class HoldbackDatePicker {
     private static String calculateHoldbackDate(ZonedDateTime startDate, int holdbackDays) {
         ZonedDateTime holdbackExpiredDate = startDate.plusDays(holdbackDays);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
+        // Using .ISO_INSTANT as this is solr standard
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
 
         String formattedHoldbackDate = holdbackExpiredDate.format(formatter);
         return formattedHoldbackDate;
