@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Bumped kb-util version
 
+## [1.3.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.3.0) - 2024-07-01
+
+
 ## [1.2.5](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.2.5) - 2024-06-18
 ### Added
 - Yaml configuration updated with list of additional allowed Solr query parameters (solr.extraAllowedParameters). SolrShield will also allow these parameters can be returned from Solr.
