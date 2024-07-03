@@ -43,7 +43,7 @@ import javax.xml.parsers.SAXParserFactory;
  * </ol>
  * </p>
  * When the correct purpose has been extracted, the amount of holdback days needs to be found for the specific purpose.
- * This is done by looking up the PurposeName in the TODO: what is the name of this sheet and where is it?
+ * This is done by looking up the PurposeName in the dr_holdback Excel sheet.
  */
 public class HoldbackDatePicker {
     private static final Logger log = LoggerFactory.getLogger(HoldbackDatePicker.class);
@@ -339,7 +339,9 @@ public class HoldbackDatePicker {
         }
 
         double formDouble = Double.parseDouble(form);
-        // TODO: Add warning logs for values below 1000 and above 7000.
+        if (formDouble < 1000 || formDouble > 7000){
+            log.warn("The Form value extracted was out of range 1000-7000. This does not map to a FormNr. Form was: '{}'", formDouble);
+        }
 
         for (Row row : formIndexSheet) {
             // Value in FormFra column
