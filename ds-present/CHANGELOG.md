@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+### Changed
+- Changed how duplicate metadata fragments are handled in XSLT transformers.
 
 ## [1.9.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.1) 2024-07-01
 ### Changed

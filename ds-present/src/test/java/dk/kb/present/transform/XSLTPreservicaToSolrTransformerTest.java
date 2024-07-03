@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 import static dk.kb.present.TestUtil.prettyPrintJson;
+import static dk.kb.present.TestUtil.prettyPrintSolrJsonFromPreservica;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -404,6 +405,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testCountFields(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"categories_count\":\"2\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"notes_count\":\"2\"");
+    }
+
+    @Test
+    void testMultiplePaddingFragments() throws Exception {
+        assertPvicaContains(TestFiles.PVICA_RECORD_5238ea5d, "\"internal_padding_seconds\":\"0\"");
     }
 
     @Test
