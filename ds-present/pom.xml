@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
-    <version>1.8.1-SNAPSHOT</version>
+    <version>1.9.3-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
 
@@ -75,11 +75,27 @@
             </exclusions>
         </dependency>
 
+
+        <!-- Client for ds-storage This will also require the org.openapitools dependency-->
+        <dependency>
+          <groupId>dk.kb.storage</groupId>
+          <artifactId>ds-storage</artifactId>
+            <version>2.0.0</version>
+            <type>jar</type>
+            <classifier>classes</classifier>
+            <exclusions>
+              <exclusion>
+                <groupId>*</groupId>
+                <artifactId>*</artifactId>
+              </exclusion>
+          </exclusions>
+          </dependency>
+
         <!-- Client for ds-license. This will also require the org.openapitools dependency-->
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>1.4.0</version>
+          <version>1.4.2</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
@@ -292,21 +308,6 @@
             <artifactId>Saxon-HE</artifactId>
             <version>10.6</version>
         </dependency>
-
-        <!-- Client for ds-storage This will also require the org.openapitools dependency-->
-        <dependency>
-          <groupId>dk.kb.storage</groupId>
-          <artifactId>ds-storage</artifactId>
-            <version>1.19</version>
-            <type>jar</type>
-            <classifier>classes</classifier>
-            <exclusions>
-              <exclusion>
-                <groupId>*</groupId>
-                <artifactId>*</artifactId>
-              </exclusion>
-          </exclusions>
-          </dependency>
 
           <!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable -->
           <!-- Needed for the ds-storage client -->

@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+
+## [1.9.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.1) 2024-07-01
+### Changed
+- Bumped solr-config to v.1.6.8
+
+
+### Changed
+- Update dependency ds-storage to version 2.0.0
+- Update dependency ds-license to version 1.4.2
+
+## [1.9.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.0) 2024-07-01
+
 ## Changed
 - Bumped kb-util version to improve YAML logging.
 
