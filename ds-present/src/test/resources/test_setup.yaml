@@ -209,4 +209,5 @@ origins:
           description: 'Devel records'
           recordRequestType: 'DELIVERABLEUNIT'
           views: *PRESERVICA_VIEWS
-
+transformations:
+  threads: 3
