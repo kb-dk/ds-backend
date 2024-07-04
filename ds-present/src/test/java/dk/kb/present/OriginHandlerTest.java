@@ -27,7 +27,7 @@ class OriginHandlerTest {
     @BeforeAll
     static void setup() {
         try {
-            ServiceConfig.initialize("test_setup.yaml");
+            ServiceConfig.initialize("conf/ds-present-behaviour.yaml", "test_setup.yaml");
             HoldbackDatePicker.init();
             config = ServiceConfig.getConfig();
         } catch (IOException e) {          

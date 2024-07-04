@@ -121,6 +121,14 @@ origin:
     # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
     pattern: '[a-z0-9.]+'
 
+# Absolute paths to Excel sheets containing information used to calculate holdback periods from DR.
+# This value needs to be changed to the correct placement of the files. The placeholder value is resolved from classpath
+    ## when the files have been injected from aegis. However, full paths can be specified as well.
+holdback:
+  dr:
+    purposeSheet: 'internal_test_files/dr_formaalstabeller_20240704.xlsx'
+    holdbackSheet: 'internal_test_files/dr_holdbacktabel_20240704.xlsx'
+
 # Origins are to be set in ds-present-kb-collections-yaml if possible, as that file overwrites the origins defined here
 # The origins available for this instance of ds-present
 #origins:

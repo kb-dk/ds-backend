@@ -7,12 +7,14 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -368,20 +370,20 @@ public class HoldbackDatePicker {
      */
     private static void readSheet() {
         try {
-            FileInputStream purposeExcel = new FileInputStream(Resolver.getPathFromClasspath("dr_formålstabeller.xlsx").toString());
+            String purposeSheetPath = ServiceConfig.getConfig().getString("holdback.dr.purposeSheet");
+            FileInputStream purposeExcel = new FileInputStream(Resolver.resolveURL(purposeSheetPath).getPath());
             XSSFWorkbook purposeWorkbook = new XSSFWorkbook(purposeExcel);
 
             formIndexSheet = purposeWorkbook.getSheetAt(0);
             purposeMatrixSheet = purposeWorkbook.getSheetAt(1);
             purposeSheet = purposeWorkbook.getSheetAt(2);
-
             purposeExcel.close();
 
-            FileInputStream holdbackExcel = new FileInputStream(Resolver.getPathFromClasspath("dr_holdback.xlsx").toString());
+            String holdbackSheetPath = ServiceConfig.getConfig().getString("holdback.dr.holdbackSheet");
+            FileInputStream holdbackExcel = new FileInputStream(Resolver.resolveURL(holdbackSheetPath).getPath());
             XSSFWorkbook holdbackWorkbook = new XSSFWorkbook(holdbackExcel);
 
             holdbackSheet = holdbackWorkbook.getSheetAt(1);
-
             holdbackExcel.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

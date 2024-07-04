@@ -1,5 +1,6 @@
 package dk.kb.present;
 
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("integration")
@@ -24,6 +24,7 @@ public class HoldbackTest {
 
     @BeforeAll
     static void setup() throws IOException {
+        ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
         HoldbackDatePicker.init();
 
         tvRecord1.setOrigin("ds.tv");
