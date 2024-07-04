@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("integration")
@@ -21,6 +22,9 @@ public class HoldbackTest {
     private static DsRecordDto tvRecord1 = new DsRecordDto();
     private static DsRecordDto tvRecord2 = new DsRecordDto();
     private static DsRecordDto radioRecord1 = new DsRecordDto();
+    private static DsRecordDto badRecord = new DsRecordDto();
+    private static DsRecordDto noOriginRecord = new DsRecordDto();
+    private static DsRecordDto badOriginRecord = new DsRecordDto();
 
     @BeforeAll
     static void setup() throws IOException {
@@ -35,9 +39,27 @@ public class HoldbackTest {
 
         radioRecord1.setOrigin("ds.radio");
         radioRecord1.setData(Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_2b462c63));
+
+        badRecord.setOrigin("ds.tv");
+        badRecord.setData(Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_HOLDBACK_TEST_RECORD));
+
+        noOriginRecord.setOrigin(null);
+        badOriginRecord.setOrigin("this.is.not.an.origin");
     }
-    // TODO: introduce "chained" test
-    // TODO: introduce excel lookup tests with no results
+
+    @Test
+    public void badOriginsTest() throws IOException {
+        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord).getHoldbackDate());
+        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord).getHoldbackPurposeName());
+
+        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badOriginRecord).getHoldbackDate());
+        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badOriginRecord).getHoldbackPurposeName());
+    }
+
+    @Test
+    public void badRecordTest() throws IOException {
+        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badRecord).getHoldbackDate());
+    }
 
     @Test
     public void getHoldbackDateFromXmlTest() throws IOException {
