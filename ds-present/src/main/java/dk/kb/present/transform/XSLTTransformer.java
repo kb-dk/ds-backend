@@ -44,6 +44,7 @@ public class XSLTTransformer implements DSTransformer {
     public static final TransformerFactory transformerFactory;
 
     protected static final Semaphore semaphore;
+    protected static final boolean useSemaphore;
 
     static {
         System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
@@ -51,6 +52,7 @@ public class XSLTTransformer implements DSTransformer {
         // Ignoring base as it is always null in the ds-present code
         transformerFactory.setURIResolver((href, base) -> new StreamSource(Resolver.resolveStream(href)));
 
+        useSemaphore =  ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0;
         semaphore = new Semaphore(ServiceConfig.getConfig().getInteger("transformations.threads",0));
     }
     public final String stylesheet;
@@ -104,7 +106,7 @@ public class XSLTTransformer implements DSTransformer {
                 }
                 metadata.forEach(transformer::setParameter);
 
-                if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+                if (useSemaphore) {
                     semaphore.acquire();
                 }
                 transformer.transform(new StreamSource(in), new StreamResult(out));
@@ -116,7 +118,7 @@ public class XSLTTransformer implements DSTransformer {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
-            if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+            if (useSemaphore) {
                 semaphore.release();
             }
         }
