@@ -23,6 +23,8 @@ solr:
     - queryUUID 
     # Frontend uses facet.limit this for timeline
     - facet.limit
+    # Frontend is sorting on dates when showing results from "Tidsmaskinen"
+    - sort
 
   # /select specific config
   select:
