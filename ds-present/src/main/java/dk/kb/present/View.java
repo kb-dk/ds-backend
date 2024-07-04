@@ -47,12 +47,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private static final String MIME_KEY = "mime";
     private static final String TRANSFORMERS_KEY = "transformers";
     private static final String STRATEGY_KEY = "strategy";
-    /**
-     * Preservica manifestations can be of different types. Presentation manifestations are of type 2 and are the ones
-     * we want to extract through this pattern.
-     */
-    private static final Pattern PRESENTATION_MANIFESTATION_PATTERN = Pattern.compile(
-            "<ManifestationRelRef>2</ManifestationRelRef>");
 
     private final String id;
     private final String origin;
@@ -63,7 +57,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * Defines the strategy used to construct the wanted view of the resource.
      * Strategy can be one of the following: <br/>
      * {@link #NONE} <br/>
-     * {@link #MANIFESTATION5} <br/>
+     * {@link #DR} <br/>
+     * {@link #MANIFESTATION} <br/>
      */
     enum Strategy {
         /**
@@ -71,15 +66,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
          */
         NONE,
         /**
-         * Manifestation strategy, used when the metadata to transform is dependent on one or more manifestations. This
-         * strategy is oriented towards metadata from preservica 5 and expects the metadata to conform to the preservica 5
-         * datamodel, where data is divided between DeliverableUnits and Manifestations. The DeliverableUnit contains
-         * the metadata, while a manifestation contains metadata on a single representation of the resource described in
-         * the DeliverableUnit.
-         * This strategy injects a manifestation into the XSLT, which is then used as part of the transformation.
-         * The manifestation is needed to create streaming_urls for resources.
+         * DR strategy used when DR holdback is to be applied to the metadata records. This also applies the features
+         * from the MANIFESTATION strategy afterward.
          */
-        MANIFESTATION5,
+        DR,
         /**
          *  Manifestation strategy, used when the metadata to transform is dependent on one MANIFESTATION. This
          *  strategy is oriented towards metadata from preservica 7 and expects the metadata to conform to the preservica 7
@@ -138,8 +128,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         String content = record.getData();
 
         switch (strategy) {
-            case MANIFESTATION:
+            case DR:
                 updateMetadataMapWithHoldback(record, metadata);
+                // IMPORTANT: No break here as MANIFESTATION strategy should also be applied.
+            case MANIFESTATION:
                 updateMetadataMapWithPreservicaManifestation(record, metadata);
                 break;
             case NONE:
