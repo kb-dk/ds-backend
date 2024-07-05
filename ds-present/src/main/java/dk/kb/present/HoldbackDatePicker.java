@@ -371,20 +371,24 @@ public class HoldbackDatePicker {
     private static void readSheet() {
         try {
             String purposeSheetPath = ServiceConfig.getConfig().getString("holdback.dr.purposeSheet");
-            FileInputStream purposeExcel = new FileInputStream(Resolver.resolveURL(purposeSheetPath).getPath());
-            XSSFWorkbook purposeWorkbook = new XSSFWorkbook(purposeExcel);
+            XSSFWorkbook purposeWorkbook;
+            try (FileInputStream purposeExcel = new FileInputStream(Resolver.resolveURL(purposeSheetPath).getPath())) {
+                purposeWorkbook = new XSSFWorkbook(purposeExcel);
 
-            formIndexSheet = purposeWorkbook.getSheetAt(0);
-            purposeMatrixSheet = purposeWorkbook.getSheetAt(1);
-            purposeSheet = purposeWorkbook.getSheetAt(2);
-            purposeExcel.close();
+                formIndexSheet = purposeWorkbook.getSheetAt(0);
+                purposeMatrixSheet = purposeWorkbook.getSheetAt(1);
+                purposeSheet = purposeWorkbook.getSheetAt(2);
+                purposeWorkbook.close();
+            }
 
             String holdbackSheetPath = ServiceConfig.getConfig().getString("holdback.dr.holdbackSheet");
-            FileInputStream holdbackExcel = new FileInputStream(Resolver.resolveURL(holdbackSheetPath).getPath());
-            XSSFWorkbook holdbackWorkbook = new XSSFWorkbook(holdbackExcel);
+            XSSFWorkbook holdbackWorkbook;
+            try (FileInputStream holdbackExcel = new FileInputStream(Resolver.resolveURL(holdbackSheetPath).getPath())) {
+                holdbackWorkbook = new XSSFWorkbook(holdbackExcel);
+                holdbackSheet = holdbackWorkbook.getSheetAt(1);
+                holdbackWorkbook.close();
+            }
 
-            holdbackSheet = holdbackWorkbook.getSheetAt(1);
-            holdbackExcel.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
