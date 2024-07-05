@@ -68,6 +68,7 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
             if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
                 semaphore.acquire();
             }
+            log.debug("Starting transformation");
             transformer.transform(new StreamSource(new ByteArrayInputStream(placeholderXml.getBytes(StandardCharsets.UTF_8))),
                                   new StreamResult(out));
 
@@ -78,6 +79,7 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
+            log.debug("transformation done");
             if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
                 semaphore.release();
             }

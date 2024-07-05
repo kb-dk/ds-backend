@@ -109,6 +109,7 @@ public class XSLTTransformer implements DSTransformer {
                 if (useSemaphore) {
                     semaphore.acquire();
                 }
+                log.debug("Starting transformation");
                 transformer.transform(new StreamSource(in), new StreamResult(out));
             }
             return out.toString(StandardCharsets.UTF_8);
@@ -118,6 +119,7 @@ public class XSLTTransformer implements DSTransformer {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
+            log.debug("transformation done");
             if (useSemaphore) {
                 semaphore.release();
             }

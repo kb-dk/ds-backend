@@ -79,13 +79,7 @@ public class EmbeddedSolrTest {
     @BeforeAll
     public static void startEmbeddedSolrServer() throws IOException {
 
-        String CONFIG = Resolver.resolveGlob("conf/ds-present-behaviour.yaml").get(0).toString();
-        if ("[]".equals(CONFIG)) {
-            throw new IllegalStateException("Unable to locate config");
-        }
-
-        log.info("Fixing config to '{}'", CONFIG);
-        ServiceConfig.initialize(CONFIG);
+        ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
 
         File solrHomeDir = new File(solr_home);
         String solrHomeAbsoluteDir= solrHomeDir.getAbsolutePath();

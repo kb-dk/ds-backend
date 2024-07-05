@@ -19,12 +19,7 @@ public class XSLTDocumentationExtractorTest {
 
     @BeforeAll
     public static void fixConfiguration() throws IOException {
-        String CONFIG = Resolver.resolveGlob("conf/ds-present-behaviour.yaml").get(0).toString();
-        if ("[]".equals(CONFIG)) {
-            throw new IllegalStateException("Unable to locate config");
-        }
-
-        ServiceConfig.initialize(CONFIG);
+        ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
     }
 
     @Test
