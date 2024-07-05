@@ -119,7 +119,6 @@ class ViewTest {
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
 
         String solrdoc = solrView.apply(recordDto);
-        prettyPrintJson(solrdoc);
         assertTrue(solrdoc.contains("\"title\":\"Før Bjørnen Er Skudt\""));
         assertTrue(solrdoc.contains("\"holdback_expired_date\":\"9999-01-01T00:00:00Z\""));
     }
