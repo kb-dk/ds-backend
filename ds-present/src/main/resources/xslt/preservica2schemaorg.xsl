@@ -816,7 +816,7 @@
       <xsl:call-template name="program-structure"/>
     </xsl:for-each>
 
-    <!-- Holdback date included here. Holdbac purpose is only included for video objects, therefor it is done in the
+    <!-- Holdback date included here. Holdback purpose is only included for video objects, therefor it is done in the
           internal-video-fields template. -->
     <xsl:if test="$holdbackDate != null or $holdbackDate != ''">
       <f:string key="kb:holdback_date">

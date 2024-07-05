@@ -13,6 +13,7 @@ import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.Resolver;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
@@ -91,7 +92,7 @@ public class HoldbackDatePicker {
      * @param record DsStorage record containing an InformationObject from Preservica encapsulating a DR record/program,
      *              which holdback needs to be calculated for.
      * @return a string containing the date for when the holdback for the record has expired.
-     *         In the format: yyyy-MM-dd'T'HH:mm:ssZ
+     *         In the format: yyyy-MM-ddTHH:mm:ssZ
      */
     public HoldbackDTO getHoldbackDateForRecord(DsRecordDto record) throws IOException {
         HoldbackDTO result = new HoldbackDTO();
@@ -109,9 +110,8 @@ public class HoldbackDatePicker {
         } else {
             log.error("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'." +
                     " Returning a result object without values.");
-            result.setHoldbackPurposeName("");
-            result.setHoldbackDate("");
-            return result;
+            throw new InternalServiceException("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'." +
+                    " Returning a result object without values.");
         }
 
     }
@@ -139,7 +139,7 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Calculate holdback for a TV record by comparing values in the record to the DR providede schemas.
+     * Calculate holdback for a TV record by comparing values in the record to the DR provided schemas.
      * @param record to calculate holdback for.
      * @param result holdbackDTO containing the purposeName and the holdbackDate for a record.
      * @return the result object with updated values.
@@ -435,8 +435,6 @@ public class HoldbackDatePicker {
         saxParser.parse(xml, handler);
         xml.reset();
         String datetimeString =  handler.getCurrentValue();
-
-        log.info(datetimeString);
 
         String dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss[XX][XXX]";
         try {
