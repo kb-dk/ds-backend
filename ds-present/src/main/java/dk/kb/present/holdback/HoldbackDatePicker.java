@@ -1,4 +1,4 @@
-package dk.kb.present;
+package dk.kb.present.holdback;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.holdback.dto.FormIndexSheetDTO;
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.DatetimeParser;
@@ -15,7 +16,6 @@ import dk.kb.util.MalformedIOException;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
-import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -56,7 +56,8 @@ public class HoldbackDatePicker {
     /**
      * Excel sheet containing table to find FormNr in based on Form from the XML.
      */
-    private static XSSFSheet formIndexSheet;
+    private static FormIndexSheetDTO formIndexSheet;
+
 
     /**
      * Excel sheet containing table to find PurposeID in based on Content and FormNr.
@@ -225,8 +226,7 @@ public class HoldbackDatePicker {
         String form = getFormValue(xmlStream);
 
         // get formNr by looking up form in formIndexSheet.
-        int formNr = getFormNrFromForm(form);
-        String formString = createFormString(formNr);
+        String formString = formIndexSheet.getFormNr(form);
 
         // TODO: do some logic on gallup/nielsen differences.
         // get contentsitem from xml
@@ -284,7 +284,7 @@ public class HoldbackDatePicker {
      * Get PurposeID from provided Content and FormNr.
      *
      * @param content a four-digit number extracted from the XML, which holdback is being calculated for.
-     * @param formNrString a string of the format: 'FormX' where x has been resolved through {@link #getFormNrFromForm(String)}
+     * @param formNrString a string of the format: 'FormX' where x has been resolved through {@link FormIndexSheetDTO#getFormNr(String)}
      * @return a PurposeID most likely in the format x.xx: An example could be the string '2.02'.
      */
     private static String getPurposeIdFromContentAndForm(String content, String formNrString) {
@@ -320,51 +320,6 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Prefix the input formNr with the literal string: "Form". This is done because the constructed formString is needed
-     * when looking up PurposeID in {@link #purposeMatrixSheet}.
-     * @param formNr to prefix with "Form"
-     * @return a formString of the format Form+formNr eg. Form1, Form2 etc.
-     */
-    private static String createFormString(int formNr) {
-        return "Form" + formNr;
-    }
-
-    /**
-     * Extract FormNr from {@link #formIndexSheet} based on the value of form, which is a four-digit number.
-     * @param form four-digit number extracted from a preservica record.
-     * @return the corresponding FormNr for the input form. Returns zero if no value has been extracted.
-     */
-    private static int getFormNrFromForm(String form) {
-        if (form.isEmpty()){
-            log.warn("No FormNr could be extracted as form string is empty. Returning 0.");
-            return 0;
-        }
-
-        double formDouble = Double.parseDouble(form);
-        if (formDouble < 1000 || formDouble > 7000){
-            log.warn("The Form value extracted was out of range 1000-7000. This does not map to a FormNr. Form was: '{}'", formDouble);
-        }
-
-        for (Row row : formIndexSheet) {
-            // Value in FormFra column
-            Cell formFra = row.getCell(1);
-            // Value in FormTil column
-            Cell formTil = row.getCell(2);
-            if (formFra != null && formFra.getCellType() == CellType.NUMERIC) {
-                double formFraValue = formFra.getNumericCellValue();
-                double formTilValue = formTil.getNumericCellValue();
-                // If form is between FormFra and FormTil (both inclusive) the FormNr is matching and extracted.
-                if (formDouble >= formFraValue && formDouble <= formTilValue) {
-                    return (int) row.getCell(0).getNumericCellValue();
-                }
-            }
-        }
-
-        log.warn("No FormNr could be extracted for form: '{}'. Returning 0.", form);
-        return 0;
-    }
-
-    /**
      * Setup of the HoldbackDatePicker. Fetches the Excel sheets for {@link #formIndexSheet}, {@link #purposeMatrixSheet},
      * {@link #purposeSheet} and {@link #holdbackSheet}.
      */
@@ -375,7 +330,9 @@ public class HoldbackDatePicker {
             try (FileInputStream purposeExcel = new FileInputStream(Resolver.resolveURL(purposeSheetPath).getPath())) {
                 purposeWorkbook = new XSSFWorkbook(purposeExcel);
 
-                formIndexSheet = purposeWorkbook.getSheetAt(0);
+                formIndexSheet = new FormIndexSheetDTO(purposeWorkbook.getSheetAt(0));
+
+
                 purposeMatrixSheet = purposeWorkbook.getSheetAt(1);
                 purposeSheet = purposeWorkbook.getSheetAt(2);
                 purposeWorkbook.close();
@@ -450,23 +407,16 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Get the formIndexSheet.
-     */
-    XSSFSheet getFormIndexSheet() {
-        return formIndexSheet;
-    }
-
-    /**
      * Get the purposeMatrixSheet.
      */
-    XSSFSheet getPurposeMatrixSheet() {
+    public XSSFSheet getPurposeMatrixSheet() {
         return purposeMatrixSheet;
     }
 
     /**
      * Get the purposeSheet.
      */
-    XSSFSheet getPurposeSheet() {
+    public XSSFSheet getPurposeSheet() {
         return purposeSheet;
     }
 }

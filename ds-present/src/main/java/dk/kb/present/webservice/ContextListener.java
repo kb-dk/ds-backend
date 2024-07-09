@@ -13,7 +13,7 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import dk.kb.present.HoldbackDatePicker;
+import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;

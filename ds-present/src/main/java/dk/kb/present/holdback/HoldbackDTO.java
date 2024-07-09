@@ -1,4 +1,4 @@
-package dk.kb.present;
+package dk.kb.present.holdback;
 
 /**
  * Data transfer object which contains holdback information for a preservica record.

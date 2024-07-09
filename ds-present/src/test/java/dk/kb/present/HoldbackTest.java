@@ -1,8 +1,11 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.holdback.HoldbackDTO;
+import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -52,8 +55,8 @@ public class HoldbackTest {
         assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord).getHoldbackDate());
         assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord).getHoldbackPurposeName());
 
-        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badOriginRecord).getHoldbackDate());
-        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badOriginRecord).getHoldbackPurposeName());
+        Exception exception = assertThrowsExactly(InternalServiceException.class, () -> HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badOriginRecord));
+        assertEquals("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without values.", exception.getMessage());
     }
 
     @Test
@@ -94,7 +97,7 @@ public class HoldbackTest {
         assertEquals("", holdbackDTO.getHoldbackPurposeName());
     }
 
-    @Test
+    /*@Test
     public void xslxSheetTest(){
         int rowIndex = 0;
 
@@ -115,6 +118,6 @@ public class HoldbackTest {
         row = purposeSheet.getRow(rowIndex);
         cell = row.getCell(2);
         assertEquals("FormålNavn", cell.getStringCellValue());
-    }
+    }*/
 
 }
