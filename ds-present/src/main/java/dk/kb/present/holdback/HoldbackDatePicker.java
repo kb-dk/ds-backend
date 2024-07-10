@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.holdback.dto.FormIndexSheetDTO;
 import dk.kb.present.holdback.dto.PurposeMatrixSheetDTO;
+import dk.kb.present.holdback.dto.PurposeSheetDTO;
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.DatetimeParser;
@@ -68,9 +69,9 @@ public class HoldbackDatePicker {
      */
     private static PurposeMatrixSheetDTO purposeMatrixSheet;
     /**
-     * Excel sheet containing table to find PurposeName in based on PurposeID
+     * Object representing an Excel sheet containing table to find PurposeName in based on PurposeID
      */
-    private static XSSFSheet purposeSheet;
+    private static PurposeSheetDTO purposeSheet;
 
     /**
      * Excel sheet containing table to find holdback days for a given purpose.
@@ -241,27 +242,7 @@ public class HoldbackDatePicker {
         purposeNumber = validatePurpose(purposeNumber, xmlStream);
 
         // Brug den fundne værdi i formåls arket til at finde formålNavn
-        return getPurposeNameFromNumber(purposeNumber);
-    }
-
-    /**
-     * Extract purposeName from a given purposeID in {@link #purposeSheet}.
-     * @param purposeID which maps to a textual name in the purposeSheet.
-     * @return the purposeName for the input ID.
-     */
-    private static String getPurposeNameFromNumber(String purposeID) {
-        if (purposeID.isEmpty()){
-            log.warn("PurposeID is empty. Returning an empty string as PurposeName.");
-            return "";
-        }
-        for (Row row : purposeSheet) {
-            if (row.getCell(1).getStringCellValue().equals(purposeID)) {
-                return row.getCell(2).getStringCellValue();
-            }
-        }
-
-        log.warn("No purposeName could be found for PurposeID: '{}'", purposeID);
-        return "";
+        return purposeSheet.getPurposeNameFromNumber(purposeNumber);
     }
 
     /**
@@ -298,7 +279,7 @@ public class HoldbackDatePicker {
                 formIndexSheet = new FormIndexSheetDTO(purposeWorkbook.getSheetAt(0));
 
                 purposeMatrixSheet = new PurposeMatrixSheetDTO(purposeWorkbook.getSheetAt(1));
-                purposeSheet = purposeWorkbook.getSheetAt(2);
+                purposeSheet = new PurposeSheetDTO(purposeWorkbook.getSheetAt(2));
                 purposeWorkbook.close();
             }
 
@@ -368,12 +349,5 @@ public class HoldbackDatePicker {
             throw new RuntimeException(e);
         }
 
-    }
-
-    /**
-     * Get the purposeSheet.
-     */
-    public XSSFSheet getPurposeSheet() {
-        return purposeSheet;
     }
 }
