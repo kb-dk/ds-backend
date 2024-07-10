@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.holdback.dto.FormIndexSheetDTO;
+import dk.kb.present.holdback.dto.PurposeMatrixSheetDTO;
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.DatetimeParser;
@@ -54,15 +55,18 @@ public class HoldbackDatePicker {
     private static HoldbackDatePicker datePicker = new HoldbackDatePicker();
 
     /**
-     * Excel sheet containing table to find FormNr in based on Form from the XML.
+     * Object representing values from an Excel sheet containing table to find FormNr in based on Form from the XML.
      */
     private static FormIndexSheetDTO formIndexSheet;
-
 
     /**
      * Excel sheet containing table to find PurposeID in based on Content and FormNr.
      */
-    private static XSSFSheet purposeMatrixSheet;
+    private static XSSFSheet purposeMatrixSheetOld;
+    /**
+     * Object representing an Excel sheet containing table to find PurposeID in based on Content and FormNr.
+     */
+    private static PurposeMatrixSheetDTO purposeMatrixSheet;
     /**
      * Excel sheet containing table to find PurposeName in based on PurposeID
      */
@@ -233,7 +237,7 @@ public class HoldbackDatePicker {
         String contentsItem = getContentsItem(xmlStream);
 
         // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
-        String purposeNumber = getPurposeIdFromContentAndForm(contentsItem, formString);
+        String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contentsItem, formString);
         purposeNumber = validatePurpose(purposeNumber, xmlStream);
 
         // Brug den fundne værdi i formåls arket til at finde formålNavn
@@ -261,7 +265,7 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Validate and handle special cases of IDs constructed by {@link #getPurposeIdFromContentAndForm(String, String)}.
+     * Validate and handle special cases of IDs constructed by {@link PurposeMatrixSheetDTO#getPurposeIdFromContentAndForm(String, String)}.
      * @param purposeId which is to be validated.
      * @param xml of the preservica record. Needs to be included here when validating against values from it.
      * @return an updated PurposeID
@@ -281,45 +285,6 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Get PurposeID from provided Content and FormNr.
-     *
-     * @param content a four-digit number extracted from the XML, which holdback is being calculated for.
-     * @param formNrString a string of the format: 'FormX' where x has been resolved through {@link FormIndexSheetDTO#getFormNr(String)}
-     * @return a PurposeID most likely in the format x.xx: An example could be the string '2.02'.
-     */
-    private static String getPurposeIdFromContentAndForm(String content, String formNrString) {
-        if (content.isEmpty()){
-            log.warn("The field 'content' is empty. PurposeID can't be calculated. Returning an empty string.");
-            return "";
-        }
-
-        double contentDouble = Double.parseDouble(content);
-        for (Row row : purposeMatrixSheet) {
-            Cell indholdFra = row.getCell(1);
-            Cell indholdTil = row.getCell(2);
-            if (indholdFra != null && indholdFra.getCellType() == CellType.NUMERIC) {
-                double indholdFraValue = indholdFra.getNumericCellValue();
-                double indholdTilValue = indholdTil.getNumericCellValue();
-                if (contentDouble >= indholdFraValue && contentDouble <= indholdTilValue) {
-                    log.info("IndholdFra and IndholdTil matches in row: '{}'", row.getRowNum());
-
-                    for (Cell formCell : purposeMatrixSheet.getRow(0)) {
-                        if (formCell.getStringCellValue().equals(formNrString)) {
-                            log.info("Found the correct formNrString, which is: '{}'", formCell.getStringCellValue());
-                            log.info("Extracting Purpose Number from this cell, which is: '{}'", row.getCell(formCell.getColumnIndex()));
-                            return String.valueOf(row.getCell(formCell.getColumnIndex()));
-                        }
-
-                    }
-                }
-            }
-        }
-
-        log.warn("No PurposeID could be extracted from content: '{}' and form: '{}'", content, formNrString);
-        return "";
-    }
-
-    /**
      * Setup of the HoldbackDatePicker. Fetches the Excel sheets for {@link #formIndexSheet}, {@link #purposeMatrixSheet},
      * {@link #purposeSheet} and {@link #holdbackSheet}.
      */
@@ -332,8 +297,7 @@ public class HoldbackDatePicker {
 
                 formIndexSheet = new FormIndexSheetDTO(purposeWorkbook.getSheetAt(0));
 
-
-                purposeMatrixSheet = purposeWorkbook.getSheetAt(1);
+                purposeMatrixSheet = new PurposeMatrixSheetDTO(purposeWorkbook.getSheetAt(1));
                 purposeSheet = purposeWorkbook.getSheetAt(2);
                 purposeWorkbook.close();
             }
@@ -404,13 +368,6 @@ public class HoldbackDatePicker {
             throw new RuntimeException(e);
         }
 
-    }
-
-    /**
-     * Get the purposeMatrixSheet.
-     */
-    public XSSFSheet getPurposeMatrixSheet() {
-        return purposeMatrixSheet;
     }
 
     /**
