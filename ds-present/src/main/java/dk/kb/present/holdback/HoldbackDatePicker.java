@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.holdback.dto.FormIndexSheetDTO;
+import dk.kb.present.holdback.dto.HoldbackSheetDTO;
 import dk.kb.present.holdback.dto.PurposeMatrixSheetDTO;
 import dk.kb.present.holdback.dto.PurposeSheetDTO;
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
@@ -74,9 +75,9 @@ public class HoldbackDatePicker {
     private static PurposeSheetDTO purposeSheet;
 
     /**
-     * Excel sheet containing table to find holdback days for a given purpose.
+     * Object representing an Excel sheet containing table to find holdback days for a given purpose.
      */
-    private static XSSFSheet holdbackSheet;
+    private static HoldbackSheetDTO holdbackSheet;
 
     private static SAXParserFactory factory;
 
@@ -163,7 +164,7 @@ public class HoldbackDatePicker {
                     log.warn("Purpose name was empty. Setting holdback date to 9999-01-01T00:00:00Z");
                     result.setHoldbackDate("9999-01-01T00:00:00Z");
                 } else {
-                    int holdbackDays = getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
+                    int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
                     result.setHoldbackDate(addHoldbackDaysToRecordStartDate(xmlStream, holdbackDays));
                 }
 
@@ -201,24 +202,6 @@ public class HoldbackDatePicker {
 
         String formattedHoldbackDate = holdbackExpiredDate.format(formatter);
         return formattedHoldbackDate;
-    }
-
-    /**
-     * From a purposeName, get the amount of days which the program should be held back.
-     * This is looked up in the DR provided holdback sheet.
-     * @param purpose purposeName from {@link #purposeSheet} to lookup.
-     * @return amount of holdback days.
-     */
-    private static int getHoldbackDaysForPurpose(String purpose) {
-        for (Row row : holdbackSheet) {
-            // Check the value against the 2019 and 2022 values.
-            if (purpose.equals(row.getCell(2).getStringCellValue()) || purpose.equals(row.getCell(0).getStringCellValue() )){
-                return (int) row.getCell(4).getNumericCellValue();
-            }
-        }
-
-        log.error("No holdback has been defined for purpose: '{}'.", purpose);
-        throw new NotFoundServiceException("No holdback value cold be found for purpose: '" + purpose + "' in holdbackSheet: '" + holdbackSheet.getSheetName() + "' ");
     }
 
     /**
@@ -287,7 +270,7 @@ public class HoldbackDatePicker {
             XSSFWorkbook holdbackWorkbook;
             try (FileInputStream holdbackExcel = new FileInputStream(Resolver.resolveURL(holdbackSheetPath).getPath())) {
                 holdbackWorkbook = new XSSFWorkbook(holdbackExcel);
-                holdbackSheet = holdbackWorkbook.getSheetAt(1);
+                holdbackSheet = new HoldbackSheetDTO(holdbackWorkbook.getSheetAt(1));
                 holdbackWorkbook.close();
             }
 
