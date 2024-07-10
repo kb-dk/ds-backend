@@ -12,6 +12,14 @@
 
 # Sample configuration values below. Remove from concrete application
 
+
+#Enable auto refresh to enable refresh of encryption salt
+
+config:
+  autoupdate:
+    enabled: true
+    intervalms: 60000
+
 # Keycloak configuration
 keycloak:
   url: "https://keycloak-devel-01.kb.dk"
