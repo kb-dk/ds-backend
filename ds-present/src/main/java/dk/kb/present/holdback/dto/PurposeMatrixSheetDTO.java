@@ -21,8 +21,6 @@ public class PurposeMatrixSheetDTO {
     private final int NUMBER_OF_COLUMNS = 18; // Number of columns in the sheet
     private final List<List<String>> formNrValues = new ArrayList<>(NUMBER_OF_COLUMNS);
 
-
-
     public PurposeMatrixSheetDTO(XSSFSheet purposeMatrixSheet){
         // Initialize lists for each column
         for (int i = 0; i < NUMBER_OF_COLUMNS; i++) {
@@ -62,7 +60,6 @@ public class PurposeMatrixSheetDTO {
                     Cell cell = row.getCell(colIndex);
                     if (cell.getCellType() == CellType.NUMERIC){
                         formNrValues.get(colIndex).add(String.valueOf( (int) cell.getNumericCellValue()));
-
                     } else {
                         formNrValues.get(colIndex).add(cell.getStringCellValue());
                     }
@@ -77,7 +74,15 @@ public class PurposeMatrixSheetDTO {
             throw new InternalServiceException("There is a difference between amount of formNrs and formNrValues. Their respective sizes are: " + formNr.size() + " and " + formNrValues.size());
         }
 
-        //TODO: Add checks for different list sizes for all lists needed.
+        if (indholdTil.size() != indholdFra.size()){
+            throw new InternalServiceException("There is a difference between the sizes of the lists 'indholdTil' and 'indholdFra'. Their respective sizes are: " + indholdTil.size() + " and " + indholdFra.size());
+        }
+
+        for (List<String> list : formNrValues) {
+            if (list.size() != indholdFra.size()){
+                throw new InternalServiceException("There is a difference between the sizes of a list in the nested list 'formNrValues' and 'indholdFra'. Their respective sizes are: " + list.size() + " and " + indholdFra.size());
+            }
+        }
 
         log.info("Initialized PurposeMatrixSheet with the following values: \n" +
                 "           IndholdFra: {} \n" +

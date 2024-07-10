@@ -20,6 +20,9 @@ public class PurposeSheetDTO {
         for (Row row : purposeSheet) {
             purposeMap.put(row.getCell(1).getStringCellValue(), row.getCell(2).getStringCellValue());
         }
+
+        log.info("Initialized PurposeSheet with the following value: \n" +
+                "           PurposeMap: {}", purposeMap);
     }
 
     /**

@@ -6,9 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HoldbackSheetDTO {
@@ -17,7 +15,7 @@ public class HoldbackSheetDTO {
     /**
      * A Map containing purposeNames as keys and days of holdback as values.
      */
-    Map<String, Integer> holdbackForPurpose = new HashMap<>();
+    Map<String, Integer> holdbackDaysForPurpose = new HashMap<>();
 
 
 
@@ -27,9 +25,12 @@ public class HoldbackSheetDTO {
                 // Add holdback days to list
                 String purposeName = getPurposeName(row);
                 int holdbackDays = (int) row.getCell(4).getNumericCellValue();
-                holdbackForPurpose.put(purposeName, holdbackDays);
+                holdbackDaysForPurpose.put(purposeName, holdbackDays);
             }
         }
+
+        log.info("Initialized HoldbackSheet with the following values: \n" +
+                "           holdbackDaysForPurpose: {}", holdbackDaysForPurpose);
     }
 
     /**
@@ -58,7 +59,7 @@ public class HoldbackSheetDTO {
      * @return amount of holdback days.
      */
     public int getHoldbackDaysForPurpose(String purpose) {
-        for (Map.Entry<String, Integer> entry : holdbackForPurpose.entrySet()) {
+        for (Map.Entry<String, Integer> entry : holdbackDaysForPurpose.entrySet()) {
             if (purpose.equals(entry.getKey())){
                 return entry.getValue();
             }
