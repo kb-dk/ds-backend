@@ -1,5 +1,0 @@
-secretSalt: "anotherverysecretsalt"
-
-config:
-  autoupdate:
-    enabled: false

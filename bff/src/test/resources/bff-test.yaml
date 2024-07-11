@@ -3,7 +3,6 @@ keycloak:
   realm: "ds-poc"
   clientID: "bff-poc"
   secret: ""
-secretSalt: "thisisaverysecretsalt"
 
 config:
   autoupdate:
