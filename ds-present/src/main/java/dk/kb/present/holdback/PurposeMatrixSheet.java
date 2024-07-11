@@ -136,7 +136,24 @@ public class PurposeMatrixSheet {
         StringBuilder builder = new StringBuilder();
 
         for (List<String> formValue : formNrValues) {
-            builder.append("\n").append(formValue).append(",");
+            List<String> prettyList = new ArrayList<>();
+
+            for (String value : formValue) {
+                if (value.length() == 7 ){
+                    prettyList.add(value);
+                } else {
+                    StringBuilder prettyBuilder = new StringBuilder();
+                    int spacesToAdd = 7 - value.length();
+
+                    prettyBuilder.append(" ".repeat(spacesToAdd));
+                    prettyBuilder.append(value);
+
+                    prettyList.add(prettyBuilder.toString());
+
+                }
+            }
+
+            builder.append("\n").append(prettyList).append(",");
         }
 
         return builder.toString();
