@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Changed how the solr field creator_affiliation_facet is constructed.
 
 ## [1.9.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.3) 2024-07-03
 ### Changed
