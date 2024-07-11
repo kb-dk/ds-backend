@@ -424,12 +424,17 @@
       </xsl:if>
 
       <!-- Extract aspect ratio-->
-      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio') != ''">
+      <xsl:if test="$schemaorg-xml('videoFrameSize')">
+        <f:string key="aspect_ratio">
+          <xsl:value-of select="$schemaorg-xml('videoFrameSize')"/>
+        </f:string>
+      </xsl:if>
+      <!--<xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio') != ''">
         <f:string key="aspect_ratio">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio')"/>
         </f:string>
       </xsl:if>
-
+-->
       <!-- Extract boolean for live broadcast -->
       <xsl:if test="f:exists($schemaorg-xml('publication'))">
         <xsl:if test="f:exists($schemaorg-xml('publication')('isLiveBroadcast'))">

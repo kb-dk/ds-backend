@@ -130,6 +130,13 @@
           <xsl:if test="//pbcoreInstantiation/formatStandard != ''">
             <f:string key="videoQuality"><xsl:value-of select="//pbcoreInstantiation/formatStandard"/></f:string>
           </xsl:if>
+
+          <!-- Extract aspect ratio-->
+          <xsl:if test="$pbCore/pbcoreInstantiation/formatAspectRatio">
+            <f:string key="videoFrameSize">
+              <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
+            </f:string>
+          </xsl:if>
         </xsl:for-each>
 
         <!-- Extract manifestation -->
@@ -824,13 +831,6 @@
        aspect_ratio and color.-->
   <xsl:template name="internal-video-fields">
     <xsl:param name="pbCore"/>
-    <!-- Extract aspect ratio-->
-    <xsl:if test="$pbCore/pbcoreInstantiation/formatAspectRatio">
-      <f:string key="kb:aspect_ratio">
-        <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
-      </f:string>
-    </xsl:if>
-
     <!-- Create boolean for color for tv resources-->
     <xsl:choose>
       <xsl:when test="$pbCore/pbcoreInstantiation/formatColors = 'farve'">

@@ -307,10 +307,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertTrue(transformedJSON.contains("\"kb:genre_sub\":\"Alle\""));
     }
     @Test
-    void testInternalAspectRatio() throws IOException {
+    void testAspectRatio() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
 
-        Assertions.assertTrue(transformedJSON.contains("\"kb:aspect_ratio\":\"16:9\""));
+        Assertions.assertTrue(transformedJSON.contains("\"videoFrameSize\":\"16:9\""));
     }
     @Test
     void testInternalSubtitlesAndTeletext() throws IOException {
