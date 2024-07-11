@@ -27,7 +27,7 @@ imageservers:
   # Note: The servers are in a list to ensure the full list of servers can be fully overwritten in subsequent configs
   - example:
       url: "https://example.com"
-
+      default: true 
   - invalid:
       url: "invalid://url"
       # The default is commented out here to force defining a default for a real imageserver in the local, devel or prod config
