@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Object representing an Excel sheet containing values used to calculate purpose from a 'formNr' from {@link FormIndexSheet}.
+ * and 'content' from metadata record.
+ */
 public class PurposeMatrixSheet {
     private static final Logger log = LoggerFactory.getLogger(PurposeMatrixSheet.class);
 

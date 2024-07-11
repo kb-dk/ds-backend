@@ -15,9 +15,6 @@ import dk.kb.util.MalformedIOException;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -57,13 +54,10 @@ public class HoldbackDatePicker {
     private static FormIndexSheet formIndexSheet;
 
     /**
-     * Excel sheet containing table to find PurposeID in based on Content and FormNr.
-     */
-    private static XSSFSheet purposeMatrixSheetOld;
-    /**
      * Object representing an Excel sheet containing table to find PurposeID in based on Content and FormNr.
      */
     private static PurposeMatrixSheet purposeMatrixSheet;
+
     /**
      * Object representing an Excel sheet containing table to find PurposeName in based on PurposeID
      */

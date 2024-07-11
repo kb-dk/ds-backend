@@ -11,9 +11,11 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Object representing an Excel sheet containing values used to calculate FormNr from a 'form' value in metadata from record.
+ */
 public class FormIndexSheet {
     private static final Logger log = LoggerFactory.getLogger(FormIndexSheet.class);
-
 
     private List<String> formNr = new ArrayList<>();
     private List<Integer> formFra = new ArrayList<>();

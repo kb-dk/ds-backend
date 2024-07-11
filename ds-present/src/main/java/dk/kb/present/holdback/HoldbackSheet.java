@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Object representing an Excel sheet containing values used to calculate amount of holdback days from value extracted
+ * from {@link PurposeSheet}.
+ */
 public class HoldbackSheet {
     private static final Logger log = LoggerFactory.getLogger(HoldbackSheet.class);
 

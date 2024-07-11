@@ -1,7 +1,7 @@
 package dk.kb.present.holdback;
 
 /**
- * Data transfer object which contains holdback information for a preservica record.
+ * Data which contains holdback information for a preservica record.
  * The object contains the following values:
  * <ul>
  *     <li>holdbackDate: Until this date, the record is not available.</li>

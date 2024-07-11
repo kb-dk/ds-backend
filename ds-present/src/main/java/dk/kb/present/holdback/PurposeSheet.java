@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Object representing an Excel sheet containing values used to calculate purposeName from a 'purposeId' value extracted
+ * in {@link PurposeMatrixSheet}.
+ */
 public class PurposeSheet {
     private static final Logger log = LoggerFactory.getLogger(PurposeSheet.class);
 
