@@ -800,15 +800,20 @@
     </xsl:for-each>
 
     <!-- Extracts information on video padding. -->
-    <xsl:if test="/XIP/Metadata/Content/padding:padding/paddingSeconds">
-      <f:number key="kb:padding_seconds">
-        <xsl:value-of select="/XIP/Metadata/Content/padding:padding/paddingSeconds"/>
-      </f:number>
-    </xsl:if>
+    <xsl:for-each select="/XIP/Metadata/Content/padding:padding/paddingSeconds">
+      <xsl:if test="position() = 1">
+        <f:number key="kb:padding_seconds">
+          <xsl:value-of select="."/>
+        </f:number>
+      </xsl:if>
+    </xsl:for-each>
+
 
     <!-- Extracts access metadata to the internal kb map -->
     <xsl:for-each select="/XIP/Metadata/Content/access:access">
-      <xsl:call-template name="access-template"/>
+      <xsl:if test="position() = 1">
+        <xsl:call-template name="access-template"/>
+      </xsl:if>
     </xsl:for-each>
 
     <!-- Extracts information on the structure of the video component. -->

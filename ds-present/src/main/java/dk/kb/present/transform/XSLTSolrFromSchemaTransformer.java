@@ -1,9 +1,11 @@
 package dk.kb.present.transform;
 
+import dk.kb.present.config.ServiceConfig;
 import net.sf.saxon.TransformerFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -54,15 +56,19 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
     }
 
     @Override
-    public synchronized String apply(String s, Map<String, String> metadata) {
+    public String apply(String s, Map<String, String> metadata) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            transformer.clearParameters();
+            Transformer transformer = templates.newTransformer();
             if (fixedInjections != null) {
                 fixedInjections.forEach(transformer::setParameter);
             }
             transformer.setParameter("schemaorgjson", s);
             metadata.forEach(transformer::setParameter);
 
+            if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+                semaphore.acquire();
+            }
+            log.debug("Starting transformation");
             transformer.transform(new StreamSource(new ByteArrayInputStream(placeholderXml.getBytes(StandardCharsets.UTF_8))),
                                   new StreamResult(out));
 
@@ -70,6 +76,13 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
         } catch (IOException | TransformerException e) {
             throw new RuntimeTransformerException(
                     "Exception transforming with stylesheet '" + stylesheet + "' and metadata '" + metadata + "'", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            log.debug("transformation done");
+            if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+                semaphore.release();
+            }
         }
     }
 }

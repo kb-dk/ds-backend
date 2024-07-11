@@ -1,6 +1,9 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
+import dk.kb.present.config.ServiceConfig;
+import dk.kb.util.Resolver;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.*;
@@ -28,6 +31,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class XSLTTransformerTest {
     public static final String MODS2JSONLD = "xslt/mods2schemaorg.xsl";
     public static final String MODS2SOLR = "xslt/mods2solr.xsl";
+
+    @BeforeAll
+    public static void fixConfiguration() throws IOException {
+        ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
+    }
 
     @Test
     void testIDInjection() throws IOException {

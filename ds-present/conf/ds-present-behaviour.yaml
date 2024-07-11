@@ -190,3 +190,8 @@ holdback:
   #          transformers:
   #            - xslt:
   #                stylesheet: 'xslt/mods2solr.xsl'
+
+#
+# Limit the number of concurrent executions of xslt transformations
+transformations:
+  threads: 3

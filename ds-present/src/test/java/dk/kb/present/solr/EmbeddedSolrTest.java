@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -78,7 +79,9 @@ public class EmbeddedSolrTest {
     public static final String PRESERVICA2SOLR = "xslt/preservica2solr.xsl";
 
     @BeforeAll
-    public static void startEmbeddedSolrServer() {
+    public static void startEmbeddedSolrServer() throws IOException {
+
+        ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
 
         File solrHomeDir = new File(solr_home);
         String solrHomeAbsoluteDir= solrHomeDir.getAbsolutePath();

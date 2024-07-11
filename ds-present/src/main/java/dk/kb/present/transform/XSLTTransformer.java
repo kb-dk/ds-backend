@@ -14,6 +14,7 @@
  */
 package dk.kb.present.transform;
 
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 /**
  * XSLT transformer using Saxon HE 3.
@@ -41,14 +43,20 @@ public class XSLTTransformer implements DSTransformer {
 
     public static final TransformerFactory transformerFactory;
 
+    protected static final Semaphore semaphore;
+    protected static final boolean useSemaphore;
+
     static {
         System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
         transformerFactory = TransformerFactory.newInstance();
         // Ignoring base as it is always null in the ds-present code
         transformerFactory.setURIResolver((href, base) -> new StreamSource(Resolver.resolveStream(href)));
+
+        useSemaphore =  ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0;
+        semaphore = new Semaphore(ServiceConfig.getConfig().getInteger("transformations.threads",0));
     }
     public final String stylesheet;
-    public final Transformer transformer;
+    public final Templates templates;
     public final Map<String, String> fixedInjections;
 
     /**
@@ -69,7 +77,7 @@ public class XSLTTransformer implements DSTransformer {
             throw new FileNotFoundException("Unable to resolve stylesheet '" + stylesheet + "'");
         }
         try (InputStream is = stylesheetURL.openStream()) {
-            transformer = transformerFactory.newTransformer(new StreamSource(is));
+            templates = transformerFactory.newTemplates(new StreamSource(is));
         } catch (IOException e) {
             throw new IOException("Unable to retrieve stylesheet from '" + stylesheet + "'", e);
         } catch (TransformerConfigurationException e) {
@@ -89,20 +97,32 @@ public class XSLTTransformer implements DSTransformer {
     }
 
     @Override
-    public synchronized String apply(String s, Map<String, String> metadata) {
+    public String apply(String s, Map<String, String> metadata) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Transformer transformer = templates.newTransformer();
             try (Reader in = new StringReader(s)) {
-                transformer.clearParameters();
                 if (fixedInjections != null) {
                     fixedInjections.forEach(transformer::setParameter);
                 }
                 metadata.forEach(transformer::setParameter);
+
+                if (useSemaphore) {
+                    semaphore.acquire();
+                }
+                log.debug("Starting transformation");
                 transformer.transform(new StreamSource(in), new StreamResult(out));
             }
             return out.toString(StandardCharsets.UTF_8);
         } catch (IOException | TransformerException e) {
             throw new RuntimeTransformerException(
                     "Exception transforming with stylesheet '" + stylesheet + "' and metadata '" + metadata + "'", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            log.debug("transformation done");
+            if (useSemaphore) {
+                semaphore.release();
+            }
         }
     }
 

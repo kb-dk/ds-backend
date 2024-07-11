@@ -171,8 +171,15 @@
 
           <xsl:if test="not(f:empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName'))) and
                         my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName') != ''">
-            <f:string key="creator_affiliation">
+
+            <xsl:variable name="creatorAffiliation">
               <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn',  'broadcastDisplayName')"/>
+            </xsl:variable>
+            <f:string key="creator_affiliation">
+              <xsl:value-of select="$creatorAffiliation"/>
+            </f:string>
+            <f:string key="creator_affiliation_facet">
+              <xsl:value-of select="upper-case($creatorAffiliation)"/>
             </f:string>
           </xsl:if>
 

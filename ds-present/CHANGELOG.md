@@ -6,9 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Changed how the solr field creator_affiliation_facet is constructed.
 
+## [1.9.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.3) 2024-07-03
+### Changed
+- Changed how duplicate metadata fragments are handled in XSLT transformers.
 
-## [1.9.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.1) 2024-07-01
+## [1.9.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.2) 2024-07-01
 ### Changed
 - Bumped solr-config to v.1.6.8
 

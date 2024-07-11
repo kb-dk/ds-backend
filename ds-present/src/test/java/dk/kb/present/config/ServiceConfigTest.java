@@ -92,4 +92,5 @@ class ServiceConfigTest {
                         getString("transformers[1].xslt.injections[0].imageserver"),
                 "Requesting path substituted values from a sub map should work on a newly loaded config");
     }
+
 }

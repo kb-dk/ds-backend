@@ -15,12 +15,16 @@
 package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.util.TestFileProvider;
+import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
+import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +40,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class XSLTTransformerTestBase {
 
     private static final Logger log = LoggerFactory.getLogger(XSLTTransformerTestBase.class);
+
+    @BeforeAll
+    public static void fixConfiguration() throws IOException {
+        ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
+    }
 
     /**
      * @return the XSLT used for all tests.

@@ -2,7 +2,9 @@ package dk.kb.present.transform;
 
 import dk.kb.present.PresentFacade;
 import dk.kb.present.TestUtil;
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -14,6 +16,11 @@ public class XSLTDocumentationExtractorTest {
 
     public static final String SCHEMA2DOC = "xslt/schema2markdown.xsl";
     public static final String SCHEMA = "target/solr/dssolr/conf/schema.xml";
+
+    @BeforeAll
+    public static void fixConfiguration() throws IOException {
+        ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
+    }
 
     @Test
     public void testExtractionOfProcessingInstruction() throws IOException {
