@@ -1,4 +1,4 @@
-package dk.kb.present.holdback.dto;
+package dk.kb.present.holdback;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -8,15 +8,15 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PurposeSheetDTO {
-    private static final Logger log = LoggerFactory.getLogger(PurposeSheetDTO.class);
+public class PurposeSheet {
+    private static final Logger log = LoggerFactory.getLogger(PurposeSheet.class);
 
     /**
      * Map containing purposes. Keys are Purpose IDs and values are purposeNames.
      */
     private Map<String, String> purposeMap = new HashMap<>();
 
-    public PurposeSheetDTO(XSSFSheet purposeSheet){
+    public PurposeSheet(XSSFSheet purposeSheet){
         for (Row row : purposeSheet) {
             purposeMap.put(row.getCell(1).getStringCellValue(), row.getCell(2).getStringCellValue());
         }

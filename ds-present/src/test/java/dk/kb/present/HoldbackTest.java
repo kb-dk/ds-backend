@@ -1,7 +1,7 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.holdback.HoldbackDTO;
+import dk.kb.present.holdback.HoldbackObject;
 import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
@@ -91,10 +91,10 @@ public class HoldbackTest {
 
     @Test
     public void radioHoldbackTest() throws IOException {
-        HoldbackDTO holdbackDTO =  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(radioRecord1);
+        HoldbackObject holdbackObject =  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(radioRecord1);
 
-        assertEquals("2021-04-03T08:03:00Z", holdbackDTO.getHoldbackDate());
-        assertEquals("", holdbackDTO.getHoldbackPurposeName());
+        assertEquals("2021-04-03T08:03:00Z", holdbackObject.getHoldbackDate());
+        assertEquals("", holdbackObject.getHoldbackPurposeName());
     }
 
     /*@Test

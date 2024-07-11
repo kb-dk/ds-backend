@@ -9,7 +9,7 @@ package dk.kb.present.holdback;
  *                              the kind of material.</li>
  * </ul>
  */
-public class HoldbackDTO {
+public class HoldbackObject {
     private String holdbackDate;
     private String holdbackPurposeName;
 

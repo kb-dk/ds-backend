@@ -1,4 +1,4 @@
-package dk.kb.present.holdback.dto;
+package dk.kb.present.holdback;
 
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -11,15 +11,15 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FormIndexSheetDTO {
-    private static final Logger log = LoggerFactory.getLogger(FormIndexSheetDTO.class);
+public class FormIndexSheet {
+    private static final Logger log = LoggerFactory.getLogger(FormIndexSheet.class);
 
 
     private List<String> formNr = new ArrayList<>();
     private List<Integer> formFra = new ArrayList<>();
     private List<Integer> formTil = new ArrayList<>();
 
-    public FormIndexSheetDTO(XSSFSheet formIndexSheet){
+    public FormIndexSheet(XSSFSheet formIndexSheet){
 
         for (Row row: formIndexSheet) {
             if (row.getRowNum() != 0){

@@ -1,4 +1,4 @@
-package dk.kb.present.holdback.dto;
+package dk.kb.present.holdback;
 
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.poi.ss.usermodel.Row;
@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HoldbackSheetDTO {
-    private static final Logger log = LoggerFactory.getLogger(HoldbackSheetDTO.class);
+public class HoldbackSheet {
+    private static final Logger log = LoggerFactory.getLogger(HoldbackSheet.class);
 
     /**
      * A Map containing purposeNames as keys and days of holdback as values.
@@ -19,7 +19,7 @@ public class HoldbackSheetDTO {
 
 
 
-    public HoldbackSheetDTO(XSSFSheet holdbackSheet) {
+    public HoldbackSheet(XSSFSheet holdbackSheet) {
         for (Row row : holdbackSheet) {
             if (row.getRowNum() != 0){
                 // Add holdback days to list
@@ -55,7 +55,7 @@ public class HoldbackSheetDTO {
     /**
      * From a purposeName, get the amount of days which the program should be held back.
      * This is looked up in the DR provided holdback sheet.
-     * @param purpose purposeName from {@link PurposeSheetDTO} to lookup.
+     * @param purpose purposeName from {@link PurposeSheet} to lookup.
      * @return amount of holdback days.
      */
     public int getHoldbackDaysForPurpose(String purpose) {

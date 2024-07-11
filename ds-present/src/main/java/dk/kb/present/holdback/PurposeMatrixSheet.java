@@ -1,4 +1,4 @@
-package dk.kb.present.holdback.dto;
+package dk.kb.present.holdback;
 
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class PurposeMatrixSheetDTO {
-    private static final Logger log = LoggerFactory.getLogger(PurposeMatrixSheetDTO.class);
+public class PurposeMatrixSheet {
+    private static final Logger log = LoggerFactory.getLogger(PurposeMatrixSheet.class);
 
     private List<Integer> indholdFra = new ArrayList<>();
     private List<Integer> indholdTil = new ArrayList<>();
@@ -21,7 +21,7 @@ public class PurposeMatrixSheetDTO {
     private final int NUMBER_OF_COLUMNS = 18; // Number of columns in the sheet
     private final List<List<String>> formNrValues = new ArrayList<>(NUMBER_OF_COLUMNS);
 
-    public PurposeMatrixSheetDTO(XSSFSheet purposeMatrixSheet){
+    public PurposeMatrixSheet(XSSFSheet purposeMatrixSheet){
         // Initialize lists for each column
         for (int i = 0; i < NUMBER_OF_COLUMNS; i++) {
             formNrValues.add(new ArrayList<>());
@@ -96,7 +96,7 @@ public class PurposeMatrixSheetDTO {
      * Get PurposeID from provided Content and FormNr.
      *
      * @param content a four-digit number extracted from the XML, which holdback is being calculated for.
-     * @param formNrString a string of the format: 'FormX' where x has been resolved through {@link FormIndexSheetDTO#getFormNr(String)}
+     * @param formNrString a string of the format: 'FormX' where x has been resolved through {@link FormIndexSheet#getFormNr(String)}
      * @return a PurposeID most likely in the format x.xx: An example could be the string '2.02'.
      */
     public String getPurposeIdFromContentAndForm(String content, String formNrString) {

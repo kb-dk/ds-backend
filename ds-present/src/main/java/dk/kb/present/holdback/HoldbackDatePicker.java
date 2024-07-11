@@ -8,17 +8,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.holdback.dto.FormIndexSheetDTO;
-import dk.kb.present.holdback.dto.HoldbackSheetDTO;
-import dk.kb.present.holdback.dto.PurposeMatrixSheetDTO;
-import dk.kb.present.holdback.dto.PurposeSheetDTO;
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -59,7 +54,7 @@ public class HoldbackDatePicker {
     /**
      * Object representing values from an Excel sheet containing table to find FormNr in based on Form from the XML.
      */
-    private static FormIndexSheetDTO formIndexSheet;
+    private static FormIndexSheet formIndexSheet;
 
     /**
      * Excel sheet containing table to find PurposeID in based on Content and FormNr.
@@ -68,16 +63,16 @@ public class HoldbackDatePicker {
     /**
      * Object representing an Excel sheet containing table to find PurposeID in based on Content and FormNr.
      */
-    private static PurposeMatrixSheetDTO purposeMatrixSheet;
+    private static PurposeMatrixSheet purposeMatrixSheet;
     /**
      * Object representing an Excel sheet containing table to find PurposeName in based on PurposeID
      */
-    private static PurposeSheetDTO purposeSheet;
+    private static PurposeSheet purposeSheet;
 
     /**
      * Object representing an Excel sheet containing table to find holdback days for a given purpose.
      */
-    private static HoldbackSheetDTO holdbackSheet;
+    private static HoldbackSheet holdbackSheet;
 
     private static SAXParserFactory factory;
 
@@ -101,8 +96,8 @@ public class HoldbackDatePicker {
      * @return a string containing the date for when the holdback for the record has expired.
      *         In the format: yyyy-MM-ddTHH:mm:ssZ
      */
-    public HoldbackDTO getHoldbackDateForRecord(DsRecordDto record) throws IOException {
-        HoldbackDTO result = new HoldbackDTO();
+    public HoldbackObject getHoldbackDateForRecord(DsRecordDto record) throws IOException {
+        HoldbackObject result = new HoldbackObject();
         if (record.getOrigin() == null){
             log.error("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without values.");
             result.setHoldbackPurposeName("");
@@ -129,9 +124,9 @@ public class HoldbackDatePicker {
      * @param result holdbackDTO object, which the calculated holdback date is added to. This will never contain a value
      *               for {@code holdbackPurposeName} as these are not present for radio records.
      *
-     * @return the updated HoldbackDTO.
+     * @return the updated HoldbackObject.
      */
-    private HoldbackDTO getHoldbackForRadioRecord(DsRecordDto record, HoldbackDTO result) throws IOException {
+    private HoldbackObject getHoldbackForRadioRecord(DsRecordDto record, HoldbackObject result) throws IOException {
         if (record.getData() == null){
             throw new RuntimeException("Record with ID: '" + record.getId() + "' does not contain data");
         }
@@ -151,7 +146,7 @@ public class HoldbackDatePicker {
      * @param result holdbackDTO containing the purposeName and the holdbackDate for a record.
      * @return the result object with updated values.
      */
-    private static HoldbackDTO getHoldbackForTvRecord(DsRecordDto record, HoldbackDTO result) throws IOException {
+    private static HoldbackObject getHoldbackForTvRecord(DsRecordDto record, HoldbackObject result) throws IOException {
         if (record.getData() == null){
             throw new RuntimeException("Record with ID: '" + record.getId() + "' does not contain data");
         }
@@ -229,7 +224,7 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Validate and handle special cases of IDs constructed by {@link PurposeMatrixSheetDTO#getPurposeIdFromContentAndForm(String, String)}.
+     * Validate and handle special cases of IDs constructed by {@link PurposeMatrixSheet#getPurposeIdFromContentAndForm(String, String)}.
      * @param purposeId which is to be validated.
      * @param xml of the preservica record. Needs to be included here when validating against values from it.
      * @return an updated PurposeID
@@ -259,10 +254,10 @@ public class HoldbackDatePicker {
             try (FileInputStream purposeExcel = new FileInputStream(Resolver.resolveURL(purposeSheetPath).getPath())) {
                 purposeWorkbook = new XSSFWorkbook(purposeExcel);
 
-                formIndexSheet = new FormIndexSheetDTO(purposeWorkbook.getSheetAt(0));
+                formIndexSheet = new FormIndexSheet(purposeWorkbook.getSheetAt(0));
 
-                purposeMatrixSheet = new PurposeMatrixSheetDTO(purposeWorkbook.getSheetAt(1));
-                purposeSheet = new PurposeSheetDTO(purposeWorkbook.getSheetAt(2));
+                purposeMatrixSheet = new PurposeMatrixSheet(purposeWorkbook.getSheetAt(1));
+                purposeSheet = new PurposeSheet(purposeWorkbook.getSheetAt(2));
                 purposeWorkbook.close();
             }
 
@@ -270,7 +265,7 @@ public class HoldbackDatePicker {
             XSSFWorkbook holdbackWorkbook;
             try (FileInputStream holdbackExcel = new FileInputStream(Resolver.resolveURL(holdbackSheetPath).getPath())) {
                 holdbackWorkbook = new XSSFWorkbook(holdbackExcel);
-                holdbackSheet = new HoldbackSheetDTO(holdbackWorkbook.getSheetAt(1));
+                holdbackSheet = new HoldbackSheet(holdbackWorkbook.getSheetAt(1));
                 holdbackWorkbook.close();
             }
 

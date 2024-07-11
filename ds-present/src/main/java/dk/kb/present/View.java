@@ -14,7 +14,7 @@
  */
 package dk.kb.present;
 
-import dk.kb.present.holdback.HoldbackDTO;
+import dk.kb.present.holdback.HoldbackObject;
 import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
@@ -213,10 +213,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      */
     private void updateMetadataMapWithHoldback(DsRecordDto record, Map<String, String> metadata) {
         try {
-            HoldbackDTO holdbackDTO = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(record);
+            HoldbackObject holdbackObject = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(record);
 
-            metadata.put("holdbackDate", holdbackDTO.getHoldbackDate());
-            metadata.put("holdbackPurposeName", holdbackDTO.getHoldbackPurposeName());
+            metadata.put("holdbackDate", holdbackObject.getHoldbackDate());
+            metadata.put("holdbackPurposeName", holdbackObject.getHoldbackPurposeName());
         } catch (IOException e) {
             log.warn("An IOException occurred during holdback calculation for record: '{}'.", record.getId());
             throw new RuntimeException(e);
