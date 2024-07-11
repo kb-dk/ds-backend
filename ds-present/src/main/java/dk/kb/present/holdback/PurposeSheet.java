@@ -25,8 +25,7 @@ public class PurposeSheet {
             purposeMap.put(row.getCell(1).getStringCellValue(), row.getCell(2).getStringCellValue());
         }
 
-        log.info("Initialized PurposeSheet with the following value: \n" +
-                "           PurposeMap: {}", purposeMap);
+        log.info("Initialized PurposeSheet with the following value: \n{}", this);
     }
 
     /**
@@ -48,5 +47,12 @@ public class PurposeSheet {
 
         log.warn("No purposeName could be found for PurposeID: '{}'", purposeID);
         return "";
+    }
+
+    @Override
+    public String toString() {
+        return "PurposeSheet{" + "\n" +
+                " purposeMap=" + purposeMap +
+                '}';
     }
 }

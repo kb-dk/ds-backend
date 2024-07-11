@@ -61,9 +61,7 @@ public class FormIndexSheet {
 
 
         log.info("Initialized FormIndexSheet with the following values: \n" +
-                "           FormNr: {} \n" +
-                "           FormFra: {} \n" +
-                "           FormTil: {}", formNr, formFra, formTil);
+                this.toString());
     }
 
     /**
@@ -96,4 +94,12 @@ public class FormIndexSheet {
         return "";
     }
 
+    @Override
+    public String toString() {
+        return "FormIndexSheet{" + "\n" +
+                " formNr=" + formNr +
+                ",\n formFra=" + formFra +
+                ",\n formTil=" + formTil +
+                "\n}";
+    }
 }

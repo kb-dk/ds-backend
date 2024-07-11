@@ -33,8 +33,7 @@ public class HoldbackSheet {
             }
         }
 
-        log.info("Initialized HoldbackSheet with the following values: \n" +
-                "           holdbackDaysForPurpose: {}", holdbackDaysForPurpose);
+        log.info("Initialized HoldbackSheet with the following values: \n{}", this);
     }
 
     /**
@@ -71,5 +70,12 @@ public class HoldbackSheet {
 
         log.error("No holdback has been defined for purpose: '{}'.", purpose);
         throw new NotFoundServiceException("No holdback value cold be found for purpose: '" + purpose + "' in holdbackSheet.");
+    }
+
+    @Override
+    public String toString() {
+        return "HoldbackSheet{" + "\n" +
+                " holdbackDaysForPurpose=" + holdbackDaysForPurpose +
+                "\n}";
     }
 }

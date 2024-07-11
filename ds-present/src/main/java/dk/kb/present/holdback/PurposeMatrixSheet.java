@@ -32,6 +32,8 @@ public class PurposeMatrixSheet {
         }
 
         for (Row row : purposeMatrixSheet) {
+            validateNumberOfColumns(row);
+
             Cell indholdFraCell = row.getCell(1);
             Cell indholdTilCell = row.getCell(2);
 
@@ -88,12 +90,16 @@ public class PurposeMatrixSheet {
             }
         }
 
-        log.info("Initialized PurposeMatrixSheet with the following values: \n" +
-                "           IndholdFra: {} \n" +
-                "           IndholdTil: {} \n" +
-                "           FormNr: {} \n" +
-                "           FormNrValues: {}", indholdFra, indholdTil, formNr, prettyPrintFormValues());
+        log.info("Initialized PurposeMatrixSheet with the following values: \n {}", this);
 
+    }
+
+    private void validateNumberOfColumns(Row row) {
+        if (row.getRowNum() != 0 && row.getLastCellNum() != NUMBER_OF_COLUMNS){
+            throw new InternalServiceException("There is a difference between the amount of columns in the sheet and " +
+                    "the amounts expected. Expected amount of columns: '" + NUMBER_OF_COLUMNS +"'. Amount of columns: '" +
+                    row.getLastCellNum() + "' in row: '" + row.getRowNum() + "'.");
+        }
     }
 
     /**
@@ -130,9 +136,20 @@ public class PurposeMatrixSheet {
         StringBuilder builder = new StringBuilder();
 
         for (List<String> formValue : formNrValues) {
-            builder.append("\n              ").append(formValue);
+            builder.append("\n").append(formValue).append(",");
         }
 
         return builder.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "PurposeMatrixSheet{" + "\n" +
+                " indholdFra=" + indholdFra +
+                ",\n indholdTil=" + indholdTil +
+                ",\n formNr=" + formNr +
+                ",\n NUMBER_OF_COLUMNS=" + NUMBER_OF_COLUMNS +
+                ",\n formNrValues=" + prettyPrintFormValues() +
+                "\n}";
     }
 }
