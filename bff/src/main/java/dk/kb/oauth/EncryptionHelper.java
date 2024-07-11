@@ -39,10 +39,10 @@ public class EncryptionHelper {
     }
 
     /**
-     * Encrypt a string using AES and the configured secret salt
+     * Encrypt a string using the configured secret salt
      *
-     * @param plain the string to encrypt
-     * @return the encrypted string
+     * @param plain text to be encrypted (i.e. the value of the BFF cookie)
+     * @return The encrypted string base64 encoded
      */
     public static String encryptString(String plain) {
         try {
@@ -62,10 +62,10 @@ public class EncryptionHelper {
     }
 
     /**
-     * Decrypts an encrypted string
+     * Decrypts an encrypted string using the same encryption method as encrypt
      *
-     * @param encryptedString the string to decrypt
-     * @return the
+     * @param encryptedString base64 encoded encrypted String the string to decrypt
+     * @return the decrypted string.
      */
     public static String decryptString(String encryptedString){
         try {
