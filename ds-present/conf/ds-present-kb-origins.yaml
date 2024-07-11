@@ -14,7 +14,7 @@ pvicaviews: &PRESERVICA_VIEWS
         - identity:
   - JSON-LD:
       mime: 'application/json'
-      strategy: 'MANIFESTATION'
+      strategy: 'DR'
       transformers:
         - xslt:
             stylesheet: 'xslt/preservica2schemaorg.xsl'
@@ -24,7 +24,7 @@ pvicaviews: &PRESERVICA_VIEWS
               - old_imageserver: ${path:oldimageserver.url}
   - SolrJSON:
       mime: 'application/json'
-      strategy: 'MANIFESTATION'
+      strategy: 'DR'
       transformers:
         - xslt:
             stylesheet: 'xslt/preservica2schemaorg.xsl'

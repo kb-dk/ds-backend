@@ -13,6 +13,7 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
@@ -67,10 +68,13 @@ public class ContextListener implements ServletContextListener {
             String configFile = (String) ctx.lookup("java:/comp/env/application-config");
             //TODO this should not refer to something in template. Should we perhaps use reflection here?
             ServiceConfig.initialize(configFile);
+            // Early initialization of HoldbackDatePicker
+            HoldbackDatePicker.init();
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load settings", e);        } 
+            throw new RuntimeException("Failed to load settings", e);
+        }
         log.info("Service initialized.");
     }
 

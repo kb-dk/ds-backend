@@ -40,6 +40,9 @@ public class TestFiles {
     public static final String PVICA_RECORD_5238ea5d = "internal_test_files/preservica7/5238ea5d-9627-4b08-9a76-356dfb8bebd0.xml";
     public static final String PVICA_DOMS_MIG_bd612d1e = "internal_test_files/domsMigrated/bd612d1e-b90b-48f7-87ce-898da240950b-20240612T105945.xml";
     public static final String PVICA_DOMS_MIG_eaea0362 = "internal_test_files/domsMigrated/eaea0362-bbad-43ec-8d5e-07df6957923b-20240612T112310.xml";
+    public static final String PVICA_DOMS_MIG_9779a1b2 = "internal_test_files/domsMigrated/9779a1b2-88ff-408c-9352-ad614615b2e7-20240531T022942.xml";
+    public static final String PVICA_DOMS_MIG_9ed10d66 = "internal_test_files/domsMigrated/9ed10d66-4791-4390-8db9-bb0bed7aebcb-20240531T023244.xml";
+    public static final String PVICA_HOMEMADE_HOLDBACK_TEST_RECORD = "internal_test_files/homemade/badHoldbackFieldContents.xml";
 
     // From preservica 6, not in preservica 7 stage
     public static final String PVICA6_RECORD_00a9e71c = "internal_test_files/preservica6/00a9e71c-1264-4e57-9238-b38ec5672fb2.xml";
