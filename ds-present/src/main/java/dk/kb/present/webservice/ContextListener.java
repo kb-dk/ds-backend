@@ -73,7 +73,8 @@ public class ContextListener implements ServletContextListener {
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load settings", e);        } 
+            throw new RuntimeException("Failed to load settings", e);
+        }
         log.info("Service initialized.");
     }
 
