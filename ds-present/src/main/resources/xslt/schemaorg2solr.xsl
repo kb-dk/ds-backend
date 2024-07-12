@@ -582,6 +582,12 @@
       </f:string>
     </xsl:if>
 
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'countryOfOrigin', 'name') != ''">
+      <f:string key="country_of_origin">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'countryOfOrigin', 'name')"/>
+      </f:string>
+    </xsl:if>
+
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'countryOfOrigin', 'identifier') != ''">
       <f:string key="country_of_origin_id">
         <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'countryOfOrigin', 'identifier')"/>

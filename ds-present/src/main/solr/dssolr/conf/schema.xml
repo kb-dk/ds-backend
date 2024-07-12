@@ -732,8 +732,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     ?> <!-- TODO: figure if these IDs are always integers -->
   </field>
 
+  <field name="country_of_origin" type="string">
+    <?description The name of the country the resource has been created in.?>
+    <?example     Danmark?>
+  </field>
   <field name="country_of_origin_id" type="string">
-    <?description An ID which determines which contry the resource has been created in.?>
+    <?description An ID which determines which country the resource has been created in.?>
     <?example     0?>
   </field>
 
