@@ -224,7 +224,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testCountryOfOriginId(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_country_of_origin_id\":\"0\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"country_of_origin_id\":\"0\"");
     }
 
     @Test

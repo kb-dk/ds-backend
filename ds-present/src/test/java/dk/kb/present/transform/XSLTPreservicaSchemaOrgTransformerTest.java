@@ -347,6 +347,15 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
+    void testCountryOfOrigin() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
+
+        assertTrue(transformedJSON.contains("\"countryOfOrigin\":{" +
+                "\"@type\":\"Country\"," +
+                "\"identifier\":\"0\"}"));
+    }
+
+    @Test
     void testNoEmptyInternalMap() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda);
         Assertions.assertFalse(transformedJSON.contains("\"kb:internal\":{}"));

@@ -424,6 +424,19 @@
       </f:map>
     </xsl:if>
 
+    <!-- Create country of origin and add the identifier for the production country as text. -->
+    <xsl:for-each select="./pbcoreExtension/extension">
+      <xsl:if test="f:contains(. , 'produktionsland_id:')">
+        <f:map key="countryOfOrigin">
+          <f:string key="@type">Country</f:string>
+          <f:string key="identifier">
+            <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
+          </f:string>
+        </f:map>
+      </xsl:if>
+    </xsl:for-each>
+
+
     
     <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
     <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and ./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
