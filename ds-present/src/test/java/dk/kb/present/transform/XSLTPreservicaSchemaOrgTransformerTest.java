@@ -339,7 +339,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:maingenre_id\":\"1\"," +
                                                         "\"kb:channel_id\":3," +
-                                                        "\"kb:country_of_origin_id\":\"0\"," +
                                                         "\"kb:ritzau_program_id\":\"25101114\"" ));
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:format_identifier_ritzau\":\"81213310\"," +
@@ -389,6 +388,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testDomsEpisodeNumbers() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eaea0362);
+        prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"episodeNumber\":8,") && transformedJSON.contains("\"numberOfEpisodes\":24"));
     }
 

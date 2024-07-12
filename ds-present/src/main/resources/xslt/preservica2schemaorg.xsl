@@ -426,43 +426,36 @@
 
     <!-- Create boolean containing true, if either 'produktionsland' or 'produktionsland_id' is present in metadata. -->
     <xsl:variable name="produktionslandBoolean">
-      <xsl:for-each select="./pbcoreExtension/extension">
-        <xsl:if test="f:contains(., 'produktionsland:') or f:contains(., 'produktionsland_id:')">
-          <xsl:value-of select="f:true()"
-        </xsl:if>
-      </xsl:for-each>
+      <xsl:choose>
+        <xsl:when test="$pbcExtensions[f:contains(., 'produktionsland:') or f:contains(., 'produktionsland_id:')]">
+          <xsl:value-of select="f:true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:variable>
 
     <!-- Create country of origin and add the identifier for the production country as text. -->
     <xsl:if test="$produktionslandBoolean = f:true()">
       <f:map key="countryOfOrigin">
         <f:string key="@type">Country</f:string>
-
+        <xsl:for-each select="./pbcoreExtension/extension">
+          <xsl:choose>
+            <xsl:when test="f:contains(. , 'produktionsland:')">
+              <f:string key="name">
+                <xsl:value-of select="f:substring-after(. , 'produktionsland:')"/>
+              </f:string>
+            </xsl:when>
+            <xsl:when test="f:contains(. , 'produktionsland_id:')">
+              <f:string key="identifier">
+                <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
+              </f:string>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:for-each>
       </f:map>
     </xsl:if>
-
-    <xsl:for-each select="./pbcoreExtension/extension">
-      <xsl:choose>
-        <xsl:when test="f:contains(. , 'produktionsland:')">
-          <f:string key="name">
-            <xsl:value-of select="f:substring-after(. , 'produktionsland:')"/>
-          </f:string>
-        </xsl:when>
-        <xsl:when test="f:contains(. , 'produktionsland_id:')">
-          <f:string key="identifier">
-            <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
-          </f:string>
-        </xsl:when>
-      </xsl:choose>
-      <xsl:if test="f:contains(. , 'produktionsland_id:')">
-          <f:string key="identifier">
-            <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
-          </f:string>
-        </f:map>
-      </xsl:if>
-    </xsl:for-each>
-
-
     
     <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
     <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and ./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
