@@ -107,7 +107,7 @@ public class PresentFacadeTest {
         out.write(resultBytes);
         String result = resultBytes.toString(StandardCharsets.UTF_8);
         // Very primitive check just to see if something passes
-        assertTrue(result.contains("096c9090-717f-11e0-82d7-002185371280"), "Result should contain expected UUID");
+        assertTrue(result.contains("0b3f6a54-befa-4471-95c0-78bcb1de6300"), "Result should contain expected UUID");
     }
 
     @Test

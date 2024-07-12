@@ -56,7 +56,7 @@ pvicaviews: &PRESERVICA_VIEWS
         - identity: # No transformation steps as mods is the core format for images-dsfl
   - json-ld:
       mime: 'application/json'
-      strategy: 'MANIFESTATION'
+      strategy: 'DR'
       transformers:
         - xslt:
             stylesheet: 'xslt/preservica2schemaorg.xsl'
@@ -65,7 +65,7 @@ pvicaviews: &PRESERVICA_VIEWS
               - streamingserver: "here_should_be_a_wowza_url"
   - solrjson:
       mime: 'application/json'
-      strategy: 'MANIFESTATION'
+      strategy: 'DR'
       transformers:
         - xslt:
             stylesheet: 'xslt/preservica2schemaorg.xsl'
@@ -94,7 +94,7 @@ pvica5views: &PRESERVICA_VIEWS
         - identity: # No transformation steps as mods is the core format for images-dsfl
   - json-ld:
       mime: 'application/json'
-      strategy: 'MANIFESTATION'
+      strategy: 'DR'
       transformers:
         - xslt:
             stylesheet: 'xslt/preservica2schemaorg.xsl'
@@ -103,7 +103,7 @@ pvica5views: &PRESERVICA_VIEWS
               - streamingserver: "here_should_be_a_wowza_url"
   - solrjson:
       mime: 'application/json'
-      strategy: 'MANIFESTATION'
+      strategy: 'DR'
       transformers:
         - xslt:
             stylesheet: 'xslt/preservica2schemaorg.xsl'

@@ -53,6 +53,14 @@ licensemodule:
   url: http://localhost:9076/ds-license/v1
   allowall: false
 
+# Absolute paths to Excel sheets containing information used to calculate holdback periods from DR.
+# This value needs to be changed to the correct placement of the files. The placeholder value is resolved from classpath
+# when the files have been injected from aegis. However, full paths can be specified as well.
+holdback:
+  dr:
+    purposeSheet: 'internal_test_files/dr_formaalstabeller_20240704.xlsx'
+    holdbackSheet: 'internal_test_files/dr_holdbacktabel_20240704.xlsx'
+
 # List of backing storages.
 
 # The storages defined in this file are

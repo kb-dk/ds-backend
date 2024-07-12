@@ -14,6 +14,8 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.holdback.HoldbackObject;
+import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -23,21 +25,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 
 /**
@@ -50,12 +48,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private static final String MIME_KEY = "mime";
     private static final String TRANSFORMERS_KEY = "transformers";
     private static final String STRATEGY_KEY = "strategy";
-    /**
-     * Preservica manifestations can be of different types. Presentation manifestations are of type 2 and are the ones
-     * we want to extract through this pattern.
-     */
-    private static final Pattern PRESENTATION_MANIFESTATION_PATTERN = Pattern.compile(
-            "<ManifestationRelRef>2</ManifestationRelRef>");
 
     private final String id;
     private final String origin;
@@ -66,7 +58,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * Defines the strategy used to construct the wanted view of the resource.
      * Strategy can be one of the following: <br/>
      * {@link #NONE} <br/>
-     * {@link #MANIFESTATION5} <br/>
+     * {@link #DR} <br/>
+     * {@link #MANIFESTATION} <br/>
      */
     enum Strategy {
         /**
@@ -74,15 +67,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
          */
         NONE,
         /**
-         * Manifestation strategy, used when the metadata to transform is dependent on one or more manifestations. This
-         * strategy is oriented towards metadata from preservica 5 and expects the metadata to conform to the preservica 5
-         * datamodel, where data is divided between DeliverableUnits and Manifestations. The DeliverableUnit contains
-         * the metadata, while a manifestation contains metadata on a single representation of the resource described in
-         * the DeliverableUnit.
-         * This strategy injects a manifestation into the XSLT, which is then used as part of the transformation.
-         * The manifestation is needed to create streaming_urls for resources.
+         * DR strategy used when DR holdback is to be applied to the metadata records. This also applies the features
+         * from the MANIFESTATION strategy afterward.
          */
-        MANIFESTATION5,
+        DR,
         /**
          *  Manifestation strategy, used when the metadata to transform is dependent on one MANIFESTATION. This
          *  strategy is oriented towards metadata from preservica 7 and expects the metadata to conform to the preservica 7
@@ -141,11 +129,12 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         String content = record.getData();
 
         switch (strategy) {
+            case DR:
+                updateMetadataMapWithHoldback(record, metadata);
+                // IMPORTANT: No break here as MANIFESTATION strategy should also be applied.
             case MANIFESTATION:
-                updateMetadataMapWithPreservica7Manifestation(record, metadata);
+                updateMetadataMapWithPreservicaManifestation(record, metadata);
                 break;
-            case MANIFESTATION5:
-                updateMetadataMapWithPreservica5Manifestation(record, metadata);
             case NONE:
                 break;
             default:
@@ -205,27 +194,34 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Update the map of metadata with manifestation record from the deliverable unit contained in the input record.
-     * @param record with an expanded tree containing manifestation childs.
-     * @param metadata map that values from the record is extracted to.
-     */
-    private void updateMetadataMapWithPreservica5Manifestation(DsRecordDto record, Map<String, String> metadata) {
-        String child = getFirstPresentationManifestation(record);
-        if (!child.isEmpty()){
-            metadata.put("manifestation", child);
-        }
-    }
-
-    /**
      * Update the map of metadata with manifestation from the input {@link DsRecordDto}s referenceId.
      * @param record with a referenceId.
      * @param metadata map that values from the record is extracted to.
      */
-    private void updateMetadataMapWithPreservica7Manifestation(DsRecordDto record, Map<String, String> metadata) {
+    private void updateMetadataMapWithPreservicaManifestation(DsRecordDto record, Map<String, String> metadata) {
         String manifestationName = record.getReferenceId();
         if (!(manifestationName == null) && !manifestationName.isEmpty()){
             metadata.put("manifestation", manifestationName);
         }
+    }
+
+    /**
+     * Update the map of metadata with holdback values calculated from specific fields inside the content.
+     * @param record A DsStorage record containing a preservica XML record.
+     * @param metadata map, which holds values that are to be used in the XSLT transformation later on.
+     *                 Holdback values are added to this map.
+     */
+    private void updateMetadataMapWithHoldback(DsRecordDto record, Map<String, String> metadata) {
+        try {
+            HoldbackObject holdbackObject = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(record);
+
+            metadata.put("holdbackDate", holdbackObject.getHoldbackDate());
+            metadata.put("holdbackPurposeName", holdbackObject.getHoldbackPurposeName());
+        } catch (IOException e) {
+            log.warn("An IOException occurred during holdback calculation for record: '{}'.", record.getId());
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -239,72 +235,4 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
                ')';
     }
 
-    /**
-     * If record has children, the first presentation manifestation is returned.
-     * If record have not got children an empty string is returned.
-     * @param record to extract the newest presentation manifestation from.
-     * @return the data from the first presentation manifestation related to the input record.
-     */
-    private String getFirstPresentationManifestation(DsRecordDto record) {
-        // TODO: Figure how to choose correct manifestation for record, if more than one is present
-        // Return first child record of manifestation type = 2. If there are multiple presentation manifestations,
-        // the rest are currently not added to the transformation
-        List<String> presentationManifestations = record.getChildren() == null ? Collections.singletonList("") :
-                record.getChildren().stream()
-                        .map(this::getNonNullChild)
-                        .filter(this::isPresentationManifestation) // Filter not needed for Preservica 7
-                        .collect(Collectors.toList());
-
-        return returnPresentationManifestationFromList(presentationManifestations, record.getId());
-    }
-
-    /**
-     * Determine if the input preservica manifestation is a presentation manifestation by looking for the XML tag
-     * {@code ManifestationRelRef} with a value of 2. This filter should only be used for legacy Preservica 5.
-     * By looking at manifestation length it can be determined if it is a preservica 5 or 7 manifestation.
-     * @param preservicaManifestation content from a ds-storage record, which is a child of the current DeliverableUnit
-     *                                being processed.
-     * @return true if the given manifestation is a presentation manifestation, otherwise return false.
-     */
-    private boolean isPresentationManifestation(String preservicaManifestation) {
-        if (preservicaManifestation.length() > 42){
-            Matcher m = PRESENTATION_MANIFESTATION_PATTERN.matcher(preservicaManifestation);
-            return m.find();
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * Returns the first presentation manifestation for a record. If there are more than one presentation manifestation
-     * for the record a warning will be logged.
-     * @param presentationManifestations list of all presentation manifestations for a record
-     * @return the first presentation manifestation for a record.
-     */
-    private String returnPresentationManifestationFromList(List<String> presentationManifestations, String recordId) {
-        if (presentationManifestations == null || presentationManifestations.isEmpty()){
-            log.warn("No presentation manifestations were delivered from DS-storage as children for record: '{}'", recordId);
-            return "";
-        }
-
-        if (presentationManifestations.size() > 1) {
-            log.warn("Multiple presentation manifestations were present for record with id: '{}'. " +
-                    "Only the first has been returned", recordId);
-            return presentationManifestations.get(0);
-        }
-
-        return presentationManifestations.get(0);
-    }
-
-    /**
-     * Check for the data of the child being null.
-     * @param child record to check for data in.
-     * @return the data from child if child is not null. Otherwise, return an empty string.
-     */
-    private String getNonNullChild(DsRecordDto child) {
-        if (child.getData() == null){
-            return "";
-        }
-        return child.getData();
-    }
 }

@@ -32,6 +32,8 @@
   <xsl:param name="mTime"/>
   <!-- Access condition for DR material. Currently, this param contains a placeholder. -->
   <xsl:param name="conditionsOfAccess"/>
+  <xsl:param name="holdbackDate"/>
+  <xsl:param name="holdbackPurposeName"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
@@ -456,7 +458,7 @@
         </xsl:for-each>
       </f:map>
     </xsl:if>
-    
+
     <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
     <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and ./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
       <f:string key="datePublished">
@@ -862,12 +864,27 @@
     <xsl:for-each select="/XIP/Metadata/Content/program_structure:program_structure">
       <xsl:call-template name="program-structure"/>
     </xsl:for-each>
+
+    <!-- Holdback date included here. Holdback purpose is only included for video objects, therefor it is done in the
+          internal-video-fields template. -->
+    <xsl:if test="$holdbackDate != null or $holdbackDate != ''">
+      <f:string key="kb:holdback_date">
+        <xsl:value-of select="$holdbackDate"/>
+      </f:string>
+    </xsl:if>
   </xsl:template>
 
   <!-- Transforms internal fields, that are only present for tv/video metadata. These fields are:
        aspect_ratio and color.-->
   <xsl:template name="internal-video-fields">
     <xsl:param name="pbCore"/>
+
+    <xsl:if test="$holdbackPurposeName != null or $holdbackPurposeName != ''">
+      <f:string key="kb:holdback_name">
+        <xsl:value-of select="$holdbackPurposeName"/>
+      </f:string>
+    </xsl:if>
+
     <!-- Create boolean for color for tv resources-->
     <xsl:choose>
       <xsl:when test="$pbCore/pbcoreInstantiation/formatColors = 'farve'">

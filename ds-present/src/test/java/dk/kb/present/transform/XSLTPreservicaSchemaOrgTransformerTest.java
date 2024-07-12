@@ -101,8 +101,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void testIdentifiers() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
 
-        prettyPrintJson(transformedJSON);
-
         Assertions.assertTrue(transformedJSON.contains("\"identifier\":[{\"@type\":\"PropertyValue\",\"PropertyID\":\"Origin\",\"value\":\"ds.test\"}")
                 && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"ritzauId\",\"value\":\"926e730f-b3e6-44b9-aea7-a6ea27ec98ae\"}")
                 && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"RecordID\",\"value\":\"ds.test:e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml\"}")
@@ -404,9 +402,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
-    void testManifestationNameFromPreservica7() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+    public void testHoldbackFields() throws IOException {
+        Map<String, String> holdbackInjections = Map.of("holdbackDate", "2026-01-17T09:34:42Z",
+                                                        "holdbackPurposeName","Aktualitet og debat");
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eaea0362, holdbackInjections);
+        prettyPrintJson(transformedJSON);
 
+        assertTrue(transformedJSON.contains("\"kb:holdback_date\":\"2026-01-17T09:34:42Z\""));
+        assertTrue(transformedJSON.contains("\"kb:holdback_name\":\"Aktualitet og debat\""));
     }
 
     private static void printSchemaOrgJson(String xml) throws IOException {
