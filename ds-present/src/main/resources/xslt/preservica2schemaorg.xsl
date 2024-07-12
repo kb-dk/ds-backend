@@ -780,6 +780,11 @@
             <xsl:value-of select="formatIdentifier"/>
           </f:string>
         </xsl:when>
+        <xsl:when test="formatIdentifierSource = 'tvmeter'">
+          <f:string key="kb:format_identifier_tvmeter">
+            <xsl:value-of select="formatIdentifier"/>
+          </f:string>
+        </xsl:when>
       </xsl:choose>
     </xsl:for-each>
     <!--TODO: Figure if retransmission can fit into real schema.org -->
