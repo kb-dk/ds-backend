@@ -684,6 +684,12 @@ public class EmbeddedSolrTest {
         testStringValuePreservicaField(PVICA_DOMS_MIG_eaea0362, "holdback_name", "Aktualitet og debat");
     }
 
+    @Test
+    @Tag("integration")
+    void testKalturaId() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "kaltura_id", "aVeryTrueKalturaID");
+    }
+
     /*
      * ------- Private helper methods below --------------
      */

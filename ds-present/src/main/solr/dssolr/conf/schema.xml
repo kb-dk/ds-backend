@@ -38,8 +38,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.9: Change facet field type to uppercase all values.
 1.6.10: Add fields for holdback management
 1.6.11: Rename schema fields following feedback from metadata review.
+1.6.12: Add kaltura_id to schema.
   -->
-  <field name="_ds_1.6.10_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.12_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -634,6 +635,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="streaming_url" type="string">
     <?description An URL, where the resource can be streamed.?>
     <?example     www.example.com/streaming/bart-access-copies-tv/00/00/00/000000e1-0000-462a-a2b4-7488244fcca7/playlist.m3u8"?>
+  </field>
+
+  <field name="kaltura_id" type="string">
+    <?description An ID created by kaltura representing the access copy available et kaltura for the given record.?>
+    <?example 0_00abcdef?>
   </field>
 
   <field name="file_id" type="string">
