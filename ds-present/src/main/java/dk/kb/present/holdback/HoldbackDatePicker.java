@@ -93,7 +93,8 @@ public class HoldbackDatePicker {
     public HoldbackObject getHoldbackDateForRecord(DsRecordDto record) throws IOException {
         HoldbackObject result = new HoldbackObject();
         if (record.getOrigin() == null){
-            log.error("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without values.");
+            log.error("TVMeter origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without " +
+                    "values.");
             result.setHoldbackPurposeName("");
             result.setHoldbackDate("");
             return result;
