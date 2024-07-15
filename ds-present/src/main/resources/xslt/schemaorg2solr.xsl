@@ -437,12 +437,17 @@
       </xsl:if>
 
       <!-- Extract aspect ratio-->
-      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio') != ''">
+      <xsl:if test="$schemaorg-xml('videoFrameSize')">
+        <f:string key="aspect_ratio">
+          <xsl:value-of select="$schemaorg-xml('videoFrameSize')"/>
+        </f:string>
+      </xsl:if>
+      <!--<xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio') != ''">
         <f:string key="aspect_ratio">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio')"/>
         </f:string>
       </xsl:if>
-
+-->
       <!-- Extract boolean for live broadcast -->
       <xsl:if test="f:exists($schemaorg-xml('publication'))">
         <xsl:if test="f:exists($schemaorg-xml('publication')('isLiveBroadcast'))">
@@ -590,9 +595,15 @@
       </f:string>
     </xsl:if>
 
-    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:country_of_origin_id') != ''">
-      <f:string key="internal_country_of_origin_id">
-        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:country_of_origin_id')"/>
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'countryOfOrigin', 'name') != ''">
+      <f:string key="country_of_origin">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'countryOfOrigin', 'name')"/>
+      </f:string>
+    </xsl:if>
+
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'countryOfOrigin', 'identifier') != ''">
+      <f:string key="country_of_origin_id">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'countryOfOrigin', 'identifier')"/>
       </f:string>
     </xsl:if>
 

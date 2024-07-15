@@ -7,419 +7,444 @@
 <body>
 
 <h1>Overview of mapping for RadioTv collection</h1>
- Overview of mapping between fields from preservica.
- The XSLT Transformers created by the {@link dk.kb.present.transform.XSLTFactory} using XSLTs related to preservica
- metadata are connected in the following way:
- <table border="1">
-     	<caption>Mapping between preservica fields</caption>
-     	<thead>
- 	<tr>
-     		<th>Preservica OAI-PMH XML</th>
-     		<th>SolrDoc</th>
-     		<th>Schema.org JSON</th>
-     		<th>Comment</th>
-     	</tr>
- 	</thead>
-     	<tbody>
- 	<tr>
-     		<td></td>
-     		<td>id</td>
-     		<td>id or identifier/RecordID</td>
-     		<td>This ID is a DS-id, which is not present in preservica and is created from the name of the record in the
-     	       	preservica OAI-PMH harvest.</td>
-     	</tr>
- 	<tr>
-     		<td></td>
-     		<td>origin</td>
-     		<td>identifier/Origin</td>
-     		<td>Origin is not present in preservica. It is created from where the metadata originates from. In this case,
-     	        the Radio/TV collection.</td>
-     	</tr>
-	<tr>
-     		<td></td>
-     		<td>conditions_of_access</td>
-     		<td>conditionsOfAccess</td>
-     		<td>This field contains information on how the object can be accessed. It is not present in the original
-				metadata from Preservica but is added through the ds-present transformations. </td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreGenre/genre</td>
-     		<td>categories</td>
-     		<td>keywords</td>
-     		<td>All types of genres from preservica are present here.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreInstantiation/<br/>formatLocation</td>
-     		<td>collection</td>
-     		<td>isPartOf/Collection</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreGenre/genre</td>
-     		<td>genre</td>
-     		<td>genre</td>
-     		<td>Extracted from the field which contains 'hovedgenre:'</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreInstantiation/<br/>formatMediaType</td>
-     		<td>resource_description</td>
-     		<td>type</td>
-     		<td>A description of what the resource is, not what it represents or contains. e.g. video or image.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreTitle/title</td>
-     		<td>title</td>
-     		<td>name</td>
-     		<td>Is extracted when pbcoreTitle/titleType = 'titel'</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreTitle/title</td>
-     		<td>original_title</td>
-     		<td>alternateName</td>
-     		<td>Is extracted when pbcoreTitle/titleType = 'originaltitel'</td>
-     	</tr>
- 	<tr>
-     		<td>pbcorePublisher/<br/>publisherRole</td>
-     		<td>creator_affiliation</td>
-     		<td>publishedOn/broadcastDisplayName</td>
-     		<td>The solr field has the same name across collections.</td>
-     	</tr>
-	<tr>
-     		<td>pbcorePublisher/<br/>publisherRole</td>
-     		<td>creator_affiliation_generic</td>
-     		<td>publishedOn/alternateName</td>
-     		<td>This generic field contains a constant value across different names for the same channel.
-				An example could be the Danish radio channel DR P1, which has had different names as 'Program 1' and
-				'P1' at different times. The value in this field for any P1 record is 'drp1'.</td>
-     	</tr>
- 	<tr>
-     	    <td>pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart</td>
-     	    <td></td>
-     	    <td>datePublished</td>
-     	    <td>Is only extracted when the PBCore document contains the extension 'premiere' with the value premiere,
-     	        as this field only is to be created if it is the first time this resource has been shown. </td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreDescription</td>
-     		<td>notes</td>
-     		<td>Does not exist, the values are present in either 'abstract' or 'description'</td>
-     		<td>The notes field originates from the mods2solr XSLT and combines different metadata, which didn't have their
-     	        own field in the MODS standard. Descriptions from preservica are cramped into this field, however, they are
-     	        also extracted to their own fields 'abstract' for short description and 'description' for longer descriptions</td>
-     	</tr>
- 	<tr>
-     		<td>xip:Manifestation/<br/>ComponentManifestation/<br/>FileRef</td>
-     		<td>resource_id OR streaming_url</td>
-     		<td>contentUrl</td>
-     		<td>This id is not directly available in the DeliverableUnit from preservica, but originates from a manifestation.
-     	       	It is the ID of a presentation manifestation related to the DeliverableUnit. The connection between them is
-     	       	created in the backing DS-storage. Then the XSLT looks for the child and accesses it through its URI.
-     	       	Furthermore, there is a difference between the solr resource_id and the schema.org contentUrl. The first is
-     	       	just the ID, while the second is a full URL, to where the content can be accessed. To access the full streaming
-				url in the solr index you have to use the field streaming_url.
-			</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreTitle/title</td>
-     		<td>episode_title</td>
-     		<td>encodesCreativeWork/name</td>
-     		<td>Is extracted when pbcoreTitle/titleType = 'episodetitel'</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreIdentifier</td>
-     		<td>ritzau_id</td>
-     		<td>identifier/ritzauId</td>
-     		<td>Extracted from pbcoreIdentifier where identifierSource = 'ritzauId'</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreIdentifier</td>
-     		<td>tvmeter_id</td>
-     		<td>identifier/tvmeterId</td>
-     		<td>Extracted from pbcoreIdentifier where identifierSource = 'tvmeterId'</td>
-     	</tr>
- 	<tr>
-     	    <td>pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart</td>
-     	    <td>startTime</td>
-     	    <td>startTime</td>
-     	    <td></td>
-     	</tr>
- 	<tr>
-     	    <td>pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd</td>
-     	    <td>endTime</td>
-     	    <td>endTime</td>
-     	    <td></td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreInstantiation/formatDuration <br/> or calculated from <br/>
-     	       	pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and
-     	       	pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd</td>
-     		<td>duration_ms</td>
-     		<td>duration</td>
-     		<td>Resources from preservica can contain the duration in miliseconds, however not all resources does. Therefore,
-     	        the XSLT looks for this field and if it isn't present, the duration is calculated from the available fields.
-     	        Time is UTC.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreInstantiation/formatColors</td>
-     		<td>color</td>
-     		<td>kb:internal/kb:color</td>
-     		<td>Boolean value for colors. Resource in colors = true,  resource in greytones = false.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreInstantiation/formatStandard</td>
-     		<td>video_quality</td>
-     		<td>videoQuality</td>
-     		<td>Quality of the video. Preservica can contain values 'hd' and 'ikke hd'</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreInstantiation/formatChannelConfiguration</td>
-     		<td>surround_sound</td>
-     		<td>kb:internal/kb:surround_sound</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>premiere</td>
-     		<td>kb:internal/kb:premiere</td>
-     		<td>Extracted when the extension field starts with 'premiere:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreInstantiation/formatAspectRatio</td>
-     		<td>aspect_ratio</td>
-     		<td>kb:internal/kb:aspect_ratio</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>xip:Manifestation/ComponentManifestation/ComponentType</td>
-     		<td>manifestation_type</td>
-     		<td>not present and not needed as the field 'type' describes what type of resource is in hand.</td>
-     		<td>Is extracted from a presentation manifestation related to the DeliverableUnit.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>episode</td>
-     		<td>encodesCreativeWork/episodeNumber</td>
-     		<td>Extracted when the extension field starts with 'episodenr:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>number_of_episodes</td>
-     		<td>encodesCreativeWork/partOfSeason/numberOfEpisodes</td>
-     		<td>Extracted when the extension field starts with 'antalepisoder:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>live_broadcast</td>
-     		<td>publication/isLiveBroadcast</td>
-     		<td>Extracted when the extension field starts with 'live:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>retransmission</td>
-     		<td>kb:internal/kb:retransmission</td>
-     		<td>Extracted when the extension field starts with 'genudsendelse:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreDescription</td>
-     		<td>abstract</td>
-     		<td>abstract</td>
-     		<td>Is extracted when ./descriptionType = 'kortomtale'</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreDescription</td>
-     		<td>description</td>
-     		<td>description</td>
-     		<td>is extracted when ./descriptionType = 'langomtale1' </td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreGenre/genre</td>
-     		<td>genre_sub</td>
-     		<td>kb:internal/kb:genre_sub</td>
-     		<td>Extracted when pbcoreGenre/genre contains undergenre:</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>has_subtitles</td>
-     		<td>kb:internal/kb:has_subtitles</td>
-     		<td>Extracted when the extension field starts with 'tekstet:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>has_subtitles_for_hearing_impaired</td>
-     		<td>kb:internal/kb:has_subtitles_for_hearing_impaired</td>
-     		<td>Extracted when the extension field starts with 'th:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pidhandle:pidhandle/handle</td>
-     		<td>pid</td>
-     		<td>identifier/PID</td>
-     		<td>A long lasting reference to the resource.</td>
-     	</tr>
- 	<tr>
-     		<td>xip:DeliverableUnit/AccessionRef</td>
-     		<td>internal_accession_ref</td>
-     		<td>identifier/InternalAccessionRef</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>"pbcoreInstantiation/pbcoreFormatID</td>
-     		<td>internal_format_identifier_ritzau</td>
-     		<td>kb:internal/kb:format_identifier_ritzau</td>
-     		<td>Is extracted when ./formatIdentifierSource = 'ritzau'</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreInstantiation/pbcoreFormatID</td>
-     		<td>internal_format_identifier_nielsen</td>
-     		<td>kb:internal/kb:format_identifier_nielsen</td>
-     		<td>Is extracted when ./formatIdentifierSource = 'nielsen'</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_maingenre_id</td>
-     		<td>kb:internal/kb:maingenre_id</td>
-     		<td>Extracted when the extension field starts with 'hovedgenre_id:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_channel_id</td>
-     		<td>kb:internal/kb:channel_id</td>
-     		<td>Extracted when the extension field starts with 'kanalid:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_country_of_origin_id</td>
-     		<td>kb:internal/kb:country_of_origin_id</td>
-     		<td>Extracted when the extension field starts with 'produktionsland_id:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_ritzau_program_id</td>
-     		<td>kb:internal/kb:ritzau_program_id</td>
-     		<td>Extracted when the extension field starts with 'program_id:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_subgenre_id</td>
-     		<td>kb:internal/kb:subgenre_id</td>
-     		<td>Extracted when the extension field starts with 'undergenre_id:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_episode_id</td>
-     		<td>kb:internal/kb:episode_id</td>
-     		<td>Extracted when the extension field starts with 'afsnit_id:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_season_id</td>
-     		<td>kb:internal/kb:season_id</td>
-     		<td>Extracted when the extension field starts with 'saeson_id:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_series_id</td>
-     		<td>kb:internal/kb:series_id</td>
-     		<td>Extracted when the extension field starts with 'serie_id:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_program_ophold</td>
-     		<td>kb:internal/kb:program_ophold</td>
-     		<td>Extracted when the extension field starts with 'program_indhold:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_is_teletext</td>
-     		<td>kb:internal/kb:is_teletext</td>
-     		<td>Extracted when the extension field starts with 'ttv:'.</td>
-     	</tr>
- 	<tr>
-     		<td>pbcoreExtension/extension</td>
-     		<td>internal_showviewcode</td>
-     		<td>kb:internal/kb:showviewcode</td>
-     		<td>Extracted when the extension field starts with 'showviewcode:'.</td>
-     	</tr>
- 	<tr>
-     		<td>padding:padding/paddingSeconds</td>
-     		<td>internal_padding_seconds</td>
-     		<td>kb:internal/kb:padding_seconds</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>Metadata/access:access/individuelt_forbud</td>
-     		<td>internal_access_individual_prohibition</td>
-     		<td>kb:internal/kb:access_individual_prohibition</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>Metadata/access:access/klausuleret</td>
-     		<td>internal_access_claused</td>
-     		<td>kb:internal/kb:access_claused</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>Metadata/access:access/defekt</td>
-     		<td>internal_access_malfunction</td>
-     		<td>kb:internal/kb:access_malfunction</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>Metadata/access:access/kommentarer</td>
-     		<td>internal_access_comments</td>
-     		<td>kb:internal/kb:access_comments</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>Metadata/program_structure:program_structure/missingStart/missingSeconds</td>
-     		<td>internal_program_structure_missing_seconds_start</td>
-     		<td>kb:internal/kb:program_structure_missing_seconds_start</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>Metadata/program_structure:program_structure/missingEnd/missingSeconds</td>
-     		<td>internal_program_structure_missing_seconds_end</td>
-     		<td>kb:internal/kb:program_structure_missing_seconds_end</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>Metadata/program_structure:program_structure/holes</td>
-     		<td>internal_program_structure_holes</td>
-     		<td>kb:internal/kb:program_structure_holes</td>
-     		<td></td>
-     	</tr>
- 	<tr>
-     		<td>Metadata/program_structure:program_structure/overlaps</td>
-     		<td>internal_program_structure_overlaps</td>
-     		<td>kb:internal/kb:program_structure_overlaps</td>
-     		<td>Boolean value, which tells if there are any overlaps between this resource and other resources.</td>
-     	</tr>
-	 <tr>
-		 <td>Metadata/program_structure:program_structure/overlaps/overlap/overlapType</td>
-		 <td>internal_program_structure_overlap_type_X....</td>
-		 <td>kb:program_structure_overlap/overlap_type</td>
-		 <td>As solr documents require a flat structure, the overlap type is used as part of naming in the solr fields.
-		 	 When reading the following fields 'type_X' is a placeholder for the actual type of overlap. </td>
-	 </tr>
-	<tr>
-		<td>Metadata/program_structure:program_structure/overlaps/overlap/overlapLength</td>
-		<td>internal_program_structure_overlap_type_X_length_ms</td>
-		<td>kb:program_structure_overlap/overlap_length</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>Metadata/program_structure:program_structure/overlaps/overlap/file1UUID</td>
-		<td>internal_program_structure_overlap_type_X_file1UUID</td>
-		<td>kb:program_structure_overlap/file1UUID</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>Metadata/program_structure:program_structure/overlaps/overlap/file2UUID</td>
-		<td>internal_program_structure_overlap_type_X_file2UUID</td>
-		<td>kb:program_structure_overlap/file2UUID</td>
-		<td></td>
-	</tr>
- 	<tbody>
- </table>
+Overview of mapping between fields from preservica.
+The XSLT Transformers created by the java class: dk.kb.present.transform.XSLTFactory using XSLTs related to preservica
+metadata are connected in the following way:
+<table border="1">
+    <caption>Mapping between preservica fields</caption>
+    <thead>
+    <tr>
+        <th>Preservica OAI-PMH XML</th>
+        <th>SolrDoc</th>
+        <th>Schema.org JSON</th>
+        <th>Comment</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td></td>
+        <td>id</td>
+        <td>id or identifier/RecordID</td>
+        <td>This ID is a DS-id, which is not present in preservica and is created from the name of the record in the
+            preservica OAI-PMH harvest.
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>origin</td>
+        <td>identifier/Origin</td>
+        <td>Origin is not present in preservica. It is created from where the metadata originates from. In this case,
+            the Radio/TV collection.
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>conditions_of_access</td>
+        <td>conditionsOfAccess</td>
+        <td>This field contains information on how the object can be accessed. It is not present in the original
+            metadata from Preservica but is added through the ds-present transformations.
+        </td>
+    </tr>
+    <tr>
+        <td>pbcoreGenre/genre</td>
+        <td>categories</td>
+        <td>keywords</td>
+        <td>All types of genres from preservica are present here.</td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/<br/>formatLocation</td>
+        <td>collection</td>
+        <td>isPartOf/Collection</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>pbcoreGenre/genre</td>
+        <td>genre</td>
+        <td>genre</td>
+        <td>Extracted from the field which contains 'hovedgenre:'</td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/<br/>formatMediaType</td>
+        <td>resource_description</td>
+        <td>type</td>
+        <td>A description of what the resource is, not what it represents or contains. e.g. video or image.</td>
+    </tr>
+    <tr>
+        <td>pbcoreTitle/title</td>
+        <td>title</td>
+        <td>name</td>
+        <td>Is extracted when pbcoreTitle/titleType = 'titel'</td>
+    </tr>
+    <tr>
+        <td>pbcoreTitle/title</td>
+        <td>original_title</td>
+        <td>alternateName</td>
+        <td>Is extracted when pbcoreTitle/titleType = 'originaltitel'</td>
+    </tr>
+    <tr>
+        <td>pbcorePublisher/<br/>publisherRole</td>
+        <td>creator_affiliation</td>
+        <td>publishedOn/broadcastDisplayName</td>
+        <td>The solr field has the same name across collections.</td>
+    </tr>
+    <tr>
+        <td>pbcorePublisher/<br/>publisherRole</td>
+        <td>creator_affiliation_generic</td>
+        <td>publishedOn/alternateName</td>
+        <td>This generic field contains a constant value across different names for the same channel.
+            An example could be the Danish radio channel DR P1, which has had different names as 'Program 1' and
+            'P1' at different times. The value in this field for any P1 record is 'drp1'.
+        </td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart</td>
+        <td></td>
+        <td>datePublished</td>
+        <td>Is only extracted when the PBCore document contains the extension 'premiere' with the value premiere,
+            as this field only is to be created if it is the first time this resource has been shown.
+        </td>
+    </tr>
+    <tr>
+        <td>pbcoreDescription</td>
+        <td>notes</td>
+        <td>Does not exist, the values are present in either 'abstract' or 'description'</td>
+        <td>The notes field originates from the mods2solr XSLT and combines different metadata, which didn't have their
+            own field in the MODS standard. Descriptions from preservica are cramped into this field, however, they are
+            also extracted to their own fields 'abstract' for short description and 'description' for longer
+            descriptions
+        </td>
+    </tr>
+    <tr>
+        <td>xip:Manifestation/<br/>ComponentManifestation/<br/>FileRef</td>
+        <td>resource_id OR streaming_url</td>
+        <td>contentUrl</td>
+        <td>This id is not directly available in the DeliverableUnit from preservica, but originates from a
+            manifestation.
+            It is the ID of a presentation manifestation related to the DeliverableUnit. The connection between them is
+            created in the backing DS-storage. Then the XSLT looks for the child and accesses it through its URI.
+            Furthermore, there is a difference between the solr resource_id and the schema.org contentUrl. The first is
+            just the ID, while the second is a full URL, to where the content can be accessed. To access the full
+            streaming
+            url in the solr index you have to use the field streaming_url.
+        </td>
+    </tr>
+    <tr>
+        <td>pbcoreTitle/title</td>
+        <td>episode_title</td>
+        <td>encodesCreativeWork/name</td>
+        <td>Is extracted when pbcoreTitle/titleType = 'episodetitel'</td>
+    </tr>
+    <tr>
+        <td>pbcoreIdentifier</td>
+        <td>ritzau_id</td>
+        <td>identifier/ritzauId</td>
+        <td>Extracted from pbcoreIdentifier where identifierSource = 'ritzauId'</td>
+    </tr>
+    <tr>
+        <td>pbcoreIdentifier</td>
+        <td>tvmeter_id</td>
+        <td>identifier/tvmeterId</td>
+        <td>Extracted from pbcoreIdentifier where identifierSource = 'tvmeterId'</td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart</td>
+        <td>startTime</td>
+        <td>startTime</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd</td>
+        <td>endTime</td>
+        <td>endTime</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/formatDuration <br/> or calculated from <br/>
+            pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and
+            pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd
+        </td>
+        <td>duration_ms</td>
+        <td>duration</td>
+        <td>Resources from preservica can contain the duration in miliseconds, however not all resources does.
+            Therefore,
+            the XSLT looks for this field and if it isn't present, the duration is calculated from the available fields.
+            Time is UTC.
+        </td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/formatColors</td>
+        <td>color</td>
+        <td>kb:internal/kb:color</td>
+        <td>Boolean value for colors. Resource in colors = true, resource in greytones = false.</td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/formatStandard</td>
+        <td>video_quality</td>
+        <td>videoQuality</td>
+        <td>Quality of the video. Preservica can contain values 'hd' and 'ikke hd'</td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/formatChannelConfiguration</td>
+        <td>surround_sound</td>
+        <td>kb:internal/kb:surround_sound</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>premiere</td>
+        <td>kb:internal/kb:premiere</td>
+        <td>Extracted when the extension field starts with 'premiere:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/formatAspectRatio</td>
+        <td>aspect_ratio</td>
+        <td>kb:internal/kb:aspect_ratio</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>xip:Manifestation/ComponentManifestation/ComponentType</td>
+        <td>manifestation_type</td>
+        <td>not present and not needed as the field 'type' describes what type of resource is in hand.</td>
+        <td>Is extracted from a presentation manifestation related to the DeliverableUnit.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>episode</td>
+        <td>encodesCreativeWork/episodeNumber</td>
+        <td>Extracted when the extension field starts with 'episodenr:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>number_of_episodes</td>
+        <td>encodesCreativeWork/partOfSeason/numberOfEpisodes</td>
+        <td>Extracted when the extension field starts with 'antalepisoder:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>live_broadcast</td>
+        <td>publication/isLiveBroadcast</td>
+        <td>Extracted when the extension field starts with 'live:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>retransmission</td>
+        <td>kb:internal/kb:retransmission</td>
+        <td>Extracted when the extension field starts with 'genudsendelse:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreDescription</td>
+        <td>abstract</td>
+        <td>abstract</td>
+        <td>Is extracted when ./descriptionType = 'kortomtale'</td>
+    </tr>
+    <tr>
+        <td>pbcoreDescription</td>
+        <td>description</td>
+        <td>description</td>
+        <td>is extracted when ./descriptionType = 'langomtale1'</td>
+    </tr>
+    <tr>
+        <td>pbcoreGenre/genre</td>
+        <td>genre_sub</td>
+        <td>kb:internal/kb:genre_sub</td>
+        <td>Extracted when pbcoreGenre/genre contains undergenre:</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>has_subtitles</td>
+        <td>kb:internal/kb:has_subtitles</td>
+        <td>Extracted when the extension field starts with 'tekstet:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>has_subtitles_for_hearing_impaired</td>
+        <td>kb:internal/kb:has_subtitles_for_hearing_impaired</td>
+        <td>Extracted when the extension field starts with 'th:'.</td>
+    </tr>
+    <tr>
+        <td>pidhandle:pidhandle/handle</td>
+        <td>pid</td>
+        <td>identifier/PID</td>
+        <td>A long lasting reference to the resource.</td>
+    </tr>
+    <tr>
+        <td>xip:DeliverableUnit/AccessionRef</td>
+        <td>internal_accession_ref</td>
+        <td>identifier/InternalAccessionRef</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>"pbcoreInstantiation/pbcoreFormatID</td>
+        <td>internal_format_identifier_ritzau</td>
+        <td>kb:internal/kb:format_identifier_ritzau</td>
+        <td>Is extracted when ./formatIdentifierSource = 'ritzau'</td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/pbcoreFormatID</td>
+        <td>internal_format_identifier_nielsen</td>
+        <td>kb:internal/kb:format_identifier_nielsen</td>
+        <td>Is extracted when ./formatIdentifierSource = 'nielsen'</td>
+    </tr>
+    <tr>
+        <td>pbcoreInstantiation/pbcoreFormatID</td>
+        <td>internal_format_identifier_tvmeter</td>
+        <td>kb:internal/kb:format_identifier_tvmeter</td>
+        <td>Is extracted when ./formatIdentifierSource = 'tvmeter'</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_maingenre_id</td>
+        <td>kb:internal/kb:maingenre_id</td>
+        <td>Extracted when the extension field starts with 'hovedgenre_id:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_channel_id</td>
+        <td>kb:internal/kb:channel_id</td>
+        <td>Extracted when the extension field starts with 'kanalid:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>country_of_origin</td>
+        <td>countryOfOrigin/name</td>
+        <td>Extracted when the extension field starts with 'produktionsland:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>country_of_origin_id</td>
+        <td>countryOfOrigin/identifier</td>
+        <td>Extracted when the extension field starts with 'produktionsland_id:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_ritzau_program_id</td>
+        <td>kb:internal/kb:ritzau_program_id</td>
+        <td>Extracted when the extension field starts with 'program_id:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_subgenre_id</td>
+        <td>kb:internal/kb:subgenre_id</td>
+        <td>Extracted when the extension field starts with 'undergenre_id:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_episode_id</td>
+        <td>kb:internal/kb:episode_id</td>
+        <td>Extracted when the extension field starts with 'afsnit_id:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_season_id</td>
+        <td>kb:internal/kb:season_id</td>
+        <td>Extracted when the extension field starts with 'saeson_id:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_series_id</td>
+        <td>kb:internal/kb:series_id</td>
+        <td>Extracted when the extension field starts with 'serie_id:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_program_ophold</td>
+        <td>kb:internal/kb:program_ophold</td>
+        <td>Extracted when the extension field starts with 'program_ophold:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_is_teletext</td>
+        <td>kb:internal/kb:is_teletext</td>
+        <td>Extracted when the extension field starts with 'ttv:'.</td>
+    </tr>
+    <tr>
+        <td>pbcoreExtension/extension</td>
+        <td>internal_showviewcode</td>
+        <td>kb:internal/kb:showviewcode</td>
+        <td>Extracted when the extension field starts with 'showviewcode:'.</td>
+    </tr>
+    <tr>
+        <td>padding:padding/paddingSeconds</td>
+        <td>internal_padding_seconds</td>
+        <td>kb:internal/kb:padding_seconds</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/access:access/individuelt_forbud</td>
+        <td>internal_access_individual_prohibition</td>
+        <td>kb:internal/kb:access_individual_prohibition</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/access:access/klausuleret</td>
+        <td>internal_access_claused</td>
+        <td>kb:internal/kb:access_claused</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/access:access/defekt</td>
+        <td>internal_access_malfunction</td>
+        <td>kb:internal/kb:access_malfunction</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/access:access/kommentarer</td>
+        <td>internal_access_comments</td>
+        <td>kb:internal/kb:access_comments</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/program_structure:program_structure/missingStart/missingSeconds</td>
+        <td>internal_program_structure_missing_seconds_start</td>
+        <td>kb:internal/kb:program_structure_missing_seconds_start</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/program_structure:program_structure/missingEnd/missingSeconds</td>
+        <td>internal_program_structure_missing_seconds_end</td>
+        <td>kb:internal/kb:program_structure_missing_seconds_end</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/program_structure:program_structure/holes</td>
+        <td>internal_program_structure_holes</td>
+        <td>kb:internal/kb:program_structure_holes</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/program_structure:program_structure/overlaps</td>
+        <td>internal_program_structure_overlaps</td>
+        <td>kb:internal/kb:program_structure_overlaps</td>
+        <td>Boolean value, which tells if there are any overlaps between this resource and other resources.</td>
+    </tr>
+    <tr>
+        <td>Metadata/program_structure:program_structure/overlaps/overlap/overlapType</td>
+        <td>internal_program_structure_overlap_type_X....</td>
+        <td>kb:program_structure_overlap/overlap_type</td>
+        <td>As solr documents require a flat structure, the overlap type is used as part of naming in the solr fields.
+            When reading the following fields 'type_X' is a placeholder for the actual type of overlap.
+        </td>
+    </tr>
+    <tr>
+        <td>Metadata/program_structure:program_structure/overlaps/overlap/overlapLength</td>
+        <td>internal_program_structure_overlap_type_X_length_ms</td>
+        <td>kb:program_structure_overlap/overlap_length</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/program_structure:program_structure/overlaps/overlap/file1UUID</td>
+        <td>internal_program_structure_overlap_type_X_file1UUID</td>
+        <td>kb:program_structure_overlap/file1UUID</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Metadata/program_structure:program_structure/overlaps/overlap/file2UUID</td>
+        <td>internal_program_structure_overlap_type_X_file2UUID</td>
+        <td>kb:program_structure_overlap/file2UUID</td>
+        <td></td>
+    </tr>
+    <tbody>
+</table>
 
 </body>
 </html>

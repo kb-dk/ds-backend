@@ -305,10 +305,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertTrue(transformedJSON.contains("\"kb:genre_sub\":\"Alle\""));
     }
     @Test
-    void testInternalAspectRatio() throws IOException {
+    void testAspectRatio() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
 
-        Assertions.assertTrue(transformedJSON.contains("\"kb:aspect_ratio\":\"16:9\""));
+        Assertions.assertTrue(transformedJSON.contains("\"videoFrameSize\":\"16:9\""));
     }
     @Test
     void testInternalSubtitlesAndTeletext() throws IOException {
@@ -337,11 +337,19 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:maingenre_id\":\"1\"," +
                                                         "\"kb:channel_id\":3," +
-                                                        "\"kb:country_of_origin_id\":\"0\"," +
                                                         "\"kb:ritzau_program_id\":\"25101114\"" ));
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:format_identifier_ritzau\":\"81213310\"," +
                 "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," ));
+    }
+
+    @Test
+    void testCountryOfOrigin() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
+
+        assertTrue(transformedJSON.contains("\"countryOfOrigin\":{" +
+                "\"@type\":\"Country\"," +
+                "\"identifier\":\"0\"}"));
     }
 
     @Test
@@ -378,6 +386,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testDomsEpisodeNumbers() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eaea0362);
+        prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"episodeNumber\":8,") && transformedJSON.contains("\"numberOfEpisodes\":24"));
     }
 

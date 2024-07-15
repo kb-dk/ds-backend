@@ -132,6 +132,13 @@
           <xsl:if test="//pbcoreInstantiation/formatStandard != ''">
             <f:string key="videoQuality"><xsl:value-of select="//pbcoreInstantiation/formatStandard"/></f:string>
           </xsl:if>
+
+          <!-- Extract aspect ratio-->
+          <xsl:if test="$pbCore/pbcoreInstantiation/formatAspectRatio">
+            <f:string key="videoFrameSize">
+              <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
+            </f:string>
+          </xsl:if>
         </xsl:for-each>
 
         <!-- Extract manifestation -->
@@ -419,7 +426,39 @@
       </f:map>
     </xsl:if>
 
-    
+    <!-- Create boolean containing true, if either 'produktionsland' or 'produktionsland_id' is present in metadata. -->
+    <xsl:variable name="produktionslandBoolean">
+      <xsl:choose>
+        <xsl:when test="$pbcExtensions[f:contains(., 'produktionsland:') or f:contains(., 'produktionsland_id:')]">
+          <xsl:value-of select="f:true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <!-- Create country of origin and add the identifier for the production country as text. -->
+    <xsl:if test="$produktionslandBoolean = f:true()">
+      <f:map key="countryOfOrigin">
+        <f:string key="@type">Country</f:string>
+        <xsl:for-each select="./pbcoreExtension/extension">
+          <xsl:choose>
+            <xsl:when test="f:contains(. , 'produktionsland:')">
+              <f:string key="name">
+                <xsl:value-of select="f:substring-after(. , 'produktionsland:')"/>
+              </f:string>
+            </xsl:when>
+            <xsl:when test="f:contains(. , 'produktionsland_id:')">
+              <f:string key="identifier">
+                <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
+              </f:string>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:for-each>
+      </f:map>
+    </xsl:if>
+
     <!-- Creates datePublished, when pbcore extension tells that the program is a premiere.  -->
     <xsl:if test="$pbcExtensions[f:contains(., 'premiere:premiere')] and ./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart">
       <f:string key="datePublished">
@@ -775,6 +814,11 @@
             <xsl:value-of select="formatIdentifier"/>
           </f:string>
         </xsl:when>
+        <xsl:when test="formatIdentifierSource = 'tvmeter'">
+          <f:string key="kb:format_identifier_tvmeter">
+            <xsl:value-of select="formatIdentifier"/>
+          </f:string>
+        </xsl:when>
       </xsl:choose>
     </xsl:for-each>
     <!--TODO: Figure if retransmission can fit into real schema.org -->
@@ -828,9 +872,6 @@
         <xsl:value-of select="$holdbackDate"/>
       </f:string>
     </xsl:if>
-
-
-
   </xsl:template>
 
   <!-- Transforms internal fields, that are only present for tv/video metadata. These fields are:
@@ -841,13 +882,6 @@
     <xsl:if test="$holdbackPurposeName != null or $holdbackPurposeName != ''">
       <f:string key="kb:holdback_name">
         <xsl:value-of select="$holdbackPurposeName"/>
-      </f:string>
-    </xsl:if>
-
-    <!-- Extract aspect ratio-->
-    <xsl:if test="$pbCore/pbcoreInstantiation/formatAspectRatio">
-      <f:string key="kb:aspect_ratio">
-        <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
       </f:string>
     </xsl:if>
 
@@ -877,11 +911,6 @@
         <f:number key="kb:channel_id">
           <xsl:value-of select="substring-after(. , 'kanalid:')"/>
         </f:number>
-      </xsl:when>
-      <xsl:when test="f:starts-with(. , 'produktionsland_id:')">
-        <f:string key="kb:country_of_origin_id">
-          <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
-        </f:string>
       </xsl:when>
       <xsl:when test="f:starts-with(. , 'program_id:')">
         <f:string key="kb:ritzau_program_id">
