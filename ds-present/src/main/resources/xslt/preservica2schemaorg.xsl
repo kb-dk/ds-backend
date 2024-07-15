@@ -25,6 +25,8 @@
   <xsl:param name="origin"/>
   <!-- ID of the record. -->
   <xsl:param name="recordID"/>
+  <!-- ID created by kaltura. This ID is the ID of the stream containing the newest presentation copy for this resource. Used for video and audio objects.-->
+  <xsl:param name="kalturaID"/>
   <!-- XML containing the presentation manifestation for the record in hand-->
   <xsl:param name="manifestation"/>
   <!-- Representation of when the record was last modified in the backing ds-storage. The value is a long representing time
@@ -693,6 +695,14 @@
           <xsl:value-of select="$recordID"/>
         </f:string>
       </f:map>
+      <xsl:if test="$kalturaID != ''">
+        <f:map>
+          <f:string key="@type">PropertyValue</f:string>
+          <f:string key="PropertyID">KalturaID</f:string>
+          <f:string key="value"><xsl:value-of select="$kalturaID"/></f:string>
+          <f:string key="description">Kaltura ID of the access copy. Created internally by Kaltura.</f:string>
+        </f:map>
+      </xsl:if>
       <xsl:if test="//pbcoreIdentifier">
         <xsl:for-each select="./pbcoreIdentifier">
           <xsl:choose>
