@@ -143,11 +143,6 @@
           </xsl:if>
         </xsl:for-each>
 
-        <!-- Extract manifestation -->
-        <xsl:call-template name="extract-manifestation-preservica">
-          <xsl:with-param name="pbCore" select="$pbCore"/>
-        </xsl:call-template>
-
         <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
              available from the preservica records.-->
         <f:map key="kb:internal">
@@ -250,11 +245,6 @@
             </f:array>
           </xsl:otherwise>
         </xsl:choose>
-
-        <!-- Extract manifestation -->
-        <xsl:call-template name="extract-manifestation-preservica">
-          <xsl:with-param name="pbCore" select="$pbCore"/>
-        </xsl:call-template>
 
         <!-- If type is MediaObject we don't create the internal map. -->
         <xsl:if test="$type != 'MediaObject'">
@@ -762,44 +752,6 @@
           <f:string key="name"><xsl:value-of select="//pbcoreInstantiation/formatLocation"/></f:string>
         </f:map>
       </f:array>
-    </xsl:if>
-  </xsl:template>
-
-  <!-- EXTRACT MANIFESTATION FROM METADATA.-->
-  <xsl:template name="extract-manifestation-preservica">
-    <xsl:param name="pbCore"/>
-    <xsl:if test="$manifestation != ''">
-      <xsl:variable name="manifestationRef">
-        <xsl:value-of select="$manifestation"/>
-      </xsl:variable>
-      <xsl:variable name="urlPrefix">
-        <xsl:choose>
-          <xsl:when test="$pbCore/pbcoreInstantiation/formatMediaType = 'Moving Image'">mp4:bart-access-copies-tv/</xsl:when>
-          <xsl:when test="$pbCore/pbcoreInstantiation/formatMediaType = 'Sound'">mp3:bart-access-copies-radio/</xsl:when>
-          <xsl:otherwise></xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
-      <xsl:variable name="path">
-        <xsl:variable name="path_level1">
-          <xsl:value-of select="concat(substring($manifestationRef,1,2), '/')"/>
-        </xsl:variable>
-        <xsl:variable name="path_level2">
-          <xsl:value-of select="concat(substring($manifestationRef,3,2), '/')"/>
-        </xsl:variable>
-        <xsl:variable name="path_level3">
-          <xsl:value-of select="concat(substring($manifestationRef,5,2), '/')"/>
-        </xsl:variable>
-        <xsl:value-of select="concat($path_level1, $path_level2, $path_level3)"/>
-      </xsl:variable>
-      <xsl:variable name="streamingUrl">
-        <xsl:value-of select="concat($streamingserver, $urlPrefix,
-                                         $path, $manifestationRef,
-                                         '/playlist.m3u8')"/>
-      </xsl:variable>
-      <f:string key="contentUrl">
-        <!-- TODO: Add full url to content when possible-->
-        <xsl:value-of select="$streamingUrl"/>
-      </f:string>
     </xsl:if>
   </xsl:template>
 

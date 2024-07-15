@@ -245,13 +245,7 @@
 
       </xsl:if>
 
-      <!-- Extract content url-->
-      <!-- TODO: What about resourceID?-->
-      <xsl:if test="$schemaorg-xml('contentUrl')">
-        <f:string key="streaming_url">
-          <xsl:value-of select="$schemaorg-xml('contentUrl')"/>
-        </f:string>
-      </xsl:if>
+      <!-- Extract file_id -->
       <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:file_id') != ''">
         <f:string key="file_id">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:file_id') "/>

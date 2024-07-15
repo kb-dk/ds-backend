@@ -115,27 +115,6 @@ class ViewTest {
 
     @Test
     @Tag("integration")
-    void pvicaEmptyChild() throws Exception {
-        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
-            fail("Missing internal test files");
-        }
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML radioConf = conf.getYAMLList(".origins").get(2);
-        View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(1),
-                                    radioConf.getSubMap("\"ds.radio\"").getString("origin"));
-        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
-
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.radio");
-
-        DsRecordDto emptyChildDto = new DsRecordDto().id("test.emptyChild").mTime(1701261949625000L);
-        recordDto.setChildren(List.of(emptyChildDto));
-
-        String jsonld = jsonldView.apply(recordDto);
-        assertFalse(jsonld.contains("\"contentUrl\":"));
-    }
-
-    @Test
-    @Tag("integration")
     void solrFromPvica() throws Exception {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
