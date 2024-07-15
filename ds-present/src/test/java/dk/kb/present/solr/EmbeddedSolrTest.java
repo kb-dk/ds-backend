@@ -555,8 +555,8 @@ public class EmbeddedSolrTest {
 
     @Test
     @Tag("integration")
-    void testInternalCountryOfOriginId() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_country_of_origin_id", "0");
+    void testCountryOfOriginId() throws Exception {
+        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "country_of_origin_id", "0");
     }
     @Test
     @Tag("integration")

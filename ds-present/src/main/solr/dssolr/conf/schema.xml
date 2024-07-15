@@ -37,6 +37,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.8: Add creator_affiliation_facet field.
 1.6.9: Change facet field type to uppercase all values.
 1.6.10: Add fields for holdback management
+1.6.11: Rename schema fields following feedback from metadata review.
   -->
   <field name="_ds_1.6.10_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -744,8 +745,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     ?> <!-- TODO: figure if these IDs are always integers -->
   </field>
 
-  <field name="internal_country_of_origin_id" type="string">
-    <?description An ID which determines which contry the resource has been created in.?>
+  <field name="country_of_origin" type="string">
+    <?description The name of the country the resource has been created in.?>
+    <?example     Danmark?>
+  </field>
+  <field name="country_of_origin_id" type="string">
+    <?description An ID which determines which country the resource has been created in.?>
     <?example     0?>
   </field>
 
