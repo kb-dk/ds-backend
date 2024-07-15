@@ -109,28 +109,6 @@ public class TestUtil {
 	 * Transforms the inputted XML with the given transformer to schema.org compliant JSON, then transforms the
 	 * schema.org JSON to solr documents.
 	 * @param schemaOrgTransformer used to transform from origin specific format to general schema.org json.
-	 * @return a solr document ready for indexing, created from the schema.org representation of the inputted XML.
-	 */
-	@Deprecated
-	public static String getTransformedToSolrJsonThroughSchemaJson(String schemaOrgTransformer, String record) throws IOException {
-		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
-				"streamingserver" ,"https://www.example.com/streamingserver/",
-				"holdbackDate", "2026-01-17T09:34:42Z",
-				"holdbackPurposeName","Aktualitet og debat");
-		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
-		//prettyPrintJson(schemaOrgJson);
-
-		String placeholderXml = "placeholder.xml";
-		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);
-		String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, mapOfJson);
-		//prettyPrintJson(solrJson);
-		return solrJson;
-	}
-
-	/**
-	 * Transforms the inputted XML with the given transformer to schema.org compliant JSON, then transforms the
-	 * schema.org JSON to solr documents.
-	 * @param schemaOrgTransformer used to transform from origin specific format to general schema.org json.
 	 * @param record the record to transform.
 	 * @return a solr document ready for indexing, created from the schema.org representation of the inputted XML.
 	 */
@@ -139,7 +117,8 @@ public class TestUtil {
 				"streamingserver" ,"https://www.example.com/streamingserver/",
 				"manifestation", "8946d31d-a81c-447f-b84d-ff80644353d2.mp4",
 				"holdbackDate", "2026-01-17T09:34:42Z",
-				"holdbackPurposeName","Aktualitet og debat");
+				"holdbackPurposeName","Aktualitet og debat",
+				"kalturaId", "aVeryTrueKalturaID");
 		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
 		//prettyPrintJson(schemaOrgJson);
 

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 
+import static dk.kb.present.TestUtil.prettyPrintJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 /*
@@ -139,17 +140,37 @@ class ViewTest {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML tvConf = conf.getYAMLList(".origins").get(3);
-        View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
-                                 tvConf.getSubMap("\"ds.tv\"").getString("origin"));
+        View solrView = getSolrViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                                    .origin("ds.tv").kalturaId("someRandomKalturaId");
 
         String solrdoc = solrView.apply(recordDto);
+
         assertTrue(solrdoc.contains("\"title\":\"Før Bjørnen Er Skudt\""));
         assertTrue(solrdoc.contains("\"holdback_expired_date\":\"9999-01-01T00:00:00Z\""));
+        assertTrue(solrdoc.contains("\"kaltura_id\":\"someRandomKalturaId\""));
+    }
+
+    @Test
+    @Tag("integration")
+    void testPreservicaSolrNoKalturaId() throws Exception {
+        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
+            fail("Missing internal test files");
+        }
+        View solrView = getSolrViewForPreservicaRecord();
+        String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
+
+        // Test with Kaltura ID = null
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
+        String solrdoc = solrView.apply(recordDto);
+        assertFalse(solrdoc.contains("\"kaltura_id\":"));
+
+        // Test with Kaltura ID = ""
+        recordDto.setKalturaId("");
+        solrdoc = solrView.apply(recordDto);
+        assertFalse(solrdoc.contains("\"kaltura_id\":"));
     }
 
     @Test
@@ -233,5 +254,17 @@ class ViewTest {
         View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(1),
                 radioConf.getSubMap("\"ds.radio\"").getString("origin"));
         return jsonldView;
+    }
+
+    /**
+     * Create test view for Preservica solr transformation
+     * @return solr view for preservica records.
+     */
+    private static View getSolrViewForPreservicaRecord() throws IOException {
+        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
+        YAML tvConf = conf.getYAMLList(".origins").get(3);
+        View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
+                tvConf.getSubMap("\"ds.tv\"").getString("origin"));
+        return solrView;
     }
 }

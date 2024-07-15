@@ -350,7 +350,7 @@ public class EmbeddedSolrTest {
     @Test
     void testPreservicaPremiere() throws Exception {
         if (Resolver.getPathFromClasspath("internal_test_files/preservica7") != null) {
-            SolrDocument record = singlePreservicaIndex(PVICA_RECORD_b346acc8);
+            SolrDocument record = singlePreservica7Index(PVICA_RECORD_b346acc8);
             assertFalse((Boolean) record.getFieldValue("premiere"));
         } else {
             log.info("Preservica test files are not present. Embedded Solr tests for preservica metadata are not run.");
@@ -744,13 +744,6 @@ public class EmbeddedSolrTest {
         return getRecordByDerivedId(modsFile);
     }
 
-    @Deprecated
-    private SolrDocument singlePreservicaIndex(String preservicaFile) throws Exception {
-        indexPreservicaRecord(preservicaFile);
-        assertEquals(1, getNumberOfTotalDocuments(),
-                "After indexing '" + preservicaFile + "' the index should only hold a single record");
-        return getRecordByDerivedId(preservicaFile);
-    }
 
     private SolrDocument singlePreservica7Index(String preservicaFile) throws Exception {
         indexPreservica7Record(preservicaFile);
@@ -773,13 +766,6 @@ public class EmbeddedSolrTest {
         String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, recordXml);
 
         addRecordToEmbeddedServer(recordXml, solrString);
-    }
-
-    @Deprecated
-    private void indexPreservicaRecord(String preservicaRecord) throws Exception {
-        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJson(PRESERVICA2SCHEMAORG, preservicaRecord);
-        //prettyPrintJson(solrString);
-        addRecordToEmbeddedServer(preservicaRecord, solrString);
     }
 
     private void indexPreservica7Record(String preservicaRecord) throws Exception {
@@ -872,7 +858,7 @@ public class EmbeddedSolrTest {
            log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'.",preservicaRecord, solrField);
            fail("Missing internal test files");
         }
-        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        SolrDocument record = singlePreservica7Index(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
 
     }
@@ -882,7 +868,7 @@ public class EmbeddedSolrTest {
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'",preservicaRecord, solrField);
             fail("Missing internal test files");
         }
-        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        SolrDocument record = singlePreservica7Index(preservicaRecord);
         for (String value:fieldValues) {
             assertTrue(record.getFieldValue(solrField).toString().contains(value));
         }
@@ -893,7 +879,7 @@ public class EmbeddedSolrTest {
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'",preservicaRecord, solrField);
             fail("Missing internal test files");
         }
-        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        SolrDocument record = singlePreservica7Index(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
     }
 
@@ -902,7 +888,7 @@ public class EmbeddedSolrTest {
             log.info("Preservica test file '{}' is not present. Embedded Solr test for field '{}'",preservicaRecord, solrField);
             fail("Missing internal test files");            
         }
-        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        SolrDocument record = singlePreservica7Index(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
     }
 
@@ -912,7 +898,7 @@ public class EmbeddedSolrTest {
             fail("Missing internal test files");        
         }
 
-        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        SolrDocument record = singlePreservica7Index(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
     }
 
@@ -922,7 +908,7 @@ public class EmbeddedSolrTest {
             fail("Missing internal test files");
         }
 
-        SolrDocument record = singlePreservicaIndex(preservicaRecord);
+        SolrDocument record = singlePreservica7Index(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
     }
 
