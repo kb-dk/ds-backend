@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Changed how the solr field creator_affiliation_facet is constructed.
+- Elevated some fields in XSLTs from the kb:internal map to proper schema.org values and non internal solr fields.
+- Bumped solr-config to v. 1.6.10
 
 ## [1.9.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.3) 2024-07-03
 ### Changed
