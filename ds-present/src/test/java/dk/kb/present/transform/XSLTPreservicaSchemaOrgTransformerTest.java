@@ -397,10 +397,15 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Map<String, String> holdbackInjections = Map.of("holdbackDate", "2026-01-17T09:34:42Z",
                                                         "holdbackPurposeName","Aktualitet og debat");
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eaea0362, holdbackInjections);
-        prettyPrintJson(transformedJSON);
 
         assertTrue(transformedJSON.contains("\"kb:holdback_date\":\"2026-01-17T09:34:42Z\""));
         assertTrue(transformedJSON.contains("\"kb:holdback_name\":\"Aktualitet og debat\""));
+    }
+
+    @Test
+    public void testMultipleMaingenres() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_82514cd9);
+        assertTrue(transformedJSON.contains("\"genre\":\"film\""));
     }
 
     private static void printSchemaOrgJson(String xml) throws IOException {

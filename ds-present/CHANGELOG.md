@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Changed how the solr field creator_affiliation_facet is constructed.
+- Updated XSLTs to handle edge cases, where multiple 'hovedgenre' are present in data. If multiple are present, the shortest string is used as genre in the schema.org JSON.
 
 ## [1.9.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.3) 2024-07-03
 ### Changed

@@ -587,13 +587,56 @@
         </f:string>
       </xsl:if>
 
-      <xsl:for-each select="./pbcoreGenre/genre">
-        <xsl:if test="f:contains(., 'hovedgenre:') and substring-after(., 'hovedgenre:') != ''">
+      <!-- It is seen in data, that multiple 'hovedgenre's can be defined. This should not happen and we need to find the appropriate one. Normally the maingenre would be the
+      most common and shortest description of the resource. -->
+      <!-- Create a sequence containing all main genres.-->
+      <xsl:variable name="mainGenresSequence" as="xs:string *">
+        <xsl:for-each select="./pbcoreGenre/genre">
+          <xsl:if test="f:contains(., 'hovedgenre:') and substring-after(., 'hovedgenre:') != ''">
+              <xsl:sequence select="normalize-space(substring-after(., 'hovedgenre:'))"/>
+          </xsl:if>
+        </xsl:for-each>
+      </xsl:variable>
+
+      <!-- Here we test if multiple 'hovedgenre' are present in the data. -->
+      <xsl:choose>
+        <xsl:when test="f:count($mainGenresSequence) > 1">
+          <!-- Count lenghts of all values in the mainGenresSequence to find the shortest string.-->
+          <xsl:variable name="mainGenreLengths" as="xs:integer *">
+            <xsl:for-each select="$mainGenresSequence">
+              <xsl:sequence select="f:string-length()"/>
+            </xsl:for-each>
+          </xsl:variable>
+
+          <!-- Variable which holds the shortest length from the mainGenreLengths sequence. -->
+          <xsl:variable name="shortestLength" select="f:min($mainGenreLengths)"/>
+
+          <!-- Iterate through the sequence of lengths to find the position of the shortest value, which should be treated as the main genre. -->
+          <xsl:variable name="genrePositions" as="xs:integer">
+            <xsl:for-each select="$mainGenreLengths">
+              <xsl:variable name="pos" select="position()"/>
+              <xsl:if test=". = $shortestLength">
+                <xsl:value-of select="$pos"/>
+              </xsl:if>
+            </xsl:for-each>
+          </xsl:variable>
+
+          <!-- Extract genre from sequence at position with the shortest length. -->
+          <xsl:if test="$mainGenresSequence != ''">
+            <f:string key="genre">
+              <xsl:value-of select="$mainGenresSequence[$genrePositions]"/>
+            </f:string>
+          </xsl:if>
+        </xsl:when>
+        <!-- Here we know that there's only one 'hovedgenre' in the data. -->
+        <xsl:when test="f:count($mainGenresSequence) = 1">
           <f:string key="genre">
-            <xsl:value-of select="normalize-space(substring-after(., 'hovedgenre:'))"/>
+            <xsl:value-of select="$mainGenresSequence[1]"/>
           </f:string>
-        </xsl:if>
-      </xsl:for-each>
+        </xsl:when>
+        <!-- If no genre is present, the field should not be created.-->
+        <xsl:otherwise></xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 
     <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
