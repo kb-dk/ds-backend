@@ -42,9 +42,6 @@ openapi:
 oldimageserver:
   url: "http://kb-images.kb.dk"
 
-streamingserver:
-  url: "http://example.com/streaming/"
-
 # Used for verifying access to metadata https://github.com/kb-dk/ds-license
 # If allowall is set to true (default is false), all access is granted. Use only for devel + stage
 licensemodule:

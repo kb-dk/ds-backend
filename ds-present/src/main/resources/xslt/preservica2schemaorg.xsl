@@ -19,8 +19,6 @@
   <xsl:output method="text"/>
 
   <!--INJECTIONS -->
-  <!-- Streraming server where preservica manifestations can be streamed from.-->
-  <xsl:param name="streamingserver"/>
   <!-- Origin for transformed record.-->
   <xsl:param name="origin"/>
   <!-- ID of the record. -->
