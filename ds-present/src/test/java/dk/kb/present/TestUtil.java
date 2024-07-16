@@ -60,7 +60,6 @@ public class TestUtil {
 		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
 
 		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
-		metadata.put("streamingserver", "www.example.com/streaming/");
 		metadata.put("origin", "ds.test");
 		metadata.put("conditionsOfAccess", "placeholderCondition");
 		metadata.put("mTime", "1701261949625000");
@@ -77,7 +76,6 @@ public class TestUtil {
 		String childData = "8946d31d-a81c-447f-b84d-ff80644353d2.mp4";
 
 		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
-		metadata.put("streamingserver", "www.example.com/streaming/");
 		metadata.put("origin", "ds.test");
 		metadata.put("manifestation", childData);
 		metadata.put("conditionsOfAccess", "placeholderCondition");
@@ -99,32 +97,9 @@ public class TestUtil {
 		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
 
         metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
-		metadata.put("streamingserver", "www.example.com/streaming/");
 		metadata.put("origin", "ds.test");
 		//System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
-	}
-
-	/**
-	 * Transforms the inputted XML with the given transformer to schema.org compliant JSON, then transforms the
-	 * schema.org JSON to solr documents.
-	 * @param schemaOrgTransformer used to transform from origin specific format to general schema.org json.
-	 * @return a solr document ready for indexing, created from the schema.org representation of the inputted XML.
-	 */
-	@Deprecated
-	public static String getTransformedToSolrJsonThroughSchemaJson(String schemaOrgTransformer, String record) throws IOException {
-		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
-				"streamingserver" ,"https://www.example.com/streamingserver/",
-				"holdbackDate", "2026-01-17T09:34:42Z",
-				"holdbackPurposeName","Aktualitet og debat");
-		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
-		//prettyPrintJson(schemaOrgJson);
-
-		String placeholderXml = "placeholder.xml";
-		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);
-		String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, mapOfJson);
-		//prettyPrintJson(solrJson);
-		return solrJson;
 	}
 
 	/**
@@ -136,10 +111,10 @@ public class TestUtil {
 	 */
 	public static String getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(String schemaOrgTransformer, String record) throws IOException {
 		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
-				"streamingserver" ,"https://www.example.com/streamingserver/",
 				"manifestation", "8946d31d-a81c-447f-b84d-ff80644353d2.mp4",
 				"holdbackDate", "2026-01-17T09:34:42Z",
-				"holdbackPurposeName","Aktualitet og debat");
+				"holdbackPurposeName","Aktualitet og debat",
+				"kalturaID", "aVeryTrueKalturaID");
 		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
 		//prettyPrintJson(schemaOrgJson);
 
@@ -167,7 +142,6 @@ public class TestUtil {
 		String yamlStr =
 				"stylesheet: '" + PRESERVICA2SOLR + "'\n" +
 						"injections:\n" +
-						"  - streamingserver: 'example.com/streaming'\n" +
 						"  - origin: 'ds.test'\n";
 		prettyPrintSolrJson(record, yamlStr);
 	}

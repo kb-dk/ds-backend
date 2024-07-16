@@ -9,8 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Changed how the solr field creator_affiliation_facet is constructed.
 - Elevated some fields in XSLTs from the kb:internal map to proper schema.org values and non internal solr fields.
-- Bumped solr-config to v. 1.6.10
+- Bumped solr-config to v. 1.6.12
 - Updated XSLTs to handle edge cases, where multiple 'hovedgenre' are present in data. If multiple are present, the shortest string is used as genre in the schema.org JSON.
+- Introduce kaltura_id in solr documents and solr schema
+- Introduce KalturaID as identifier in schema.org JSON
+- Updated solr tests, to use Preservica 7 setup.
+- Update logging in HoldbackDatePicker class making it clearer, that origins in a holdback context comes from TVMeter data.
+
+### Removed
+- Removed all traces of streaming_url and contentUrl for video and audio records.
 
 ## [1.9.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.3) 2024-07-03
 ### Changed

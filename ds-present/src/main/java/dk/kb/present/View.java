@@ -171,6 +171,11 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         metadata.put("mTimeHuman", getSolrDate(record.getmTimeHuman()));
         //TODO: Update placeholder when actual value is in place
         metadata.put("conditionsOfAccess", "TODO: placeholderCondition");
+
+        if (record.getKalturaId() != null){
+            metadata.put("kalturaID", record.getKalturaId());
+        }
+
         return metadata;
     }
 

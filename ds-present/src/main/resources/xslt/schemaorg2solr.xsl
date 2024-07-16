@@ -245,13 +245,7 @@
 
       </xsl:if>
 
-      <!-- Extract content url-->
-      <!-- TODO: What about resourceID?-->
-      <xsl:if test="$schemaorg-xml('contentUrl')">
-        <f:string key="streaming_url">
-          <xsl:value-of select="$schemaorg-xml('contentUrl')"/>
-        </f:string>
-      </xsl:if>
+      <!-- Extract file_id -->
       <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:file_id') != ''">
         <f:string key="file_id">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:file_id') "/>
@@ -529,6 +523,12 @@
 
   <!-- EXTRACT IDENTIFIERS FROM THE SCHEMA.ORG ARRAY OF IDENTIFIERS. -->
   <xsl:template name="identifierExtractor">
+    <!-- Finds KalturaID -->
+    <xsl:if test="map:get(., 'PropertyID') = 'KalturaID'">
+      <f:string key="kaltura_id">
+        <xsl:value-of select="map:get(., 'value')"/>
+      </f:string>
+    </xsl:if>
     <!-- Finds origin -->
     <xsl:if test="map:get(., 'PropertyID') = 'Origin'">
       <f:string key="origin">

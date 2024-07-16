@@ -42,11 +42,6 @@ oldimageserver:
   url: "http://kb-images.kb.dk"
 
 
-# In generel we are moving towards kaltura streaming instead of the local wowza installation.
-streamingserver:
-  # Wowza has a non-obvious URL, the /vod/_definst_/ part of the URL is important here.
-  url: "https://<wowzastreamingserver>.dk:1947/vod/_definst_/"
-
 # Used for verifying access to metadata https://github.com/kb-dk/ds-license
 # If allowall is set to true (default is false), all access is granted. Use only for devel + stage
 licensemodule:

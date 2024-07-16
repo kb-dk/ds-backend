@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 
+import static dk.kb.present.TestUtil.prettyPrintJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 /*
@@ -79,41 +80,37 @@ class ViewTest {
     @Test
     @Tag("integration")
     void jsonldPvica() throws Exception {
-        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
-            fail("Missing internal test files");
-        }
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML radioConf = conf.getYAMLList("origins").get(2);
-        View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(1),
-                                    radioConf.getSubMap("\"ds.radio\"").getString("origin"));
+        View jsonldView = getPreservicaJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
-
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.radio");
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                                                    .origin("ds.radio").kalturaId("randomKalturaId");
 
         String jsonld = jsonldView.apply(recordDto);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"2022-07-06T08:05:00Z\""));
+        assertTrue(jsonld.contains("\"@type\":\"PropertyValue\"," +
+                                    "\"PropertyID\":\"KalturaID\"," +
+                                    "\"value\":\"randomKalturaId\""));
     }
-
+    
     @Test
     @Tag("integration")
-    void pvicaEmptyChild() throws Exception {
-        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
-            fail("Missing internal test files");
-        }
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML radioConf = conf.getYAMLList(".origins").get(2);
-        View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(1),
-                                    radioConf.getSubMap("\"ds.radio\"").getString("origin"));
-        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
+    void testNoKalturaIdPvica() throws Exception {
+        View jsonldView = getPreservicaJsonView();
+        String preservicaData = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.radio");
+        // Test with kalturaId = null
+        DsRecordDto testRecord = new DsRecordDto().data(preservicaData).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.radio");
+        String jsonldResult = jsonldView.apply(testRecord);
+        assertFalse(jsonldResult.contains("\"@type\":\"PropertyValue\"," +
+                                            "\"PropertyID\":\"KalturaID\""));
 
-        DsRecordDto emptyChildDto = new DsRecordDto().id("test.emptyChild").mTime(1701261949625000L);
-        recordDto.setChildren(List.of(emptyChildDto));
-
-        String jsonld = jsonldView.apply(recordDto);
-        assertFalse(jsonld.contains("\"contentUrl\":"));
+        // test with kalturaId = ""
+        testRecord.setKalturaId("");
+        jsonldResult = jsonldView.apply(testRecord);
+        assertFalse(jsonldResult.contains("\"@type\":\"PropertyValue\"," +
+                                            "\"PropertyID\":\"KalturaID\""));
     }
 
     @Test
@@ -122,17 +119,37 @@ class ViewTest {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML tvConf = conf.getYAMLList(".origins").get(3);
-        View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
-                                 tvConf.getSubMap("\"ds.tv\"").getString("origin"));
+        View solrView = getSolrViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                                    .origin("ds.tv").kalturaId("someRandomKalturaId");
 
         String solrdoc = solrView.apply(recordDto);
+
         assertTrue(solrdoc.contains("\"title\":\"Før Bjørnen Er Skudt\""));
         assertTrue(solrdoc.contains("\"holdback_expired_date\":\"9999-01-01T00:00:00Z\""));
+        assertTrue(solrdoc.contains("\"kaltura_id\":\"someRandomKalturaId\""));
+    }
+
+    @Test
+    @Tag("integration")
+    void testPreservicaSolrNoKalturaId() throws Exception {
+        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
+            fail("Missing internal test files");
+        }
+        View solrView = getSolrViewForPreservicaRecord();
+        String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
+
+        // Test with Kaltura ID = null
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
+        String solrdoc = solrView.apply(recordDto);
+        assertFalse(solrdoc.contains("\"kaltura_id\":"));
+
+        // Test with Kaltura ID = ""
+        recordDto.setKalturaId("");
+        solrdoc = solrView.apply(recordDto);
+        assertFalse(solrdoc.contains("\"kaltura_id\":"));
     }
 
     @Test
@@ -200,5 +217,33 @@ class ViewTest {
         assertTrue(result2.contains("\"internal_storage_mTime\":\"1702222222222000\""));
 
         executorService.shutdown();
+    }
+
+
+    /**
+     * Create test view for Preservica Schema.org transformation
+     * @return Schema.org JSON view for preservica records.
+     */
+    private static View getPreservicaJsonView() throws IOException {
+        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
+            fail("Missing internal test files");
+        }
+        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
+        YAML radioConf = conf.getYAMLList("origins").get(2);
+        View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(1),
+                radioConf.getSubMap("\"ds.radio\"").getString("origin"));
+        return jsonldView;
+    }
+
+    /**
+     * Create test view for Preservica solr transformation
+     * @return solr view for preservica records.
+     */
+    private static View getSolrViewForPreservicaRecord() throws IOException {
+        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
+        YAML tvConf = conf.getYAMLList(".origins").get(3);
+        View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
+                tvConf.getSubMap("\"ds.tv\"").getString("origin"));
+        return solrView;
     }
 }

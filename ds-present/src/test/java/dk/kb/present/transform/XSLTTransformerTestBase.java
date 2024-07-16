@@ -130,7 +130,6 @@ public abstract class XSLTTransformerTestBase {
             String yamlStr =
                     "stylesheet: '" + getXSLT() + "'\n" +
                             "injections:\n" +
-                            "  - streamingserver: 'example.com/streaming'\n" +
                             "  - origin: 'ds.test'\n";
             YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
             solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, record);

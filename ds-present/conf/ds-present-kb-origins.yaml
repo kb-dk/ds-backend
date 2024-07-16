@@ -20,7 +20,6 @@ pvicaviews: &PRESERVICA_VIEWS
             stylesheet: 'xslt/preservica2schemaorg.xsl'
             injections:
               #- imageserver: ${path:imageservers[default=true].url}
-              - streamingserver: ${path:streamingserver.url}
               - old_imageserver: ${path:oldimageserver.url}
   - SolrJSON:
       mime: 'application/json'
@@ -30,7 +29,6 @@ pvicaviews: &PRESERVICA_VIEWS
             stylesheet: 'xslt/preservica2schemaorg.xsl'
             injections:
               #- imageserver: ${path:imageservers[default=true].url}
-              - streamingserver: ${path:streamingserver.url}
               - old_imageserver: ${path:oldimageserver.url}
         - xsltsolr:
             stylesheet: 'xslt/schemaorg2solr.xsl'
