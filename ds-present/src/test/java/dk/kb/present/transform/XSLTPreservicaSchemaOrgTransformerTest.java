@@ -413,6 +413,15 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"genre\":\"film\""));
     }
 
+    @Test
+    public void testDomsRecordsNotConvertingToMediaObject() throws IOException {
+        String transformedTV = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_dd5f2f60);
+        assertTrue(transformedTV.contains("\"@type\":\"VideoObject\","));
+
+        String transformedRadio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertTrue(transformedRadio.contains("\"@type\":\"AudioObject\","));
+    }
+
     private static void printSchemaOrgJson(String xml) throws IOException {
         Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
                                                 "conditionsOfAccess", "placeholderCondition");

@@ -48,8 +48,18 @@
        Currently, the template handles transformations from Preservica records to SCHEMA.ORG VideoObjects and AudioObjects. -->
   <xsl:template match="/">
 
+    <!-- We cannot rely on namespaces being present in the records. Therefore everything at content level has namespaces removed. This makes it possible to work with PBCore
+    metadata defined as PBCoreDescriptionDocument and PBCoreDescriptionDocument:PBCoreDescriptionDocument.-->
+    <xsl:variable name="contentObjects">
+      <xsl:for-each select="/XIP/Metadata/Content">
+        <xsl:apply-templates mode="strip-ns"/>
+      </xsl:for-each>
+      <xsl:value-of select="."/>
+    </xsl:variable>
+
+    <!-- As above, we are removing the namespaces for everything inside the PBCoreDescriptionDocument as some records have ns1, ns2, ns3 and so on for the same field. -->
     <xsl:variable name="pbCore">
-          <xsl:for-each select="/XIP/Metadata/Content/pbc:PBCoreDescriptionDocument">
+          <xsl:for-each select="$contentObjects/PBCoreDescriptionDocument">
             <xsl:apply-templates mode="strip-ns"/>
           </xsl:for-each>
           <xsl:value-of select="."/>
