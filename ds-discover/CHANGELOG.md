@@ -6,9 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+
+
+### Changed
+
+## [1.3.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.3.2) - 2024-07-17
+
+### Added
 - Allow sort parameters to solr
 
 ### Changed
+- Ds-present dependency bumb to v2.0.0
 
 ## [1.3.1](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.3.1) - 2024-07-01
 ### Changed
