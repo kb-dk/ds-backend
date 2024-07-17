@@ -449,6 +449,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertFalse(transformedJSON.contains("\"videoFrameSize\""));
     }
 
+    @Test
+    public void testMigratedFrom() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_e2dfb840);
+        assertTrue(transformedJSON.contains("kb:migrated_from\":\"DOMS\""));
+    }
+
     private static void printSchemaOrgJson(String xml) throws IOException {
         Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
                                                 "conditionsOfAccess", "placeholderCondition");

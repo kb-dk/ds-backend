@@ -39,8 +39,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.10: Add fields for holdback management
 1.6.11: Rename schema fields following feedback from metadata review.
 1.6.12: Add kaltura_id to schema and remove old wowza streaming url.
+1.6.13
   -->
-  <field name="_ds_1.6.12_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.13_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -106,7 +107,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Den grimme ælling.?>
   </field>
 
-
   <!-- Note: The title_sort_da field IS NOT automatically copied from title as title_sort_da is single valued -->
   <field name="title_sort_da" type="sort_da">
     <?description The object title, usable for sorting according to Danish locale.
@@ -155,6 +155,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
             descriptions for radio and TV metadata.?>
     <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
     <?example     Daguerreotypi, mål: 81 x 70 mm?>
+  </field>
+
+  <field name="migrated_from" type="string">
+    <?description Information on the record being migrated from another metadata system. If this value is present, the record has been migrated from another metadata system into
+            the current one.?>
+    <?example DOMS?>
   </field>
 
   <!-- =======================================================-->

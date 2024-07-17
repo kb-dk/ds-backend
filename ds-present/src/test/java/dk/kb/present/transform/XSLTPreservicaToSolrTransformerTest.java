@@ -431,6 +431,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testMigratedFrom(){
+        assertPvicaContains(TestFiles.PVICA_DOMS_MIG_e2dfb840, "\"migrated_from\":\"DOMS\"");
+    }
+
+    @Test
     void testEmptyFields() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3b0c391f);
         prettyPrintJson(solrString);
