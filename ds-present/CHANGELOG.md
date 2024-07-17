@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+
+### Removed
+
+
+## [2.0.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.0.0) 2024-07-17
+###
+- Added support for Preservica records migrated from DOMS.
+
+### Changed
 - Changed how the solr field creator_affiliation_facet is constructed.
 - Elevated some fields in XSLTs from the kb:internal map to proper schema.org values and non internal solr fields.
 - Bumped solr-config to v. 1.6.12
@@ -16,9 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated solr tests, to use Preservica 7 setup.
 - Update logging in HoldbackDatePicker class making it clearer, that origins in a holdback context comes from TVMeter data.
 - Updated XSLT to strip namespace prefixes from PbcoreDescriptionDocuments, to make them alike for all records
+- Bumped storage dependency to 2.1.0
 
 ### Removed
 - Removed all traces of streaming_url and contentUrl for video and audio records.
+
+
+
 
 ## [1.9.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.3) 2024-07-03
 ### Changed

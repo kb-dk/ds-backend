@@ -29,7 +29,6 @@ class OriginHandlerTest {
     static void setup() {
         try {
             ServiceConfig.initialize("conf/ds-present-behaviour.yaml", "test_setup.yaml");
-            HoldbackDatePicker.init();
             config = ServiceConfig.getConfig();
         } catch (IOException e) {          
             log.error("test_setup.yaml could not be loaded");            
@@ -95,7 +94,8 @@ class OriginHandlerTest {
 
     @Test
     @Tag("integration")
-    void localCorpusPvica() throws IOException {
+    void localCorpusPvica() {
+        HoldbackDatePicker.init();
         if (Resolver.getPathFromClasspath("internal_test_files/preservica7/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml") == null){
             log.error("Preservica test file is not present. Test for file 9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml");
             fail();
