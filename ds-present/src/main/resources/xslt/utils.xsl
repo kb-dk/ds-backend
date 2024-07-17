@@ -45,7 +45,6 @@
       <xsl:when test="f:ends-with($datetimeString, 'Z')">
         <xsl:value-of select="$datetimeString"/>
       </xsl:when>
-      <xsl:when test="contains(substring($datetimeString, '+'))"
       <xsl:when test="f:string-length(substring-after($datetimeString, '+')) != 5">
         <xsl:variable name="datetimeNoTimezone">
           <xsl:value-of select="substring-before($datetimeString, '+')"/>
@@ -58,6 +57,21 @@
         </xsl:variable>
         <xsl:variable name="timezoneMinute">
           <xsl:value-of select="substring($timezoneInfo, 3,2)"/>
+        </xsl:variable>
+        <xsl:value-of select="concat($datetimeNoTimezone, '+', $timezoneHour, ':', $timezoneMinute)"/>
+      </xsl:when>
+      <xsl:when test="not(contains(substring-after($datetimeString, '+'), ':'))">
+        <xsl:variable name="datetimeNoTimezone">
+          <xsl:value-of select="substring-before($datetimeString, '+')"/>
+        </xsl:variable>
+        <xsl:variable name="timezone">
+          <xsl:value-of select="substring-after($datetimeString, '+')"/>
+        </xsl:variable>
+        <xsl:variable name="timezoneHour">
+          <xsl:value-of select="substring($timezone, 1, 2)"/>
+        </xsl:variable>
+        <xsl:variable name="timezoneMinute">
+          <xsl:value-of select="substring($timezone, 4,2)"/>
         </xsl:variable>
         <xsl:value-of select="concat($datetimeNoTimezone, '+', $timezoneHour, ':', $timezoneMinute)"/>
       </xsl:when>

@@ -425,13 +425,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testDateTimeNoT() throws IOException {
         String transformed = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_4ad48e98);
-        prettyPrintJson(transformed);
+        assertTrue(transformed.contains("\"startTime\":\"1987-05-04T14:45:00Z\""));
     }
 
     @Test
     void testTimezone() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_cb4bb835);
-        prettyPrintJson(transformedJSON);
+        assertTrue(transformedJSON.contains("\"startTime\":\"1981-05-08T17:00:00Z\""));
     }
 
     @Test
