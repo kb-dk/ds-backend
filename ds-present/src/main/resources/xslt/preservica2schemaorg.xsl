@@ -144,12 +144,21 @@
             <f:string key="videoQuality"><xsl:value-of select="//pbcoreInstantiation/formatStandard"/></f:string>
           </xsl:if>
 
-          <!-- Extract aspect ratio-->
-          <xsl:if test="$pbCore/pbcoreInstantiation/formatAspectRatio != '' and normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) != ','">
-            <f:string key="videoFrameSize">
-              <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
-            </f:string>
-          </xsl:if>
+          <!-- Extract aspect ratio -->
+          <!-- Aspect ratio contains many dirty values. such as ',', ', ', '16:9,' and '16:9, '. -->
+          <xsl:choose>
+            <xsl:when test="normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = '16:9,' or '16:9, '">
+              <f:string key="videoFrameSize">16:9</f:string>
+            </xsl:when>
+            <xsl:when test="$pbCore/pbcoreInstantiation/formatAspectRatio != '' and normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) != ',' or ', '">
+              <f:string key="videoFrameSize">
+                <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
+              </f:string>
+            </xsl:when>
+            <!-- If the field doesn't exist, don't do anything -->
+            <xsl:otherwise></xsl:otherwise>
+          </xsl:choose>
+
         </xsl:for-each>
 
         <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
@@ -332,20 +341,20 @@
     <xsl:choose>
       <xsl:when test="$title = $original-title and $title != '' or ($title != '' and $original-title = '')">
         <f:string key="name">
-          <xsl:value-of select="$title"/>
+          <xsl:value-of select="normalize-space($title)"/>
         </f:string>
       </xsl:when>
       <xsl:when test="$title = '' and $original-title != ''">
         <f:string key="name">
-          <xsl:value-of select="$original-title"/>
+          <xsl:value-of select="normalize-space($original-title)"/>
         </f:string>
       </xsl:when>
       <xsl:otherwise>
         <f:string key="name">
-          <xsl:value-of select="$title"/>
+          <xsl:value-of select="normalize-space($title)"/>
         </f:string>
         <f:string key="alternateName">
-          <xsl:value-of select="$original-title"/>
+          <xsl:value-of select="normalize-space($original-title)"/>
         </f:string>
       </xsl:otherwise>
     </xsl:choose>

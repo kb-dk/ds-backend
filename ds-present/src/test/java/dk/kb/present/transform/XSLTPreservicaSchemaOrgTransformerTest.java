@@ -455,6 +455,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("kb:migrated_from\":\"DOMS\""));
     }
 
+    @Test
+    public void testDomsTitleCleaning() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_73aad1c3);
+        assertTrue(transformedJSON.contains("\"name\":\"Temalørdag: Pavarotti\","));
+    }
+
     private static void printSchemaOrgJson(String xml) throws IOException {
         Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
                                                 "conditionsOfAccess", "placeholderCondition");
