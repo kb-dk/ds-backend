@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce KalturaID as identifier in schema.org JSON
 - Updated solr tests, to use Preservica 7 setup.
 - Update logging in HoldbackDatePicker class making it clearer, that origins in a holdback context comes from TVMeter data.
+- Updated XSLT to strip namespace prefixes from PbcoreDescriptionDocuments, to make them alike for all records
 
 ### Removed
 - Removed all traces of streaming_url and contentUrl for video and audio records.

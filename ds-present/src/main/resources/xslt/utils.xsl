@@ -25,8 +25,12 @@
   <xsl:function name="my:convertDatetimeToZulu">
     <xsl:param name="datetime"/>
 
+    <xsl:variable name="validatedDatetimeT">
+      <xsl:value-of select="my:validateTimezoneT($datetime)"/>
+    </xsl:variable>
+
     <xsl:variable name="wellFormatedDatetime">
-      <xsl:value-of select="my:getDatetimeWithValidTimezone($datetime)"/>
+      <xsl:value-of select="my:getDatetimeWithValidTimezone($validatedDatetimeT)"/>
     </xsl:variable>
 
     <xsl:value-of select="f:adjust-dateTime-to-timezone($wellFormatedDatetime, xs:dayTimeDuration('PT0H'))"/>
@@ -62,6 +66,25 @@
     </xsl:choose>
   </xsl:function>
 
+  <xsl:function name="my:validateTimezoneT">
+    <xsl:param name="datetimeString"/>
+
+    <xsl:choose>
+      <xsl:when test="substring($datetimeString, 11, 1) = 'T'">
+        <xsl:value-of select="$datetimeString"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="date">
+          <xsl:value-of select="substring($datetimeString, 1, 10)"/>
+        </xsl:variable>
+        <xsl:variable name="timeAndZone">
+          <xsl:value-of select="substring($datetimeString, 11)"/>
+        </xsl:variable>
+
+        <xsl:value-of select="f:concat($date, 'T', $timeAndZone)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
 
   <!-- Get milliseconds between two datetimes. -->
   <xsl:function name="my:toMilliseconds" as="xs:integer">
