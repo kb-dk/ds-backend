@@ -15,7 +15,7 @@
                xmlns:program_structure="http://doms.statsbiblioteket.dk/types/program_structure/0/1/#"
                xmlns:err="http://www.w3.org/2005/xqt-errors"
                version="3.0">
-  
+
   <xsl:output method="text"/>
 
   <!--INJECTIONS -->
@@ -68,6 +68,7 @@
     <!-- Determine the type of schema.org object in hand.-->
     <xsl:variable name="type">
       <xsl:choose>
+        <!-- /XIP/Metadata[1]/Content/ns2:PBCoreDescriptionDocument/ns2:pbcoreInstantiation/ns2:formatMediaType-->
         <!-- XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbc:pbcoreInstantiation/pbc:formatMediaType = 'Moving Image'"-->
         <xsl:when test="$pbCore/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
         <xsl:when test="$pbCore/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
@@ -144,7 +145,7 @@
           </xsl:if>
 
           <!-- Extract aspect ratio-->
-          <xsl:if test="$pbCore/pbcoreInstantiation/formatAspectRatio">
+          <xsl:if test="$pbCore/pbcoreInstantiation/formatAspectRatio != '' and normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) != ','">
             <f:string key="videoFrameSize">
               <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
             </f:string>
@@ -444,12 +445,12 @@
         <f:string key="@type">Country</f:string>
         <xsl:for-each select="./pbcoreExtension/extension">
           <xsl:choose>
-            <xsl:when test="f:contains(. , 'produktionsland:')">
+            <xsl:when test="f:contains(. , 'produktionsland:') and substring-after(. , 'produktionsland:') != ''">
               <f:string key="name">
                 <xsl:value-of select="f:substring-after(. , 'produktionsland:')"/>
               </f:string>
             </xsl:when>
-            <xsl:when test="f:contains(. , 'produktionsland_id:')">
+            <xsl:when test="f:contains(. , 'produktionsland_id:') and substring-after(. , 'produktionsland_id:') != ''">
               <f:string key="identifier">
                 <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
               </f:string>

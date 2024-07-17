@@ -435,9 +435,18 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
-    public void testEmptyValues() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3b0c391f);
-        prettyPrintJson(transformedJSON);
+    public void testCountryOfOriginNoName() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_e2dfb840);
+        assertFalse(transformedJSON.contains("\"countryOfOrigin\":{\"@type\":\"Country\",\"name\""));
+        assertTrue(transformedJSON.contains("\"countryOfOrigin\":{" +
+                "\"@type\":\"Country\"," +
+                "\"identifier\":\"0\"}"));
+    }
+
+    @Test
+    public void testFormatAspectRatio() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_e2dfb840);
+        assertFalse(transformedJSON.contains("\"videoFrameSize\""));
     }
 
     private static void printSchemaOrgJson(String xml) throws IOException {
