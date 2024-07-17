@@ -430,6 +430,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     }
 
+    @Test
+    void testEmptyFields() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3b0c391f);
+        prettyPrintJson(solrString);
+    }
+
     /**
      * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
      * transformed record contains the given {@code substring}.

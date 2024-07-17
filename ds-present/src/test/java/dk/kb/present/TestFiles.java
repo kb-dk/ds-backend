@@ -38,6 +38,7 @@ public class TestFiles {
 
     public static final String PVICA_RECORD_2b462c63 = "internal_test_files/preservica7/2b462c63-8bb8-477a-89d9-70675c22c163.xml";
     public static final String PVICA_RECORD_5238ea5d = "internal_test_files/preservica7/5238ea5d-9627-4b08-9a76-356dfb8bebd0.xml";
+    public static final String PVICA_RECORD_3b0c391f = "internal_test_files/preservica7/3b0c391f-b7ef-4b48-a9e8-428a92288c0b.xml";
     public static final String PVICA_DOMS_MIG_bd612d1e = "internal_test_files/domsMigrated/bd612d1e-b90b-48f7-87ce-898da240950b-20240612T105945.xml";
     public static final String PVICA_DOMS_MIG_eaea0362 = "internal_test_files/domsMigrated/eaea0362-bbad-43ec-8d5e-07df6957923b-20240612T112310.xml";
     public static final String PVICA_DOMS_MIG_9779a1b2 = "internal_test_files/domsMigrated/9779a1b2-88ff-408c-9352-ad614615b2e7-20240531T022942.xml";
@@ -45,6 +46,7 @@ public class TestFiles {
     public static final String PVICA_DOMS_MIG_82514cd9 = "internal_test_files/domsMigrated/82514cd9-c30c-4963-8b5c-7c7d32684c17.xml";
     public static final String PVICA_DOMS_MIG_dd5f2f60 = "internal_test_files/domsMigrated/dd5f2f60-b13e-44d7-a439-a408777c0f02.xml";
     public static final String PVICA_DOMS_MIG_597e79f7 = "internal_test_files/domsMigrated/597e79f7-4fe8-42b0-9ccf-90e1af0f5468.xml";
+    public static final String PVICA_DOMS_MIG_4ad48e98 = "internal_test_files/domsMigrated/4ad48e98-b791-43d2-8b32-9cfa23641466.xml";
     public static final String PVICA_HOMEMADE_HOLDBACK_TEST_RECORD = "internal_test_files/homemade/badHoldbackFieldContents.xml";
 
     // From preservica 6, not in preservica 7 stage
