@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 
-## [1.9.4](https://github.com/kb-dk/ds-present/releases/tag/ds-present-1.9.4) 2024-07-17
+## [2.0.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.0.0) 2024-07-17
+###
+- Added support for Preservica records migrated from DOMS.
+
 ### Changed
 - Changed how the solr field creator_affiliation_facet is constructed.
 - Elevated some fields in XSLTs from the kb:internal map to proper schema.org values and non internal solr fields.
