@@ -45,6 +45,7 @@
       <xsl:when test="f:ends-with($datetimeString, 'Z')">
         <xsl:value-of select="$datetimeString"/>
       </xsl:when>
+      <xsl:when test="contains(substring($datetimeString, '+'))"
       <xsl:when test="f:string-length(substring-after($datetimeString, '+')) != 5">
         <xsl:variable name="datetimeNoTimezone">
           <xsl:value-of select="substring-before($datetimeString, '+')"/>
