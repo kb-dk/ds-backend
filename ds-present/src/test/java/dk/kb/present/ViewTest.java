@@ -45,7 +45,6 @@ class ViewTest {
         try {
             ServiceConfig.initialize("conf/ds-present-behaviour.yaml", "internal-test-setup.yaml");
             config = ServiceConfig.getConfig();
-            HoldbackDatePicker.init();
         } catch (IOException e) {
             fail();
         }
@@ -80,6 +79,7 @@ class ViewTest {
     @Test
     @Tag("integration")
     void jsonldPvica() throws Exception {
+        HoldbackDatePicker.init();
         View jsonldView = getPreservicaJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -96,6 +96,7 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testNoKalturaIdPvica() throws Exception {
+        HoldbackDatePicker.init();
         View jsonldView = getPreservicaJsonView();
         String preservicaData = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
@@ -116,6 +117,7 @@ class ViewTest {
     @Test
     @Tag("integration")
     void solrFromPvica() throws Exception {
+        HoldbackDatePicker.init();
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
@@ -135,6 +137,7 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testPreservicaSolrNoKalturaId() throws Exception {
+        HoldbackDatePicker.init();
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
@@ -169,7 +172,9 @@ class ViewTest {
     }
 
     @Test
+    @Tag("integration")
     void testConcurrency() throws InterruptedException, ExecutionException, IOException {
+        HoldbackDatePicker.init();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML tvConf = conf.getYAMLList(".origins").get(3);
