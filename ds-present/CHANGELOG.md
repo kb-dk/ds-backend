@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Added string normalization of title fields to XSLTs.
+- Added validation of ':' in datetime timezone values in XSLT transformations.
+- Added field migrated_from to documents
 
 ### Changed
+- Bumped solr version to 1.6.13.
+- Changed extraction of field videoFrameSize to clean values as '16:9,' and '16:9, ' to '16:9'.
 
 ### Removed
 
