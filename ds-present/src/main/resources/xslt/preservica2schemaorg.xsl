@@ -593,20 +593,7 @@
     </xsl:for-each>
 
     <!-- Extract start and end times for broadcast  and calculate duration -->
-    <xsl:if test="./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and
-                  ./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
-      <xsl:variable name="start-time">
-        <xsl:variable name="startTimeString">
-          <xsl:value-of select="./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart"/>
-        </xsl:variable>
-        <xsl:value-of select="my:convertDatetimeToZulu($startTimeString)"/>
-      </xsl:variable>
-      <xsl:variable name="end-time">
-        <xsl:variable name="endTimeString">
-          <xsl:value-of select="./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd"/>
-        </xsl:variable>
-        <xsl:value-of select="my:convertDatetimeToZulu($endTimeString)"/>
-      </xsl:variable>
+    <xsl:if test="$startTime != '' and $endTime != ''">
       <f:string key="startTime">
         <xsl:value-of select="$startTime"/>
       </f:string>
