@@ -62,6 +62,8 @@ pvicaviews: &PRESERVICA_VIEWS
             stylesheet: 'xslt/preservica2schemaorg.xsl'
             injections:
               - imageserver: 'https://example.com/imageserver/'
+              - startTime: '2022-01-01T11:00:00Z'
+              - endTime: '2022-01-01T12:00:00Z'
   - solrjson:
       mime: 'application/json'
       strategy: 'DR'
@@ -70,42 +72,8 @@ pvicaviews: &PRESERVICA_VIEWS
             stylesheet: 'xslt/preservica2schemaorg.xsl'
             injections:
               - imageserver: 'https://example.com/imageserver/'
-        - xsltsolr:
-            stylesheet: 'xslt/schemaorg2solr.xsl'
-  - raw:
-      mime: 'text/plain'
-      strategy: 'NONE'
-      transformers:
-        - fail:
-            message: 'Raw format contains confidential information and cannot be delivered'
-  # For testing purposes
-  - rawbypass:
-      mime: 'text/plain'
-      transformers:
-        - identity:
-
-pvica5views: &PRESERVICA_VIEWS
-  - mods:
-      mime: 'application/xml'
-      strategy: 'NONE'
-      transformers:
-        - identity: # No transformation steps as mods is the core format for images-dsfl
-  - json-ld:
-      mime: 'application/json'
-      strategy: 'DR'
-      transformers:
-        - xslt:
-            stylesheet: 'xslt/preservica2schemaorg.xsl'
-            injections:
-              - imageserver: 'https://example.com/imageserver/'
-  - solrjson:
-      mime: 'application/json'
-      strategy: 'DR'
-      transformers:
-        - xslt:
-            stylesheet: 'xslt/preservica2schemaorg.xsl'
-            injections:
-              - imageserver: 'https://example.com/imageserver/'
+              - startTime: '2022-01-01T11:00:00Z'
+              - endTime: '2022-01-01T12:00:00Z'
         - xsltsolr:
             stylesheet: 'xslt/schemaorg2solr.xsl'
   - raw:

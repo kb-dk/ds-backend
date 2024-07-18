@@ -82,15 +82,15 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testStartAndEndDates() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
-        Assertions.assertTrue(transformedJSON.contains("\"startTime\":\"2022-05-29T16:48:00Z\"") &&
-                                       transformedJSON.contains("\"endTime\":\"2022-05-29T17:03:00Z\""));
+        Assertions.assertTrue(transformedJSON.contains("\"startTime\":\"1987-05-04T14:45:00Z\"") &&
+                                       transformedJSON.contains("\"endTime\":\"1987-05-04T16:45:00Z\""));
     }
 
     @Test
     void testDuration() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
         // TODO: Fix the time format delivered by the XSLT even though this format is compliant with schema.org as it is part of ISO 8601.
-        Assertions.assertTrue(transformedJSON.contains("\"duration\":\"PT15M\""));
+        Assertions.assertTrue(transformedJSON.contains("\"duration\":\"PT2H\""));
     }
 
     @Test
@@ -425,13 +425,40 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testDateTimeNoT() throws IOException {
         String transformed = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_4ad48e98);
-        prettyPrintJson(transformed);
+        assertTrue(transformed.contains("\"startTime\":\"1987-05-04T14:45:00Z\""));
     }
 
     @Test
-    public void testEmptyValues() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3b0c391f);
-        prettyPrintJson(transformedJSON);
+    void testTimezone() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_cb4bb835);
+        assertTrue(transformedJSON.contains("\"startTime\":\"1987-05-04T14:45:00Z\""));
+    }
+
+    @Test
+    public void testCountryOfOriginNoName() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_e2dfb840);
+        assertFalse(transformedJSON.contains("\"countryOfOrigin\":{\"@type\":\"Country\",\"name\""));
+        assertTrue(transformedJSON.contains("\"countryOfOrigin\":{" +
+                "\"@type\":\"Country\"," +
+                "\"identifier\":\"0\"}"));
+    }
+
+    @Test
+    public void testFormatAspectRatio() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_e2dfb840);
+        assertFalse(transformedJSON.contains("\"videoFrameSize\""));
+    }
+
+    @Test
+    public void testMigratedFrom() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_e2dfb840);
+        assertTrue(transformedJSON.contains("kb:migrated_from\":\"DOMS\""));
+    }
+
+    @Test
+    public void testDomsTitleCleaning() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_73aad1c3);
+        assertTrue(transformedJSON.contains("\"name\":\"Temalørdag: Pavarotti\","));
     }
 
     private static void printSchemaOrgJson(String xml) throws IOException {

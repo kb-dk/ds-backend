@@ -5,14 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Added string normalization of title fields to XSLTs.
+- Added validation of ':' in datetime timezone values in XSLT transformations.
+- Added field migrated_from to documents
 
 ### Changed
+- Bumped solr version to 1.6.13.
+- Changed extraction of field videoFrameSize to clean values as '16:9,' and '16:9, ' to '16:9'.
 
 ### Removed
 
 
 ## [2.0.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.0.0) 2024-07-17
-###
+### Added
 - Added support for Preservica records migrated from DOMS.
 
 ### Changed

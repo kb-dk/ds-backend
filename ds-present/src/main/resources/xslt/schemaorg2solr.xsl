@@ -436,12 +436,7 @@
           <xsl:value-of select="$schemaorg-xml('videoFrameSize')"/>
         </f:string>
       </xsl:if>
-      <!--<xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio') != ''">
-        <f:string key="aspect_ratio">
-          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:aspect_ratio')"/>
-        </f:string>
-      </xsl:if>
--->
+
       <!-- Extract boolean for live broadcast -->
       <xsl:if test="f:exists($schemaorg-xml('publication'))">
         <xsl:if test="f:exists($schemaorg-xml('publication')('isLiveBroadcast'))">
@@ -564,6 +559,12 @@
   <!-- TEMPLATE WHICH EXTRACTS VALUES FROM THE KB INTERNAL MAP, THAT HAVE STATUS AS INTERNAL FIELDS IN SOLR AS WELL. -->
   <xsl:template name="kbInternal">
     <xsl:param name="internalMap"/>
+
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:migrated_from') != ''">
+      <f:string key="migrated_from">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:migrated_from')"/>
+      </f:string>
+    </xsl:if>
 
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:storage_mTime') != ''">
       <f:string key="internal_storage_mTime">

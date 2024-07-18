@@ -18,14 +18,20 @@ import dk.kb.present.holdback.HoldbackObject;
 import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
+import dk.kb.present.util.DataCleanup;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import javax.ws.rs.core.MediaType;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -128,6 +134,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         String content = record.getData();
 
+        if (content != null && (strategy.equals(Strategy.DR) || strategy.equals(Strategy.MANIFESTATION))){
+            extractStartAndEndDatesToMetadataMap(content, metadata);
+        }
+
         switch (strategy) {
             case DR:
                 updateMetadataMapWithHoldback(record, metadata);
@@ -156,6 +166,20 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             }
         }
         return content;
+    }
+
+    /**
+     * Extract start and end date from the record and ensure that they are in a valid format.
+     * @param content of the record.
+     * @param metadataMap containing values given to the transformer creating the view.
+     */
+    private static void extractStartAndEndDatesToMetadataMap(String content, Map<String, String> metadataMap) {
+        try (InputStream xmlStream = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
+            metadataMap.put("startDate", DataCleanup.getStartDate(xmlStream).format(DateTimeFormatter.ISO_INSTANT));
+            metadataMap.put("endDate", DataCleanup.getEndDate(xmlStream).format(DateTimeFormatter.ISO_INSTANT));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -218,7 +242,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      */
     private void updateMetadataMapWithHoldback(DsRecordDto record, Map<String, String> metadata) {
         try {
-            HoldbackObject holdbackObject = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(record);
+            HoldbackObject holdbackObject = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(record, metadata.get("startDate"));
 
             metadata.put("holdbackDate", holdbackObject.getHoldbackDate());
             metadata.put("holdbackPurposeName", holdbackObject.getHoldbackPurposeName());

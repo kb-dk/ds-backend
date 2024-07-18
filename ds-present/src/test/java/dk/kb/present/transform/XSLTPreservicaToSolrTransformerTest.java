@@ -15,10 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Consumer;
 
+import static dk.kb.present.TestUtil.transformWithInjections;
 import static dk.kb.present.TestUtil.prettyPrintJson;
-import static dk.kb.present.TestUtil.prettyPrintSolrJsonFromPreservica;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -61,13 +62,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    public void testDirectDuration() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8,"\"duration_ms\":\"1509000\"");
-    }
-
-    @Test
     public void testCalculatedDuration() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1,"\"duration_ms\":\"2700000\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1,"\"duration_ms\":\"7200000\"");
     }
 
     @Test
@@ -308,53 +304,53 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testStartTime(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"startTime\":\"2022-02-28T17:29:55Z\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"startTime\":\"1987-05-04T14:45:00Z\"");
     }
 
     @Test
     void testEndTime(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"endTime\":\"2022-02-28T17:55:04Z\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"endTime\":\"1987-05-04T16:45:00Z\"");
     }
 
     @Test
-    void testTemporalSearchWinterFields(){
+    void testTemporalSearchWinterFields() throws IOException {
         // Sanity check time zone conversions at https://www.worldtimebuddy.com/
-        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"temporal_start_time_da_string\":\"18:29:55\"," +
+        Map<String, String > winterDates = Map.of("startTime", "2022-02-28T17:29:55Z",
+                                                    "endTime", "2022-02-28T17:55:04Z");
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, winterDates);
+        assertTrue(solrDocument.contains("\"temporal_start_time_da_string\":\"18:29:55\"," +
                                                                         "\"temporal_start_hour_da\":\"18\"," +
                                                                         "\"temporal_start_date_da_string\":\"2022-02-28\"," +
                                                                         "\"temporal_start_year\":\"2022\"," +
                                                                         "\"temporal_start_month\":\"2\"," +
                                                                         "\"temporal_start_time_da_date\":\"9999-01-01T18:29:55Z\"," +
-                                                                        "\"temporal_start_day_da\":\"Monday\"");
-        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"temporal_end_time_da_string\":\"18:55:04\"," +
+                                                                        "\"temporal_start_day_da\":\"Monday\""));
+        assertTrue(solrDocument.contains("\"temporal_end_time_da_string\":\"18:55:04\"," +
                                                                         "\"temporal_end_date_da_string\":\"2022-02-28\"," +
                                                                         "\"temporal_end_time_da_date\":\"9999-01-01T18:55:04Z\"," +
-                                                                        "\"temporal_end_day_da\":\"Monday\"");
+                                                                        "\"temporal_end_day_da\":\"Monday\""));
     }
 
     // Adjusted version of testTemporalSearchFields, where the month has been changed from April to February to
     // check if Danish summer/winter time is obeyed.
     @Test
     void testTemporalSearchSummer() throws IOException {
-        String summer = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_3006e2f8)
-                .replace("2022-02-28T", "2022-05-28T");
-        File summerFile = Path.of(Resolver.resolveURL("ds-present-openapi_v1.yaml").getPath())
-                .getParent()
-                .resolve("3006e2f8_summer.xml")
-                .toFile();
-        Files.saveString(summer, summerFile);
+        Map<String, String > summerDates = Map.of("startTime", "2022-05-28T17:29:55Z",
+                                                    "endTime", "2022-05-28T17:55:04Z");
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, summerDates);
 
-        assertPvicaContains(summerFile.getAbsolutePath(), "\"temporal_start_time_da_string\":\"19:29:55\"," +
+        assertTrue(solrDocument.contains("\"temporal_start_time_da_string\":\"19:29:55\"," +
                 "\"temporal_start_hour_da\":\"19\"," +
                 "\"temporal_start_date_da_string\":\"2022-05-28\"," +
                 "\"temporal_start_year\":\"2022\"," +
                 "\"temporal_start_month\":\"5\"," +
                 "\"temporal_start_time_da_date\":\"9999-01-01T19:29:55Z\"," +
-                "\"temporal_start_day_da\":\"Saturday\"");
-        assertPvicaContains(summerFile.getAbsolutePath(), "\"temporal_end_time_da_string\":\"19:55:04\"," +
+                "\"temporal_start_day_da\":\"Saturday\""));
+
+        assertTrue(solrDocument.contains("\"temporal_end_time_da_string\":\"19:55:04\"," +
                 "\"temporal_end_date_da_string\":\"2022-05-28\"," +
                 "\"temporal_end_time_da_date\":\"9999-01-01T19:55:04Z\"," +
-                "\"temporal_end_day_da\":\"Saturday\"");
+                "\"temporal_end_day_da\":\"Saturday\""));
     }
 
     @Test
@@ -428,6 +424,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"abstract_length\":\"15\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"description_length\":\"374\"");
 
+    }
+
+    @Test
+    void testMigratedFrom(){
+        assertPvicaContains(TestFiles.PVICA_DOMS_MIG_e2dfb840, "\"migrated_from\":\"DOMS\"");
     }
 
     @Test

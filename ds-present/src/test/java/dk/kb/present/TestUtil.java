@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static dk.kb.present.solr.EmbeddedSolrTest.MODS2SOLR;
-import static dk.kb.present.solr.EmbeddedSolrTest.PRESERVICA2SOLR;
+import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static dk.kb.present.transform.XSLTPreservicaToSolrTransformerTest.SCHEMA2SOLR;
 
 public class TestUtil {
@@ -63,6 +63,8 @@ public class TestUtil {
 		metadata.put("origin", "ds.test");
 		metadata.put("conditionsOfAccess", "placeholderCondition");
 		metadata.put("mTime", "1701261949625000");
+		metadata.put("startTime", "1987-05-04T14:45:00Z");
+		metadata.put("endTime", "1987-05-04T16:45:00Z");
 		//System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
 	}
@@ -80,6 +82,8 @@ public class TestUtil {
 		metadata.put("manifestation", childData);
 		metadata.put("conditionsOfAccess", "placeholderCondition");
 		metadata.put("mTime", "1701261949625000");
+		metadata.put("startTime", "1987-05-04T14:45:00Z");
+		metadata.put("endTime", "1987-05-04T16:45:00Z");
 		//System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
 	}
@@ -114,7 +118,9 @@ public class TestUtil {
 				"manifestation", "8946d31d-a81c-447f-b84d-ff80644353d2.mp4",
 				"holdbackDate", "2026-01-17T09:34:42Z",
 				"holdbackPurposeName","Aktualitet og debat",
-				"kalturaID", "aVeryTrueKalturaID");
+				"kalturaID", "aVeryTrueKalturaID",
+				"startTime", "1987-05-04T14:45:00Z",
+				"endTime", "1987-05-04T16:45:00Z");
 		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
 		//prettyPrintJson(schemaOrgJson);
 
@@ -123,6 +129,31 @@ public class TestUtil {
 		String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, mapOfJson);
 		//prettyPrintJson(solrJson);
 		return solrJson;
+	}
+
+	public static String transformWithInjections(String record, Map<String, String> injections) throws IOException {
+		String schemaOrgJson = TestUtil.getTransformedWithMinimumFields(PRESERVICA2SCHEMAORG, record, injections);
+		//prettyPrintJson(schemaOrgJson);
+
+		String placeholderXml = "placeholder.xml";
+		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);
+		String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, mapOfJson);
+		//prettyPrintJson(solrJson);
+		return solrJson;
+	}
+
+	public static String getTransformedWithMinimumFields(
+			String xsltResource, String xmlResource, Map<String, String> injections) throws IOException {
+		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
+		String xml = Resolver.resolveUTF8String(xmlResource);
+		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
+
+		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
+		metadata.put("origin", "ds.test");
+		metadata.put("mTime", "1701261949625000");
+		metadata.putAll(injections);
+		//System.out.println("access fields:"+metadata);
+		return transformer.apply(xml, metadata);
 	}
 
 	/**
@@ -134,14 +165,6 @@ public class TestUtil {
 						"injections:\n" +
 						"  - imageserver: 'https://example.com/imageserver/'\n" +
 						"  - old_imageserver: 'http://kb-images.kb.dk'\n" +
-						"  - origin: 'ds.test'\n";
-		prettyPrintSolrJson(record, yamlStr);
-	}
-
-	public static void prettyPrintSolrJsonFromPreservica(String record) throws Exception {
-		String yamlStr =
-				"stylesheet: '" + PRESERVICA2SOLR + "'\n" +
-						"injections:\n" +
 						"  - origin: 'ds.test'\n";
 		prettyPrintSolrJson(record, yamlStr);
 	}

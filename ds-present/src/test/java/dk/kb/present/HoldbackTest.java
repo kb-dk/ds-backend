@@ -52,46 +52,46 @@ public class HoldbackTest {
 
     @Test
     public void badOriginsTest() throws IOException {
-        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord).getHoldbackDate());
-        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord).getHoldbackPurposeName());
+        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord, "").getHoldbackDate());
+        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord, "").getHoldbackPurposeName());
 
-        Exception exception = assertThrowsExactly(InternalServiceException.class, () -> HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badOriginRecord));
+        Exception exception = assertThrowsExactly(InternalServiceException.class, () -> HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badOriginRecord, ""));
         assertEquals("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without values.", exception.getMessage());
     }
 
     @Test
     public void badRecordTest() throws IOException {
-        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badRecord).getHoldbackDate());
+        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badRecord, "").getHoldbackDate());
     }
 
     @Test
     public void getHoldbackDateFromXmlTest() throws IOException {
-        assertEquals("2026-01-17T09:34:42Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord1).getHoldbackDate());
+        assertEquals("2026-01-17T09:34:42Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord1, "2016-01-20T09:34:42Z").getHoldbackDate());
     }
 
     @Test
     public void holdbackNoValueTest() throws IOException {
-        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackDate());
+        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2, "2022-02-28T17:29:55Z").getHoldbackDate());
     }
 
     @Test
     public void holdbackNameNoValueTest() throws IOException {
-        assertTrue(HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackPurposeName().isEmpty());
+        assertTrue(HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2, "2022-02-28T17:29:55Z").getHoldbackPurposeName().isEmpty());
     }
 
     @Test
     public void getHoldbackPurposeFromXmlTest() throws IOException {
-        assertEquals("Dansk Dramatik & Fiktion", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord1).getHoldbackPurposeName());
+        assertEquals("Dansk Dramatik & Fiktion", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord1, "2016-01-20T09:34:42Z").getHoldbackPurposeName());
     }
 
     @Test
     public void getNoHoldbackDateFromXmlTest() throws IOException {
-        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2).getHoldbackDate());
+        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2, "2022-02-28T17:29:55Z").getHoldbackDate());
     }
 
     @Test
     public void radioHoldbackTest() throws IOException {
-        HoldbackObject holdbackObject =  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(radioRecord1);
+        HoldbackObject holdbackObject =  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(radioRecord1, "2018-04-03T08:03:00Z");
 
         assertEquals("2021-04-03T08:03:00Z", holdbackObject.getHoldbackDate());
         assertEquals("", holdbackObject.getHoldbackPurposeName());

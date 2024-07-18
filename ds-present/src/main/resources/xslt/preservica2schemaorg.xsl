@@ -15,7 +15,7 @@
                xmlns:program_structure="http://doms.statsbiblioteket.dk/types/program_structure/0/1/#"
                xmlns:err="http://www.w3.org/2005/xqt-errors"
                version="3.0">
-  
+
   <xsl:output method="text"/>
 
   <!--INJECTIONS -->
@@ -23,6 +23,9 @@
   <xsl:param name="origin"/>
   <!-- ID of the record. -->
   <xsl:param name="recordID"/>
+  <!-- Start and enddate from this record. Correctly parsed and in UTC time.-->
+  <xsl:param name="startTime"/>
+  <xsl:param name="endTime"/>
   <!-- ID created by kaltura. This ID is the ID of the stream containing the newest presentation copy for this resource. Used for video and audio objects.-->
   <xsl:param name="kalturaID"/>
   <!-- XML containing the presentation manifestation for the record in hand-->
@@ -68,6 +71,7 @@
     <!-- Determine the type of schema.org object in hand.-->
     <xsl:variable name="type">
       <xsl:choose>
+        <!-- /XIP/Metadata[1]/Content/ns2:PBCoreDescriptionDocument/ns2:pbcoreInstantiation/ns2:formatMediaType-->
         <!-- XIP/Metadata/Content/pbc:PBCoreDescriptionDocument/pbc:pbcoreInstantiation/pbc:formatMediaType = 'Moving Image'"-->
         <xsl:when test="$pbCore/pbcoreInstantiation/formatMediaType = 'Moving Image'">VideoObject</xsl:when>
         <xsl:when test="$pbCore/pbcoreInstantiation/formatMediaType = 'Sound'">AudioObject</xsl:when>
@@ -143,12 +147,22 @@
             <f:string key="videoQuality"><xsl:value-of select="//pbcoreInstantiation/formatStandard"/></f:string>
           </xsl:if>
 
-          <!-- Extract aspect ratio-->
-          <xsl:if test="$pbCore/pbcoreInstantiation/formatAspectRatio">
-            <f:string key="videoFrameSize">
-              <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
-            </f:string>
-          </xsl:if>
+          <!-- Extract aspect ratio -->
+          <!-- Aspect ratio contains many dirty values. such as ',', ', ', '16:9,' and '16:9, '. -->
+          <xsl:choose>
+            <xsl:when test="normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = ','"/>
+            <xsl:when test="normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = '16:9,' or normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = '16:9, '">
+              <f:string key="videoFrameSize">16:9</f:string>
+            </xsl:when>
+            <xsl:when test="$pbCore/pbcoreInstantiation/formatAspectRatio != '' and normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) != ',' or ', '">
+              <f:string key="videoFrameSize">
+                <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
+              </f:string>
+            </xsl:when>
+            <!-- If the field doesn't exist, don't do anything -->
+            <xsl:otherwise></xsl:otherwise>
+          </xsl:choose>
+
         </xsl:for-each>
 
         <!-- Create the kb:internal map. This map contains all metadata, that are not represented in schema.org, but were
@@ -331,20 +345,20 @@
     <xsl:choose>
       <xsl:when test="$title = $original-title and $title != '' or ($title != '' and $original-title = '')">
         <f:string key="name">
-          <xsl:value-of select="$title"/>
+          <xsl:value-of select="normalize-space($title)"/>
         </f:string>
       </xsl:when>
       <xsl:when test="$title = '' and $original-title != ''">
         <f:string key="name">
-          <xsl:value-of select="$original-title"/>
+          <xsl:value-of select="normalize-space($original-title)"/>
         </f:string>
       </xsl:when>
       <xsl:otherwise>
         <f:string key="name">
-          <xsl:value-of select="$title"/>
+          <xsl:value-of select="normalize-space($title)"/>
         </f:string>
         <f:string key="alternateName">
-          <xsl:value-of select="$original-title"/>
+          <xsl:value-of select="normalize-space($original-title)"/>
         </f:string>
       </xsl:otherwise>
     </xsl:choose>
@@ -444,12 +458,12 @@
         <f:string key="@type">Country</f:string>
         <xsl:for-each select="./pbcoreExtension/extension">
           <xsl:choose>
-            <xsl:when test="f:contains(. , 'produktionsland:')">
+            <xsl:when test="f:contains(. , 'produktionsland:') and substring-after(. , 'produktionsland:') != ''">
               <f:string key="name">
                 <xsl:value-of select="f:substring-after(. , 'produktionsland:')"/>
               </f:string>
             </xsl:when>
-            <xsl:when test="f:contains(. , 'produktionsland_id:')">
+            <xsl:when test="f:contains(. , 'produktionsland_id:') and substring-after(. , 'produktionsland_id:') != ''">
               <f:string key="identifier">
                 <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
               </f:string>
@@ -579,31 +593,18 @@
     </xsl:for-each>
 
     <!-- Extract start and end times for broadcast  and calculate duration -->
-    <xsl:if test="./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart and
-                  ./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd">
-      <xsl:variable name="start-time">
-        <xsl:variable name="startTimeString">
-          <xsl:value-of select="./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart"/>
-        </xsl:variable>
-        <xsl:value-of select="my:convertDatetimeToZulu($startTimeString)"/>
-      </xsl:variable>
-      <xsl:variable name="end-time">
-        <xsl:variable name="endTimeString">
-          <xsl:value-of select="./pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd"/>
-        </xsl:variable>
-        <xsl:value-of select="my:convertDatetimeToZulu($endTimeString)"/>
-      </xsl:variable>
+    <xsl:if test="$startTime != '' and $endTime != ''">
       <f:string key="startTime">
-        <xsl:value-of select="$start-time"/>
+        <xsl:value-of select="$startTime"/>
       </f:string>
       <f:string key="endTime">
-        <xsl:value-of select="$end-time"/>
+        <xsl:value-of select="$endTime"/>
       </f:string>
 
       <!-- Schema.org refers to the wiki page for ISO8601 and actually wants the duration in the format PT12M50S
            for a duration of 12 minutes and 50 seconds -->
       <f:string key="duration">
-        <xsl:value-of select="xs:dateTime($end-time) - xs:dateTime($start-time)"/>
+        <xsl:value-of select="xs:dateTime($endTime) - xs:dateTime($startTime)"/>
       </f:string>
     </xsl:if>
 
@@ -772,6 +773,18 @@
     <xsl:param name="pbCore"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
+
+    <!-- Extration of migration details if present. Implemented as a choose statement. -->
+    <xsl:if test="/XIP/Metadata/Content/migration_details/migrated_from">
+      <xsl:variable name="migrationSource">
+        <xsl:value-of select="/XIP/Metadata/Content/migration_details/migrated_from"/>
+      </xsl:variable>
+      <f:string key="kb:migrated_from">
+        <xsl:choose>
+          <xsl:when test="normalize-space($migrationSource) = 'Radio/tv DOMS - prod'">DOMS</xsl:when>
+        </xsl:choose>
+      </f:string>
+    </xsl:if>
 
     <!-- Internal value for backing ds-storage mTime-->
     <f:string key="kb:storage_mTime">
