@@ -18,6 +18,8 @@ import dk.kb.discover.DocumentationExtractor;
 import dk.kb.discover.util.solrshield.Response;
 import dk.kb.discover.util.solrshield.SolrShield;
 import dk.kb.util.webservice.exception.InternalServiceException;
+
+import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
 import org.apache.cxf.jaxrs.model.Parameter;
@@ -46,6 +48,7 @@ import dk.kb.util.webservice.exception.ServiceException;
  * <p>ds-discover by the Royal Danish Library 
  *
  */
+@InInterceptors(interceptors = "dk.kb.discover.webservice.KBAuthorizationInterceptor")
 public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi {
     private Logger log = LoggerFactory.getLogger(this.toString());
 
