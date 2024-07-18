@@ -8,17 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.image.config.ServiceConfig;
-import dk.kb.image.kaltura.DsKalturaClient;
 import dk.kb.image.model.v1.ThumbnailsDto;
+import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
 public class KalturaUtil {
 
     private static final Logger log = LoggerFactory.getLogger(KalturaUtil.class);
-    private static DsKalturaClient clientInstance = null;
-    private static long lastSessionStart=0;
-    private static long reloadIntervalInMillis=1L*24*60*60*1000; // 1 day
-          
+            
     /**
      * 
      * Example url to the sprite with all thumbnails:<br>
@@ -43,7 +40,7 @@ public class KalturaUtil {
         String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
         Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
         
-        DsKalturaClient client = getClientInstance();
+        DsKalturaClient client = getKalturaClient();
         String kalturaId = client.getKulturaInternalId(fileId);                     
         
         if (kalturaId == null) {
@@ -76,23 +73,16 @@ public class KalturaUtil {
 
         return thumbnails;          
     }
-
     
-    public  synchronized static DsKalturaClient getClientInstance() throws IOException{
-        if (System.currentTimeMillis()-lastSessionStart >= reloadIntervalInMillis) {            
-            //Create the client
-            String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
-            String adminSecret = ServiceConfig.getConfig().getString("kaltura.adminSecret"); //Must not be shared or exposed.
-            Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
-            String userId = ServiceConfig.getConfig().getString("kaltura.userId");
-            DsKalturaClient client = new DsKalturaClient(kalturaUrl,userId,partnerId,adminSecret);             
-            clientInstance=client;
-            log.info("Started a new Kaltura session");
-            lastSessionStart=System.currentTimeMillis(); //Reset timer           
-            return clientInstance;
-        }
-        return clientInstance; //Reuse existing connection.
-        
+    private static DsKalturaClient getKalturaClient() throws IOException {
+        String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
+        String adminSecret = ServiceConfig.getConfig().getString("kaltura.adminSecret"); //Must not be shared or exposed.
+        Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
+        String userId = ServiceConfig.getConfig().getString("kaltura.userId");                               
+        long sessionKeepAliveSeconds=3600L; //1 hour
+        log.info("creating kaltura client for partnerID:"+partnerId);
+        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl,userId,partnerId,adminSecret,sessionKeepAliveSeconds);
+        return kalturaClient;
     }
     
 }

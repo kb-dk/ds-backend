@@ -117,11 +117,13 @@
         </dependency>
         
         <!--For getting thumbnails from Kaltura -->
-        <dependency>
-            <groupId>com.kaltura</groupId>
-            <artifactId>kalturaApiClient</artifactId>
-            <version>19.3.0</version>
-        </dependency>
+      <dependency>
+          <groupId>dk.kb.kaltura</groupId>
+          <artifactId>ds-kaltura</artifactId>
+          <version>1.2.3</version>
+          <type>jar</type>
+      </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-xml-provider</artifactId>
