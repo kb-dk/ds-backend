@@ -6,10 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+
+
+### Removed
+
+
+## [1.5.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.5.0) - 2024-07-18
+### Changed
 - Using ds-kaltura client v.1.2.3 instead of custom kaltura client implementation. 
 
 ### Removed
--  Kaltura integration test since this is already done in the ds-kalturaclient module.
+-  Kaltura integration test since this is already done in the ds-kaltura module.
 
 
 ## [1.4.1](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.4.1) - 2024-07-01
