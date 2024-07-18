@@ -361,7 +361,7 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testPreservicaDuration() throws Exception {
-        testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "duration_ms", 900000L);
+        testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "duration_ms", 7200000L);
     }
 
     @Test
@@ -410,7 +410,7 @@ public class EmbeddedSolrTest {
     @Tag("integration")
     void testPvicaStartTime() throws Exception {
         // Epoch value of 2018-07-11T18-06-33Z
-        Date startTime = new Date(1522926720000L);
+        Date startTime = new Date(547137900000L);
         testDateValuePreservicaField(PVICA_RECORD_b346acc8, "startTime", startTime);
     }
 
@@ -419,25 +419,25 @@ public class EmbeddedSolrTest {
     @Tag("integration")
     void testPvicaEndTime() throws Exception {
         // Epoch value of 2018-07-11T18-22-23Z
-        Date endTime = new Date(1522927920000L);
+        Date endTime = new Date(547145100000L);
         testDateValuePreservicaField(PVICA_RECORD_b346acc8, "endTime", endTime);
     }
 
     @Test
     @Tag("integration")
     void testPvicaTemporalFields() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_year", "2022");
-        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_time_da_string", "18:29:55" );
-        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_end_time_da_string", "18:55:04");
+        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_year", "1987");
+        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_time_da_string", "16:45:00" );
+        testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_end_time_da_string", "18:45:00");
         testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_day_da", "Monday");
         testStringValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_end_day_da", "Monday");
-        testIntValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_month", 2);
-        testIntValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_hour_da", 18);
+        testIntValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_month", 5);
+        testIntValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_hour_da", 16);
 
-        Date startDate = new Date(253370831395000L);
+        Date startDate = new Date(253370825100000L);
         testDateValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_start_time_da_date", startDate);
 
-        Date endDate = new Date(253370832904000L);
+        Date endDate = new Date(253370832300000L);
         testDateValuePreservicaField(PVICA_RECORD_3006e2f8, "temporal_end_time_da_date", endDate);
     }
 

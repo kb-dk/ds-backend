@@ -85,7 +85,9 @@ class ViewTest {
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                                                     .origin("ds.radio").kalturaId("randomKalturaId");
 
+
         String jsonld = jsonldView.apply(recordDto);
+        prettyPrintJson(jsonld);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"2022-07-06T08:05:00Z\""));
         assertTrue(jsonld.contains("\"@type\":\"PropertyValue\"," +

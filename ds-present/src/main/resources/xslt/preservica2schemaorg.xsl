@@ -23,6 +23,9 @@
   <xsl:param name="origin"/>
   <!-- ID of the record. -->
   <xsl:param name="recordID"/>
+  <!-- Start and enddate from this record. Correctly parsed and in UTC time.-->
+  <xsl:param name="startTime"/>
+  <xsl:param name="endTime"/>
   <!-- ID created by kaltura. This ID is the ID of the stream containing the newest presentation copy for this resource. Used for video and audio objects.-->
   <xsl:param name="kalturaID"/>
   <!-- XML containing the presentation manifestation for the record in hand-->
@@ -605,16 +608,16 @@
         <xsl:value-of select="my:convertDatetimeToZulu($endTimeString)"/>
       </xsl:variable>
       <f:string key="startTime">
-        <xsl:value-of select="$start-time"/>
+        <xsl:value-of select="$startTime"/>
       </f:string>
       <f:string key="endTime">
-        <xsl:value-of select="$end-time"/>
+        <xsl:value-of select="$endTime"/>
       </f:string>
 
       <!-- Schema.org refers to the wiki page for ISO8601 and actually wants the duration in the format PT12M50S
            for a duration of 12 minutes and 50 seconds -->
       <f:string key="duration">
-        <xsl:value-of select="xs:dateTime($end-time) - xs:dateTime($start-time)"/>
+        <xsl:value-of select="xs:dateTime($endTime) - xs:dateTime($startTime)"/>
       </f:string>
     </xsl:if>
 

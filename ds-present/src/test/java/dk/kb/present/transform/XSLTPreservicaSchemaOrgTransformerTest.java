@@ -82,15 +82,15 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testStartAndEndDates() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
-        Assertions.assertTrue(transformedJSON.contains("\"startTime\":\"2022-05-29T16:48:00Z\"") &&
-                                       transformedJSON.contains("\"endTime\":\"2022-05-29T17:03:00Z\""));
+        Assertions.assertTrue(transformedJSON.contains("\"startTime\":\"1987-05-04T14:45:00Z\"") &&
+                                       transformedJSON.contains("\"endTime\":\"1987-05-04T16:45:00Z\""));
     }
 
     @Test
     void testDuration() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
         // TODO: Fix the time format delivered by the XSLT even though this format is compliant with schema.org as it is part of ISO 8601.
-        Assertions.assertTrue(transformedJSON.contains("\"duration\":\"PT15M\""));
+        Assertions.assertTrue(transformedJSON.contains("\"duration\":\"PT2H\""));
     }
 
     @Test
@@ -431,7 +431,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testTimezone() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_cb4bb835);
-        assertTrue(transformedJSON.contains("\"startTime\":\"1981-05-08T17:00:00Z\""));
+        assertTrue(transformedJSON.contains("\"startTime\":\"1987-05-04T14:45:00Z\""));
     }
 
     @Test
