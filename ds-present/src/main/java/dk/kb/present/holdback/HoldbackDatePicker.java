@@ -10,12 +10,9 @@ import java.time.format.DateTimeFormatter;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
 import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.util.DatetimeParser;
-import dk.kb.util.MalformedIOException;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +67,11 @@ public class HoldbackDatePicker {
 
     private static SAXParserFactory factory;
 
+    /**
+     * StartDate from XML content of the record. This date is used to calculate the holdback date from.
+     */
+    private static String startDate;
+
     HoldbackDatePicker() {}
 
     public static void init(){
@@ -90,10 +92,11 @@ public class HoldbackDatePicker {
      * @return a string containing the date for when the holdback for the record has expired.
      *         In the format: yyyy-MM-ddTHH:mm:ssZ
      */
-    public HoldbackObject getHoldbackDateForRecord(DsRecordDto record) throws IOException {
+    public HoldbackObject getHoldbackDateForRecord(DsRecordDto record, String startDate) throws IOException {
+        HoldbackDatePicker.startDate = startDate;
         HoldbackObject result = new HoldbackObject();
         if (record.getOrigin() == null){
-            log.error("TVMeter origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without " +
+            log.error("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without " +
                     "values.");
             result.setHoldbackPurposeName("");
             result.setHoldbackDate("");
@@ -110,7 +113,6 @@ public class HoldbackDatePicker {
             throw new InternalServiceException("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'." +
                     " Returning a result object without values.");
         }
-
     }
 
     /**
@@ -125,14 +127,10 @@ public class HoldbackDatePicker {
         if (record.getData() == null){
             throw new RuntimeException("Record with ID: '" + record.getId() + "' does not contain data");
         }
-        try (InputStream xmlStream = IOUtils.toInputStream(record.getData(), StandardCharsets.UTF_8)) {
-            // Radio should be held back by three years by DR request.
-            result.setHoldbackDate(addHoldbackDaysToRecordStartDate(xmlStream, 1096));
-            result.setHoldbackPurposeName("");
-            return result;
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
-        }
+        // Radio should be held back by three years by DR request.
+        result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), 1096));
+        result.setHoldbackPurposeName("");
+        return result;
     }
 
     /**
@@ -155,7 +153,7 @@ public class HoldbackDatePicker {
                     result.setHoldbackDate("9999-01-01T00:00:00Z");
                 } else {
                     int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
-                    result.setHoldbackDate(addHoldbackDaysToRecordStartDate(xmlStream, holdbackDays));
+                    result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), holdbackDays));
                 }
 
 
@@ -164,18 +162,6 @@ public class HoldbackDatePicker {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    /**
-     * Extract the start date from a Preservica record and add the input holdbackDays to the date to create the date,
-     * when the holdback period for the record has expired.
-     * @param xmlStream containing a preservica record with a dateAvailableStart value in the PB Core metadata.
-     * @param holdbackDays amount of days to be added to the start date
-     * @return the calculated date for when holdback expires for the record. In the format: yyyy-MM-dd'T'HH:mm:ssZ
-     */
-    private static String addHoldbackDaysToRecordStartDate(InputStream xmlStream, int holdbackDays) throws ParserConfigurationException, IOException, SAXException {
-        ZonedDateTime startDate = getStartDate(xmlStream);
-        return calculateHoldbackDate(startDate, holdbackDays);
     }
 
     /**
@@ -308,19 +294,4 @@ public class HoldbackDatePicker {
         return handler.getCurrentValue();
     }
 
-    private static ZonedDateTime getStartDate(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
-        SAXParser saxParser = factory.newSAXParser();
-        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart");
-        saxParser.parse(xml, handler);
-        xml.reset();
-        String datetimeString =  handler.getCurrentValue();
-
-        String dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss[XX][XXX]";
-        try {
-            return DatetimeParser.parseStringToZonedDateTime(datetimeString, dateTimeFormat);
-        } catch (MalformedIOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
 }
