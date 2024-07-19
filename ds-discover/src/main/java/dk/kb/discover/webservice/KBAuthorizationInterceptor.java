@@ -237,7 +237,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
     }
 
     /**
-     * Validate that the Authorization in the message has allowed baseurl and realm, that is is not expired etc.
+     * Validate that the Authorization in the message has allowed baseurl and realm, that it is not expired etc.
      * This does not check if the roles for the caller matches the roles for the endpoint.
      * @param message CXF message with Authorization information.
      * @throws VerificationException if the authorization validation failed.
@@ -259,8 +259,8 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
                     "but it started with '" + parts[0] + " '");
         }
         if (parts.length != 2) {
-            log.warn("Received Authorization string without a space: '{}'", authorizationString);
-            throw new VerificationException("Unsupported authorization String (no space)");
+            log.warn("Received Authorization string without a two white spaces: '{}'", authorizationString);
+            throw new VerificationException("Unsupported authorization String (not two white spaces)");
         }
 
         return handler.validateAuthorization(parts[1]);

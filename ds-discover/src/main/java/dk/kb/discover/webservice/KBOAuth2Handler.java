@@ -79,30 +79,30 @@ public class KBOAuth2Handler {
      */
     private KBOAuth2Handler() {
         YAML conf;
-        if (!ServiceConfig.getConfig().containsKey(".security")) {
+        if (!ServiceConfig.getConfig().containsKey("security")) {
             log.warn("Authorization interceptor enabled, but there is no security setup in configuration at " +
                      "key .security");
             conf = new YAML();
         } else {
-            conf = ServiceConfig.getConfig().getSubMap(".security");
+            conf = ServiceConfig.getConfig().getSubMap("security");
         }
 
-        mode = MODE.valueOf(conf.getString(".mode", MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
+        mode = MODE.valueOf(conf.getString("mode", MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
         if (mode == MODE.OFFLINE) {
             log.warn("Authorization mode is {}. Access tokens will not be properly checked. " +
-                     "Set .config.security.mode to ENABLED to activate full access token validation", MODE.OFFLINE);
+                     "Set security.mode to ENABLED to activate full access token validation", MODE.OFFLINE);
         }
 
-        baseurl = trimTrailingSlash(conf.getString(".baseurl", null));
+        baseurl = trimTrailingSlash(conf.getString("baseurl", null));
         if (baseurl == null && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
-                     "No .config.security.baseurl defined and .config.security.mode=" + mode);
+                     "No security.baseurl defined and security.mode=" + mode);
         }
 
-        realms = new HashSet<>(conf.getList(".realms", Collections.emptyList()));
+        realms = new HashSet<>(conf.getList("realms", Collections.emptyList()));
         if (realms.isEmpty() && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
-                     "No .config.security.realms defined and .config.security.mode=" + mode);
+                     "No .security.realms defined and security.mode=" + mode);
         }
 
         keysTTL = conf.getInteger(".public_keys.ttl_seconds", 600);
@@ -113,7 +113,7 @@ public class KBOAuth2Handler {
     }
 
     /**
-     * @return singleton instance of thic class, initialized from {@link ServiceConfig}.
+     * @return singleton instance of this  class, initialized from {@link ServiceConfig}.
      */
     public static synchronized KBOAuth2Handler getInstance() {
         if (instance == null) {
@@ -220,7 +220,7 @@ public class KBOAuth2Handler {
     }
 
     /**
-     * Validate that the accessTokenString has allowed baseurl and realm, that is is not expired etc.
+     * Validate that the accessTokenString has allowed baseurl and realm, that it is not expired etc.
      * This does not check if the roles for the caller matches the roles for the endpoint.
      * @param encodedAccessToken untrusted Base64-encoded JSON, in multiple parts split by {@code .}.
      * @return a trusted (validated) AccessToken.
@@ -231,7 +231,7 @@ public class KBOAuth2Handler {
     }
 
     /**
-     * Validate that the accessTokenString has allowed baseurl and realm, that is is not expired etc.
+     * Validate that the accessTokenString has allowed baseurl and realm, that it is not expired etc.
      * This does not check if the roles for the caller matches the roles for the endpoint.
      * @param encodedAccessToken untrusted Base64-encoded JSON, in multiple parts split by {@code .}.
      * @param mode override of the configured mode.
