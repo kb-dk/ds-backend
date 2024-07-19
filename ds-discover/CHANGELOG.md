@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
-
 ### Changed
+
+### Removed
+- Removed non-resolvable git.tag from build.properties
 
 ## [1.3.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.3.2) - 2024-07-17
 
