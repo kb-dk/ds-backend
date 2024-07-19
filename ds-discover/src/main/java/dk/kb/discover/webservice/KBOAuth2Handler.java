@@ -63,10 +63,12 @@ public class KBOAuth2Handler {
 
     private final MODE mode;
     private final String baseurl;
-    private final Set<String > realms;
+    private final Set<String > realms; //Realms defined on the Keycloak server 
     private final int keysTTL;
 
-    final Map<String, PublicKey> realmKeys;
+    //Map with realm+kid as key the PublicKey as values 
+    //See https://www.rfc-editor.org/rfc/rfc7515#section-4.1.4
+    final Map<String, PublicKey> realmKeys; //Map
     private static KBOAuth2Handler instance;
 
     /**
@@ -284,7 +286,7 @@ public class KBOAuth2Handler {
         String issuer = baseurl + "/" + realm;
 
         return TokenVerifier.create(encodedAccessToken, AccessToken.class)
-                // TODO: Figure out why we can't trust iss
+                // TODO: Figure out why we can't trust issuer
                 //.withChecks(new TokenVerifier.RealmUrlCheck(issuer)) // String match only
                 .publicKey(getRealmKey(realm, kid))
                 .verify()
@@ -302,20 +304,23 @@ public class KBOAuth2Handler {
 
         // Note: Timestamps in token is in seconds since Epoch. Date().getTime is milliseconds
 
-        if (trusted.isExpired()) {
-            long overtime = now/1000 - trusted.getExpiration();
+        if (trusted.isExpired()) {             
+            // Check Expiration  
+            long overtime = now/1000 - trusted.getExp();
             throw new VerificationException("AccessToken expired (" + overtime + " seconds too old)");
         }
 
         if (!trusted.isNotBefore(0)) {
-            long missing = trusted.getNotBefore() - now/1000;
+            // Check not before
+            long missing = trusted.getNbf() - now/1000;
             throw new VerificationException("AccessToken not valid before " + missing + " seconds has passed");
         }
 
-        if (trusted.getIssuedAt() > now) {
-            long missing = trusted.getIssuedAt()/1000 - now;
+        if (trusted.getIat() > now) {
+         // Check Issued at
+            long missing = trusted.getIat()/1000 - now;
             log.warn("Received trusted AccessToken issued {}} seconds in the future (epoch seconds = {})",
-                     missing, trusted.getIssuedAt());
+                     missing, trusted.getIat());
             throw new VerificationException("AccessToken issued " + missing + " seconds in the future");
         }
 
@@ -361,8 +366,15 @@ public class KBOAuth2Handler {
         }
     }
 
-    // The Base64 strings that come from a JWKS need some manipulation before they can be decoded.
-     // we do that here
+    
+    
+     /**
+      * The Base64 strings that come from a JWKS need some manipulation before they can be decoded.   
+      * TODO: Why is replacement even required? See OahtUtil in ds-license. Just splitting on '.' to get the 3 terms is correct by using a OOAuth library.     
+      * 
+      * @param base64 String base64 encoded
+      * @return decoded byte array
+      */
      private static byte[] base64Decode(String base64) {
          base64 = base64.replaceAll("-", "+");
          base64 = base64.replaceAll("_", "/");

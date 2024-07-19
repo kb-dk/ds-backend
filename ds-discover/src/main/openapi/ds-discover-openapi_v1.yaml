@@ -1081,16 +1081,15 @@ components:
           type: string
           
           
- # TODO: Inject this from properties when DRA-139 has been implemented
+ # Maybe inject this from properties later. So far only authorizationUrl is injected.
+ #authorizationUrl is required for building the module, but does not seem to be active used in code. (TODO?)
   securitySchemes:
-
     KBOAuth:
       type: oauth2
       description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
       flows:
         implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
-          authorizationUrl: 'https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/auth'
-          #authorizationUrl: https://api.example.com/oauth2/authorize # Overridden by the configuration
+          authorizationUrl: '${config:security.auth_url}' #Read from the yaml propertyfile
           scopes:
             generic_ds: 'Scope used for all Digitale Samlinger services'
             # Project specific roles
