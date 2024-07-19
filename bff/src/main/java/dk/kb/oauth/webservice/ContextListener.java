@@ -88,11 +88,11 @@ public class ContextListener implements ServletContextListener {
 
         log.info("Initializing service {} {} build {} using Java {} with max heap {}MB on machine {}. The service " +
                 "has been build from git branch: '{}' with commit checksum: '{}' and newest commit was made " +
-                "at: '{}'. The service has the git tag: '{}' and is closest to the following git tag: '{}'.",
+                "at: '{}' and is closest to the following git tag: '{}'.",
                  BuildInfoManager.getName(), BuildInfoManager.getVersion(), BuildInfoManager.getBuildTime(),
                  System.getProperty("java.version"), Runtime.getRuntime().maxMemory()/1048576, hostname,
                  BuildInfoManager.getGitBranch(), BuildInfoManager.getGitCommitChecksum(),
-                 BuildInfoManager.getGitCommitTime(), BuildInfoManager.getGitCurrentTag(),
+                 BuildInfoManager.getGitCommitTime(),
                  BuildInfoManager.getGitClosestTag());
     }
 

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated KB util version from 1.4.22 to 1.5.5.
 
+### Removed
+- Removed non-resolvable git.tag from build.properties
+
 ## [1.0.1] - 2024-05-13
 ### Added
 - Added sample config files and documentation to distribution tar archive. [DRA-441](https://kb-dk.atlassian.net/browse/DRA-441)
