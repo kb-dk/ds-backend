@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed extraction of field videoFrameSize to clean values as '16:9,' and '16:9, ' to '16:9'.
 
 ### Removed
-
+- Removed non-resolvable git.tag from build.properties
 
 ## [2.0.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.0.0) 2024-07-17
 ### Added
