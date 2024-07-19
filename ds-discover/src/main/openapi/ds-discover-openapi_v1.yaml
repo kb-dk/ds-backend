@@ -1010,9 +1010,6 @@ components:
           type: string
           description: 'The current deployed branch.'
           example: master
-        gitCurrentTag:
-          type: string
-          description: 'The current tag of the deployed branch.'
         gitClosestTag:
           type: string
           description: 'The closest tag of the deployed branch.'
