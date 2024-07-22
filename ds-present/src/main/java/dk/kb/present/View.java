@@ -19,6 +19,7 @@ import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.DataCleanup;
+import dk.kb.present.util.saxhandlers.ElementsExtractionHandler;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
@@ -29,6 +30,8 @@ import org.xml.sax.SAXException;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -131,11 +134,18 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     @Override
     public String apply(DsRecordDto record) {
         final Map<String, String> metadata = createBasicMetadataMap(record);
-
+        RecordValues extractedValues;
         String content = record.getData();
 
-        if (content != null && (strategy.equals(Strategy.DR) || strategy.equals(Strategy.MANIFESTATION))){
-            extractStartAndEndDatesToMetadataMap(content, metadata);
+        // If origin is either radio or tv (i.e. from preservica) extract some predefined values from the record to a RecordValues object.
+        if (content != null && (record.getOrigin().equals("ds.tv")) || record.getOrigin().equals("ds.radio")){
+            try {
+                extractedValues = extractValuesFromPreservicaContent(content);
+                log.info("RecordValues is: '{}'", extractedValues.values);
+            } catch (ParserConfigurationException | SAXException e) {
+                throw new RuntimeException(e);
+            }
+            extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         }
 
         switch (strategy) {
@@ -150,7 +160,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             default:
                 throw new UnsupportedOperationException("Strategy: '" + strategy + "' is not allowed. " +
                         "Allowed strategies are: '" + Arrays.toString(Strategy.values()) + "'.");
-
         }
 
 
@@ -169,17 +178,34 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Extract start and end date from the record and ensure that they are in a valid format.
-     * @param content of the record.
-     * @param metadataMap containing values given to the transformer creating the view.
+     * Extract all needed values from a preservica record. These values are either tricky values such as dates, where we know that extra parsing is needed or values that are
+     * used in multiple parts of the processing of the record.
+     * @param content of the record. i.e. the XML data.
+     * @return a {@link RecordValues}-object containing the extracted values.
      */
-    private static void extractStartAndEndDatesToMetadataMap(String content, Map<String, String> metadataMap) {
-        try (InputStream xmlStream = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
-            metadataMap.put("startDate", DataCleanup.getStartDate(xmlStream).format(DateTimeFormatter.ISO_INSTANT));
-            metadataMap.put("endDate", DataCleanup.getEndDate(xmlStream).format(DateTimeFormatter.ISO_INSTANT));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+    private RecordValues extractValuesFromPreservicaContent(String content) throws ParserConfigurationException, SAXException {
+        try (InputStream xml = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(false);
+            SAXParser saxParser = factory.newSAXParser();
+
+            ElementsExtractionHandler handler = new ElementsExtractionHandler();
+            saxParser.parse(xml, handler);
+
+            return handler.getDataValues();
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Extract start and end date from the record and ensure that they are in a valid format.
+     * @param metadataMap containing values given to the transformer creating the view.
+     * @param recordValues containing values that have been extracted from the metadata record.
+     */
+    private static void extractStartAndEndDatesToMetadataMap(Map<String, String> metadataMap, RecordValues recordValues) {
+        metadataMap.put("startDate", DataCleanup.getCleanZonedDateTimeFromString(recordValues.getStartTime()).format(DateTimeFormatter.ISO_INSTANT));
+        metadataMap.put("endDate", DataCleanup.getCleanZonedDateTimeFromString(recordValues.getEndTime()).format(DateTimeFormatter.ISO_INSTANT));
     }
 
     /**

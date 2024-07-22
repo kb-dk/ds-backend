@@ -226,6 +226,20 @@ class ViewTest {
         executorService.shutdown();
     }
 
+    @Test
+    @Tag("integration")
+    void dataExtractionTest() throws Exception {
+        HoldbackDatePicker.init();
+        View jsonldView = getPreservicaJsonView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9ed10d66);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+
+        String jsonld = jsonldView.apply(recordDto);
+        prettyPrintJson(jsonld);
+    }
+
 
     /**
      * Create test view for Preservica Schema.org transformation
