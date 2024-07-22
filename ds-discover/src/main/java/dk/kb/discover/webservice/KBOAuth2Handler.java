@@ -19,6 +19,8 @@ import org.json.JSONArray;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
+import dk.kb.util.oauth2.TimeMap;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.interceptor.Fault;
 import org.json.JSONTokener;
