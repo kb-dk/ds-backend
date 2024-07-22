@@ -144,6 +144,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         switch (strategy) {
             case DR:
                 updateMetadataMapWithHoldback(record, metadata, extractedValues);
+                updateMetadataMapWithOwnProduction(metadata, extractedValues);
                 updateMetadataMapWithPreservicaManifestation(record, metadata);
                 break;
             case MANIFESTATION:
@@ -171,14 +172,35 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         return content;
     }
 
+    private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, RecordValues extractedValues) {
+        // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
+        // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
+        String ownProduction = extractedValues.getOrigin();
+        if (ownProduction.isEmpty()) {
+            log.error("Nielsen/Gallup origin was empty.");
+            // TODO: make this throw an exception, when data are better
+            //throw new InternalServiceException("The Nielsen/Gallup origin was empty. Own production cannot be defined.");
+        }
+        if (ownProduction.length() != 4){
+            log.warn("Nielsen/Gallup origin did not have length 4. Origin is: '{}'", ownProduction);
+        }
+
+        if (!ownProduction.isEmpty()) {
+            boolean isOwnProduction = Integer.parseInt(extractedValues.getOrigin()) < 2000;
+            metadataMap.put("ownProductionBool", Boolean.toString(isOwnProduction));
+        }
+        metadataMap.put("ownProductionCode", extractedValues.getOrigin());
+
+    }
+
     /**
      * Extract start and end date from the record and ensure that they are in a valid format.
      * @param metadataMap containing values given to the transformer creating the view.
      * @param recordValues containing values that have been extracted from the metadata record.
      */
     private static void extractStartAndEndDatesToMetadataMap(Map<String, String> metadataMap, RecordValues recordValues) {
-        metadataMap.put("startDate", recordValues.getStartTime());
-        metadataMap.put("endDate", recordValues.getEndTime());
+        metadataMap.put("startTime", recordValues.getStartTime());
+        metadataMap.put("endTime", recordValues.getEndTime());
     }
 
     /**

@@ -37,6 +37,7 @@
   <xsl:param name="conditionsOfAccess"/>
   <xsl:param name="holdbackDate"/>
   <xsl:param name="holdbackPurposeName"/>
+  <xsl:param name="ownProductionCode"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
