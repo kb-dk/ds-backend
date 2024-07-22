@@ -11,6 +11,8 @@ import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
+
+import org.apache.cxf.interceptor.InInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ import java.util.List;
  * <p>
  * Metadata delivery for the Royal Danish Library
  */
+@InInterceptors(interceptors = "dk.kb.present.webservice.KBAuthorizationInterceptor")
 public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     private static final Logger log = LoggerFactory.getLogger(DsPresentApiServiceImpl.class);
 
