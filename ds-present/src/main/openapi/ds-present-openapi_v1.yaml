@@ -39,7 +39,7 @@ paths:
         - '${project.name}'
       summary: 'Retrieve metadata for the record with the given ID and in the given format.'
       operationId: getRecord
-      security:  #Require KeyCloak token
+      security: 
         - KBOAuth:
           - any      
       parameters:
@@ -392,9 +392,6 @@ paths:
         - Service
       summary: 'Extract OAuth2 accessToken in the `Authorization` HTTP header and return the roles from it'
       operationId: probeWhoami
-      security:
-        - KBOAuth:
-          - public
       responses:
         '200':
           description: 'OK'
@@ -1148,5 +1145,29 @@ components:
                 type: string
               description: 'The roles stated in the OAuth2 accessToken'
               example: [read, write, admin]
+
+ # TODO: Inject this from properties when DRA-139 has been implemented
+  securitySchemes:
+
+    KBOAuth:
+      type: oauth2
+      description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
+      flows:
+        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+          authorizationUrl: 'https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/auth'
+          #authorizationUrl: https://api.example.com/oauth2/authorize # Overridden by the configuration
+          scopes:
+            generic_ds: 'Scope used for all Digitale Samlinger services'
+            # Project specific roles
+            read: 'read data'
+            write: 'modify or delete data'
+
+            # General roles at the Royal Danish Library
+            devel: 'broad read access'
+            admin: 'all rights'
+
+            # Meta role controlling authorization behaviour
+            public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
+            any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
 
 
