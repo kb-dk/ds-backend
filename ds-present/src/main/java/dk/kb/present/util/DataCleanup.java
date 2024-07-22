@@ -14,9 +14,12 @@
  */
 package dk.kb.present.util;
 
+import dk.kb.present.RecordValues;
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
+import dk.kb.present.util.saxhandlers.ElementsExtractionHandler;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -26,6 +29,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,6 +68,27 @@ public class DataCleanup {
         try {
             return DatetimeParser.parseStringToZonedDateTime(datetime, dateTimeFormat);
         } catch (MalformedIOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Extract all needed values from a preservica record. These values are either tricky values such as dates, where we know that extra parsing is needed or values that are
+     * used in multiple parts of the processing of the record.
+     * @param content of the record. i.e. the XML data.
+     * @return a {@link RecordValues}-object containing the extracted values.
+     */
+    public static RecordValues extractValuesFromPreservicaContent(String content) throws ParserConfigurationException, SAXException {
+        try (InputStream xml = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(false);
+            SAXParser saxParser = factory.newSAXParser();
+
+            ElementsExtractionHandler handler = new ElementsExtractionHandler();
+            saxParser.parse(xml, handler);
+
+            return handler.getDataValues();
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

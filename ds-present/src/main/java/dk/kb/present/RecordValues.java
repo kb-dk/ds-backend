@@ -1,7 +1,9 @@
 package dk.kb.present;
 
+import dk.kb.present.util.DataCleanup;
 import dk.kb.present.util.PathPair;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +39,8 @@ public class RecordValues {
     }
 
     public void setStartTime(String startTime) {
-        values.get("startTime").setValue(startTime);
+        String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(startTime).format(DateTimeFormatter.ISO_INSTANT);
+        values.get("startTime").setValue(cleanedTime);
     }
 
     public String getEndTime() {
@@ -45,7 +48,8 @@ public class RecordValues {
     }
 
     public void setEndTime(String endTime) {
-        values.get("endTime").setValue(endTime);
+        String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(endTime).format(DateTimeFormatter.ISO_INSTANT);
+        values.get("endTime").setValue(cleanedTime);
     }
 
     public String getFormValue() {

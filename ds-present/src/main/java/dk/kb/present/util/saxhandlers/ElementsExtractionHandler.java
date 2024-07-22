@@ -1,11 +1,13 @@
 package dk.kb.present.util.saxhandlers;
 
 import dk.kb.present.RecordValues;
+import dk.kb.present.util.DataCleanup;
 import dk.kb.present.util.PathPair;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +56,13 @@ public class ElementsExtractionHandler extends DefaultHandler {
         // Capture characters if we are within the target element
         if (captureValue) {
             currentValue.append(new String(ch, start, length));
-            recordValues.values.get(captureValueKey).setValue(currentValue.toString());
+
+            if (captureValueKey.equals("startTime") || captureValueKey.equals("endTime")){
+                String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(currentValue.toString()).format(DateTimeFormatter.ISO_INSTANT);
+                recordValues.values.get(captureValueKey).setValue(cleanedTime);
+            } else {
+                recordValues.values.get(captureValueKey).setValue(currentValue.toString());
+            }
         }
     }
 

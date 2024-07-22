@@ -6,9 +6,6 @@ import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -22,76 +19,76 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("integration")
 public class HoldbackTest {
 
-    private static DsRecordDto tvRecord1 = new DsRecordDto();
-    private static DsRecordDto tvRecord2 = new DsRecordDto();
-    private static DsRecordDto radioRecord1 = new DsRecordDto();
-    private static DsRecordDto badRecord = new DsRecordDto();
-    private static DsRecordDto noOriginRecord = new DsRecordDto();
-    private static DsRecordDto badOriginRecord = new DsRecordDto();
+    private static RecordValues tvValues1 = new RecordValues();
+    private static RecordValues tvValues2 = new RecordValues();
+    private static RecordValues radioValues = new RecordValues();
+    private static RecordValues badValues = new RecordValues();
 
     @BeforeAll
     static void setup() throws IOException {
         ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
         HoldbackDatePicker.init();
 
-        tvRecord1.setOrigin("ds.tv");
-        tvRecord1.setData(Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9ed10d66));
 
-        tvRecord2.setOrigin("ds.tv");
-        tvRecord2.setData(Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_3006e2f8));
+        tvValues1.setFormValue("4411");
+        tvValues1.setContentsItem("3190");
+        tvValues1.setProductionCountry("1000");
+        tvValues1.setStartTime("2016-01-20T10:34:42+0100");
 
-        radioRecord1.setOrigin("ds.radio");
-        radioRecord1.setData(Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_2b462c63));
+        tvValues2.setStartTime("2022-02-28T17:29:55Z");
 
-        badRecord.setOrigin("ds.tv");
-        badRecord.setData(Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_HOLDBACK_TEST_RECORD));
+        radioValues.setStartTime("2018-04-03T08:03:00Z");
 
-        noOriginRecord.setOrigin(null);
-        badOriginRecord.setOrigin("this.is.not.an.origin");
+        badValues.setFormValue("1800");
+        badValues.setContentsItem("3100");
+        badValues.setProductionCountry("2211");
+        badValues.setStartTime("2016-01-06T18:08:17+0100");
     }
 
     @Test
     public void badOriginsTest() throws IOException {
-        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord, "").getHoldbackDate());
-        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(noOriginRecord, "").getHoldbackPurposeName());
+        RecordValues values = new RecordValues();
+        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(values, null).getHoldbackDate());
+        assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(values, null).getHoldbackPurposeName());
 
-        Exception exception = assertThrowsExactly(InternalServiceException.class, () -> HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badOriginRecord, ""));
+        Exception exception = assertThrowsExactly(InternalServiceException.class, () -> HoldbackDatePicker.getInstance().getHoldbackDateForRecord(values, ""));
         assertEquals("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without values.", exception.getMessage());
     }
 
     @Test
     public void badRecordTest() throws IOException {
-        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badRecord, "").getHoldbackDate());
+        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(badValues, "ds.tv").getHoldbackDate());
     }
 
     @Test
     public void getHoldbackDateFromXmlTest() throws IOException {
-        assertEquals("2026-01-17T09:34:42Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord1, "2016-01-20T09:34:42Z").getHoldbackDate());
+        assertEquals("2026-01-17T09:34:42Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvValues1, "ds.tv").getHoldbackDate());
     }
+
 
     @Test
     public void holdbackNoValueTest() throws IOException {
-        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2, "2022-02-28T17:29:55Z").getHoldbackDate());
+        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvValues2, "ds.tv").getHoldbackDate());
     }
 
     @Test
     public void holdbackNameNoValueTest() throws IOException {
-        assertTrue(HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2, "2022-02-28T17:29:55Z").getHoldbackPurposeName().isEmpty());
+        assertTrue(HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvValues2, "ds.tv").getHoldbackPurposeName().isEmpty());
     }
 
     @Test
     public void getHoldbackPurposeFromXmlTest() throws IOException {
-        assertEquals("Dansk Dramatik & Fiktion", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord1, "2016-01-20T09:34:42Z").getHoldbackPurposeName());
+        assertEquals("Dansk Dramatik & Fiktion", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvValues1, "ds.tv").getHoldbackPurposeName());
     }
 
     @Test
     public void getNoHoldbackDateFromXmlTest() throws IOException {
-        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvRecord2, "2022-02-28T17:29:55Z").getHoldbackDate());
+        assertEquals("9999-01-01T00:00:00Z", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(tvValues2, "ds.tv").getHoldbackDate());
     }
 
     @Test
     public void radioHoldbackTest() throws IOException {
-        HoldbackObject holdbackObject =  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(radioRecord1, "2018-04-03T08:03:00Z");
+        HoldbackObject holdbackObject =  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(radioValues, "ds.radio");
 
         assertEquals("2021-04-03T08:03:00Z", holdbackObject.getHoldbackDate());
         assertEquals("", holdbackObject.getHoldbackPurposeName());

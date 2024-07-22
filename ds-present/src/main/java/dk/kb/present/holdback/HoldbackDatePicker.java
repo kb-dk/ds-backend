@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import dk.kb.present.RecordValues;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -84,18 +85,10 @@ public class HoldbackDatePicker {
         return datePicker;
     }
 
-    /**
-     * Apply the HoldbackDatePicker to a string of XML representing a Preservica Information Object.
-     *
-     * @param record DsStorage record containing an InformationObject from Preservica encapsulating a DR record/program,
-     *              which holdback needs to be calculated for.
-     * @return a string containing the date for when the holdback for the record has expired.
-     *         In the format: yyyy-MM-ddTHH:mm:ssZ
-     */
-    public HoldbackObject getHoldbackDateForRecord(DsRecordDto record, String startDate) throws IOException {
-        HoldbackDatePicker.startDate = startDate;
+    public HoldbackObject getHoldbackDateForRecord(RecordValues extractedValues, String origin) throws IOException {
+        HoldbackDatePicker.startDate = extractedValues.getStartTime();
         HoldbackObject result = new HoldbackObject();
-        if (record.getOrigin() == null){
+        if (origin == null){
             log.error("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without " +
                     "values.");
             result.setHoldbackPurposeName("");
@@ -103,10 +96,10 @@ public class HoldbackDatePicker {
             return result;
         }
 
-        if (record.getOrigin().equals("ds.tv")){
-            return getHoldbackForTvRecord(record, result);
-        } else if (record.getOrigin().equals("ds.radio")) {
-            return getHoldbackForRadioRecord(record, result);
+        if (origin.equals("ds.tv")){
+            return getHoldbackForTvRecord(extractedValues, result);
+        } else if (origin.equals("ds.radio")) {
+            return getHoldbackForRadioRecord(result);
         } else {
             log.error("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'." +
                     " Returning a result object without values.");
@@ -117,16 +110,12 @@ public class HoldbackDatePicker {
 
     /**
      * Calculate holdback for a Radio record by adding 3 years to its aired time. This value has been requested/defined by DR.
-     * @param record to calculate holdback for
      * @param result holdbackDTO object, which the calculated holdback date is added to. This will never contain a value
      *               for {@code holdbackPurposeName} as these are not present for radio records.
      *
      * @return the updated HoldbackObject.
      */
-    private HoldbackObject getHoldbackForRadioRecord(DsRecordDto record, HoldbackObject result) throws IOException {
-        if (record.getData() == null){
-            throw new RuntimeException("Record with ID: '" + record.getId() + "' does not contain data");
-        }
+    private HoldbackObject getHoldbackForRadioRecord(HoldbackObject result) throws IOException {
         // Radio should be held back by three years by DR request.
         result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), 1096));
         result.setHoldbackPurposeName("");
@@ -135,33 +124,27 @@ public class HoldbackDatePicker {
 
     /**
      * Calculate holdback for a TV record by comparing values in the record to the DR provided schemas.
-     * @param record to calculate holdback for.
+     * @param extractedValues containing values used to calculate holdback.
      * @param result holdbackDTO containing the purposeName and the holdbackDate for a record.
      * @return the result object with updated values.
      */
-    private static HoldbackObject getHoldbackForTvRecord(DsRecordDto record, HoldbackObject result) throws IOException {
-        if (record.getData() == null){
-            throw new RuntimeException("Record with ID: '" + record.getId() + "' does not contain data");
-        }
+    private static HoldbackObject getHoldbackForTvRecord(RecordValues extractedValues, HoldbackObject result) throws IOException {
+        try {
+            result.setHoldbackPurposeName(getPurposeName(extractedValues));
 
-        try (InputStream xmlStream = IOUtils.toInputStream(record.getData(), StandardCharsets.UTF_8)) {
-            try {
-                result.setHoldbackPurposeName(getPurposeName(xmlStream));
-
-                if (result.getHoldbackPurposeName().isEmpty()){
-                    log.warn("Purpose name was empty. Setting holdback date to 9999-01-01T00:00:00Z");
-                    result.setHoldbackDate("9999-01-01T00:00:00Z");
-                } else {
-                    int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
-                    result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), holdbackDays));
-                }
-
-
-                return result;
-            } catch (IOException | SAXException | ParserConfigurationException e) {
-                throw new RuntimeException(e);
+            if (result.getHoldbackPurposeName().isEmpty()){
+                log.warn("Purpose name was empty. Setting holdback date to 9999-01-01T00:00:00Z");
+                result.setHoldbackDate("9999-01-01T00:00:00Z");
+            } else {
+                int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
+                result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), holdbackDays));
             }
+
+            return result;
+        } catch (IOException | SAXException | ParserConfigurationException e) {
+            throw new RuntimeException(e);
         }
+
     }
 
     /**
@@ -182,23 +165,23 @@ public class HoldbackDatePicker {
 
     /**
      * Get purposeName for a preservica record containing metadata about a DR program.
-     * @param xmlStream containing the preservica record for analysis.
+     * @param extractedValues {@link RecordValues} containing data from a preservica record for analysis.
      * @return the purposeName for a given program.
      */
-    private static String getPurposeName(InputStream xmlStream) throws IOException, ParserConfigurationException, SAXException {
+    private static String getPurposeName(RecordValues extractedValues) throws IOException, ParserConfigurationException, SAXException {
         // Get form value
-        String form = getFormValue(xmlStream);
+        String form = extractedValues.getFormValue();
 
         // get formNr by looking up form in formIndexSheet.
         String formString = formIndexSheet.getFormNr(form);
 
         // TODO: do some logic on gallup/nielsen differences.
         // get contentsitem from xml
-        String contentsItem = getContentsItem(xmlStream);
+        String contentsItem = extractedValues.getContentsItem();
 
         // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
         String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contentsItem, formString);
-        purposeNumber = validatePurpose(purposeNumber, xmlStream);
+        purposeNumber = validatePurpose(purposeNumber, extractedValues.getProductionCountry());
 
         // Brug den fundne værdi i formåls arket til at finde formålNavn
         return purposeSheet.getPurposeNameFromNumber(purposeNumber);
@@ -207,13 +190,12 @@ public class HoldbackDatePicker {
     /**
      * Validate and handle special cases of IDs constructed by {@link PurposeMatrixSheet#getPurposeIdFromContentAndForm(String, String)}.
      * @param purposeId which is to be validated.
-     * @param xml of the preservica record. Needs to be included here when validating against values from it.
+     * @param productionCountry string containing the productionCountry value from a preservica record.
      * @return an updated PurposeID
      */
-    private static String validatePurpose(String purposeId, InputStream xml) throws ParserConfigurationException, IOException, SAXException {
+    private static String validatePurpose(String purposeId, String productionCountry) throws ParserConfigurationException, IOException, SAXException {
         // Handling of special case for purposeID 2.05, where country of production is needed to create the correct value.
         if (purposeId.equals("2.05")) {
-            String productionCountry = getProductionCountry(xml);
             if (productionCountry.equals("1000")) {
                 return purposeId + ".01";
             } else {
@@ -254,44 +236,4 @@ public class HoldbackDatePicker {
             throw new RuntimeException(e);
         }
     }
-
-    /**
-     * Get the value of Form from a Preservica record.
-     * @param xml InputStream containing a preservica record as XML.
-     * @return the value extracted from the following XPath in the given XML: {@code /XIP/Metadata/Content/ns2:record/source/tvmeter/form}
-     */
-    private static String getFormValue(InputStream xml) throws IOException, ParserConfigurationException, SAXException {
-        SAXParser saxParser = factory.newSAXParser();
-        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/record/source/tvmeter/form");
-        saxParser.parse(xml, handler);
-        xml.reset();
-        return handler.getCurrentValue();
-    }
-
-    /**
-     * Get the value of contentsitem from a Preservica record.
-     * @param xml InputStream containing a preservica record as XML.
-     * @return the value extracted from the following XPath in the given XML: {@code /XIP/Metadata/Content/ns2:record/source/tvmeter/contentsitem}
-     */
-    private static String getContentsItem(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
-        SAXParser saxParser = factory.newSAXParser();
-        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/record/source/tvmeter/contentsitem");
-        saxParser.parse(xml, handler);
-        xml.reset();
-        return handler.getCurrentValue();
-    }
-
-    /**
-     * Get the value of productioncountry from a Preservica record.
-     * @param xml InputStream containing a preservica record as XML.
-     * @return the value extracted from the following XPath in the given XML: {@code /XIP/Metadata/Content/ns2:record/source/tvmeter/productioncountry}
-     */
-    private static String getProductionCountry(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
-        SAXParser saxParser = factory.newSAXParser();
-        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/record/source/tvmeter/productioncountry");
-        saxParser.parse(xml, handler);
-        xml.reset();
-        return handler.getCurrentValue();
-    }
-
 }
