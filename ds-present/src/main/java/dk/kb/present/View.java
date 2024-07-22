@@ -144,7 +144,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         switch (strategy) {
             case DR:
                 updateMetadataMapWithHoldback(record, metadata, extractedValues);
-                // IMPORTANT: No break here as MANIFESTATION strategy should also be applied.
+                updateMetadataMapWithPreservicaManifestation(record, metadata);
+                break;
             case MANIFESTATION:
                 updateMetadataMapWithPreservicaManifestation(record, metadata);
                 break;
