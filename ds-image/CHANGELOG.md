@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+-  Upgrade to latest Oauth2 classes
 
 ### Removed
 - Removed non-resolvable git.tag from build.properties
