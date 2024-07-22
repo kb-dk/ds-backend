@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Plans are to refactor common functionality out into kb-util/template projects.
 
 ### Changed
+- TimeMap moved to kb-util
 
 ### Removed
 - Removed non-resolvable git.tag from build.properties
