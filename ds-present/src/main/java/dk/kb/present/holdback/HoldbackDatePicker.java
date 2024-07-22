@@ -115,7 +115,7 @@ public class HoldbackDatePicker {
      *
      * @return the updated HoldbackObject.
      */
-    private HoldbackObject getHoldbackForRadioRecord(HoldbackObject result) throws IOException {
+    private HoldbackObject getHoldbackForRadioRecord(HoldbackObject result) {
         // Radio should be held back by three years by DR request.
         result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), 1096));
         result.setHoldbackPurposeName("");
@@ -128,7 +128,7 @@ public class HoldbackDatePicker {
      * @param result holdbackDTO containing the purposeName and the holdbackDate for a record.
      * @return the result object with updated values.
      */
-    private static HoldbackObject getHoldbackForTvRecord(RecordValues extractedValues, HoldbackObject result) throws IOException {
+    private static HoldbackObject getHoldbackForTvRecord(RecordValues extractedValues, HoldbackObject result) {
         try {
             result.setHoldbackPurposeName(getPurposeName(extractedValues));
 
@@ -181,7 +181,7 @@ public class HoldbackDatePicker {
 
         // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
         String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contentsItem, formString);
-        purposeNumber = validatePurpose(purposeNumber, extractedValues.getProductionCountry());
+        purposeNumber = validatePurpose(purposeNumber, extractedValues.getOrigin());
 
         // Brug den fundne værdi i formåls arket til at finde formålNavn
         return purposeSheet.getPurposeNameFromNumber(purposeNumber);
@@ -190,10 +190,11 @@ public class HoldbackDatePicker {
     /**
      * Validate and handle special cases of IDs constructed by {@link PurposeMatrixSheet#getPurposeIdFromContentAndForm(String, String)}.
      * @param purposeId which is to be validated.
-     * @param productionCountry string containing the productionCountry value from a preservica record.
+     * @param productionCountry string containing the productionCountry value from a preservica record. This should not be extracted from the fields named productionCountry or
+     *                          countryOfOrigin, but rather from the field origin.
      * @return an updated PurposeID
      */
-    private static String validatePurpose(String purposeId, String productionCountry) throws ParserConfigurationException, IOException, SAXException {
+    private static String validatePurpose(String purposeId, String productionCountry) {
         // Handling of special case for purposeID 2.05, where country of production is needed to create the correct value.
         if (purposeId.equals("2.05")) {
             if (productionCountry.equals("1000")) {

@@ -32,7 +32,7 @@ public class HoldbackTest {
 
         tvValues1.setFormValue("4411");
         tvValues1.setContentsItem("3190");
-        tvValues1.setProductionCountry("1000");
+        tvValues1.setOrigin("1000");
         tvValues1.setStartTime("2016-01-20T10:34:42+0100");
 
         tvValues2.setStartTime("2022-02-28T17:29:55Z");
@@ -41,7 +41,7 @@ public class HoldbackTest {
 
         badValues.setFormValue("1800");
         badValues.setContentsItem("3100");
-        badValues.setProductionCountry("2211");
+        badValues.setOrigin("2211");
         badValues.setStartTime("2016-01-06T18:08:17+0100");
     }
 

@@ -25,14 +25,14 @@ public class RecordValues {
         values.put("endTime", new PathPair<>(endTimePath, ""));
         values.put("form", new PathPair<>(formPath, ""));
         values.put("contentsItem", new PathPair<>(contentsItemPath, ""));
-        values.put("productionCountry", new PathPair<>(productionCountryPath, ""));
+        values.put("origin", new PathPair<>(originPath, ""));
     }
 
     private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
     private static final String endTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
     private static final String formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
     private static final String contentsItemPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
-    private static final String productionCountryPath = "/XIP/Metadata/Content/record/source/tvmeter/productioncountry";
+    private static final String originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
 
     public String getStartTime() {
         return values.get("startTime").getValue();
@@ -68,12 +68,12 @@ public class RecordValues {
         values.get("contentsItem").setValue(contentsItem);
     }
 
-    public String getProductionCountry() {
-        return values.get("productionCountry").getValue();
+    public String getOrigin(){
+        return values.get("origin").getValue();
     }
 
-    public void setProductionCountry(String productionCountry) {
-        values.get("productionCountry").setValue(productionCountry);
+    public void setOrigin(String origin){
+        values.get("origin").setValue(origin);
     }
 
     public List<String> getPaths(){
