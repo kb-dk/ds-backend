@@ -51,6 +51,9 @@ security:
   # Sample: https://keycloak-keycloak.example.org/auth/realms
   baseurl: 'https://keycloak.example.com/realms'
   # Accepted realms for requests. These must be present at the OAuth2 server
+  # The authentification url with the correct realm value. Does not seem the used active by code but is required when building. (TODO?)
+  auth_url: ' https://api.example.com/oauth2/authorize'
+  # Accepted realms for requests. These must be present at the OAuth2 server
   realms:
     - foo-bar
   public_keys:

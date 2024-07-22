@@ -13,7 +13,7 @@
  *
  */
 package dk.kb.image.webservice;
-
+        
 import dk.kb.util.webservice.exception.InternalServiceException;
 import io.swagger.annotations.AuthorizationScope;
 import org.apache.cxf.helpers.CastUtils;
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  * <p>
  * Note 2: If an endpoint is marked as {@link KBAuthorization#PUBLIC} but fails validation, {@link #VALID_TOKEN}
  * will be set to {@code false} and the reason for failed validation will be stated in {@link #FAILED_REASON}.
- */
+ */             
 public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message> {
     private static final Logger log = LoggerFactory.getLogger(KBAuthorizationInterceptor.class);
     private static final String AUTHORIZATION = "Authorization";
@@ -98,10 +98,17 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         log.info("Created " + this);
     }
 
-    // Two interceptors: 1 token validator, 1 access control
-    // message.getExchange().get(OperationResourceInfo.class)
+    
+    /**
+     * Logic: <br>
+     * 1. Validate Token present if required for method. 
+     * 2. Validate access control for role allowed to call the method.
+     * 
+     */
     @Override
     public void handleMessage(Message message) throws Fault {
+
+        //message.getExchange().get(OperationResourceInfo.class);
         final String endpoint = getEndpointName(message);
         log.debug("handleMessage({}) called", endpoint);
 
@@ -113,7 +120,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         Set<String> endpointRoles = getEndpointRoles(message);
         message.put(ENDPOINT_ROLES, endpoint);
         if (endpointRoles.isEmpty()) {
-            if ("getResource".equals(endpoint)) {
+            if ("getResource".equals(endpoint)) { //TODO what is the getResource endpoint?
                 log.debug("No roles defined for endpoint '{}'. This is expected as it is a meta endpoint",
                           endpoint);
                 return;
@@ -230,7 +237,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
     }
 
     /**
-     * Validate that the Authorization in the message has allowed baseurl and realm, that is is not expired etc.
+     * Validate that the Authorization in the message has allowed baseurl and realm, that it is not expired etc.
      * This does not check if the roles for the caller matches the roles for the endpoint.
      * @param message CXF message with Authorization information.
      * @throws VerificationException if the authorization validation failed.
@@ -252,8 +259,8 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
                     "but it started with '" + parts[0] + " '");
         }
         if (parts.length != 2) {
-            log.warn("Received Authorization string without a space: '{}'", authorizationString);
-            throw new VerificationException("Unsupported authorization String (no space)");
+            log.warn("Received Authorization string without a two white spaces: '{}'", authorizationString);
+            throw new VerificationException("Unsupported authorization String (not two white spaces)");
         }
 
         return handler.validateAuthorization(parts[1]);

@@ -19,6 +19,8 @@ import org.json.JSONArray;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
+import dk.kb.util.oauth2.TimeMap;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.interceptor.Fault;
 import org.json.JSONTokener;
@@ -63,10 +65,12 @@ public class KBOAuth2Handler {
 
     private final MODE mode;
     private final String baseurl;
-    private final Set<String > realms;
+    private final Set<String > realms; //Realms defined on the Keycloak server 
     private final int keysTTL;
 
-    final Map<String, PublicKey> realmKeys;
+    //Map with realm+kid as key the PublicKey as values 
+    //See https://www.rfc-editor.org/rfc/rfc7515#section-4.1.4
+    final Map<String, PublicKey> realmKeys; //Map
     private static KBOAuth2Handler instance;
 
     /**
@@ -77,30 +81,30 @@ public class KBOAuth2Handler {
      */
     private KBOAuth2Handler() {
         YAML conf;
-        if (!ServiceConfig.getConfig().containsKey(".security")) {
+        if (!ServiceConfig.getConfig().containsKey("security")) {
             log.warn("Authorization interceptor enabled, but there is no security setup in configuration at " +
                      "key .security");
             conf = new YAML();
         } else {
-            conf = ServiceConfig.getConfig().getSubMap(".security");
+            conf = ServiceConfig.getConfig().getSubMap("security");
         }
 
-        mode = MODE.valueOf(conf.getString(".mode", MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
+        mode = MODE.valueOf(conf.getString("mode", MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
         if (mode == MODE.OFFLINE) {
             log.warn("Authorization mode is {}. Access tokens will not be properly checked. " +
-                     "Set .config.security.mode to ENABLED to activate full access token validation", MODE.OFFLINE);
+                     "Set security.mode to ENABLED to activate full access token validation", MODE.OFFLINE);
         }
 
-        baseurl = trimTrailingSlash(conf.getString(".baseurl", null));
+        baseurl = trimTrailingSlash(conf.getString("baseurl", null));
         if (baseurl == null && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
-                     "No .config.security.baseurl defined and .config.security.mode=" + mode);
+                     "No security.baseurl defined and security.mode=" + mode);
         }
 
-        realms = new HashSet<>(conf.getList(".realms", Collections.emptyList()));
+        realms = new HashSet<>(conf.getList("realms", Collections.emptyList()));
         if (realms.isEmpty() && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
-                     "No .config.security.realms defined and .config.security.mode=" + mode);
+                     "No .security.realms defined and security.mode=" + mode);
         }
 
         keysTTL = conf.getInteger(".public_keys.ttl_seconds", 600);
@@ -111,7 +115,7 @@ public class KBOAuth2Handler {
     }
 
     /**
-     * @return singleton instance of thic class, initialized from {@link ServiceConfig}.
+     * @return singleton instance of this  class, initialized from {@link ServiceConfig}.
      */
     public static synchronized KBOAuth2Handler getInstance() {
         if (instance == null) {
@@ -218,7 +222,7 @@ public class KBOAuth2Handler {
     }
 
     /**
-     * Validate that the accessTokenString has allowed baseurl and realm, that is is not expired etc.
+     * Validate that the accessTokenString has allowed baseurl and realm, that it is not expired etc.
      * This does not check if the roles for the caller matches the roles for the endpoint.
      * @param encodedAccessToken untrusted Base64-encoded JSON, in multiple parts split by {@code .}.
      * @return a trusted (validated) AccessToken.
@@ -229,7 +233,7 @@ public class KBOAuth2Handler {
     }
 
     /**
-     * Validate that the accessTokenString has allowed baseurl and realm, that is is not expired etc.
+     * Validate that the accessTokenString has allowed baseurl and realm, that it is not expired etc.
      * This does not check if the roles for the caller matches the roles for the endpoint.
      * @param encodedAccessToken untrusted Base64-encoded JSON, in multiple parts split by {@code .}.
      * @param mode override of the configured mode.
@@ -284,7 +288,7 @@ public class KBOAuth2Handler {
         String issuer = baseurl + "/" + realm;
 
         return TokenVerifier.create(encodedAccessToken, AccessToken.class)
-                // TODO: Figure out why we can't trust iss
+                // TODO: Figure out why we can't trust issuer
                 //.withChecks(new TokenVerifier.RealmUrlCheck(issuer)) // String match only
                 .publicKey(getRealmKey(realm, kid))
                 .verify()
@@ -302,20 +306,23 @@ public class KBOAuth2Handler {
 
         // Note: Timestamps in token is in seconds since Epoch. Date().getTime is milliseconds
 
-        if (trusted.isExpired()) {
-            long overtime = now/1000 - trusted.getExpiration();
+        if (trusted.isExpired()) {             
+            // Check Expiration  
+            long overtime = now/1000 - trusted.getExp();
             throw new VerificationException("AccessToken expired (" + overtime + " seconds too old)");
         }
 
         if (!trusted.isNotBefore(0)) {
-            long missing = trusted.getNotBefore() - now/1000;
+            // Check not before
+            long missing = trusted.getNbf() - now/1000;
             throw new VerificationException("AccessToken not valid before " + missing + " seconds has passed");
         }
 
-        if (trusted.getIssuedAt() > now) {
-            long missing = trusted.getIssuedAt()/1000 - now;
+        if (trusted.getIat() > now) {
+         // Check Issued at
+            long missing = trusted.getIat()/1000 - now;
             log.warn("Received trusted AccessToken issued {}} seconds in the future (epoch seconds = {})",
-                     missing, trusted.getIssuedAt());
+                     missing, trusted.getIat());
             throw new VerificationException("AccessToken issued " + missing + " seconds in the future");
         }
 
@@ -361,8 +368,15 @@ public class KBOAuth2Handler {
         }
     }
 
-    // The Base64 strings that come from a JWKS need some manipulation before they can be decoded.
-     // we do that here
+    
+    
+     /**
+      * The Base64 strings that come from a JWKS need some manipulation before they can be decoded.   
+      * TODO: Why is replacement even required? See OahtUtil in ds-license. Just splitting on '.' to get the 3 terms is correct by using a OOAuth library.     
+      * 
+      * @param base64 String base64 encoded
+      * @return decoded byte array
+      */
      private static byte[] base64Decode(String base64) {
          base64 = base64.replaceAll("-", "+");
          base64 = base64.replaceAll("_", "/");
