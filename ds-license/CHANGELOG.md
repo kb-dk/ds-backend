@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Removed non-resolvable git.tag from build.properties
 
+### Added
+- Enabled OAuth2 on module. Much is copy-paste from ds-image to see it working in two different modules.  Plans are to refactor common functionality out into kb-util/template projects.
+No methods are defined to require OAuth yet!
 
 
 ## [1.4.2](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.4.2) 2024-06-11
