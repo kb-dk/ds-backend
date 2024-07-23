@@ -24,6 +24,8 @@ import dk.kb.license.storage.PresentationType;
 import dk.kb.license.validation.LicenseValidator;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.ImplBase;
+
+import org.apache.cxf.interceptor.InInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,8 @@ import java.util.ArrayList;
  * <p>ds-license by the Royal Danish Library 
  *
  */
+
+@InInterceptors(interceptors = "dk.kb.license.webservice.KBAuthorizationInterceptor")
 public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 	private Logger log = LoggerFactory.getLogger(this.toString());
 
