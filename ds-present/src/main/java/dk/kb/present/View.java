@@ -19,6 +19,7 @@ import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.DataCleanup;
+import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
@@ -128,10 +129,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     @Override
     public String apply(DsRecordDto record) {
         final Map<String, String> metadata = createBasicMetadataMap(record);
-        RecordValues extractedValues = new RecordValues();
+        ExtractedPreservicaValues extractedValues = new ExtractedPreservicaValues();
         String content = record.getData();
 
-        // If origin is either radio or tv (i.e. from preservica) extract some predefined values from the record to a RecordValues object.
+        // If origin is either radio or tv (i.e. from preservica) extract some predefined values from the record to a ExtractedPreservicaValues object.
         if ( content != null && (strategy.equals(Strategy.DR)) || strategy.equals(Strategy.MANIFESTATION)){
             try {
                 extractedValues = DataCleanup.extractValuesFromPreservicaContent(content);
@@ -172,7 +173,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         return content;
     }
 
-    private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, RecordValues extractedValues) {
+    private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues) {
         // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
         // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
         String ownProduction = extractedValues.getOrigin();
@@ -196,11 +197,11 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     /**
      * Extract start and end date from the record and ensure that they are in a valid format.
      * @param metadataMap containing values given to the transformer creating the view.
-     * @param recordValues containing values that have been extracted from the metadata record.
+     * @param extractedPreservicaValues containing values that have been extracted from the metadata record.
      */
-    private static void extractStartAndEndDatesToMetadataMap(Map<String, String> metadataMap, RecordValues recordValues) {
-        metadataMap.put("startTime", recordValues.getStartTime());
-        metadataMap.put("endTime", recordValues.getEndTime());
+    private static void extractStartAndEndDatesToMetadataMap(Map<String, String> metadataMap, ExtractedPreservicaValues extractedPreservicaValues) {
+        metadataMap.put("startTime", extractedPreservicaValues.getStartTime());
+        metadataMap.put("endTime", extractedPreservicaValues.getEndTime());
     }
 
     /**
@@ -261,7 +262,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param metadata map, which holds values that are to be used in the XSLT transformation later on.
      *                 Holdback values are added to this map.
      */
-    private void updateMetadataMapWithHoldback(DsRecordDto record, Map<String, String> metadata, RecordValues extractedValues) {
+    private void updateMetadataMapWithHoldback(DsRecordDto record, Map<String, String> metadata, ExtractedPreservicaValues extractedValues) {
         try {
             HoldbackObject holdbackObject = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(extractedValues, record.getOrigin());
 

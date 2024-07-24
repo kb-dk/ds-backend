@@ -3,8 +3,7 @@ package dk.kb.present;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.holdback.HoldbackObject;
 import dk.kb.present.holdback.HoldbackDatePicker;
-import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.util.Resolver;
+import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -19,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("integration")
 public class HoldbackTest {
 
-    private static RecordValues tvValues1 = new RecordValues();
-    private static RecordValues tvValues2 = new RecordValues();
-    private static RecordValues radioValues = new RecordValues();
-    private static RecordValues badValues = new RecordValues();
+    private static ExtractedPreservicaValues tvValues1 = new ExtractedPreservicaValues();
+    private static ExtractedPreservicaValues tvValues2 = new ExtractedPreservicaValues();
+    private static ExtractedPreservicaValues radioValues = new ExtractedPreservicaValues();
+    private static ExtractedPreservicaValues badValues = new ExtractedPreservicaValues();
 
     @BeforeAll
     static void setup() throws IOException {
@@ -47,7 +46,7 @@ public class HoldbackTest {
 
     @Test
     public void badOriginsTest() throws IOException {
-        RecordValues values = new RecordValues();
+        ExtractedPreservicaValues values = new ExtractedPreservicaValues();
         assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(values, null).getHoldbackDate());
         assertEquals("", HoldbackDatePicker.getInstance().getHoldbackDateForRecord(values, null).getHoldbackPurposeName());
 

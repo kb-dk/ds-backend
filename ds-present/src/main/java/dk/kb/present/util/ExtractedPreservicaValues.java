@@ -1,7 +1,4 @@
-package dk.kb.present;
-
-import dk.kb.present.util.DataCleanup;
-import dk.kb.present.util.PathPair;
+package dk.kb.present.util;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -12,15 +9,15 @@ import java.util.Map;
 /**
  * An object containing all values from a single Preservica record, that are to be handled in either a special context or in multiple contexts. The main component of this object is
  * the {@link #values}-map. This map contains keys, representing the name of each entry, and values of type {@link PathPair}, containing the path to the extracted value as
- * {@link PathPair#path} and the value extracted from the specified path at {@link PathPair#value}. This value can then be retrieved by getters in {@link RecordValues}.
+ * {@link PathPair#path} and the value extracted from the specified path at {@link PathPair#value}. This value can then be retrieved by getters in {@link ExtractedPreservicaValues}.
  * <br/>
  * Can be used in conjunction with {@link dk.kb.present.util.saxhandlers.ElementsExtractionHandler} to parse an XML stream for multiple values.
  */
-public class RecordValues {
+public class ExtractedPreservicaValues {
 
     public Map<String, PathPair<String,String>> values = new HashMap<>();
 
-    public RecordValues(){
+    public ExtractedPreservicaValues(){
         values.put("startTime", new PathPair<>(startTimePath, ""));
         values.put("endTime", new PathPair<>(endTimePath, ""));
         values.put("form", new PathPair<>(formPath, ""));
@@ -87,7 +84,7 @@ public class RecordValues {
 
     @Override
     public String toString() {
-        return "RecordValues{" +
+        return "ExtractedPreservicaValues{" +
                 "values=" + values +
                 '}';
     }

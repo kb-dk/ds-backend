@@ -2,25 +2,19 @@ package dk.kb.present.holdback;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import dk.kb.present.RecordValues;
+import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
-import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 /**
@@ -85,7 +79,7 @@ public class HoldbackDatePicker {
         return datePicker;
     }
 
-    public HoldbackObject getHoldbackDateForRecord(RecordValues extractedValues, String origin) throws IOException {
+    public HoldbackObject getHoldbackDateForRecord(ExtractedPreservicaValues extractedValues, String origin) throws IOException {
         HoldbackDatePicker.startDate = extractedValues.getStartTime();
         HoldbackObject result = new HoldbackObject();
         if (origin == null){
@@ -128,7 +122,7 @@ public class HoldbackDatePicker {
      * @param result holdbackDTO containing the purposeName and the holdbackDate for a record.
      * @return the result object with updated values.
      */
-    private static HoldbackObject getHoldbackForTvRecord(RecordValues extractedValues, HoldbackObject result) {
+    private static HoldbackObject getHoldbackForTvRecord(ExtractedPreservicaValues extractedValues, HoldbackObject result) {
         try {
             result.setHoldbackPurposeName(getPurposeName(extractedValues));
 
@@ -165,10 +159,10 @@ public class HoldbackDatePicker {
 
     /**
      * Get purposeName for a preservica record containing metadata about a DR program.
-     * @param extractedValues {@link RecordValues} containing data from a preservica record for analysis.
+     * @param extractedValues {@link ExtractedPreservicaValues} containing data from a preservica record for analysis.
      * @return the purposeName for a given program.
      */
-    private static String getPurposeName(RecordValues extractedValues) throws IOException, ParserConfigurationException, SAXException {
+    private static String getPurposeName(ExtractedPreservicaValues extractedValues) throws IOException, ParserConfigurationException, SAXException {
         // Get form value
         String form = extractedValues.getFormValue();
 

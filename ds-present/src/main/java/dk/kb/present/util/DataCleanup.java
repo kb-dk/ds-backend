@@ -14,8 +14,6 @@
  */
 package dk.kb.present.util;
 
-import dk.kb.present.RecordValues;
-import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
 import dk.kb.present.util.saxhandlers.ElementsExtractionHandler;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
@@ -76,9 +74,9 @@ public class DataCleanup {
      * Extract all needed values from a preservica record. These values are either tricky values such as dates, where we know that extra parsing is needed or values that are
      * used in multiple parts of the processing of the record.
      * @param content of the record. i.e. the XML data.
-     * @return a {@link RecordValues}-object containing the extracted values.
+     * @return a {@link ExtractedPreservicaValues}-object containing the extracted values.
      */
-    public static RecordValues extractValuesFromPreservicaContent(String content) throws ParserConfigurationException, SAXException {
+    public static ExtractedPreservicaValues extractValuesFromPreservicaContent(String content) throws ParserConfigurationException, SAXException {
         try (InputStream xml = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(false);

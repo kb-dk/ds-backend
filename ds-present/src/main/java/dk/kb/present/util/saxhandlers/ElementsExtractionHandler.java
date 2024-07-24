@@ -1,6 +1,6 @@
 package dk.kb.present.util.saxhandlers;
 
-import dk.kb.present.RecordValues;
+import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.present.util.DataCleanup;
 import dk.kb.present.util.PathPair;
 import org.xml.sax.Attributes;
@@ -8,15 +8,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 
 /**
- * Extract multiple values from an XML stream to a {@link RecordValues}-object.
+ * Extract multiple values from an XML stream to a {@link ExtractedPreservicaValues}-object.
  */
 public class ElementsExtractionHandler extends DefaultHandler {
 
-    private final RecordValues recordValues = new RecordValues();
+    private final ExtractedPreservicaValues extractedPreservicaValues = new ExtractedPreservicaValues();
     private String currentPath = "";
     private boolean captureValue = false;
     private String captureValueKey = "";
@@ -28,7 +27,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
         currentPath += "/" + elementName;
 
         // Check if the current path matches any target path
-        for (Map.Entry<String, PathPair<String, String>> entry : recordValues.values.entrySet()) {
+        for (Map.Entry<String, PathPair<String, String>> entry : extractedPreservicaValues.values.entrySet()) {
             if (currentPath.equals(entry.getValue().getPath())){
                 captureValue = true;
                 captureValueKey = entry.getKey();
@@ -39,7 +38,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         // Check if we are at the end of the target element
-        for (Map.Entry<String, PathPair<String, String>> entry : recordValues.values.entrySet()) {
+        for (Map.Entry<String, PathPair<String, String>> entry : extractedPreservicaValues.values.entrySet()) {
             if (currentPath.equals(entry.getValue().getPath())){
                 captureValue = false;
                 break;
@@ -59,15 +58,15 @@ public class ElementsExtractionHandler extends DefaultHandler {
 
             if (captureValueKey.equals("startTime") || captureValueKey.equals("endTime")){
                 String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(currentValue.toString()).format(DateTimeFormatter.ISO_INSTANT);
-                recordValues.values.get(captureValueKey).setValue(cleanedTime);
+                extractedPreservicaValues.values.get(captureValueKey).setValue(cleanedTime);
             } else {
-                recordValues.values.get(captureValueKey).setValue(currentValue.toString());
+                extractedPreservicaValues.values.get(captureValueKey).setValue(currentValue.toString());
             }
         }
     }
 
-    public RecordValues getDataValues() {
-        return recordValues;
+    public ExtractedPreservicaValues getDataValues() {
+        return extractedPreservicaValues;
     }
 
     /**
