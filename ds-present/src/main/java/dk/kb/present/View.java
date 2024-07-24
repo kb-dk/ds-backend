@@ -129,27 +129,14 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     @Override
     public String apply(DsRecordDto record) {
         final Map<String, String> metadata = createBasicMetadataMap(record);
-        ExtractedPreservicaValues extractedValues = new ExtractedPreservicaValues();
         String content = record.getData();
-
-        // If origin is either radio or tv (i.e. from preservica) extract some predefined values from the record to a ExtractedPreservicaValues object.
-        if ( content != null && (strategy.equals(Strategy.DR)) || strategy.equals(Strategy.MANIFESTATION)){
-            try {
-                extractedValues = DataCleanup.extractValuesFromPreservicaContent(content);
-            } catch (ParserConfigurationException | SAXException e) {
-                throw new RuntimeException(e);
-            }
-            extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
-        }
 
         switch (strategy) {
             case DR:
-                updateMetadataMapWithHoldback(record, metadata, extractedValues);
-                updateMetadataMapWithOwnProduction(metadata, extractedValues);
-                updateMetadataMapWithPreservicaManifestation(record, metadata);
+                applyDrStrategy(record, content, metadata);
                 break;
             case MANIFESTATION:
-                updateMetadataMapWithPreservicaManifestation(record, metadata);
+                applyManifestationStrategy(record, content, metadata);
                 break;
             case NONE:
                 break;
@@ -173,6 +160,59 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         return content;
     }
 
+    /**
+     * Apply the operations required, when working with DR material. This method does the following:
+     * <ul>
+     *     <li>Extract values from preservica record. (Dates, values for holdback calculation and own-production).</li>
+     *     <li>Clean start- and end-date and add them to the metadata map.</li>
+     *     <li>Create metadata map entries for own production.</li>
+     *     <li>Calculate holdback for the record in hand and add these values to the metadata map.</li>
+     *     <li>Add the access manifestation from the {@link DsRecordDto#referenceId} to the metadata map.</li>
+     * </ul>
+     * @param record to apply the strategy to.
+     * @param content of the record.
+     * @param metadata map containing values that are to be used in the XSLT transformation.
+     */
+    private void applyDrStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
+        ExtractedPreservicaValues extractedValues;
+        try {
+            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content);
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new RuntimeException(e);
+        }
+        extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
+        updateMetadataMapWithOwnProduction(metadata, extractedValues);
+        updateMetadataMapWithHoldback(record, metadata, extractedValues);
+        updateMetadataMapWithPreservicaManifestation(record, metadata);
+    }
+
+    /**
+     * Apply the operations required, when working with Preservica material. This method does the following:
+     * <ul>
+     *     <li>Extract values from preservica record. (Dates, values for holdback calculation and own-production).</li>
+     *     <li>Clean start- and end-date and add them to the metadata map.</li>
+     *     <li>Add the access manifestation from the {@link DsRecordDto#referenceId} to the metadata map.</li>
+     * </ul>
+     * @param record to apply the strategy to.
+     * @param content of the record.
+     * @param metadata map containing values that are to be used in the XSLT transformation.
+     */
+    private void applyManifestationStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
+        ExtractedPreservicaValues extractedValues;
+        try {
+            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content);
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new RuntimeException(e);
+        }
+        extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
+        updateMetadataMapWithPreservicaManifestation(record, metadata);
+    }
+
+    /**
+     * Create values related to own production from a {@link ExtractedPreservicaValues}-object and ad them to the metadata map.
+     * @param metadataMap which the values should be added to.
+     * @param extractedValues to extract Nielsen/Gallup origin from used to determine own production.
+     */
     private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues) {
         // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
         // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
@@ -189,9 +229,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         if (!ownProduction.isEmpty()) {
             boolean isOwnProduction = Integer.parseInt(extractedValues.getOrigin()) < 2000;
             metadataMap.put("ownProductionBool", Boolean.toString(isOwnProduction));
+            metadataMap.put("ownProductionCode", extractedValues.getOrigin());
         }
-        metadataMap.put("ownProductionCode", extractedValues.getOrigin());
-
     }
 
     /**
