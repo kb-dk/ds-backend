@@ -1,7 +1,6 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.*;
 
 import static dk.kb.present.TestUtil.prettyPrintJson;
@@ -80,7 +78,7 @@ class ViewTest {
     @Tag("integration")
     void jsonldPvica() throws Exception {
         HoldbackDatePicker.init();
-        View jsonldView = getPreservicaJsonView();
+        View jsonldView = getPreservicaRadioJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                                                     .origin("ds.radio").kalturaId("randomKalturaId");
@@ -99,7 +97,7 @@ class ViewTest {
     @Tag("integration")
     void testNoKalturaIdPvica() throws Exception {
         HoldbackDatePicker.init();
-        View jsonldView = getPreservicaJsonView();
+        View jsonldView = getPreservicaRadioJsonView();
         String preservicaData = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
         // Test with kalturaId = null
@@ -228,16 +226,18 @@ class ViewTest {
 
     @Test
     @Tag("integration")
-    void dataExtractionTest() throws Exception {
+    void ownProductionTest() throws Exception {
         HoldbackDatePicker.init();
-        View jsonldView = getPreservicaJsonView();
-        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_9ed10d66);
+        View jsonldView = getPreservicaTvJsonView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
 
 
         String jsonld = jsonldView.apply(recordDto);
-        prettyPrintJson(jsonld);
+
+        assertTrue(jsonld.contains("\"kb:own_production\":true," +
+                                    "\"kb:own_production_code\":1000,"));
     }
 
 
@@ -245,7 +245,7 @@ class ViewTest {
      * Create test view for Preservica Schema.org transformation
      * @return Schema.org JSON view for preservica records.
      */
-    private static View getPreservicaJsonView() throws IOException {
+    private static View getPreservicaRadioJsonView() throws IOException {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
@@ -254,6 +254,20 @@ class ViewTest {
         View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(1),
                 radioConf.getSubMap("\"ds.radio\"").getString("origin"));
         return jsonldView;
+    }
+
+    /**
+     * Create test view for Preservica Schema.org transformation
+     * @return Schema.org JSON view for preservica records.
+     */
+    private static View getPreservicaTvJsonView() throws IOException {
+        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
+            fail("Missing internal test files");
+        }
+        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
+        YAML tvConf = conf.getYAMLList("origins").get(3);
+        return new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(1),
+                tvConf.getSubMap("\"ds.tv\"").getString("origin"));
     }
 
     /**
