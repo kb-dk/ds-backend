@@ -46,7 +46,7 @@
       <xsl:when test="f:empty($object)"><xsl:value-of select="''"/></xsl:when>
       <xsl:when test="f:empty(map:get($object, $map1))"><xsl:value-of select="''"/></xsl:when>
       <xsl:when test="f:empty(map:get(map:get($object, $map1), $map2))"><xsl:value-of select="''"/></xsl:when>
-      <xsl:otherwise> <xsl:value-of select="map:get(map:get($object, $map1),$map2)"/></xsl:otherwise>
+      <xsl:otherwise><xsl:value-of select="map:get(map:get($object, $map1),$map2)"/></xsl:otherwise>
     </xsl:choose>
   </xsl:function>
 

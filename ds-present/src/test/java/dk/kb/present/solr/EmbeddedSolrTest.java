@@ -49,9 +49,9 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_ANSK;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_FM;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_aaf3b130;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
-import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_9779a1b2;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_e2dfb840;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_eaea0362;
+import static dk.kb.present.TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED;
 import static dk.kb.present.TestFiles.PVICA_RECORD_0b3f6a54;
 import static dk.kb.present.TestFiles.PVICA_RECORD_2b462c63;
 import static dk.kb.present.TestFiles.PVICA_RECORD_3006e2f8;
@@ -695,6 +695,14 @@ public class EmbeddedSolrTest {
     @Tag("integration")
     void testMigratedFrom() throws Exception {
         testStringValuePreservicaField(PVICA_DOMS_MIG_e2dfb840, "migrated_from", "DOMS");
+    }
+
+    @Test
+    @Tag("integration")
+    void testOwnProductionFields() throws Exception {
+        testBooleanValuePreservicaField(PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED, "own_production", true);
+        testIntValuePreservicaField(PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED, "own_production_code", 1000);
+
     }
 
     /*

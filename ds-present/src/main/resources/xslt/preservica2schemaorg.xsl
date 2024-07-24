@@ -900,7 +900,7 @@
         <xsl:value-of select="$ownProductionBool"/>
       </f:boolean>
     </xsl:if>
-    <xsl:if test="$ownProductionCode != ''">
+    <xsl:if test="$ownProductionCode != '' and not(f:empty($ownProductionCode))">
       <f:number key="kb:own_production_code">
         <xsl:value-of select="$ownProductionCode"/>
       </f:number>
