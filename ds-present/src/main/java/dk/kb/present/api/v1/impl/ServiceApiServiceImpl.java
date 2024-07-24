@@ -4,18 +4,22 @@ import dk.kb.present.Stats;
 import dk.kb.present.api.v1.ServiceApi;
 import dk.kb.present.model.v1.StatusDto;
 import dk.kb.present.model.v1.WhoamiDto;
-import dk.kb.present.webservice.AccessUtil;
+import dk.kb.present.model.v1.WhoamiTokenDto;
+import dk.kb.present.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Timing;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.ServiceException;
+
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * ds-present
@@ -85,11 +89,28 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
                 .stats(Stats.GET_RECORD.toString((Timing.STATS[])null, true));
     }
 
-    // Test with curl -X GET "http://localhost:9073/ds-present/v1/probe/whoami" -H  "Simulated-OAuth2-Group: foo"
+    /**
+     * Extract info from OAUth2 accessTokens.
+     * @return OAUth2 roles from the caller's accessToken, if present.
+     */
+    @SuppressWarnings("unchecked")
     @Override
-    public WhoamiDto whoami() {
-        return new WhoamiDto()
-                .hasAuthenticationToken(AccessUtil.hasAuthorization(httpHeaders))
-                .groups(new ArrayList<>(AccessUtil.getGroups(httpHeaders)));
+    public WhoamiDto probeWhoami() {
+        WhoamiDto whoami = new WhoamiDto();
+        WhoamiTokenDto token = new WhoamiTokenDto();
+        whoami.setToken(token);
+
+        Message message = JAXRSUtils.getCurrentMessage();
+
+        token.setPresent(message.containsKey(KBAuthorizationInterceptor.ACCESS_TOKEN_STRING));
+        token.setValid(Boolean.TRUE.equals(message.get(KBAuthorizationInterceptor.VALID_TOKEN)));
+        if (message.containsKey(KBAuthorizationInterceptor.FAILED_REASON)) {
+            token.setError(message.get(KBAuthorizationInterceptor.FAILED_REASON).toString());
+        }
+        Object roles = message.get(KBAuthorizationInterceptor.TOKEN_ROLES);
+        if (roles != null) {
+            token.setRoles(new ArrayList<>((Set<String>)roles));
+        }
+        return whoami;
     }
 }

@@ -39,6 +39,9 @@ paths:
         - '${project.name}'
       summary: 'Retrieve metadata for the record with the given ID and in the given format.'
       operationId: getRecord
+      security: 
+        - KBOAuth:
+          - any      
       parameters:
         - name: id
           in: path
@@ -382,14 +385,13 @@ paths:
             text/plain:
               schema:
                 type: string
-
-  # Debugging of OAuth2 roles
-  /probe/whoami:
+ 
+  /monitor/whoami:
     get:
       tags:
         - Service
-      summary: 'Pseudo-OAuth2 check: The groups that the caller belongs'
-      operationId: whoami
+      summary: 'Extract OAuth2 accessToken in the `Authorization` HTTP header and return the roles from it'
+      operationId: probeWhoami
       responses:
         '200':
           description: 'OK'
@@ -397,6 +399,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Whoami'
+ 
 
 components:
   schemas:
@@ -1115,18 +1118,56 @@ components:
           type: string
           description: 'Assorted performance statistics'
 
+
     Whoami:
       type: object
-      required:
-        - hasAuthenticationToken
+      description: 'OAuth2 information derived from the request'
       properties:
-        hasAuthenticationToken:
-          description: 'True if an authentication token was provided with the call, else false'
-          type: boolean
-          example: true
-        groups:
-          description: 'The groups that the user belongs to within this service'
-          type: array
-          items:
-            type: string
-            example: 'read'
+        token:
+          type: object
+          required:
+            - present
+          properties:
+            present:
+              type: boolean
+              description: 'True if an OAuth2 accessToken was present in the request, else false'
+              example: true
+            valid:
+              type: boolean
+              description: 'True is an OAuth2 accessToken was present and valid, else false'
+              example: false
+            error:
+              type: string
+              description: 'If the accessToken is not valid, the reason will be stated here'
+            roles:
+              type: array
+              items:
+                type: string
+              description: 'The roles stated in the OAuth2 accessToken'
+              example: [read, write, admin]
+
+  securitySchemes:
+
+    KBOAuth:
+      type: oauth2
+      description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
+      flows:
+        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+          #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
+          #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
+          authorizationUrl: https://api.example.com/oauth2/authorize 
+          scopes:
+            generic_ds: 'Scope used for all Digitale Samlinger services'
+            # Project specific roles
+            read: 'read data'
+            write: 'modify or delete data'
+
+            # General roles at the Royal Danish Library
+            devel: 'broad read access'
+            admin: 'all rights'
+
+            # Meta role controlling authorization behaviour
+            public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
+            any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
+
+

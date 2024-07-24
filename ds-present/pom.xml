@@ -61,7 +61,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.5.6</version>
+            <version>1.5.9</version>
             <exclusions>
                 <exclusion>
                     <!-- kb-util has 2.3.3, but transitive resolving has 2.4.0 somewhere-->
@@ -315,6 +315,22 @@
             <artifactId>Saxon-HE</artifactId>
             <version>10.6</version>
         </dependency>
+
+        <!-- OAuth  support -->
+        <!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-core -->
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
+            <version>24.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <!-- mockserver-junit-jupiter has 1.1, but transitive resolving has 1.2.2 somewhere-->
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
 
           <!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable -->
           <!-- Needed for the ds-storage client -->

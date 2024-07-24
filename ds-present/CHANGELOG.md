@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added field migrated_from to documents.
 - Added fields own_production and own_production_code to documents.
 
+- Enabled OAuth2 on module. Much is copy-paste from ds-image to see it working in two different modules.  Plans are to refactor common functionality out into kb-util/
+Only method getRecord (show full-record called by frontend) has OAuth enabled
+
 ### Changed
 - Bumped solr version to 1.6.13.
 - Changed extraction of field videoFrameSize to clean values as '16:9,' and '16:9, ' to '16:9'.
