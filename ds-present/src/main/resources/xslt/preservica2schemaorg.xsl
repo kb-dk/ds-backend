@@ -730,6 +730,22 @@
       </xsl:if>
     </xsl:for-each>
 
+    <!-- Extract authors/creators here we are using creators as these two can be used for the same content and we are using creator for images as well. -->
+    <xsl:if test="./pbcoreCreator/creatorRole = 'forfatter' and ./pbcoreCreator/creator != ''">
+      <f:array key="creator">
+        <xsl:for-each select="./pbcoreCreator">
+          <xsl:if test="./creatorRole = 'forfatter' and ./creator != ''">
+            <f:map>
+              <f:string key="@type">Person</f:string>
+              <f:string key="name">
+                <xsl:value-of select="normalize-space(./creator)"/>
+              </f:string>
+            </f:map>
+          </xsl:if>
+        </xsl:for-each>
+      </f:array>
+    </xsl:if>
+
     <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
     <f:array key="identifier">
       <f:map>
