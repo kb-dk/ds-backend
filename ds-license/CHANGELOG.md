@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Bumped kb-util version to improve YAML logging.
+- Bumped kb-util version to improve YAML logging and remove double logging.
 
 ### Removed
 - Removed non-resolvable git.tag from build.properties
