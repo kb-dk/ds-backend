@@ -679,6 +679,46 @@
       </xsl:choose>
     </xsl:if>
 
+    <!-- Extract actors if any present in metadata. see https://schema.org/actor and the JSON.LD example -->
+    <xsl:if test="./pbcoreContributor/contributorRole = 'medvirkende' and ./pbcoreContributor/contributor != ''">
+      <f:array key="actor">
+
+        <xsl:for-each select="./pbcoreContributor">
+          <xsl:if test="./contributorRole = 'medvirkende' and ./contributor != ''">
+            <f:map>
+              <f:string key="@type">PerformanceRole</f:string>
+              <xsl:choose>
+                <!-- When contributor contains a ':' it means that the character on the left is played by the actor on the right of the ':'. In this case we are creating
+                      a Person object and a characterName string. -->
+                <xsl:when test="contains(./contributor, ':')">
+                  <f:map key="actor">
+                    <f:string key="@type">Person</f:string>
+                    <f:string key="name">
+                      <xsl:value-of select="normalize-space(substring-after(./contributor, ':'))"/>
+                    </f:string>
+                  </f:map>
+                  <f:string key="characterName">
+                    <xsl:value-of select="normalize-space(substring-before(./contributor, ':'))"/>
+                  </f:string>
+                </xsl:when>
+                <!-- When contributor doesn't contain a ':' we dont know anything about the character and therefore we aren't creating a characterName string but using the full
+                content as name for the Person. -->
+                <xsl:when test="not(contains(./contributor, ':') and ./contributor != '')">
+                  <f:map key="actor">
+                    <f:string key="@type">Person</f:string>
+                    <f:string key="name">
+                      <xsl:value-of select="normalize-space(./contributor)"/>
+                    </f:string>
+                  </f:map>
+                </xsl:when>
+              </xsl:choose>
+            </f:map>
+          </xsl:if>
+        </xsl:for-each>
+
+      </f:array>
+    </xsl:if>
+
     <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
     <f:array key="identifier">
       <f:map>

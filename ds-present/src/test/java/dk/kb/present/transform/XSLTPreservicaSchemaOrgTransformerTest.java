@@ -465,6 +465,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     public void testActors() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
         prettyPrintJson(transformedJSON);
+        assertTrue(transformedJSON.contains("\"actor\":" +
+                                            "[{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"Elizabeth McGovern\"},\"characterName\":\"Deborah\"}," +
+                                            "{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"James Woods\"},\"characterName\":\"Max\"}," +
+                                            "{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"Robert De Niro\"},\"characterName\":\"Noodles\"}]"));
     }
 
     private static void printSchemaOrgJson(String xml) throws IOException {
