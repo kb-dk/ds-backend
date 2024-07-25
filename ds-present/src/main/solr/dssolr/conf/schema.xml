@@ -39,7 +39,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.10: Add fields for holdback management
 1.6.11: Rename schema fields following feedback from metadata review.
 1.6.12: Add kaltura_id to schema and remove old wowza streaming url.
-1.6.13
+1.6.13: Add fields actor, director, character and creator and their respective _strict fields.
   -->
   <field name="_ds_1.6.13_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -501,7 +501,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     John R. Johnsen?>
   </field>
 
+  <field name="actor_strict" type="text_strict" multiValued="true"  >
+    <?description The name of the actors present in the recording.?>
+    <?example     John R. Johnsen?>
+  </field>
+
   <field name="character" type="string" multiValued="true"  docValues="true">
+    <?description The name of the characters played by the actors in the recording.?>
+    <?example     Hans Christian Varnæs?>
+  </field>
+
+<field name="character_strict" type="text_strict" multiValued="true">
     <?description The name of the characters played by the actors in the recording.?>
     <?example     Hans Christian Varnæs?>
   </field>
@@ -510,6 +520,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?description The name of the director of the recording.?>
     <?example     Thomas Vinterberg?>
   </field>
+
+  <field name="director_strict" type="text_strict">
+    <?description The name of the director of the recording.?>
+    <?example     Thomas Vinterberg?>
+  </field>
+
 
   <field name="creator_affiliation_generic" type="text_general" multiValued="true">
     <?description The name of an organization, institution, etc. with which
@@ -1151,6 +1167,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 
   <copyField source="creator_name" dest="freetext"/>
   <copyField source="creator" dest="freetext"/>
+  <copyField source="actor" dest="freetext"/>
+  <copyField source="actor" dest="actor_strict"/>
+  <copyField source="character" dest="freetext"/>
+  <copyField source="character" dest="character_strict"/>
+  <copyField source="director" dest="freetext"/>
+  <copyField source="director" dest="director_strict"/>
   <copyField source="creator_given_name" dest="freetext"/>
   <copyField source="creator_terms_of_address" dest="freetext"/>
   <copyField source="area" dest="freetext"/>

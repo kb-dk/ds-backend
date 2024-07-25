@@ -760,6 +760,9 @@
         title_strict^5.0
         title
         creator_strict^5.0
+        actor_strict^5.0
+        character_strict^5.0
+        director_strict^5.0
         pid^5.0
         episode_title^4.0
         topic^2.0
@@ -981,6 +984,9 @@
         title
         title_strict^5.0
         creator_strict^5.0
+        actor_strict^5.0
+        character_strict^5.0
+        director_strict^5.0
         pid^5.0
         episode_title^4.0
         topic^2.0
@@ -1010,6 +1016,9 @@
           title
           title_strict^5.0
           creator_strict^5.0
+          actor_strict^5.0
+          character_strict^5.0
+          director_strict^5.0
           topic^2.0
           location
           notes
