@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Removed non-resolvable git.tag from build.properties
+- Removed double logging of part of the URL by bumping kb util to v1.5.10
+
 
 
 ## [1.5.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.5.0) - 2024-07-18
