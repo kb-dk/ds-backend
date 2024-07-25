@@ -14,6 +14,8 @@ Plans are to refactor common functionality out into kb-util/template projects.
 
 ### Removed
 - Removed non-resolvable git.tag from build.properties
+- Removed double logging of part of the URL by bumping kb util to v1.5.10
+
 
 ## [1.3.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.3.2) - 2024-07-17
 
