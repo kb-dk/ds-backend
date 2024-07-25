@@ -60,7 +60,7 @@ public class LicenseModuleClientTest {
         input.setAttributes(userObjAttributes);
 
         ArrayList<String> groups = new ArrayList<String>();
-        groups.add("Samlingsbilleder");		
+        groups.add("TV");		
         input.setGroups(groups);
         input.setPresentationType("Search");
 
@@ -85,6 +85,8 @@ public class LicenseModuleClientTest {
         assertTrue(output.getFilterQuery().indexOf("-(access_blokeret:true)") >0);
     }
 
+    
+    /*  Samlings billeder no longer in corpus
     @Test
     public void testCheckAccessForIds() throws Exception {
         DsLicenseClient dsLicenseClient = getDsLicenseClient();
@@ -107,6 +109,7 @@ public class LicenseModuleClientTest {
         assertEquals(output.getNonExistingIds().size(),1);                     	
     }
 
+*/
 
     @Test
     public void testGetUsersLicenses() throws Exception {

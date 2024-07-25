@@ -47,8 +47,8 @@ public class LicenceSolrJClientTest {
     public void testIdFiltering() throws  IOException, SolrServerException{        
         SolrServerClient solrServer = new SolrServerClient(dsSolrUrl); //Do not use the one in ds-license-behaviour.yaml
 
-        String idVideo="ds.tv:oai:du:3006e2f8-3f73-477a-a504-4d7cb1ae1e1c";
-        String idRadio="ds.radio:oai:du:e683b0b8-425b-45aa-be86-78ac2b4ef0ca";
+        String idVideo="ds.tv:oai:io:fc7b649b-6b70-4841-aac8-05655b6a933a";
+        String idRadio="ds.radio:oai:io:82f7a8cf-1acd-46ed-bd9a-da7685796ce4";
         ArrayList<String> ids = new ArrayList<String>(); 
         ids.add(idVideo);// Video
         ids.add(idRadio); //radio
