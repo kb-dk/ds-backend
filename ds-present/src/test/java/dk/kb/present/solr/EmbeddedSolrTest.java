@@ -715,7 +715,11 @@ public class EmbeddedSolrTest {
     void testDirectorPreservica() throws Exception{
         testStringValuePreservicaField(PVICA_DOMS_MIG_054c55b3, "director", "Sergio Leone");
     }
-
+    @Test
+    @Tag("integration")
+    void testCreatorPreservica() throws Exception{
+        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "creator_full_name", "Franco Arcalli", "Piero De Bernardi", "Franco Ferrini og Sergio Leon");
+    }
     /*
      * ------- Private helper methods below --------------
      */

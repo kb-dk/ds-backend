@@ -119,6 +119,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     12?>
   </field>
 
+  <field name="creator_full_name" type="string" multiValued="true"  docValues="true">
+    <?description The name of the creator written as given name family name.?>
+    <?example     John R. Johnsen?>
+  </field>
+
   <field name="creator_affiliation" type="text_general">
     <?description The name of an organization, institution, etc. with which
             the entity was associated at the time that the resource was created.?>
@@ -228,11 +233,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="creator_name" type="text_strict" multiValued="true">
     <?description The name of the creator written as family name, given name.?>
     <?example     Johnsen, John R.?>
-  </field>
-
-  <field name="creator_full_name" type="string" multiValued="true"  docValues="true">
-    <?description The name of the creator written as given name family name.?>
-    <?example     John R. Johnsen?>
   </field>
 
   <field name="creator_full_name_strict" type="text_strict" multiValued="true">

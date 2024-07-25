@@ -199,11 +199,27 @@
       </xsl:if>
 
       <!-- Extract director from schema.org json -->
-    <xsl:if test="f:exists($schemaorg-xml('director'))">
-      <f:string key="director">
-        <xsl:value-of select="map:get($schemaorg-xml('director'), 'name')"/>
-      </f:string>
-    </xsl:if>
+      <xsl:if test="f:exists($schemaorg-xml('director'))">
+        <f:string key="director">
+          <xsl:value-of select="map:get($schemaorg-xml('director'), 'name')"/>
+        </f:string>
+      </xsl:if>
+
+     <!-- Extracts creators from the array of creators present in the creator value from schema.org-->
+      <xsl:if test="f:exists($schemaorg-xml('creator'))">
+        <xsl:variable name="creators" as="item()*">
+          <xsl:copy-of select="array:flatten($schemaorg-xml('creator'))"/>
+        </xsl:variable>
+
+        <!-- Reusing the field 'creator_full_name' here as us used for images as well. -->
+        <f:array key="creator_full_name">
+          <xsl:for-each select="$creators">
+            <f:string>
+              <xsl:value-of select="map:get(., 'name')"/>
+            </f:string>
+          </xsl:for-each>
+        </f:array>
+      </xsl:if>
 
       <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
            Therefore, we are also extracting the creator_affiliation_generic which contains the same value for e.g.
