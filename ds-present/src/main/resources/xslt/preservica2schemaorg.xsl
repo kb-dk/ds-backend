@@ -35,8 +35,11 @@
   <xsl:param name="mTime"/>
   <!-- Access condition for DR material. Currently, this param contains a placeholder. -->
   <xsl:param name="conditionsOfAccess"/>
+  <!-- Holdback and Own Production params are values needed for DR material. They are used in the transformations to determine if users are allowed to access the material. -->
   <xsl:param name="holdbackDate"/>
   <xsl:param name="holdbackPurposeName"/>
+  <xsl:param name="ownProductionBool"/>
+  <xsl:param name="ownProductionCode"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
@@ -890,6 +893,18 @@
     <xsl:for-each select="/XIP/Metadata/Content/program_structure:program_structure">
       <xsl:call-template name="program-structure"/>
     </xsl:for-each>
+
+
+    <xsl:if test="$ownProductionBool != ''">
+      <f:boolean key="kb:own_production">
+        <xsl:value-of select="$ownProductionBool"/>
+      </f:boolean>
+    </xsl:if>
+    <xsl:if test="$ownProductionCode != '' and not(f:empty($ownProductionCode))">
+      <f:number key="kb:own_production_code">
+        <xsl:value-of select="$ownProductionCode"/>
+      </f:number>
+    </xsl:if>
 
     <!-- Holdback date included here. Holdback purpose is only included for video objects, therefor it is done in the
           internal-video-fields template. -->

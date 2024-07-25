@@ -62,11 +62,18 @@ public class HoldbackSheet {
      * @return amount of holdback days.
      */
     public int getHoldbackDaysForPurpose(String purpose) {
+        // If the purpose gets calculated to 'Udenlandsk Dramatik & Fiktion' the record will be filtered away by the own-prodution filter and therefore a "random" high value is
+        // set here.
+        if (purpose.equals("Udenlandsk Dramatik & Fiktion")){
+            return 999999;
+        }
+
         for (Map.Entry<String, Integer> entry : holdbackDaysForPurpose.entrySet()) {
             if (purpose.equals(entry.getKey())){
                 return entry.getValue();
             }
         }
+
 
         log.error("No holdback has been defined for purpose: '{}'.", purpose);
         throw new NotFoundServiceException("No holdback value cold be found for purpose: '" + purpose + "' in holdbackSheet.");

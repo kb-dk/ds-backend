@@ -19,10 +19,10 @@ import dk.kb.present.holdback.HoldbackDatePicker;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.DataCleanup;
+import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -30,8 +30,6 @@ import org.xml.sax.SAXException;
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -131,26 +129,20 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     @Override
     public String apply(DsRecordDto record) {
         final Map<String, String> metadata = createBasicMetadataMap(record);
-
         String content = record.getData();
-
-        if (content != null && (strategy.equals(Strategy.DR) || strategy.equals(Strategy.MANIFESTATION))){
-            extractStartAndEndDatesToMetadataMap(content, metadata);
-        }
 
         switch (strategy) {
             case DR:
-                updateMetadataMapWithHoldback(record, metadata);
-                // IMPORTANT: No break here as MANIFESTATION strategy should also be applied.
+                applyDrStrategy(record, content, metadata);
+                break;
             case MANIFESTATION:
-                updateMetadataMapWithPreservicaManifestation(record, metadata);
+                applyManifestationStrategy(record, content, metadata);
                 break;
             case NONE:
                 break;
             default:
                 throw new UnsupportedOperationException("Strategy: '" + strategy + "' is not allowed. " +
                         "Allowed strategies are: '" + Arrays.toString(Strategy.values()) + "'.");
-
         }
 
 
@@ -169,17 +161,86 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Extract start and end date from the record and ensure that they are in a valid format.
+     * Apply the operations required, when working with DR material. This method does the following:
+     * <ul>
+     *     <li>Extract values from preservica record. (Dates, values for holdback calculation and own-production).</li>
+     *     <li>Clean start- and end-date and add them to the metadata map.</li>
+     *     <li>Create metadata map entries for own production.</li>
+     *     <li>Calculate holdback for the record in hand and add these values to the metadata map.</li>
+     *     <li>Add the access manifestation from the {@link DsRecordDto#referenceId} to the metadata map.</li>
+     * </ul>
+     * @param record to apply the strategy to.
      * @param content of the record.
-     * @param metadataMap containing values given to the transformer creating the view.
+     * @param metadata map containing values that are to be used in the XSLT transformation.
      */
-    private static void extractStartAndEndDatesToMetadataMap(String content, Map<String, String> metadataMap) {
-        try (InputStream xmlStream = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
-            metadataMap.put("startDate", DataCleanup.getStartDate(xmlStream).format(DateTimeFormatter.ISO_INSTANT));
-            metadataMap.put("endDate", DataCleanup.getEndDate(xmlStream).format(DateTimeFormatter.ISO_INSTANT));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+    private void applyDrStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
+        ExtractedPreservicaValues extractedValues;
+        try {
+            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content);
+        } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
+        extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
+        updateMetadataMapWithOwnProduction(metadata, extractedValues);
+        updateMetadataMapWithHoldback(record, metadata, extractedValues);
+        updateMetadataMapWithPreservicaManifestation(record, metadata);
+    }
+
+    /**
+     * Apply the operations required, when working with Preservica material. This method does the following:
+     * <ul>
+     *     <li>Extract values from preservica record. (Dates, values for holdback calculation and own-production).</li>
+     *     <li>Clean start- and end-date and add them to the metadata map.</li>
+     *     <li>Add the access manifestation from the {@link DsRecordDto#referenceId} to the metadata map.</li>
+     * </ul>
+     * @param record to apply the strategy to.
+     * @param content of the record.
+     * @param metadata map containing values that are to be used in the XSLT transformation.
+     */
+    private void applyManifestationStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
+        ExtractedPreservicaValues extractedValues;
+        try {
+            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content);
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new RuntimeException(e);
+        }
+        extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
+        updateMetadataMapWithPreservicaManifestation(record, metadata);
+    }
+
+    /**
+     * Create values related to own production from a {@link ExtractedPreservicaValues}-object and ad them to the metadata map.
+     * @param metadataMap which the values should be added to.
+     * @param extractedValues to extract Nielsen/Gallup origin from used to determine own production.
+     */
+    private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues) {
+        // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
+        // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
+        String ownProduction = extractedValues.getOrigin();
+        if (ownProduction.isEmpty()) {
+            log.error("Nielsen/Gallup origin was empty.");
+            // TODO: make this throw an exception, when data are better
+            //throw new InternalServiceException("The Nielsen/Gallup origin was empty. Own production cannot be defined.");
+        }
+        if (ownProduction.length() != 4){
+            log.warn("Nielsen/Gallup origin did not have length 4. Origin is: '{}'", ownProduction);
+        }
+
+        if (!ownProduction.isEmpty()) {
+            boolean isOwnProduction = Integer.parseInt(extractedValues.getOrigin()) < 2000;
+            metadataMap.put("ownProductionBool", Boolean.toString(isOwnProduction));
+            metadataMap.put("ownProductionCode", extractedValues.getOrigin());
+        }
+    }
+
+    /**
+     * Extract start and end date from the record and ensure that they are in a valid format.
+     * @param metadataMap containing values given to the transformer creating the view.
+     * @param extractedPreservicaValues containing values that have been extracted from the metadata record.
+     */
+    private static void extractStartAndEndDatesToMetadataMap(Map<String, String> metadataMap, ExtractedPreservicaValues extractedPreservicaValues) {
+        metadataMap.put("startTime", extractedPreservicaValues.getStartTime());
+        metadataMap.put("endTime", extractedPreservicaValues.getEndTime());
     }
 
     /**
@@ -240,9 +301,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param metadata map, which holds values that are to be used in the XSLT transformation later on.
      *                 Holdback values are added to this map.
      */
-    private void updateMetadataMapWithHoldback(DsRecordDto record, Map<String, String> metadata) {
+    private void updateMetadataMapWithHoldback(DsRecordDto record, Map<String, String> metadata, ExtractedPreservicaValues extractedValues) {
         try {
-            HoldbackObject holdbackObject = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(record, metadata.get("startDate"));
+            HoldbackObject holdbackObject = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(extractedValues, record.getOrigin());
 
             metadata.put("holdbackDate", holdbackObject.getHoldbackDate());
             metadata.put("holdbackPurposeName", holdbackObject.getHoldbackPurposeName());
