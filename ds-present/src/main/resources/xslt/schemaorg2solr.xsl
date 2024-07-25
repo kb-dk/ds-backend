@@ -170,7 +170,7 @@
         </xsl:variable>
 
         <!-- Extract actor names from nested map-->
-        <f:array key="actors">
+        <f:array key="actor">
           <xsl:for-each select="$actors">
             <f:string><xsl:value-of select="my:getNestedMapValue2Levels(., 'actor', 'name')"/></f:string>
           </xsl:for-each>
@@ -186,7 +186,7 @@
 
         <!-- Get character names from map if they are present.-->
         <xsl:if test="contains($charactersBool, 'true')">
-          <f:array key="characters">
+          <f:array key="character">
             <xsl:for-each select="$actors">
               <xsl:if test="f:exists(map:get(., 'characterName'))">
                 <f:string>
@@ -211,8 +211,8 @@
           <xsl:copy-of select="array:flatten($schemaorg-xml('creator'))"/>
         </xsl:variable>
 
-        <!-- Reusing the field 'creator_full_name' here as us used for images as well. -->
-        <f:array key="creator_full_name">
+        <!-- Reusing the field 'creator' here as us used for images as well. -->
+        <f:array key="creator">
           <xsl:for-each select="$creators">
             <f:string>
               <xsl:value-of select="map:get(., 'name')"/>

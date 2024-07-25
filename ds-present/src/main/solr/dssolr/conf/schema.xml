@@ -119,7 +119,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     12?>
   </field>
 
-  <field name="creator_full_name" type="string" multiValued="true"  docValues="true">
+  <field name="creator" type="string" multiValued="true"  docValues="true">
     <?description The name of the creator written as given name family name.?>
     <?example     John R. Johnsen?>
   </field>
@@ -235,7 +235,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Johnsen, John R.?>
   </field>
 
-  <field name="creator_full_name_strict" type="text_strict" multiValued="true">
+  <field name="creator_strict" type="text_strict" multiValued="true">
     <?description The name of the creator written as givenName familyName.
                   This is a strict field, which produces a better ranking when querying.?>
     <?example     John R. Johnsen?>
@@ -496,12 +496,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     DR?>
   </field>
 
-  <field name="actors" type="string" multiValued="true"  docValues="true">
+  <field name="actor" type="string" multiValued="true"  docValues="true">
     <?description The name of the actors present in the recording.?>
     <?example     John R. Johnsen?>
   </field>
 
-  <field name="characters" type="string" multiValued="true"  docValues="true">
+  <field name="character" type="string" multiValued="true"  docValues="true">
     <?description The name of the characters played by the actors in the recording.?>
     <?example     Hans Christian Varnæs?>
   </field>
@@ -1133,7 +1133,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- END FIELDTYPE DEFINITIONS-->
 
   <!-- START COPYFIELDS  -->
-  <copyField source="creator_full_name" dest="creator_full_name_strict">
+  <copyField source="creator" dest="creator_strict">
     <?description Copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
     <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
   </copyField>
@@ -1150,7 +1150,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </copyField>
 
   <copyField source="creator_name" dest="freetext"/>
-  <copyField source="creator_full_name" dest="freetext"/>
+  <copyField source="creator" dest="freetext"/>
   <copyField source="creator_given_name" dest="freetext"/>
   <copyField source="creator_terms_of_address" dest="freetext"/>
   <copyField source="area" dest="freetext"/>

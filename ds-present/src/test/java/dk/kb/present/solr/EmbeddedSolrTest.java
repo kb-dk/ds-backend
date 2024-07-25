@@ -171,8 +171,8 @@ public class EmbeddedSolrTest {
         // creator_name
         assertMultivalueField(record,"creator_name", "Clemens, Johann Friderich");
 
-        // creator_full_name
-        assertMultivalueField(record,"creator_full_name", "Johann Friderich Clemens");
+        // creator
+        assertMultivalueField(record,"creator", "Johann Friderich Clemens");
 
         // creator_family_name
         assertMultivalueField(record,"creator_family_name", "Clemens");
@@ -702,12 +702,12 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testActorsPreservica() throws Exception{
-        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "actors", "Elizabeth McGovern", "James Woods", "Robert De Niro");
+        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "actor", "Elizabeth McGovern", "James Woods", "Robert De Niro");
     }
     @Test
     @Tag("integration")
     void testCharactersPreservica() throws Exception{
-        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "characters", "Max", "Noodles", "Deborah");
+        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "character", "Max", "Noodles", "Deborah");
     }
 
     @Test
@@ -718,7 +718,7 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testCreatorPreservica() throws Exception{
-        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "creator_full_name", "Franco Arcalli", "Piero De Bernardi", "Franco Ferrini og Sergio Leon");
+        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "creator", "Franco Arcalli", "Piero De Bernardi", "Franco Ferrini og Sergio Leon");
     }
     /*
      * ------- Private helper methods below --------------

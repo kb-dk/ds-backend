@@ -439,25 +439,25 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testActors() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
-        assertTrue(solrString.contains("\"actors\":[" +
+        assertTrue(solrString.contains("\"actor\":[" +
                 "\"Elizabeth McGovern\",\"James Woods\",\"Robert De Niro\"],"));
     }
     @Test
     void testCharacters() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
-        assertTrue(solrString.contains("\"characters\":[" +
+        assertTrue(solrString.contains("\"character\":[" +
                 "\"Deborah\",\"Max\",\"Noodles\"],"));
     }
 
     @Test
     void testNoActors() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
-        assertFalse(solrString.contains("\"actors\":["));
+        assertFalse(solrString.contains("\"actor\":["));
     }
     @Test
     void testNoCharacters() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
-        assertFalse(solrString.contains("\"characters\":["));
+        assertFalse(solrString.contains("\"character\":["));
     }
 
     @Test
@@ -475,13 +475,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testCreators() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
-        assertTrue(solrString.contains("\"creator_full_name\":[\"Franco Ferrini og Sergio Leon\","));
+        assertTrue(solrString.contains("\"creator\":[\"Franco Ferrini og Sergio Leon\","));
     }
 
     @Test
     void testNoCreators() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
-        assertFalse(solrString.contains("\"creator_full_name\":"));
+        assertFalse(solrString.contains("\"creator\":"));
     }
 
     /**
