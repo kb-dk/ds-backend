@@ -506,6 +506,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Hans Christian Varnæs?>
   </field>
 
+  <field name="director" type="string"  docValues="true">
+    <?description The name of the director of the recording.?>
+    <?example     Thomas Vinterberg?>
+  </field>
+
   <field name="creator_affiliation_generic" type="text_general" multiValued="true">
     <?description The name of an organization, institution, etc. with which
                   the entity was associated at the time that the resource was created.

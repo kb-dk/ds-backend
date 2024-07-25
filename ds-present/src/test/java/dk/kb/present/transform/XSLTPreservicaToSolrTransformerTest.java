@@ -460,6 +460,18 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertFalse(solrString.contains("\"characters\":["));
     }
 
+    @Test
+    void testDirector() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(solrString.contains("\"director\":\"Sergio Leone\","));
+    }
+
+    @Test
+    void testNoDirector() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(solrString.contains("\"director\":"));
+    }
+
     /**
      * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
      * transformed record contains the given {@code substring}.

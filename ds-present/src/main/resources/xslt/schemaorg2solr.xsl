@@ -198,6 +198,13 @@
         </xsl:if>
       </xsl:if>
 
+      <!-- Extract director from schema.org json -->
+    <xsl:if test="f:exists($schemaorg-xml('director'))">
+      <f:string key="director">
+        <xsl:value-of select="map:get($schemaorg-xml('director'), 'name')"/>
+      </f:string>
+    </xsl:if>
+
       <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
            Therefore, we are also extracting the creator_affiliation_generic which contains the same value for e.g.
            DR P1 from 1960 'program 1' and 2000's 'P1'. Here the value would be drp1. -->
