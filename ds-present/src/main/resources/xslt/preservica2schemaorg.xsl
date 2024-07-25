@@ -682,7 +682,6 @@
     <!-- Extract actors if any present in metadata. see https://schema.org/actor and the JSON.LD example -->
     <xsl:if test="./pbcoreContributor/contributorRole = 'medvirkende' and ./pbcoreContributor/contributor != ''">
       <f:array key="actor">
-
         <xsl:for-each select="./pbcoreContributor">
           <xsl:if test="./contributorRole = 'medvirkende' and ./contributor != ''">
             <f:map>
@@ -715,9 +714,21 @@
             </f:map>
           </xsl:if>
         </xsl:for-each>
-
       </f:array>
     </xsl:if>
+
+    <!-- Extract directors if any present in metadata. see https://schema.org/director -->
+    <!-- In our devel system we dont have any records where there are more than one contributer with the role 'instruktion' therefore this is not implemented as an array. -->
+    <xsl:for-each select="./pbcoreContributor">
+      <xsl:if test="./contributorRole = 'instruktion' and ./contributor != ''">
+        <f:map key="director">
+          <f:string key="@type">Person</f:string>
+          <f:string key="name">
+            <xsl:value-of select="normalize-space(./contributor)"/>
+          </f:string>
+        </f:map>
+      </xsl:if>
+    </xsl:for-each>
 
     <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
     <f:array key="identifier">
