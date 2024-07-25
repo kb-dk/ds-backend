@@ -461,6 +461,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"name\":\"Temalørdag: Pavarotti\","));
     }
 
+    @Test
+    public void testActors() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        prettyPrintJson(transformedJSON);
+    }
+
     private static void printSchemaOrgJson(String xml) throws IOException {
         Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
                                                 "conditionsOfAccess", "placeholderCondition");
