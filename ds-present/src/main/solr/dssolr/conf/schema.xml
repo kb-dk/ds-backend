@@ -496,6 +496,16 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     DR?>
   </field>
 
+  <field name="actors" type="string" multiValued="true"  docValues="true">
+    <?description The name of the actors present in the recording.?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="characters" type="string" multiValued="true"  docValues="true">
+    <?description The name of the characters played by the actors in the recording.?>
+    <?example     Hans Christian Varnæs?>
+  </field>
+
   <field name="creator_affiliation_generic" type="text_general" multiValued="true">
     <?description The name of an organization, institution, etc. with which
                   the entity was associated at the time that the resource was created.

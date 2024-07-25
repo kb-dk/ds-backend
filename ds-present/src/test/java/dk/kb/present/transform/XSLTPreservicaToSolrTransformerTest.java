@@ -434,7 +434,30 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testEmptyFields() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3b0c391f);
-        prettyPrintJson(solrString);
+    }
+
+    @Test
+    void testActors() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(solrString.contains("\"actors\":[" +
+                "\"Elizabeth McGovern\",\"James Woods\",\"Robert De Niro\"],"));
+    }
+    @Test
+    void testCharacters() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(solrString.contains("\"characters\":[" +
+                "\"Deborah\",\"Max\",\"Noodles\"],"));
+    }
+
+    @Test
+    void testNoActors() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(solrString.contains("\"actors\":["));
+    }
+    @Test
+    void testNoCharacters() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(solrString.contains("\"characters\":["));
     }
 
     /**

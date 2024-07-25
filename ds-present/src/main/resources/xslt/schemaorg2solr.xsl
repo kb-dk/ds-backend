@@ -163,6 +163,41 @@
         </f:string>
       </xsl:if>
 
+      <!-- Extract actors and characters is present.-->
+      <xsl:if test="f:exists($schemaorg-xml('actor'))">
+        <xsl:variable name="actors" as="item()*">
+          <xsl:copy-of select="array:flatten($schemaorg-xml('actor'))"/>
+        </xsl:variable>
+
+        <!-- Extract actor names from nested map-->
+        <f:array key="actors">
+          <xsl:for-each select="$actors">
+            <f:string><xsl:value-of select="my:getNestedMapValue2Levels(., 'actor', 'name')"/></f:string>
+          </xsl:for-each>
+        </f:array>
+
+        <!-- Here we need to know if the value 'characterName' is present somewhere in the nested map. I dont know of anyway else of checking this than through a variable
+        getting populated true strings that we then can do an if-lookup on. -->
+        <xsl:variable name="charactersBool">
+          <xsl:for-each select="$actors">
+            <xsl:if test="map:get(., 'characterName')"><xsl:value-of select="f:true()"/></xsl:if>
+          </xsl:for-each>
+        </xsl:variable>
+
+        <!-- Get character names from map if they are present.-->
+        <xsl:if test="contains($charactersBool, 'true')">
+          <f:array key="characters">
+            <xsl:for-each select="$actors">
+              <xsl:if test="f:exists(map:get(., 'characterName'))">
+                <f:string>
+                  <xsl:value-of select="map:get(., 'characterName')"/>
+                </f:string>
+              </xsl:if>
+            </xsl:for-each>
+          </f:array>
+        </xsl:if>
+      </xsl:if>
+
       <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
            Therefore, we are also extracting the creator_affiliation_generic which contains the same value for e.g.
            DR P1 from 1960 'program 1' and 2000's 'P1'. Here the value would be drp1. -->

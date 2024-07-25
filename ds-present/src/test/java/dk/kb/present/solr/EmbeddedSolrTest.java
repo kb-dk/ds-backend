@@ -49,6 +49,8 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_ANSK;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_FM;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_aaf3b130;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
+import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_054c55b3;
+import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_597e79f7;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_9779a1b2;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_e2dfb840;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_eaea0362;
@@ -695,6 +697,17 @@ public class EmbeddedSolrTest {
     @Tag("integration")
     void testMigratedFrom() throws Exception {
         testStringValuePreservicaField(PVICA_DOMS_MIG_e2dfb840, "migrated_from", "DOMS");
+    }
+
+    @Test
+    @Tag("integration")
+    void testActorsPreservica() throws Exception{
+        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "actors", "Elizabeth McGovern", "James Woods", "Robert De Niro");
+    }
+    @Test
+    @Tag("integration")
+    void testCharactersPreservica() throws Exception{
+        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "characters", "Max", "Noodles", "Deborah");
     }
 
     /*
