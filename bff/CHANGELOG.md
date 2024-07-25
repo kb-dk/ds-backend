@@ -6,10 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Updated KB util version from 1.4.22 to 1.5.5.
+- Updated KB util version from 1.4.22 to 1.5.10.
 
 ### Removed
 - Removed non-resolvable git.tag from build.properties
+- Removed double logging of part of URLs by bumping kb util to v1.5.10
+
 
 ## [1.0.1] - 2024-05-13
 ### Added
