@@ -548,6 +548,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     78e74634-bec1-4cea-a984-20192c97b743?>
   </field>
 
+  <field name="own_production" type="boolean">
+    <?desciption A boolean representing if the record has been produced by DR?>
+    <?example true?>
+  </field>
+
+  <field name="own_production_code" type="pint">
+    <?desciption A four digit code containing information about wether the record has been produces by DR. numbers below 2000 are considered own production, which would also be
+            reflected in the boolean 'own_production?>
+    <?example 1100?>
+  </field>
+
   <field name="holdback_expired_date" type="pdate">
     <?description The point in time where the given record is outside of holdback and can be shown/used in the archive
                   in UTC time.?>

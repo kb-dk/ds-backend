@@ -120,7 +120,9 @@ public class TestUtil {
 				"holdbackPurposeName","Aktualitet og debat",
 				"kalturaID", "aVeryTrueKalturaID",
 				"startTime", "1987-05-04T14:45:00Z",
-				"endTime", "1987-05-04T16:45:00Z");
+				"endTime", "1987-05-04T16:45:00Z",
+				"ownProductionBool", "true",
+				"ownProductionCode","1000");
 		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
 		//prettyPrintJson(schemaOrgJson);
 

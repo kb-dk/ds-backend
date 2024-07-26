@@ -61,7 +61,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.5.9</version>
+            <version>1.5.10</version>
             <exclusions>
                 <exclusion>
                     <!-- kb-util has 2.3.3, but transitive resolving has 2.4.0 somewhere-->
@@ -280,6 +280,7 @@
           <groupId>org.mockito</groupId>
           <artifactId>mockito-inline</artifactId>
           <version>5.2.0</version>
+         <scope>test</scope>
         </dependency>
         <!-- Mockito-core is needed for FieldSetter used in tests.
              Tests using this functionality should probably be re-written to use an updated version of mockito -->

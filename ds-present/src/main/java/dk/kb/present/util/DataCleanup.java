@@ -14,9 +14,10 @@
  */
 package dk.kb.present.util;
 
-import dk.kb.present.util.saxhandlers.ElementExtractionHandler;
+import dk.kb.present.util.saxhandlers.ElementsExtractionHandler;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -26,6 +27,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,43 +61,32 @@ public class DataCleanup {
     }
     private static final Pattern XML_DECLARATION = Pattern.compile("[\n ]*<[?]xml [^?]*[?]>\n?", Pattern.DOTALL);
 
-
-    /**
-     * Extract startDate for a Preservica record. Extracts the value present at {@code PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart} and
-     * parses it as a well formatted ZonedDateTime. Resets the stream after use.
-     * @param xml stream representing a preservica record, with the field {@code PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart} present.
-     * @return a well formatted ZonedDateTime with the value.
-     */
-    public static ZonedDateTime getStartDate(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
-        factory.setNamespaceAware(false);
-        SAXParser saxParser = factory.newSAXParser();
-
-        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart");
-        return getCleanZonedDateTime(xml, saxParser, handler);
-    }
-
-    /**
-     * Extract startDate for a Preservica record. Extracts the value present at {@code PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd} and
-     * parses it as a well formatted ZonedDateTime. Resets the stream after use.
-     * @param xml stream representing a preservica record, with the field {@code PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd} present.
-     * @return a well formatted ZonedDateTime with the value.
-     */
-    public static ZonedDateTime getEndDate(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
-        factory.setNamespaceAware(false);
-        SAXParser saxParser = factory.newSAXParser();
-        ElementExtractionHandler handler = new ElementExtractionHandler("/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd");
-        return getCleanZonedDateTime(xml, saxParser, handler);
-    }
-
-    private static ZonedDateTime getCleanZonedDateTime(InputStream xml, SAXParser saxParser, ElementExtractionHandler handler) throws SAXException, IOException {
-        saxParser.parse(xml, handler);
-        xml.reset();
-        String datetimeString =  handler.getCurrentValue();
-
+    public static ZonedDateTime getCleanZonedDateTimeFromString(String datetime){
         String dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss[XX][XXX]";
         try {
-            return DatetimeParser.parseStringToZonedDateTime(datetimeString, dateTimeFormat);
+            return DatetimeParser.parseStringToZonedDateTime(datetime, dateTimeFormat);
         } catch (MalformedIOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Extract all needed values from a preservica record. These values are either tricky values such as dates, where we know that extra parsing is needed or values that are
+     * used in multiple parts of the processing of the record.
+     * @param content of the record. i.e. the XML data.
+     * @return a {@link ExtractedPreservicaValues}-object containing the extracted values.
+     */
+    public static ExtractedPreservicaValues extractValuesFromPreservicaContent(String content) throws ParserConfigurationException, SAXException {
+        try (InputStream xml = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(false);
+            SAXParser saxParser = factory.newSAXParser();
+
+            ElementsExtractionHandler handler = new ElementsExtractionHandler();
+            saxParser.parse(xml, handler);
+
+            return handler.getDataValues();
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

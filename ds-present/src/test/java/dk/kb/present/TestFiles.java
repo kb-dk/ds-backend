@@ -52,6 +52,8 @@ public class TestFiles {
     public static final String PVICA_DOMS_MIG_73aad1c3 = "internal_test_files/domsMigrated/73aad1c3-5af0-4720-a569-98441edbd245.xml";
     public static final String PVICA_DOMS_MIG_054c55b3 = "internal_test_files/domsMigrated/054c55b3-ed3a-442c-99dd-1b80c0218114.xml";
     public static final String PVICA_HOMEMADE_HOLDBACK_TEST_RECORD = "internal_test_files/homemade/badHoldbackFieldContents.xml";
+    public static final String PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED = "internal_test_files/homemade/correctDomsMigWithTVMeterEnrichment.xml";
+    public static final String PVICA_HOMEMADE_NOT_OWNPROD = "internal_test_files/homemade/badOwnProduction.xml";
 
     // From preservica 6, not in preservica 7 stage
     public static final String PVICA6_RECORD_00a9e71c = "internal_test_files/preservica6/00a9e71c-1264-4e57-9238-b38ec5672fb2.xml";

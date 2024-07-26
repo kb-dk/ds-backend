@@ -338,6 +338,18 @@
         </xsl:if>
       </xsl:if>
 
+      <!-- Extraction of ownprocution related fields. -->
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:own_production') != ''">
+        <f:string key="own_production">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:own_production')"/>
+        </f:string>
+      </xsl:if>
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:own_production_code') != ''">
+        <f:string key="own_production_code">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:own_production_code')"/>
+        </f:string>
+      </xsl:if>
+
       <!-- Extraction of holdback related fields. -->
       <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_name') != ''">
         <f:string key="holdback_name">
