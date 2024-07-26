@@ -49,9 +49,11 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_ANSK;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_FM;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_aaf3b130;
 import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
+import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_054c55b3;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_e2dfb840;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_eaea0362;
 import static dk.kb.present.TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED;
+import static dk.kb.present.TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS;
 import static dk.kb.present.TestFiles.PVICA_RECORD_0b3f6a54;
 import static dk.kb.present.TestFiles.PVICA_RECORD_2b462c63;
 import static dk.kb.present.TestFiles.PVICA_RECORD_3006e2f8;
@@ -169,8 +171,8 @@ public class EmbeddedSolrTest {
         // creator_name
         assertMultivalueField(record,"creator_name", "Clemens, Johann Friderich");
 
-        // creator_full_name
-        assertMultivalueField(record,"creator_full_name", "Johann Friderich Clemens");
+        // creator
+        assertMultivalueField(record,"creator", "Johann Friderich Clemens");
 
         // creator_family_name
         assertMultivalueField(record,"creator_family_name", "Clemens");
@@ -705,6 +707,33 @@ public class EmbeddedSolrTest {
 
     }
 
+    @Test
+    @Tag("integration")
+    void testActorsPreservica() throws Exception{
+        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "actor", "Elizabeth McGovern", "James Woods", "Robert De Niro");
+    }
+    @Test
+    @Tag("integration")
+    void testCharactersPreservica() throws Exception{
+        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "character", "Max", "Noodles", "Deborah");
+    }
+
+    @Test
+    @Tag("integration")
+    void testDirectorPreservica() throws Exception{
+        testStringValuePreservicaField(PVICA_DOMS_MIG_054c55b3, "director", "Sergio Leone");
+    }
+    @Test
+    @Tag("integration")
+    void testCreatorPreservica() throws Exception{
+        testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "creator", "Franco Arcalli", "Piero De Bernardi", "Franco Ferrini og Sergio Leon");
+    }
+
+    @Test
+    @Tag("integration")
+    void testContributorPreservicaRadio() throws Exception{
+        testStringPresentInPreservicaMultiField(PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS, "contributor", "Max: James Woods");
+    }
     /*
      * ------- Private helper methods below --------------
      */

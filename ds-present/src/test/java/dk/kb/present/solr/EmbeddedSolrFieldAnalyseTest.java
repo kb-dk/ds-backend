@@ -204,7 +204,7 @@ public class EmbeddedSolrFieldAnalyseTest {
     
     private long getCreatorNameStrictResultsForQuery(String query) throws Exception {
         SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery("creator_full_name_strict:(" + query + ")");
+        solrQuery.setQuery("creator_strict:(" + query + ")");
         solrQuery.setRows(10);
         QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
         return rsp.getResults().getNumFound();
@@ -262,14 +262,14 @@ public class EmbeddedSolrFieldAnalyseTest {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", 1);
             document.addField("origin", "ds.test");
-            document.addField("creator_full_name", "Thomas Egense");
-            document.addField("creator_full_name", "Antoine de Saint-Exupéry");
-            document.addField("creator_full_name", "Honoré de Balzac");
-            document.addField("creator_full_name", "Søren Kierkegaard");
-            document.addField("creator_full_name", "Juliusz Słowacki");
-            document.addField("creator_full_name", "Maria Dąbrowska");
-            document.addField("creator_full_name", "Gabriel García Márquez");
-            document.addField("creator_full_name", "Günter Grass");
+            document.addField("creator", "Thomas Egense");
+            document.addField("creator", "Antoine de Saint-Exupéry");
+            document.addField("creator", "Honoré de Balzac");
+            document.addField("creator", "Søren Kierkegaard");
+            document.addField("creator", "Juliusz Słowacki");
+            document.addField("creator", "Maria Dąbrowska");
+            document.addField("creator", "Gabriel García Márquez");
+            document.addField("creator", "Günter Grass");
             document.addField("access_billede_aftale", false); // required field
             document.addField("access_foto_aftale", false);// required field
             document.addField("title", "Romeo og Julie");

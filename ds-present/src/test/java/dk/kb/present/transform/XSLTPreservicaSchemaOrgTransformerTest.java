@@ -461,6 +461,56 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"name\":\"Temalørdag: Pavarotti\","));
     }
 
+    @Test
+    public void testActors() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(transformedJSON.contains("\"actor\":" +
+                                            "[{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"Elizabeth McGovern\"},\"characterName\":\"Deborah\"}," +
+                                            "{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"James Woods\"},\"characterName\":\"Max\"}," +
+                                            "{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"Robert De Niro\"},\"characterName\":\"Noodles\"}]"));
+    }
+
+    @Test
+    public void testNoActors() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(transformedJSON.contains("\"actor\""));
+    }
+
+    @Test
+    public void testDirectors() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(transformedJSON.contains("\"director\":{\"@type\":\"Person\",\"name\":\"Sergio Leone\"}"));
+    }
+
+    @Test
+    public void testNoDirectors() throws IOException{
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(transformedJSON.contains("\"director\""));
+
+    }
+
+    @Test
+    public void testCreators() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        prettyPrintJson(transformedJSON);
+        assertTrue(transformedJSON.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"Franco Ferrini og Sergio Leon\"},{\"@type\":\"Person\",\"name\":\"Franco Arcalli\"}," +
+                                            "{\"@type\":\"Person\",\"name\":\"Enrico Medioli\"},{\"@type\":\"Person\",\"name\":\"Piero De Bernardi\"}," +
+                                            "{\"@type\":\"Person\",\"name\":\"Leonardo Benvenuti\"}]"));
+    }
+
+    @Test
+    public void testNoCreators() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(transformedJSON.contains("\"creator\""));
+
+    }
+
+    @Test
+    public void voidContributorsTest() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
+        assertTrue(transformedJSON.contains("\"contributor\""));
+    }
+
     private static void printSchemaOrgJson(String xml) throws IOException {
         Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
                                                 "conditionsOfAccess", "placeholderCondition");

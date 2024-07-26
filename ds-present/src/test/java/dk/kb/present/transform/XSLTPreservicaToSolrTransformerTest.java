@@ -434,7 +434,60 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testEmptyFields() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3b0c391f);
-        prettyPrintJson(solrString);
+    }
+
+    @Test
+    void testActors() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(solrString.contains("\"actor\":[" +
+                "\"Elizabeth McGovern\",\"James Woods\",\"Robert De Niro\"],"));
+    }
+    @Test
+    void testCharacters() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(solrString.contains("\"character\":[" +
+                "\"Deborah\",\"Max\",\"Noodles\"],"));
+    }
+
+    @Test
+    void testContributor() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
+        assertTrue(solrString.contains("\"contributor\":["));
+    }
+
+    @Test
+    void testNoActors() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(solrString.contains("\"actor\":["));
+    }
+    @Test
+    void testNoCharacters() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(solrString.contains("\"character\":["));
+    }
+
+    @Test
+    void testDirector() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(solrString.contains("\"director\":\"Sergio Leone\","));
+    }
+
+    @Test
+    void testNoDirector() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(solrString.contains("\"director\":"));
+    }
+
+    @Test
+    void testCreators() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(solrString.contains("\"creator\":[\"Franco Ferrini og Sergio Leon\","));
+    }
+
+    @Test
+    void testNoCreators() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
+        assertFalse(solrString.contains("\"creator\":"));
     }
 
     /**

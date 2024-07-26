@@ -358,7 +358,7 @@
               </xsl:for-each>
             </f:array>
             <!-- Extracts family and given name and combines into a full name-->
-            <f:array key="creator_full_name">
+            <f:array key="creator">
               <xsl:for-each select="m:name">
                 <xsl:if test="./m:namePart[@type='family'] or ./m:namePart[@type='given']">
                   <f:string>

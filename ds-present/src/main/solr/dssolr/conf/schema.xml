@@ -39,7 +39,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.10: Add fields for holdback management
 1.6.11: Rename schema fields following feedback from metadata review.
 1.6.12: Add kaltura_id to schema and remove old wowza streaming url.
-1.6.13
+1.6.13: Add fields actor, director, character, contributor and creator and their respective _strict fields.
   -->
   <field name="_ds_1.6.13_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -117,6 +117,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="title_length" type="plong">
     <?description The length of the title messured in characters.?>
     <?example     12?>
+  </field>
+
+  <field name="creator" type="string" multiValued="true"  docValues="true">
+    <?description The name of the creator written as given name family name.?>
+    <?example     John R. Johnsen?>
   </field>
 
   <field name="creator_affiliation" type="text_general">
@@ -230,12 +235,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Johnsen, John R.?>
   </field>
 
-  <field name="creator_full_name" type="string" multiValued="true"  docValues="true">
-    <?description The name of the creator written as given name family name.?>
-    <?example     John R. Johnsen?>
-  </field>
-
-  <field name="creator_full_name_strict" type="text_strict" multiValued="true">
+  <field name="creator_strict" type="text_strict" multiValued="true">
     <?description The name of the creator written as givenName familyName.
                   This is a strict field, which produces a better ranking when querying.?>
     <?example     John R. Johnsen?>
@@ -495,6 +495,47 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                   broadcaster is DR.?>
     <?example     DR?>
   </field>
+
+  <field name="actor" type="string" multiValued="true"  docValues="true">
+    <?description The name of the actors present in the recording. Applies to records from origin ds.tv?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="actor_strict" type="text_strict" multiValued="true"  >
+    <?description The name of the actors present in the recording. Applies to records from origin ds.tv?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="contributor" type="string" multiValued="true"  docValues="true">
+    <?description The name of contributors present in the recording. Applies to records from origin ds.radio?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="contributor_strict" type="text_strict" multiValued="true"  >
+    <?description The name of contributors present in the recording. Applies to records from origin ds.radio?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="character" type="string" multiValued="true"  docValues="true">
+    <?description The name of the characters played by the actors in the recording.?>
+    <?example     Hans Christian Varnæs?>
+  </field>
+
+<field name="character_strict" type="text_strict" multiValued="true">
+    <?description The name of the characters played by the actors in the recording.?>
+    <?example     Hans Christian Varnæs?>
+  </field>
+
+  <field name="director" type="string"  docValues="true">
+    <?description The name of the director of the recording.?>
+    <?example     Thomas Vinterberg?>
+  </field>
+
+  <field name="director_strict" type="text_strict">
+    <?description The name of the director of the recording.?>
+    <?example     Thomas Vinterberg?>
+  </field>
+
 
   <field name="creator_affiliation_generic" type="text_general" multiValued="true">
     <?description The name of an organization, institution, etc. with which
@@ -1129,7 +1170,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <!-- END FIELDTYPE DEFINITIONS-->
 
   <!-- START COPYFIELDS  -->
-  <copyField source="creator_full_name" dest="creator_full_name_strict">
+  <copyField source="creator" dest="creator_strict">
     <?description Copies the full name of the creator to a strict field, which produces a higher ranking when queried.?>
     <?example     A query for Hans Christian Andersen would produce a higher ranking than H.C Andersen.?>
   </copyField>
@@ -1146,7 +1187,15 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </copyField>
 
   <copyField source="creator_name" dest="freetext"/>
-  <copyField source="creator_full_name" dest="freetext"/>
+  <copyField source="creator" dest="freetext"/>
+  <copyField source="actor" dest="freetext"/>
+  <copyField source="actor" dest="actor_strict"/>
+  <copyField source="contributor" dest="freetext"/>
+  <copyField source="contributor" dest="contributor_strict"/>
+  <copyField source="character" dest="freetext"/>
+  <copyField source="character" dest="character_strict"/>
+  <copyField source="director" dest="freetext"/>
+  <copyField source="director" dest="director_strict"/>
   <copyField source="creator_given_name" dest="freetext"/>
   <copyField source="creator_terms_of_address" dest="freetext"/>
   <copyField source="area" dest="freetext"/>

@@ -142,9 +142,43 @@
             <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
           </xsl:call-template>
 
-          <!-- This is the only field directly present in pbc:PBCoreDescriptionDocument, which is only used for video
-               objects. Therefore, it is extracted here. If more fields from this part of the metadata were only
-               relevant for video objects, then a new template would be introduced. -->
+          <!-- Extract actors if any present in metadata. see https://schema.org/actor and the JSON.LD example -->
+          <xsl:if test="$pbCore/pbcoreContributor/contributorRole = 'medvirkende' and ./pbcoreContributor/contributor != ''">
+            <f:array key="actor">
+              <xsl:for-each select="./pbcoreContributor">
+                <xsl:if test="./contributorRole = 'medvirkende' and ./contributor != ''">
+                  <f:map>
+                    <f:string key="@type">PerformanceRole</f:string>
+                    <xsl:choose>
+                      <!-- When contributor contains a ':' it means that the character on the left is played by the actor on the right of the ':'. In this case we are creating
+                            a Person object and a characterName string. -->
+                      <xsl:when test="contains(./contributor, ':')">
+                        <f:map key="actor">
+                          <f:string key="@type">Person</f:string>
+                          <f:string key="name">
+                            <xsl:value-of select="normalize-space(substring-after(./contributor, ':'))"/>
+                          </f:string>
+                        </f:map>
+                        <f:string key="characterName">
+                          <xsl:value-of select="normalize-space(substring-before(./contributor, ':'))"/>
+                        </f:string>
+                      </xsl:when>
+                      <!-- When contributor doesn't contain a ':' we dont know anything about the character and therefore we aren't creating a characterName string but using the full
+                      content as name for the Person. -->
+                      <xsl:when test="not(contains(./contributor, ':') and ./contributor != '')">
+                        <f:map key="actor">
+                          <f:string key="@type">Person</f:string>
+                          <f:string key="name">
+                            <xsl:value-of select="normalize-space(./contributor)"/>
+                          </f:string>
+                        </f:map>
+                      </xsl:when>
+                    </xsl:choose>
+                  </f:map>
+                </xsl:if>
+              </xsl:for-each>
+            </f:array>
+          </xsl:if>
           <!-- Is the resource hd? or do we know anything about the video quality=? -->
           <xsl:if test="//pbcoreInstantiation/formatStandard != ''">
             <f:string key="videoQuality"><xsl:value-of select="//pbcoreInstantiation/formatStandard"/></f:string>
@@ -258,6 +292,23 @@
                 <xsl:with-param name="type" select="$type"/>
                 <xsl:with-param name="pbcExtensions" select="$pbcExtensions"/>
               </xsl:call-template>
+
+
+              <!-- Extract contributor if any present in metadata. see https://schema.org/contributor and the JSON.LD example -->
+              <xsl:if test="$pbCore/pbcoreContributor/contributorRole = 'medvirkende' and ./pbcoreContributor/contributor != ''">
+                <f:array key="contributor">
+                  <xsl:for-each select="./pbcoreContributor">
+                    <xsl:if test="./contributorRole = 'medvirkende' and ./contributor != ''">
+                      <f:map>
+                        <f:string key="@type">Person</f:string>
+                        <f:string key="name">
+                          <xsl:value-of select="normalize-space(./contributor)"/>
+                        </f:string>
+                      </f:map>
+                    </xsl:if>
+                  </xsl:for-each>
+                </f:array>
+              </xsl:if>
             </xsl:for-each>
           </xsl:when>
           <xsl:otherwise>
@@ -680,6 +731,35 @@
         <!-- If no genre is present, the field should not be created.-->
         <xsl:otherwise></xsl:otherwise>
       </xsl:choose>
+    </xsl:if>
+
+    <!-- Extract directors if any present in metadata. see https://schema.org/director -->
+    <!-- In our devel system we dont have any records where there are more than one contributer with the role 'instruktion' therefore this is not implemented as an array. -->
+    <xsl:for-each select="./pbcoreContributor">
+      <xsl:if test="./contributorRole = 'instruktion' and ./contributor != ''">
+        <f:map key="director">
+          <f:string key="@type">Person</f:string>
+          <f:string key="name">
+            <xsl:value-of select="normalize-space(./contributor)"/>
+          </f:string>
+        </f:map>
+      </xsl:if>
+    </xsl:for-each>
+
+    <!-- Extract authors/creators here we are using creators as these two can be used for the same content and we are using creator for images as well. -->
+    <xsl:if test="./pbcoreCreator/creatorRole = 'forfatter' and ./pbcoreCreator/creator != ''">
+      <f:array key="creator">
+        <xsl:for-each select="./pbcoreCreator">
+          <xsl:if test="./creatorRole = 'forfatter' and ./creator != ''">
+            <f:map>
+              <f:string key="@type">Person</f:string>
+              <f:string key="name">
+                <xsl:value-of select="normalize-space(./creator)"/>
+              </f:string>
+            </f:map>
+          </xsl:if>
+        </xsl:for-each>
+      </f:array>
     </xsl:if>
 
     <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
