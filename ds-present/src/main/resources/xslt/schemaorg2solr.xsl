@@ -198,6 +198,21 @@
         </xsl:if>
       </xsl:if>
 
+      <!-- Extract contributors from schema.org json -->
+      <xsl:if test="f:exists($schemaorg-xml('contributor'))">
+        <xsl:variable name="contributors" as="item()*">
+          <xsl:copy-of select="array:flatten($schemaorg-xml('contributor'))"/>
+        </xsl:variable>
+
+        <f:array key="contributor">
+          <xsl:for-each select="$contributors">
+            <f:string>
+              <xsl:value-of select="map:get(., 'name')"/>
+            </f:string>
+          </xsl:for-each>
+        </f:array>
+      </xsl:if>
+
       <!-- Extract director from schema.org json -->
       <xsl:if test="f:exists($schemaorg-xml('director'))">
         <f:string key="director">

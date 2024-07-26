@@ -53,6 +53,7 @@ import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_054c55b3;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_e2dfb840;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_eaea0362;
 import static dk.kb.present.TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED;
+import static dk.kb.present.TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS;
 import static dk.kb.present.TestFiles.PVICA_RECORD_0b3f6a54;
 import static dk.kb.present.TestFiles.PVICA_RECORD_2b462c63;
 import static dk.kb.present.TestFiles.PVICA_RECORD_3006e2f8;
@@ -726,6 +727,12 @@ public class EmbeddedSolrTest {
     @Tag("integration")
     void testCreatorPreservica() throws Exception{
         testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "creator", "Franco Arcalli", "Piero De Bernardi", "Franco Ferrini og Sergio Leon");
+    }
+
+    @Test
+    @Tag("integration")
+    void testContributorPreservicaRadio() throws Exception{
+        testStringPresentInPreservicaMultiField(PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS, "contributor", "Max: James Woods");
     }
     /*
      * ------- Private helper methods below --------------
