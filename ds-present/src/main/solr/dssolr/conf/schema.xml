@@ -39,7 +39,7 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.10: Add fields for holdback management
 1.6.11: Rename schema fields following feedback from metadata review.
 1.6.12: Add kaltura_id to schema and remove old wowza streaming url.
-1.6.13: Add fields actor, director, character and creator and their respective _strict fields.
+1.6.13: Add fields actor, director, character, contributor and creator and their respective _strict fields.
   -->
   <field name="_ds_1.6.13_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -497,12 +497,22 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="actor" type="string" multiValued="true"  docValues="true">
-    <?description The name of the actors present in the recording.?>
+    <?description The name of the actors present in the recording. Applies to records from origin ds.tv?>
     <?example     John R. Johnsen?>
   </field>
 
   <field name="actor_strict" type="text_strict" multiValued="true"  >
-    <?description The name of the actors present in the recording.?>
+    <?description The name of the actors present in the recording. Applies to records from origin ds.tv?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="contributor" type="string" multiValued="true"  docValues="true">
+    <?description The name of contributors present in the recording. Applies to records from origin ds.radio?>
+    <?example     John R. Johnsen?>
+  </field>
+
+  <field name="contributor_strict" type="text_strict" multiValued="true"  >
+    <?description The name of contributors present in the recording. Applies to records from origin ds.radio?>
     <?example     John R. Johnsen?>
   </field>
 
@@ -1180,6 +1190,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <copyField source="creator" dest="freetext"/>
   <copyField source="actor" dest="freetext"/>
   <copyField source="actor" dest="actor_strict"/>
+  <copyField source="contributor" dest="freetext"/>
+  <copyField source="contributor" dest="contributor_strict"/>
   <copyField source="character" dest="freetext"/>
   <copyField source="character" dest="character_strict"/>
   <copyField source="director" dest="freetext"/>

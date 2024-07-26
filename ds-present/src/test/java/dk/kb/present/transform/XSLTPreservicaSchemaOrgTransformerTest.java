@@ -464,6 +464,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testActors() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"actor\":" +
                                             "[{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"Elizabeth McGovern\"},\"characterName\":\"Deborah\"}," +
                                             "{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"James Woods\"},\"characterName\":\"Max\"}," +
@@ -492,6 +493,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testCreators() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"Franco Ferrini og Sergio Leon\"},{\"@type\":\"Person\",\"name\":\"Franco Arcalli\"}," +
                                             "{\"@type\":\"Person\",\"name\":\"Enrico Medioli\"},{\"@type\":\"Person\",\"name\":\"Piero De Bernardi\"}," +
                                             "{\"@type\":\"Person\",\"name\":\"Leonardo Benvenuti\"}]"));
@@ -502,6 +504,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(transformedJSON.contains("\"creator\""));
 
+    }
+
+    @Test
+    public void voidContributorsTest() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
+        prettyPrintJson(transformedJSON);
+        assertTrue(transformedJSON.contains("\"contributor\""));
     }
 
     private static void printSchemaOrgJson(String xml) throws IOException {
