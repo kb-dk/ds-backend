@@ -763,10 +763,16 @@
         actor_strict^5.0
         character_strict^5.0
         director_strict^5.0
+        contributor_strict^5.0
         pid^5.0
         episode_title^4.0
         topic^2.0
         location
+        creator
+        actor
+        character
+        director
+        contributor
         notes
         collection
         categories
@@ -973,7 +979,8 @@
   <requestHandler name="/mlt" class="solr.MoreLikeThisHandler">
     <!-- mlt-parameteres probably needs to be tweaked. This is just a semi-loose first attempt -->
     <lst name="defaults">
-      <str name="mlt.fl">abstract,description,genre_sub,title,subtitle,alternative_title,creator,area,topic,notes,catalog,production_place,subject_full_name,audience,text</str>
+      <str name="mlt.fl">abstract,description,genre_sub,title,subtitle,alternative_title,creator,actor,character,director,contributor,area,topic,notes,catalog,production_place,
+        subject_full_name,audience,text</str>
       <str name="mlt.mintf">2</str>
       <str name="mlt.mindf">2</str>
       <str name="mlt.boost">true</str>
@@ -987,10 +994,16 @@
         actor_strict^5.0
         character_strict^5.0
         director_strict^5.0
+        contributor_strict^5.0
         pid^5.0
         episode_title^4.0
         topic^2.0
         location
+        creator
+        actor
+        character
+        director
+        contributor
         notes
         collection
         categories
@@ -1019,8 +1032,14 @@
           actor_strict^5.0
           character_strict^5.0
           director_strict^5.0
+          contributor_strict^5.0
           topic^2.0
           location
+          creator
+          actor
+          character
+          director
+          contributor
           notes
           collection
           catalog

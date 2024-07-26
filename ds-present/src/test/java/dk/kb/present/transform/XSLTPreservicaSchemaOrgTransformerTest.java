@@ -464,7 +464,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testActors() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
-        prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"actor\":" +
                                             "[{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"Elizabeth McGovern\"},\"characterName\":\"Deborah\"}," +
                                             "{\"@type\":\"PerformanceRole\",\"actor\":{\"@type\":\"Person\",\"name\":\"James Woods\"},\"characterName\":\"Max\"}," +
@@ -509,7 +508,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void voidContributorsTest() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
-        prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"contributor\""));
     }
 
