@@ -10,12 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added validation of ':' in datetime timezone values in XSLT transformations.
 - Added field migrated_from to documents.
 - Added fields own_production and own_production_code to documents.
+- Added _count fields to count entries in all multiValued solr fields for radio and tv.
+- Added _length fields to count the length of content in all analysed solr text fields for radio and tv.
 
 - Enabled OAuth2 on module. Much is copy-paste from ds-image to see it working in two different modules.  Plans are to refactor common functionality out into kb-util/
 Only method getRecord (show full-record called by frontend) has OAuth enabled
 
 ### Changed
-- Bumped solr version to 1.6.13.
+- Bumped solr version to 1.6.14.
 - Changed extraction of field videoFrameSize to clean values as '16:9,' and '16:9, ' to '16:9'.
 - Changed how values are extracted from Preservica records. Now all needed values are extracted at once, saving iterations on the XML stream.
 

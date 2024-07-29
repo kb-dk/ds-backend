@@ -44,8 +44,9 @@ When adding fields to this schema please have the following guidelines in mind:
 1.6.11: Rename schema fields following feedback from metadata review.
 1.6.12: Add kaltura_id to schema and remove old wowza streaming url.
 1.6.13: Add fields actor, director, character, contributor and creator and their respective _strict fields.
+1.6.14: Add _count and _length fields for all multiValued and text fields respectively.
   -->
-  <field name="_ds_1.6.13_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.14_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -568,6 +569,11 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="creator_affiliation_generic_count" type="pint" stored="true">
     <?description The amount of entries for the field 'creator_affiliation_generic'. For radio and tv this will properbly always be 1, but for other collections this will be
             important and different ?>
+    <?example     1?>
+  </field>
+  <field name="creator_affiliation_generic_length" type="plong" stored="true">
+    <?description The string length of the content in the field creator_affiliation_generic. For radio and tv this is the length of the only entry- For other collections this
+            will be de combined length of all entries ?>
     <?example     1?>
   </field>
 

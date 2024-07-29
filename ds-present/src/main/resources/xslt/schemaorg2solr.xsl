@@ -268,6 +268,10 @@
             <f:string key="creator_affiliation">
               <xsl:value-of select="$creatorAffiliation"/>
             </f:string>
+            <f:number key="creator_affiliation_length">
+              <xsl:value-of select="f:string-length($creatorAffiliation)"/>
+            </f:number>
+
             <f:string key="creator_affiliation_facet">
               <xsl:value-of select="upper-case($creatorAffiliation)"/>
             </f:string>
@@ -281,6 +285,9 @@
             <f:string key="creator_affiliation_generic">
               <xsl:value-of select="$genericAffiliation"/>
             </f:string>
+            <f:number key="creator_affiliation_generic_length">
+              <xsl:value-of select="f:string-length($genericAffiliation)"/>
+            </f:number>
             <f:number key="creator_affiliation_generic_count">
               <xsl:value-of select="f:count($genericAffiliation)"/>
             </f:number>
