@@ -830,6 +830,11 @@
           </f:string>
         </xsl:for-each>
       </f:array>
+
+      <!-- This counts the amount of overlaps, not the amount of overlapping files. -->
+      <f:number key="internal_overlapping_files_count">
+        <xsl:value-of select="f:count($overlapsArray)"/>
+      </f:number>
     </xsl:if>
     <!--
     INTERNAL STRUCTURE HAS BEEN TEMPORARILY REMOVED FROM TRANSFORMATION AS IT'S HARD TO REPRESENT IT FLAT.

@@ -961,7 +961,7 @@ When adding fields to this schema please have the following guidelines in mind:
   </field>
 
   <field name="internal_overlapping_files_count" type="pint" stored="true">
-    <?description The amount of overlapping files.?>
+    <?description The amount of overlaps between files. Not the amount of files overlapping other files.?>
     <?example     3?>
   </field>
 

@@ -307,6 +307,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void internalOverlappingStructure() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_f90f0a79);
+        assertTrue(solrString.contains("\"internal_overlapping_files_count\": 1"));
+    }
+
+    @Test
     void testStartTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"startTime\":\"1987-05-04T14:45:00Z\"");
     }
