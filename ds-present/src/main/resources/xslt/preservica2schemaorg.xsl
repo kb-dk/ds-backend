@@ -663,7 +663,21 @@
     </xsl:if>
 
     <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.
-         Also extracts maingenre to the schema.org field 'genre'-->
+         Also extracts maingenre to the schema.org field 'genre'. Values here are checked against variables of "mapping values" mapping broader categories to simpler UX
+         categories. These simpler categories are then used as genre.-->
+    <xsl:variable name="NewsPoliticsSociety">Nyheder &amp; Aktualitet, Vejrudsigt, Regional, Forbruger, Aktualitet og debat, Nyheder</xsl:variable>
+    <xsl:variable name="Music">Musik, Musik, Kor- og orkestervirksomhed</xsl:variable>
+    <xsl:variable name="Culture">Kultur, Religion, Undervisning, Oplysning og kultur, Undervisning, Dramatik og fiktion, Udsendelsesvirksomhed</xsl:variable>
+    <xsl:variable name="Sport">Sport</xsl:variable>
+    <xsl:variable name="Entertainment">Underholdning, Tips &amp; Lotto, Underholdning</xsl:variable>
+    <xsl:variable name="ChildrenYouth">Børn &amp; Ungdom</xsl:variable>
+    <xsl:variable name="Documentary">Dokumentar</xsl:variable>
+    <xsl:variable name="Fiction">Film, Serie</xsl:variable>
+    <xsl:variable name="Lifestyle">Fritid &amp; Livsstil, Sundhed &amp; Mad</xsl:variable>
+    <xsl:variable name="ScienceNature">Videnskab &amp; forskning, Videnskab &amp; Teknologi, Natur &amp; Miljø</xsl:variable>
+    <xsl:variable name="Misc">Alle, Alle, Ikke formålsfordelt, N/A, Præsentation og services</xsl:variable>
+
+
     <xsl:if test="//pbcoreGenre">
       <xsl:variable name="keywords">
         <xsl:for-each select="./pbcoreGenre/genre">
