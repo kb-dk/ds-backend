@@ -135,6 +135,13 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     Danmarks Radio?>
   </field>
 
+  <field name="creator_affiliation_length" type="pint" stored="true">
+    <?description The string length of the content from 'creator_affiliation'. For radio and tv this field will contain the length of the single entry while collections with
+            more than one entry in the field 'creator_affiliation' should contain the combined length of all values in this field.?>
+    <?example     Bisson frères?>
+    <?example     Danmarks Radio?>
+  </field>
+
   <field name="creator_affiliation_facet" type="facet">
     <?description The name of an organization, institution, etc. with which
             the entity was associated at the time that the resource was created. This field should be used for faceting.?>

@@ -176,9 +176,9 @@
           </xsl:for-each>
         </f:array>
 
-        <f:number key="actor_count">
+        <f:string key="actor_count">
           <xsl:value-of select="f:count($actors)"/>
-        </f:number>
+        </f:string>
 
         <!-- Here we need to know if the value 'characterName' is present somewhere in the nested map. I dont know of anyway else of checking this than through a variable
         getting populated true strings that we then can do an if-lookup on. -->
@@ -200,9 +200,9 @@
             </xsl:for-each>
           </f:array>
 
-          <f:number key="character_count">
+          <f:string key="character_count">
             <xsl:value-of select="f:count($characters)"/>
-          </f:number>
+          </f:string>
         </xsl:if>
       </xsl:if>
 
@@ -220,9 +220,9 @@
           </xsl:for-each>
         </f:array>
 
-        <f:number key="contributor_count">
+        <f:string key="contributor_count">
           <xsl:value-of select="f:count($contributors)"/>
-        </f:number>
+        </f:string>
       </xsl:if>
 
       <!-- Extract director from schema.org json -->
@@ -248,9 +248,9 @@
         </f:array>
 
         <!-- Creator_count field -->
-        <f:number key="creator_count">
+        <f:string key="creator_count">
           <xsl:value-of select="f:count($creators)"/>
-        </f:number>
+        </f:string>
       </xsl:if>
 
       <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
@@ -268,9 +268,9 @@
             <f:string key="creator_affiliation">
               <xsl:value-of select="$creatorAffiliation"/>
             </f:string>
-            <f:number key="creator_affiliation_length">
+            <f:string key="creator_affiliation_length">
               <xsl:value-of select="f:string-length($creatorAffiliation)"/>
-            </f:number>
+            </f:string>
 
             <f:string key="creator_affiliation_facet">
               <xsl:value-of select="upper-case($creatorAffiliation)"/>
@@ -285,12 +285,12 @@
             <f:string key="creator_affiliation_generic">
               <xsl:value-of select="$genericAffiliation"/>
             </f:string>
-            <f:number key="creator_affiliation_generic_length">
+            <f:string key="creator_affiliation_generic_length">
               <xsl:value-of select="f:string-length($genericAffiliation)"/>
-            </f:number>
-            <f:number key="creator_affiliation_generic_count">
+            </f:string>
+            <f:string key="creator_affiliation_generic_count">
               <xsl:value-of select="f:count($genericAffiliation)"/>
-            </f:number>
+            </f:string>
           </xsl:if>
 
           <xsl:if test="my:getNestedMapValue4Levels($schemaorg-xml, 'publication',
@@ -839,9 +839,9 @@
       </f:array>
 
       <!-- This counts the amount of overlaps, not the amount of overlapping files. -->
-      <f:number key="internal_overlapping_files_count">
+      <f:string key="internal_overlapping_files_count">
         <xsl:value-of select="f:count($overlapsArray)"/>
-      </f:number>
+      </f:string>
     </xsl:if>
     <!--
     INTERNAL STRUCTURE HAS BEEN TEMPORARILY REMOVED FROM TRANSFORMATION AS IT'S HARD TO REPRESENT IT FLAT.

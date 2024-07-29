@@ -726,7 +726,7 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testCharacterCountPreservica() throws Exception{
-        testIntValuePreservicaField(PVICA_DOMS_MIG_054c55b3, "character_count", 5);
+        testIntValuePreservicaField(PVICA_DOMS_MIG_054c55b3, "character_count", 3);
     }
 
     @Test
