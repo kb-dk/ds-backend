@@ -111,6 +111,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     public void testCreatorAffiliation() {
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"creator_affiliation\":\"DR1\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"creator_affiliation_length\":\"3\"");
     }
 
     @Test
@@ -125,6 +126,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     public void testCreatorAffiliationGeneric() {
         assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic\":\"drp1\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic_length\":\"4\"");
+
+    }
+    @Test
+    public void testCreatorAffiliationGenericCount() {
+        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic_count\":\"1\"");
     }
 
     @Test
@@ -303,6 +310,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void internalOverlappingStructure() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_f90f0a79);
+        assertTrue(solrString.contains("\"internal_overlapping_files_count\":\"1\""));
+    }
+
+    @Test
     void testStartTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"startTime\":\"1987-05-04T14:45:00Z\"");
     }
@@ -442,17 +455,33 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(solrString.contains("\"actor\":[" +
                 "\"Elizabeth McGovern\",\"James Woods\",\"Robert De Niro\"],"));
     }
+
+    @Test
+    void testActorsCount() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(solrString.contains("\"actor_count\":\"3\""));
+    }
     @Test
     void testCharacters() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
         assertTrue(solrString.contains("\"character\":[" +
                 "\"Deborah\",\"Max\",\"Noodles\"],"));
     }
+    @Test
+    void testCharacterCount() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        assertTrue(solrString.contains("\"character_count\":\"3\""));
+    }
 
     @Test
     void testContributor() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
         assertTrue(solrString.contains("\"contributor\":["));
+    }
+    @Test
+    void testContributorCount() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
+        assertTrue(solrString.contains("\"contributor_count\":\"3\""));
     }
 
     @Test
@@ -488,6 +517,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testNoCreators() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(solrString.contains("\"creator\":"));
+    }
+
+    @Test
+    void testCreatorCount() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
+        prettyPrintJson(solrString);
     }
 
     /**
