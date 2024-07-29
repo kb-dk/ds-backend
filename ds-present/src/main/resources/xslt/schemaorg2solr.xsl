@@ -176,25 +176,33 @@
           </xsl:for-each>
         </f:array>
 
+        <f:number key="actor_count">
+          <xsl:value-of select="f:count($actors)"/>
+        </f:number>
+
         <!-- Here we need to know if the value 'characterName' is present somewhere in the nested map. I dont know of anyway else of checking this than through a variable
         getting populated true strings that we then can do an if-lookup on. -->
-        <xsl:variable name="charactersBool">
+        <xsl:variable name="characters" as="item()*">
           <xsl:for-each select="$actors">
-            <xsl:if test="map:get(., 'characterName')"><xsl:value-of select="f:true()"/></xsl:if>
+            <xsl:if test="map:get(., 'characterName')">
+              <xsl:value-of select="map:get(., 'characterName')"/>
+            </xsl:if>
           </xsl:for-each>
         </xsl:variable>
 
         <!-- Get character names from map if they are present.-->
-        <xsl:if test="contains($charactersBool, 'true')">
+        <xsl:if test="not(f:empty($characters))">
           <f:array key="character">
-            <xsl:for-each select="$actors">
-              <xsl:if test="f:exists(map:get(., 'characterName'))">
+            <xsl:for-each select="$characters">
                 <f:string>
-                  <xsl:value-of select="map:get(., 'characterName')"/>
+                  <xsl:value-of select="."/>
                 </f:string>
-              </xsl:if>
             </xsl:for-each>
           </f:array>
+
+          <f:number key="character_count">
+            <xsl:value-of select="f:count($characters)"/>
+          </f:number>
         </xsl:if>
       </xsl:if>
 
@@ -211,6 +219,10 @@
             </f:string>
           </xsl:for-each>
         </f:array>
+
+        <f:number key="contributor_count">
+          <xsl:value-of select="f:count($contributors)"/>
+        </f:number>
       </xsl:if>
 
       <!-- Extract director from schema.org json -->
@@ -234,6 +246,11 @@
             </f:string>
           </xsl:for-each>
         </f:array>
+
+        <!-- Creator_count field -->
+        <f:number key="creator_count">
+          <xsl:value-of select="f:count($creators)"/>
+        </f:number>
       </xsl:if>
 
       <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
@@ -258,9 +275,15 @@
 
           <xsl:if test="not(empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName'))) and
                         my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName') != ''">
-            <f:string key="creator_affiliation_generic">
+            <xsl:variable name="genericAffiliation">
               <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')"/>
+            </xsl:variable>
+            <f:string key="creator_affiliation_generic">
+              <xsl:value-of select="$genericAffiliation"/>
             </f:string>
+            <f:number key="creator_affiliation_generic_count">
+              <xsl:value-of select="f:count($genericAffiliation)"/>
+            </f:number>
           </xsl:if>
 
           <xsl:if test="my:getNestedMapValue4Levels($schemaorg-xml, 'publication',

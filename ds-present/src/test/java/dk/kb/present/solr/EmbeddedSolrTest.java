@@ -714,8 +714,19 @@ public class EmbeddedSolrTest {
     }
     @Test
     @Tag("integration")
+    void testActorCountPreservica() throws Exception{
+        testIntValuePreservicaField(PVICA_DOMS_MIG_054c55b3, "actor_count", 3);
+    }
+    @Test
+    @Tag("integration")
     void testCharactersPreservica() throws Exception{
         testStringPresentInPreservicaMultiField(PVICA_DOMS_MIG_054c55b3, "character", "Max", "Noodles", "Deborah");
+    }
+
+    @Test
+    @Tag("integration")
+    void testCharacterCountPreservica() throws Exception{
+        testIntValuePreservicaField(PVICA_DOMS_MIG_054c55b3, "character_count", 5);
     }
 
     @Test
@@ -731,8 +742,19 @@ public class EmbeddedSolrTest {
 
     @Test
     @Tag("integration")
+    void testCreatorCountPreservica() throws Exception{
+        testIntValuePreservicaField(PVICA_DOMS_MIG_054c55b3, "creator_count", 5);
+    }
+
+    @Test
+    @Tag("integration")
     void testContributorPreservicaRadio() throws Exception{
         testStringPresentInPreservicaMultiField(PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS, "contributor", "Max: James Woods");
+    }
+    @Test
+    @Tag("integration")
+    void testContributorCountPreservicaRadio() throws Exception{
+        testIntValuePreservicaField(PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS, "contributor_count", 3);
     }
     /*
      * ------- Private helper methods below --------------
