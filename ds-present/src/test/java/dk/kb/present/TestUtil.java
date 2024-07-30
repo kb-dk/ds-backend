@@ -129,7 +129,7 @@ public class TestUtil {
 		String placeholderXml = "placeholder.xml";
 		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);
 		String solrJson = TestUtil.getTransformedWithAccessFieldsAdded(SCHEMA2SOLR, placeholderXml, mapOfJson);
-		//prettyPrintJson(solrJson);
+		prettyPrintJson(solrJson);
 		return solrJson;
 	}
 

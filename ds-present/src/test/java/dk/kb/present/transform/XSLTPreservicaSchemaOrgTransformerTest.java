@@ -159,7 +159,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testEmptyEpisodeName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_9d9785a8);
-        prettyPrintJson(transformedJSON);
         Assertions.assertFalse(transformedJSON.contains("\"encodesCreativeWork\":{" +
                 "\"@type\":\"TVEpisode\",\"name\":\"\""));
     }
@@ -173,7 +172,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testKeywords() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8afb121);
-        Assertions.assertFalse(transformedJSON.contains("\"keywords\":\"Serier, Krimiserie\","));
+        Assertions.assertTrue(transformedJSON.contains("\"keywords\":\"Serier, Krimiserie\","));
     }
 
     @Test
@@ -191,7 +190,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testAbstractCreation() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8afb121);
-        prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"abstract\":\"Eng. krimiserie\""));
     }
 
@@ -382,7 +380,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testDomsEpisodeNumbers() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eaea0362);
-        prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"episodeNumber\":8,") && transformedJSON.contains("\"numberOfEpisodes\":24"));
     }
 
@@ -407,10 +404,14 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"kb:holdback_name\":\"Aktualitet og debat\""));
     }
 
+    /**
+     * This tests that when multiple main genres are present the conversion to predefined values still occurs correctly.
+     * @throws IOException
+     */
     @Test
     public void testMultipleMaingenres() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_82514cd9);
-        assertTrue(transformedJSON.contains("\"genre\":\"film\""));
+        assertTrue(transformedJSON.contains("\"genre\":\"Fiktion\""));
     }
 
     @Test
@@ -492,7 +493,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testCreators() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
-        prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"creator\":[{\"@type\":\"Person\",\"name\":\"Franco Ferrini og Sergio Leon\"},{\"@type\":\"Person\",\"name\":\"Franco Arcalli\"}," +
                                             "{\"@type\":\"Person\",\"name\":\"Enrico Medioli\"},{\"@type\":\"Person\",\"name\":\"Piero De Bernardi\"}," +
                                             "{\"@type\":\"Person\",\"name\":\"Leonardo Benvenuti\"}]"));
@@ -509,17 +509,5 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     public void voidContributorsTest() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
         assertTrue(transformedJSON.contains("\"contributor\""));
-    }
-
-    private static void printSchemaOrgJson(String xml) throws IOException {
-        Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
-                                                "conditionsOfAccess", "placeholderCondition");
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, xml, injections);
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonElement je = JsonParser.parseString(transformedJSON);
-        String transformedPrettyJSON = gson.toJson(je);
-
-        System.out.println(transformedPrettyJSON);
     }
 }

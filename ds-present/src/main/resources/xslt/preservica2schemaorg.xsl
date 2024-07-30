@@ -665,22 +665,33 @@
     <!-- Construct keywords list from all genre fields. Seperates entries by comma and removes last comma.
          Also extracts maingenre to the schema.org field 'genre'. Values here are checked against variables of "mapping values" mapping broader categories to simpler UX
          categories. These simpler categories are then used as genre.-->
-    <xsl:variable name="NewsPoliticsSociety">Nyheder &amp; Aktualitet, Vejrudsigt, Regional, Forbruger, Aktualitet og debat, Nyheder</xsl:variable>
-    <xsl:variable name="Music">Musik, Musik, Kor- og orkestervirksomhed</xsl:variable>
-    <xsl:variable name="Culture">Kultur, Religion, Undervisning, Oplysning og kultur, Undervisning, Dramatik og fiktion, Udsendelsesvirksomhed</xsl:variable>
-    <xsl:variable name="Sport">Sport</xsl:variable>
-    <xsl:variable name="Entertainment">Underholdning, Tips &amp; Lotto, Underholdning</xsl:variable>
-    <xsl:variable name="ChildrenYouth">Børn &amp; Ungdom</xsl:variable>
-    <xsl:variable name="Documentary">Dokumentar</xsl:variable>
-    <xsl:variable name="Fiction">Film, Serie</xsl:variable>
-    <xsl:variable name="Lifestyle">Fritid &amp; Livsstil, Sundhed &amp; Mad</xsl:variable>
-    <xsl:variable name="ScienceNature">Videnskab &amp; forskning, Videnskab &amp; Teknologi, Natur &amp; Miljø</xsl:variable>
-    <xsl:variable name="Misc">Alle, Alle, Ikke formålsfordelt, N/A, Præsentation og services</xsl:variable>
-
-
     <xsl:if test="//pbcoreGenre">
+      <!-- Variables containing values that are to be mapped to a simpler combined value.-->
+      <!-- These values should map to: Nyheder, politik og samfund-->
+      <xsl:variable name="NewsPoliticsSociety" as="item()*" select="('nyheder &amp; aktualitet', 'vejrudsigt', 'regional', 'forbruger', 'aktualitet og debat', 'nyheder')"/>
+      <!-- These values should map to: Musik-->
+      <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed')"/>
+      <!-- These values should map to: Kultur og oplysning-->
+      <xsl:variable name="Culture" as="item()*" select="('kultur', 'religion', 'undervisning', 'oplysning og kultur', 'dramatik og fiktion', 'udsendelsesvirksomhed')"/>
+      <!-- These values should map to: Sport-->
+      <xsl:variable name="Sport" as="item()*" select="('sport')"/>
+      <!-- These values should map to: Underholdning-->
+      <xsl:variable name="Entertainment" as="item()*" select="('underholdning', 'tips &amp; lotto')"/>
+      <!-- These values should map to: Børn og unge-->
+      <xsl:variable name="ChildrenYouth" as="item()*" select="('børn &amp; ungdom')"/>
+      <!-- These values should map to: Dokumentar-->
+      <xsl:variable name="Documentary" as="item()*" select="('dokumentar')"/>
+      <!-- These values should map to: Fiktion-->
+      <xsl:variable name="Fiction" as="item()*" select="('film', 'serie', 'serier')"/>
+      <!-- These values should map to: Livsstil-->
+      <xsl:variable name="Lifestyle" as="item()*" select="('fritid &amp; livsstil', 'sundhed &amp; mad')"/>
+      <!-- These values should map to: Videnskab og natur-->
+      <xsl:variable name="ScienceNature" as="item()*" select="('videnskab &amp; forskning', 'videnskab &amp; teknologi', 'natur &amp; miljø')"/>
+      <!-- These values should map to: Diverse-->
+      <xsl:variable name="Misc" as="item()*" select="('alle', 'ikke formålsfordelt', 'N/A', 'n/a', 'præsentation og services')"/>
+
       <!-- Save keywords as a sequence -->
-      <xsl:variable name="keywords" as="item()*">
+      <xsl:variable name="keywordsSequence" as="item()*">
         <xsl:for-each select="./pbcoreGenre/genre">
           <xsl:if test="substring-after(., ':') != '' and not(f:contains(., 'null'))">
             <xsl:value-of select="(normalize-space(f:substring-after(., ':')))"/>
@@ -688,23 +699,113 @@
         </xsl:for-each>
       </xsl:variable>
 
-      <xsl:if test="$keywords != ''">
+      <xsl:variable name="keywordsString">
+        <xsl:value-of select="f:string-join($keywordsSequence, ', ')"/>
+      </xsl:variable>
+
+      <xsl:if test="$keywordsString != ''">
         <f:string key="keywords">
-          <xsl:value-of select="f:string-join($keywords, ',')"/>
+          <xsl:value-of select="$keywordsString"/>
+        </f:string>
+
+        <xsl:variable name="genreValue">
+            <xsl:choose>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $NewsPoliticsSociety)">
+                <xsl:value-of select="'Nyheder, politik og samfund'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Music)">
+                <xsl:value-of select="'Musik'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Culture)">
+                <xsl:value-of select="'Kultur og oplysning'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Sport)">
+                <xsl:value-of select="'Sport'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Entertainment)">
+                <xsl:value-of select="'Underholdning'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ChildrenYouth)">
+                <xsl:value-of select="'Børn og Unge'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Documentary)">
+                <xsl:value-of select="'Dokumentar'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Fiction)">
+                <xsl:value-of select="'Fiktion'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Lifestyle)">
+                <xsl:value-of select="'Livsstil'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ScienceNature)">
+                <xsl:value-of select="'Videnskab og natur'"/>
+              </xsl:when>
+              <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Misc)">
+                <xsl:value-of select="'Diverse'"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="'Unresolved'"/>
+              </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+
+
+
+        <!--<xsl:variable name="genreContent">
+          <xsl:if test=". = '' or f:empty(.) or . = null">
+            <xsl:for-each select="$keywordsSequence">
+              <xsl:choose>
+                <xsl:when test="f:contains($NewsPoliticsSociety, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($Music, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($Culture, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($Sport, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($Entertainment, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($ChildrenYouth, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($Documentary, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($Fiction, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($Lifestyle, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($ScienceNature, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:when test="f:contains($Misc, .)">
+                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
+                </xsl:when>
+                <xsl:otherwise></xsl:otherwise>
+              </xsl:choose>
+            </xsl:for-each>
+          </xsl:if>
+        </xsl:variable>-->
+
+        <f:string key="genre">
+          <xsl:value-of select="$genreValue"/>
         </f:string>
       </xsl:if>
 
-      <!--<xsl:for-each select="$keywords">
-        <xsl:choose>
-          <xsl:when test=""></xsl:when>
-          <xsl:otherwise></xsl:otherwise>
-        </xsl:choose>
-      </xsl:for-each>-->
+
 
       <!-- It is seen in data, that multiple 'hovedgenre's can be defined. This should not happen and we need to find the appropriate one. Normally the maingenre would be the
       most common and shortest description of the resource. -->
       <!-- Create a sequence containing all main genres.-->
-      <xsl:variable name="mainGenresSequence" as="xs:string *">
+      <!--<xsl:variable name="mainGenresSequence" as="xs:string *">
         <xsl:for-each select="./pbcoreGenre/genre">
           <xsl:if test="f:contains(., 'hovedgenre:') and substring-after(., 'hovedgenre:') != ''">
               <xsl:sequence select="normalize-space(substring-after(., 'hovedgenre:'))"/>
@@ -712,20 +813,20 @@
         </xsl:for-each>
       </xsl:variable>
 
-      <!-- Here we test if multiple 'hovedgenre' are present in the data. -->
+      &lt;!&ndash; Here we test if multiple 'hovedgenre' are present in the data. &ndash;&gt;
       <xsl:choose>
         <xsl:when test="f:count($mainGenresSequence) > 1">
-          <!-- Count lenghts of all values in the mainGenresSequence to find the shortest string.-->
+          &lt;!&ndash; Count lenghts of all values in the mainGenresSequence to find the shortest string.&ndash;&gt;
           <xsl:variable name="mainGenreLengths" as="xs:integer *">
             <xsl:for-each select="$mainGenresSequence">
               <xsl:sequence select="f:string-length()"/>
             </xsl:for-each>
           </xsl:variable>
 
-          <!-- Variable which holds the shortest length from the mainGenreLengths sequence. -->
+          &lt;!&ndash; Variable which holds the shortest length from the mainGenreLengths sequence. &ndash;&gt;
           <xsl:variable name="shortestLength" select="f:min($mainGenreLengths)"/>
 
-          <!-- Iterate through the sequence of lengths to find the position of the shortest value, which should be treated as the main genre. -->
+          &lt;!&ndash; Iterate through the sequence of lengths to find the position of the shortest value, which should be treated as the main genre. &ndash;&gt;
           <xsl:variable name="genrePositions" as="xs:integer">
             <xsl:for-each select="$mainGenreLengths">
               <xsl:variable name="pos" select="position()"/>
@@ -735,22 +836,22 @@
             </xsl:for-each>
           </xsl:variable>
 
-          <!-- Extract genre from sequence at position with the shortest length. -->
+          &lt;!&ndash; Extract genre from sequence at position with the shortest length. &ndash;&gt;
           <xsl:if test="$mainGenresSequence != ''">
             <f:string key="genre">
               <xsl:value-of select="$mainGenresSequence[$genrePositions]"/>
             </f:string>
           </xsl:if>
         </xsl:when>
-        <!-- Here we know that there's only one 'hovedgenre' in the data. -->
+        &lt;!&ndash; Here we know that there's only one 'hovedgenre' in the data. &ndash;&gt;
         <xsl:when test="f:count($mainGenresSequence) = 1">
           <f:string key="genre">
             <xsl:value-of select="$mainGenresSequence[1]"/>
           </f:string>
         </xsl:when>
-        <!-- If no genre is present, the field should not be created.-->
+        &lt;!&ndash; If no genre is present, the field should not be created.&ndash;&gt;
         <xsl:otherwise></xsl:otherwise>
-      </xsl:choose>
+      </xsl:choose>-->
     </xsl:if>
 
     <!-- Extract directors if any present in metadata. see https://schema.org/director -->

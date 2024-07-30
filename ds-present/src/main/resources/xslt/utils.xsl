@@ -36,7 +36,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Get a value from a nested JSON map. The function checks that each level of the map isn't empty.
+  <!-- Get a genreValue from a nested JSON map. The function checks that each level of the map isn't empty.
        If the map is empty, an empty string will be returned.-->
   <xsl:function name="my:getNestedMapValue2Levels">
     <xsl:param name="object"/>
@@ -50,7 +50,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Return the innermost value from a three-level nested JSON object.
+  <!-- Return the innermost genreValue from a three-level nested JSON object.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
   <xsl:function name="my:getNestedMapValue3Levels">
@@ -67,7 +67,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Get a value from a nested JSON map with four nested levels.
+  <!-- Get a genreValue from a nested JSON map with four nested levels.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
   <xsl:function name="my:getNestedMapValue4Levels" as="item()">
@@ -86,7 +86,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Get a value from a nested JSON map with five nested levels.
+  <!-- Get a genreValue from a nested JSON map with five nested levels.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
   <xsl:function name="my:getNestedMapValue5Levels" as="item()">
@@ -107,7 +107,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Get a value from a nested JSON map with six nested levels.
+  <!-- Get a genreValue from a nested JSON map with six nested levels.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
   <xsl:function name="my:getNestedMapValue6Levels" as="item()">
@@ -130,6 +130,42 @@
                                 $map1), $map2), $map3), $map4), $map5), $map6))"><xsl:value-of select="''"/></xsl:when>
       <xsl:otherwise><xsl:value-of select="map:get(map:get(map:get(map:get(map:get(map:get($object,
                                              $map1), $map2), $map3), $map4), $map5), $map6)"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
+  <!-- Named template to create a genre string containing the value given as a parameter to the template. -->
+  <xsl:template name="my:createGenreString">
+    <xsl:param name="genreValue"/>
+    <f:string key="genre">
+      <xsl:value-of select="$genreValue"/>
+    </f:string>
+  </xsl:template>
+
+  <!-- Check if a sequence contains values from another sequence. Returns boolean true if sequence A contains a value also present in sequence B. -->
+  <xsl:function name="my:sequenceAContainsValueFromSequenceB" as="xs:boolean">
+    <xsl:param name="sequenceA"/>
+    <xsl:param name="sequenceB"/>
+
+    <!-- Find and display common values -->
+    <xsl:variable name="valuesIntersect">
+      <xsl:for-each select="$sequenceA">
+        <xsl:variable name="item" select="lower-case(.)" />
+        <xsl:if test="$sequenceB = $item">
+          <xsl:value-of select="true()"/>
+        </xsl:if>
+        <xsl:if test="$sequenceB != $item">
+          <xsl:value-of select="false()"/>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:choose>
+      <xsl:when test="f:contains($valuesIntersect, 'true')">
+        <xsl:value-of select="true()"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="false()"/>
+      </xsl:otherwise>
     </xsl:choose>
   </xsl:function>
 
