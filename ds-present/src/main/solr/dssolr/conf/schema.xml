@@ -5,7 +5,11 @@ Since we are using schema.xml and not managed-schema.xml all filters defined
 has to be loaded by class and not by name parameter.
 Read about this bug: https://issues.apache.org/jira/browse/SOLR-16203
 
-In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>  
+In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>
+
+When adding fields to this schema please have the following guidelines in mind:
+- When adding a multivalued field also add a 'fieldname_count' field containing the count of entries in the created field.
+- When adding an analyzed text field also add a 'fieldname_length' field containing the length of the textual entry in the created field.
 -->
 
 <!-- TODO: Add query examples where they apply. -->
@@ -40,8 +44,9 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
 1.6.11: Rename schema fields following feedback from metadata review.
 1.6.12: Add kaltura_id to schema and remove old wowza streaming url.
 1.6.13: Add fields actor, director, character, contributor and creator and their respective _strict fields.
+1.6.14: Add _count and _length fields for all multiValued and text fields respectively.
   -->
-  <field name="_ds_1.6.13_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.14_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -97,9 +102,8 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   </field>
 
   <field name="categories_count" type="pint">
-    <?description   ?>
-    <?example       ?>
-    <?query_example ?>
+    <?description   The count of entries in the categories field.?>
+    <?example       3?>
   </field>
 
   <field name="title" type="text_general" multiValued="true" stored="true"> <!-- Title will be made single value field at some time-->
@@ -127,6 +131,13 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="creator_affiliation" type="text_general">
     <?description The name of an organization, institution, etc. with which
             the entity was associated at the time that the resource was created.?>
+    <?example     Bisson frères?>
+    <?example     Danmarks Radio?>
+  </field>
+
+  <field name="creator_affiliation_length" type="pint" stored="true">
+    <?description The string length of the content from 'creator_affiliation'. For radio and tv this field will contain the length of the single entry while collections with
+            more than one entry in the field 'creator_affiliation' should contain the combined length of all values in this field.?>
     <?example     Bisson frères?>
     <?example     Danmarks Radio?>
   </field>
@@ -501,6 +512,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     John R. Johnsen?>
   </field>
 
+  <field name="actor_count" type="pint" stored="true">
+    <?description The amount of actors present in the recording. Applies to records from origin ds.tv?>
+    <?example     John R. Johnsen?>
+  </field>
+
   <field name="actor_strict" type="text_strict" multiValued="true"  >
     <?description The name of the actors present in the recording. Applies to records from origin ds.tv?>
     <?example     John R. Johnsen?>
@@ -509,6 +525,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
   <field name="contributor" type="string" multiValued="true"  docValues="true">
     <?description The name of contributors present in the recording. Applies to records from origin ds.radio?>
     <?example     John R. Johnsen?>
+  </field>
+
+  <field name="contributor_count" type="pint" stored="true">
+    <?description The amount of contributors in the recording. Applies to records from origin ds.radio?>
+    <?example     2?>
   </field>
 
   <field name="contributor_strict" type="text_strict" multiValued="true"  >
@@ -521,7 +542,12 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Hans Christian Varnæs?>
   </field>
 
-<field name="character_strict" type="text_strict" multiValued="true">
+  <field name="character_count" type="pint">
+    <?description The amount of characters present in the metadata about the recording.?>
+    <?example     5?>
+  </field>
+
+  <field name="character_strict" type="text_strict" multiValued="true">
     <?description The name of the characters played by the actors in the recording.?>
     <?example     Hans Christian Varnæs?>
   </field>
@@ -536,7 +562,6 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
     <?example     Thomas Vinterberg?>
   </field>
 
-
   <field name="creator_affiliation_generic" type="text_general" multiValued="true">
     <?description The name of an organization, institution, etc. with which
                   the entity was associated at the time that the resource was created.
@@ -546,6 +571,17 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                   as 'Program 1' and 'P1'. ?>
     <?example     Bisson frères?>
     <?example     Danmarks Radio?>
+  </field>
+
+  <field name="creator_affiliation_generic_count" type="pint" stored="true">
+    <?description The amount of entries for the field 'creator_affiliation_generic'. For radio and tv this will properbly always be 1, but for other collections this will be
+            important and different ?>
+    <?example     1?>
+  </field>
+  <field name="creator_affiliation_generic_length" type="plong" stored="true">
+    <?description The string length of the content in the field creator_affiliation_generic. For radio and tv this is the length of the only entry- For other collections this
+            will be de combined length of all entries ?>
+    <?example     1?>
   </field>
 
   <field name="ritzau_id" type="string">
@@ -935,6 +971,11 @@ In solrconfig.xml the classic schema is defined with this:  <schemaFactory class
                   for knowing how long the overlap is or what kind of overlap there are between the files. Overlapping
                   files are listed in comma seperated pairs.?>
     <?example     c8f496cf-4e0b-4682-8eee-67dfe07525d2,8ac98f6e-5653-492a-ab8c-c1462edaeb4a?>
+  </field>
+
+  <field name="internal_overlapping_files_count" type="pint" stored="true">
+    <?description The amount of overlaps between files. Not the amount of files overlapping other files.?>
+    <?example     3?>
   </field>
 
   <field name="internal_transformation_error" type="boolean" default="false">

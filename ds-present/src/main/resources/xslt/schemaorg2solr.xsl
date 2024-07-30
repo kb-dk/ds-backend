@@ -176,25 +176,33 @@
           </xsl:for-each>
         </f:array>
 
+        <f:string key="actor_count">
+          <xsl:value-of select="f:count($actors)"/>
+        </f:string>
+
         <!-- Here we need to know if the value 'characterName' is present somewhere in the nested map. I dont know of anyway else of checking this than through a variable
         getting populated true strings that we then can do an if-lookup on. -->
-        <xsl:variable name="charactersBool">
+        <xsl:variable name="characters" as="item()*">
           <xsl:for-each select="$actors">
-            <xsl:if test="map:get(., 'characterName')"><xsl:value-of select="f:true()"/></xsl:if>
+            <xsl:if test="map:get(., 'characterName')">
+              <xsl:value-of select="map:get(., 'characterName')"/>
+            </xsl:if>
           </xsl:for-each>
         </xsl:variable>
 
         <!-- Get character names from map if they are present.-->
-        <xsl:if test="contains($charactersBool, 'true')">
+        <xsl:if test="not(f:empty($characters))">
           <f:array key="character">
-            <xsl:for-each select="$actors">
-              <xsl:if test="f:exists(map:get(., 'characterName'))">
+            <xsl:for-each select="$characters">
                 <f:string>
-                  <xsl:value-of select="map:get(., 'characterName')"/>
+                  <xsl:value-of select="."/>
                 </f:string>
-              </xsl:if>
             </xsl:for-each>
           </f:array>
+
+          <f:string key="character_count">
+            <xsl:value-of select="f:count($characters)"/>
+          </f:string>
         </xsl:if>
       </xsl:if>
 
@@ -211,6 +219,10 @@
             </f:string>
           </xsl:for-each>
         </f:array>
+
+        <f:string key="contributor_count">
+          <xsl:value-of select="f:count($contributors)"/>
+        </f:string>
       </xsl:if>
 
       <!-- Extract director from schema.org json -->
@@ -242,6 +254,11 @@
             </f:string>
           </xsl:for-each>
         </f:array>
+
+        <!-- Creator_count field -->
+        <f:string key="creator_count">
+          <xsl:value-of select="f:count($creators)"/>
+        </f:string>
       </xsl:if>
 
       <!-- Extract the creater affiliation. Two fields are required here as creator_affiliation can change over time.
@@ -259,6 +276,10 @@
             <f:string key="creator_affiliation">
               <xsl:value-of select="$creatorAffiliation"/>
             </f:string>
+            <f:string key="creator_affiliation_length">
+              <xsl:value-of select="f:string-length($creatorAffiliation)"/>
+            </f:string>
+
             <f:string key="creator_affiliation_facet">
               <xsl:value-of select="upper-case($creatorAffiliation)"/>
             </f:string>
@@ -266,8 +287,17 @@
 
           <xsl:if test="not(empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName'))) and
                         my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName') != ''">
-            <f:string key="creator_affiliation_generic">
+            <xsl:variable name="genericAffiliation">
               <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')"/>
+            </xsl:variable>
+            <f:string key="creator_affiliation_generic">
+              <xsl:value-of select="$genericAffiliation"/>
+            </f:string>
+            <f:string key="creator_affiliation_generic_length">
+              <xsl:value-of select="f:string-length($genericAffiliation)"/>
+            </f:string>
+            <f:string key="creator_affiliation_generic_count">
+              <xsl:value-of select="f:count($genericAffiliation)"/>
             </f:string>
           </xsl:if>
 
@@ -815,6 +845,11 @@
           </f:string>
         </xsl:for-each>
       </f:array>
+
+      <!-- This counts the amount of overlaps, not the amount of overlapping files. -->
+      <f:string key="internal_overlapping_files_count">
+        <xsl:value-of select="f:count($overlapsArray)"/>
+      </f:string>
     </xsl:if>
     <!--
     INTERNAL STRUCTURE HAS BEEN TEMPORARILY REMOVED FROM TRANSFORMATION AS IT'S HARD TO REPRESENT IT FLAT.
