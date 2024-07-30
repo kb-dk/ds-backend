@@ -552,13 +552,18 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     Hans Christian Varnæs?>
   </field>
 
-  <field name="director" type="string"  docValues="true">
+  <field name="director" type="string"  multiValued="true" docValues="true">
     <?description The name of the director of the recording.?>
     <?example     Thomas Vinterberg?>
   </field>
 
-  <field name="director_strict" type="text_strict">
+  <field name="director_strict" type="text_strict" multiValued="true">
     <?description The name of the director of the recording.?>
+    <?example     Thomas Vinterberg?>
+  </field>
+
+  <field name="director_count" type="pint" stored="true">
+    <?description The amount of directors for the recording.?>
     <?example     Thomas Vinterberg?>
   </field>
 

@@ -238,6 +238,10 @@
             </f:string>
           </xsl:for-each>
         </f:array>
+
+        <f:string key="director_count">
+          <xsl:value-of select="f:count($directors)"/>
+        </f:string>
       </xsl:if>
 
      <!-- Extracts creators from the array of creators present in the creator value from schema.org-->

@@ -498,7 +498,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testDirector() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
-        assertTrue(solrString.contains("\"director\":\"Sergio Leone\","));
+        assertTrue(solrString.contains("\"director\":[\"Sergio Leone\"],"));
     }
 
     @Test

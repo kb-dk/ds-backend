@@ -480,7 +480,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testDirectors() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
-        assertTrue(transformedJSON.contains("\"director\":{\"@type\":\"Person\",\"name\":\"Sergio Leone\"}"));
+        assertTrue(transformedJSON.contains("\"director\":[{\"@type\":\"Person\",\"name\":\"Sergio Leone\"}]"));
     }
 
     @Test
