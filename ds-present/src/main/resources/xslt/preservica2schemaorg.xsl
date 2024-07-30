@@ -679,21 +679,27 @@
 
 
     <xsl:if test="//pbcoreGenre">
-      <xsl:variable name="keywords">
+      <!-- Save keywords as a sequence -->
+      <xsl:variable name="keywords" as="item()*">
         <xsl:for-each select="./pbcoreGenre/genre">
           <xsl:if test="substring-after(., ':') != '' and not(f:contains(., 'null'))">
-            <xsl:value-of select="concat(normalize-space(f:substring-after(., ':')), ', ')"/>
+            <xsl:value-of select="(normalize-space(f:substring-after(., ':')))"/>
           </xsl:if>
         </xsl:for-each>
       </xsl:variable>
-      <!-- Length used to delete last comma from keyword list.-->
-      <xsl:variable name="keywords-length" select="string-length($keywords)"/>
 
       <xsl:if test="$keywords != ''">
         <f:string key="keywords">
-          <xsl:value-of select="substring($keywords, 1, $keywords-length - 2)"/>
+          <xsl:value-of select="f:string-join($keywords, ',')"/>
         </f:string>
       </xsl:if>
+
+      <!--<xsl:for-each select="$keywords">
+        <xsl:choose>
+          <xsl:when test=""></xsl:when>
+          <xsl:otherwise></xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each>-->
 
       <!-- It is seen in data, that multiple 'hovedgenre's can be defined. This should not happen and we need to find the appropriate one. Normally the maingenre would be the
       most common and shortest description of the resource. -->

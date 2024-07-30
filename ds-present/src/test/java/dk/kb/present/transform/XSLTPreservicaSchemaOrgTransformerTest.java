@@ -173,7 +173,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testKeywords() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8afb121);
-        Assertions.assertFalse(transformedJSON.contains("\"keywords\":\"Serier,Krimiserie\","));
+        Assertions.assertFalse(transformedJSON.contains("\"keywords\":\"Serier, Krimiserie\","));
     }
 
     @Test
