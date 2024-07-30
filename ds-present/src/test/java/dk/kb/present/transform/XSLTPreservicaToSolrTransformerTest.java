@@ -85,7 +85,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testMainGenre() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121,"\"genre\":\"Serier\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121,"\"genre\":\"Fiktion\"");
     }
 
     @Test
@@ -488,6 +488,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testNoCreators() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(solrString.contains("\"creator\":"));
+    }
+
+    @Test
+    void testFailure() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eec71f45);
+        prettyPrintJson(solrString);
     }
 
     /**

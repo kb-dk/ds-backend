@@ -856,16 +856,20 @@
 
     <!-- Extract directors if any present in metadata. see https://schema.org/director -->
     <!-- In our devel system we dont have any records where there are more than one contributer with the role 'instruktion' therefore this is not implemented as an array. -->
-    <xsl:for-each select="./pbcoreContributor">
-      <xsl:if test="./contributorRole = 'instruktion' and ./contributor != ''">
-        <f:map key="director">
-          <f:string key="@type">Person</f:string>
-          <f:string key="name">
-            <xsl:value-of select="normalize-space(./contributor)"/>
-          </f:string>
-        </f:map>
-      </xsl:if>
-    </xsl:for-each>
+    <xsl:if test="./pbcoreContributor/contributorRole = 'instruktion' and ./pbcoreContributor/contributor != ''">
+      <f:array key="director">
+        <xsl:for-each select="./pbcoreContributor">
+          <xsl:if test="./contributorRole = 'instruktion' and ./contributor != ''">
+            <f:map>
+              <f:string key="@type">Person</f:string>
+              <f:string key="name">
+                <xsl:value-of select="normalize-space(./contributor)"/>
+              </f:string>
+            </f:map>
+          </xsl:if>
+        </xsl:for-each>
+      </f:array>
+    </xsl:if>
 
     <!-- Extract authors/creators here we are using creators as these two can be used for the same content and we are using creator for images as well. -->
     <xsl:if test="./pbcoreCreator/creatorRole = 'forfatter' and ./pbcoreCreator/creator != ''">
