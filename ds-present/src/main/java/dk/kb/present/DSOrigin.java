@@ -266,7 +266,7 @@ public class DSOrigin {
             } catch (Exception e) {
                 if (stopOnError) {
                     throw new RuntimeTransformerException(
-                            "Exception transforming record '" + record.getId() + "' to format '" + format + "'");
+                            "Exception transforming record '" + record.getId() + "' to format '" + format + "'. The following exception was thrown: '" + e + "'.");
                 } else {
                     log.warn("Non-critical Exception transforming record '{}' to format '{}'. " +
                             "Overall processing will continue as stopOnError=", record.getId(), format, e);
