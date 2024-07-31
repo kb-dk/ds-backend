@@ -124,7 +124,7 @@ public class TestUtil {
 				"ownProductionBool", "true",
 				"ownProductionCode","1000");
 		String schemaOrgJson = TestUtil.getTransformedWithAccessFieldsAdded(schemaOrgTransformer, record, injections);
-		prettyPrintJson(schemaOrgJson);
+		//prettyPrintJson(schemaOrgJson);
 
 		String placeholderXml = "placeholder.xml";
 		Map<String, String> mapOfJson = Map.of("schemaorgjson", schemaOrgJson);

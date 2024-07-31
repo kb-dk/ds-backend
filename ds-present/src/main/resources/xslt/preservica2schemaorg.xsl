@@ -65,7 +65,9 @@
 
     <!-- As above, we are removing the namespaces for everything inside the PBCoreDescriptionDocument as some records have ns1, ns2, ns3 and so on for the same field. -->
     <xsl:variable name="pbCore">
-          <xsl:for-each select="$contentObjects/PBCoreDescriptionDocument">
+          <!-- TODO: RECORDS SHOULD ONLY HAVE ONE OF THESE. HOWEVER RECORD WITH ID: 382c7e23-06b9-42c0-8857-c0b898235bb2 HAS TWO. Choosing the first one until Karen is back from
+           holiday.-->
+          <xsl:for-each select="$contentObjects/PBCoreDescriptionDocument[1]">
             <xsl:apply-templates mode="strip-ns"/>
           </xsl:for-each>
           <xsl:value-of select="."/>
@@ -749,109 +751,10 @@
             </xsl:choose>
         </xsl:variable>
 
-
-
-
-        <!--<xsl:variable name="genreContent">
-          <xsl:if test=". = '' or f:empty(.) or . = null">
-            <xsl:for-each select="$keywordsSequence">
-              <xsl:choose>
-                <xsl:when test="f:contains($NewsPoliticsSociety, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($Music, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($Culture, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($Sport, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($Entertainment, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($ChildrenYouth, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($Documentary, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($Fiction, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($Lifestyle, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($ScienceNature, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="f:contains($Misc, .)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:otherwise></xsl:otherwise>
-              </xsl:choose>
-            </xsl:for-each>
-          </xsl:if>
-        </xsl:variable>-->
-
         <f:string key="genre">
           <xsl:value-of select="$genreValue"/>
         </f:string>
       </xsl:if>
-
-
-
-      <!-- It is seen in data, that multiple 'hovedgenre's can be defined. This should not happen and we need to find the appropriate one. Normally the maingenre would be the
-      most common and shortest description of the resource. -->
-      <!-- Create a sequence containing all main genres.-->
-      <!--<xsl:variable name="mainGenresSequence" as="xs:string *">
-        <xsl:for-each select="./pbcoreGenre/genre">
-          <xsl:if test="f:contains(., 'hovedgenre:') and substring-after(., 'hovedgenre:') != ''">
-              <xsl:sequence select="normalize-space(substring-after(., 'hovedgenre:'))"/>
-          </xsl:if>
-        </xsl:for-each>
-      </xsl:variable>
-
-      &lt;!&ndash; Here we test if multiple 'hovedgenre' are present in the data. &ndash;&gt;
-      <xsl:choose>
-        <xsl:when test="f:count($mainGenresSequence) > 1">
-          &lt;!&ndash; Count lenghts of all values in the mainGenresSequence to find the shortest string.&ndash;&gt;
-          <xsl:variable name="mainGenreLengths" as="xs:integer *">
-            <xsl:for-each select="$mainGenresSequence">
-              <xsl:sequence select="f:string-length()"/>
-            </xsl:for-each>
-          </xsl:variable>
-
-          &lt;!&ndash; Variable which holds the shortest length from the mainGenreLengths sequence. &ndash;&gt;
-          <xsl:variable name="shortestLength" select="f:min($mainGenreLengths)"/>
-
-          &lt;!&ndash; Iterate through the sequence of lengths to find the position of the shortest value, which should be treated as the main genre. &ndash;&gt;
-          <xsl:variable name="genrePositions" as="xs:integer">
-            <xsl:for-each select="$mainGenreLengths">
-              <xsl:variable name="pos" select="position()"/>
-              <xsl:if test=". = $shortestLength">
-                <xsl:value-of select="$pos"/>
-              </xsl:if>
-            </xsl:for-each>
-          </xsl:variable>
-
-          &lt;!&ndash; Extract genre from sequence at position with the shortest length. &ndash;&gt;
-          <xsl:if test="$mainGenresSequence != ''">
-            <f:string key="genre">
-              <xsl:value-of select="$mainGenresSequence[$genrePositions]"/>
-            </f:string>
-          </xsl:if>
-        </xsl:when>
-        &lt;!&ndash; Here we know that there's only one 'hovedgenre' in the data. &ndash;&gt;
-        <xsl:when test="f:count($mainGenresSequence) = 1">
-          <f:string key="genre">
-            <xsl:value-of select="$mainGenresSequence[1]"/>
-          </f:string>
-        </xsl:when>
-        &lt;!&ndash; If no genre is present, the field should not be created.&ndash;&gt;
-        <xsl:otherwise></xsl:otherwise>
-      </xsl:choose>-->
     </xsl:if>
 
     <!-- Extract directors if any present in metadata. see https://schema.org/director -->

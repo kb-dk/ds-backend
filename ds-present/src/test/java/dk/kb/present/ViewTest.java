@@ -121,7 +121,7 @@ class ViewTest {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
-        View solrView = getSolrViewForPreservicaRecord();
+        View solrView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -141,7 +141,7 @@ class ViewTest {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
-        View solrView = getSolrViewForPreservicaRecord();
+        View solrView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
         // Test with Kaltura ID = null
@@ -257,6 +257,7 @@ class ViewTest {
                                     "\"kb:own_production_code\":2300"));
     }
 
+    //********************************************** PRIVATE HELPER METHODS BELOW ***************************************************************
 
     /**
      * Create test view for Preservica Schema.org transformation
@@ -291,7 +292,7 @@ class ViewTest {
      * Create test view for Preservica solr transformation
      * @return solr view for preservica records.
      */
-    private static View getSolrViewForPreservicaRecord() throws IOException {
+    private static View getSolrTvViewForPreservicaRecord() throws IOException {
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML tvConf = conf.getYAMLList(".origins").get(3);
         View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
