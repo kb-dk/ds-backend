@@ -133,4 +133,40 @@
     </xsl:choose>
   </xsl:function>
 
+  <!-- Named template to create a genre string containing the value given as a parameter to the template. -->
+  <xsl:template name="my:createGenreString">
+    <xsl:param name="genreValue"/>
+    <f:string key="genre">
+      <xsl:value-of select="$genreValue"/>
+    </f:string>
+  </xsl:template>
+
+  <!-- Check if a sequence contains values from another sequence. Returns boolean true if sequence A contains a value also present in sequence B. -->
+  <xsl:function name="my:sequenceAContainsValueFromSequenceB" as="xs:boolean">
+    <xsl:param name="sequenceA"/>
+    <xsl:param name="sequenceB"/>
+
+    <!-- Find and display common values -->
+    <xsl:variable name="valuesIntersect">
+      <xsl:for-each select="$sequenceA">
+        <xsl:variable name="item" select="lower-case(.)" />
+        <xsl:if test="$sequenceB = $item">
+          <xsl:value-of select="true()"/>
+        </xsl:if>
+        <xsl:if test="$sequenceB != $item">
+          <xsl:value-of select="false()"/>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:choose>
+      <xsl:when test="f:contains($valuesIntersect, 'true')">
+        <xsl:value-of select="true()"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="false()"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
 </xsl:stylesheet>

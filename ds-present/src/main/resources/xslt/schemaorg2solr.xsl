@@ -227,8 +227,20 @@
 
       <!-- Extract director from schema.org json -->
       <xsl:if test="f:exists($schemaorg-xml('director'))">
-        <f:string key="director">
-          <xsl:value-of select="map:get($schemaorg-xml('director'), 'name')"/>
+        <xsl:variable name="directors" as="item()*">
+          <xsl:copy-of select="array:flatten($schemaorg-xml('director'))"/>
+        </xsl:variable>
+
+        <f:array key="director">
+          <xsl:for-each select="$directors">
+            <f:string>
+              <xsl:value-of select="map:get(., 'name')"/>
+            </f:string>
+          </xsl:for-each>
+        </f:array>
+
+        <f:string key="director_count">
+          <xsl:value-of select="f:count($directors)"/>
         </f:string>
       </xsl:if>
 
