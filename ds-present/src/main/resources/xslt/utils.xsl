@@ -36,7 +36,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Get a genreValue from a nested JSON map. The function checks that each level of the map isn't empty.
+  <!-- Get a value from a nested JSON map. The function checks that each level of the map isn't empty.
        If the map is empty, an empty string will be returned.-->
   <xsl:function name="my:getNestedMapValue2Levels">
     <xsl:param name="object"/>
@@ -50,7 +50,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Return the innermost genreValue from a three-level nested JSON object.
+  <!-- Return the innermost value from a three-level nested JSON object.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
   <xsl:function name="my:getNestedMapValue3Levels">
@@ -67,7 +67,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Get a genreValue from a nested JSON map with four nested levels.
+  <!-- Get a value from a nested JSON map with four nested levels.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
   <xsl:function name="my:getNestedMapValue4Levels" as="item()">
@@ -86,7 +86,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Get a genreValue from a nested JSON map with five nested levels.
+  <!-- Get a value from a nested JSON map with five nested levels.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
   <xsl:function name="my:getNestedMapValue5Levels" as="item()">
@@ -107,7 +107,7 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Get a genreValue from a nested JSON map with six nested levels.
+  <!-- Get a value from a nested JSON map with six nested levels.
        The function checks that each level of the map isn't empty.
        If the map is empty at any level, an empty string will be returned. -->
   <xsl:function name="my:getNestedMapValue6Levels" as="item()">
