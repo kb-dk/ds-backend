@@ -68,14 +68,13 @@ public class ProxyHelper {
     }
 
     /**
-     * Streams the content for a given httpURLConnection to the api to proxy
+     * Streams the content for a given inputstream
      *
-     * @param connection
+     * @param inputStream
      * @return
      * @throws IOException
      */
-    public static StreamingOutput createStreamingOutput(HttpURLConnection connection) throws IOException {
-        InputStream inputStream = connection.getInputStream();
+    public static StreamingOutput createStreamingOutput(InputStream inputStream) throws IOException {
         return outputStream -> {
             byte[] buffer = new byte[1024];
             int bytesRead;

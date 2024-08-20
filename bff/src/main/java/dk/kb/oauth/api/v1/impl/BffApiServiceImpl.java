@@ -75,15 +75,24 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
         URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
         HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
         try {
+            int status = apiConnection.getResponseCode();
             httpServletResponse.setStatus(apiConnection.getResponseCode());
             httpServletResponse.setHeader("Content-Type", apiConnection.getHeaderField("Content-Type"));
             httpServletResponse.setHeader("Content-Disposition", apiConnection.getHeaderField("Content-Disposition"));
-            return ProxyHelper.createStreamingOutput(apiConnection);
+            if (status / 100 == 2) {
+                //API SUCCESS
+                return ProxyHelper.createStreamingOutput(apiConnection.getInputStream());
+            }
+            if (status >= 400) {
+                //API ERROR
+                return ProxyHelper.createStreamingOutput(apiConnection.getErrorStream());
+            }
+            return null;
         } catch (SocketTimeoutException e) {
                 log.warn("Proxy Error: connection timeout uri:'{}'",uri.toString(),e);
                 throw new ServiceException("Proxy Error: connection timeout uri:'"+uri.toString(),Response.Status.GATEWAY_TIMEOUT);
         } catch (IOException e) {
-                log.warn("Proxy Error: unable to connect uri:'{}'",uri.toString(),e);
+                log.warn("Proxy Error: unable to read data uri:'{}'",uri.toString(),e);
                 throw new ServiceException("Proxy Error: unable to connect to uri:'"+uri.toString(),Response.Status.BAD_GATEWAY);
         }
     }
