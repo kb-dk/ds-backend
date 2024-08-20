@@ -73,8 +73,8 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
         }
 
         URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
-        HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
         try {
+            HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
             int status = apiConnection.getResponseCode();
             httpServletResponse.setStatus(apiConnection.getResponseCode());
             httpServletResponse.setHeader("Content-Type", apiConnection.getHeaderField("Content-Type"));

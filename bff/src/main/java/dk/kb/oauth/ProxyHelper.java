@@ -20,24 +20,12 @@ public class ProxyHelper {
 
     private static final Logger log = LoggerFactory.getLogger(ProxyHelper.class);
 
-    public static HttpURLConnection openConnection(String method, URI uri, HttpHeaders requestHeaders, String accessToken) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
-            connection.setRequestMethod(method);
-            connection.setRequestProperty("Authorization","Bearer "+accessToken);
-            connection.connect();
-            return connection;
-        } catch (ProtocolException e) {
-            throw new InternalServiceException("Unable to set request method " + method);
-        } catch (SocketTimeoutException e) {
-            log.warn("Proxy Error: connection timeout uri:'{}'",uri.toString(),e);
-            throw new ServiceException("Proxy Error: connection timeout uri:'"+uri.toString(),Response.Status.GATEWAY_TIMEOUT);
-        } catch (IOException e) {
-            log.warn("Proxy Error: unable to connect uri:'{}'",uri.toString(),e);
-            throw new ServiceException("Proxy Error: unable to connect to uri:'"+uri.toString(),Response.Status.BAD_GATEWAY);
-        }
-
-
+    public static HttpURLConnection openConnection(String method, URI uri, HttpHeaders requestHeaders, String accessToken) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+        connection.setRequestMethod(method);
+        connection.setRequestProperty("Authorization","Bearer "+accessToken);
+        connection.connect();
+        return connection;
     }
 
 
