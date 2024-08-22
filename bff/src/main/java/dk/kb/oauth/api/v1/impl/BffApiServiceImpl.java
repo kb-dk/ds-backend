@@ -60,8 +60,8 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
         }
         String accessTokenString = EncryptionHelper.decryptString(authorization);
         if (!verifyAccessTokenString(accessTokenString)) {
-            log.debug("invalid authorization");
-            throw new ServiceException("Authorization missing",Response.Status.UNAUTHORIZED);
+            log.debug("expired authorization");
+            throw new ServiceException("Expired",Response.Status.UNAUTHORIZED);
         }
 
         URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
