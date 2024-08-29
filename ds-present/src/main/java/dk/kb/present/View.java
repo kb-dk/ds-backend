@@ -180,6 +180,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
+
+        log.info(extractedValues.toString());
+
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         updateMetadataMapWithOwnProduction(metadata, extractedValues);
         updateMetadataMapWithHoldback(record, metadata, extractedValues);

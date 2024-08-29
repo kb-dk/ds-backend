@@ -12,6 +12,8 @@ import java.util.Map;
  * {@link PathPair#path} and the value extracted from the specified path at {@link PathPair#value}. This value can then be retrieved by getters in {@link ExtractedPreservicaValues}.
  * <br/>
  * Can be used in conjunction with {@link dk.kb.present.util.saxhandlers.ElementsExtractionHandler} to parse an XML stream for multiple values.
+ * <br/>
+ * Values for form, contentsItem and origin can come from either tvmeter or nielsen metadata fragments, but never from both of them at the same time.
  */
 public class ExtractedPreservicaValues {
 
@@ -20,16 +22,13 @@ public class ExtractedPreservicaValues {
     public ExtractedPreservicaValues(){
         values.put("startTime", new PathPair<>(startTimePath, ""));
         values.put("endTime", new PathPair<>(endTimePath, ""));
-        values.put("form", new PathPair<>(formPath, ""));
-        values.put("contentsItem", new PathPair<>(contentsItemPath, ""));
-        values.put("origin", new PathPair<>(originPath, ""));
+        values.put("form", new PathPair<>("", ""));
+        values.put("contentsItem", new PathPair<>("", ""));
+        values.put("origin", new PathPair<>("", ""));
     }
 
     private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
     private static final String endTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
-    private static final String formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
-    private static final String contentsItemPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
-    private static final String originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
 
     public String getStartTime() {
         return values.get("startTime").getValue();
