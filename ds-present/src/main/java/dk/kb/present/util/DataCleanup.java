@@ -85,8 +85,6 @@ public class DataCleanup {
             ElementsExtractionHandler handler = new ElementsExtractionHandler();
             saxParser.parse(xml, handler);
 
-            log.info("Values here are: " + handler.getDataValues());
-
             return handler.getDataValues();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -131,7 +131,6 @@ public class HoldbackDatePicker {
                 result.setHoldbackDate("9999-01-01T00:00:00Z");
             } else {
                 int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
-                log.info("Start date is: " + startDate);
                 result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), holdbackDays));
             }
 
