@@ -13,7 +13,7 @@ import java.util.Map;
  * <br/>
  * Can be used in conjunction with {@link dk.kb.present.util.saxhandlers.ElementsExtractionHandler} to parse an XML stream for multiple values.
  * <br/>
- * Values for form, contentsItem and origin can come from either tvmeter or nielsen metadata fragments, but never from both of them at the same time.
+ * Values for form, content and origin can come from either tvmeter or nielsen metadata fragments, but never from both of them at the same time.
  */
 public class ExtractedPreservicaValues {
 
@@ -23,7 +23,7 @@ public class ExtractedPreservicaValues {
         values.put("startTime", new PathPair<>(startTimePath, ""));
         values.put("endTime", new PathPair<>(endTimePath, ""));
         values.put("form", new PathPair<>("", ""));
-        values.put("contentsItem", new PathPair<>("", ""));
+        values.put("content", new PathPair<>("", ""));
         values.put("origin", new PathPair<>("", ""));
     }
 
@@ -56,12 +56,12 @@ public class ExtractedPreservicaValues {
         values.get("form").setValue(formValue);
     }
 
-    public String getContentsItem() {
-        return values.get("contentsItem").getValue();
+    public String getContent() {
+        return values.get("content").getValue();
     }
 
-    public void setContentsItem(String contentsItem) {
-        values.get("contentsItem").setValue(contentsItem);
+    public void setContent(String content) {
+        values.get("content").setValue(content);
     }
 
     public String getOrigin(){

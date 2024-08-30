@@ -171,7 +171,7 @@ public class HoldbackDatePicker {
 
         // TODO: do some logic on gallup/nielsen differences.
         // get contentsitem from xml
-        String contentsItem = extractedValues.getContentsItem();
+        String contentsItem = extractedValues.getContent();
 
         // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
         String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contentsItem, formString);

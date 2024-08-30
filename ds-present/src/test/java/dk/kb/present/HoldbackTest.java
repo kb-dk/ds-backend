@@ -30,7 +30,7 @@ public class HoldbackTest {
 
 
         tvValues1.setFormValue("4411");
-        tvValues1.setContentsItem("3190");
+        tvValues1.setContent("3190");
         tvValues1.setOrigin("1000");
         tvValues1.setStartTime("2016-01-20T10:34:42+0100");
 
@@ -39,7 +39,7 @@ public class HoldbackTest {
         radioValues.setStartTime("2018-04-03T08:03:00Z");
 
         badValues.setFormValue("1800");
-        badValues.setContentsItem("3100");
+        badValues.setContent("3100");
         badValues.setOrigin("2211");
         badValues.setStartTime("2016-01-06T18:08:17+0100");
     }
