@@ -42,38 +42,11 @@ public class ElementsExtractionHandler extends DefaultHandler {
         // Update the current path
         currentPath += "/" + elementName;
 
-        //log.info("Current path is: '{}'", currentPath);
-        if (currentPath.equals(startTimePath)){
-            captureValue = true;
-            captureValueKey = "startTime";
-        }
+        // Path for timestamps are alike in all records.
+        handleTimestampPaths();
 
-        if (currentPath.equals(endTimePath)){
-            captureValue = true;
-            captureValueKey = "endTime";
-        }
-
-        // Check if the specific path matches
-        if (currentPath.equals(tvmeterPath)) {
-            containsTvMeter = true;
-
-            log.info("Contains tv meter");
-
-            formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
-            contentsItemPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
-            originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
-            updatePathValues();
-        }
-
-        if (currentPath.equals(nielsenPath)){
-            containsNielsen = true;
-
-            formPath = "/XIP/Metadata/Content/record/source/nielsen/form";
-            // TODO: Is this the correct path to extract from?
-            contentsItemPath = "/XIP/Metadata/Content/record/source/nielsen/commoncode";
-            originPath = "/XIP/Metadata/Content/record/source/nielsen/origin";
-            updatePathValues();
-        }
+        // Check if the current path is either Tvmeter or Nielsen extracted metadata.
+        handleTvmeterAndNielsenPaths();
 
         if (containsNielsen || containsTvMeter){
             // Check if the current path matches any target path
@@ -119,6 +92,46 @@ public class ElementsExtractionHandler extends DefaultHandler {
             } else {
                 extractedPreservicaValues.values.get(captureValueKey).setValue(currentValue.toString());
             }
+        }
+    }
+
+    /**
+     * Update all variables extracted from either Tvmeter or Nielsen with their correct path values and sets the respective boolean to true and the other to false.
+     */
+    private void handleTvmeterAndNielsenPaths() {
+        if (currentPath.equals(tvmeterPath)) {
+            containsTvMeter = true;
+            containsNielsen = false;
+
+            log.info("Contains tv meter");
+
+            formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
+            contentsItemPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
+            originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
+            updatePathValues();
+        }
+
+        if (currentPath.equals(nielsenPath)){
+            containsNielsen = true;
+            containsTvMeter = false;
+
+            formPath = "/XIP/Metadata/Content/record/source/nielsen/form";
+            // TODO: Is this the correct path to extract from?
+            contentsItemPath = "/XIP/Metadata/Content/record/source/nielsen/commoncode";
+            originPath = "/XIP/Metadata/Content/record/source/nielsen/origin";
+            updatePathValues();
+        }
+    }
+
+    private void handleTimestampPaths() {
+        if (currentPath.equals(startTimePath)){
+            captureValue = true;
+            captureValueKey = "startTime";
+        }
+
+        if (currentPath.equals(endTimePath)){
+            captureValue = true;
+            captureValueKey = "endTime";
         }
     }
 
