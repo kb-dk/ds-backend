@@ -226,7 +226,7 @@ class ViewTest {
 
     @Test
     @Tag("integration")
-    void ownProductionTrueTest() throws Exception {
+    void ownProductionTrueTestTvmeter() throws Exception {
         HoldbackDatePicker.init();
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED);
@@ -238,6 +238,23 @@ class ViewTest {
 
         assertTrue(jsonld.contains("\"kb:own_production\":true," +
                                     "\"kb:own_production_code\":1000"));
+    }
+
+    @Test
+    @Tag("integration")
+    void holdbackNameTestNielsen() throws Exception {
+        HoldbackDatePicker.init();
+        View jsonldView = getPreservicaTvJsonView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_0e89456b);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+
+        String jsonld = jsonldView.apply(recordDto);
+        prettyPrintJson(jsonld);
+
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2024-02-27T04:49:52Z\"," +
+                "\"kb:holdback_name\":\"Aktualitet & Debat\""));
     }
 
     @Test
