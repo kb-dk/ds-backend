@@ -159,23 +159,28 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Get purposeName for a preservica record containing metadata about a DR program.
+     * Get purposeName for a preservica record containing metadata about a DR program. If purpose in extractedValues is equal to '6000', then purpose is set as "Undervisning",
+     * no matter other values.
      * @param extractedValues {@link ExtractedPreservicaValues} containing data from a preservica record for analysis.
      * @return the purposeName for a given program.
      */
     private static String getPurposeName(ExtractedPreservicaValues extractedValues) throws IOException, ParserConfigurationException, SAXException {
+        // If purpose is 6000, then the purpose name is "Undervisning" no matter what.
+        if (extractedValues.getPurpose().equals("6000")){
+            return "Undervisning";
+        }
+
         // Get form value
         String form = extractedValues.getFormValue();
 
         // get formNr by looking up form in formIndexSheet.
         String formString = formIndexSheet.getFormNr(form);
 
-        // TODO: do some logic on gallup/nielsen differences.
         // get contentsitem from xml
-        String contentsItem = extractedValues.getContent();
+        String contents = extractedValues.getContent();
 
         // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
-        String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contentsItem, formString, extractedValues.getId());
+        String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contents, formString, extractedValues.getId());
         purposeNumber = validatePurpose(purposeNumber, extractedValues.getOrigin());
 
         // Brug den fundne værdi i formåls arket til at finde formålNavn
