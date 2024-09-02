@@ -107,11 +107,13 @@ public class PurposeMatrixSheet {
      *
      * @param content a four-digit number extracted from the XML, which holdback is being calculated for.
      * @param formNrString a string of the format: 'FormX' where x has been resolved through {@link FormIndexSheet#getFormNr(String)}
+     * @param recordId of the record being processed. Used for logging.
      * @return a PurposeID most likely in the format x.xx: An example could be the string '2.02'.
      */
-    public String getPurposeIdFromContentAndForm(String content, String formNrString) {
+    public String getPurposeIdFromContentAndForm(String content, String formNrString, String recordId) {
         if (content.isEmpty()){
-            log.warn("The field 'content' is empty. PurposeID can't be calculated. Returning an empty string.");
+            log.warn("The field 'content' is empty for record with id: '{}'. PurposeID can't be calculated. Returning an empty string.",
+                    recordId);
             return "";
         }
 

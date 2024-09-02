@@ -74,15 +74,16 @@ public class DataCleanup {
      * Extract all needed values from a preservica record. These values are either tricky values such as dates, where we know that extra parsing is needed or values that are
      * used in multiple parts of the processing of the record.
      * @param content of the record. i.e. the XML data.
+     * @param recordId of the processed record. Used for logging and debugging.
      * @return a {@link ExtractedPreservicaValues}-object containing the extracted values.
      */
-    public static ExtractedPreservicaValues extractValuesFromPreservicaContent(String content) throws ParserConfigurationException, SAXException {
+    public static ExtractedPreservicaValues extractValuesFromPreservicaContent(String content, String recordId) throws ParserConfigurationException, SAXException {
         try (InputStream xml = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(false);
             SAXParser saxParser = factory.newSAXParser();
 
-            ElementsExtractionHandler handler = new ElementsExtractionHandler();
+            ElementsExtractionHandler handler = new ElementsExtractionHandler(recordId);
             saxParser.parse(xml, handler);
 
             return handler.getDataValues();

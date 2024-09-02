@@ -35,6 +35,10 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static  String originPath = "";
 
 
+    public ElementsExtractionHandler(String recordId){
+        extractedPreservicaValues.values.get("recordId").setValue(recordId);
+    }
+
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         String elementName = stripPrefix(qName);
@@ -134,7 +138,8 @@ public class ElementsExtractionHandler extends DefaultHandler {
 
     public ExtractedPreservicaValues getDataValues() {
         if (!containsNielsen && !containsTvMeter){
-            log.info("Record does not contain Nielsen or TVMeter metadata fragments.");
+            log.info("Record with id: '{}' does not contain Nielsen or TVMeter metadata fragments.",
+                    extractedPreservicaValues.getId());
         }
         return extractedPreservicaValues;
     }

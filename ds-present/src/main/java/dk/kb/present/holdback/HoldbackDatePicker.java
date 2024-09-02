@@ -127,7 +127,8 @@ public class HoldbackDatePicker {
             result.setHoldbackPurposeName(getPurposeName(extractedValues));
 
             if (result.getHoldbackPurposeName().isEmpty()){
-                log.info("Purpose name was empty. Setting holdback date to 9999-01-01T00:00:00Z");
+                log.info("Purpose name was empty for record with id: '{}'. Setting holdback date to 9999-01-01T00:00:00Z",
+                        extractedValues.getId());
                 result.setHoldbackDate("9999-01-01T00:00:00Z");
             } else {
                 int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
@@ -174,7 +175,7 @@ public class HoldbackDatePicker {
         String contentsItem = extractedValues.getContent();
 
         // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
-        String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contentsItem, formString);
+        String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contentsItem, formString, extractedValues.getId());
         purposeNumber = validatePurpose(purposeNumber, extractedValues.getOrigin());
 
         // Brug den fundne værdi i formåls arket til at finde formålNavn
@@ -182,7 +183,7 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Validate and handle special cases of IDs constructed by {@link PurposeMatrixSheet#getPurposeIdFromContentAndForm(String, String)}.
+     * Validate and handle special cases of IDs constructed by {@link PurposeMatrixSheet#getPurposeIdFromContentAndForm(String, String, String)}.
      * @param purposeId which is to be validated.
      * @param productionCountry string containing the productionCountry value from a preservica record. This should not be extracted from the fields named productionCountry or
      *                          countryOfOrigin, but rather from the field origin.

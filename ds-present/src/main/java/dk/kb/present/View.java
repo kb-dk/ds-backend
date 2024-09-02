@@ -176,7 +176,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private void applyDrStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
         ExtractedPreservicaValues extractedValues;
         try {
-            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content);
+            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content, record.getId());
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
@@ -200,7 +200,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private void applyManifestationStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
         ExtractedPreservicaValues extractedValues;
         try {
-            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content);
+            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content, record.getId());
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }

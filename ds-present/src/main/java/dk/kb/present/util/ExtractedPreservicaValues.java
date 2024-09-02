@@ -20,6 +20,7 @@ public class ExtractedPreservicaValues {
     public Map<String, PathPair<String,String>> values = new HashMap<>();
 
     public ExtractedPreservicaValues(){
+        values.put("recordId", new PathPair<>("id", ""));
         values.put("startTime", new PathPair<>(startTimePath, ""));
         values.put("endTime", new PathPair<>(endTimePath, ""));
         values.put("form", new PathPair<>("", ""));
@@ -70,6 +71,14 @@ public class ExtractedPreservicaValues {
 
     public void setOrigin(String origin){
         values.get("origin").setValue(origin);
+    }
+
+    public String getId(){
+        return values.get("recordId").getValue();
+    }
+
+    public void setId(String id){
+        values.get("recordId").setValue(id);
     }
 
     public List<String> getPaths(){
