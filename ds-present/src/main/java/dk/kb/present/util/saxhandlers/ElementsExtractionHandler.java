@@ -23,10 +23,10 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private boolean captureValue = false;
     private String captureValueKey = "";
 
-    private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
-    private static final String endTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
-    private static final String tvmeterPath = "/XIP/Metadata/Content/record/source/tvmeter";
-    private static final String nielsenPath = "/XIP/Metadata/Content/record/source/nielsen";
+    private static final String START_TIME_PATH = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
+    private static final String END_TIME_PATH = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
+    private static final String TVMETER_PATH = "/XIP/Metadata/Content/record/source/tvmeter";
+    private static final String NIELSEN_PATH = "/XIP/Metadata/Content/record/source/nielsen";
     private static boolean containsNielsen = false;
     private static boolean containsTvMeter = false;
 
@@ -60,7 +60,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (currentPath.equals(startTimePath) || currentPath.equals(endTimePath)){
+        if (currentPath.equals(START_TIME_PATH) || currentPath.equals(END_TIME_PATH)){
             captureValue = false;
         }
 
@@ -98,7 +98,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
      * Update all variables extracted from either Tvmeter or Nielsen with their correct path values and sets the respective boolean to true and the other to false.
      */
     private void handleTvmeterAndNielsenPaths() {
-        if (currentPath.equals(tvmeterPath)) {
+        if (currentPath.equals(TVMETER_PATH)) {
             containsTvMeter = true;
             containsNielsen = false;
 
@@ -108,7 +108,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
             updatePathValues();
         }
 
-        if (currentPath.equals(nielsenPath)){
+        if (currentPath.equals(NIELSEN_PATH)){
             containsNielsen = true;
             containsTvMeter = false;
 
@@ -121,18 +121,21 @@ public class ElementsExtractionHandler extends DefaultHandler {
     }
 
     private void handleTimestampPaths() {
-        if (currentPath.equals(startTimePath)){
+        if (currentPath.equals(START_TIME_PATH)){
             captureValue = true;
             captureValueKey = "startTime";
         }
 
-        if (currentPath.equals(endTimePath)){
+        if (currentPath.equals(END_TIME_PATH)){
             captureValue = true;
             captureValueKey = "endTime";
         }
     }
 
     public ExtractedPreservicaValues getDataValues() {
+        if (!containsNielsen && !containsTvMeter){
+            log.info("Record does not contain Nielsen or TVMeter metadata fragments.");
+        }
         return extractedPreservicaValues;
     }
 

@@ -223,7 +223,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             //throw new InternalServiceException("The Nielsen/Gallup origin was empty. Own production cannot be defined.");
         }
         if (ownProduction.length() != 4){
-            log.warn("Nielsen/Gallup origin did not have length 4. Origin is: '{}'", ownProduction);
+            log.debug("Nielsen/Gallup origin did not have length 4. Origin is: '{}'", ownProduction);
         }
 
         if (!ownProduction.isEmpty()) {

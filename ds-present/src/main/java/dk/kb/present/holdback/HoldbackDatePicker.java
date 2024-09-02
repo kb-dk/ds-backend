@@ -127,7 +127,7 @@ public class HoldbackDatePicker {
             result.setHoldbackPurposeName(getPurposeName(extractedValues));
 
             if (result.getHoldbackPurposeName().isEmpty()){
-                log.warn("Purpose name was empty. Setting holdback date to 9999-01-01T00:00:00Z");
+                log.info("Purpose name was empty. Setting holdback date to 9999-01-01T00:00:00Z");
                 result.setHoldbackDate("9999-01-01T00:00:00Z");
             } else {
                 int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());

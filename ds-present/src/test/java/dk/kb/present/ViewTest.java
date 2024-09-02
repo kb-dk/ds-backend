@@ -254,7 +254,7 @@ class ViewTest {
         prettyPrintJson(jsonld);
 
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"2024-02-27T04:49:52Z\"," +
-                "\"kb:holdback_name\":\"Aktualitet & Debat\""));
+                "\"kb:holdback_name\":\"Underholdning\""));
     }
 
     @Test
