@@ -124,7 +124,7 @@ origin:
 holdback:
   dr:
     purposeSheet: 'internal_test_files/dr_formaalstabeller_20240704.xlsx'
-    holdbackSheet: 'internal_test_files/dr_holdbacktabel_20240704.xlsx'
+    holdbackSheet: 'internal_test_files/dr_holdbacktabel_20240902.xlsx'
 
 # Origins are to be set in ds-present-kb-collections-yaml if possible, as that file overwrites the origins defined here
 # The origins available for this instance of ds-present
@@ -198,7 +198,7 @@ security:
   # The security mode. Valid values are
   # OFFLINE: No validation of security tokens: All requests are accepted.
   # ENABLED (or no mode set): Validation of security tokens against OAuth2 server.
-  mode: 'ENABLED'
+  mode: 'OFFLINE'
   # The OAUth2 server base url, typically ending in "realms"
   # Sample: https://keycloak-keycloak.example.org/auth/realms
   baseurl: 'https://keycloak.example.com/realms'
