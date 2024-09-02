@@ -26,6 +26,7 @@ public class ExtractedPreservicaValues {
         values.put("form", new PathPair<>("", ""));
         values.put("content", new PathPair<>("", ""));
         values.put("origin", new PathPair<>("", ""));
+        values.put("purpose", new PathPair<>("", ""));
     }
 
     private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
@@ -80,6 +81,15 @@ public class ExtractedPreservicaValues {
     public void setId(String id){
         values.get("recordId").setValue(id);
     }
+
+    public String getPurpose(){
+        return values.get("purpose").getValue();
+    }
+
+    public void setPurpose(String purpose){
+        values.get("purpose").setValue(purpose);
+    }
+
 
     public List<String> getPaths(){
         List<String> paths = new ArrayList<>();

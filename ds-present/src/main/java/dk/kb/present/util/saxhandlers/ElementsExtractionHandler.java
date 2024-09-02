@@ -33,6 +33,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static String formPath = "";
     private static String content = "";
     private static  String originPath = "";
+    private static String purpose = "";
 
 
     public ElementsExtractionHandler(String recordId){
@@ -109,6 +110,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
             formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
             content = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
             originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
+            purpose = "/XIP/Metadata/Content/record/source/tvmeter/intent";
             updatePathValues();
         }
 
@@ -120,6 +122,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
             // TODO: Is this the correct path to extract from?
             content = "/XIP/Metadata/Content/record/source/nielsen/typology";
             originPath = "/XIP/Metadata/Content/record/source/nielsen/origin";
+            purpose = "/XIP/Metadata/Content/record/source/nielsen/purpose";
             updatePathValues();
         }
     }
