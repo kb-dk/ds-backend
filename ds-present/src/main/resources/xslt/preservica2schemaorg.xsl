@@ -38,6 +38,8 @@
   <!-- Holdback and Own Production params are values needed for DR material. They are used in the transformations to determine if users are allowed to access the material. -->
   <xsl:param name="holdbackDate"/>
   <xsl:param name="holdbackPurposeName"/>
+  <xsl:param name="holdbackFormValue"/>
+  <xsl:param name="holdbackContentValue"/>
   <xsl:param name="ownProductionBool"/>
   <xsl:param name="ownProductionCode"/>
   <xsl:include href="xslt/utils.xsl"/>
@@ -1031,6 +1033,18 @@
     <xsl:if test="$holdbackPurposeName != null or $holdbackPurposeName != ''">
       <f:string key="kb:holdback_name">
         <xsl:value-of select="$holdbackPurposeName"/>
+      </f:string>
+    </xsl:if>
+
+    <xsl:if test="$holdbackFormValue != null or $holdbackFormValue != ''">
+      <f:string key="kb:holdback_form_value">
+        <xsl:value-of select="$holdbackFormValue"/>
+      </f:string>
+    </xsl:if>
+
+    <xsl:if test="$holdbackContentValue != null or $holdbackContentValue != ''">
+      <f:string key="kb:holdback_content_value">
+        <xsl:value-of select="$holdbackContentValue"/>
       </f:string>
     </xsl:if>
 

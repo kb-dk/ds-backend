@@ -45,8 +45,9 @@ When adding fields to this schema please have the following guidelines in mind:
 1.6.12: Add kaltura_id to schema and remove old wowza streaming url.
 1.6.13: Add fields actor, director, character, contributor and creator and their respective _strict fields.
 1.6.14: Add _count and _length fields for all multiValued and text fields respectively.
+1.6.15: Add form and content value fields for holdback calculation
   -->
-  <field name="_ds_1.6.14_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.6.15_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -619,6 +620,14 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="holdback_name" type="string">
     <?description A DR defined string containing information on what the purpose of the transmission was.?>
     <?example Aktualitet og debat?>
+  </field>
+  <field name="holdback_form_value" type="pint">
+    <?description A value extracted from Tvmeter or Nielsen metadata used for holdback calculation.?>
+    <?example 4000?>
+  </field>
+  <field name="holdback_content_value" type="pint">
+    <?description A value extracted from Tvmeter or Nielsen metadata used for holdback calculation.?>
+    <?example 2000?>
   </field>
 
   <field name="startTime" type="pdate">

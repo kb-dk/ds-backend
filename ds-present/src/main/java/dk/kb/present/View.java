@@ -181,6 +181,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             throw new RuntimeException(e);
         }
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
+        // The following three methods are all related to holdback and ownproduction calculations.
+        updateMetadataMapWithFormAndContent(metadata, extractedValues);
         updateMetadataMapWithOwnProduction(metadata, extractedValues);
         updateMetadataMapWithHoldback(record, metadata, extractedValues);
         updateMetadataMapWithPreservicaManifestation(record, metadata);
@@ -312,6 +314,11 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void updateMetadataMapWithFormAndContent(Map<String, String> metadata, ExtractedPreservicaValues extractedValues) {
+        metadata.put("holdbackFormValue", extractedValues.getFormValue());
+        metadata.put("holdbackContentValue", extractedValues.getContent());
     }
 
     @Override
