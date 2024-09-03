@@ -127,7 +127,7 @@ public class HoldbackDatePicker {
             result.setHoldbackPurposeName(getPurposeName(extractedValues));
 
             if (result.getHoldbackPurposeName().isEmpty()){
-                log.info("Purpose name was empty for record with id: '{}'. Setting holdback date to 9999-01-01T00:00:00Z",
+                log.debug("Purpose name was empty for record with id: '{}'. Setting holdback date to 9999-01-01T00:00:00Z",
                         extractedValues.getId());
                 result.setHoldbackDate("9999-01-01T00:00:00Z");
             } else {
@@ -168,6 +168,10 @@ public class HoldbackDatePicker {
         // If purpose is 6000, then the purpose name is "Undervisning" no matter what.
         if (extractedValues.getPurpose().equals("6000")){
             return "Undervisning";
+        }
+        // IF form = 7000 return an empty string, which later translate to a holdback date of year 9999 as records with form = 7000 are trailers and should be filtered out.
+        if (extractedValues.getFormValue().equals("7000")){
+            return "";
         }
 
         // Get form value
