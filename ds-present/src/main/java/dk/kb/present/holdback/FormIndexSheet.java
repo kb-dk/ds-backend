@@ -71,7 +71,7 @@ public class FormIndexSheet {
      */
     public String getFormNr(String form){
         if (form.isEmpty()){
-            log.warn("No FormNr could be extracted as form string is empty. Returning an empty string.");
+            log.debug("No FormNr could be extracted as form string is empty. Returning an empty string.");
             return "";
         }
 
@@ -90,7 +90,7 @@ public class FormIndexSheet {
 
         }
 
-        log.warn("No FormNr could be extracted for form: '{}'. Returning an empty string.", form);
+        log.debug("No FormNr could be extracted for form: '{}'. Returning an empty string.", form);
         return "";
     }
 

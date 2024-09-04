@@ -316,6 +316,11 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     }
 
+    /**
+     * Add form and content values used for holdback calculation to the XSLT metadata map.
+     * @param metadata map to add values to.
+     * @param extractedValues to retrieve form and content values from.
+     */
     private void updateMetadataMapWithFormAndContent(Map<String, String> metadata, ExtractedPreservicaValues extractedValues) {
         metadata.put("holdbackFormValue", extractedValues.getFormValue());
         metadata.put("holdbackContentValue", extractedValues.getContent());

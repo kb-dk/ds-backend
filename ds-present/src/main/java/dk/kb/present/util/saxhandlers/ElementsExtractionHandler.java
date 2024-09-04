@@ -31,9 +31,9 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static boolean containsTvMeter = false;
 
     private static String formPath = "";
-    private static String content = "";
+    private static String contentPath = "";
     private static  String originPath = "";
-    private static String purpose = "";
+    private static String purposePath = "";
 
 
     public ElementsExtractionHandler(String recordId){
@@ -108,9 +108,9 @@ public class ElementsExtractionHandler extends DefaultHandler {
             containsNielsen = false;
 
             formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
-            content = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
+            contentPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
             originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
-            purpose = "/XIP/Metadata/Content/record/source/tvmeter/intent";
+            purposePath = "/XIP/Metadata/Content/record/source/tvmeter/intent";
             updatePathValues();
         }
 
@@ -120,13 +120,16 @@ public class ElementsExtractionHandler extends DefaultHandler {
 
             formPath = "/XIP/Metadata/Content/record/source/nielsen/form";
             // TODO: Is this the correct path to extract from?
-            content = "/XIP/Metadata/Content/record/source/nielsen/typology";
+            contentPath = "/XIP/Metadata/Content/record/source/nielsen/typology";
             originPath = "/XIP/Metadata/Content/record/source/nielsen/origin";
-            purpose = "/XIP/Metadata/Content/record/source/nielsen/purpose";
+            purposePath = "/XIP/Metadata/Content/record/source/nielsen/purpose";
             updatePathValues();
         }
     }
 
+    /**
+     * Extract start- and endtime from PBcore fragment in record.
+     */
     private void handleTimestampPaths() {
         if (currentPath.equals(START_TIME_PATH)){
             captureValue = true;
@@ -139,11 +142,10 @@ public class ElementsExtractionHandler extends DefaultHandler {
         }
     }
 
+    /**
+     * Get all values extracted from the input XML as a {@link ExtractedPreservicaValues}-object.
+     */
     public ExtractedPreservicaValues getDataValues() {
-        if (!containsNielsen && !containsTvMeter){
-            log.info("Record with id: '{}' does not contain Nielsen or TVMeter metadata fragments.",
-                    extractedPreservicaValues.getId());
-        }
         return extractedPreservicaValues;
     }
 
@@ -152,7 +154,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
      */
     private void updatePathValues() {
         extractedPreservicaValues.values.replace("form", new PathPair<>(formPath, ""));
-        extractedPreservicaValues.values.replace("content", new PathPair<>(content, ""));
+        extractedPreservicaValues.values.replace("content", new PathPair<>(contentPath, ""));
         extractedPreservicaValues.values.replace("origin", new PathPair<>(originPath, ""));
     }
 

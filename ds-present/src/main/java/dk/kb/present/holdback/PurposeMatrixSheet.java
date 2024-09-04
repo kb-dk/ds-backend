@@ -112,7 +112,7 @@ public class PurposeMatrixSheet {
      */
     public String getPurposeIdFromContentAndForm(String content, String formNrString, String recordId) {
         if (content.isEmpty()){
-            log.warn("The field 'content' is empty for record with id: '{}'. PurposeID can't be calculated. Returning an empty string.",
+            log.debug("The field 'content' is empty for record with id: '{}'. PurposeID can't be calculated. Returning an empty string.",
                     recordId);
             return "";
         }

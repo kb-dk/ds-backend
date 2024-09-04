@@ -159,8 +159,14 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Get purposeName for a preservica record containing metadata about a DR program. If purpose in extractedValues is equal to '6000', then purpose is set as "Undervisning",
-     * no matter other values.
+     * Get purposeName for a preservica record containing metadata about a DR program.
+     * Some rules apply to calculation of purpose name:
+     * <ol>
+     *     <li>If purpose in extractedValues is equal to '6000', then purpose is set as "Undervisning", no matter other values.</li>
+     *     <li>If form in extractedValues is equal to '7000'. then purpose is deliberately set as an empty string to filter the content away.
+     *          Form = 7000 means that a record is a movie/series-trailer and should not be included.</li>
+     * </ol>
+     *
      * @param extractedValues {@link ExtractedPreservicaValues} containing data from a preservica record for analysis.
      * @return the purposeName for a given program.
      */

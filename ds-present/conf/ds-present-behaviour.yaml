@@ -198,7 +198,7 @@ security:
   # The security mode. Valid values are
   # OFFLINE: No validation of security tokens: All requests are accepted.
   # ENABLED (or no mode set): Validation of security tokens against OAuth2 server.
-  mode: 'OFFLINE'
+  mode: 'ENABLED'
   # The OAUth2 server base url, typically ending in "realms"
   # Sample: https://keycloak-keycloak.example.org/auth/realms
   baseurl: 'https://keycloak.example.com/realms'
