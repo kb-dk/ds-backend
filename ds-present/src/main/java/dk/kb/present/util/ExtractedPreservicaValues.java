@@ -18,76 +18,83 @@ import java.util.Map;
 public class ExtractedPreservicaValues {
 
     public Map<String, PathPair<String,String>> values = new HashMap<>();
+    public static final String RECORD_ID_KEY = "recordId";
+    public static final String STARTTIME_KEY = "startTime";
+    public static final String ENDTIME_KEY = "endTime";
+    public static final String FORM_KEY = "form";
+    public static final String CONTENT_KEY = "content";
+    public static final String ORIGIN_COUNTRY_KEY = "originCountry";
+    public static final String PURPOSE_KEY = "purpose";
 
     public ExtractedPreservicaValues(){
-        values.put("recordId", new PathPair<>("id", ""));
-        values.put("startTime", new PathPair<>(startTimePath, ""));
-        values.put("endTime", new PathPair<>(endTimePath, ""));
-        values.put("form", new PathPair<>("", ""));
-        values.put("content", new PathPair<>("", ""));
-        values.put("originCountry", new PathPair<>("", ""));
-        values.put("purpose", new PathPair<>("", ""));
+        values.put(RECORD_ID_KEY, new PathPair<>("id", ""));
+        values.put(STARTTIME_KEY, new PathPair<>(startTimePath, ""));
+        values.put(ENDTIME_KEY, new PathPair<>(endTimePath, ""));
+        values.put(FORM_KEY, new PathPair<>("", ""));
+        values.put(CONTENT_KEY, new PathPair<>("", ""));
+        values.put(ORIGIN_COUNTRY_KEY, new PathPair<>("", ""));
+        values.put(PURPOSE_KEY, new PathPair<>("", ""));
     }
 
     private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
     private static final String endTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
 
     public String getStartTime() {
-        return values.get("startTime").getValue();
+        return values.get(STARTTIME_KEY).getValue();
     }
 
     public void setStartTime(String startTime) {
         String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(startTime).format(DateTimeFormatter.ISO_INSTANT);
-        values.get("startTime").setValue(cleanedTime);
+        values.get(STARTTIME_KEY).setValue(cleanedTime);
     }
 
     public String getEndTime() {
-        return values.get("endTime").getValue();
+        return values.get(ENDTIME_KEY).getValue();
     }
 
     public void setEndTime(String endTime) {
         String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(endTime).format(DateTimeFormatter.ISO_INSTANT);
-        values.get("endTime").setValue(cleanedTime);
+        values.get(ENDTIME_KEY).setValue(cleanedTime);
     }
 
     public String getFormValue() {
-        return values.get("form").getValue();
+        return values.get(FORM_KEY).getValue();
     }
 
     public void setFormValue(String formValue) {
-        values.get("form").setValue(formValue);
+        values.get(FORM_KEY).setValue(formValue);
     }
 
     public String getContent() {
-        return values.get("content").getValue();
+        return values.get(CONTENT_KEY).getValue();
     }
 
     public void setContent(String content) {
-        values.get("content").setValue(content);
+        values.get(CONTENT_KEY).setValue(content);
     }
 
     public String getOriginCountry(){
-        return values.get("origin").getValue();
+        return values.get(ORIGIN_COUNTRY_KEY).getValue();
     }
 
     public void setOriginCountry(String origin){
-        values.get("origin").setValue(origin);
+        values.get(ORIGIN_COUNTRY_KEY).setValue(origin);
     }
 
     public String getId(){
-        return values.get("recordId").getValue();
+        return values.get(RECORD_ID_KEY).getValue();
     }
 
     public void setId(String id){
-        values.get("recordId").setValue(id);
+        values.get(RECORD_ID_KEY).setValue(id);
     }
 
     public String getPurpose(){
-        return values.get("purpose").getValue();
+        return values.get(PURPOSE_KEY).getValue();
     }
 
     public void setPurpose(String purpose){
-        values.get("purpose").setValue(purpose);
+        values.get(PURPOSE_KEY).setValue(purpose);
     }
 
 

@@ -90,7 +90,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
         if (captureValue) {
             currentValue.append(new String(ch, start, length));
 
-            if (captureValueKey.equals("startTime") || captureValueKey.equals("endTime")){
+            if (captureValueKey.equals(ExtractedPreservicaValues.STARTTIME_KEY) || captureValueKey.equals(ExtractedPreservicaValues.ENDTIME_KEY)){
                 String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(currentValue.toString()).format(DateTimeFormatter.ISO_INSTANT);
                 extractedPreservicaValues.values.get(captureValueKey).setValue(cleanedTime);
             } else {
@@ -133,12 +133,12 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private void handleTimestampPaths() {
         if (currentPath.equals(START_TIME_PATH)){
             captureValue = true;
-            captureValueKey = "startTime";
+            captureValueKey = ExtractedPreservicaValues.STARTTIME_KEY;
         }
 
         if (currentPath.equals(END_TIME_PATH)){
             captureValue = true;
-            captureValueKey = "endTime";
+            captureValueKey = ExtractedPreservicaValues.ENDTIME_KEY;
         }
     }
 
@@ -153,9 +153,9 @@ public class ElementsExtractionHandler extends DefaultHandler {
      * Update paths for values form, contentsItem and origin
      */
     private void updatePathValues() {
-        extractedPreservicaValues.values.replace("form", new PathPair<>(formPath, ""));
-        extractedPreservicaValues.values.replace("content", new PathPair<>(contentPath, ""));
-        extractedPreservicaValues.values.replace("origin", new PathPair<>(origincountryPath, ""));
+        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.FORM_KEY, new PathPair<>(formPath, ""));
+        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.CONTENT_KEY, new PathPair<>(contentPath, ""));
+        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.ORIGIN_COUNTRY_KEY, new PathPair<>(origincountryPath, ""));
     }
 
     /**
