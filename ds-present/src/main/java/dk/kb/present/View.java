@@ -220,15 +220,16 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
         String ownProduction = extractedValues.getOriginCountry();
         if (ownProduction.isEmpty()) {
-            log.error("Nielsen/Gallup origin was empty.");
-            // TODO: make this throw an exception, when data are better
-            //throw new InternalServiceException("The Nielsen/Gallup origin was empty. Own production cannot be defined.");
+            log.debug("Nielsen/Gallup originCountry was empty.");
+            // TODO: When we at some point have extra DR metadata, originCountry should be available there for records before 1993
+            //throw new InternalServiceException("The Nielsen/Gallup originCountry was empty. Own production cannot be defined.");
         }
         if (ownProduction.length() != 4){
             log.debug("Nielsen/Gallup origin did not have length 4. Origin is: '{}'", ownProduction);
         }
 
         if (!ownProduction.isEmpty()) {
+            // Values below 2000 are considered own production. It can in fact be co-production, but these should all be covered by the rights-agreement made.
             boolean isOwnProduction = Integer.parseInt(extractedValues.getOriginCountry()) < 2000;
             metadataMap.put("ownProductionBool", Boolean.toString(isOwnProduction));
             metadataMap.put("ownProductionCode", extractedValues.getOriginCountry());
