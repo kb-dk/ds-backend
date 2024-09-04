@@ -226,7 +226,7 @@ class ViewTest {
 
     @Test
     @Tag("integration")
-    void ownProductionTrueTest() throws Exception {
+    void ownProductionTrueTestTvmeter() throws Exception {
         HoldbackDatePicker.init();
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED);
@@ -238,6 +238,23 @@ class ViewTest {
 
         assertTrue(jsonld.contains("\"kb:own_production\":true," +
                                     "\"kb:own_production_code\":1000"));
+    }
+
+    @Test
+    @Tag("integration")
+    void holdbackNameTestNielsen() throws Exception {
+        HoldbackDatePicker.init();
+        View jsonldView = getPreservicaTvJsonView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_0e89456b);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+
+        String jsonld = jsonldView.apply(recordDto);
+        prettyPrintJson(jsonld);
+
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2024-02-27T04:49:52Z\"," +
+                "\"kb:holdback_name\":\"Underholdning\""));
     }
 
     @Test
@@ -255,6 +272,35 @@ class ViewTest {
 
         assertTrue(jsonld.contains("\"kb:own_production\":false," +
                                     "\"kb:own_production_code\":2300"));
+    }
+
+
+    @Test
+    @Tag("integration")
+    void holdbackNameSolrTest() throws Exception {
+        HoldbackDatePicker.init();
+        View jsonldView = getSolrTvViewForPreservicaRecord();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_0e89456b);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+
+        String solrdoc = jsonldView.apply(recordDto);
+        assertTrue(solrdoc.contains("\"holdback_name\":\"Underholdning\","));
+    }
+
+    @Test
+    @Tag("integration")
+    void testFormAndContentInTransformation() throws Exception {
+        HoldbackDatePicker.init();
+        View jsonldView = getSolrTvViewForPreservicaRecord();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_0e89456b);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+        String solrdoc = jsonldView.apply(recordDto);
+        prettyPrintJson(solrdoc);
+        assertTrue(solrdoc.contains("\"holdback_form_value\":\"1300\",\"holdback_content_value\":\"6700\","));
     }
 
     //********************************************** PRIVATE HELPER METHODS BELOW ***************************************************************

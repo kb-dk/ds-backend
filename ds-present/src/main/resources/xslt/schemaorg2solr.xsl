@@ -418,6 +418,16 @@
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_date')"/>
         </f:string>
       </xsl:if>
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_form_value') != ''">
+        <f:string key="holdback_form_value">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_form_value')"/>
+        </f:string>
+      </xsl:if>
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_content_value') != ''">
+        <f:string key="holdback_content_value">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_content_value')"/>
+        </f:string>
+      </xsl:if>
 
 
       <!-- If statement creating all fields related to the schema.org value startTime -->

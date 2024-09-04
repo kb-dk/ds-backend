@@ -35,7 +35,7 @@ public class PurposeSheet {
      */
     public String getPurposeNameFromNumber(String purposeID) {
         if (purposeID.isEmpty()){
-            log.warn("PurposeID is empty. Returning an empty string as PurposeName.");
+            log.debug("PurposeID is empty. Returning an empty string as PurposeName.");
             return "";
         }
 

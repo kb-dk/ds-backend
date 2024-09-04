@@ -12,66 +12,91 @@ import java.util.Map;
  * {@link PathPair#path} and the value extracted from the specified path at {@link PathPair#value}. This value can then be retrieved by getters in {@link ExtractedPreservicaValues}.
  * <br/>
  * Can be used in conjunction with {@link dk.kb.present.util.saxhandlers.ElementsExtractionHandler} to parse an XML stream for multiple values.
+ * <br/>
+ * Values for form, content and origin can come from either tvmeter or nielsen metadata fragments, but never from both of them at the same time.
  */
 public class ExtractedPreservicaValues {
 
     public Map<String, PathPair<String,String>> values = new HashMap<>();
+    public static final String RECORD_ID_KEY = "recordId";
+    public static final String STARTTIME_KEY = "startTime";
+    public static final String ENDTIME_KEY = "endTime";
+    public static final String FORM_KEY = "form";
+    public static final String CONTENT_KEY = "content";
+    public static final String ORIGIN_COUNTRY_KEY = "originCountry";
+    public static final String PURPOSE_KEY = "purpose";
 
     public ExtractedPreservicaValues(){
-        values.put("startTime", new PathPair<>(startTimePath, ""));
-        values.put("endTime", new PathPair<>(endTimePath, ""));
-        values.put("form", new PathPair<>(formPath, ""));
-        values.put("contentsItem", new PathPair<>(contentsItemPath, ""));
-        values.put("origin", new PathPair<>(originPath, ""));
+        values.put(RECORD_ID_KEY, new PathPair<>("id", ""));
+        values.put(STARTTIME_KEY, new PathPair<>(startTimePath, ""));
+        values.put(ENDTIME_KEY, new PathPair<>(endTimePath, ""));
+        values.put(FORM_KEY, new PathPair<>("", ""));
+        values.put(CONTENT_KEY, new PathPair<>("", ""));
+        values.put(ORIGIN_COUNTRY_KEY, new PathPair<>("", ""));
+        values.put(PURPOSE_KEY, new PathPair<>("", ""));
     }
 
     private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
     private static final String endTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
-    private static final String formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
-    private static final String contentsItemPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
-    private static final String originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
 
     public String getStartTime() {
-        return values.get("startTime").getValue();
+        return values.get(STARTTIME_KEY).getValue();
     }
 
     public void setStartTime(String startTime) {
         String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(startTime).format(DateTimeFormatter.ISO_INSTANT);
-        values.get("startTime").setValue(cleanedTime);
+        values.get(STARTTIME_KEY).setValue(cleanedTime);
     }
 
     public String getEndTime() {
-        return values.get("endTime").getValue();
+        return values.get(ENDTIME_KEY).getValue();
     }
 
     public void setEndTime(String endTime) {
         String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(endTime).format(DateTimeFormatter.ISO_INSTANT);
-        values.get("endTime").setValue(cleanedTime);
+        values.get(ENDTIME_KEY).setValue(cleanedTime);
     }
 
     public String getFormValue() {
-        return values.get("form").getValue();
+        return values.get(FORM_KEY).getValue();
     }
 
     public void setFormValue(String formValue) {
-        values.get("form").setValue(formValue);
+        values.get(FORM_KEY).setValue(formValue);
     }
 
-    public String getContentsItem() {
-        return values.get("contentsItem").getValue();
+    public String getContent() {
+        return values.get(CONTENT_KEY).getValue();
     }
 
-    public void setContentsItem(String contentsItem) {
-        values.get("contentsItem").setValue(contentsItem);
+    public void setContent(String content) {
+        values.get(CONTENT_KEY).setValue(content);
     }
 
-    public String getOrigin(){
-        return values.get("origin").getValue();
+    public String getOriginCountry(){
+        return values.get(ORIGIN_COUNTRY_KEY).getValue();
     }
 
-    public void setOrigin(String origin){
-        values.get("origin").setValue(origin);
+    public void setOriginCountry(String origin){
+        values.get(ORIGIN_COUNTRY_KEY).setValue(origin);
     }
+
+    public String getId(){
+        return values.get(RECORD_ID_KEY).getValue();
+    }
+
+    public void setId(String id){
+        values.get(RECORD_ID_KEY).setValue(id);
+    }
+
+    public String getPurpose(){
+        return values.get(PURPOSE_KEY).getValue();
+    }
+
+    public void setPurpose(String purpose){
+        values.get(PURPOSE_KEY).setValue(purpose);
+    }
+
 
     public List<String> getPaths(){
         List<String> paths = new ArrayList<>();

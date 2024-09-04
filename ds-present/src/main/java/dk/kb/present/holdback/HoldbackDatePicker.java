@@ -127,7 +127,8 @@ public class HoldbackDatePicker {
             result.setHoldbackPurposeName(getPurposeName(extractedValues));
 
             if (result.getHoldbackPurposeName().isEmpty()){
-                log.warn("Purpose name was empty. Setting holdback date to 9999-01-01T00:00:00Z");
+                log.debug("Purpose name was empty for record with id: '{}'. Setting holdback date to 9999-01-01T00:00:00Z",
+                        extractedValues.getId());
                 result.setHoldbackDate("9999-01-01T00:00:00Z");
             } else {
                 int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
@@ -159,30 +160,45 @@ public class HoldbackDatePicker {
 
     /**
      * Get purposeName for a preservica record containing metadata about a DR program.
+     * Some rules apply to calculation of purpose name:
+     * <ol>
+     *     <li>If purpose in extractedValues is equal to '6000', then purpose is set as "Undervisning", no matter other values.</li>
+     *     <li>If form in extractedValues is equal to '7000'. then purpose is deliberately set as an empty string to filter the content away.
+     *          Form = 7000 means that a record is a movie/series-trailer and should not be included.</li>
+     * </ol>
+     *
      * @param extractedValues {@link ExtractedPreservicaValues} containing data from a preservica record for analysis.
      * @return the purposeName for a given program.
      */
     private static String getPurposeName(ExtractedPreservicaValues extractedValues) throws IOException, ParserConfigurationException, SAXException {
+        // If purpose is 6000, then the purpose name is "Undervisning" no matter what.
+        if (extractedValues.getPurpose().equals("6000")){
+            return "Undervisning";
+        }
+        // IF form = 7000 return an empty string, which later translate to a holdback date of year 9999 as records with form = 7000 are trailers and should be filtered out.
+        if (extractedValues.getFormValue().equals("7000")){
+            return "";
+        }
+
         // Get form value
         String form = extractedValues.getFormValue();
 
         // get formNr by looking up form in formIndexSheet.
         String formString = formIndexSheet.getFormNr(form);
 
-        // TODO: do some logic on gallup/nielsen differences.
         // get contentsitem from xml
-        String contentsItem = extractedValues.getContentsItem();
+        String contents = extractedValues.getContent();
 
         // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
-        String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contentsItem, formString);
-        purposeNumber = validatePurpose(purposeNumber, extractedValues.getOrigin());
+        String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contents, formString, extractedValues.getId());
+        purposeNumber = validatePurpose(purposeNumber, extractedValues.getOriginCountry());
 
         // Brug den fundne værdi i formåls arket til at finde formålNavn
         return purposeSheet.getPurposeNameFromNumber(purposeNumber);
     }
 
     /**
-     * Validate and handle special cases of IDs constructed by {@link PurposeMatrixSheet#getPurposeIdFromContentAndForm(String, String)}.
+     * Validate and handle special cases of IDs constructed by {@link PurposeMatrixSheet#getPurposeIdFromContentAndForm(String, String, String)}.
      * @param purposeId which is to be validated.
      * @param productionCountry string containing the productionCountry value from a preservica record. This should not be extracted from the fields named productionCountry or
      *                          countryOfOrigin, but rather from the field origin.

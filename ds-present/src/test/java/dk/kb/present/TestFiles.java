@@ -39,6 +39,7 @@ public class TestFiles {
     public static final String PVICA_RECORD_2b462c63 = "internal_test_files/preservica7/2b462c63-8bb8-477a-89d9-70675c22c163.xml";
     public static final String PVICA_RECORD_5238ea5d = "internal_test_files/preservica7/5238ea5d-9627-4b08-9a76-356dfb8bebd0.xml";
     public static final String PVICA_RECORD_3b0c391f = "internal_test_files/preservica7/3b0c391f-b7ef-4b48-a9e8-428a92288c0b.xml";
+    public static final String PVICA_RECORD_0e89456b = "internal_test_files/preservica7/0e89456b-a2d6-4364-9129-bbc70472b359.xml";
     public static final String PVICA_DOMS_MIG_bd612d1e = "internal_test_files/domsMigrated/bd612d1e-b90b-48f7-87ce-898da240950b-20240612T105945.xml";
     public static final String PVICA_DOMS_MIG_eaea0362 = "internal_test_files/domsMigrated/eaea0362-bbad-43ec-8d5e-07df6957923b-20240612T112310.xml";
     public static final String PVICA_DOMS_MIG_9779a1b2 = "internal_test_files/domsMigrated/9779a1b2-88ff-408c-9352-ad614615b2e7-20240531T022942.xml";
