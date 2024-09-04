@@ -191,7 +191,7 @@ public class HoldbackDatePicker {
 
         // Slå Indhold op i IndholdFra-IndholdTil i matrice i FormNr kolonne.
         String purposeNumber = purposeMatrixSheet.getPurposeIdFromContentAndForm(contents, formString, extractedValues.getId());
-        purposeNumber = validatePurpose(purposeNumber, extractedValues.getOrigin());
+        purposeNumber = validatePurpose(purposeNumber, extractedValues.getOriginCountry());
 
         // Brug den fundne værdi i formåls arket til at finde formålNavn
         return purposeSheet.getPurposeNameFromNumber(purposeNumber);

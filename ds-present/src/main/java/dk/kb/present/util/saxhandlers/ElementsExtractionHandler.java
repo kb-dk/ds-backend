@@ -32,7 +32,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
 
     private static String formPath = "";
     private static String contentPath = "";
-    private static  String originPath = "";
+    private static  String origincountryPath = "";
     private static String purposePath = "";
 
 
@@ -109,7 +109,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
 
             formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
             contentPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
-            originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
+            origincountryPath = "/XIP/Metadata/Content/record/source/tvmeter/productioncountry";
             purposePath = "/XIP/Metadata/Content/record/source/tvmeter/intent";
             updatePathValues();
         }
@@ -121,7 +121,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
             formPath = "/XIP/Metadata/Content/record/source/nielsen/form";
             // TODO: Is this the correct path to extract from?
             contentPath = "/XIP/Metadata/Content/record/source/nielsen/typology";
-            originPath = "/XIP/Metadata/Content/record/source/nielsen/origin";
+            origincountryPath = "/XIP/Metadata/Content/record/source/nielsen/origincountry";
             purposePath = "/XIP/Metadata/Content/record/source/nielsen/purpose";
             updatePathValues();
         }
@@ -155,7 +155,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private void updatePathValues() {
         extractedPreservicaValues.values.replace("form", new PathPair<>(formPath, ""));
         extractedPreservicaValues.values.replace("content", new PathPair<>(contentPath, ""));
-        extractedPreservicaValues.values.replace("origin", new PathPair<>(originPath, ""));
+        extractedPreservicaValues.values.replace("origin", new PathPair<>(origincountryPath, ""));
     }
 
     /**

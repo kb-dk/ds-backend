@@ -218,7 +218,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues) {
         // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
         // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
-        String ownProduction = extractedValues.getOrigin();
+        String ownProduction = extractedValues.getOriginCountry();
         if (ownProduction.isEmpty()) {
             log.error("Nielsen/Gallup origin was empty.");
             // TODO: make this throw an exception, when data are better
@@ -229,9 +229,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
 
         if (!ownProduction.isEmpty()) {
-            boolean isOwnProduction = Integer.parseInt(extractedValues.getOrigin()) < 2000;
+            boolean isOwnProduction = Integer.parseInt(extractedValues.getOriginCountry()) < 2000;
             metadataMap.put("ownProductionBool", Boolean.toString(isOwnProduction));
-            metadataMap.put("ownProductionCode", extractedValues.getOrigin());
+            metadataMap.put("ownProductionCode", extractedValues.getOriginCountry());
         }
     }
 

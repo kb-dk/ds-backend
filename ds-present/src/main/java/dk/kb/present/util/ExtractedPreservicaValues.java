@@ -25,7 +25,7 @@ public class ExtractedPreservicaValues {
         values.put("endTime", new PathPair<>(endTimePath, ""));
         values.put("form", new PathPair<>("", ""));
         values.put("content", new PathPair<>("", ""));
-        values.put("origin", new PathPair<>("", ""));
+        values.put("originCountry", new PathPair<>("", ""));
         values.put("purpose", new PathPair<>("", ""));
     }
 
@@ -66,11 +66,11 @@ public class ExtractedPreservicaValues {
         values.get("content").setValue(content);
     }
 
-    public String getOrigin(){
+    public String getOriginCountry(){
         return values.get("origin").getValue();
     }
 
-    public void setOrigin(String origin){
+    public void setOriginCountry(String origin){
         values.get("origin").setValue(origin);
     }
 
