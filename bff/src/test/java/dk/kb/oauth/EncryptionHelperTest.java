@@ -3,6 +3,7 @@ package dk.kb.oauth;
 import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,7 @@ public class EncryptionHelperTest {
         Path knownFile = Path.of(Resolver.resolveURL("bff-security-newsalt.yaml").getPath());
         ServiceConfig.getInstance().initialize(knownFile.toString());
         assertEquals(testString,decryptedString);
-        assertThrows(InternalServiceException.class, () ->
+        assertThrows(ServiceException.class, () ->
             EncryptionHelper.decryptString(encryptedString));
     }
 
