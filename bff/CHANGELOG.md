@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Updated KB util version from 1.4.22 to 1.5.5.
+- Send Unauthorized on missing, expired cookies and if secret salt has changed
+- Proxy error responses from proxied url's in stead of return status 502
 
 ## [1.0.1] - 2024-05-13
 ### Added
