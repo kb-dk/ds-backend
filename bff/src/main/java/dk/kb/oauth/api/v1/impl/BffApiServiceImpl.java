@@ -44,17 +44,9 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
     @Override
     public String authenticate(String returnUrl) throws ServiceException {
-        log.debug("authenticate "+httpServletRequest.getRemoteHost());
+        log.debug("authenticate "+httpServletRequest.getRemoteHost()+"return url "+returnUrl);
         String accessTokenString = OauthHelper.getNewAccessToken();
         addCookieToResponse(accessTokenString);
-        if (!StringUtils.isEmpty(returnUrl)) {
-            try {
-                httpServletResponse.sendRedirect(returnUrl);
-            } catch (IOException e) {
-                log.error("Redirect error ",e);
-                throw new InternalServiceException("Invalid returnUrl "+returnUrl);
-            }
-        }
         return "";
     }
 
@@ -63,27 +55,33 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
     public StreamingOutput proxyGetRequest(@PathParam("api") String api, @PathParam("path") String path, @CookieParam("Authorization") String authorization) {
         log.debug("proxy request to: '{}/{}' authorization:'{}'",api,path,authorization);
         if (StringUtils.isEmpty(authorization)) {
-            sendRedirectToAuthentication();
-            return null;
+            log.debug("authorization is empty");
+            throw new ServiceException("Authorization missing",Response.Status.UNAUTHORIZED);
         }
         String accessTokenString = EncryptionHelper.decryptString(authorization);
         if (!verifyAccessTokenString(accessTokenString)) {
-            sendRedirectToAuthentication();
-            return null;
+            log.debug("expired authorization");
+            throw new ServiceException("Expired",Response.Status.UNAUTHORIZED);
         }
 
         URI uri = ProxyHelper.getApiUri(api, path, uriInfo.getRequestUri().getRawQuery());
-        HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
         try {
+            HttpURLConnection apiConnection = ProxyHelper.openConnection("GET", uri, httpHeaders, accessTokenString);
+            int status = apiConnection.getResponseCode();
             httpServletResponse.setStatus(apiConnection.getResponseCode());
             httpServletResponse.setHeader("Content-Type", apiConnection.getHeaderField("Content-Type"));
             httpServletResponse.setHeader("Content-Disposition", apiConnection.getHeaderField("Content-Disposition"));
-            return ProxyHelper.createStreamingOutput(apiConnection);
+            if (status >= 400) {
+                // API Error
+                return ProxyHelper.createStreamingOutput(apiConnection.getErrorStream());
+            }
+            return ProxyHelper.createStreamingOutput(apiConnection.getInputStream());
+
         } catch (SocketTimeoutException e) {
                 log.warn("Proxy Error: connection timeout uri:'{}'",uri.toString(),e);
                 throw new ServiceException("Proxy Error: connection timeout uri:'"+uri.toString(),Response.Status.GATEWAY_TIMEOUT);
         } catch (IOException e) {
-                log.warn("Proxy Error: unable to connect uri:'{}'",uri.toString(),e);
+                log.warn("Proxy Error: unable to read data uri:'{}'",uri.toString(),e);
                 throw new ServiceException("Proxy Error: unable to connect to uri:'"+uri.toString(),Response.Status.BAD_GATEWAY);
         }
     }
@@ -112,20 +110,6 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
         }
         cookieString += "; SameSite="+cookieConf.getString("samesite","Strict");
         httpServletResponse.setHeader("Set-Cookie",cookieString);
-    }
-
-
-    private void sendRedirectToAuthentication() {
-        try {
-            URIBuilder uriBuilder = new URIBuilder(uriInfo.getBaseUri()+"authenticate");
-            if (ServiceConfig.getConfig().getBoolean("redirectAfterAuthentication",false)) {
-                uriBuilder.addParameter("returnUrl",uriInfo.getRequestUri().toString());
-            }
-            httpServletResponse.sendRedirect(uriBuilder.build().toString());
-        } catch (IOException | URISyntaxException e) {
-            log.error("Error sending redirect",e);
-            throw new InternalServiceException();
-        }
     }
 
     private boolean verifyAccessTokenString(String accessTokenString) {

@@ -2,6 +2,7 @@ package dk.kb.oauth;
 
 import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.ws.rs.core.Response;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
@@ -78,9 +80,12 @@ public class EncryptionHelper {
 
             SecretKey key = generateKey(ServiceConfig.getConfig().getString("secretSalt"));
             Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, key,  new GCMParameterSpec(INITIALIZATION_VECTOR_LENGTH * 8, iv));
+            cipher.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(INITIALIZATION_VECTOR_LENGTH * 8, iv));
             byte[] decryptedBytes = cipher.doFinal(content);
-            return new String(decryptedBytes,StandardCharsets.UTF_8);
+            return new String(decryptedBytes, StandardCharsets.UTF_8);
+        } catch (AEADBadTagException e) {
+            log.debug("Bad tag (invalid salt)");
+            throw new ServiceException("Invalid salt", Response.Status.UNAUTHORIZED);
         } catch (InvalidAlgorithmParameterException  |InvalidKeySpecException | IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             log.error("decryption error ",e);
             throw new InternalServiceException("decryption error");
