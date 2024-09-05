@@ -6,15 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Updated KB util version from 1.4.22 to 1.5.10.
+- Updated KB util version from 1.4.22 to 1.5.11.
+- Send Unauthorized on missing, expired cookies and if secret salt has changed
+- Proxy error responses from proxied url's in stead of return status 502
 
 ### Removed
 - Removed non-resolvable git.tag from build.properties
 - Removed double logging of part of URLs by bumping kb util to v1.5.10
-
-- Updated KB util version from 1.4.22 to 1.5.5.
-- Send Unauthorized on missing, expired cookies and if secret salt has changed
-- Proxy error responses from proxied url's in stead of return status 502
 
 ## [1.0.1] - 2024-05-13
 ### Added
