@@ -11,5 +11,12 @@ fælleskab => fællesskab
 diciplin => disciplin
 
 # Collapse several terms into one (in this case a multiterm)
-tv-avisen, tvavis, tvavisen, tv-avis, tv avis, tv-avis-sen=> tv avisen
+tv-avisen, tva, tvavis, tvavisen, tv-avis, tv avis, tv-avis-sen=> tv avisen
+frank og kastanjegården, kastanjegården, kastanjegård => bondeknolden
+følg pengene => sorte tal
+krop og bevægelse => morgengymnastik
+løvens hule => visionærerne
+melodi grand prix -> mgp
+true crime  => lyssky
+bedøvende  => galt nok
 bamsekylling, bamse kylling => bamse og kylling

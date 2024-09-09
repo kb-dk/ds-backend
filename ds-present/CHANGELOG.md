@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added _count fields to count entries in all multiValued solr fields for radio and tv.
 - Added _length fields to count the length of content in all analysed solr text fields for radio and tv.
 - Added metadata from gallup tvmeter as input for holdback calculation.
+- Added more synonyms to dr_synonyms.txt. This require a new deploy to solr (and version bump)
 
 - Enabled OAuth2 on module. Much is copy-paste from ds-image to see it working in two different modules.  Plans are to refactor common functionality out into kb-util/
 Only method getRecord (show full-record called by frontend) has OAuth enabled
