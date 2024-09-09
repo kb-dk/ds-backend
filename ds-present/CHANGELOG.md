@@ -27,6 +27,9 @@ Only method getRecord (show full-record called by frontend) has OAuth enabled
 - Removed non-resolvable git.tag from build.properties
 - Removed double logging of part of the URL by bumping kb util to v1.5.10
 
+### Fixed
+- Transformation of genres starting with _ are now corrected to not contain the underscore.
+
 
 ## [2.0.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.0.0) 2024-07-17
 ### Added

@@ -510,4 +510,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
         assertTrue(transformedJSON.contains("\"contributor\""));
     }
+
+    @Test
+    public void channelCleanupTest() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_1ab7e0fc);
+        assertTrue(transformedJSON.contains("\"broadcastDisplayName\":\"DR Oline\","));
+    }
 }

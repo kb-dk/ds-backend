@@ -462,7 +462,14 @@
           <f:map key="publishedOn">
             <f:string key="@type">BroadcastService</f:string>
             <f:string key="broadcastDisplayName">
-              <xsl:value-of select="$publisherSpecific"/>
+              <xsl:choose>
+                <xsl:when test="f:starts-with($publisherSpecific, '_')">
+                  <xsl:value-of select="substring($publisherSpecific, 2)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="$publisherSpecific"/>
+                </xsl:otherwise>
+              </xsl:choose>
             </f:string>
             <xsl:if test="f:exists($publisherGeneral) and not(f:empty($publisherGeneral)) and $publisherGeneral != ''">
             <f:string key="alternateName">
