@@ -23,10 +23,14 @@ Only method getRecord (show full-record called by frontend) has OAuth enabled
 - Changed extraction of field videoFrameSize to clean values as '16:9,' and '16:9, ' to '16:9'.
 - Changed how values are extracted from Preservica records. Now all needed values are extracted at once, saving iterations on the XML stream.
 - Changed logic in holdback filter, when values form=7000 or purpose=6000 are met.
+- Changed values used in solr field creator_affiliation_facet and cleaned the generic channel names.
 
 ### Removed
 - Removed non-resolvable git.tag from build.properties
 - Removed double logging of part of the URL by bumping kb util to v1.5.10
+
+### Fixed
+- Transformation of genres starting with _ are now corrected to not contain the underscore.
 
 
 ## [2.0.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.0.0) 2024-07-17
