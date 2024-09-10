@@ -514,6 +514,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void channelCleanupTest() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_1ab7e0fc);
+        assertTrue(transformedJSON.contains("\"alternateName\":\"DR OLINE\""));
         assertTrue(transformedJSON.contains("\"broadcastDisplayName\":\"DR Oline\","));
     }
 }

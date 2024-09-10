@@ -473,7 +473,16 @@
             </f:string>
             <xsl:if test="f:exists($publisherGeneral) and not(f:empty($publisherGeneral)) and $publisherGeneral != ''">
             <f:string key="alternateName">
-              <xsl:value-of select="$publisherGeneral"/>
+              <xsl:choose>
+                <!-- Do clean up of DR channel names -->
+                <xsl:when test="f:starts-with($publisherGeneral, 'dr')">
+                  <xsl:value-of select="my:cleanDrChannel($publisherGeneral)"/>
+                </xsl:when>
+                <!-- Plain usage of alterneName which isn't going to be used before other collections than DR are in the system -->
+                <xsl:otherwise>
+                  <xsl:value-of select="$publisherGeneral"/>
+                </xsl:otherwise>
+              </xsl:choose>
             </f:string>
             <xsl:choose>
               <xsl:when test="f:starts-with($publisherGeneral, 'dr')">

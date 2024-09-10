@@ -133,6 +133,136 @@
     </xsl:choose>
   </xsl:function>
 
+  <!-- Clean generic DR channel code to a  -->
+  <xsl:function name="my:cleanDrChannel">
+    <xsl:param name="channelCode"/>
+    <xsl:choose>
+      <!-- TV channels start here -->
+      <xsl:when test="$channelCode = 'dr1' or $channelCode = 'dr'">
+        <xsl:value-of select="'DR 1'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'dr2'">
+        <xsl:value-of select="'DR 2'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'dr3'">
+        <xsl:value-of select="'DR 3'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drk'">
+        <xsl:value-of select="'DR K'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drhd'">
+        <xsl:value-of select="'DR HD'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drram'">
+        <xsl:value-of select="'DR RAMASJANG'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drultra'">
+        <xsl:value-of select="'DR ULTRA'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drup'">
+        <xsl:value-of select="'DR UPDATE'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drsydregtv' or $channelCode = 'drtvs'">
+        <xsl:value-of select="'TV SYD'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drtv'">
+        <xsl:value-of select="'DR TV'"/>
+      </xsl:when>
+      <!-- Radio channels start here -->
+      <xsl:when test="$channelCode = 'drp1'">
+        <xsl:value-of select="'DR P1'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp2'">
+        <xsl:value-of select="'DR P2'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp3' or $channelCode = 'drmusikradio'">
+        <xsl:value-of select="'DR P3'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp4o'">
+        <xsl:value-of select="'DR P4'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp4b' or $channelCode = 'drp4blm'">
+        <xsl:value-of select="'DR P4 BORNHOLM'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp4f' or $channelCode = 'drp4fyn'">
+        <xsl:value-of select="'DR P4 FYN'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp4k' or $channelCode = 'drp4k94'">
+        <xsl:value-of select="'DR P4 KANAL 94 VEJLE'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp4miv' or $channelCode = 'drp4mv'">
+        <xsl:value-of select="'DR P4 MIDT &amp; VEST'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp4n' or $channelCode = 'drp4nj' or $channelCode = 'drp4nor'">
+        <xsl:value-of select="'DR P4 NORDJYLLAND'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp4oj'">
+        <xsl:value-of select="'DR P4 ØSTJYLLAND'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp4re'">
+        <xsl:value-of select="'DR P4 REGIONALEN NÆSTVED'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp4s'">
+        <xsl:value-of select="'DR P4 SYD'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp5' or $channelCode = 'dr5'">
+        <xsl:value-of select="'DR P5'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp5000'">
+        <xsl:value-of select="'DR P5000'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp6b' or $channelCode = 'dr6'">
+        <xsl:value-of select="'DR P6 BEAT'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp7' or $channelCode = 'drp7m'">
+        <xsl:value-of select="'DR P7 MIX'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drp8j' or $channelCode = 'dr8'">
+        <xsl:value-of select="'DR P8 JAZZ'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drpk'">
+        <xsl:value-of select="'DR KLASSISK'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drmamara'">
+        <xsl:value-of select="'DR MAMA'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drol'">
+        <xsl:value-of select="'DR OLINE'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drrar'">
+        <xsl:value-of select="'RAMASJANG RADIO'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drboo'">
+        <xsl:value-of select="'DR BOOGIE'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drkalkortb'">
+        <xsl:value-of select="'KALUNDBORG KORTBØLGE'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drkallangb'">
+        <xsl:value-of select="'KALUNDBORG LANGBØLGE'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drkalmellemb'">
+        <xsl:value-of select="'KALUNDBORG MELLEMBØLGE'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drkalradio'">
+        <xsl:value-of select="'KALUNDBORG RADIO'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drkbhradio'">
+        <xsl:value-of select="'KØBENHAVNS RADIO'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drlyngbradio'">
+        <xsl:value-of select="'LYNGBY RADIO'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drryvangradio'">
+        <xsl:value-of select="'RYVANG RADIO'"/>
+      </xsl:when>
+      <xsl:when test="$channelCode = 'drsorøradio'">
+        <xsl:value-of select="'SORØ RADIO'"/>
+      </xsl:when>
+      <xsl:otherwise><xsl:value-of select="f:upper-case($channelCode)"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+
   <!-- Named template to create a genre string containing the value given as a parameter to the template. -->
   <xsl:template name="my:createGenreString">
     <xsl:param name="genreValue"/>
