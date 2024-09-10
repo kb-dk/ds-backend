@@ -283,10 +283,6 @@
             <f:string key="creator_affiliation_length">
               <xsl:value-of select="f:string-length($creatorAffiliation)"/>
             </f:string>
-
-            <f:string key="creator_affiliation_facet">
-              <xsl:value-of select="upper-case($creatorAffiliation)"/>
-            </f:string>
           </xsl:if>
 
           <xsl:if test="not(empty(my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName'))) and
@@ -294,6 +290,9 @@
             <xsl:variable name="genericAffiliation">
               <xsl:value-of select="my:getNestedMapValue3Levels($schemaorg-xml, 'publication', 'publishedOn', 'alternateName')"/>
             </xsl:variable>
+            <f:string key="creator_affiliation_facet">
+              <xsl:value-of select="upper-case($genericAffiliation)"/>
+            </f:string>
             <f:string key="creator_affiliation_generic">
               <xsl:value-of select="$genericAffiliation"/>
             </f:string>
