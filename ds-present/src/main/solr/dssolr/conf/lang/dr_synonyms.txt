@@ -19,4 +19,6 @@ løvens hule => visionærerne
 melodi grand prix -> mgp
 true crime  => lyssky
 bedøvende  => galt nok
+genstart => dato
 bamsekylling, bamse kylling => bamse og kylling
+mors afskedsbrev, third ear, ruths hus  =>  mord i kultureliten
