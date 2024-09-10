@@ -76,7 +76,7 @@
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>1.4.2</version>
+          <version>1.5.0</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
@@ -90,7 +90,7 @@
       <dependency>
             <groupId>dk.kb.present</groupId>
             <artifactId>ds-present</artifactId>
-            <version>2.0.0</version>
+            <version>2.1.1</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
@@ -99,6 +99,7 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+
        </dependency>
 
         <!-- Apache CXF and servlet stuff -->
