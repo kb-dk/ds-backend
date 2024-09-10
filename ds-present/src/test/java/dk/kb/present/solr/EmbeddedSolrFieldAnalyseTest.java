@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.slf4j.Logger;
@@ -66,6 +67,14 @@ public class EmbeddedSolrFieldAnalyseTest {
         embeddedServer.close();
     }
 
+    /*
+     * Delete all documents in solr between tests, so each unittest gets a clean solr.
+     */
+    @BeforeEach
+    public void deleteDocs() throws SolrServerException, IOException {
+        embeddedServer.deleteByQuery("*:*");
+    }
+    
     /*
      * Even diacritics must match for text_strict field
      */
@@ -183,6 +192,19 @@ public class EmbeddedSolrFieldAnalyseTest {
 
     }
 
+    @Test
+    public void testBondeknolden() throws SolrServerException, IOException{
+        addSynonymFieldTestBondeknolden();
+        assertEquals(1, getFreeTextQuery("bondeknolden"));                 
+        assertEquals(1, getFreeTextQuery("kastanjegården"));
+        assertEquals(1, getFreeTextQuery("Frank og Kastanjegården"));
+    }
+    
+    public void testMPG() throws SolrServerException, IOException{
+        addSynonymFieldMPG();
+        assertEquals(1, getFreeTextQuery("mgp"));                         
+    }
+  
     @Test
     public void testSuggest() throws SolrServerException, IOException{
         addSynonymFieldTestDocuments1();
@@ -328,11 +350,54 @@ public class EmbeddedSolrFieldAnalyseTest {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
+    }
+    
+    /*
+     * title: Frank og Kastanjegården
+     */
+    private static void addSynonymFieldTestBondeknolden() {
+
+        try {
+            SolrInputDocument document = new SolrInputDocument();
+            document.addField("id", "synonym1");
+            document.addField("origin", "ds.test");
+            document.addField("title", "Frank og Kastanjegården"); // Synonym file: frank, kastanjegården, kastanjegård => bondeknolden
+            document.addField("broadcaster", "DR");
+
+            embeddedServer.add(document);
+            embeddedServer.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error indexing test documents");
+        }
 
     }
+    
+    
+    /*
+     * title: ansk Melodi Grand Prix 2024
+     */
+    private static void addSynonymFieldMPG() {
 
+        try {
+            SolrInputDocument document = new SolrInputDocument();
+            document.addField("id", "synonym1");
+            document.addField("origin", "ds.test");
+            document.addField("title", "Dansk Melodi Grand Prix 2024"); // Synonym file: melodi grand prix -> mgp
+            document.addField("broadcaster", "DR");
+
+            embeddedServer.add(document);
+            embeddedServer.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error indexing test documents");
+        }
+
+    }
+    
     private static void addDocForNegativeSuggestTest() {
-
         try {
 
             SolrInputDocument document = new SolrInputDocument();
