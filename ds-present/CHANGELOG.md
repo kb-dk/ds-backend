@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added field `dr_production_id` to transformations and solr schema.
+
 ## [2.1.1](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.1) 2024-09-10
 ### Changed
 - Bumped ds-storage and ds-license dependency.
