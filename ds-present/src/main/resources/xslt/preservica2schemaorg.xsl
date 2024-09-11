@@ -42,6 +42,8 @@
   <xsl:param name="holdbackContentValue"/>
   <xsl:param name="ownProductionBool"/>
   <xsl:param name="ownProductionCode"/>
+  <!-- ProductionId has been extracted from either tvmeter or nielsen metadata, and is then injected as a single value. -->
+  <xsl:param name="productionId"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
@@ -823,6 +825,14 @@
           <xsl:value-of select="$recordID"/>
         </f:string>
       </f:map>
+      <xsl:if test="$productionId != ''">
+        <f:map>
+          <f:string key="@type">PropertyValue</f:string>
+          <f:string key="PropertyID">ProductionID</f:string>
+          <f:string key="value"><xsl:value-of select="$productionId"/></f:string>
+          <f:string key="description">DRs internal production ID of the record.</f:string>
+        </f:map>
+      </xsl:if>
       <xsl:if test="$kalturaID != ''">
         <f:map>
           <f:string key="@type">PropertyValue</f:string>

@@ -25,6 +25,7 @@ public class ExtractedPreservicaValues {
     public static final String CONTENT_KEY = "content";
     public static final String ORIGIN_COUNTRY_KEY = "originCountry";
     public static final String PURPOSE_KEY = "purpose";
+    public static final String PRODUCTION_ID_KEY = "productionId";
 
     public ExtractedPreservicaValues(){
         values.put(RECORD_ID_KEY, new PathPair<>("id", ""));
@@ -34,6 +35,7 @@ public class ExtractedPreservicaValues {
         values.put(CONTENT_KEY, new PathPair<>("", ""));
         values.put(ORIGIN_COUNTRY_KEY, new PathPair<>("", ""));
         values.put(PURPOSE_KEY, new PathPair<>("", ""));
+        values.put(PRODUCTION_ID_KEY, new PathPair<>("",""));
     }
 
     private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
@@ -95,6 +97,14 @@ public class ExtractedPreservicaValues {
 
     public void setPurpose(String purpose){
         values.get(PURPOSE_KEY).setValue(purpose);
+    }
+
+    public String getProductionId() {
+        return values.get(PRODUCTION_ID_KEY).getValue();
+    }
+
+    public void setProductionId(String formValue) {
+        values.get(FORM_KEY).setValue(formValue);
     }
 
 
