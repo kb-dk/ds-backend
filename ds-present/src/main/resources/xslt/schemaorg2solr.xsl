@@ -690,6 +690,12 @@
         <xsl:value-of select="map:get(., 'value')"/>
       </f:string>
     </xsl:if>
+    <!-- Finds productionId (in danish: 'Produktions ID') for DR records.-->
+    <xsl:if test="map:get(., 'PropertyID') = 'ProductionID'">
+      <f:string key="dr_production_id">
+        <xsl:value-of select="map:get(., 'value')"/>
+      </f:string>
+    </xsl:if>
   </xsl:template>
 
   <!-- TEMPLATE WHICH EXTRACTS VALUES FROM THE KB INTERNAL MAP, THAT HAVE STATUS AS INTERNAL FIELDS IN SOLR AS WELL. -->

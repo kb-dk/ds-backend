@@ -46,6 +46,7 @@ When adding fields to this schema please have the following guidelines in mind:
 1.6.13: Add fields actor, director, character, contributor and creator and their respective _strict fields.
 1.6.14: Add _count and _length fields for all multiValued and text fields respectively.
 1.6.15: Add form and content value fields for holdback calculation
+1.6.16: Add dr_production_id
   -->
   <field name="_ds_1.6.15_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -743,6 +744,11 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="kaltura_id" type="string">
     <?description An ID created by kaltura representing the access copy available et kaltura for the given record.?>
     <?example 0_00abcdef?>
+  </field>
+
+  <field name="dr_production_id" type="string">
+    <?description An internal ID created by DR.?>
+    <?example 8030782300?>
   </field>
 
   <field name="file_id" type="string">

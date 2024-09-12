@@ -186,6 +186,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         updateMetadataMapWithOwnProduction(metadata, extractedValues);
         updateMetadataMapWithHoldback(record, metadata, extractedValues);
         updateMetadataMapWithPreservicaManifestation(record, metadata);
+        metadata.put("productionId", extractedValues.getProductionId());
     }
 
     /**

@@ -34,6 +34,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static String contentPath = "";
     private static  String origincountryPath = "";
     private static String purposePath = "";
+    private static String productionIdPath = "";
 
 
     public ElementsExtractionHandler(String recordId){
@@ -111,6 +112,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
             contentPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
             origincountryPath = "/XIP/Metadata/Content/record/source/tvmeter/productioncountry";
             purposePath = "/XIP/Metadata/Content/record/source/tvmeter/intent";
+            productionIdPath = "/XIP/Metadata/Content/record/source/tvmeter/internalidcode";
             updatePathValues();
         }
 
@@ -123,6 +125,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
             contentPath = "/XIP/Metadata/Content/record/source/nielsen/typology";
             origincountryPath = "/XIP/Metadata/Content/record/source/nielsen/origincountry";
             purposePath = "/XIP/Metadata/Content/record/source/nielsen/purpose";
+            productionIdPath = "/XIP/Metadata/Content/record/source/nielsen/internalidcode";
             updatePathValues();
         }
     }
@@ -156,6 +159,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
         extractedPreservicaValues.values.replace(ExtractedPreservicaValues.FORM_KEY, new PathPair<>(formPath, ""));
         extractedPreservicaValues.values.replace(ExtractedPreservicaValues.CONTENT_KEY, new PathPair<>(contentPath, ""));
         extractedPreservicaValues.values.replace(ExtractedPreservicaValues.ORIGIN_COUNTRY_KEY, new PathPair<>(origincountryPath, ""));
+        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.PRODUCTION_ID_KEY, new PathPair<>(productionIdPath, ""));
     }
 
     /**
