@@ -10,7 +10,7 @@
     <name>bff</name> <!-- Human readable name, uppercase and spaces welcome -->
     <groupId>dk.kb.oauth</groupId>
     <artifactId>bff</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
 
     <packaging>war</packaging>
     <description>bff by the Royal Danish Library</description>
@@ -32,7 +32,7 @@
         <url>https://github.com/kb-dk/bff</url>
         <connection>scm:git:git@github.com:kb-dk/bff.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/bff.git</developerConnection>
-        <tag>bff-1.1.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
