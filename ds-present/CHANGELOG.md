@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added field `dr_production_id` to transformations and solr schema.
+- Added the query used to build frontpage of the webapp to warmup of solr searchers. Lowering Qtime from approx 300 ms to 50 ms on a local setup.
 
 ## [2.1.1](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.1) 2024-09-10
 ### Changed

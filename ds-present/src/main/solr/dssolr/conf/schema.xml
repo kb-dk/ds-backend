@@ -47,8 +47,9 @@ When adding fields to this schema please have the following guidelines in mind:
 1.6.14: Add _count and _length fields for all multiValued and text fields respectively.
 1.6.15: Add form and content value fields for holdback calculation
 1.6.16: Add dr_production_id
+1.7.0: Add warming of start-up query.
   -->
-  <field name="_ds_1.6.16_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.0_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
