@@ -47,7 +47,7 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
         YAML messages = ServiceConfig.getMessagesConfig();
         return messages.keySet().stream().collect(Collectors.toMap(
             key -> key,
-            key -> messages.getString(key)
+            messages::getString
         ));
     }
 

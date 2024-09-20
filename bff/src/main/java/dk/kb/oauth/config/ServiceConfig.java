@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Sample configuration class using the Singleton and Observer patterns.
