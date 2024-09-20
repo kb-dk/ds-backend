@@ -68,7 +68,7 @@ paths:
       tags:
         - '${project.name}'
       operationId: getMessages
-      summary: Get messages
+      summary: Service that provides a list of messages to be used by the frontend.
       responses:
         '200':
           description: Messages from the backend to the frontend
