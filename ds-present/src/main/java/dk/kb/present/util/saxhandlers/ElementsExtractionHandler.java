@@ -33,6 +33,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static String formPath = "";
     private static String contentPath = "";
     private static  String origincountryPath = "";
+    private static  String originPath = "";
     private static String purposePath = "";
     private static String productionIdPath = "";
 
@@ -110,6 +111,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
 
             formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
             contentPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
+            originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
             origincountryPath = "/XIP/Metadata/Content/record/source/tvmeter/productioncountry";
             purposePath = "/XIP/Metadata/Content/record/source/tvmeter/intent";
             productionIdPath = "/XIP/Metadata/Content/record/source/tvmeter/internalidcode";
@@ -123,6 +125,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
             formPath = "/XIP/Metadata/Content/record/source/nielsen/form";
             // TODO: Is this the correct path to extract from?
             contentPath = "/XIP/Metadata/Content/record/source/nielsen/typology";
+            originPath = "/XIP/Metadata/Content/record/source/nielsen/origin";
             origincountryPath = "/XIP/Metadata/Content/record/source/nielsen/origincountry";
             purposePath = "/XIP/Metadata/Content/record/source/nielsen/purpose";
             productionIdPath = "/XIP/Metadata/Content/record/source/nielsen/internalidcode";

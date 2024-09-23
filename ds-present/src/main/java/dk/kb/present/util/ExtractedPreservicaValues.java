@@ -23,6 +23,7 @@ public class ExtractedPreservicaValues {
     public static final String ENDTIME_KEY = "endTime";
     public static final String FORM_KEY = "form";
     public static final String CONTENT_KEY = "content";
+    public static final String ORIGIN_KEY = "origin";
     public static final String ORIGIN_COUNTRY_KEY = "originCountry";
     public static final String PURPOSE_KEY = "purpose";
     public static final String PRODUCTION_ID_KEY = "productionId";
@@ -33,6 +34,7 @@ public class ExtractedPreservicaValues {
         values.put(ENDTIME_KEY, new PathPair<>(endTimePath, ""));
         values.put(FORM_KEY, new PathPair<>("", ""));
         values.put(CONTENT_KEY, new PathPair<>("", ""));
+        values.put(ORIGIN_KEY, new PathPair<>("", ""));
         values.put(ORIGIN_COUNTRY_KEY, new PathPair<>("", ""));
         values.put(PURPOSE_KEY, new PathPair<>("", ""));
         values.put(PRODUCTION_ID_KEY, new PathPair<>("",""));
@@ -81,6 +83,13 @@ public class ExtractedPreservicaValues {
 
     public void setOriginCountry(String origin){
         values.get(ORIGIN_COUNTRY_KEY).setValue(origin);
+    }
+    public String getOrigin(){
+        return values.get(ORIGIN_KEY).getValue();
+    }
+
+    public void setOrigin(String origin){
+        values.get(ORIGIN_KEY).setValue(origin);
     }
 
     public String getId(){
