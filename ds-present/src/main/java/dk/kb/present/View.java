@@ -230,9 +230,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         if (!ownProduction.isEmpty()) {
             // Values below 2000 are considered own production. It can in fact be co-production, but these should all be covered by the rights-agreement made.
-            boolean isOwnProduction = Integer.parseInt(extractedValues.getOriginCountry()) < 2000;
+            boolean isOwnProduction = Integer.parseInt(ownProduction) < 2000;
             metadataMap.put("ownProductionBool", Boolean.toString(isOwnProduction));
-            metadataMap.put("ownProductionCode", extractedValues.getOriginCountry());
+            metadataMap.put("ownProductionCode", ownProduction);
         }
     }
 
