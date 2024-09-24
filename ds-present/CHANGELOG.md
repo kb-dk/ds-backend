@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Changed field used for ownproduction calculation from country_of_origin to origin as specified by DR metadata specialists.
 
+### Fixed
+- Some documents did not get the channel facet correctly created. A check for these DR1 and DR2 records have been added in the preservica2schemaorg XSLT.
+
 ## [2.1.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.2) 2024-09-17
 ### Added
 - Added field `dr_production_id` to transformations and solr schema.
