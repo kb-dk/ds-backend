@@ -588,11 +588,13 @@
                 <xsl:variable name="episodeInfo">
                   <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
                 </xsl:variable>
-                <xsl:variable name="episodeNumber">
+
+              <xsl:variable name="episodeNumber">
                   <xsl:value-of select="number(normalize-space(substring-before($episodeInfo, ':')))"/>
                 </xsl:variable>
 
-                <xsl:if test="$episodeNumber != NaN">
+                <xsl:if test="string($episodeNumber) != 'NaN'">
+
                   <f:number key="episodeNumber">
                     <xsl:value-of select="$episodeNumber"/>
                   </f:number>
@@ -609,7 +611,7 @@
                   <xsl:variable name="numberOfEpisodes">
                     <xsl:value-of select="number(normalize-space(substring-after($episodeInfo, ':')))"/>
                   </xsl:variable>
-                  <xsl:if test="$numberOfEpisodes != NaN">
+                  <xsl:if test="string($numberOfEpisodes) != 'NaN'">
                     <f:number key="numberOfEpisodes">
                       <xsl:value-of select="substring-after($episodeInfo, ':')"/>
                     </f:number>
@@ -625,7 +627,7 @@
                   <xsl:variable name="episodeNumber">
                       <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
                   </xsl:variable>
-                  <xsl:if test="$episodeNumber != NaN">
+                  <xsl:if test="string($episodeNumber) != 'NaN'">
                     <f:number key="episodeNumber">
                       <xsl:value-of select="substring-after(., 'episodenr:')"/>
                     </f:number>
@@ -655,7 +657,7 @@
                     <xsl:variable name="numberOfEpisodes">
                       <xsl:value-of select="number(normalize-space(substring-after(., 'antalepisoder:')))"/>
                     </xsl:variable>
-                    <xsl:if test="$numberOfEpisodes != NaN">
+                    <xsl:if test="string($numberOfEpisodes) != 'NaN'">
                       <f:number key="numberOfEpisodes">
                         <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
                       </f:number>
@@ -1035,7 +1037,7 @@
         <xsl:variable name="paddingSeconds">
           <xsl:value-of select="number(normalize-space(.))"/>
         </xsl:variable>
-        <xsl:if test="$paddingSeconds != NaN">
+        <xsl:if test="string($paddingSeconds) != 'NaN'">
           <f:number key="kb:padding_seconds">
             <xsl:value-of select="$paddingSeconds"/>
           </f:number>
@@ -1063,7 +1065,7 @@
       </f:boolean>
     </xsl:if>
     <xsl:if test="$ownProductionCode != '' and not(f:empty($ownProductionCode))">
-      <xsl:if test="number(normalize-space($ownProductionCode)) != NaN">
+      <xsl:if test="string(number(normalize-space($ownProductionCode))) != 'NaN'">
         <f:number key="kb:own_production_code">
           <xsl:value-of select="number(normalize-space($ownProductionCode))"/>
         </f:number>
@@ -1128,7 +1130,7 @@
         <xsl:variable name="channelId">
           <xsl:value-of select="number(normalize-space(substring-after(. , 'kanalid:')))"/>
         </xsl:variable>
-        <xsl:if test="$channelId != NaN">
+        <xsl:if test="string($channelId) != 'NaN'">
           <f:number key="kb:channel_id">
             <xsl:value-of select="$channelId"/>
           </f:number>
@@ -1296,10 +1298,10 @@
               <f:string key="file2UUID">
                 <xsl:value-of select="file2UUID"/>
               </f:string>
-              <xsl:if test="f:string-length(normalize-space(overlapLengh))
-                            and number(normalize-space(overlapLengh))">
+              <xsl:if test="f:string-length(normalize-space(overlapLength)) > 0
+                            and string(number(normalize-space(overlapLength))) != 'NaN'">
                 <f:number key="overlap_length">
-                  <xsl:value-of select="number(normalize-space(overlapLengh))"/>
+                  <xsl:value-of select="number(normalize-space(overlapLength))"/>
                 </f:number>
               </xsl:if>
               <f:string key="overlap_type">
