@@ -481,6 +481,8 @@
                 <xsl:when test="f:starts-with($publisherGeneral, 'dr')">
                   <xsl:value-of select="my:cleanDrChannel($publisherGeneral)"/>
                 </xsl:when>
+                <!-- In some cases records from DR1 and DR2 doesn't contain a value in the field $publisherGeneral, when this happens and the value in $publisherSpecific is
+                either DR1 or DR2, then these values should be used for generation of alternateName. -->
                 <xsl:when test="$publisherSpecific = 'DR1' or $publisherSpecific = 'DR2'">
                   <xsl:value-of select="my:cleanDrChannel($publisherSpecific)"/>
                 </xsl:when>
