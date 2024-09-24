@@ -586,12 +586,18 @@
           <xsl:choose>
             <xsl:when test="f:contains(substring-after(., 'episodenr:'), ':')">
                 <xsl:variable name="episodeInfo">
-                  <xsl:value-of select="substring-after(., 'episodenr:')"/>
+                  <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
+                </xsl:variable>
+                <xsl:variable name="episodeNumber">
+                  <xsl:value-of select="number(normalize-space(substring-before($episodeInfo, ':')))"/>
                 </xsl:variable>
 
-                <f:number key="episodeNumber">
-                  <xsl:value-of select="substring-before($episodeInfo, ':')"/>
-                </f:number>
+                <xsl:if test="$episodeNumber != NaN">
+                  <f:number key="episodeNumber">
+                    <xsl:value-of select="$episodeNumber"/>
+                  </f:number>
+                </xsl:if>
+
                 <f:map key="partOfSeason">
                   <f:string key="@type">
                     <xsl:choose>
@@ -600,9 +606,14 @@
                       <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
                     </xsl:choose>
                   </f:string>
-                  <f:number key="numberOfEpisodes">
-                    <xsl:value-of select="substring-after($episodeInfo, ':')"/>
-                  </f:number>
+                  <xsl:variable name="numberOfEpisodes">
+                    <xsl:value-of select="number(normalize-space(substring-after($episodeInfo, ':')))"/>
+                  </xsl:variable>
+                  <xsl:if test="$numberOfEpisodes != NaN">
+                    <f:number key="numberOfEpisodes">
+                      <xsl:value-of select="substring-after($episodeInfo, ':')"/>
+                    </f:number>
+                  </xsl:if>
                 </f:map>
             </xsl:when>
             <xsl:otherwise>
@@ -610,10 +621,15 @@
               <xsl:for-each select=".">
                 <!-- Extract episode number if present.
                      Checks for 'episodenr' in PBC extension and checks that there is a substring after the key.-->
-                <xsl:if test="f:contains(., 'episodenr:') and f:string-length(substring-after(., 'episodenr:')) > 0">
-                  <f:number key="episodeNumber">
-                    <xsl:value-of select="substring-after(., 'episodenr:')"/>
-                  </f:number>
+                <xsl:if test="f:contains(., 'episodenr:') and f:string-length(normalize-space(substring-after(., 'episodenr:'))) > 0">
+                  <xsl:variable name="episodeNumber">
+                      <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
+                  </xsl:variable>
+                  <xsl:if test="$episodeNumber != NaN">
+                    <f:number key="episodeNumber">
+                      <xsl:value-of select="substring-after(., 'episodenr:')"/>
+                    </f:number>
+                  </xsl:if>
                 </xsl:if>
               </xsl:for-each>
 
@@ -636,9 +652,14 @@
                         <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
                       </xsl:choose>
                     </f:string>
-                    <f:number key="numberOfEpisodes">
-                      <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
-                    </f:number>
+                    <xsl:variable name="numberOfEpisodes">
+                      <xsl:value-of select="number(normalize-space(substring-after(., 'antalepisoder:')))"/>
+                    </xsl:variable>
+                    <xsl:if test="$numberOfEpisodes != NaN">
+                      <f:number key="numberOfEpisodes">
+                        <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
+                      </f:number>
+                    </xsl:if>
                   </f:map>
                 </xsl:if>
               </xsl:for-each>
@@ -1011,9 +1032,14 @@
     <!-- Extracts information on video padding. -->
     <xsl:for-each select="/XIP/Metadata/Content/padding:padding/paddingSeconds">
       <xsl:if test="position() = 1">
-        <f:number key="kb:padding_seconds">
-          <xsl:value-of select="."/>
-        </f:number>
+        <xsl:variable name="paddingSeconds">
+          <xsl:value-of select="number(normalize-space(.))"/>
+        </xsl:variable>
+        <xsl:if test="$paddingSeconds != NaN">
+          <f:number key="kb:padding_seconds">
+            <xsl:value-of select="$paddingSeconds"/>
+          </f:number>
+        </xsl:if>
       </xsl:if>
     </xsl:for-each>
 
@@ -1037,9 +1063,11 @@
       </f:boolean>
     </xsl:if>
     <xsl:if test="$ownProductionCode != '' and not(f:empty($ownProductionCode))">
-      <f:number key="kb:own_production_code">
-        <xsl:value-of select="$ownProductionCode"/>
-      </f:number>
+      <xsl:if test="number(normalize-space($ownProductionCode)) != NaN">
+        <f:number key="kb:own_production_code">
+          <xsl:value-of select="number(normalize-space($ownProductionCode))"/>
+        </f:number>
+      </xsl:if>
     </xsl:if>
 
     <!-- Holdback date included here. Holdback purpose is only included for video objects, therefor it is done in the
@@ -1096,10 +1124,15 @@
           <xsl:value-of select="substring-after(. , 'hovedgenre_id:')"/>
         </f:string>
       </xsl:when>
-      <xsl:when test="f:starts-with(. , 'kanalid:')">
-        <f:number key="kb:channel_id">
-          <xsl:value-of select="substring-after(. , 'kanalid:')"/>
-        </f:number>
+      <xsl:when test="f:starts-with(. , 'kanalid:') and f:string-length(normalize-space(substring-after(. , 'kanalid:'))) > 0">
+        <xsl:variable name="channelId">
+          <xsl:value-of select="number(normalize-space(substring-after(. , 'kanalid:')))"/>
+        </xsl:variable>
+        <xsl:if test="$channelId != NaN">
+          <f:number key="kb:channel_id">
+            <xsl:value-of select="$channelId"/>
+          </f:number>
+        </xsl:if>
       </xsl:when>
       <xsl:when test="f:starts-with(. , 'program_id:')">
         <f:string key="kb:ritzau_program_id">
@@ -1263,9 +1296,12 @@
               <f:string key="file2UUID">
                 <xsl:value-of select="file2UUID"/>
               </f:string>
-              <f:number key="overlap_length">
-                <xsl:value-of select="overlapLength"/>
-              </f:number>
+              <xsl:if test="f:string-length(normalize-space(overlapLengh))
+                            and number(normalize-space(overlapLengh))">
+                <f:number key="overlap_length">
+                  <xsl:value-of select="number(normalize-space(overlapLengh))"/>
+                </f:number>
+              </xsl:if>
               <f:string key="overlap_type">
                 <xsl:value-of select="overlapType"/>
               </f:string>
