@@ -221,11 +221,11 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
         String ownProduction = extractedValues.getOrigin();
         if (ownProduction.isEmpty()) {
-            log.debug("Nielsen/Gallup origin was empty.");
+            log.debug("Nielsen/Gallup origin was empty. Own production can not be calculated.");
             // TODO: When we at some point have extra DR metadata, origin should be available there for records before 1993
             //throw new InternalServiceException("The Nielsen/Gallup origin was empty. Own production cannot be defined.");
         } else if (ownProduction.length() != 4){
-            log.debug("Nielsen/Gallup origin did not have length 4. Origin is: '{}'", ownProduction);
+            log.debug("Nielsen/Gallup origin did not have length 4. Own production will not be calculated correctly. Origin is: '{}'", ownProduction);
         }
 
         if (!ownProduction.isEmpty()) {
