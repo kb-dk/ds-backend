@@ -315,6 +315,20 @@ class ViewTest {
         assertTrue(solrdoc.contains("\"dr_production_id\":\"8030782300\""));
     }
 
+    @Test
+    @Tag("integration")
+    void testOwnProductionCorrectValue() throws IOException {
+        HoldbackDatePicker.init();
+        View jsonldView = getSolrTvViewForPreservicaRecord();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_5d6db06e);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+        String solrdoc = jsonldView.apply(recordDto);
+        assertTrue(solrdoc.contains("\"own_production_code\":\"4400\""));
+
+    }
+
     //********************************************** PRIVATE HELPER METHODS BELOW ***************************************************************
 
     /**
