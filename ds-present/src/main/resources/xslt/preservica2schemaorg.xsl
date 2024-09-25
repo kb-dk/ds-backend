@@ -473,12 +473,18 @@
                 </xsl:otherwise>
               </xsl:choose>
             </f:string>
-            <xsl:if test="f:exists($publisherGeneral) and not(f:empty($publisherGeneral)) and $publisherGeneral != ''">
+            <xsl:if test="(f:exists($publisherGeneral) and not(f:empty($publisherGeneral)) and $publisherGeneral != '') or
+                          ($publisherSpecific = 'DR1' or $publisherSpecific = 'DR2')">
             <f:string key="alternateName">
               <xsl:choose>
                 <!-- Do clean up of DR channel names -->
                 <xsl:when test="f:starts-with($publisherGeneral, 'dr')">
                   <xsl:value-of select="my:cleanDrChannel($publisherGeneral)"/>
+                </xsl:when>
+                <!-- In some cases records from DR1 and DR2 doesn't contain a value in the field $publisherGeneral, when this happens and the value in $publisherSpecific is
+                either DR1 or DR2, then these values should be used for generation of alternateName. -->
+                <xsl:when test="$publisherSpecific = 'DR1' or $publisherSpecific = 'DR2'">
+                  <xsl:value-of select="my:cleanDrChannel($publisherSpecific)"/>
                 </xsl:when>
                 <!-- Plain usage of alterneName which isn't going to be used before other collections than DR are in the system -->
                 <xsl:otherwise>

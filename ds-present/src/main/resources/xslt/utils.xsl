@@ -138,10 +138,10 @@
     <xsl:param name="channelCode"/>
     <xsl:choose>
       <!-- TV channels start here -->
-      <xsl:when test="$channelCode = 'dr1' or $channelCode = 'dr'">
+      <xsl:when test="lower-case($channelCode) = 'dr1' or $channelCode = 'dr'">
         <xsl:value-of select="'DR 1'"/>
       </xsl:when>
-      <xsl:when test="$channelCode = 'dr2'">
+      <xsl:when test="lower-case($channelCode) = 'dr2'">
         <xsl:value-of select="'DR 2'"/>
       </xsl:when>
       <xsl:when test="$channelCode = 'dr3'">
