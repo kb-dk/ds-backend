@@ -59,6 +59,8 @@ public class TestFiles {
     public static final String PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED = "internal_test_files/homemade/correctDomsMigWithTVMeterEnrichment.xml";
     public static final String PVICA_HOMEMADE_NOT_OWNPROD = "internal_test_files/homemade/badOwnProduction.xml";
     public static final String PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS = "internal_test_files/homemade/radioWithContributors.xml";
+    public static final String PVICA_HOMEMADE_INVALID_NUMBERS = "internal_test_files/homemade/invalid_numbers.xml";
+
 
     // From preservica 6, not in preservica 7 stage
     public static final String PVICA6_RECORD_00a9e71c = "internal_test_files/preservica6/00a9e71c-1264-4e57-9238-b38ec5672fb2.xml";
