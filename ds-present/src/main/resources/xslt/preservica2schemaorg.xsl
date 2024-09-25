@@ -825,11 +825,11 @@
           <xsl:value-of select="$recordID"/>
         </f:string>
       </f:map>
-      <xsl:if test="$productionId != ''">
+      <xsl:if test="normalize-space($productionId) != ''">
         <f:map>
           <f:string key="@type">PropertyValue</f:string>
           <f:string key="PropertyID">ProductionID</f:string>
-          <f:string key="value"><xsl:value-of select="$productionId"/></f:string>
+          <f:string key="value"><xsl:value-of select="normalize-space($productionId)"/></f:string>
           <f:string key="description">DRs internal production ID of the record.</f:string>
         </f:map>
       </xsl:if>
