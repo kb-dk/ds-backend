@@ -60,7 +60,6 @@ public class TestFiles {
     public static final String PVICA_HOMEMADE_NOT_OWNPROD = "internal_test_files/homemade/badOwnProduction.xml";
     public static final String PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS = "internal_test_files/homemade/radioWithContributors.xml";
     public static final String PVICA_HOMEMADE_INVALID_NUMBERS = "internal_test_files/homemade/invalid_numbers.xml";
-    public static final String PVICA_HOMEMADE_VALID_NUMBERS = "internal_test_files/homemade/valid_numbers.xml";
 
 
     // From preservica 6, not in preservica 7 stage
