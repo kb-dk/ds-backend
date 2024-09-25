@@ -525,4 +525,16 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"alternateName\":\"DR 1\""));
     }
 
+
+    @Test
+    public void invalidNumbersTest() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_INVALID_NUMBERS);
+        assertFalse(transformedJSON.contains("\"episodeNumber\""));
+        assertFalse(transformedJSON.contains("\"numberOfEpisodes\""));
+        assertFalse(transformedJSON.contains("\"kb:channel_id\""));
+        assertFalse(transformedJSON.contains("\"overlap_length\""));
+        assertFalse(transformedJSON.contains("\"kb:own_production_code\""));
+        prettyPrintJson(transformedJSON);
+    }
+
 }
