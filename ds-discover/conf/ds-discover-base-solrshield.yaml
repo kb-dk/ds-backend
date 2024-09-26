@@ -126,7 +126,7 @@ solr:
               - collection
               - categories
               - genre
-              - renre_sub
+              - genre_sub
               - resource_description
               - resource_description_general
               - creator_full_name
