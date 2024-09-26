@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added 
+- Added normalization of values in fields representing DR production IDs.
+
 ### Changed
 - Changed field used for ownproduction calculation from country_of_origin to origin as specified by DR metadata specialists.
 - Check for valid numbers in preservica2schemaorg transformation
