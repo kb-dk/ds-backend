@@ -11,7 +11,6 @@ import dk.kb.util.webservice.exception.ServiceException;
 
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
@@ -28,8 +27,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -41,6 +41,15 @@ import java.time.Instant;
 
 public class BffApiServiceImpl extends ImplBase implements BffApi {
     private final Logger log = LoggerFactory.getLogger(this.toString());
+
+    @Override
+    public Map<String, String> getMessages() {
+        YAML messages = ServiceConfig.getMessagesConfig();
+        return messages.keySet().stream().collect(Collectors.toMap(
+            key -> key,
+            messages::getString
+        ));
+    }
 
     @Override
     public String authenticate(String returnUrl) throws ServiceException {

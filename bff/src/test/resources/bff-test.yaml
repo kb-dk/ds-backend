@@ -7,3 +7,8 @@ keycloak:
 config:
   autoupdate:
     enabled: false
+
+
+messages:
+  msg1: "text1"
+  msg2: "text2"

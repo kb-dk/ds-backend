@@ -1,13 +1,13 @@
 package dk.kb.oauth.config;
 
 import dk.kb.util.yaml.AutoYAML;
+import dk.kb.util.yaml.NotFoundException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Sample configuration class using the Singleton and Observer patterns.
@@ -76,5 +76,14 @@ public class ServiceConfig extends AutoYAML {
             throw new IllegalStateException("The configuration should have been loaded, but was not");
         }
         return getInstance().getYAML();
+    }
+
+    public static YAML getMessagesConfig() {
+        ServiceConfig instance = getInstance();
+        try {
+            return instance.getYAML().getSubMap("messages");
+        } catch (NotFoundException e) {
+            return new YAML();
+        }
     }
 }

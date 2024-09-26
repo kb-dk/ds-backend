@@ -60,6 +60,25 @@ paths:
               schema:
                 type: string
 
+
+
+
+  /messages:
+    get:
+      tags:
+        - '${project.name}'
+      operationId: getMessages
+      summary: Service that provides a list of messages to be used by the frontend.
+      responses:
+        '200':
+          description: Messages from the backend to the frontend
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
   #
@@ -116,7 +135,6 @@ paths:
 
 components:
   schemas:
-
 
 
     # Basic status response component.

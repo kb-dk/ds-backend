@@ -41,3 +41,7 @@ apis:
     baseURL: "https://localhost/"
   poc-middleware:
     baseURL: "http://localhost:9061"
+
+messages:
+  msg1: "This is the message"
+  msg2: "This is another message"
