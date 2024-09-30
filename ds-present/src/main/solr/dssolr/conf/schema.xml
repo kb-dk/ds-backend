@@ -48,8 +48,9 @@ When adding fields to this schema please have the following guidelines in mind:
 1.6.15: Add form and content value fields for holdback calculation
 1.6.16: Add dr_production_id
 1.7.0: Add warming of start-up query.
+1.7.1: Rename field migrated_from to originates_from and added which contains the word Preservica as default.
   -->
-  <field name="_ds_1.7.0_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.1_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -176,7 +177,7 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     Daguerreotypi, mål: 81 x 70 mm?>
   </field>
 
-  <field name="migrated_from" type="string">
+  <field name="originates_from" type="string">
     <?description Information on the record being migrated from another metadata system. If this value is present, the record has been migrated from another metadata system into
             the current one.?>
     <?example DOMS?>

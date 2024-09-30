@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Changed field used for ownproduction calculation from country_of_origin to origin as specified by DR metadata specialists.
 - Check for valid numbers in preservica2schemaorg transformation
+- Rename field `migrated_from` to `originates_from` and add preservica as default value.
 
 ### Fixed
 - Some documents did not get the channel facet correctly created. A check for these DR1 and DR2 records have been added in the preservica2schemaorg XSLT.

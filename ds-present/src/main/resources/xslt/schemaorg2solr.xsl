@@ -702,9 +702,9 @@
   <xsl:template name="kbInternal">
     <xsl:param name="internalMap"/>
 
-    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:migrated_from') != ''">
-      <f:string key="migrated_from">
-        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:migrated_from')"/>
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:originates_from') != ''">
+      <f:string key="originates_from">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:originates_from')"/>
       </f:string>
     </xsl:if>
 

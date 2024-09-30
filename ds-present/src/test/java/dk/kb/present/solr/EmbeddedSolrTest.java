@@ -696,7 +696,7 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testMigratedFrom() throws Exception {
-        testStringValuePreservicaField(PVICA_DOMS_MIG_e2dfb840, "migrated_from", "DOMS");
+        testStringValuePreservicaField(PVICA_DOMS_MIG_e2dfb840, "originates_from", "DOMS");
     }
 
     @Test
