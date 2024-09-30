@@ -943,16 +943,15 @@
     <xsl:param name="type"/>
 
     <!-- Extration of migration details if present. Implemented as a choose statement. -->
-    <xsl:if test="/XIP/Metadata/Content/migration_details/migrated_from">
-      <xsl:variable name="migrationSource">
-        <xsl:value-of select="/XIP/Metadata/Content/migration_details/migrated_from"/>
-      </xsl:variable>
-      <f:string key="kb:migrated_from">
-        <xsl:choose>
-          <xsl:when test="normalize-space($migrationSource) = 'Radio/tv DOMS - prod'">DOMS</xsl:when>
-        </xsl:choose>
-      </f:string>
-    </xsl:if>
+    <xsl:variable name="migrationSource">
+      <xsl:value-of select="/XIP/Metadata/Content/migration_details/migrated_from"/>
+    </xsl:variable>
+    <f:string key="kb:originates_from">
+      <xsl:choose>
+        <xsl:when test="normalize-space($migrationSource) = 'Radio/tv DOMS - prod'">DOMS</xsl:when>
+        <xsl:otherwise>Preservica</xsl:otherwise>
+      </xsl:choose>
+    </f:string>
 
     <!-- Internal value for backing ds-storage mTime-->
     <f:string key="kb:storage_mTime">

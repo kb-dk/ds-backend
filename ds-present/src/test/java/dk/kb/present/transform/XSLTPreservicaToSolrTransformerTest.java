@@ -440,8 +440,14 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    void testMigratedFrom(){
-        assertPvicaContains(TestFiles.PVICA_DOMS_MIG_e2dfb840, "\"migrated_from\":\"DOMS\"");
+    void testOriginatesFromDoms(){
+        assertPvicaContains(TestFiles.PVICA_DOMS_MIG_e2dfb840, "\"originates_from\":\"DOMS\"");
+    }
+
+    @Test
+    void testOriginatesFromPreservica(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"originates_from\":\"Preservica\"");
+
     }
 
     @Test
