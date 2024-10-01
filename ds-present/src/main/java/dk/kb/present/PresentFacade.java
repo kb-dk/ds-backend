@@ -138,17 +138,25 @@ public class PresentFacade {
 
 
         switch (format) {
-            case JSON_LD: return getRecordsData(
+            case JSON_LD:
+                httpServletResponse.setContentType("application/json");
+                return getRecordsData(
                     origin, mTime, maxRecords,
                     httpServletResponse, FormatDto.JSON_LD, ExportWriterFactory.FORMAT.json,
                     accessFilter);
-            case JSON_LD_LINES: return getRecordsData(
+            case JSON_LD_LINES:
+                httpServletResponse.setContentType("application/json");
+                return getRecordsData(
                     origin, mTime, maxRecords,
                     httpServletResponse, FormatDto.JSON_LD_LINES, ExportWriterFactory.FORMAT.jsonl, accessFilter);
-            case MODS: return getRecordsData(
+            case MODS:
+                httpServletResponse.setContentType("application/xml");
+                return getRecordsData(
                     origin, mTime, maxRecords,
                     httpServletResponse, FormatDto.MODS, ExportWriterFactory.FORMAT.xml, accessFilter);
-            case SOLRJSON: return getRecordsSolr(origin, mTime, maxRecords, httpServletResponse, accessFilter);
+            case SOLRJSON:
+                httpServletResponse.setContentType("application/json");
+                return getRecordsSolr(origin, mTime, maxRecords, httpServletResponse, accessFilter);
             default: throw new InvalidArgumentServiceException("The format '" + format + "' is not supported");
         }
     }
