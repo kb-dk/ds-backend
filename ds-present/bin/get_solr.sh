@@ -8,8 +8,6 @@ pushd ${BASH_SOURCE%/*} > /dev/null
 source general.conf
 # Optionally only download a specific Solr
 : ${SPECIFIC_SOLR:="$1"}
-# "https://archive.apache.org/dist/lucene/solr/${S}/solr-${S}.tgz"
-: ${SOLR_BASE_URL:="https://archive.apache.org/dist/lucene/solr"}
 
 mkdir -p cache
 pushd cache > /dev/null
@@ -111,6 +109,21 @@ resolve_multi() {
             download "http://archive.apache.org/dist/lucene/solr/4.10.4/solr-4.10.4.tgz" solr-4.10.4.tgz
         elif [[ "trunk" == "$S" ]]; then
             compile_trunk
+        elif [ -n "$SPECIFIC_SOLR" ]; then
+              # Determine if we are working with solr 9 or older versions.
+              MAJOR_VERSION="${SPECIFIC_SOLR:0:1}"
+              MAJOR_VERSION_INT=$((MAJOR_VERSION))
+
+              # Specify where to fetch solr from.
+              if [ $MAJOR_VERSION_INT -le 8 ]; then
+                  # "https://archive.apache.org/dist/lucene/solr/${S}/solr-${S}.tgz"
+                SOLR_BASE_URL="https://archive.apache.org/dist/lucene/solr"
+                download "$SOLR_BASE_URL/${S}/solr-${S}.tgz" solr-${S}.tgz
+              else
+                # "https://archive.apache.org/dist/solr/solr/${S}/solr-${S}.tgz"
+                SOLR_BASE_URL="https://archive.apache.org/dist/solr/solr"
+                download "$SOLR_BASE_URL/${S}/solr-${S}.tgz" solr-${S}.tgz
+              fi
         else
             download "${SOLR_BASE_URL}/${S}/solr-${S}.tgz" solr-${S}.tgz
         fi
