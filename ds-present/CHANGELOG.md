@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Unreleased
+### Fixed 
+- Fixed mime-type for JSON responses to `/records`-endpoint.
+
 ## [2.1.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.3) 2024-09-30
 ### Added 
 - Added normalization of values in fields representing DR production IDs.
