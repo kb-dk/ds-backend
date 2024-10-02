@@ -49,8 +49,11 @@ When adding fields to this schema please have the following guidelines in mind:
 1.6.16: Add dr_production_id
 1.7.0: Add warming of start-up query.
 1.7.1: Rename field migrated_from to originates_from and added which contains the word Preservica as default.
+1.7.2: Bumped solr.max.booleanClauses from 1024 to 8192. This will allow queries with more terms. 
+
+
   -->
-  <field name="_ds_1.7.1_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.2_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->

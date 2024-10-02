@@ -118,6 +118,7 @@ check_parameters "$@"
 
 echo "Starting ZooKeepers and Solrs in ${CLOUD}/$VERSION"
 pushd ${CLOUD}/$VERSION > /dev/null
+export SOLR_OPTS="-Dsolr.max.booleanClauses=8192"
 start_zoo
 start_solr
 echo "Solr should now be available at http://localhost:${SOLR_BASE_PORT}/solr/"
