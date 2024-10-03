@@ -618,10 +618,10 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testInternalAccess() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_individual_prohibition", "Nej");
-        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_claused", "Nej");
-        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_malfunction", "Nej");
-        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "internal_access_comments", null);
+        testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "access_individual_prohibition", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "access_claused", false);
+        testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "access_malfunction", false);
+        testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "access_comments", null);
     }
 
     @Test
