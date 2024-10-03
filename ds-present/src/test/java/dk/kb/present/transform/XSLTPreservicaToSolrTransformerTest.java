@@ -290,9 +290,9 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testAccessMetadata(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_access_individual_prohibition\":\"Nej\"," +
-                                                 "\"internal_access_claused\":\"Nej\"," +
-                                                 "\"internal_access_malfunction\":\"Nej\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"access_individual_prohibition\":\"false\"," +
+                                                 "\"access_claused\":\"false\"," +
+                                                 "\"access_malfunction\":\"false\"");
         //TODO: Add test that contains internal_access_comments
     }
 

@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed mime-type for JSON responses to `/records`-endpoint.
 - Fixed download of solr in solr setup scripts.
 
+### Changed
+- Renamed all fields named `internal_acces_...` to `access_...` as they are to be used in ds-license.
 
 ## [2.1.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.3) 2024-09-30
 ### Added 
