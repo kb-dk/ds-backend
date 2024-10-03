@@ -719,17 +719,20 @@
     <xsl:if test="//pbcoreGenre">
       <!-- Variables containing values that are to be mapped to a simpler combined value.-->
       <!-- These values should map to: Nyheder, politik og samfund-->
-      <xsl:variable name="NewsPoliticsSociety" as="item()*" select="('nyheder &amp; aktualitet', 'vejrudsigt', 'regional', 'forbruger', 'aktualitet og debat', 'nyheder')"/>
+      <xsl:variable name="NewsPoliticsSociety" as="item()*"
+                    select="('nyheder &amp; aktualitet', 'vejrudsigt', 'regional', 'forbruger', 'økonomi og erhvervsforhold', 'samfundsforhold (fakta)',
+                              'samfundsforhold i et land', 'aktualitet og debat', 'nyheder')"/>
       <!-- These values should map to: Musik-->
-      <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed')"/>
+      <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed', 'opera')"/>
       <!-- These values should map to: Kultur og oplysning-->
-      <xsl:variable name="Culture" as="item()*" select="('kultur', 'religion', 'undervisning', 'oplysning og kultur', 'dramatik og fiktion', 'udsendelsesvirksomhed')"/>
+      <xsl:variable name="Culture" as="item()*"
+                    select="('kultur', 'religion', 'undervisning', 'historie og kulturhistorie', 'oplysning og kultur', 'dramatik og fiktion', 'udsendelsesvirksomhed')"/>
       <!-- These values should map to: Sport-->
-      <xsl:variable name="Sport" as="item()*" select="('sport')"/>
+      <xsl:variable name="Sport" as="item()*" select="('sport', 'blandet sport - nyhedspræget uden')"/>
       <!-- These values should map to: Underholdning-->
-      <xsl:variable name="Entertainment" as="item()*" select="('underholdning', 'tips &amp; lotto')"/>
+      <xsl:variable name="Entertainment" as="item()*" select="('underholdning', 'tips &amp; lotto', 'anden underholdning', 'individet')"/>
       <!-- These values should map to: Børn og unge-->
-      <xsl:variable name="ChildrenYouth" as="item()*" select="('børn &amp; ungdom')"/>
+      <xsl:variable name="ChildrenYouth" as="item()*" select="('børn &amp; ungdom', 'dyr med central rolle')"/>
       <!-- These values should map to: Dokumentar-->
       <xsl:variable name="Documentary" as="item()*" select="('dokumentar')"/>
       <!-- These values should map to: Fiktion-->
@@ -739,7 +742,7 @@
       <!-- These values should map to: Videnskab og natur-->
       <xsl:variable name="ScienceNature" as="item()*" select="('videnskab &amp; forskning', 'videnskab &amp; teknologi', 'natur &amp; miljø')"/>
       <!-- These values should map to: Diverse-->
-      <xsl:variable name="Misc" as="item()*" select="('alle', 'ikke formålsfordelt', 'N/A', 'n/a', 'præsentation og services')"/>
+      <xsl:variable name="Misc" as="item()*" select="('alle', 'andet', 'andet.', 'blandet', 'ikke formålsfordelt', 'N/A', 'n/a', 'præsentation og services')"/>
 
       <!-- Save keywords as a sequence -->
       <xsl:variable name="keywordsSequence" as="item()*">
