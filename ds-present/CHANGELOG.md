@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.4](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.4) 2024-10-08
 ### Added 
 - solr maxBooleanClauses increased from 1024 til 8192. This is because licensmodule queries can have several 100 terms. (solr.config=1.7.2)
   For this to also work on a solr cloud setup the solr start script must have:  export SOLR_OPTS="-Dsolr.allowPaths=/solr-c-backup -Dsolr.max.booleanClauses=8192
