@@ -18,11 +18,13 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,6 +42,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PresentFacadeTest {
+
+    private HttpServletResponse testResponse;
+
     @BeforeAll
     static void setup() {
         try {
@@ -48,6 +53,11 @@ public class PresentFacadeTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @BeforeEach
+    void resetMock() {
+        testResponse = Mockito.mock(HttpServletResponse.class);
     }
 
     @Test
@@ -62,7 +72,7 @@ public class PresentFacadeTest {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
            fail("Missing internal_test_files");
         }
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, FormatDto.MODS, ids -> ids);
+        StreamingOutput out = PresentFacade.getRecords(testResponse, "dsfl", 0L, -1L, FormatDto.MODS, ids -> ids);
         String result = toString(out);
         assertTrue(result.contains("<mods:namePart type=\"family\">Andersen</mods:namePart>"));
     }
@@ -81,12 +91,12 @@ public class PresentFacadeTest {
                 "05fea810-7181-11e0-82d7-002185371280.xml"));
 
         // No access checking
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, FormatDto.MODS, ids -> ids);
+        StreamingOutput out = PresentFacade.getRecords(testResponse, "dsfl", 0L, -1L, FormatDto.MODS, ids -> ids);
         long baseCount = countMETS(out);
         assertTrue(baseCount > 1, "There should be more than 1 record returned when requesting 'dsfl'-records");
 
         // Filter every other record, sorted order
-        out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, FormatDto.MODS,
+        out = PresentFacade.getRecords(testResponse, "dsfl", 0L, -1L, FormatDto.MODS,
                 ids -> ids.stream()
                         .filter(ALLOWED::contains)
                         .collect(Collectors.toList()));
@@ -102,7 +112,7 @@ public class PresentFacadeTest {
         }
 
         // No access checking
-        StreamingOutput out = PresentFacade.getRecords(null, "ds.radiotv", 0L, -1L, FormatDto.SOLRJSON, ids -> ids);
+        StreamingOutput out = PresentFacade.getRecords(testResponse, "ds.radiotv", 0L, -1L, FormatDto.SOLRJSON, ids -> ids);
         ByteArrayOutputStream resultBytes = new ByteArrayOutputStream();
         out.write(resultBytes);
         String result = resultBytes.toString(StandardCharsets.UTF_8);
@@ -137,7 +147,7 @@ public class PresentFacadeTest {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             fail("Missing internal_test_files");                 
         }
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, FormatDto.MODS, ids -> ids);
+        StreamingOutput out = PresentFacade.getRecords(testResponse, "dsfl", 0L, -1L, FormatDto.MODS, ids -> ids);
         String result = toString(out);
 
         Pattern DECLARATION = Pattern.compile("<[?]xml version=\"1.0\" encoding=\"UTF-8\"[?]>", Pattern.DOTALL);
@@ -169,7 +179,7 @@ public class PresentFacadeTest {
                             RAWBYPASS});
 
             PresentFacade.recordView = RAWBYPASS; //"raw-bypass"; // We don't want to check security here
-            StreamingOutput out = PresentFacade.getRecordsRaw(null, "dsfl", 0L, -1L,  ids -> ids, null);
+            StreamingOutput out = PresentFacade.getRecordsRaw(testResponse, "dsfl", 0L, -1L,  ids -> ids, null);
             String result = toString(out);
 
             assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"origin\":null,\"recordType\":null,\"deleted\":false"));
@@ -200,7 +210,7 @@ public class PresentFacadeTest {
                             RAWBYPASS});
 
             PresentFacade.recordView = RAWBYPASS; //"raw-bypass"; // We don't want to check security here
-            StreamingOutput out = PresentFacade.getRecordsRaw(null, "dsfl", 0L, -1L, ids -> ids, true);
+            StreamingOutput out = PresentFacade.getRecordsRaw(testResponse, "dsfl", 0L, -1L, ids -> ids, true);
             String result = toString(out);
             assertTrue(result.contains("\"id\":\"40221e30-1414-11e9-8fb8-00505688346e.xml\",\"origin\":null,\"recordType\":null,\"deleted\":false"));
             assertFalse(result.contains(",\n"), "Result should not contain a comma followed by newline as it should be a multi-entry JSON-Lines");
@@ -214,7 +224,7 @@ public class PresentFacadeTest {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             fail("Missing internal_test_files");
         }
-        StreamingOutput out = PresentFacade.getRecords(null, "dsfl", 0L, -1L, FormatDto.SOLRJSON, ids -> ids);
+        StreamingOutput out = PresentFacade.getRecords(testResponse, "dsfl", 0L, -1L, FormatDto.SOLRJSON, ids -> ids);
         String result = toString(out);
     }
 

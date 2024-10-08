@@ -49,11 +49,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.6.16: Add dr_production_id
 1.7.0: Add warming of start-up query.
 1.7.1: Rename field migrated_from to originates_from and added which contains the word Preservica as default.
-1.7.2: Bumped solr.max.booleanClauses from 1024 to 8192. This will allow queries with more terms. 
-
-
+1.7.2: Bumped solr.max.booleanClauses from 1024 to 8192. This will allow queries with more terms.
+1.7.3: Rename internal prohibition fields to something not internal, as they are to be used in the application.
   -->
-  <field name="_ds_1.7.2_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.3_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -920,23 +919,21 @@ When adding fields to this schema please have the following guidelines in mind:
     <?description ?>
     <?example     ?>
   </field>
-  <!--TODO: Figure out what this field can contain-->
-  <field name="internal_access_individual_prohibition" type="string">
-    <?description ?>
-    <?example     ?>
+  <field name="access_individual_prohibition" type="boolean">
+    <?description If the value of this field is 'true', then the record can not be shown to the public for various reasons, this could be due to complaints etc. ?>
+    <?example     true?>
+  </field>
+  <field name="access_claused" type="boolean">
+    <?description If the value of this field is 'true', then the record can not be shown to the public for various reasons, this could be due to complaints etc. ?>
+    <?example     true?>
+  </field>
+  <field name="access_malfunction" type="boolean">
+    <?description If the value of this field is 'true', then the record can not be shown to the public because the presentation copy is broken or in such a bad state that it
+            effectively is broken. Often these records are available as dublicates in the archive in a better version. ?>
+    <?example     true?>
   </field>
   <!--TODO: Figure out what this field can contain-->
-  <field name="internal_access_claused" type="string">
-    <?description ?>
-    <?example     ?>
-  </field>
-  <!--TODO: Figure out what this field can contain-->
-  <field name="internal_access_malfunction" type="string">
-    <?description ?>
-    <?example     ?>
-  </field>
-  <!--TODO: Figure out what this field can contain-->
-  <field name="internal_access_comments" type="string">
+  <field name="access_comments" type="string">
     <?description ?>
     <?example     ?>
   </field>

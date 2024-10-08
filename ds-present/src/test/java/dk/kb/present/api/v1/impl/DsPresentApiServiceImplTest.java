@@ -25,14 +25,18 @@ import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.Resolver;
+import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletMapping;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.util.Collections;
@@ -43,6 +47,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class DsPresentApiServiceImplTest {
+
+    HttpServletResponse testResponse;
 
     @BeforeAll
     static void setup() {
@@ -195,6 +201,7 @@ public class DsPresentApiServiceImplTest {
         HttpServletMapping mockedMapping = mock(HttpServletMapping.class);
         doReturn("foo").when(mockedMapping).getMatchValue();
 
+        HttpServletResponse mockedResponse = mock(HttpServletResponse.class);
         HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
         doReturn("GET").when(mockedRequest).getMethod();
         doReturn(mockedMapping).when(mockedRequest).getHttpServletMapping();
@@ -202,6 +209,7 @@ public class DsPresentApiServiceImplTest {
 
         DsPresentApiServiceImpl presentAPI = spy(new DsPresentApiServiceImpl());
         setField(presentAPI, dk.kb.util.webservice.ImplBase.class.getDeclaredField("httpServletRequest"), mockedRequest);
+        setField(presentAPI, dk.kb.util.webservice.ImplBase.class.getDeclaredField("httpServletResponse"), mockedResponse);
         return presentAPI;
     }
 }
