@@ -14,6 +14,7 @@
  */
 package dk.kb.present.util;
 
+import dk.kb.present.PresentFacade;
 import dk.kb.present.client.v1.DsPresentApi;
 import dk.kb.present.client.v1.IiifPresentationApi;
 import dk.kb.present.client.v1.ServiceApi;
@@ -230,6 +231,16 @@ public class DsPresentClient extends DsPresentApi {
             String origin, Long mTime, Long maxRecords) throws IOException {
         return getRecordsRawJSON(origin, mTime, maxRecords, false)
                 .stream(DsRecordDto.class);
+    }
+
+    /**
+     * Converts a raw solr schema to a human-readable version.
+     * @param rawSchema the schema to convert.
+     * @param format the format which it gets converted to.
+     * @return the transformed solr schema in the specified format.
+     */
+    public String transformSolrSchema(String rawSchema, String format) throws IOException {
+        return PresentFacade.transformSolrSchema(rawSchema, format);
     }
 
     /**
