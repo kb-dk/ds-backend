@@ -726,30 +726,39 @@
       <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed', 'opera')"/>
       <!-- These values should map to: Kultur og oplysning-->
       <xsl:variable name="Culture" as="item()*"
-                    select="('kultur', 'religion', 'undervisning', 'historie og kulturhistorie', 'oplysning og kultur', 'dramatik og fiktion', 'udsendelsesvirksomhed')"/>
+                    select="('kultur', 'religion', 'undervisning', 'historie og kulturhistorie', 'oplysning og kultur', 'dramatik og fiktion', 'udsendelsesvirksomhed', 'livsberetninger og skæbner',
+                              'natur og dyr', 'mad og drikke', 'undervisning og kultur', 'medier')"/>
       <!-- These values should map to: Sport-->
       <xsl:variable name="Sport" as="item()*" select="('sport', 'blandet sport - nyhedspræget uden')"/>
       <!-- These values should map to: Underholdning-->
-      <xsl:variable name="Entertainment" as="item()*" select="('underholdning', 'tips &amp; lotto', 'anden underholdning', 'individet')"/>
+      <xsl:variable name="Entertainment" as="item()*"
+                    select="('underholdning', 'tips &amp; lotto', 'anden underholdning', 'individet', 'comedy/situation comedy', 'journalistisk underholdning', 'humor', 'quiz', 'shows')"/>
       <!-- These values should map to: Børn og unge-->
-      <xsl:variable name="ChildrenYouth" as="item()*" select="('børn &amp; ungdom', 'dyr med central rolle')"/>
+      <xsl:variable name="ChildrenYouth" as="item()*" select="('børn &amp; ungdom', 'dyr med central rolle', 'eventyr')"/>
       <!-- These values should map to: Dokumentar-->
       <xsl:variable name="Documentary" as="item()*" select="('dokumentar')"/>
       <!-- These values should map to: Fiktion-->
-      <xsl:variable name="Fiction" as="item()*" select="('film', 'serie', 'serier')"/>
+      <xsl:variable name="Fiction" as="item()*"
+                    select="('film', 'serie', 'serier', 'spænding', 'psykologisk', 'socialt og historisk drama', 'Trillers: Krimi', 'detektiv', 'spion', 'Fiktion')"/>
       <!-- These values should map to: Livsstil-->
       <xsl:variable name="Lifestyle" as="item()*" select="('fritid &amp; livsstil', 'sundhed &amp; mad')"/>
       <!-- These values should map to: Videnskab og natur-->
-      <xsl:variable name="ScienceNature" as="item()*" select="('videnskab &amp; forskning', 'videnskab &amp; teknologi', 'natur &amp; miljø')"/>
+      <xsl:variable name="ScienceNature" as="item()*"
+                    select="('videnskab &amp; forskning', 'videnskab &amp; teknologi', 'natur &amp; miljø', 'natur', 'natur og kultur (fakta)', 'sundhed')"/>
       <!-- These values should map to: Diverse-->
       <xsl:variable name="Misc" as="item()*" select="('alle', 'andet', 'andet.', 'blandet', 'ikke formålsfordelt', 'N/A', 'n/a', 'præsentation og services')"/>
 
       <!-- Save keywords as a sequence -->
       <xsl:variable name="keywordsSequence" as="item()*">
         <xsl:for-each select="./pbcoreGenre/genre">
-          <xsl:if test="substring-after(., ':') != '' and not(f:contains(., 'null'))">
-            <xsl:value-of select="(normalize-space(f:substring-after(., ':')))"/>
-          </xsl:if>
+          <xsl:choose>
+            <xsl:when test="f:contains(., ':') and substring-after(., ':') != '' and not(f:contains(., 'null'))" >
+              <xsl:value-of select="(normalize-space(f:substring-after(., ':')))"/>
+            </xsl:when>
+            <xsl:when test="not(f:contains(., ':')) and not(f:contains(., 'null'))">
+              <xsl:value-of select="normalize-space(.)"/>
+            </xsl:when>
+          </xsl:choose>
         </xsl:for-each>
       </xsl:variable>
 
