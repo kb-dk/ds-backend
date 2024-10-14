@@ -528,6 +528,12 @@ paths:
             application/json:
               schema:
                 type: string
+        '503':
+          description: 'An error occurred when sending the request to solr. The service is currently unavailable.'
+          content:
+            application/json:
+              schema:
+                type: string
 
   /solr/{collection}/mlt:
     get:

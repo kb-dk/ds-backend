@@ -489,11 +489,12 @@ public class SolrService {
             log.warn(String.format(
                     Locale.ROOT, "Unable to perform remote %s call for collection '%s', query '%s'",
                     callType, getID(), q), e);
-            throw new InternalServiceException(String.format(
+            throw new ServiceException(String.format(
                     Locale.ROOT, "Unable to perform remote %s call for query '%s'." +
-                            "Remote service might not be responding",
-                    callType, StringListUtils.truncateMiddle(q, 100)));
+                            "Remote service might not be responding.",
+                    callType, StringListUtils.truncateMiddle(q, 100)), Response.Status.SERVICE_UNAVAILABLE);
         }
+
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             log.warn("Got HTTP {} from remote {} call for collection '{}', query '{}': {}",
                     response.statusCode(), callType, getID(), q, response.body());
