@@ -14,15 +14,19 @@
  */
 package dk.kb.discover;
 
+import dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl;
 import dk.kb.discover.config.ServiceConfig;
+import dk.kb.discover.util.ErrorMessageHandler;
 import dk.kb.discover.util.SolrParamMerger;
 import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -493,9 +497,13 @@ public class SolrService {
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             log.warn("Got HTTP {} from remote {} call for collection '{}', query '{}': {}",
                     response.statusCode(), callType, getID(), q, response.body());
-            throw new InternalServiceException(String.format(
-                    Locale.ROOT, "Got HTTP %d performing remote %s call for query '%s'",
-                    response.statusCode(), callType, StringListUtils.truncateMiddle(q, 100)));
+
+            String solrError = ErrorMessageHandler.getErrorMsgFromSolrResponse(response.body());
+
+            throw new ServiceException(String.format(
+                    Locale.ROOT, "Got HTTP %d performing remote %s call for query '%s'. Solr error was: '%s'",
+                    response.statusCode(), callType, StringListUtils.truncateMiddle(q, 100), solrError),
+                    Response.Status.fromStatusCode(response.statusCode()));
         }
 
         return response.body();
