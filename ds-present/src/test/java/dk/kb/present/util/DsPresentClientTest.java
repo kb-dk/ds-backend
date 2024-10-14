@@ -18,6 +18,7 @@ import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.util.Resolver;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import dk.kb.util.webservice.stream.ContinuationUtil;
@@ -103,6 +104,14 @@ public class DsPresentClientTest {
             // which are "Deliverable units", in other words, records that contain actual metadata and are delivered.
             assertEquals(1L, records.getRecordCount());
         }
+    }
+
+    @Test
+    public void testSchemaTransformation() throws IOException {
+        String schema = Resolver.resolveUTF8String("src/main/solr/dssolr/conf/schema.xml");
+
+        String result = remote.transformSolrSchema(schema, "markdown");
+        assertTrue(result.startsWith("# Schema documentation"));
     }
 
     @SuppressWarnings("unchecked")
