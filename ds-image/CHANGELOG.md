@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+
+## [1.7.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.7.0) - 2024-10-15
 ### Changed
 - Upgraded ds-kaltura to v.1.2.5
 - Kaltura client uses kaltura app-tokens instead of mastersecret. Two new properties added: kaltura.token and katura.tokenId. Mastersecret can be set to null in property
