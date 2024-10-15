@@ -15,7 +15,7 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 public class KalturaUtil {
 
     private static final Logger log = LoggerFactory.getLogger(KalturaUtil.class);
-            
+    private static DsKalturaClient kalturaClientInstance;
     /**
      * 
      * Example url to the sprite with all thumbnails:<br>
@@ -39,16 +39,16 @@ public class KalturaUtil {
         ThumbnailsDto thumbnails = new ThumbnailsDto();
         String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
         Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
-        
+
         DsKalturaClient client = getKalturaClient();
         String kalturaId = client.getKulturaInternalId(fileId);                     
-        
+
         if (kalturaId == null) {
             throw new InvalidArgumentServiceException("FileId not found at Kaltura:"+fileId);
         }             
         log.debug("ReferenceId lookup at kaltura resolved to internalId {} -> {}",fileId,kalturaId);
         String baseUrl=kalturaUrl+"/p/"+partnerId+"/thumbnail/entry_id/"+kalturaId;
-      
+
         if (width != null && width.intValue() > 0) {
             baseUrl=baseUrl+"/width/"+width;
         }
@@ -73,16 +73,25 @@ public class KalturaUtil {
 
         return thumbnails;          
     }
-    
-    private static DsKalturaClient getKalturaClient() throws IOException {
+
+    private static synchronized DsKalturaClient getKalturaClient() throws IOException {
+
+        if (kalturaClientInstance != null) {
+            return kalturaClientInstance;
+        }
+
         String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
-        String adminSecret = ServiceConfig.getConfig().getString("kaltura.adminSecret"); //Must not be shared or exposed.
+        String adminSecret = ServiceConfig.getConfig().getString("kaltura.adminSecret"); //Must not be shared or exposed. Use token,tokenId.
         Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
         String userId = ServiceConfig.getConfig().getString("kaltura.userId");                               
+        String token= ServiceConfig.getConfig().getString("kaltura.token");
+        String tokenId= ServiceConfig.getConfig().getString("kaltura.tokenId");
+
         long sessionKeepAliveSeconds=3600L; //1 hour
-        log.info("creating kaltura client for partnerID:"+partnerId);
-        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl,userId,partnerId,adminSecret,sessionKeepAliveSeconds);
-        return kalturaClient;
+        log.info("creating kaltura client for partnerID:"+partnerId);           
+        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl,userId,partnerId,token,tokenId,adminSecret,sessionKeepAliveSeconds);
+        kalturaClientInstance=kalturaClient;
+        return kalturaClient;    
     }
-    
+
 }

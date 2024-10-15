@@ -36,10 +36,13 @@ thumbnail:
   width:
     max: 150
   
+ #Use token and tokenId  instead of admin secret
 kaltura: 
   url:  https://kmc.kaltura.nordu.net
-  partnerId:  380
+  partnerId:  398
   userId:  xxx@kb.dk
+  token: 'yyyyy'
+  tokenId: 'yyyyy'
   adminSecret: very very secret
 
 security:

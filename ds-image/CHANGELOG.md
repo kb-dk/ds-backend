@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Using ds-kaltura client v.1.2.5
+
 ## [1.6.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.6.0) - 2024-09-10
 ### Changed
 -  Upgrade to latest Oauth2 classes
