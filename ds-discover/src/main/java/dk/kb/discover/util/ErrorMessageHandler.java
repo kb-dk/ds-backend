@@ -21,7 +21,8 @@ public class ErrorMessageHandler {
         try {
             rootNode = objectMapper.readTree(solrResponse);
         } catch (JsonProcessingException e) {
-            throw new InternalServiceException(e);
+            throw new InternalServiceException("An error occurred when extracting Solr Error Message from a SolrResponse. There might not be an error message in the returned " +
+                    "SolrResponse. The exception thrown is: ", e);
         }
 
         // Extract the "error" node
