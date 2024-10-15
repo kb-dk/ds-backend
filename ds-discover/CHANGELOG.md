@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- The SolrService class now delivers the correct error message and status code from solr, when the backing solr throws an HTTP code outside the range 200-299.
+
 ## [1.4.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.4.0) - 2024-09-10
 ### Added
 - Enabled OAuth2 on /select (solrSearch) endpoint. Much is copy-paste from ds-image to see it working in two different modules.
