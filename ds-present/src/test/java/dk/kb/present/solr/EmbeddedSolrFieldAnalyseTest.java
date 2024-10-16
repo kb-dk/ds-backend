@@ -132,9 +132,17 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals(1, getStrictTitleForQuery("\"Romeo and Juliet\""));
         assertEquals(0, getStrictTitleForQuery("and"));
         assertEquals(0, getStrictTitleForQuery("Julie"));
-
     }
 
+    @Test
+    public void testTitle() throws SolrServerException, IOException {
+        //title field does not use stopwords
+        addSynonymFieldTestDocuments2();//this has a title: Velkommen til TV avisen
+        assertEquals(1, getTitleQuery("\"Velkommen til TV avisen\"").size());
+        //last 'og' not removed by stopwords, so no hits.
+        assertEquals(0, getTitleQuery("\"Velkommen til TV avisen og\"").size());               
+    }
+    
     @Test
     public void testAnalysis() throws SolrServerException, IOException {
         addSimpleFieldTestDocuments();

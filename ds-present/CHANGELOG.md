@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added client method for solr schema transformation
 ### Changed
 - Updated genre mappings with more values.
+- solr1.7.4 : New field type as text_general but without stopwords. The title field now uses this field instead. It needed for better title match.
+
 
 ## [2.1.4](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.4) 2024-10-08
 ### Added 
