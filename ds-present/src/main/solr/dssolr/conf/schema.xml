@@ -1066,6 +1066,11 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     If a television recording with subtitles is indexed, this field will hold the subtitles and only the subtitles.?>
   </field>
 
+  <field name="suggest_context" type="string" multiValued="true">
+    <?description An internal field used to filter results in a suggest query. ?>
+    <?example ?>
+  </field>
+
   <!-- Most fields are copied to this field for matching. -->
   <field name="freetext" type="freetext" multiValued="true" stored="false">
     <?description Freetext field, which contains text from multiple other fields.
@@ -1281,6 +1286,7 @@ When adding fields to this schema please have the following guidelines in mind:
   <copyField source="original_title" dest="freetext"/>
   <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->    
   <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
+  <copyField source="own_production" dest="suggest_context"/>
   <copyField source="text" dest="text_shingles">
     <?description Copies the content of the basic text field to the shingles enabled text field, for better phrase search ranking and keyword extraction.?>
   </copyField>
