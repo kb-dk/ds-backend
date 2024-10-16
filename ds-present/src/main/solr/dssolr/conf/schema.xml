@@ -51,8 +51,9 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.1: Rename field migrated_from to originates_from and added which contains the word Preservica as default.
 1.7.2: Bumped solr.max.booleanClauses from 1024 to 8192. This will allow queries with more terms.
 1.7.3: Rename internal prohibition fields to something not internal, as they are to be used in the application.
+1.7.4: New field type as text_general but without stopwords. The title field now uses this field instead. It needed for better title match.
   -->
-  <field name="_ds_1.7.3_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.4_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -112,7 +113,7 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example       3?>
   </field>
 
-  <field name="title" type="text_general" multiValued="true" stored="true"> <!-- Title will be made single value field at some time-->
+  <field name="title" type="text_general_no_stopwords" multiValued="true" stored="true"> <!-- Title will be made single value field at some time-->
     <?description The object title.?>
     <?example     Den grimme ælling.?>
   </field>
@@ -1162,6 +1163,23 @@ When adding fields to this schema please have the following guidelines in mind:
         <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>        
     </analyzer>
   </fieldType>
+  
+    <!-- Highly analysed text field with stopwords and synonym. -->
+  <fieldType name="text_general_no_stopwords" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+    <analyzer type="index">
+       <tokenizer class="solr.StandardTokenizerFactory"/>
+       <filter class="solr.LowerCaseFilterFactory"/>
+       <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>
+       <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
+       
+    </analyzer>
+    <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>        
+        <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>        
+    </analyzer>
+  </fieldType>
+  
 
   <!-- The suggest component needs its own field type. Currently, this is a copy of the text_general fieldType. -->
   <!-- TODO: Figure how tho create the best suggest fieldType-->
