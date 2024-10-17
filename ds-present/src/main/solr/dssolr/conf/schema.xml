@@ -1068,7 +1068,7 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     If a television recording with subtitles is indexed, this field will hold the subtitles and only the subtitles.?>
   </field>
 
-  <field name="suggest_context" type="string" multiValued="true">
+  <field name="suggest_context" type="string">
     <?description An internal field used to filter results in a suggest query. ?>
     <?example ?>
   </field>

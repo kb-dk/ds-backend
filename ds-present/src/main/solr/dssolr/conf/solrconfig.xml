@@ -884,7 +884,7 @@
         <str name="suggest.count">10</str>
         <!-- Add default value for contextField. own_production:true as normal queries are. The suggest_context field is a multivalued field
          so that values from more fields can be added as context values.-->
-        <str name="suggest.cfq">!false</str>
+        <str name="suggest.cfq">true</str>
       </lst>
       <arr name="components">
         <str>suggest</str>
