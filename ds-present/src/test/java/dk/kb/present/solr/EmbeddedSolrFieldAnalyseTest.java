@@ -431,6 +431,7 @@ public class EmbeddedSolrFieldAnalyseTest {
             document.addField("origin", "ds.test");
             document.addField("title", "Velkommen til tvavisen hos TV2");
             document.addField("broadcaster", "TV2");
+            document.addField("own_production", "false");
 
             embeddedServer.add(document);
             embeddedServer.commit();
