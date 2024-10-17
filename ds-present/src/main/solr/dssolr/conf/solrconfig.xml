@@ -772,7 +772,7 @@
         <str name="qf">
         filename_local^5.0
         title_strict^5.0
-        title
+        title^5.0
         creator_strict^5.0
         actor_strict^5.0
         character_strict^5.0
