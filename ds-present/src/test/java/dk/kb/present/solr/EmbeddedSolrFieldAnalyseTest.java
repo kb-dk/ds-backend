@@ -327,6 +327,7 @@ public class EmbeddedSolrFieldAnalyseTest {
             document.addField("origin", "ds.test");
             document.addField("title", "Velkommen til TVavisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
             document.addField("broadcaster", "DR");
+            document.addField("own_production", "true");
             // => tv avisen
 
             embeddedServer.add(document);
