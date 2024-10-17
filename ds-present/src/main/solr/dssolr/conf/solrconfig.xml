@@ -882,9 +882,9 @@
         <str name="suggest.dictionary">radiotv_title_suggest</str>
         <str name="suggest">true</str>
         <str name="suggest.count">10</str>
-        <str name="suggest.cfq">DR</str> <!-- Add default value for contextField. This means that all suggestions are
-                                              filtered by broadcaster:DR as normal queries are. TODO: When rights metadata
-                                              has been extracted correct, teh CFQ value and field has to be addressed.-->
+        <!-- Add default value for contextField. own_production:true as normal queries are. The suggest_context field is a multivalued field
+         so that values from more fields can be added as context values.-->
+        <str name="suggest.cfq">true</str>
       </lst>
       <arr name="components">
         <str>suggest</str>
@@ -897,7 +897,7 @@
       <str name="lookupImpl">BlendedInfixLookupFactory</str> <!-- Using one of the two implementations that support Context fields  -->
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">title</str>
-      <str name="contextField">broadcaster</str> <!-- Context field, used to filter the suggester on broadcaster:DR -->
+      <str name="contextField">suggest_context</str> <!-- Context field, used to filter the suggester on own_production:true -->
       <str name="suggestAnalyzerFieldType">suggest_field</str> <!-- Currently suggest_field is a copy of text_general -->
       <str name="buildOnStartup">true</str> <!-- Good enough for now -->
     </lst>

@@ -52,8 +52,9 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.2: Bumped solr.max.booleanClauses from 1024 to 8192. This will allow queries with more terms.
 1.7.3: Rename internal prohibition fields to something not internal, as they are to be used in the application.
 1.7.4: New field type as text_general but without stopwords. The title field now uses this field instead. It needed for better title match.
+1.7.5: New field used for context filter queries in the suggest component. Values used for filtering should be copied to this field and included in the cfq default parameter.
   -->
-  <field name="_ds_1.7.4_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.5_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -1067,6 +1068,11 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     If a television recording with subtitles is indexed, this field will hold the subtitles and only the subtitles.?>
   </field>
 
+  <field name="suggest_context" type="string">
+    <?description An internal field used to filter results in a suggest query. ?>
+    <?example ?>
+  </field>
+
   <!-- Most fields are copied to this field for matching. -->
   <field name="freetext" type="freetext" multiValued="true" stored="false">
     <?description Freetext field, which contains text from multiple other fields.
@@ -1299,6 +1305,7 @@ When adding fields to this schema please have the following guidelines in mind:
   <copyField source="original_title" dest="freetext"/>
   <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->    
   <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
+  <copyField source="own_production" dest="suggest_context"/>
   <copyField source="text" dest="text_shingles">
     <?description Copies the content of the basic text field to the shingles enabled text field, for better phrase search ranking and keyword extraction.?>
   </copyField>
