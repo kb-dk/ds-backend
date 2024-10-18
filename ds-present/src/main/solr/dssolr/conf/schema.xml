@@ -53,6 +53,7 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.3: Rename internal prohibition fields to something not internal, as they are to be used in the application.
 1.7.4: New field type as text_general but without stopwords. The title field now uses this field instead. It needed for better title match.
 1.7.5: New field used for context filter queries in the suggest component. Values used for filtering should be copied to this field and included in the cfq default parameter.
+       Add field genre_facet with value from genre.
   -->
   <field name="_ds_1.7.5_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -90,6 +91,12 @@ When adding fields to this schema please have the following guidelines in mind:
   </field>
 
   <field name="genre" type="string" docValues="true">
+    <?description The genre of the resource?>
+    <?example     For a photograph: Portrait?>
+    <?example     For a book: novel?>
+  </field>
+
+  <field name="genre_facet" type="facet" docValues="true">
     <?description The genre of the resource?>
     <?example     For a photograph: Portrait?>
     <?example     For a book: novel?>
@@ -1294,6 +1301,7 @@ When adding fields to this schema please have the following guidelines in mind:
   <copyField source="catalog" dest="freetext"/>
   <copyField source="collection" dest="freetext"/>
   <copyField source="genre" dest="freetext"/>
+  <copyField source="genre" dest="genre_facet"/>
   <copyField source="genre_sub" dest="freetext"/>
   <copyField source="resource_description" dest="freetext"/>
   <copyField source="resource_description_general" dest="freetext"/>
