@@ -122,7 +122,39 @@
       </xsl:choose>
 
     </xsl:variable>
-    <xsl:value-of select="f:xml-to-json($json)"/>
+
+    <!-- Wrapping the xml-to-json function in a  -->
+    <xsl:try>
+      <xsl:value-of select="f:xml-to-json($json)"/>
+      <xsl:catch errors="*">
+        <xsl:variable name="errorDoc">
+          <f:map>
+            <!-- First three fields for schema.org are these no matter which object the transformer transforms to. -->
+            <f:string key="@context">http://schema.org/</f:string>
+            <f:string key="@type"><xsl:value-of select="$type"/></f:string>
+            <f:string key="id">
+              <xsl:value-of select="$recordID"/>
+            </f:string>
+            <f:array key="identifier">
+              <f:map>
+                <f:string key="@type">PropertyValue</f:string>
+                <f:string key="PropertyID">Origin</f:string>
+                <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+              </f:map>
+            </f:array>
+            <f:map key="kb:internal">
+              <!-- Internal value for backing ds-storage mTime-->
+              <f:string key="kb:storage_mTime">
+                <xsl:value-of select="format-number($mTime, '0')"/>
+              </f:string>
+              <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
+              <f:string key="kb:transformation_error_description"><xsl:value-of select="concat($err:code, ': ', $err:description)"/></f:string>
+            </f:map>
+          </f:map>
+        </xsl:variable>
+        <xsl:value-of select="f:xml-to-json($errorDoc)"/>
+      </xsl:catch>
+    </xsl:try>
   </xsl:template>
 
   <!-- TEMPLATE FOR TRANSFORMING VIDEOOBJECTS. The template requires the following two parameters:
@@ -341,7 +373,7 @@
         </xsl:if>
         <!-- Catches all errors in sequence constructors (places where data can be used as input). If an error occurs
            the field origin will be created and internal fields about the error will be created as well. -->
-        <xsl:catch errors="*">
+        <xsl:catch>
           <f:array key="identifier">
             <f:map>
               <f:string key="@type">PropertyValue</f:string>

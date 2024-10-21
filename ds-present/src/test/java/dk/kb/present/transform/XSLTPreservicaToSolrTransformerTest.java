@@ -537,6 +537,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         prettyPrintJson(solrString);
     }
 
+    @Test
+    void testErrorFromFirstSchemaTransformation() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_INVALID_NUMBERS_PLUSSIGN);
+        assertTrue(solrString.contains("\"internal_transformation_error_description\":\"err:FOJS0006: xml-to-json: Invalid number: 2+3 \"") &&
+                solrString.contains("\"id\":\"ds.test:invalid_numbers_2.xml\""));
+    }
+
     /**
      * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
      * transformed record contains the given {@code substring}.
