@@ -385,12 +385,19 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
 
     @Test
+    public void testNotANumberPlusSign() throws IOException {
+        Map<String, String> fakeManifestation = Map.of("manifestation", "test");
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_INVALID_NUMBERS_PLUSSIGN, fakeManifestation);
+
+        assertFalse(transformedJSON.contains("\"kb:transformation_error_description\":\"err:FOJS0006: xml-to-json: Invalid number: 2+3 \""));
+    }
+
+    //@Test
     void testErrorCatching() throws IOException {
         // This does not produce an error anymore, however I would like to produce an error to test the error handling.
         Map<String, String> fakeManifestation = Map.of("manifestation", "test");
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_INVALID_NUMBERS_PLUSSIGN, fakeManifestation);
 
-        prettyPrintJson(transformedJSON);
         Assertions.assertTrue(transformedJSON.contains("\"kb:transformation_error_description\":\"err:FOJS0006: xml-to-json: Invalid number: 2+3 \""));
     }
 

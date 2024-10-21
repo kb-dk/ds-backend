@@ -665,7 +665,8 @@
                   <xsl:variable name="episodeNumber">
                       <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
                   </xsl:variable>
-                  <xsl:if test="string($episodeNumber) != 'NaN'">
+                  <!-- Check that variable only contains valid digits and not crazy stuff like 2+3 to show that both episode 2 and 3 are present in this program. -->
+                  <xsl:if test="string($episodeNumber) != 'NaN' and matches($episodeNumber, '^\d+$')">
                     <f:number key="episodeNumber">
                       <xsl:value-of select="substring-after(., 'episodenr:')"/>
                     </f:number>
@@ -759,7 +760,7 @@
       <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed', 'opera')"/>
       <!-- These values should map to: Kultur og oplysning-->
       <xsl:variable name="Culture" as="item()*"
-                    select="('kultur', 'religion', 'undervisning', 'historie og kulturhistorie', 'oplysning og kultur', 'dramatik og fiktion', 'udsendelsesvirksomhed', 'livsberetninger og skæbner',
+                    select="('kultur', 'religion', 'undervisning', 'historie og kulturhistorie', 'oplysning og kultur', 'amatik og fiktion', 'udsendelsesvirksomhed', 'livsberetninger og skæbner',
                               'natur og dyr', 'mad og drikke', 'undervisning og kultur', 'medier', 'forbrugerstof', 'litteratur', 'forkyndende sangprogrammer', 'kulturforhold', 'sjælelivet')"/>
       <!-- These values should map to: Sport-->
       <xsl:variable name="Sport" as="item()*" select="('sport', 'blandet sport - nyhedspræget uden', 'fodbold')"/>
