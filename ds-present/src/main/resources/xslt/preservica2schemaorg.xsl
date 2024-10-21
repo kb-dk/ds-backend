@@ -665,7 +665,8 @@
                   <xsl:variable name="episodeNumber">
                       <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
                   </xsl:variable>
-                  <xsl:if test="string($episodeNumber) != 'NaN'">
+                  <!-- Check that variable only contains valid digits and not crazy stuff like 2+3 to show that both episode 2 and 3 are present in this program. -->
+                  <xsl:if test="string($episodeNumber) != 'NaN' and matches($episodeNumber, '^\d+$')">
                     <f:number key="episodeNumber">
                       <xsl:value-of select="substring-after(., 'episodenr:')"/>
                     </f:number>
