@@ -760,7 +760,7 @@
       <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed', 'opera')"/>
       <!-- These values should map to: Kultur og oplysning-->
       <xsl:variable name="Culture" as="item()*"
-                    select="('kultur', 'religion', 'undervisning', 'historie og kulturhistorie', 'oplysning og kultur', 'amatik og fiktion', 'udsendelsesvirksomhed', 'livsberetninger og skæbner',
+                    select="('kultur', 'religion', 'undervisning', 'historie og kulturhistorie', 'oplysning og kultur', 'dramatik og fiktion', 'udsendelsesvirksomhed', 'livsberetninger og skæbner',
                               'natur og dyr', 'mad og drikke', 'undervisning og kultur', 'medier', 'forbrugerstof', 'litteratur', 'forkyndende sangprogrammer', 'kulturforhold', 'sjælelivet')"/>
       <!-- These values should map to: Sport-->
       <xsl:variable name="Sport" as="item()*" select="('sport', 'blandet sport - nyhedspræget uden', 'fodbold')"/>
