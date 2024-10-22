@@ -447,7 +447,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testOriginatesFromPreservica(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"originates_from\":\"Preservica\"");
-
     }
 
     @Test

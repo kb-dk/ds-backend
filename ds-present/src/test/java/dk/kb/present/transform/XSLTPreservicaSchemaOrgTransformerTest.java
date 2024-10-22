@@ -464,9 +464,16 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
-    public void testMigratedFrom() throws IOException {
+    public void testOriginatesFromDOMS() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_e2dfb840);
         assertTrue(transformedJSON.contains("kb:originates_from\":\"DOMS\""));
+    }
+
+    @Test
+    public void testColonInCategory() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_07fc1c7c);
+        prettyPrintJson(transformedJSON);
+        assertTrue(transformedJSON.contains("\"genre\":\"Fiktion\","));
     }
 
     @Test
