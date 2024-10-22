@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Added check for DOMS records having a valid access representation.
 - Added client method for solr schema transformation
 - solr 1.7.5: Added field genre_facet to solr schema
 

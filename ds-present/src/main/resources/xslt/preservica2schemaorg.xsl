@@ -1001,6 +1001,44 @@
       </xsl:choose>
     </f:string>
 
+    <!-- If record originates from DOMS, we have to check if an access copy has been created by DOMS. That's whats happening inside this if-statement.
+          This is done in the same way as mediestream did it.-->
+    <xsl:if test="normalize-space($migrationSource) = 'Radio/tv DOMS - prod'">
+      <xsl:variable name="maxMissingSeconds">
+        <xsl:value-of select="90"/>
+      </xsl:variable>
+
+      <f:string key="kb:has_doms_access_copy">
+        <xsl:choose>
+          <!-- When access/defekt is Ja, then there is no access copy for the DOMS record -->
+          <xsl:when test="/XIP/Metadata/Content/access:access/defekt = 'Ja'">
+            <xsl:value-of select="false"/>
+          </xsl:when>
+          <!-- When there is a progam structure object present, there is a presentation copy present, however it might be so bad, that it cannot be shown.
+                The default configuration for missing seconds from the old transcoder was 120 for not generating the access copy. Mediestream set the value to 90, which
+                is the one that we are reusing here to make sure all programs delivered are watchable.-->
+          <xsl:when test="/XIP/Metadata/Content/program_structure:program_structure">
+            <!-- Each element in the program structure has to be analysed. This is done as in mediestream, where 90 seconds are allowed to be missing in each of the fields.
+                  If the value is greater than that, then we dont want the program to be shown.-->
+            <xsl:for-each select="/XIP/Metadata/Content/program_structure:program_structure">
+              <xsl:choose>
+                <xsl:when test="holes/hole/holeLength[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
+                <xsl:when test="missingStart/missingSeconds[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
+                <xsl:when test="missingEnd/missingSeconds[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
+                <xsl:when test="holes/hole/holeLength[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
+                <!-- A program exists and there is not more than 90 seconds missing from each element above. -->
+                <xsl:otherwise><xsl:value-of select="true()"/></xsl:otherwise>
+              </xsl:choose>
+            </xsl:for-each>
+          </xsl:when>
+          <!-- If the program structure doesn't exist and the record originates from DOMS, then an access copy haven't been created. -->
+          <xsl:otherwise>
+            <xsl:value-of select="false()"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </f:string>
+    </xsl:if>
+
     <!-- Internal value for backing ds-storage mTime-->
     <f:string key="kb:storage_mTime">
       <xsl:value-of select="format-number($mTime, '0')"/>

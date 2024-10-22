@@ -392,6 +392,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertFalse(transformedJSON.contains("\"kb:transformation_error_description\":\"err:FOJS0006: xml-to-json: Invalid number: 2+3 \""));
     }
 
+    @Test
+    public void testNoPresentationCopyDoms() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_1ab7e0fc);
+        assertTrue(transformedJSON.contains("\"kb:has_doms_access_copy\":\"false\""));
+    }
+
     //@Test
     void testErrorCatching() throws IOException {
         // This does not produce an error anymore, however I would like to produce an error to test the error handling.

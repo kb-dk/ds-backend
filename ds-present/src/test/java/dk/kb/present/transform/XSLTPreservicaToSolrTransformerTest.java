@@ -537,6 +537,19 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         prettyPrintJson(solrString);
     }
 
+    @Test
+    public void testNoPresentationCopyDoms() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_1ab7e0fc);
+        assertTrue(transformedJSON.contains("\"access_malfunction\":\"true\""));
+    }
+
+    @Test
+    public void testDOMSLogicNotAffectsPreservicaRecord() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_0b3f6a54);
+        assertTrue(transformedJSON.contains("\"access_malfunction\":\"false\""));
+    }
+
+
     //@Test
     void testErrorFromFirstSchemaTransformation() throws IOException {
         // This does not produce an error anymore
