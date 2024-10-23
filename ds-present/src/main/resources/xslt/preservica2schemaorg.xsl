@@ -789,17 +789,17 @@
         <xsl:for-each select="./pbcoreGenre/genre">
           <xsl:choose>
             <xsl:when test="f:contains(., ':') and substring-after(., ':') != '' and not(f:contains(., 'null'))" >
-              <xsl:value-of select="(normalize-space(tokenize(f:substring-after(., ':'), ',')))"/>
+              <xsl:value-of select="tokenize(f:substring-after(., ':'), ',')"/>
             </xsl:when>
             <xsl:when test="not(f:contains(., ':')) and not(f:contains(., 'null'))">
-              <xsl:value-of select="normalize-space(.)"/>
+              <xsl:value-of select="."/>
             </xsl:when>
           </xsl:choose>
         </xsl:for-each>
       </xsl:variable>
 
       <xsl:variable name="keywordsString">
-        <xsl:value-of select="f:string-join($keywordsSequence, ', ')"/>
+        <xsl:value-of select="normalize-space(f:string-join($keywordsSequence, ', '))"/>
       </xsl:variable>
 
       <xsl:if test="$keywordsString != ''">

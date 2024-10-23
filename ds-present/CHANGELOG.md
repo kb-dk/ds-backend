@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - solr 1.7.5: Update configuration of suggest component to filter on own_production status
 
 ### Fixed
+- Fixed categories not transforming correct, when they contained a `:`-character.
 - Fixed handling of `episodenr: 2+3` where a proper digit is expected. 
 - Fixed cases where transformation errors wasn't handled correct. Now all errors gets written to the transformed documents.
 

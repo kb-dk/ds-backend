@@ -279,7 +279,7 @@
     <!-- Find and display common values -->
     <xsl:variable name="valuesIntersect">
       <xsl:for-each select="$sequenceA">
-        <xsl:variable name="item" select="lower-case(.)" />
+        <xsl:variable name="item" select="normalize-space(lower-case(.))" />
         <xsl:if test="$sequenceB = $item">
           <xsl:value-of select="true()"/>
         </xsl:if>
