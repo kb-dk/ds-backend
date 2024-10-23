@@ -781,6 +781,7 @@
         pid^5.0
         episode_title^4.0
         topic^2.0
+        temporal_start_year^2.0
         location
         creator
         actor
@@ -1012,6 +1013,7 @@
         pid^5.0
         episode_title^4.0
         topic^2.0
+        temporal_start_year^2.0
         location
         creator
         actor
@@ -1048,6 +1050,7 @@
           director_strict^5.0
           contributor_strict^5.0
           topic^2.0
+          temporal_start_year^2.0
           location
           creator
           actor
