@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.1.5](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.5) 2024-10-23
 ### Added
 - Added check for DOMS records having a valid access representation.
 - Added client method for solr schema transformation
