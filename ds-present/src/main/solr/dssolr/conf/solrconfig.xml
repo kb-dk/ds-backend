@@ -805,7 +805,9 @@
        
         <str name="pf">
          freetext         
-       </str>     
+       </str>
+       <str name="bq">resource_description:VideoObject^2</str>
+
        <str name="facet">true</str>
        <str name="facet.mincount">1</str>
        <str name="facet.limit">10</str>
