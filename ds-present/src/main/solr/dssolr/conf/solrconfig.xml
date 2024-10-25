@@ -769,39 +769,38 @@
        <str name="defType">edismax</str>      
         <!-- Update qf for /mlt handler further down in the solrconfig.xml when changing this -->
         <str name="qf">
-        <!--filename_local^5.0--> <!-- Only available for images-->
         title_strict^5.0 <!-- Should be present for all collections. Used for matching on single word titles and filtering of these in ds-license.-->
         title^5.0
         creator_strict^5.0 <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
         actor_strict^5.0 <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
         character_strict^5.0 <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
         director_strict^5.0 <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
-        <!--contributor_strict^5.0--> <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it, only 104 hits in radio/tv data. -->
-        pid^5.0 <!-- Should be in all collections. However PIDs for radio and tv refer to mediestream. -->
         episode_title^4.0  <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
-        topic^2.0 <!-- Only available for images -->
         temporal_start_year^2.0 <!-- Always available for radio and tv. Probably also available for other collections when implemented. -->
-        location <!-- Only aaaavailable for images -->
         creator <!-- Can be present in all collections -->
         actor <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
         character <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
         director <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
         contributor <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
-        <!--notes--> <!-- Only in images collection -->
         collection <!-- Probably is in all collections -->
         categories <!-- Probably is in all collections -->
-        catalog <!-- Only present in image documents-->
         genre <!-- Some value should always be present in documents-->
-        genre_sub <!-- Should probably just be copied to freetext and not included here. -->
         resource_description <!-- Present for all records, defines the type of record -->
         creator_affiliation <!-- Present for all radio and tv records. Might not be for images. Contains channel -->
         abstract <!-- Can be present in all collections, but might not be. -->
         description <!-- Can be present in all collections, but might not be. -->
-        internal_showviewcode <!-- Can only be present in radio and tv. 200K DR records contains the code. -->
         text^0.75 <!-- Not used for radio and tv yet! Should contain subtitles when ready. -->
         text_shingles^0.75 <!-- Not used for radio and tv yet! Should contain subtitles when ready. -->
         freetext^0.5 <!-- Some data should be copied to this field no matter what. -->
-       </str>
+
+        <!--filename_local^5.0--> <!-- Only available for images-->
+        <!--pid^5.0--> <!-- Should be in all collections. However PIDs for radio and tv refer to mediestream. -->
+        <!--contributor_strict^5.0--> <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it, only 104 hits in radio/tv data. -->
+        <!--topic^2.0--> <!-- Only available for images -->
+        <!--location--> <!-- Only available for images -->
+        <!--catalog--> <!-- Only present in image documents-->
+        <!--notes--> <!-- Only in images collection -->
+        </str>
        
         <str name="pf">
          freetext         
@@ -1003,38 +1002,37 @@
       <str name="mlt.maxntp">5000</str>
       <!-- mlt.qf synchronized with edismax qf -->
       <str name="mlt.qf">
-        filename_local^5.0
-        title
-        title_strict^5.0
-        creator_strict^5.0
-        actor_strict^5.0
-        character_strict^5.0
-        director_strict^5.0
-        contributor_strict^5.0
-        pid^5.0
-        episode_title^4.0
-        topic^2.0
-        temporal_start_year^2.0
-        location
-        creator
-        actor
-        character
-        director
-        contributor
-        notes
-        collection
-        categories
-        catalog
-        genre
-        genre_sub
-        resource_description
-        creator_affiliation
-        abstract
-        description
-        internal_showviewcode
-        text^0.75
-        text_shingles^0.75
-        freetext^0.5        
+        title_strict^5.0 <!-- Should be present for all collections. Used for matching on single word titles and filtering of these in ds-license.-->
+        title^5.0
+        creator_strict^5.0 <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
+        actor_strict^5.0 <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        character_strict^5.0 <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
+        director_strict^5.0 <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        episode_title^4.0  <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        temporal_start_year^2.0 <!-- Always available for radio and tv. Probably also available for other collections when implemented. -->
+        creator <!-- Can be present in all collections -->
+        actor <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        character <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
+        director <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        contributor <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
+        collection <!-- Probably is in all collections -->
+        categories <!-- Probably is in all collections -->
+        genre <!-- Some value should always be present in documents-->
+        resource_description <!-- Present for all records, defines the type of record -->
+        creator_affiliation <!-- Present for all radio and tv records. Might not be for images. Contains channel -->
+        abstract <!-- Can be present in all collections, but might not be. -->
+        description <!-- Can be present in all collections, but might not be. -->
+        text^0.75 <!-- Not used for radio and tv yet! Should contain subtitles when ready. -->
+        text_shingles^0.75 <!-- Not used for radio and tv yet! Should contain subtitles when ready. -->
+        freetext^0.5 <!-- Some data should be copied to this field no matter what. -->
+
+        <!--filename_local^5.0--> <!-- Only available for images-->
+        <!--pid^5.0--> <!-- Should be in all collections. However PIDs for radio and tv refer to mediestream. -->
+        <!--contributor_strict^5.0--> <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it, only 104 hits in radio/tv data. -->
+        <!--topic^2.0--> <!-- Only available for images -->
+        <!--location--> <!-- Only available for images -->
+        <!--catalog--> <!-- Only present in image documents-->
+        <!--notes--> <!-- Only in images collection -->
       </str>
       <str name="mlt.maxqt">25</str>
       <str name="mlt.maxdfpct">75</str>
@@ -1042,29 +1040,37 @@
       <!-- Poorly understood hacking to get edismax-support for MLT -->
       <str name="defType">edismax</str>
       <str name="qf">
-          filename_local^5.0
-          title
-          title_strict^5.0
-          creator_strict^5.0
-          actor_strict^5.0
-          character_strict^5.0
-          director_strict^5.0
-          contributor_strict^5.0
-          topic^2.0
-          temporal_start_year^2.0
-          location
-          creator
-          actor
-          character
-          director
-          contributor
-          notes
-          collection
-          catalog
-          resource_description
-          text^0.75
-          text_shingles^0.75
-          freetext^0.5
+        title_strict^5.0 <!-- Should be present for all collections. Used for matching on single word titles and filtering of these in ds-license.-->
+        title^5.0
+        creator_strict^5.0 <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
+        actor_strict^5.0 <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        character_strict^5.0 <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
+        director_strict^5.0 <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        episode_title^4.0  <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        temporal_start_year^2.0 <!-- Always available for radio and tv. Probably also available for other collections when implemented. -->
+        creator <!-- Can be present in all collections -->
+        actor <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        character <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
+        director <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
+        contributor <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->
+        collection <!-- Probably is in all collections -->
+        categories <!-- Probably is in all collections -->
+        genre <!-- Some value should always be present in documents-->
+        resource_description <!-- Present for all records, defines the type of record -->
+        creator_affiliation <!-- Present for all radio and tv records. Might not be for images. Contains channel -->
+        abstract <!-- Can be present in all collections, but might not be. -->
+        description <!-- Can be present in all collections, but might not be. -->
+        text^0.75 <!-- Not used for radio and tv yet! Should contain subtitles when ready. -->
+        text_shingles^0.75 <!-- Not used for radio and tv yet! Should contain subtitles when ready. -->
+        freetext^0.5 <!-- Some data should be copied to this field no matter what. -->
+
+        <!--filename_local^5.0--> <!-- Only available for images-->
+        <!--pid^5.0--> <!-- Should be in all collections. However PIDs for radio and tv refer to mediestream. -->
+        <!--contributor_strict^5.0--> <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it, only 104 hits in radio/tv data. -->
+        <!--topic^2.0--> <!-- Only available for images -->
+        <!--location--> <!-- Only available for images -->
+        <!--catalog--> <!-- Only present in image documents-->
+        <!--notes--> <!-- Only in images collection -->
         </str>
     </lst>
   </requestHandler>
