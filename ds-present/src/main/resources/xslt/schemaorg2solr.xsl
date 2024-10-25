@@ -801,15 +801,21 @@
       <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:originates_from')"/>
     </xsl:variable>
 
-    <xsl:if test="$malfunction != ''">
-      <f:string key="access_malfunction">
-        <xsl:choose>
-          <xsl:when test="lower-case($malfunction) = 'ja'">true</xsl:when>
-          <xsl:when test="$originates_from = 'DOMS' and $hasAccessCopyFromDoms = false()">true</xsl:when>
-          <xsl:otherwise>false</xsl:otherwise>
-        </xsl:choose>
-      </f:string>
-    </xsl:if>
+    <f:string key="access_malfunction">
+      <xsl:choose>
+        <xsl:when test="$malfunction != ''">
+          <xsl:choose>
+            <xsl:when test="lower-case($malfunction) = 'ja'">true</xsl:when>
+            <xsl:when test="$originates_from = 'DOMS' and $hasAccessCopyFromDoms = false()">true</xsl:when>
+            <xsl:otherwise>false</xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="false"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:string>
+
 
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_comments') != ''">
       <f:string key="access_comments">

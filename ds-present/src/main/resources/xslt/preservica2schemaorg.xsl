@@ -996,8 +996,12 @@
     </xsl:variable>
     <f:string key="kb:originates_from">
       <xsl:choose>
-        <xsl:when test="normalize-space($migrationSource) = 'Radio/tv DOMS - prod'">DOMS</xsl:when>
-        <xsl:otherwise>Preservica</xsl:otherwise>
+        <xsl:when test="normalize-space($migrationSource) = 'Radio/tv DOMS - prod'">
+          <xsl:value-of select="'DOMS'"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="'Preservica'"/>
+        </xsl:otherwise>
       </xsl:choose>
     </f:string>
 
@@ -1017,10 +1021,10 @@
           <!-- When there is a progam structure object present, there is a presentation copy present, however it might be so bad, that it cannot be shown.
                 The default configuration for missing seconds from the old transcoder was 120 for not generating the access copy. Mediestream set the value to 90, which
                 is the one that we are reusing here to make sure all programs delivered are watchable.-->
-          <xsl:when test="/XIP/Metadata/Content/program_structure:program_structure">
+          <xsl:when test="/XIP/Metadata/Content/program_structure">
             <!-- Each element in the program structure has to be analysed. This is done as in mediestream, where 90 seconds are allowed to be missing in each of the fields.
                   If the value is greater than that, then we dont want the program to be shown.-->
-            <xsl:for-each select="/XIP/Metadata/Content/program_structure:program_structure">
+            <xsl:for-each select="/XIP/Metadata/Content/program_structure">
               <xsl:choose>
                 <xsl:when test="holes/hole/holeLength[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
                 <xsl:when test="missingStart/missingSeconds[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>

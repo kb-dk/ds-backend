@@ -397,6 +397,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_1ab7e0fc);
         assertTrue(transformedJSON.contains("\"kb:has_doms_access_copy\":\"false\""));
     }
+    @Test
+    public void testPresentationCopyDoms() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_17f56f97);
+        prettyPrintJson(transformedJSON);
+        assertTrue(transformedJSON.contains("\"kb:has_doms_access_copy\":\"true\""));
+    }
 
     //@Test
     void testErrorCatching() throws IOException {
