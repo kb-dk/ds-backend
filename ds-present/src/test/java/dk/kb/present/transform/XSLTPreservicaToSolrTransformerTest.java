@@ -135,11 +135,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    public void testNotes() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"notes\":[\"Eng. krimiserie\",\"To begravelser er planlagt.");
-    }
-
-    @Test
     void testDescription() {
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"description\":\"To begravelser er planlagt. Den ene for Sir Magnus Pye, den anden for Alan Conway.");
     }
@@ -422,7 +417,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testCountFields(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"categories_count\":\"2\"");
-        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"notes_count\":\"2\"");
     }
 
     @Test
@@ -433,7 +427,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void testLengthFields(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"title_length\":\"25\"");
-        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"notes_length\":\"389\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"abstract_length\":\"15\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"description_length\":\"374\"");
 
