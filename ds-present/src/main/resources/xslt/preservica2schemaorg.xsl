@@ -822,7 +822,7 @@
                 <xsl:value-of select="'Sport'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Entertainment)">
-                <xsl:value-of select="'Underholdning'"/>
+                <xsl:value-of select="'Humor, quiz og underholdning'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ChildrenYouth)">
                 <xsl:value-of select="'Børn og Unge'"/>
@@ -831,7 +831,7 @@
                 <xsl:value-of select="'Dokumentar'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Fiction)">
-                <xsl:value-of select="'Fiktion'"/>
+                <xsl:value-of select="'Film og serier'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Lifestyle)">
                 <xsl:value-of select="'Livsstil'"/>
@@ -840,7 +840,7 @@
                 <xsl:value-of select="'Videnskab og natur'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Misc)">
-                <xsl:value-of select="'Diverse'"/>
+                <xsl:value-of select="'Rodekassen'"/>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:value-of select="'Unresolved'"/>
