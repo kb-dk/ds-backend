@@ -316,51 +316,6 @@
         </xsl:if>
       </xsl:if>
 
-
-      <!-- Creates the notes field, which originates from the mods2solr XSLT and acts as a catch all field for metadata
-           The values in this field are also present in the specific abstract and description fields.-->
-      <xsl:if test="$schemaorg-xml('abstract') or $schemaorg-xml('description')">
-        <f:array key="notes">
-          <xsl:if test="$schemaorg-xml('abstract')">
-            <f:string>
-              <xsl:value-of select="$schemaorg-xml('abstract')"/>
-            </f:string>
-          </xsl:if>
-          <xsl:if test="$schemaorg-xml('description')">
-            <f:string>
-              <xsl:value-of select="$schemaorg-xml('description')"/>
-            </f:string>
-          </xsl:if>
-        </f:array>
-
-        <f:string key="notes_count">
-          <xsl:choose>
-            <xsl:when test="$schemaorg-xml('abstract') and $schemaorg-xml('description')">
-              <xsl:value-of select="'2'"/>
-            </xsl:when>
-            <xsl:when test="$schemaorg-xml('abstract') and not($schemaorg-xml('description'))">
-              <xsl:value-of select="'1'"/>
-            </xsl:when>
-            <xsl:when test="$schemaorg-xml('description') and not($schemaorg-xml('abstract'))">
-              <xsl:value-of select="'1'"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="'0'"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </f:string>
-
-        <f:string key="notes_length">
-          <xsl:variable name="noteslength">
-            <!-- Eventhough IntelliJ IDEA underlines the syntax below as wrong formatted it works, because we are
-                 JSON represented as XDM. -->
-           <xsl:value-of select="concat($schemaorg-xml('abstract'), $schemaorg-xml('description'))"/>
-          </xsl:variable>
-          <xsl:value-of select="f:string-length($noteslength)"/>
-        </f:string>
-
-      </xsl:if>
-
       <!-- Extract file_id -->
       <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:file_id') != ''">
         <f:string key="file_id">
@@ -846,15 +801,21 @@
       <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:originates_from')"/>
     </xsl:variable>
 
-    <xsl:if test="$malfunction != ''">
-      <f:string key="access_malfunction">
-        <xsl:choose>
-          <xsl:when test="lower-case($malfunction) = 'ja'">true</xsl:when>
-          <xsl:when test="$originates_from = 'DOMS' and $hasAccessCopyFromDoms = false()">true</xsl:when>
-          <xsl:otherwise>false</xsl:otherwise>
-        </xsl:choose>
-      </f:string>
-    </xsl:if>
+    <f:string key="access_malfunction">
+      <xsl:choose>
+        <xsl:when test="$malfunction != ''">
+          <xsl:choose>
+            <xsl:when test="lower-case($malfunction) = 'ja'">true</xsl:when>
+            <xsl:when test="$originates_from = 'DOMS' and $hasAccessCopyFromDoms = false()">true</xsl:when>
+            <xsl:otherwise>false</xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="false"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:string>
+
 
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_comments') != ''">
       <f:string key="access_comments">

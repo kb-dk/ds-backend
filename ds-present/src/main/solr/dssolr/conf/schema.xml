@@ -54,8 +54,9 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.4: New field type as text_general but without stopwords. The title field now uses this field instead. It needed for better title match.
 1.7.5: New field used for context filter queries in the suggest component. Values used for filtering should be copied to this field and included in the cfq default parameter.
        Add field genre_facet with value from genre.
+1.7.6: Search optimization
   -->
-  <field name="_ds_1.7.5_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.6_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -1305,6 +1306,7 @@ When adding fields to this schema please have the following guidelines in mind:
   <copyField source="genre_sub" dest="freetext"/>
   <copyField source="resource_description" dest="freetext"/>
   <copyField source="resource_description_general" dest="freetext"/>
+  <copyField source="temporal_start_year" dest="freetext"/>
   <copyField source="notes" dest="freetext"/>
   <copyField source="location" dest="freetext"/>
   <copyField source="title" dest="freetext"/>
