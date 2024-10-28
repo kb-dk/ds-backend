@@ -757,7 +757,7 @@
                     select="('nyheder &amp; aktualitet', 'vejrudsigt', 'regional', 'forbruger', 'økonomi og erhvervsforhold', 'samfundsforhold (fakta)',
                               'samfundsforhold i et land', 'aktualitet og debat', 'nyheder', 'politiske forhold', 'de politiske partier', 'internationale forhold', 'skoleforhold')"/>
       <!-- These values should map to: Musik-->
-      <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed', 'opera')"/>
+      <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed', 'opera', 'rytmisk musik', 'populær musik', 'popmusik')"/>
       <!-- These values should map to: Kultur og oplysning-->
       <xsl:variable name="Culture" as="item()*"
                     select="('kultur', 'religion', 'undervisning', 'historie og kulturhistorie', 'oplysning og kultur', 'dramatik og fiktion', 'udsendelsesvirksomhed', 'livsberetninger og skæbner',
@@ -767,7 +767,7 @@
       <!-- These values should map to: Underholdning-->
       <xsl:variable name="Entertainment" as="item()*"
                     select="('underholdning', 'tips &amp; lotto', 'anden underholdning', 'individet', 'comedy/situation comedy', 'journalistisk underholdning', 'humor', 'quiz',
-                              'shows', 'rytmisk musik', 'populær musik', 'popmusik', 'farce/spoof')"/>
+                              'shows', 'farce/spoof')"/>
       <!-- These values should map to: Børn og unge-->
       <xsl:variable name="ChildrenYouth" as="item()*" select="('børn &amp; ungdom', 'dyr med central rolle', 'eventyr')"/>
       <!-- These values should map to: Dokumentar-->
