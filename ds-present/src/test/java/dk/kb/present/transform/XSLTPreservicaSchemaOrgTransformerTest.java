@@ -223,13 +223,19 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testGenre() throws IOException {
         String hasGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3945e2d1);
-        Assertions.assertTrue(hasGenre.contains("\"genre\":\"Underholdning\""));
+        Assertions.assertTrue(hasGenre.contains("\"genre\":\"Humor, quiz og underholdning\""));
 
         String noGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda);
         Assertions.assertFalse(noGenre.contains("\"genre\":"));
 
         String emptyGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda);
         Assertions.assertFalse(emptyGenre.contains("\"genre\":"));
+    }
+
+    @Test
+    void newGenreTest() throws IOException{
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, "internal_test_files/domsMigrated/19fe6686-42a5-41f9-80d8-bffb872f942a.xml");
+        prettyPrintJson(transformedJSON);
     }
 
     @Test
@@ -424,7 +430,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     public void testMultipleMaingenres() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_82514cd9);
-        assertTrue(transformedJSON.contains("\"genre\":\"Fiktion\""));
+        assertTrue(transformedJSON.contains("\"genre\":\"Film og serier\""));
     }
 
     @Test
@@ -473,7 +479,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     public void testColonInCategory() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_07fc1c7c);
         prettyPrintJson(transformedJSON);
-        assertTrue(transformedJSON.contains("\"genre\":\"Fiktion\","));
+        assertTrue(transformedJSON.contains("\"genre\":\"Film og serier\","));
     }
 
     @Test
