@@ -2,7 +2,6 @@ package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.util.Resolver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

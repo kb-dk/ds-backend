@@ -1,9 +1,5 @@
 package dk.kb.present.transform;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.util.Resolver;

@@ -3,7 +3,6 @@ package dk.kb.present.util;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import java.util.function.*;
 import java.util.stream.*;
 
 import static org.junit.jupiter.api.Assertions.*;

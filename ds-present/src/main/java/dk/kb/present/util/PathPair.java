@@ -1,7 +1,5 @@
 package dk.kb.present.util;
 
-import java.util.List;
-
 /**
  * Pair object for storing a pair of path and value.
  * Almost identical with the {@link dk.kb.util.Pair}-class. The only difference is that Path and Value can be set through a setter in PathPair.

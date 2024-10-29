@@ -25,14 +25,11 @@ import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.Resolver;
-import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletMapping;
 import javax.servlet.http.HttpServletRequest;
