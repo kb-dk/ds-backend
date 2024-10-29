@@ -390,11 +390,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }*/
 
     @Test
-    void testAccessConditions(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"conditions_of_access\":\"placeholderCondition\"");
-    }
-
-    @Test
     void testNoBroadcasterInformation(){
         assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"publishedOn\"");
     }

@@ -658,12 +658,6 @@ public class EmbeddedSolrTest {
 
     @Test
     @Tag("integration")
-    void testAccessConditions() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "conditions_of_access", "placeholderCondition");
-    }
-
-    @Test
-    @Tag("integration")
     void testBroadcaster() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_53ce4817, "broadcaster", "DR");
     }

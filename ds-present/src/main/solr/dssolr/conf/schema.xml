@@ -55,6 +55,7 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.5: New field used for context filter queries in the suggest component. Values used for filtering should be copied to this field and included in the cfq default parameter.
        Add field genre_facet with value from genre.
 1.7.6: Search optimization
+       Remove unused placeholder field: 'condition_of_access'.
   -->
   <field name="_ds_1.7.6_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -79,11 +80,6 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="origin" type="string" required="true">
     <?description The origin of the record. Defines which collection the record originates from?>
     <?example     ds.samlingsbilleder?>
-  </field>
-
-  <field name="conditions_of_access" type="string">
-    <?description A value that describes how the resource can be accessed?>
-    <?example ?> <!--TODO: What should the value of this field actually contain-->
   </field>
 
   <field name="collection" type="string" docValues="true">

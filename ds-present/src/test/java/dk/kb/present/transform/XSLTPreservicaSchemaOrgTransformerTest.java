@@ -50,12 +50,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
-    void testConditionOfAccess() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3945e2d1, null);
-        Assertions.assertTrue(transformedJSON.contains("\"conditionsOfAccess\":\"placeholderCondition\""));
-    }
-
-    @Test
     void testUrlPreservica7() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_b346acc8, null);
         Assertions.assertTrue(transformedJSON.contains("\"kb:file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\""));
