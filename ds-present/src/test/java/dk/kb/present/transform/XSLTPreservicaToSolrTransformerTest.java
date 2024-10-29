@@ -85,7 +85,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testMainGenre() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121,"\"genre\":\"Fiktion\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121,"\"genre\":\"Film og serier\"");
     }
 
     @Test
