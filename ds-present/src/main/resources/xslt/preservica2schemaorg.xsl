@@ -757,17 +757,23 @@
                     select="('nyheder &amp; aktualitet', 'vejrudsigt', 'regional', 'forbruger', 'økonomi og erhvervsforhold', 'samfundsforhold (fakta)',
                               'samfundsforhold i et land', 'aktualitet og debat', 'nyheder', 'politiske forhold', 'de politiske partier', 'internationale forhold', 'skoleforhold')"/>
       <!-- These values should map to: Musik-->
-      <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed', 'opera')"/>
+      <xsl:variable name="Music" as="item()*" select="('musik', 'kor- og orkestervirksomhed', 'opera', 'rytmisk musik', 'populær musik', 'popmusik', 'populær musik popmusik')"/>
       <!-- These values should map to: Kultur og oplysning-->
       <xsl:variable name="Culture" as="item()*"
                     select="('kultur', 'religion', 'undervisning', 'historie og kulturhistorie', 'oplysning og kultur', 'dramatik og fiktion', 'udsendelsesvirksomhed', 'livsberetninger og skæbner',
                               'natur og dyr', 'mad og drikke', 'undervisning og kultur', 'medier', 'forbrugerstof', 'litteratur', 'forkyndende sangprogrammer', 'kulturforhold', 'sjælelivet')"/>
       <!-- These values should map to: Sport-->
-      <xsl:variable name="Sport" as="item()*" select="('sport', 'blandet sport - nyhedspræget uden', 'fodbold')"/>
+      <xsl:variable name="Sport" as="item()*"
+                    select="('sport', 'blandet sport - nyhedspræget uden', 'fodbold', 'hestesport (gallop trav ridebane'), 'atletik', 'badminton.', 'boksning.', 'blandet sport - nyhedspræget med',
+                              'bordtennis.', 'cykling.', 'dansk klub-fodbold', 'dansk klub-håndbold - herrer',
+                              'dansk klub-håndbold - kvinder', 'danske fodboldlandskampe', 'danske håndboldlandskampe - kvinder', 'engelsk klub-fodbold.',
+                              'europa cup-kampe - herrer', 'europa cup-kampe - kvinder', 'europacup-fodbold', 'folkelig idræt (herunder f.eks.-', 'golf.', 'gymnastik.', 'håndbold.', 'ishockey.',
+                              'kano/kajak/roning.', 'motorsport.', 'ol- em og vm-fodboldlandskampe', 'ol- em- og vm-håndboldkampe – herrer', 'ol- em- og vm-håndboldkampe – kvinder', 'sejlsport.','skisport.',
+                              'speedway.', 'sportsdans.', 'sportstema - blandet sport uden', 'svømning.', 'taekwon-do o.lign.', 'tennis.', 'vintersport.', 'volleyball.'"/>
       <!-- These values should map to: Underholdning-->
       <xsl:variable name="Entertainment" as="item()*"
                     select="('underholdning', 'tips &amp; lotto', 'anden underholdning', 'individet', 'comedy/situation comedy', 'journalistisk underholdning', 'humor', 'quiz',
-                              'shows', 'rytmisk musik', 'populær musik', 'popmusik', 'farce/spoof')"/>
+                              'shows', 'farce/spoof', 'quiz game (hvis ingen emnekategorisering)')"/>
       <!-- These values should map to: Børn og unge-->
       <xsl:variable name="ChildrenYouth" as="item()*" select="('børn &amp; ungdom', 'dyr med central rolle', 'eventyr')"/>
       <!-- These values should map to: Dokumentar-->
@@ -822,7 +828,7 @@
                 <xsl:value-of select="'Sport'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Entertainment)">
-                <xsl:value-of select="'Underholdning'"/>
+                <xsl:value-of select="'Humor, quiz og underholdning'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ChildrenYouth)">
                 <xsl:value-of select="'Børn og Unge'"/>
@@ -831,7 +837,7 @@
                 <xsl:value-of select="'Dokumentar'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Fiction)">
-                <xsl:value-of select="'Fiktion'"/>
+                <xsl:value-of select="'Film og serier'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Lifestyle)">
                 <xsl:value-of select="'Livsstil'"/>
@@ -840,7 +846,7 @@
                 <xsl:value-of select="'Videnskab og natur'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Misc)">
-                <xsl:value-of select="'Diverse'"/>
+                <xsl:value-of select="'Rodekassen'"/>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:value-of select="'Unresolved'"/>

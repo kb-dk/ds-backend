@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added a more thorough parsing of categories into pretty genres.
+
 ### Changed 
 - solr 1.7.6: Changes related to search ranking.
 
