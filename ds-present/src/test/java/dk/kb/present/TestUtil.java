@@ -61,7 +61,6 @@ public class TestUtil {
 
 		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		metadata.put("origin", "ds.test");
-		metadata.put("conditionsOfAccess", "placeholderCondition");
 		metadata.put("mTime", "1701261949625000");
 		metadata.put("startTime", "1987-05-04T14:45:00Z");
 		metadata.put("endTime", "1987-05-04T16:45:00Z");
@@ -80,7 +79,6 @@ public class TestUtil {
 		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
 		metadata.put("origin", "ds.test");
 		metadata.put("manifestation", childData);
-		metadata.put("conditionsOfAccess", "placeholderCondition");
 		metadata.put("mTime", "1701261949625000");
 		metadata.put("startTime", "1987-05-04T14:45:00Z");
 		metadata.put("endTime", "1987-05-04T16:45:00Z");

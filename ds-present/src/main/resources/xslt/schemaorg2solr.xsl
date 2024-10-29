@@ -38,12 +38,6 @@
           <xsl:value-of select="$schemaorg-xml('id')"/>
         </f:string>
 
-        <xsl:if test="map:get($schemaorg-xml, 'conditionsOfAccess') != ''">
-          <f:string key="conditions_of_access">
-            <xsl:value-of select="map:get($schemaorg-xml, 'conditionsOfAccess')"/>
-          </f:string>
-        </xsl:if>
-
         <xsl:choose>
           <!--Check if an error has occurred in hte previous transformer. Otherwise, continue with this transformation -->
           <xsl:when test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:transformation_error') = 'true'">

@@ -17,14 +17,10 @@ package dk.kb.present.util;
 import dk.kb.present.TestFiles;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Meta test class that checks if test files are locally available.

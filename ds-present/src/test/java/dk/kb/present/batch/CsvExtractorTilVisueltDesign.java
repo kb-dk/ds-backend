@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
-import org.mozilla.javascript.ContextAction;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -38,8 +36,8 @@ public class CsvExtractorTilVisueltDesign {
   
     /**
      * Call with argument to custom folder
-     * 
-     * @param path to folder with record XML files
+     *
+     * @param args path to folder with record XML files
      */
     public static void main(String[] args) {
 

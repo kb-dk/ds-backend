@@ -16,8 +16,6 @@ package dk.kb.present;
 
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.util.Timing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Holds statistics for operations.

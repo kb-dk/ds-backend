@@ -33,8 +33,6 @@
   <!-- Representation of when the record was last modified in the backing ds-storage. The value is a long representing time
        since epoch with microsecond precision (milliseconds with 3 extra digits). -->
   <xsl:param name="mTime"/>
-  <!-- Access condition for DR material. Currently, this param contains a placeholder. -->
-  <xsl:param name="conditionsOfAccess"/>
   <!-- Holdback and Own Production params are values needed for DR material. They are used in the transformations to determine if users are allowed to access the material. -->
   <xsl:param name="holdbackDate"/>
   <xsl:param name="holdbackPurposeName"/>
@@ -402,9 +400,6 @@
     <f:string key="@type"><xsl:value-of select="$type"/></f:string>
     <f:string key="id">
       <xsl:value-of select="$recordID"/>
-    </f:string>
-    <f:string key="conditionsOfAccess">
-      <xsl:value-of select="$conditionsOfAccess"/>
     </f:string>
   </xsl:template>
 

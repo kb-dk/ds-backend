@@ -88,7 +88,6 @@ public class DSOrigin {
 
     /**
      * Optional origin, with fallback to the default origin for {@link Storage}.
-     * Used when {@link #getDSRecords(Long, Long, String, Function)} is called.
      */
     private final String origin;
 

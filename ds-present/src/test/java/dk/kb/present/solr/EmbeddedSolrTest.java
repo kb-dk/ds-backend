@@ -66,7 +66,6 @@ import static dk.kb.present.TestFiles.PVICA_RECORD_a8aafb121;
 import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_c6fde2f4;
 import static dk.kb.present.TestFiles.PVICA_RECORD_e683b0b8;
-import static dk.kb.present.TestUtil.prettyPrintJson;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -654,12 +653,6 @@ public class EmbeddedSolrTest {
     @Tag("integration")
     void testIndexingOfRadioRecord() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "resource_description", "AudioObject");
-    }
-
-    @Test
-    @Tag("integration")
-    void testAccessConditions() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "conditions_of_access", "placeholderCondition");
     }
 
     @Test

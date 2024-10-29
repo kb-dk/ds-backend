@@ -19,7 +19,6 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.ViewDto;
-import dk.kb.present.transform.XSLTTransformer;
 import dk.kb.present.util.DataCleanup;
 import dk.kb.present.util.SolrDocumentationExtractor;
 import dk.kb.util.webservice.stream.*;

@@ -1,9 +1,5 @@
 package dk.kb.present.transform;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.util.Resolver;
@@ -47,12 +43,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertTrue(transformedJSON.contains("\"isPartOf\":[" +
                                                         "{\"@type\":\"Collection\"," +
                                                         "\"name\":\"Det Kgl. Bibliotek; Radio\\/TV-Samlingen\"}"));
-    }
-
-    @Test
-    void testConditionOfAccess() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3945e2d1, null);
-        Assertions.assertTrue(transformedJSON.contains("\"conditionsOfAccess\":\"placeholderCondition\""));
     }
 
     @Test

@@ -3,7 +3,6 @@ package dk.kb.present.transform;
 import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.present.util.TestFileProvider;
-import dk.kb.util.Files;
 import dk.kb.util.Resolver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -11,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -388,11 +385,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_one_file1UUID\":\"f73b69da-2bc0-4e06-b19b-95f24756804e\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_two_file2UUID\":\"f73b69da-2bc0-4e06-b19b-95f24756804e\"");
     }*/
-
-    @Test
-    void testAccessConditions(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"conditions_of_access\":\"placeholderCondition\"");
-    }
 
     @Test
     void testNoBroadcasterInformation(){

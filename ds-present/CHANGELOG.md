@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed 
 - solr 1.7.6: Changes related to search ranking.
 
+### Removed
+- Removed Schema.org field `conditionsOfAccess` and solr field `conditions_of_access` as this field was never used and the DR rights management couldn't be done in a single value 
+  field.
+
 ## [2.1.5](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.5) 2024-10-23
 ### Added
 - Added check for DOMS records having a valid access representation.

@@ -29,8 +29,8 @@ public class AccessCondtionExtractorTilQA {
   
     /**
      * Call with argument to custom folder
-     * 
-     * @param path to folder with record XML files
+     *
+     * @param args custom folder
      */
     public static void main(String[] args) {
 
