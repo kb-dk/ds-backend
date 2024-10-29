@@ -38,8 +38,8 @@ public class CsvExtractorTilVisueltDesign {
   
     /**
      * Call with argument to custom folder
-     * 
-     * @param path to folder with record XML files
+     *
+     * @param args path to folder with record XML files
      */
     public static void main(String[] args) {
 
