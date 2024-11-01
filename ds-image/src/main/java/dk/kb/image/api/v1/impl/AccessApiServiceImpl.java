@@ -461,17 +461,16 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      * The first link in the list is the sprite containing all thumbnails.
      * 
      * @param fileId The externalId we have for the record. 
-     * @param numberOfSlices Number of thumbnails. They be divided uniform over the video.
+     * @param numberOfThumbnails Number of thumbnails. They be divided uniform over the video.
      * @param width Optional width parameter in pixels. Aspect ratio will be kept.
      * @param height Optional height parameter in pixels. Aspect ratio will be kept. 
      * 
      * @return ThumbnailsDto. Has a default thumbnail, a sprite and list of time sliced thumbnails.
-     * @throws Exception If the fileId is not found or internal server error with Kaltura
      */
     @Override
-    public ThumbnailsDto kalturaThumbnails(String fileId,Integer numberOfThumbnails, Integer width, Integer height) throws  ServiceException{
+    public ThumbnailsDto kalturaThumbnails(String fileId, Integer numberOfThumbnails, Integer width, Integer height) throws  ServiceException {
      
-        if ( fileId == null) {
+        if (fileId == null) {
             throw new InvalidArgumentServiceException("FileId must not be null");
         }        
         try {
