@@ -1,7 +1,7 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.holdback.HoldbackDatePicker;
+import dk.kb.present.dr.holdback.HoldbackDatePicker;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;

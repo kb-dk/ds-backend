@@ -14,8 +14,8 @@
  */
 package dk.kb.present;
 
-import dk.kb.present.holdback.HoldbackObject;
-import dk.kb.present.holdback.HoldbackDatePicker;
+import dk.kb.present.dr.holdback.HoldbackObject;
+import dk.kb.present.dr.holdback.HoldbackDatePicker;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.DataCleanup;
