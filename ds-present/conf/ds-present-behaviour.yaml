@@ -127,7 +127,7 @@ dr:
   holdback:
     purposeSheet: 'internal_test_files/dr_formaalstabeller_20240704.xlsx'
     holdbackSheet: 'internal_test_files/dr_holdbacktabel_20240902.xlsx'
-  restrictionSheet: 'internal_test_files/'
+  restrictionSheet: 'internal_test_files/dr_klausuleringsliste_20241104.xlsx'
 
 
 

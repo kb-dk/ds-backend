@@ -1,0 +1,87 @@
+package dk.kb.present.dr.restrictions;
+
+import dk.kb.present.config.ServiceConfig;
+import dk.kb.util.Resolver;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+/**
+ * DR has provided restrictions for the DR Archive. This includes a restricted list of production IDs. If a record has a production ID, which is present in the backing list for
+ * this class, the record can not be shown in the DR Archive.
+ */
+public class ProductionIdLookup {
+    private static final Logger log = LoggerFactory.getLogger(ProductionIdLookup.class);
+
+
+    /**
+     * Set containing production IDs that cannot be shown to users.
+     */
+    private final Set<String> restrictedProductionIds = loadRestrictedIdsFromFile();
+
+    public ProductionIdLookup() {
+        loadRestrictedIdsFromFile();
+    }
+
+    /**
+     * Check if an ID is present in {@link #restrictedProductionIds} and return either true or false based on the result.
+     * If the method returns true, the production ID cannot be shown in the DR Archive.
+     * @param id to perform lookup for.
+     * @return either true or false based on the id being in the restrictedProductionIDs set.
+     */
+    public boolean doLookup(String id){
+        return restrictedProductionIds.contains(id);
+    }
+
+
+    /**
+     * Load restricted production IDs from an Excel sheet defined in the configuration for ds-present.
+     * @return the IDs as a set of strings.
+     */
+    private Set<String> loadRestrictedIdsFromFile() {
+        String restrictionsSheetPath = ServiceConfig.getConfig().getString("dr.restrictionSheet");
+        Set<String> restrictedIds = new HashSet<>();
+
+        // Read Excel sheet specified in configuration.
+        try (FileInputStream fis = new FileInputStream(Resolver.resolveURL(restrictionsSheetPath).getPath());
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            // TODO: Read the specific column of cells.
+            for (Row row : sheet) {
+                Cell cell = row.getCell(0);
+                if (cell != null) {
+                    if (Objects.requireNonNull(cell.getCellType()) == CellType.STRING) {
+                        restrictedIds.add(cell.getStringCellValue());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            log.error("The excel sheet, which should be present at path '{}', could not be loaded.", restrictionsSheetPath);
+            throw new InternalServiceException(e);
+        }
+
+        if (restrictedIds.isEmpty()){
+            log.error("No restricted production IDs were loaded. Keep in mind that this sounds like a good thing, however it should not happen. " +
+                    "Please check that a list of actual IDs are provided in the configuration at YAML key: '{}'.", restrictionsSheetPath);
+        }
+
+        log.info("Loaded '{}' restricted production IDs from file specified at YAML path: '{}'", restrictedIds.size(), restrictionsSheetPath);
+        return  restrictedIds;
+    }
+
+
+}
