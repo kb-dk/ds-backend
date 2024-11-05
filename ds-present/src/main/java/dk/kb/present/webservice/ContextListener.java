@@ -15,6 +15,7 @@ import javax.servlet.ServletContextListener;
 
 import dk.kb.present.dr.holdback.HoldbackDatePicker;
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.dr.restrictions.ProductionIdLookup;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
 import dk.kb.util.Resolver;
@@ -70,6 +71,7 @@ public class ContextListener implements ServletContextListener {
             ServiceConfig.initialize(configFile);
             // Early initialization of HoldbackDatePicker
             HoldbackDatePicker.init();
+            ProductionIdLookup.init();
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {

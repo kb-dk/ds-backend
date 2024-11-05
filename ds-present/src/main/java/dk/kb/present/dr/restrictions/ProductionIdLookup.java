@@ -1,6 +1,7 @@
 package dk.kb.present.dr.restrictions;
 
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.dr.holdback.HoldbackDatePicker;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -25,15 +26,23 @@ import java.util.Set;
 public class ProductionIdLookup {
     private static final Logger log = LoggerFactory.getLogger(ProductionIdLookup.class);
 
+    private static ProductionIdLookup idLookup = new ProductionIdLookup();
+
 
     /**
      * Set containing production IDs that cannot be shown to users.
      */
     private final static Set<String> restrictedProductionIds = loadRestrictedIdsFromFile();
 
-    public ProductionIdLookup() {
+    ProductionIdLookup() {}
+
+    public static void init() {
         loadRestrictedIdsFromFile();
     }
+    public static synchronized ProductionIdLookup getInstance(){
+        return idLookup;
+    }
+
 
     /**
      * Check if an ID is present in {@link #restrictedProductionIds} and return either true or false based on the result.
@@ -41,7 +50,7 @@ public class ProductionIdLookup {
      * @param id to perform lookup for.
      * @return either true or false based on the id being in the restrictedProductionIDs set.
      */
-    public static boolean doLookup(String id){
+    public boolean doLookup(String id){
         return restrictedProductionIds.contains(id);
     }
 
