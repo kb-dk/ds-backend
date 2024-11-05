@@ -32,6 +32,9 @@ public class EncryptionHelper {
 
     private static final SecretKeyFactory keyFactory;
 
+    private static SecretKey secretKey = null;
+    private static String currentSecretSalt = null;
+
     static {
         try {
             keyFactory = SecretKeyFactory.getInstance(FACTORY_INSTANCE);
@@ -92,10 +95,14 @@ public class EncryptionHelper {
         }
     }
 
-    private static SecretKey generateKey(String secretSalt) throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PBEKeySpec pbeKeySpec = new PBEKeySpec(secretSalt.toCharArray(), secretSalt.getBytes(StandardCharsets.UTF_8), 65536, AES_KEY_SIZE);
-        SecretKey pbeKey = keyFactory.generateSecret(pbeKeySpec);
-        return new SecretKeySpec(pbeKey.getEncoded(), KEY_ALGORITHM);
+    private static synchronized SecretKey generateKey(String secretSalt) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        if (secretKey == null || !currentSecretSalt.equals(secretSalt)) {
+            PBEKeySpec pbeKeySpec = new PBEKeySpec(secretSalt.toCharArray(), secretSalt.getBytes(StandardCharsets.UTF_8), 65536, AES_KEY_SIZE);
+            SecretKey pbeKey = keyFactory.generateSecret(pbeKeySpec);
+            secretKey = new SecretKeySpec(pbeKey.getEncoded(), KEY_ALGORITHM);
+            currentSecretSalt = secretSalt;
+        }
+        return secretKey;
     }
 
     private static byte[] getRandomBytes(int lengh) {
