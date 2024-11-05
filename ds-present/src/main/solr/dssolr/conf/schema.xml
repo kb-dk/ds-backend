@@ -56,6 +56,7 @@ When adding fields to this schema please have the following guidelines in mind:
        Add field genre_facet with value from genre.
 1.7.6: Search optimization
        Remove unused placeholder field: 'condition_of_access'.
+1.7.7: Add DR specific field on restricted production IDs.
   -->
   <field name="_ds_1.7.6_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -759,6 +760,12 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="dr_production_id" type="string">
     <?description An internal ID created by DR.?>
     <?example 8030782300?>
+  </field>
+
+  <field name="dr_id_restricted" type="boolean">
+    <?description If a record has been restricted by DR, it has been restricted by the Production ID present in dr_production_id. If that is the case, this value will be true
+            and therefore the record should not be available.?>
+    <?example true?>
   </field>
 
   <field name="file_id" type="string">

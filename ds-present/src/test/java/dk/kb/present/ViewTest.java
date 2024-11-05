@@ -44,6 +44,7 @@ class ViewTest {
         try {
             ServiceConfig.initialize("conf/ds-present-behaviour.yaml", "internal-test-setup.yaml");
             config = ServiceConfig.getConfig();
+            ProductionIdLookup.init();
         } catch (IOException e) {
             fail();
         }
@@ -322,15 +323,12 @@ class ViewTest {
     @Tag("integration")
     void testRestrictedDRProductionID() throws IOException {
         HoldbackDatePicker.init();
-        ProductionIdLookup.init();
         View jsonldView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_968dd87e);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
 
         String solrdoc = jsonldView.apply(recordDto);
-
-        prettyPrintJson(solrdoc);
 
         assertTrue(solrdoc.contains("\"dr_id_restricted\":\"true\""));
     }

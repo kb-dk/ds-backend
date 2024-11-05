@@ -32,7 +32,7 @@ public class ProductionIdLookup {
     /**
      * Set containing production IDs that cannot be shown to users.
      */
-    private final static Set<String> restrictedProductionIds = loadRestrictedIdsFromFile();
+    private static Set<String> restrictedProductionIds = new HashSet<>();
 
     ProductionIdLookup() {}
 
@@ -57,9 +57,8 @@ public class ProductionIdLookup {
 
     /**
      * Load restricted production IDs from an Excel sheet defined in the configuration for ds-present.
-     * @return the IDs as a set of strings.
      */
-    private static Set<String> loadRestrictedIdsFromFile() {
+    private static void loadRestrictedIdsFromFile() {
         String restrictionsSheetPath = ServiceConfig.getConfig().getString("dr.restrictionSheet");
         Set<String> restrictedIds = new HashSet<>();
 
@@ -74,7 +73,7 @@ public class ProductionIdLookup {
                 Cell cell = row.getCell(0);
                 if (cell != null) {
                     if (Objects.requireNonNull(cell.getCellType()) == CellType.STRING) {
-                        restrictedIds.add(reformatProductionId(cell.getStringCellValue()));
+                        restrictedProductionIds.add(reformatProductionId(cell.getStringCellValue()));
                     }
                 }
             }
@@ -83,13 +82,12 @@ public class ProductionIdLookup {
             throw new InternalServiceException(e);
         }
 
-        if (restrictedIds.isEmpty()){
+        if (restrictedProductionIds.isEmpty()){
             log.error("No restricted production IDs were loaded. Keep in mind that this sounds like a good thing, however it should not happen. " +
                     "Please check that a list of actual IDs are provided in the configuration at YAML key: '{}'.", restrictionsSheetPath);
         }
 
-        log.info("Loaded '{}' restricted production IDs from file specified at YAML path: '{}'", restrictedIds.size(), restrictionsSheetPath);
-        return  restrictedIds;
+        log.info("Loaded '{}' restricted production IDs from file specified at YAML path: '{}'", restrictedProductionIds.size(), restrictionsSheetPath);
     }
 
 
