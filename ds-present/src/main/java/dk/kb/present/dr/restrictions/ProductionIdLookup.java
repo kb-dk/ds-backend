@@ -29,7 +29,7 @@ public class ProductionIdLookup {
     /**
      * Set containing production IDs that cannot be shown to users.
      */
-    private final Set<String> restrictedProductionIds = loadRestrictedIdsFromFile();
+    private final static Set<String> restrictedProductionIds = loadRestrictedIdsFromFile();
 
     public ProductionIdLookup() {
         loadRestrictedIdsFromFile();
@@ -41,7 +41,7 @@ public class ProductionIdLookup {
      * @param id to perform lookup for.
      * @return either true or false based on the id being in the restrictedProductionIDs set.
      */
-    public boolean doLookup(String id){
+    public static boolean doLookup(String id){
         return restrictedProductionIds.contains(id);
     }
 
@@ -50,7 +50,7 @@ public class ProductionIdLookup {
      * Load restricted production IDs from an Excel sheet defined in the configuration for ds-present.
      * @return the IDs as a set of strings.
      */
-    private Set<String> loadRestrictedIdsFromFile() {
+    private static Set<String> loadRestrictedIdsFromFile() {
         String restrictionsSheetPath = ServiceConfig.getConfig().getString("dr.restrictionSheet");
         Set<String> restrictedIds = new HashSet<>();
 
