@@ -57,6 +57,7 @@ public class TestFiles {
     public static final String PVICA_DOMS_MIG_eec71f45 = "internal_test_files/domsMigrated/eec71f45-38f8-49e0-b2fe-16283949078e.xml";
     public static final String PVICA_DOMS_MIG_1ab7e0fc = "internal_test_files/domsMigrated/1ab7e0fc-61fc-4635-a4c1-09d2f7a7a0f4.xml";
     public static final String PVICA_DOMS_MIG_17f56f97 = "internal_test_files/domsMigrated/17f56f97-8b08-489a-ae37-9b0f467b600b.xml";
+    public static final String PVICA_DOMS_MIG_968dd87e = "internal_test_files/domsMigrated/968dd87e-f496-4b7f-b371-f2e632324024.xml";
     public static final String PVICA_HOMEMADE_HOLDBACK_TEST_RECORD = "internal_test_files/homemade/badHoldbackFieldContents.xml";
     public static final String PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED = "internal_test_files/homemade/correctDomsMigWithTVMeterEnrichment.xml";
     public static final String PVICA_HOMEMADE_NOT_OWNPROD = "internal_test_files/homemade/badOwnProduction.xml";

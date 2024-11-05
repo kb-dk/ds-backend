@@ -191,7 +191,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         if (!extractedValues.getProductionId().isEmpty()){
             metadata.put("productionId", extractedValues.getProductionId());
             // Check if production ID is restricted from DR.
-            metadata.put("productionIdRestrictedDr", String.valueOf(ProductionIdLookup.doLookup(extractedValues.getId())));
+            log.info("Performing lookup for id: '{}'", extractedValues.getProductionId());
+            metadata.put("productionIdRestrictedDr", String.valueOf(ProductionIdLookup.getInstance().doLookup(extractedValues.getProductionId())));
         }
     }
 

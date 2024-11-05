@@ -42,6 +42,7 @@
   <xsl:param name="ownProductionCode"/>
   <!-- ProductionId has been extracted from either tvmeter or nielsen metadata, and is then injected as a single value. -->
   <xsl:param name="productionId"/>
+  <xsl:param name="productionIdRestrictedDr"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
@@ -1053,6 +1054,12 @@
       <f:string key="kb:file_id">
         <xsl:value-of select="$manifestation"/>
       </f:string>
+    </xsl:if>
+
+    <xsl:if test="$productionIdRestrictedDr != ''">
+      <f:boolean key="kb:dr_id_restricted">
+        <xsl:value-of select="$productionIdRestrictedDr"/>
+      </f:boolean>
     </xsl:if>
 
     <!-- Extract subgenre if present -->
