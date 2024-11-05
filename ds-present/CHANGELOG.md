@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added:
+- Functionality to look up if a record has been restricted by DR by production ID.  
+
+### Changed:
+- Changed configuration naming for YAML key `holdback.dr` to `dr.holdback` in preparation for addition of `dr.restrictions`.
+
 ## [2.1.6](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.6) 2024-11-05
 ### Added
 - Added a more thorough parsing of categories into pretty genres.

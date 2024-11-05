@@ -1,8 +1,8 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.holdback.HoldbackObject;
-import dk.kb.present.holdback.HoldbackDatePicker;
+import dk.kb.present.dr.holdback.HoldbackObject;
+import dk.kb.present.dr.holdback.HoldbackDatePicker;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.junit.jupiter.api.BeforeAll;

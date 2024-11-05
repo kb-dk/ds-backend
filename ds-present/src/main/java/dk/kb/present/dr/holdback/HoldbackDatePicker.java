@@ -1,4 +1,4 @@
-package dk.kb.present.holdback;
+package dk.kb.present.dr.holdback;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -223,7 +223,7 @@ public class HoldbackDatePicker {
      */
     private static void readSheet() {
         try {
-            String purposeSheetPath = ServiceConfig.getConfig().getString("holdback.dr.purposeSheet");
+            String purposeSheetPath = ServiceConfig.getConfig().getString("dr.holdback.purposeSheet");
             XSSFWorkbook purposeWorkbook;
             try (FileInputStream purposeExcel = new FileInputStream(Resolver.resolveURL(purposeSheetPath).getPath())) {
                 purposeWorkbook = new XSSFWorkbook(purposeExcel);
@@ -235,7 +235,7 @@ public class HoldbackDatePicker {
                 purposeWorkbook.close();
             }
 
-            String holdbackSheetPath = ServiceConfig.getConfig().getString("holdback.dr.holdbackSheet");
+            String holdbackSheetPath = ServiceConfig.getConfig().getString("dr.holdback.holdbackSheet");
             XSSFWorkbook holdbackWorkbook;
             try (FileInputStream holdbackExcel = new FileInputStream(Resolver.resolveURL(holdbackSheetPath).getPath())) {
                 holdbackWorkbook = new XSSFWorkbook(holdbackExcel);

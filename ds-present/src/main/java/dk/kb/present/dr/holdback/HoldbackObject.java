@@ -1,4 +1,4 @@
-package dk.kb.present.holdback;
+package dk.kb.present.dr.holdback;
 
 /**
  * Data which contains holdback information for a preservica record.
