@@ -16,7 +16,7 @@ public class ProductionIdLookupTest {
         ProductionIdLookup idLookup = new ProductionIdLookup();
 
         // ID we know is present in list.
-        assertTrue(idLookup.doLookup("00922023260"));
+        assertTrue(idLookup.doLookup("9220232600"));
     }
 
 }

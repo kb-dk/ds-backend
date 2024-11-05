@@ -65,7 +65,7 @@ public class ProductionIdLookup {
                 Cell cell = row.getCell(0);
                 if (cell != null) {
                     if (Objects.requireNonNull(cell.getCellType()) == CellType.STRING) {
-                        restrictedIds.add(cell.getStringCellValue());
+                        restrictedIds.add(reformatProductionId(cell.getStringCellValue()));
                     }
                 }
             }
@@ -81,6 +81,22 @@ public class ProductionIdLookup {
 
         log.info("Loaded '{}' restricted production IDs from file specified at YAML path: '{}'", restrictedIds.size(), restrictionsSheetPath);
         return  restrictedIds;
+    }
+
+
+    /**
+     * DR production IDs are different in nielsen/tvmeter data than in DRs own system. We need to reformat the values received from DR to match our metadata.
+     * To do so we must remove prefixed zeros and prefix another zero.
+     * @param productionId retrieved from DR provided Excel sheet.
+     * @return productionId matching values in tvmeter and nielsen metadata.
+     */
+    private static String reformatProductionId(String productionId) {
+        while (productionId.startsWith("0")) { //remove prefix zeroes
+            productionId = productionId.substring(1);
+        }
+
+        //add another zero
+        return productionId + "0" ;
     }
 
 
