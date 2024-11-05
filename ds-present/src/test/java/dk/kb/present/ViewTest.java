@@ -241,6 +241,17 @@ class ViewTest {
     }
 
     @Test
+    void ownProductionRadioTest() throws Exception {
+        View solrView = getPreservicaRadioSolrView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_2b462c63);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100")
+                .mTime(1701261949625000L).origin("ds.radio").kalturaId("randomKalturaId");
+
+        String solrDoc = solrView.apply(recordDto);
+        assertTrue(solrDoc.contains("\"own_production\":\"true\""));
+    }
+
+    @Test
     @Tag("integration")
     void holdbackNameTestNielsen() throws Exception {
         HoldbackDatePicker.init();
@@ -251,8 +262,6 @@ class ViewTest {
 
 
         String jsonld = jsonldView.apply(recordDto);
-        prettyPrintJson(jsonld);
-
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"2024-02-27T04:49:52Z\"," +
                 "\"kb:holdback_name\":\"Underholdning\""));
     }
@@ -268,8 +277,6 @@ class ViewTest {
 
 
         String jsonld = jsonldView.apply(recordDto);
-        prettyPrintJson(jsonld);
-
         assertTrue(jsonld.contains("\"kb:own_production\":false," +
                                     "\"kb:own_production_code\":2300"));
     }
@@ -370,5 +377,20 @@ class ViewTest {
         View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
                 tvConf.getSubMap("\"ds.tv\"").getString("origin"));
         return solrView;
+    }
+
+    /**
+     * Create test view for Preservica solr transformation
+     * @return Solr JSON view for preservica records.
+     */
+    private static View getPreservicaRadioSolrView() throws IOException {
+        if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
+            fail("Missing internal test files");
+        }
+        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
+        YAML radioConf = conf.getYAMLList("origins").get(2);
+        View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(2),
+                radioConf.getSubMap("\"ds.radio\"").getString("origin"));
+        return jsonldView;
     }
 }

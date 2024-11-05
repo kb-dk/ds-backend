@@ -183,7 +183,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         // The following three methods are all related to holdback and ownproduction calculations.
         updateMetadataMapWithFormAndContent(metadata, extractedValues);
-        updateMetadataMapWithOwnProduction(metadata, extractedValues);
+        updateMetadataMapWithOwnProduction(metadata, extractedValues, record.getOrigin());
         updateMetadataMapWithHoldback(record, metadata, extractedValues);
         updateMetadataMapWithPreservicaManifestation(record, metadata);
         metadata.put("productionId", extractedValues.getProductionId());
@@ -216,7 +216,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param metadataMap which the values should be added to.
      * @param extractedValues to extract Nielsen/Gallup origin from used to determine own production.
      */
-    private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues) {
+    private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues, String origin) {
         // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
         // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
         String ownProduction = extractedValues.getOrigin();
@@ -233,6 +233,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             boolean isOwnProduction = Integer.parseInt(ownProduction) < 2000;
             metadataMap.put("ownProductionBool", Boolean.toString(isOwnProduction));
             metadataMap.put("ownProductionCode", ownProduction);
+        } else if (origin.equals("ds.radio")){
+            log.debug("Record is a radio record, therefor we see it as own production no matter what.");
+            metadataMap.put("ownProductionBool", "true");
         }
     }
 
