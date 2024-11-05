@@ -659,6 +659,12 @@
       </f:string>
     </xsl:if>
 
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:dr_id_restricted') != ''">
+      <f:string key="dr_id_restricted">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:dr_id_restricted')"/>
+      </f:string>
+    </xsl:if>
+
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:storage_mTime') != ''">
       <f:string key="internal_storage_mTime">
         <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:storage_mTime')"/>

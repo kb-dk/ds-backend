@@ -96,7 +96,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
                 String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(currentValue.toString()).format(DateTimeFormatter.ISO_INSTANT);
                 extractedPreservicaValues.values.get(captureValueKey).setValue(cleanedTime);
             } else {
-                extractedPreservicaValues.values.get(captureValueKey).setValue(currentValue.toString());
+                extractedPreservicaValues.values.get(captureValueKey).setValue(currentValue.toString().trim());
             }
         }
     }

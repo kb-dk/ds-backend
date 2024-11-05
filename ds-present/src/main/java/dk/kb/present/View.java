@@ -14,8 +14,9 @@
  */
 package dk.kb.present;
 
-import dk.kb.present.holdback.HoldbackObject;
-import dk.kb.present.holdback.HoldbackDatePicker;
+import dk.kb.present.dr.holdback.HoldbackObject;
+import dk.kb.present.dr.holdback.HoldbackDatePicker;
+import dk.kb.present.dr.restrictions.ProductionIdLookup;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.DataCleanup;
@@ -186,7 +187,13 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         updateMetadataMapWithOwnProduction(metadata, extractedValues, record.getOrigin());
         updateMetadataMapWithHoldback(record, metadata, extractedValues);
         updateMetadataMapWithPreservicaManifestation(record, metadata);
-        metadata.put("productionId", extractedValues.getProductionId());
+
+        if (!extractedValues.getProductionId().isEmpty()){
+            metadata.put("productionId", extractedValues.getProductionId());
+            // Check if production ID is restricted from DR.
+            log.debug("Performing lookup for id: '{}'", extractedValues.getProductionId());
+            metadata.put("productionIdRestrictedDr", String.valueOf(ProductionIdLookup.getInstance().doLookup(extractedValues.getProductionId())));
+        }
     }
 
     /**
