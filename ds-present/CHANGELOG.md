@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.6](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.6) 2024-11-05
 ### Added
 - Added a more thorough parsing of categories into pretty genres.
 
@@ -15,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Removed Schema.org field `conditionsOfAccess` and solr field `conditions_of_access` as this field was never used and the DR rights management couldn't be done in a single value 
   field.
+
+### Fixed
+- In the prior version all DOMS migrated records were set as malfunctioning. This is fixed in this release.
 
 ## [2.1.5](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.5) 2024-10-23
 ### Added
