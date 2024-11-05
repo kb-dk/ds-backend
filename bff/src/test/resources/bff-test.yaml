@@ -8,27 +8,6 @@ config:
   autoupdate:
     enabled: false
 
-apis:
-  ds-image:
-    baseURL: "http://devel11.statsbiblioteket.dk:10001/ds-image/v1/"
-  ds-present:
-    baseURL: "http://devel11.statsbiblioteket.dk:10001/ds-present/v1/"
-  ds-licence:
-    baseURL: "http://devel11.statsbiblioteket.dk:10001/ds-licence/v1/"
-  ds-discover:
-    baseURL: "http://devel11.statsbiblioteket.dk:10001/ds-discover/v1/"
-  search:
-    baseURL: "http://devel11.statsbiblioteket.dk:10001/ds-discover/v1/solr/ds/select"
-  record:
-    baseURL: "http://devel11.statsbiblioteket.dk:10001/ds-present/v1/record"
-  mlt:
-    baseURL: "http://devel11.statsbiblioteket.dk:10001/ds-discover/v1/solr/ds/mlt"
-  suggest:
-    baseURL: "http://devel11.statsbiblioteket.dk:10001/ds-discover/v1/solr/ds/suggest"
-  thumbnail:
-    baseURL: "http://devel11.statsbiblioteket.dk:10001/ds-image/v1/kaltura/thumbnails"
-
-
 
 messages:
   msg1: "text1"
