@@ -823,6 +823,17 @@
       </f:string>
     </xsl:if>
 
+    <!-- The following three fields should always be available in the schema.org document for radio and tv records, so no need to encapsulate in if-statements. -->
+    <f:string key="contains_tvmeter">
+      <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:contains_tvmeter')"/>
+    </f:string>
+    <f:string key="contains_nielsen">
+      <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:contains_nielsen')"/>
+    </f:string>
+    <f:string key="contains_ritzau">
+      <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:contains_ritzau')"/>
+    </f:string>
+
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_missing_seconds_start') != ''">
       <f:string key="internal_program_structure_missing_seconds_start">
         <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:program_structure_missing_seconds_start')"/>

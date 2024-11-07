@@ -1182,6 +1182,42 @@
         <xsl:value-of select="$holdbackDate"/>
       </f:string>
     </xsl:if>
+
+    <!-- Create a field with a boolean value representing if the record has the extra tvmeter fragment -->
+    <f:boolean key="kb:contains_tvmeter">
+      <xsl:choose>
+        <xsl:when test="f:exists(/XIP/Metadata/Content/record/source/tvmeter)">
+          <xsl:value-of select="f:true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="f:false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:boolean>
+
+    <!-- Create a field with a boolean value representing if the record has the extra nielsen fragment -->
+    <f:boolean key="kb:contains_nielsen">
+      <xsl:choose>
+        <xsl:when test="exists(/XIP/Metadata/Content/record/source/nielsen)">
+          <xsl:value-of select="f:true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="f:false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:boolean>
+
+    <!-- Create a field with a boolean value representing if the record has the extra ritzau fragment -->
+    <f:boolean key="kb:contains_ritzau">
+      <xsl:choose>
+        <xsl:when test="f:exists(/XIP/Metadata/Content/record/source/ritzau)">
+          <xsl:value-of select="f:true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="f:false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:boolean>
   </xsl:template>
 
   <!-- Transforms internal fields, that are only present for tv/video metadata. These fields are:

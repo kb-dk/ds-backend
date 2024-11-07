@@ -539,6 +539,14 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(transformedJSON.contains("\"access_malfunction\":\"false\""));
     }
 
+    @Test
+    public void testFragmentBooleans() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG , TestFiles.PVICA_DOMS_MIG_17f56f97);
+        prettyPrintJson(transformedJSON);
+    }
+
+
+
 
     //@Test
     void testErrorFromFirstSchemaTransformation() throws IOException {

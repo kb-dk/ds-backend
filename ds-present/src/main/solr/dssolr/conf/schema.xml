@@ -57,6 +57,7 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.6: Search optimization
        Remove unused placeholder field: 'condition_of_access'.
 1.7.7: Add DR specific field on restricted production IDs.
+       Add fields contains_tvmeter, contains_nielsen & contains_ritzau for better debugging of metadata fragments
   -->
   <field name="_ds_1.7.7_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -949,6 +950,27 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="access_comments" type="string">
     <?description ?>
     <?example     ?>
+  </field>
+
+  <field name="contains_tvmeter" type="boolean">
+    <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
+            through a proprietary service, which delivers tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            record has been enriched with tvmeter data from this service.?>
+    <?example true?>
+  </field>
+
+  <field name="contains_nielsen" type="boolean">
+    <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
+            through a proprietary service, which delivers tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            record has been enriched with nielsen data from this service.?>
+    <?example true?>
+  </field>
+
+  <field name="contains_ritzau" type="boolean">
+    <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
+            through a proprietary service, which delivers tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            record has been enriched with ritzau data from this service.?>
+    <?example true?>
   </field>
 
   <field name="internal_program_structure_missing_seconds_start" type="pint">
