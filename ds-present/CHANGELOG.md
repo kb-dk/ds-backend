@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added:
-- Functionality to look up if a record has been restricted by DR by production ID.
+- Functionality to look up if a record has been restricted by DR by production ID.  
+- Added field own_production to all radio records, so that all records have a value for this field.
 - Solr 1.7.7: Add boolean field to show if record is restricted by DR.
 - Add boolean fields related to which kind of extra metadata that have been added to the records after OAI harvest to the transformations. These fields are also present in solr 
   schema version 1.7.7
