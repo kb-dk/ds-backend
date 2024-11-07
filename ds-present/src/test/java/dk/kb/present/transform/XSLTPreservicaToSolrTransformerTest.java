@@ -540,9 +540,19 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    public void testFragmentBooleans() throws IOException {
-        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG , TestFiles.PVICA_DOMS_MIG_17f56f97);
-        prettyPrintJson(transformedJSON);
+    public void testFragmentBooleansTvmeter() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG , TestFiles.PVICA_DOMS_MIG_172c987b);
+        assertTrue(transformedJSON.contains("\"contains_tvmeter\":\"true\""));
+        assertTrue(transformedJSON.contains("\"contains_nielsen\":\"false\","));
+        assertTrue(transformedJSON.contains("\"contains_ritzau\":\"false\""));
+    }
+
+    @Test
+    public void testFragmentBooleansNielsen() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG , TestFiles.PVICA_RECORD_0e89456b);
+        assertTrue(transformedJSON.contains("\"contains_tvmeter\":\"false\""));
+        assertTrue(transformedJSON.contains("\"contains_nielsen\":\"true\","));
+        assertTrue(transformedJSON.contains("\"contains_ritzau\":\"true\""));
     }
 
 

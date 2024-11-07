@@ -542,7 +542,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
     @Test
     public void testAlternateNameForDR1AndDR2() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, "internal_test_files/domsMigrated/172c987b-515d-4fbb-91d8-ebcc45b75095.xml");
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_172c987b);
         prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"alternateName\":\"DR 1\""));
     }
