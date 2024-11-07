@@ -58,7 +58,7 @@ When adding fields to this schema please have the following guidelines in mind:
        Remove unused placeholder field: 'condition_of_access'.
 1.7.7: Add DR specific field on restricted production IDs.
   -->
-  <field name="_ds_1.7.6_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.7_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
