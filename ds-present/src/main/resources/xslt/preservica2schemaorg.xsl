@@ -1176,14 +1176,6 @@
       </xsl:if>
     </xsl:if>
 
-    <!-- Holdback date included here. Holdback purpose is only included for video objects, therefor it is done in the
-          internal-video-fields template. -->
-    <xsl:if test="$holdbackDate != null or $holdbackDate != ''">
-      <f:string key="kb:holdback_date">
-        <xsl:value-of select="$holdbackDate"/>
-      </f:string>
-    </xsl:if>
-
     <!-- Create a field with a boolean value representing if the record has the extra tvmeter fragment -->
     <f:boolean key="kb:contains_tvmeter">
       <xsl:choose>
@@ -1219,6 +1211,15 @@
         </xsl:otherwise>
       </xsl:choose>
     </f:boolean>
+
+    <!-- Holdback date included here. Holdback purpose is only included for video objects, therefor it is done in the
+          internal-video-fields template. -->
+    <xsl:if test="$holdbackDate != null or $holdbackDate != ''">
+      <f:string key="kb:holdback_date">
+        <xsl:value-of select="$holdbackDate"/>
+      </f:string>
+    </xsl:if>
+
   </xsl:template>
 
   <!-- Transforms internal fields, that are only present for tv/video metadata. These fields are:
@@ -1243,6 +1244,8 @@
         <xsl:value-of select="$holdbackContentValue"/>
       </f:string>
     </xsl:if>
+
+
 
     <!-- Create boolean for color for tv resources-->
     <xsl:choose>

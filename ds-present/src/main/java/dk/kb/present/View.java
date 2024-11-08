@@ -184,7 +184,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         // The following three methods are all related to holdback and ownproduction calculations.
         updateMetadataMapWithFormAndContent(metadata, extractedValues);
-        updateMetadataMapWithOwnProduction(metadata, extractedValues, record.getOrigin());
+        updateMetadataMapWithOwnProduction(metadata, extractedValues);
         updateMetadataMapWithHoldback(record, metadata, extractedValues);
         updateMetadataMapWithPreservicaManifestation(record, metadata);
 
@@ -223,7 +223,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param metadataMap which the values should be added to.
      * @param extractedValues to extract Nielsen/Gallup origin from used to determine own production.
      */
-    private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues, String origin) {
+    private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues) {
         // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
         // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
         String ownProduction = extractedValues.getOrigin();
