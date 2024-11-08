@@ -58,6 +58,7 @@ When adding fields to this schema please have the following guidelines in mind:
        Remove unused placeholder field: 'condition_of_access'.
 1.7.7: Add DR specific field on restricted production IDs.
        Add fields contains_tvmeter, contains_nielsen & contains_ritzau for better debugging of metadata fragments
+       Add copyField which copies description to freetext.
   -->
   <field name="_ds_1.7.7_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -1340,6 +1341,7 @@ When adding fields to this schema please have the following guidelines in mind:
   <copyField source="original_title" dest="freetext"/>
   <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->    
   <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
+  <copyField source="description" dest="freetext"/>
   <copyField source="own_production" dest="suggest_context"/>
   <copyField source="text" dest="text_shingles">
     <?description Copies the content of the basic text field to the shingles enabled text field, for better phrase search ranking and keyword extraction.?>
