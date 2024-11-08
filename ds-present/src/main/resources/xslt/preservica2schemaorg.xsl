@@ -60,6 +60,7 @@
     <!-- We cannot rely on namespaces being present in the records. Therefore everything at content level has namespaces removed. This makes it possible to work with PBCore
     metadata defined as PBCoreDescriptionDocument and PBCoreDescriptionDocument:PBCoreDescriptionDocument.-->
     <xsl:variable name="contentObjects">
+      <!--/XIP/Metadata-->
       <xsl:for-each select="/XIP/Metadata/Content">
         <xsl:apply-templates mode="strip-ns"/>
       </xsl:for-each>
@@ -1175,6 +1176,42 @@
       </xsl:if>
     </xsl:if>
 
+    <!-- Create a field with a boolean value representing if the record has the extra tvmeter fragment -->
+    <f:boolean key="kb:contains_tvmeter">
+      <xsl:choose>
+        <xsl:when test="//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_tvmeter_metadata']">
+          <xsl:value-of select="f:true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:boolean>
+
+    <!-- Create a field with a boolean value representing if the record has the extra nielsen fragment -->
+    <f:boolean key="kb:contains_nielsen">
+      <xsl:choose>
+        <xsl:when test="//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_nielsen_metadata']">
+          <xsl:value-of select="f:true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="f:false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:boolean>
+
+    <!-- Create a field with a boolean value representing if the record has the extra ritzau fragment -->
+    <f:boolean key="kb:contains_ritzau">
+      <xsl:choose>
+        <xsl:when test="//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_ritzau_metadata']">
+          <xsl:value-of select="f:true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="f:false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:boolean>
+
     <!-- Holdback date included here. Holdback purpose is only included for video objects, therefor it is done in the
           internal-video-fields template. -->
     <xsl:if test="$holdbackDate != null or $holdbackDate != ''">
@@ -1182,6 +1219,7 @@
         <xsl:value-of select="$holdbackDate"/>
       </f:string>
     </xsl:if>
+
   </xsl:template>
 
   <!-- Transforms internal fields, that are only present for tv/video metadata. These fields are:
@@ -1206,6 +1244,8 @@
         <xsl:value-of select="$holdbackContentValue"/>
       </f:string>
     </xsl:if>
+
+
 
     <!-- Create boolean for color for tv resources-->
     <xsl:choose>
