@@ -805,12 +805,12 @@
         <xsl:value-of select="normalize-space(f:string-join($keywordsSequence, ', '))"/>
       </xsl:variable>
 
-      <xsl:if test="$keywordsString != ''">
-        <f:string key="keywords">
-          <xsl:value-of select="$keywordsString"/>
-        </f:string>
-
-        <xsl:variable name="genreValue">
+      <xsl:choose>
+        <xsl:when test="$keywordsString != ''">
+          <f:string key="keywords">
+            <xsl:value-of select="$keywordsString"/>
+          </f:string>
+          <xsl:variable name="genreValue">
             <xsl:choose>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $NewsPoliticsSociety)">
                 <xsl:value-of select="'Nyheder, politik og samfund'"/>
@@ -828,7 +828,7 @@
                 <xsl:value-of select="'Humor, quiz og underholdning'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ChildrenYouth)">
-                <xsl:value-of select="'Børn og Unge'"/>
+                <xsl:value-of select="'Børn og unge'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Documentary)">
                 <xsl:value-of select="'Dokumentar'"/>
@@ -840,7 +840,7 @@
                 <xsl:value-of select="'Livsstil'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ScienceNature)">
-                <xsl:value-of select="'Videnskab og natur'"/>
+                <xsl:value-of select="'Natur og videnskab'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Misc)">
                 <xsl:value-of select="'Rodekassen'"/>
@@ -849,12 +849,18 @@
                 <xsl:value-of select="'Rodekassen'"/>
               </xsl:otherwise>
             </xsl:choose>
-        </xsl:variable>
-
-        <f:string key="genre">
-          <xsl:value-of select="$genreValue"/>
-        </f:string>
-      </xsl:if>
+          </xsl:variable>
+          <f:string key="genre">
+            <xsl:value-of select="$genreValue"/>
+          </f:string>
+        </xsl:when>
+        <!-- Adding a fallback to 'Rodekassen' as we have 160K records without genre at all. -->
+        <xsl:otherwise>
+          <f:string key="genre">
+            <xsl:value-of select="'Rodekassen'"/>
+          </f:string>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 
     <!-- Extract directors if any present in metadata. see https://schema.org/director -->
