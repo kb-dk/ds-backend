@@ -846,7 +846,7 @@
                 <xsl:value-of select="'Rodekassen'"/>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:value-of select="'Unresolved'"/>
+                <xsl:value-of select="'Rodekassen'"/>
               </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
