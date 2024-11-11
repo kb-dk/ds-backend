@@ -353,6 +353,32 @@ class ViewTest {
 
     }
 
+    @Test
+    @Tag("integration")
+    void testHasKalturaIdBoolean() throws IOException {
+        HoldbackDatePicker.init();
+        View solrView = getSolrTvViewForPreservicaRecord();
+        String preservicaRecord = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_4d61dcb3);
+        DsRecordDto recordDto = new DsRecordDto().data(preservicaRecord).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+        String solrdoc = solrView.apply(recordDto);
+        assertTrue(solrdoc.contains("\"has_kaltura_id\":\"true\""));
+    }
+
+    @Test
+    @Tag("integration")
+    void testNoKalturaIdBoolean() throws IOException {
+        HoldbackDatePicker.init();
+        View solrView = getSolrTvViewForPreservicaRecord();
+        String preservicaRecord = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_4d61dcb3);
+        DsRecordDto recordDto = new DsRecordDto().data(preservicaRecord).id("test.id")
+                .mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
+
+        String solrdoc = solrView.apply(recordDto);
+        assertTrue(solrdoc.contains("\"has_kaltura_id\":\"false\""));
+    }
+
     //********************************************** PRIVATE HELPER METHODS BELOW ***************************************************************
 
     /**

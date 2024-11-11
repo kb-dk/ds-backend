@@ -649,7 +649,7 @@
     </xsl:if>
   </xsl:template>
 
-  <!-- TEMPLATE WHICH EXTRACTS VALUES FROM THE KB INTERNAL MAP, THAT HAVE STATUS AS INTERNAL FIELDS IN SOLR AS WELL. -->
+  <!-- TEMPLATE WHICH EXTRACTS VALUES FROM THE KB INTERNAL MAP. -->
   <xsl:template name="kbInternal">
     <xsl:param name="internalMap"/>
 
@@ -662,6 +662,12 @@
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:dr_id_restricted') != ''">
       <f:string key="dr_id_restricted">
         <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:dr_id_restricted')"/>
+      </f:string>
+    </xsl:if>
+
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:has_kaltura_id') != ''">
+      <f:string key="has_kaltura_id">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:has_kaltura_id')"/>
       </f:string>
     </xsl:if>
 

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Solr 1.7.7: Add boolean field to show if record is restricted by DR.
 - Add boolean fields related to which kind of extra metadata that have been added to the records after OAI harvest to the transformations. These fields are also present in solr 
   schema version 1.7.7
+- Add boolean field `has_kaltura_id`.
 
 ### Changed:
 - Changed configuration naming for YAML key `holdback.dr` to `dr.holdback` in preparation for addition of `dr.restrictions`.

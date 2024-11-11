@@ -999,6 +999,18 @@
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
 
+    <!-- Boolean value which determins if the record has a stream available at Kaltura.-->
+    <f:boolean key="kb:has_kaltura_id">
+      <xsl:choose>
+        <xsl:when test="$kalturaID != ''">
+          <xsl:value-of select="true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:boolean>
+
     <!-- Extration of migration details if present. Implemented as a choose statement. -->
     <xsl:variable name="migrationSource">
       <xsl:value-of select="/XIP/Metadata/Content/migration_details/migrated_from"/>

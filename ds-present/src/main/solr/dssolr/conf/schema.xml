@@ -59,6 +59,7 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.7: Add DR specific field on restricted production IDs.
        Add fields contains_tvmeter, contains_nielsen & contains_ritzau for better debugging of metadata fragments
        Add copyField which copies description to freetext.
+       Add field has_kaltura_id which should be used for filtering records.
   -->
   <field name="_ds_1.7.7_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -757,6 +758,11 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="kaltura_id" type="string">
     <?description An ID created by kaltura representing the access copy available et kaltura for the given record.?>
     <?example 0_00abcdef?>
+  </field>
+
+  <field name="has_kaltura_id" type="boolean">
+    <?description A boolean representing when a record has a stream present in kaltura.?>
+    <?example true?>
   </field>
 
   <field name="dr_production_id" type="string">
