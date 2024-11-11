@@ -222,10 +222,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertTrue(hasGenre.contains("\"genre\":\"Humor, quiz og underholdning\""));
 
         String noGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda);
-        Assertions.assertFalse(noGenre.contains("\"genre\":"));
+        Assertions.assertTrue(noGenre.contains("\"genre\":\"Rodekassen\""));
 
         String emptyGenre = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda);
-        Assertions.assertFalse(emptyGenre.contains("\"genre\":"));
+        Assertions.assertTrue(emptyGenre.contains("\"genre\":\"Rodekassen\""));
     }
 
     @Test

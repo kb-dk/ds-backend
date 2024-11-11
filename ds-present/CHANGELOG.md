@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed:
 - Changed configuration naming for YAML key `holdback.dr` to `dr.holdback` in preparation for addition of `dr.restrictions`.
+- Moved unresolved genres to the genre `Rodekassen`.
 
 ## [2.1.6](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.1.6) 2024-11-05
 ### Added
