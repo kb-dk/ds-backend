@@ -242,6 +242,7 @@ class ViewTest {
     }
 
     @Test
+    @Tag("integration")
     void ownProductionRadioTest() throws Exception {
         View solrView = getPreservicaRadioSolrView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_2b462c63);
