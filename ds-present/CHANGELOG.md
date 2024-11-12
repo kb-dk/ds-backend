@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.0) 2024-11-12
 ### Added:
 - Functionality to look up if a record has been restricted by DR by production ID.  
 - Added field own_production to all radio records, so that all records have a value for this field.
