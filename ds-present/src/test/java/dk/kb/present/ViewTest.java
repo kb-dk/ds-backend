@@ -44,7 +44,6 @@ class ViewTest {
         try {
             ServiceConfig.initialize("conf/ds-present-behaviour.yaml", "internal-test-setup.yaml");
             config = ServiceConfig.getConfig();
-            ProductionIdLookup.init();
         } catch (IOException e) {
             fail();
         }
@@ -330,6 +329,7 @@ class ViewTest {
     @Tag("integration")
     void testRestrictedDRProductionID() throws IOException {
         HoldbackDatePicker.init();
+        ProductionIdLookup.init();
         View jsonldView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_4d61dcb3);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
