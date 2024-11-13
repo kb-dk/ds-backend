@@ -14,10 +14,19 @@
  */
 package dk.kb.discover;
 
-import dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.util.ErrorMessageHandler;
 import dk.kb.discover.util.SolrParamMerger;
+import dk.kb.discover.util.responses.select.SelectResponse;
+import dk.kb.discover.util.responses.suggest.SuggestResponse;
+import dk.kb.discover.util.responses.suggest.SuggestResponseBody;
+import dk.kb.discover.util.responses.suggest.SuggestionObject;
+import dk.kb.discover.util.responses.suggest.SuggestionObjectList;
+import dk.kb.license.client.v1.DsLicenseApi;
+import dk.kb.license.model.v1.GetUserQueryInputDto;
+import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -32,6 +41,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +49,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl.FILTER_CACHE_PREFIX;
+import static dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl.getDsLicenseApiClient;
+import static dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl.getLicenseQueryDto;
 
 /**
  * Encapsulates assess to a Solr server.
@@ -100,6 +114,11 @@ public class SolrService {
     private final String server;
     private final String path;
     private final String solrCollection;
+
+    /**
+     * A list of fqs created by DSLicense.
+     */
+    private final List<String> plainLicenseFilter = createAccessFilter("");
 
     private final HttpClient client = HttpClient.newHttpClient();
 
@@ -363,8 +382,59 @@ public class SolrService {
            throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
         }
 
-        URI suggestURI = createSuggestRequestBuilder(suggestDictionary, suggestQuery,suggestCount,wt);
-        return performCall(suggestQuery, suggestURI, "suggest");
+        URI suggestURI = createSuggestRequestBuilder(suggestDictionary, suggestQuery, suggestCount, wt);
+        String rawSuggestBody = performCall(suggestQuery, suggestURI, "suggest");
+        System.out.println("Solr response");
+        System.out.println(rawSuggestBody);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        SuggestionObjectList filteredSuggestions = new SuggestionObjectList();
+        int allowedSuggestionsCount = 0;
+        try {
+            SuggestResponse originalSuggestResponse = objectMapper.readValue(rawSuggestBody, SuggestResponse.class);
+            SuggestionObjectList originalSuggestions = originalSuggestResponse.getSuggest().getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery);
+
+            for (SuggestionObject currentSuggestion : originalSuggestions.getSuggestions()){
+                if (allowedSuggestionsCount == 5){
+                    break;
+                }
+
+                String title = currentSuggestion.getTerm();
+                String titleQuery = "title:\"" + title + "\"";
+
+                SolrParamMerger merger = createBaseParams(SELECT, titleQuery, plainLicenseFilter, 1, null, null, null, wt);
+                merger.put(FACET, false);
+                merger.put(SPELLCHECK, false);
+                merger.put("hl", false);
+
+
+                URI uri = createRequest(SELECT, merger);
+                String singleResult = performCall(titleQuery, uri, "search");
+                SelectResponse singleResponse = objectMapper.readValue(singleResult, SelectResponse.class);
+
+                if (singleResponse.getNumFound() > 0){
+                    filteredSuggestions.addSuggestion(currentSuggestion);
+                    allowedSuggestionsCount ++;
+                } else {
+                    log.debug("Record with title '{}' can not be shown in suggestions.", title);
+                }
+            }
+
+
+            SuggestResponse filteredSuggestResponse = new SuggestResponse();
+            SuggestResponseBody suggestResponseBody = new SuggestResponseBody();
+
+
+            suggestResponseBody.setRadioTvTitleSuggest(originalSuggestResponse.getSuggest().getRadioTvTitleSuggest());
+            suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).setSuggestions(filteredSuggestions.getSuggestions());
+            suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).setNumFound(allowedSuggestionsCount);
+            filteredSuggestResponse.setResponseHeader(originalSuggestResponse.getResponseHeader());
+            filteredSuggestResponse.setSuggest(suggestResponseBody);
+
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(filteredSuggestResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -663,6 +733,35 @@ public class SolrService {
         }
         String response = stripMatcher.replaceAll("");
         return EMPTY_FQ_XML.matcher(response).replaceAll("");
+    }
+
+    /**
+     * Request a filter query from ds-license and use it as fq.
+     * @param designation describes the caller, used for logging only.
+     * @return {@code fq} extended with an access filter from ds-license.
+     */
+    private List<String> createAccessFilter(String designation) {
+        //Add filter query from license module.
+        DsLicenseApi licenseClient = getDsLicenseApiClient();
+        GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
+        GetUsersFilterQueryOutputDto filterQuery;
+        try {
+            filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
+        } catch (Exception e) {
+            log.warn("Unable to get response from ds-license at URL '" +
+                    ServiceConfig.getConfig().getString("licensemodule.url") + "'", e);
+            throw new InternalServiceException("Unable to contact license server");
+        }
+
+        log.debug("{}: Using filter query='{}' for user attributes='{}'",
+                designation, filterQuery.getFilterQuery(), getLicenseQueryDto());
+
+        List<String> fq = new ArrayList<>();
+
+        if (filterQuery.getFilterQuery() != null && !filterQuery.getFilterQuery().isEmpty()) {
+            fq.add(FILTER_CACHE_PREFIX + filterQuery.getFilterQuery()); //Add the additional filter query
+        }
+        return fq;
     }
 
     private static final Pattern SINGLE_FQ_JSON = Pattern.compile("\"fq\":\\s*\\[\\s*(\"(?:[^\"\\\\]|\\\\.)*\")\\s*]", Pattern.DOTALL);

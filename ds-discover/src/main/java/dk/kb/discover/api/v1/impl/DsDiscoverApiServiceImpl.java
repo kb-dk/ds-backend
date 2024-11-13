@@ -402,7 +402,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     }
 
 
-    private static GetUserQueryInputDto getLicenseQueryDto() {
+    public static GetUserQueryInputDto getLicenseQueryDto() {
         GetUserQueryInputDto getQueryDto = new GetUserQueryInputDto();
 
         getQueryDto.setPresentationType("Search"); // Important. Must be defined in Licensemodule with same name
@@ -423,7 +423,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
 
     }
     
-    private static DsLicenseApi getDsLicenseApiClient() {
+    public static DsLicenseApi getDsLicenseApiClient() {
       
       if (licenseClient!= null) {
         return licenseClient;

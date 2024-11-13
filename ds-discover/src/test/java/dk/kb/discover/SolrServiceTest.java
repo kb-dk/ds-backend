@@ -1,7 +1,11 @@
 package dk.kb.discover;
 
 import dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl;
+import dk.kb.discover.config.ServiceConfig;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -118,5 +122,22 @@ class SolrServiceTest {
                 "    </arr>\n";
         assertThrows(IllegalArgumentException.class,
                 () -> SolrService.removePrefixedFilters(response, prefix,"xml"));
+    }
+
+    @Test
+    @Tag("integration")
+    void suggestTest() throws IOException {
+        // Integration test towards devel env. Remember to update aegis before running this.
+        ServiceConfig.initialize("src/test/resources/ds-discover-integration-test.yaml");
+        String suggestDictionary = "radiotv_title_suggest";
+        //String suggestQuery = "Palle Lauring";
+        String suggestQuery = "tes";
+        int suggestCount = 10;
+        String wt = "json";
+        SolrService solr = SolrManager.getSolrService("ds");
+        String rawResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);
+
+        System.out.println("ParsedResponse");
+        System.out.println(rawResponse);
     }
 }
