@@ -2,10 +2,12 @@ package dk.kb.discover;
 
 import dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl;
 import dk.kb.discover.config.ServiceConfig;
+import dk.kb.discover.util.SolrParamMerger;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -132,7 +134,7 @@ class SolrServiceTest {
         String suggestDictionary = "radiotv_title_suggest";
         //String suggestQuery = "Palle Lauring";
         String suggestQuery = "tes";
-        int suggestCount = 10;
+        int suggestCount = 5;
         String wt = "json";
         SolrService solr = SolrManager.getSolrService("ds");
         String rawResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);

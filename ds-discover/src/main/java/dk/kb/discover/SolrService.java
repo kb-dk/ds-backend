@@ -46,6 +46,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -389,51 +392,106 @@ public class SolrService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         SuggestionObjectList filteredSuggestions = new SuggestionObjectList();
-        int allowedSuggestionsCount = 0;
+        AtomicInteger allowedSuggestionsCount = new AtomicInteger(0);
         try {
             SuggestResponse originalSuggestResponse = objectMapper.readValue(rawSuggestBody, SuggestResponse.class);
             SuggestionObjectList originalSuggestions = originalSuggestResponse.getSuggest().getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery);
 
-            for (SuggestionObject currentSuggestion : originalSuggestions.getSuggestions()){
-                if (allowedSuggestionsCount == 5){
+            ForkJoinPool threadPool = new ForkJoinPool(5);
+
+            /*while (allowedSuggestionsCount.get() < 5){
+                threadPool.submit(() ->
+                        originalSuggestions.getSuggestions().stream()
+                                .parallel() // Do the streaming operations in parallel aka make use of the thread pool.
+                                .filter(suggestion -> isSuggestAllowed(suggestion, objectMapper, wt))
+                                .forEach(suggestion -> addToSuggestResponse(suggestion, filteredSuggestions, allowedSuggestionsCount))
+                ).get();
+            }*/
+
+
+            for (SuggestionObject suggestion : originalSuggestions.getSuggestions()) {
+                if (allowedSuggestionsCount.get() >= suggestCount){
                     break;
                 }
 
-                String title = currentSuggestion.getTerm();
-                String titleQuery = "title:\"" + title + "\"";
+                threadPool.submit(() -> {
+                    String title = suggestion.getTerm();
+                    String titleQuery = "title:\"" + title + "\"";
 
-                SolrParamMerger merger = createBaseParams(SELECT, titleQuery, plainLicenseFilter, 1, null, null, null, wt);
-                merger.put(FACET, false);
-                merger.put(SPELLCHECK, false);
-                merger.put("hl", false);
+                    SolrParamMerger merger = createBaseParams(SELECT, titleQuery, plainLicenseFilter, 1, null, null, null, wt);
+                    merger.put(FACET, false);
+                    merger.put(SPELLCHECK, false);
+                    merger.put("hl", false);
 
 
-                URI uri = createRequest(SELECT, merger);
-                String singleResult = performCall(titleQuery, uri, "search");
-                SelectResponse singleResponse = objectMapper.readValue(singleResult, SelectResponse.class);
+                    URI uri = createRequest(SELECT, merger);
+                    String singleResult = performCall(titleQuery, uri, "search");
+                    SelectResponse singleResponse = null;
+                    try {
+                        singleResponse = objectMapper.readValue(singleResult, SelectResponse.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                if (singleResponse.getNumFound() > 0){
-                    filteredSuggestions.addSuggestion(currentSuggestion);
-                    allowedSuggestionsCount ++;
-                } else {
-                    log.debug("Record with title '{}' can not be shown in suggestions.", title);
-                }
+                    if (singleResponse.getNumFound() > 0) {
+                        filteredSuggestions.addSuggestion(suggestion);
+                        allowedSuggestionsCount.getAndAdd(1);
+                    } else {
+                        log.debug("Record with title '{}' can not be shown in suggestions.", title);
+                    }
+                }).get();
             }
 
 
+            System.out.println(filteredSuggestions);
             SuggestResponse filteredSuggestResponse = new SuggestResponse();
             SuggestResponseBody suggestResponseBody = new SuggestResponseBody();
 
 
             suggestResponseBody.setRadioTvTitleSuggest(originalSuggestResponse.getSuggest().getRadioTvTitleSuggest());
             suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).setSuggestions(filteredSuggestions.getSuggestions());
-            suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).setNumFound(allowedSuggestionsCount);
+            suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).setNumFound(allowedSuggestionsCount.get());
             filteredSuggestResponse.setResponseHeader(originalSuggestResponse.getResponseHeader());
             filteredSuggestResponse.setSuggest(suggestResponseBody);
 
+            threadPool.shutdown();
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(filteredSuggestResponse);
         } catch (JsonProcessingException e) {
+            throw new InternalServiceException("An error occurred when processing JSON in the suggest response: ", e);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new InternalServiceException("An error occurred when getting suggest response in parallel: ", e);
+        }
+    }
+
+    private void addToSuggestResponse(SuggestionObject suggestion, SuggestionObjectList finalSuggestions, AtomicInteger allowedSuggestionsCount) {
+        finalSuggestions.addSuggestion(suggestion);
+        allowedSuggestionsCount.getAndAdd(1);
+    }
+
+    private boolean isSuggestAllowed(SuggestionObject suggestion, ObjectMapper objectMapper, String wt) {
+        String title = suggestion.getTerm();
+        String titleQuery = "title:\"" + title + "\"";
+
+        SolrParamMerger merger = createBaseParams(SELECT, titleQuery, plainLicenseFilter, 1, null, null, null, wt);
+        merger.put(FACET, false);
+        merger.put(SPELLCHECK, false);
+        merger.put("hl", false);
+
+
+        URI uri = createRequest(SELECT, merger);
+        String singleResult = performCall(titleQuery, uri, "search");
+        SelectResponse singleResponse = null;
+        try {
+            singleResponse = objectMapper.readValue(singleResult, SelectResponse.class);
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
+        }
+
+        if (singleResponse.getNumFound() > 0) {
+            return true;
+        } else {
+            log.debug("Record with title '{}' can not be shown in suggestions.", title);
+            return false;
         }
     }
 
