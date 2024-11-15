@@ -71,9 +71,9 @@ public class SolrQueryRecursiveTask extends RecursiveTask<List<SuggestionObject>
 
             filteredSuggestions.addAll(subtask1.join());
             filteredSuggestions.addAll(subtask2.join());
-            log.debug("filtered suggestions now contain: '{}'", filteredSuggestions);
 
         } else {
+            long requestStartTime = System.currentTimeMillis();
             log.debug("Doing workLoad: {}", workLoad);
             for (SuggestionObject suggestion : originalSuggestions) {
                 String title = suggestion.getTerm();
@@ -100,6 +100,8 @@ public class SolrQueryRecursiveTask extends RecursiveTask<List<SuggestionObject>
                 } else {
                     log.debug("Record with title '{}' can not be shown in suggestions.", title);
                 }
+
+                log.info("Single SELECT request for suggestion took '{}' ms", System.currentTimeMillis() - requestStartTime);
             }
 
         }

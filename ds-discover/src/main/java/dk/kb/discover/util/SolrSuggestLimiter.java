@@ -20,6 +20,7 @@ public class SolrSuggestLimiter {
 
 
     public static SuggestResponse limit(SolrService solr, String rawSuggestBody, ObjectMapper objectMapper, String suggestQuery, int suggestCount, String wt) throws JsonProcessingException {
+        long methodStartTime = System.currentTimeMillis();
         SuggestResponse originalSuggestResponse = objectMapper
                 .readValue(rawSuggestBody, SuggestResponse.class);
         SuggestionObjectList originalSuggestions = originalSuggestResponse.getSuggest().getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery);
@@ -43,6 +44,7 @@ public class SolrSuggestLimiter {
 
         threadPool.shutdown();
 
+        log.info("Limiting of suggest result took '{}' ms", System.currentTimeMillis() - methodStartTime);
         return filteredSuggestResponse;
     }
 }
