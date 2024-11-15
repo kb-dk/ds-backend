@@ -3,6 +3,7 @@ package dk.kb.discover.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dk.kb.discover.SolrQueryRecursiveTask;
 import dk.kb.discover.SolrService;
 import dk.kb.discover.util.responses.suggest.SuggestResponse;
 import dk.kb.discover.util.responses.suggest.SuggestResponseBody;

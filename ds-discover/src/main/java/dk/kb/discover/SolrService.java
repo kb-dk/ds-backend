@@ -18,13 +18,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.util.ErrorMessageHandler;
+import dk.kb.discover.util.LicenseUtil;
 import dk.kb.discover.util.SolrParamMerger;
-import dk.kb.discover.util.SolrQueryRecursiveTask;
 import dk.kb.discover.util.SolrSuggestLimiter;
 import dk.kb.discover.util.responses.suggest.SuggestResponse;
-import dk.kb.discover.util.responses.suggest.SuggestResponseBody;
-import dk.kb.discover.util.responses.suggest.SuggestionObject;
-import dk.kb.discover.util.responses.suggest.SuggestionObjectList;
 import dk.kb.license.client.v1.DsLicenseApi;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
@@ -47,15 +44,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl.FILTER_CACHE_PREFIX;
-import static dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl.getDsLicenseApiClient;
-import static dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl.getLicenseQueryDto;
 
 /**
  * Encapsulates assess to a Solr server.
@@ -412,7 +405,7 @@ public class SolrService {
      * Create a param merger for the given {@code handler} and add the given parameters to it.
      * @return a handler-specific param merger, filled wit the given parameters.
      */
-    public SolrParamMerger createBaseParams(
+    protected SolrParamMerger createBaseParams(
             String handler, String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
         SolrParamMerger merger;
         switch (handler) {
@@ -442,7 +435,7 @@ public class SolrService {
      * @param params the parameters for the call.
      * @return an URI ready for use with a HTTP component.
      */
-    public URI createRequest(String handler, SolrParamMerger params) {
+    protected URI createRequest(String handler, SolrParamMerger params) {
         try {
             URIBuilder builder = new URIBuilder(server)
                     .setPathSegments(path, solrCollection, handler);
@@ -503,7 +496,7 @@ public class SolrService {
      * @param callType the overall type of call (search/facet/...) used for logging only.
      * @return the response from the request for {@code uri}
      */
-    public String performCall(String q, URI uri, String callType) {
+    protected String performCall(String q, URI uri, String callType) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
@@ -699,8 +692,8 @@ public class SolrService {
      */
     public List<String> createAccessFilter(String designation) {
         //Add filter query from license module.
-        DsLicenseApi licenseClient = getDsLicenseApiClient();
-        GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
+        DsLicenseApi licenseClient = LicenseUtil.getDsLicenseApiClient();
+        GetUserQueryInputDto licenseQueryDto = LicenseUtil.getLicenseQueryDto();
         GetUsersFilterQueryOutputDto filterQuery;
         try {
             filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
@@ -711,7 +704,7 @@ public class SolrService {
         }
 
         log.debug("{}: Using filter query='{}' for user attributes='{}'",
-                designation, filterQuery.getFilterQuery(), getLicenseQueryDto());
+                designation, filterQuery.getFilterQuery(), licenseQueryDto);
 
         List<String> fq = new ArrayList<>();
 

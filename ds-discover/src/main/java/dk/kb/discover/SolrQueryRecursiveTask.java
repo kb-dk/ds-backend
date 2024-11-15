@@ -1,7 +1,7 @@
-package dk.kb.discover.util;
+package dk.kb.discover;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dk.kb.discover.SolrService;
+import dk.kb.discover.util.SolrParamMerger;
 import dk.kb.discover.util.responses.select.SelectResponse;
 import dk.kb.discover.util.responses.suggest.SuggestionObject;
 import org.slf4j.Logger;
