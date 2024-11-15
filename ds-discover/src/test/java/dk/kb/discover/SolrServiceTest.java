@@ -137,9 +137,10 @@ class SolrServiceTest {
         int suggestCount = 5;
         String wt = "json";
         SolrService solr = SolrManager.getSolrService("ds");
-        String rawResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);
+
+        String filteredResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);
 
         System.out.println("ParsedResponse");
-        System.out.println(rawResponse);
+        System.out.println(filteredResponse);
     }
 }

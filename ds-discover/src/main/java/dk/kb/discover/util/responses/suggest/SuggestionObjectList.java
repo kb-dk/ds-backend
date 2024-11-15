@@ -37,6 +37,10 @@ public class SuggestionObjectList {
         suggestionObjects.add(suggestionObject);
     }
 
+    public void deleteAllSuggestions() {
+        suggestionObjects.clear();
+    }
+
     @Override
     public String toString() {
         return "SuggestionObjectList{" +

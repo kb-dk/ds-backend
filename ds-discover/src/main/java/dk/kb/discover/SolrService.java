@@ -19,7 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.util.ErrorMessageHandler;
 import dk.kb.discover.util.SolrParamMerger;
-import dk.kb.discover.util.responses.select.SelectResponse;
+import dk.kb.discover.util.SolrQueryRecursiveTask;
+import dk.kb.discover.util.SolrSuggestLimiter;
 import dk.kb.discover.util.responses.suggest.SuggestResponse;
 import dk.kb.discover.util.responses.suggest.SuggestResponseBody;
 import dk.kb.discover.util.responses.suggest.SuggestionObject;
@@ -48,7 +49,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -118,10 +118,7 @@ public class SolrService {
     private final String path;
     private final String solrCollection;
 
-    /**
-     * A list of fqs created by DSLicense.
-     */
-    private final List<String> plainLicenseFilter = createAccessFilter("");
+    public static ObjectMapper objectMapper = new ObjectMapper();
 
     private final HttpClient client = HttpClient.newHttpClient();
 
@@ -387,111 +384,13 @@ public class SolrService {
 
         URI suggestURI = createSuggestRequestBuilder(suggestDictionary, suggestQuery, suggestCount, wt);
         String rawSuggestBody = performCall(suggestQuery, suggestURI, "suggest");
-        System.out.println("Solr response");
-        System.out.println(rawSuggestBody);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        SuggestionObjectList filteredSuggestions = new SuggestionObjectList();
-        AtomicInteger allowedSuggestionsCount = new AtomicInteger(0);
         try {
-            SuggestResponse originalSuggestResponse = objectMapper.readValue(rawSuggestBody, SuggestResponse.class);
-            SuggestionObjectList originalSuggestions = originalSuggestResponse.getSuggest().getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery);
 
-            ForkJoinPool threadPool = new ForkJoinPool(5);
-
-            /*while (allowedSuggestionsCount.get() < 5){
-                threadPool.submit(() ->
-                        originalSuggestions.getSuggestions().stream()
-                                .parallel() // Do the streaming operations in parallel aka make use of the thread pool.
-                                .filter(suggestion -> isSuggestAllowed(suggestion, objectMapper, wt))
-                                .forEach(suggestion -> addToSuggestResponse(suggestion, filteredSuggestions, allowedSuggestionsCount))
-                ).get();
-            }*/
-
-
-            for (SuggestionObject suggestion : originalSuggestions.getSuggestions()) {
-                if (allowedSuggestionsCount.get() >= suggestCount){
-                    break;
-                }
-
-                threadPool.submit(() -> {
-                    String title = suggestion.getTerm();
-                    String titleQuery = "title:\"" + title + "\"";
-
-                    SolrParamMerger merger = createBaseParams(SELECT, titleQuery, plainLicenseFilter, 1, null, null, null, wt);
-                    merger.put(FACET, false);
-                    merger.put(SPELLCHECK, false);
-                    merger.put("hl", false);
-
-
-                    URI uri = createRequest(SELECT, merger);
-                    String singleResult = performCall(titleQuery, uri, "search");
-                    SelectResponse singleResponse = null;
-                    try {
-                        singleResponse = objectMapper.readValue(singleResult, SelectResponse.class);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    if (singleResponse.getNumFound() > 0) {
-                        filteredSuggestions.addSuggestion(suggestion);
-                        allowedSuggestionsCount.getAndAdd(1);
-                    } else {
-                        log.debug("Record with title '{}' can not be shown in suggestions.", title);
-                    }
-                }).get();
-            }
-
-
-            System.out.println(filteredSuggestions);
-            SuggestResponse filteredSuggestResponse = new SuggestResponse();
-            SuggestResponseBody suggestResponseBody = new SuggestResponseBody();
-
-
-            suggestResponseBody.setRadioTvTitleSuggest(originalSuggestResponse.getSuggest().getRadioTvTitleSuggest());
-            suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).setSuggestions(filteredSuggestions.getSuggestions());
-            suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).setNumFound(allowedSuggestionsCount.get());
-            filteredSuggestResponse.setResponseHeader(originalSuggestResponse.getResponseHeader());
-            filteredSuggestResponse.setSuggest(suggestResponseBody);
-
-            threadPool.shutdown();
+            SuggestResponse filteredSuggestResponse = SolrSuggestLimiter.limit(this, rawSuggestBody, objectMapper, suggestQuery, suggestCount, wt);
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(filteredSuggestResponse);
         } catch (JsonProcessingException e) {
             throw new InternalServiceException("An error occurred when processing JSON in the suggest response: ", e);
-        } catch (InterruptedException | ExecutionException e) {
-            throw new InternalServiceException("An error occurred when getting suggest response in parallel: ", e);
-        }
-    }
-
-    private void addToSuggestResponse(SuggestionObject suggestion, SuggestionObjectList finalSuggestions, AtomicInteger allowedSuggestionsCount) {
-        finalSuggestions.addSuggestion(suggestion);
-        allowedSuggestionsCount.getAndAdd(1);
-    }
-
-    private boolean isSuggestAllowed(SuggestionObject suggestion, ObjectMapper objectMapper, String wt) {
-        String title = suggestion.getTerm();
-        String titleQuery = "title:\"" + title + "\"";
-
-        SolrParamMerger merger = createBaseParams(SELECT, titleQuery, plainLicenseFilter, 1, null, null, null, wt);
-        merger.put(FACET, false);
-        merger.put(SPELLCHECK, false);
-        merger.put("hl", false);
-
-
-        URI uri = createRequest(SELECT, merger);
-        String singleResult = performCall(titleQuery, uri, "search");
-        SelectResponse singleResponse = null;
-        try {
-            singleResponse = objectMapper.readValue(singleResult, SelectResponse.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (singleResponse.getNumFound() > 0) {
-            return true;
-        } else {
-            log.debug("Record with title '{}' can not be shown in suggestions.", title);
-            return false;
         }
     }
 
@@ -513,7 +412,7 @@ public class SolrService {
      * Create a param merger for the given {@code handler} and add the given parameters to it.
      * @return a handler-specific param merger, filled wit the given parameters.
      */
-    private SolrParamMerger createBaseParams(
+    public SolrParamMerger createBaseParams(
             String handler, String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
         SolrParamMerger merger;
         switch (handler) {
@@ -543,7 +442,7 @@ public class SolrService {
      * @param params the parameters for the call.
      * @return an URI ready for use with a HTTP component.
      */
-    private URI createRequest(String handler, SolrParamMerger params) {
+    public URI createRequest(String handler, SolrParamMerger params) {
         try {
             URIBuilder builder = new URIBuilder(server)
                     .setPathSegments(path, solrCollection, handler);
@@ -604,7 +503,7 @@ public class SolrService {
      * @param callType the overall type of call (search/facet/...) used for logging only.
      * @return the response from the request for {@code uri}
      */
-    private String performCall(String q, URI uri, String callType) {
+    public String performCall(String q, URI uri, String callType) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
@@ -798,7 +697,7 @@ public class SolrService {
      * @param designation describes the caller, used for logging only.
      * @return {@code fq} extended with an access filter from ds-license.
      */
-    private List<String> createAccessFilter(String designation) {
+    public List<String> createAccessFilter(String designation) {
         //Add filter query from license module.
         DsLicenseApi licenseClient = getDsLicenseApiClient();
         GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
