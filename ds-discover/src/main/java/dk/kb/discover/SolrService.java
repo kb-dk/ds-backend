@@ -375,11 +375,12 @@ public class SolrService {
            throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
         }
 
-        URI suggestURI = createSuggestRequestBuilder(suggestDictionary, suggestQuery, suggestCount, wt);
+        URI suggestURI = createSuggestRequestBuilder(suggestDictionary, suggestQuery, suggestCount + 5, wt);
+        // Get original suggest response.
         String rawSuggestBody = performCall(suggestQuery, suggestURI, "suggest");
 
         try {
-
+            // Filter suggest response with ds-license filters.
             SuggestResponse filteredSuggestResponse = SolrSuggestLimiter.limit(this, rawSuggestBody, objectMapper, suggestQuery, suggestCount, wt);
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(filteredSuggestResponse);
         } catch (JsonProcessingException e) {
@@ -560,7 +561,7 @@ public class SolrService {
      */
     // TODO: Base sanitising on roles
     // TODO: Catch field-qualified regexp
-    private String sanitiseQuery(String q) {
+    protected String sanitiseQuery(String q) {
         return SANITISE_PATTERN.matcher(q).replaceFirst(SANITISE_REPLACEMENT);
     }
     private final static Pattern SANITISE_PATTERN = Pattern.compile("^([{/])");
