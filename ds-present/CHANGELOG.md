@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added: 
+- Added functionality to change own production threshold in configuration files, with a default value which includes own-, co- and enterprise-production for DR records.
+
 ## [2.2.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.0) 2024-11-12
 ### Added:
 - Functionality to look up if a record has been restricted by DR by production ID.  

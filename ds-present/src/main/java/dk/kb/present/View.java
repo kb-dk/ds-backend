@@ -14,6 +14,7 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.dr.holdback.HoldbackObject;
 import dk.kb.present.dr.holdback.HoldbackDatePicker;
 import dk.kb.present.dr.restrictions.ProductionIdLookup;
@@ -237,7 +238,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         if (!ownProduction.isEmpty()) {
             // Values below 2000 are considered own production. It can in fact be co-production, but these should all be covered by the rights-agreement made.
-            boolean isOwnProduction = Integer.parseInt(ownProduction) < 2000;
+            boolean isOwnProduction = Integer.parseInt(ownProduction) <= ServiceConfig.getOwnProductionCode();
             metadataMap.put("ownProductionBool", Boolean.toString(isOwnProduction));
             metadataMap.put("ownProductionCode", ownProduction);
         } else if (origin.equals("ds.radio")){
