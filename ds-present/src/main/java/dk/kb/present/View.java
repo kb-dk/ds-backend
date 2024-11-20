@@ -192,7 +192,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         if (!extractedValues.getProductionId().isEmpty()){
             metadata.put("productionId", extractedValues.getProductionId());
             // Check if production ID is restricted from DR.
-            log.debug("Performing lookup for id: '{}'", extractedValues.getProductionId());
+            log.debug("Performing productionID lookup for id: '{}' in DR restricted ID list.", extractedValues.getProductionId());
             metadata.put("productionIdRestrictedDr", String.valueOf(ProductionIdLookup.getInstance().doLookup(extractedValues.getProductionId())));
         }
     }
@@ -228,7 +228,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
         // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
         String productionCode = extractedValues.getOrigin();
-        if (productionCode.isEmpty()) {
+        if (productionCode.isEmpty() && origin.equals("ds.tv")) {
             log.debug("Nielsen/Gallup origin was empty. Own production can not be calculated.");
             // TODO: When we at some point have extra DR metadata, origin should be available there for records before 1993
             //throw new InternalServiceException("The Nielsen/Gallup origin was empty. Own production cannot be defined.");
@@ -242,7 +242,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
             metadataMap.put("productionCodeValue", productionCode);
         } else if (origin.equals("ds.radio")){
-            log.debug("Record is a radio record, therefor we see it as own production no matter what.");
             metadataMap.put("productionCodeAllowed", "true");
         }
     }
