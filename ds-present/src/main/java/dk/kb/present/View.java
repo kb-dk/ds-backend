@@ -185,7 +185,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         // The following three methods are all related to holdback and ownproduction calculations.
         updateMetadataMapWithFormAndContent(metadata, extractedValues);
-        updateMetadataMapWithOwnProduction(metadata, extractedValues);
+        updateMetadataMapWithProductionCode(metadata, extractedValues);
         updateMetadataMapWithHoldback(record, metadata, extractedValues);
         updateMetadataMapWithPreservicaManifestation(record, metadata);
 
@@ -220,30 +220,30 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Create values related to own production from a {@link ExtractedPreservicaValues}-object and ad them to the metadata map.
+     * Create values related to production codes from a {@link ExtractedPreservicaValues}-object and ad them to the metadata map.
      * @param metadataMap which the values should be added to.
-     * @param extractedValues to extract Nielsen/Gallup origin from used to determine own production.
+     * @param extractedValues to extract Nielsen/Gallup origin from used to determine availability based on production code.
      */
-    private void updateMetadataMapWithOwnProduction(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues) {
+    private void updateMetadataMapWithProductionCode(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues) {
         // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
         // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
-        String ownProduction = extractedValues.getOrigin();
-        if (ownProduction.isEmpty()) {
+        String productionCode = extractedValues.getOrigin();
+        if (productionCode.isEmpty()) {
             log.debug("Nielsen/Gallup origin was empty. Own production can not be calculated.");
             // TODO: When we at some point have extra DR metadata, origin should be available there for records before 1993
             //throw new InternalServiceException("The Nielsen/Gallup origin was empty. Own production cannot be defined.");
-        } else if (ownProduction.length() != 4){
-            log.debug("Nielsen/Gallup origin did not have length 4. Own production will not be calculated correctly. Origin is: '{}'", ownProduction);
+        } else if (productionCode.length() != 4){
+            log.debug("Nielsen/Gallup origin did not have length 4. Production code allowance will not be calculated correctly. Origin is: '{}'", productionCode);
         }
 
-        if (!ownProduction.isEmpty()) {
+        if (!productionCode.isEmpty()) {
             // Values below 2000 are considered own production. It can in fact be co-production, but these should all be covered by the rights-agreement made.
-            boolean isOwnProduction = Integer.parseInt(ownProduction) <= ServiceConfig.getOwnProductionCode();
-            metadataMap.put("ownProductionBool", Boolean.toString(isOwnProduction));
-            metadataMap.put("ownProductionCode", ownProduction);
+            boolean allowedProductionCode = Integer.parseInt(productionCode) <= ServiceConfig.getMaxAllowedProductionCode();
+            metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
+            metadataMap.put("productionCodeValue", productionCode);
         } else if (origin.equals("ds.radio")){
             log.debug("Record is a radio record, therefor we see it as own production no matter what.");
-            metadataMap.put("ownProductionBool", "true");
+            metadataMap.put("productionCodeAllowed", "true");
         }
     }
 

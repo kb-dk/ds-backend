@@ -3,7 +3,6 @@ package dk.kb.present.config;
 import java.io.IOException;
 import java.util.List;
 
-import dk.kb.present.View;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,7 @@ public class ServiceConfig {
      * To calculate which records that are allowed to be shown in the publicly available DR Archive platform, we use this value to check records against. Records with tvmeter
      * origin less than this value are considered ownProduction and can be shown in the DR Archive.
      */
-    private static int ownProductionCode;
+    private static int maxAllowedProductionCode;
 
     /**
      * Initialized the configuration from the provided configFiles.
@@ -38,7 +37,7 @@ public class ServiceConfig {
         serviceConfig = YAML.resolveLayeredConfigs(configFiles);
         serviceConfig.setExtrapolate(true);
 
-        ownProductionCode = setValidOwnProductionCode();
+        maxAllowedProductionCode = setValidProductionCode();
     }
 
     /**
@@ -46,9 +45,9 @@ public class ServiceConfig {
      * Logs a warning if the values is above 3400, which defines the upper limit for DR produced material.
      * @return the maxAllowedProductionCode from the backing YAML configuration file.
      */
-    private static int setValidOwnProductionCode() {
+    private static int setValidProductionCode() {
         // Setting default value to include own, co- and enterprise production
-        int valueFromConf = serviceConfig.getInteger("dr.ownProduction.maxAllowedProductionCode", 3400);
+        int valueFromConf = serviceConfig.getInteger("dr.maxAllowedProductionCode", 3400);
         if (valueFromConf > 3400){
             log.warn("The specified maxAllowedProductionCode is '{}' which is greater than 3400. This means that records produced by other broadcasters than DR can be marked as " +
                     "own production", valueFromConf);
@@ -85,7 +84,7 @@ public class ServiceConfig {
         return serviceConfig;
     }
 
-    public static int getOwnProductionCode() {
-        return ownProductionCode;
+    public static int getMaxAllowedProductionCode() {
+        return maxAllowedProductionCode;
     }
 }

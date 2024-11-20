@@ -134,8 +134,7 @@ dr:
   # value < 3000 = co production
   # value <= 3400 = some kind of enterprise production
   # values > 3400 = probably not DR productions
-  ownProduction:
-    maxAllowedProductionCode: 3400
+  maxAllowedProductionCode: 3400
 
 
 

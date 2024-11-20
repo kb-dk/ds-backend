@@ -695,8 +695,8 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testOwnProductionFields() throws Exception {
-        testBooleanValuePreservicaField(PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED, "own_production", true);
-        testIntValuePreservicaField(PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED, "own_production_code", 1000);
+        testBooleanValuePreservicaField(PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED, "production_code_allowed", true);
+        testIntValuePreservicaField(PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED, "production_code_value", 1000);
 
     }
 

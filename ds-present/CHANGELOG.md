@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added: 
 - Added functionality to change own production threshold in configuration files, with a default value which includes own-, co- and enterprise-production for DR records.
 
+### Changed
+- Renamed solr fields `own_production` and `own_production_code` to `production_code_allowed` and `production_code_value`. 
+
 ## [2.2.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.0) 2024-11-12
 ### Added:
 - Functionality to look up if a record has been restricted by DR by production ID.  
