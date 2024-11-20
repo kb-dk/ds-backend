@@ -237,8 +237,8 @@ class ViewTest {
 
         String jsonld = jsonldView.apply(recordDto);
 
-        assertTrue(jsonld.contains("\"kb:own_production\":true," +
-                                    "\"kb:own_production_code\":1000"));
+        assertTrue(jsonld.contains("\"kb:production_code_allowed\":true," +
+                                    "\"kb:production_code_value\":1000"));
     }
 
     @Test
@@ -250,7 +250,8 @@ class ViewTest {
                 .mTime(1701261949625000L).origin("ds.radio").kalturaId("randomKalturaId");
 
         String solrDoc = solrView.apply(recordDto);
-        assertTrue(solrDoc.contains("\"own_production\":\"true\""));
+        prettyPrintJson(solrDoc);
+        assertTrue(solrDoc.contains("\"production_code_allowed\":\"true\""));
     }
 
     @Test
@@ -279,8 +280,8 @@ class ViewTest {
 
 
         String jsonld = jsonldView.apply(recordDto);
-        assertTrue(jsonld.contains("\"kb:own_production\":false," +
-                                    "\"kb:own_production_code\":2300"));
+        assertTrue(jsonld.contains("\"kb:production_code_allowed\":false," +
+                                    "\"kb:production_code_value\":3600"));
     }
 
 
@@ -350,7 +351,7 @@ class ViewTest {
                 .origin("ds.tv").kalturaId("randomKalturaId");
 
         String solrdoc = jsonldView.apply(recordDto);
-        assertTrue(solrdoc.contains("\"own_production_code\":\"4400\""));
+        assertTrue(solrdoc.contains("\"production_code_value\":\"4400\""));
 
     }
 

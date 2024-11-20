@@ -119,15 +119,22 @@ origin:
     pattern: '[a-z0-9.]+'
 
 
-# Absolute paths to Excel sheets containing various information used to calculate all kinds of restrictions from DR.
-# This value needs to be changed to the correct placement of the files. The placeholder value is resolved from classpath
-# when the files have been injected from aegis. However, full paths can be specified as well.
+# Configuration specific for DR rights calculation
 dr:
+  # Absolute paths to Excel sheets containing various information used to calculate all kinds of restrictions from DR.
+  # This value needs to be changed to the correct placement of the files. The placeholder value is resolved from classpath
+  # when the files have been injected from aegis. However, full paths can be specified as well.
   # Absolute paths to Excel sheets containing information used to calculate holdback periods from DR.
   holdback:
     purposeSheet: 'internal_test_files/dr_formaalstabeller_20240704.xlsx'
     holdbackSheet: 'internal_test_files/dr_holdbacktabel_20240902.xlsx'
   restrictionSheet: 'internal_test_files/dr_klausuleringsliste_20241105.xlsx'
+  # This number specifies which material gets indexed as own production and therefore gets viewable in the system.
+  # value < 2000 = truly own production
+  # value < 3000 = co production
+  # value <= 3400 = some kind of enterprise production
+  # values > 3400 = probably not DR productions
+  maxAllowedProductionCode: 3400
 
 
 

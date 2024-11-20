@@ -38,8 +38,8 @@
   <xsl:param name="holdbackPurposeName"/>
   <xsl:param name="holdbackFormValue"/>
   <xsl:param name="holdbackContentValue"/>
-  <xsl:param name="ownProductionBool"/>
-  <xsl:param name="ownProductionCode"/>
+  <xsl:param name="productionCodeAllowed"/>
+  <xsl:param name="productionCodeValue"/>
   <!-- ProductionId has been extracted from either tvmeter or nielsen metadata, and is then injected as a single value. -->
   <xsl:param name="productionId"/>
   <xsl:param name="productionIdRestrictedDr"/>
@@ -1181,15 +1181,15 @@
     </xsl:for-each>
 
 
-    <xsl:if test="$ownProductionBool != ''">
-      <f:boolean key="kb:own_production">
-        <xsl:value-of select="$ownProductionBool"/>
+    <xsl:if test="$productionCodeAllowed != ''">
+      <f:boolean key="kb:production_code_allowed">
+        <xsl:value-of select="$productionCodeAllowed"/>
       </f:boolean>
     </xsl:if>
-    <xsl:if test="$ownProductionCode != '' and not(f:empty($ownProductionCode))">
-      <xsl:if test="string(number(normalize-space($ownProductionCode))) != 'NaN'">
-        <f:number key="kb:own_production_code">
-          <xsl:value-of select="number(normalize-space($ownProductionCode))"/>
+    <xsl:if test="$productionCodeValue != '' and not(f:empty($productionCodeValue))">
+      <xsl:if test="string(number(normalize-space($productionCodeValue))) != 'NaN'">
+        <f:number key="kb:production_code_value">
+          <xsl:value-of select="number(normalize-space($productionCodeValue))"/>
         </f:number>
       </xsl:if>
     </xsl:if>

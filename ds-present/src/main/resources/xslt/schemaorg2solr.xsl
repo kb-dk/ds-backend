@@ -346,14 +346,14 @@
       </xsl:if>
 
       <!-- Extraction of ownprocution related fields. -->
-      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:own_production') != ''">
-        <f:string key="own_production">
-          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:own_production')"/>
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:production_code_allowed') != ''">
+        <f:string key="production_code_allowed">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:production_code_allowed')"/>
         </f:string>
       </xsl:if>
-      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:own_production_code') != ''">
-        <f:string key="own_production_code">
-          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:own_production_code')"/>
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:production_code_value') != ''">
+        <f:string key="production_code_value">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:production_code_value')"/>
         </f:string>
       </xsl:if>
 

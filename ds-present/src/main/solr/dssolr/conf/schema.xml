@@ -60,8 +60,10 @@ When adding fields to this schema please have the following guidelines in mind:
        Add fields contains_tvmeter, contains_nielsen & contains_ritzau for better debugging of metadata fragments
        Add copyField which copies description to freetext.
        Add field has_kaltura_id which should be used for filtering records.
+1.7.8  Rename own_production to production_code_allowed
+       Rename own_production_code to production_code_value
   -->
-  <field name="_ds_1.7.7_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.8_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -615,14 +617,14 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     78e74634-bec1-4cea-a984-20192c97b743?>
   </field>
 
-  <field name="own_production" type="boolean">
-    <?desciption A boolean representing if the record has been produced by DR?>
+  <field name="production_code_allowed" type="boolean">
+    <?desciption A boolean representing if the record has been produced by DR and is allowed to be shown in the archive based on this information?>
     <?example true?>
   </field>
 
-  <field name="own_production_code" type="pint">
-    <?desciption A four digit code containing information about wether the record has been produces by DR. numbers below 2000 are considered own production, which would also be
-            reflected in the boolean 'own_production?>
+  <field name="production_code_value" type="pint">
+    <?desciption A four digit code containing information about wether the record has been produces by DR, by others or in cooperation between DR and others. Numbers below 2000
+            are considered own production, which would also be reflected in the boolean 'production_code_value'?>
     <?example 1100?>
   </field>
 
@@ -1348,7 +1350,7 @@ When adding fields to this schema please have the following guidelines in mind:
   <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->    
   <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
   <copyField source="description" dest="freetext"/>
-  <copyField source="own_production" dest="suggest_context"/>
+  <copyField source="production_code_allowed" dest="suggest_context"/>
   <copyField source="text" dest="text_shingles">
     <?description Copies the content of the basic text field to the shingles enabled text field, for better phrase search ranking and keyword extraction.?>
   </copyField>
