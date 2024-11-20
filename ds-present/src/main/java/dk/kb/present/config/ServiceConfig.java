@@ -21,6 +21,10 @@ public class ServiceConfig {
      */
     private static YAML serviceConfig;
 
+    /**
+     * To calculate which records that are allowed to be shown in the publicly available DR Archive platform, we use this value to check records against. Records with tvmeter
+     * origin less than this value are considered ownProduction and can be shown in the DR Archive.
+     */
     private static int ownProductionCode;
 
     /**
