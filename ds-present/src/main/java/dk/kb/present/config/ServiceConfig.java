@@ -47,7 +47,7 @@ public class ServiceConfig {
      */
     private static int setValidProductionCode() {
         // Setting default value to include own, co- and enterprise production
-        int valueFromConf = serviceConfig.getInteger("dr.maxAllowedProductionCode", 3400);
+        int valueFromConf = serviceConfig.getInteger("dr.maxAllowedProductionCode", 3300);
         if (valueFromConf > 3400){
             log.warn("The specified maxAllowedProductionCode is '{}' which is greater than 3400. This means that records produced by other broadcasters than DR can be marked as " +
                     "own production", valueFromConf);

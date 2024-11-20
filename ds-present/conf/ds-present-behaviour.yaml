@@ -132,9 +132,9 @@ dr:
   # This number specifies which material gets indexed as own production and therefore gets viewable in the system.
   # value < 2000 = truly own production
   # value < 3000 = co production
-  # value <= 3400 = some kind of enterprise production
-  # values > 3400 = probably not DR productions
-  maxAllowedProductionCode: 3400
+  # value <= 3300 = some kind of enterprise production
+  # values > 3300 = probably not DR productions
+  maxAllowedProductionCode: 3300
 
 
 
