@@ -280,7 +280,7 @@ class ViewTest {
 
         String jsonld = jsonldView.apply(recordDto);
         assertTrue(jsonld.contains("\"kb:own_production\":false," +
-                                    "\"kb:own_production_code\":2300"));
+                                    "\"kb:own_production_code\":3600"));
     }
 
 
