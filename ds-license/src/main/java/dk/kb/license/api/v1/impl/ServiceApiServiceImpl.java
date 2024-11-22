@@ -30,7 +30,7 @@ import javax.ws.rs.ServiceUnavailableException;
  *
  */
 public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
-    private Logger log = LoggerFactory.getLogger(this.toString());
+    private static Logger log = LoggerFactory.getLogger(ServiceApiServiceImpl.class);
 
 
 

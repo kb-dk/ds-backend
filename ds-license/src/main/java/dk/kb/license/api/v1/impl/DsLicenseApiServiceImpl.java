@@ -42,7 +42,7 @@ import java.util.ArrayList;
 
 @InInterceptors(interceptors = "dk.kb.license.webservice.KBAuthorizationInterceptor")
 public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
-	private Logger log = LoggerFactory.getLogger(this.toString());
+	private static final Logger log = LoggerFactory.getLogger(DsLicenseApiServiceImpl.class);
 
 	
 	@Override
