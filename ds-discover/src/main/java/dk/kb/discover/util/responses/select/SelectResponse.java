@@ -15,6 +15,9 @@ public class SelectResponse {
     @JsonProperty("response")
     EmptySelectResponseBody response;
 
+    @JsonProperty("facet_counts")
+    FacetCounts facetCounts;
+
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }
@@ -33,5 +36,23 @@ public class SelectResponse {
 
     public Long getNumFound(){
         return response.getNumFound();
+    }
+
+    public FacetCounts getFacetCounts() {
+        return facetCounts;
+    }
+
+    public void setFacetCounts(FacetCounts facetCounts) {
+        this.facetCounts = facetCounts;
+    }
+
+
+    @Override
+    public String toString() {
+        return "SelectResponse{" +
+                "responseHeader=" + responseHeader +
+                ", response=" + response +
+                ", facetCounts=" + facetCounts +
+                '}';
     }
 }

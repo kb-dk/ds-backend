@@ -43,6 +43,9 @@ public class Params {
     @JsonProperty("facet")
     String facet;
 
+    @JsonProperty("facet.field")
+    String facetField;
+
     @JsonProperty("hl")
     String hl;
 

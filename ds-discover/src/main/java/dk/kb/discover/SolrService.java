@@ -406,7 +406,7 @@ public class SolrService {
      * Create a param merger for the given {@code handler} and add the given parameters to it.
      * @return a handler-specific param merger, filled wit the given parameters.
      */
-    protected SolrParamMerger createBaseParams(
+    public SolrParamMerger createBaseParams(
             String handler, String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
         SolrParamMerger merger;
         switch (handler) {
@@ -436,7 +436,7 @@ public class SolrService {
      * @param params the parameters for the call.
      * @return an URI ready for use with a HTTP component.
      */
-    protected URI createRequest(String handler, SolrParamMerger params) {
+    public URI createRequest(String handler, SolrParamMerger params) {
         try {
             URIBuilder builder = new URIBuilder(server)
                     .setPathSegments(path, solrCollection, handler);
@@ -497,7 +497,7 @@ public class SolrService {
      * @param callType the overall type of call (search/facet/...) used for logging only.
      * @return the response from the request for {@code uri}
      */
-    protected String performCall(String q, URI uri, String callType) {
+    public String performCall(String q, URI uri, String callType) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
