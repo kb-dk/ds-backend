@@ -58,7 +58,7 @@ import java.util.List;
  *
  */
 public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPresentationApi {
-    private Logger log = LoggerFactory.getLogger(this.toString());
+    private static final Logger log = LoggerFactory.getLogger(IiifPresentationApiServiceImpl.class);
 
     /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
 
