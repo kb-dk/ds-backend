@@ -101,7 +101,7 @@ public class SolrSuggestLimiter {
             titleJoiner.add(suggestion.getTerm());
         }
 
-        return queryField + titleJoiner;
+        return queryField + ":" + titleJoiner;
     }
 
     /**
