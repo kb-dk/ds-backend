@@ -160,7 +160,7 @@ public class DSOrigin {
         // Timing is both overall and with sub-timings for retrieval and transformation
         return timing.measure(() -> {
             DsRecordDto record = timing.getChild("retrieve").measure(() ->
-                    storage.getDSRecordTreeLocal(recordID));
+                    storage.getDSRecord(recordID));
             return timing.getChild("transform").measure(() ->
                     getView(format).apply(record));
         });
