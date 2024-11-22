@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed 
 - solr 1.7.6: Changes related to search ranking.
+- make all loggers static
 
 ### Removed
 - Removed Schema.org field `conditionsOfAccess` and solr field `conditions_of_access` as this field was never used and the DR rights management couldn't be done in a single value 
