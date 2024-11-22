@@ -375,6 +375,7 @@ public class SolrService {
            throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
         }
 
+        // Get 5 extra suggestions for a better chance at delivering 5.
         URI suggestURI = createSuggestRequestBuilder(suggestDictionary, suggestQuery, suggestCount + 5, wt);
         // Get original suggest response.
         String rawSuggestBody = performCall(suggestQuery, suggestURI, "suggest");
