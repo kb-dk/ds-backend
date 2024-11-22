@@ -65,7 +65,7 @@ public class SolrSuggestLimiter {
         Map<String, Integer> allowedQueries = createMapOfFacetPairs(result);
         SuggestResponse filteredSuggestResponse = constructFilteredSuggestResponseFromFacets(suggestQuery, originalSuggestResponse, allowedQueries, suggestCount);
 
-        log.info("Limiting of suggest result took '{}' ms", System.currentTimeMillis() - methodStartTime);
+        log.debug("Limiting of suggest result took '{}' ms", System.currentTimeMillis() - methodStartTime);
         return filteredSuggestResponse;
     }
 
@@ -144,7 +144,7 @@ public class SolrSuggestLimiter {
         filteredSuggestResponse.setResponseHeader(originalSuggestResponse.getResponseHeader());
         filteredSuggestResponse.setSuggest(suggestResponseBody);
 
-        log.info("Moving values between objects took '{}' ms", System.currentTimeMillis() - objectManipulationStartTime);
+        log.debug("Moving values between objects took '{}' ms", System.currentTimeMillis() - objectManipulationStartTime);
         return filteredSuggestResponse;
     }
 
