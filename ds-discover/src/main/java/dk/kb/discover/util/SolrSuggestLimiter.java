@@ -3,7 +3,6 @@ package dk.kb.discover.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dk.kb.discover.SolrQueryRecursiveTask;
 import dk.kb.discover.SolrService;
 import dk.kb.discover.util.responses.select.SelectResponse;
 import dk.kb.discover.util.responses.suggest.SuggestResponse;
@@ -16,13 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import java.util.concurrent.ForkJoinPool;
 
 import static dk.kb.discover.SolrService.FACET;
 import static dk.kb.discover.SolrService.FACET_FIELD;
@@ -38,8 +34,6 @@ public class SolrSuggestLimiter {
     private static final Logger log = LoggerFactory.getLogger(SolrSuggestLimiter.class);
 
     private static List<String> accessFilter = new ArrayList<>();
-
-
 
     /**
      * Method used to limit suggest response to only contain allowed suggestions.
@@ -101,56 +95,6 @@ public class SolrSuggestLimiter {
         }
 
         return queryField + titleJoiner;
-    }
-
-
-    /**
-     * Perform parallelized requests to solr for each suggestion in the original suggest object list.
-     * @param solr client to query through.
-     * @param suggestCount amount of suggestions to validate.
-     * @param wt param for choosing solr response writer
-     * @param originalSuggestions containing all suggestions from original call to the suggest component.
-     * @return a list of {@link SuggestionObject}s that are all viewable for the caller.
-     */
-    private static List<SuggestionObject> getFilteredSuggestionObjects(SolrService solr, int suggestCount, String wt, SuggestionObjectList originalSuggestions) {
-        ForkJoinPool threadPool = new ForkJoinPool(5);
-        SolrQueryRecursiveTask recursiveQueryTask = new SolrQueryRecursiveTask(suggestCount, originalSuggestions.getSuggestions(), solr, wt);
-        List<SuggestionObject> filteredSuggestions = threadPool.invoke(recursiveQueryTask);
-        threadPool.shutdown();
-
-        return filteredSuggestions;
-    }
-
-    /**
-     * From an original SuggestResponse construct a response object containing only suggestions, that the end user can actually access after ds-license filtering has been done.
-     * @param suggestQuery original query used for the initial suggest request. Used for retrieving and setting of the correct part of the JSON.
-     * @param originalSuggestResponse used for extracting the correct JSON structure for the suggest component in use.
-     * @param filteredSuggestions a list of allowed {@link SuggestionObject}s that are to be delivered as suggestions for the returned {@link SuggestResponse}.
-     * @return A {@link SuggestResponse} consisting of the header from the original suggest response, with the amount of suggestions updated and containing only the suggestions
-     * that are part of the {@code filteredSuggestions}.
-     */
-    private static SuggestResponse constructFilteredSuggestResponse(String suggestQuery, SuggestResponse originalSuggestResponse, List<SuggestionObject> filteredSuggestions) {
-        long objectManipulationStartTime = System.currentTimeMillis();
-        // Create empty objects that are to be populated.
-        SuggestResponse filteredSuggestResponse = new SuggestResponse();
-        SuggestResponseBody suggestResponseBody = new SuggestResponseBody();
-
-        // Set RadioTv title suggest in the object, but delete all original suggestions.
-        suggestResponseBody.setRadioTvTitleSuggest(originalSuggestResponse.getSuggest().getRadioTvTitleSuggest());
-        suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).deleteAllSuggestions();
-
-        // Add each filtered suggestion to the constructed suggestResponseBody.
-        for (SuggestionObject suggestion : filteredSuggestions){
-            suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).addSuggestion(suggestion);
-        }
-
-        // Set numFound and header from original response and add filtered body as body.
-        suggestResponseBody.getRadioTvTitleSuggest().getSuggestQueryObject().get(suggestQuery).setNumFound(filteredSuggestions.size());
-        filteredSuggestResponse.setResponseHeader(originalSuggestResponse.getResponseHeader());
-        filteredSuggestResponse.setSuggest(suggestResponseBody);
-
-        log.info("Moving values between objects took '{}' ms", System.currentTimeMillis() - objectManipulationStartTime);
-        return filteredSuggestResponse;
     }
 
     /**
