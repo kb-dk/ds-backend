@@ -555,7 +555,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertFalse(transformedJSON.contains("\"numberOfEpisodes\""));
         assertFalse(transformedJSON.contains("\"kb:channel_id\""));
         assertFalse(transformedJSON.contains("\"overlap_length\""));
-        assertFalse(transformedJSON.contains("\"kb:own_production_code\""));
+        assertFalse(transformedJSON.contains("\"kb:production_code_allowed\""));
         prettyPrintJson(transformedJSON);
     }
 
