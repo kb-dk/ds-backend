@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.0) - 2024-11-25
 ### Added 
 - Added filtering to suggest component, to make it only suggest documents, that the caller are able to query for. 
+- Minimum suggest characters increased from 2 to 3 in ds-discover-behaviour.yaml
 - make all loggers static
 
 ## [1.4.1](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.4.1) - 2024-10-15
