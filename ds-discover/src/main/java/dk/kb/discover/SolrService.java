@@ -14,10 +14,17 @@
  */
 package dk.kb.discover;
 
-import dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.util.ErrorMessageHandler;
+import dk.kb.discover.util.LicenseUtil;
 import dk.kb.discover.util.SolrParamMerger;
+import dk.kb.discover.util.SolrSuggestLimiter;
+import dk.kb.discover.util.responses.suggest.SuggestResponse;
+import dk.kb.license.client.v1.DsLicenseApi;
+import dk.kb.license.model.v1.GetUserQueryInputDto;
+import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -32,6 +39,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +47,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl.FILTER_CACHE_PREFIX;
 
 /**
  * Encapsulates assess to a Solr server.
@@ -100,6 +110,8 @@ public class SolrService {
     private final String server;
     private final String path;
     private final String solrCollection;
+
+    public static ObjectMapper objectMapper = new ObjectMapper();
 
     private final HttpClient client = HttpClient.newHttpClient();
 
@@ -363,8 +375,18 @@ public class SolrService {
            throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
         }
 
-        URI suggestURI = createSuggestRequestBuilder(suggestDictionary, suggestQuery,suggestCount,wt);
-        return performCall(suggestQuery, suggestURI, "suggest");
+        // Get 5 extra suggestions for a better chance at delivering 5.
+        URI suggestURI = createSuggestRequestBuilder(suggestDictionary, suggestQuery, suggestCount + 5, wt);
+        // Get original suggest response.
+        String rawSuggestBody = performCall(suggestQuery, suggestURI, "suggest");
+
+        try {
+            // Filter suggest response with ds-license filters.
+            SuggestResponse filteredSuggestResponse = SolrSuggestLimiter.limit(this, rawSuggestBody, objectMapper, suggestQuery, suggestCount, wt);
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(filteredSuggestResponse);
+        } catch (JsonProcessingException e) {
+            throw new InternalServiceException("An error occurred when processing JSON in the suggest response: ", e);
+        }
     }
 
     /**
@@ -385,7 +407,7 @@ public class SolrService {
      * Create a param merger for the given {@code handler} and add the given parameters to it.
      * @return a handler-specific param merger, filled wit the given parameters.
      */
-    private SolrParamMerger createBaseParams(
+    public SolrParamMerger createBaseParams(
             String handler, String q, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
         SolrParamMerger merger;
         switch (handler) {
@@ -415,7 +437,7 @@ public class SolrService {
      * @param params the parameters for the call.
      * @return an URI ready for use with a HTTP component.
      */
-    private URI createRequest(String handler, SolrParamMerger params) {
+    public URI createRequest(String handler, SolrParamMerger params) {
         try {
             URIBuilder builder = new URIBuilder(server)
                     .setPathSegments(path, solrCollection, handler);
@@ -476,7 +498,7 @@ public class SolrService {
      * @param callType the overall type of call (search/facet/...) used for logging only.
      * @return the response from the request for {@code uri}
      */
-    private String performCall(String q, URI uri, String callType) {
+    public String performCall(String q, URI uri, String callType) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
@@ -540,7 +562,7 @@ public class SolrService {
      */
     // TODO: Base sanitising on roles
     // TODO: Catch field-qualified regexp
-    private String sanitiseQuery(String q) {
+    protected String sanitiseQuery(String q) {
         return SANITISE_PATTERN.matcher(q).replaceFirst(SANITISE_REPLACEMENT);
     }
     private final static Pattern SANITISE_PATTERN = Pattern.compile("^([{/])");
@@ -663,6 +685,35 @@ public class SolrService {
         }
         String response = stripMatcher.replaceAll("");
         return EMPTY_FQ_XML.matcher(response).replaceAll("");
+    }
+
+    /**
+     * Request a filter query from ds-license and use it as fq.
+     * @param designation describes the caller, used for logging only.
+     * @return {@code fq} extended with an access filter from ds-license.
+     */
+    public List<String> createAccessFilter(String designation) {
+        //Add filter query from license module.
+        DsLicenseApi licenseClient = LicenseUtil.getDsLicenseApiClient();
+        GetUserQueryInputDto licenseQueryDto = LicenseUtil.getLicenseQueryDto();
+        GetUsersFilterQueryOutputDto filterQuery;
+        try {
+            filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
+        } catch (Exception e) {
+            log.warn("Unable to get response from ds-license at URL '" +
+                    ServiceConfig.getConfig().getString("licensemodule.url") + "'", e);
+            throw new InternalServiceException("Unable to contact license server");
+        }
+
+        log.debug("{}: Using filter query='{}' for user attributes='{}'",
+                designation, filterQuery.getFilterQuery(), licenseQueryDto);
+
+        List<String> fq = new ArrayList<>();
+
+        if (filterQuery.getFilterQuery() != null && !filterQuery.getFilterQuery().isEmpty()) {
+            fq.add(FILTER_CACHE_PREFIX + filterQuery.getFilterQuery()); //Add the additional filter query
+        }
+        return fq;
     }
 
     private static final Pattern SINGLE_FQ_JSON = Pattern.compile("\"fq\":\\s*\\[\\s*(\"(?:[^\"\\\\]|\\\\.)*\")\\s*]", Pattern.DOTALL);

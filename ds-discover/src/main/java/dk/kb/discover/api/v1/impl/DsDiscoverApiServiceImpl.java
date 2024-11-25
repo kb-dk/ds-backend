@@ -15,6 +15,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
 import dk.kb.discover.DocumentationExtractor;
+import dk.kb.discover.util.LicenseUtil;
 import dk.kb.discover.util.solrshield.Response;
 import dk.kb.discover.util.solrshield.SolrShield;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -403,35 +404,11 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
 
 
     private static GetUserQueryInputDto getLicenseQueryDto() {
-        GetUserQueryInputDto getQueryDto = new GetUserQueryInputDto();
-
-        getQueryDto.setPresentationType("Search"); // Important. Must be defined in Licensemodule with same name
-
-        //"everybody=true" is a value everyone will (from keycloak?)
-        UserObjAttributeDto everybodyUserAttribute=new UserObjAttributeDto();
-           everybodyUserAttribute.setAttribute("everybody"); 
-           ArrayList<String> values = new ArrayList<String>();
-           values.add("yes");
-           everybodyUserAttribute.setValues(values);
-           
-           List<UserObjAttributeDto> allAttributes = new ArrayList<UserObjAttributeDto>(); 
-           allAttributes.add(everybodyUserAttribute);
-           
-           getQueryDto.setAttributes(allAttributes);           
-           return getQueryDto;
-
-
+       return LicenseUtil.getLicenseQueryDto();
     }
     
     private static DsLicenseApi getDsLicenseApiClient() {
-      
-      if (licenseClient!= null) {
-        return licenseClient;
-      }
-        
-      String dsLicenseUrl = ServiceConfig.getConfig().getString("licensemodule.url");
-      licenseClient = new DsLicenseClient(dsLicenseUrl);               
-      return licenseClient;
+        return LicenseUtil.getDsLicenseApiClient();
     }
     
     
