@@ -51,7 +51,7 @@ import dk.kb.util.webservice.exception.ServiceException;
  */
 @InInterceptors(interceptors = "dk.kb.discover.webservice.KBAuthorizationInterceptor")
 public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi {
-    private Logger log = LoggerFactory.getLogger(this.toString());
+    private static final Logger log = LoggerFactory.getLogger(DsDiscoverApiServiceImpl.class);
 
     /**
      * If the config has {@code config.solr.permissive: true}, all parameters are passed on Solr calls.
