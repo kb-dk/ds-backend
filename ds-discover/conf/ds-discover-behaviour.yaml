@@ -89,7 +89,7 @@ solr:
         #
 
   #Minimum number of characters required for suggest
-  suggestMinimumLength: 2
+  suggestMinimumLength: 3
 
 
 #License module is called to generate a filter query that is used when calling Solr
