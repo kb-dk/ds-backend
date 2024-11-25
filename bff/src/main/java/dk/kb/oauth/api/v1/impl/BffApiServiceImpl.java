@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 
 public class BffApiServiceImpl extends ImplBase implements BffApi {
-    private final Logger log = LoggerFactory.getLogger(this.toString());
+    private static final Logger log = LoggerFactory.getLogger(BffApiServiceImpl.class);
 
     @Override
     public Map<String, String> getMessages() {
