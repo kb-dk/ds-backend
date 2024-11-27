@@ -42,6 +42,7 @@ public class TestFiles {
     public static final String PVICA_RECORD_0e89456b = "internal_test_files/preservica7/0e89456b-a2d6-4364-9129-bbc70472b359.xml";
     public static final String PVICA_RECORD_07fc1c7c = "internal_test_files/domsMigrated/07fc1c7c-9ec5-4471-9eb6-23fd62844e35.xml";
     public static final String PVICA_RECORD_4d61dcb3 = "internal_test_files/preservica7/4d61dcb3-5050-4ca8-b844-6dd7d38e5eb6.xml";
+    public static final String PVICA_RECORD_e8c664f9 = "internal_test_files/preservica7/e8c664f9-9faf-4720-9c80-fa8fb22e45cc.xml";
     public static final String PVICA_DOMS_MIG_bd612d1e = "internal_test_files/domsMigrated/bd612d1e-b90b-48f7-87ce-898da240950b-20240612T105945.xml";
     public static final String PVICA_DOMS_MIG_eaea0362 = "internal_test_files/domsMigrated/eaea0362-bbad-43ec-8d5e-07df6957923b-20240612T112310.xml";
     public static final String PVICA_DOMS_MIG_9779a1b2 = "internal_test_files/domsMigrated/9779a1b2-88ff-408c-9352-ad614615b2e7-20240531T022942.xml";
@@ -60,6 +61,7 @@ public class TestFiles {
     public static final String PVICA_DOMS_MIG_17f56f97 = "internal_test_files/domsMigrated/17f56f97-8b08-489a-ae37-9b0f467b600b.xml";
     public static final String PVICA_DOMS_MIG_968dd87e = "internal_test_files/domsMigrated/968dd87e-f496-4b7f-b371-f2e632324024.xml";
     public static final String PVICA_DOMS_MIG_172c987b = "internal_test_files/domsMigrated/172c987b-515d-4fbb-91d8-ebcc45b75095.xml";
+    public static final String PVICA_DOMS_MIG_f1a6492f = "internal_test_files/domsMigrated/f1a6492f-bdde-4d1e-8a13-dd2bb4e29951.xml";
     public static final String PVICA_HOMEMADE_HOLDBACK_TEST_RECORD = "internal_test_files/homemade/badHoldbackFieldContents.xml";
     public static final String PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED = "internal_test_files/homemade/correctDomsMigWithTVMeterEnrichment.xml";
     public static final String PVICA_HOMEMADE_NOT_OWNPROD = "internal_test_files/homemade/badOwnProduction.xml";
