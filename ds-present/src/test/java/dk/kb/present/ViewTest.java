@@ -270,10 +270,23 @@ class ViewTest {
     }
     @Test
     @Tag("integration")
-    void holdbackNameEducationTest() throws Exception {
+    void holdbackNameEducationTvMeterTest() throws Exception {
         HoldbackDatePicker.init();
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_f1a6492f);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+
+        String jsonld = jsonldView.apply(recordDto);
+        assertTrue(jsonld.contains("\"kb:holdback_name\":\"Undervisning\""));
+    }
+    @Test
+    @Tag("integration")
+    void holdbackNameEducationNielsenTest() throws Exception {
+        HoldbackDatePicker.init();
+        View jsonldView = getPreservicaTvJsonView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_e8c664f9);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
 
