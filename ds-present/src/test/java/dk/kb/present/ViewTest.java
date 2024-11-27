@@ -268,6 +268,19 @@ class ViewTest {
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"2024-02-27T04:49:52Z\"," +
                 "\"kb:holdback_name\":\"Underholdning\""));
     }
+    @Test
+    @Tag("integration")
+    void holdbackNameEducationTest() throws Exception {
+        HoldbackDatePicker.init();
+        View jsonldView = getPreservicaTvJsonView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_f1a6492f);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+
+        String jsonld = jsonldView.apply(recordDto);
+        assertTrue(jsonld.contains("\"kb:holdback_name\":\"Undervisning\""));
+    }
 
     @Test
     @Tag("integration")

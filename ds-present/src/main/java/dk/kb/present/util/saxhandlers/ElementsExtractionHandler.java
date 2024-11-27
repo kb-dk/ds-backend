@@ -162,6 +162,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
         extractedPreservicaValues.values.replace(ExtractedPreservicaValues.FORM_KEY, new PathPair<>(formPath, ""));
         extractedPreservicaValues.values.replace(ExtractedPreservicaValues.CONTENT_KEY, new PathPair<>(contentPath, ""));
         extractedPreservicaValues.values.replace(ExtractedPreservicaValues.ORIGIN_KEY, new PathPair<>(originPath, ""));
+        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.PURPOSE_KEY, new PathPair<>(purposePath, ""));
         extractedPreservicaValues.values.replace(ExtractedPreservicaValues.ORIGIN_COUNTRY_KEY, new PathPair<>(origincountryPath, ""));
         extractedPreservicaValues.values.replace(ExtractedPreservicaValues.PRODUCTION_ID_KEY, new PathPair<>(productionIdPath, ""));
     }

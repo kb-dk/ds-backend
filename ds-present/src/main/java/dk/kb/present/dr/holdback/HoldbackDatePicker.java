@@ -173,6 +173,7 @@ public class HoldbackDatePicker {
     private static String getPurposeName(ExtractedPreservicaValues extractedValues) throws IOException, ParserConfigurationException, SAXException {
         // If purpose is 6000, then the purpose name is "Undervisning" no matter what.
         if (extractedValues.getPurpose().equals("6000")){
+            log.debug("Nielsen/TVMeter intent is: '6000', therefore the holdback name is set as 'Undervisning'.");
             return "Undervisning";
         }
         // IF form = 7000 return an empty string, which later translate to a holdback date of year 9999 as records with form = 7000 are trailers and should be filtered out.
