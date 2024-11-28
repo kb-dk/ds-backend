@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fixed an issue where holdback name for records with the holdback value for "Undervisning" did not get populated correctly.
+
 ## [2.2.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.2) 2024-11-22
 ### Changed:
 - Changed which method present uses to call storage. Effectively cutting SQL calls to DS-Storage database in half.
