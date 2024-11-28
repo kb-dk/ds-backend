@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.3) 2024-11-28
 ### Fixed
 - Fixed an issue where holdback name for records with the holdback value for "Undervisning" did not get populated correctly.
 
