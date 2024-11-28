@@ -843,10 +843,24 @@
                 <xsl:value-of select="'Natur og videnskab'"/>
               </xsl:when>
               <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Misc)">
-                <xsl:value-of select="'Rodekassen'"/>
+                <xsl:choose>
+                  <xsl:when test="$type = 'VideoObject'">
+                    <xsl:value-of select="'TV-rodekasse'"/>
+                  </xsl:when>
+                  <xsl:when test="$type = 'AudioObject'">
+                    <xsl:value-of select="'Radio-rodekasse'"/>
+                  </xsl:when>
+                </xsl:choose>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:value-of select="'Rodekassen'"/>
+                <xsl:choose>
+                  <xsl:when test="$type = 'VideoObject'">
+                    <xsl:value-of select="'TV-rodekasse'"/>
+                  </xsl:when>
+                  <xsl:when test="$type = 'AudioObject'">
+                    <xsl:value-of select="'Radio-rodekasse'"/>
+                  </xsl:when>
+                </xsl:choose>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:variable>
@@ -857,7 +871,14 @@
         <!-- Adding a fallback to 'Rodekassen' as we have 160K records without genre at all. -->
         <xsl:otherwise>
           <f:string key="genre">
-            <xsl:value-of select="'Rodekassen'"/>
+            <xsl:choose>
+              <xsl:when test="$type = 'VideoObject'">
+                <xsl:value-of select="'TV-rodekasse'"/>
+              </xsl:when>
+              <xsl:when test="$type = 'AudioObject'">
+                <xsl:value-of select="'Radio-rodekasse'"/>
+              </xsl:when>
+            </xsl:choose>
           </f:string>
         </xsl:otherwise>
       </xsl:choose>
