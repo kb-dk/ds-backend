@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.4](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.4) 2024-11-29
 ### Changed 
 - Split genre `Rodekassen` to `TV-rodekasse` and `Radio-rodekasse`.
 
