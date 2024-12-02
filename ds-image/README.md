@@ -36,13 +36,14 @@ This project produces a support JAR containing client code for calling the servi
 This can be used from an external project by adding the following to the [pom.xml](pom.xml):
 ```xml
 <!-- Used by the OpenAPI client -->
-<dependency>
+<dependencies>
+  <dependency>
     <groupId>org.openapitools</groupId>
     <artifactId>jackson-databind-nullable</artifactId>
     <version>0.2.2</version>
-</dependency>
+  </dependency>
 
-<dependency>
+  <dependency>
     <groupId>dk.kb.image</groupId>
     <artifactId>ds-image</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -50,12 +51,13 @@ This can be used from an external project by adding the following to the [pom.xm
     <classifier>classes</classifier>
     <!-- Do not perform transitive dependency resolving for the OpenAPI client -->
     <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
+      <exclusion>
+        <groupId>*</groupId>
+        <artifactId>*</artifactId>
+      </exclusion>
     </exclusions>
-</dependency>
+  </dependency>
+</dependencies>
 ```
 after this a client can be created with
 ```java

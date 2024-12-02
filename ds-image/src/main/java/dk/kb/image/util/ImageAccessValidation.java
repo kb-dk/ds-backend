@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
-import dk.kb.license.invoker.v1.ApiException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,6 @@ import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.util.DsLicenseClient;
-import dk.kb.util.Pair;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
 

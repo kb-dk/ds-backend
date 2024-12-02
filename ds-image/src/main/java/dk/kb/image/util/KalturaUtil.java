@@ -12,9 +12,6 @@ import org.slf4j.LoggerFactory;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.ThumbnailsDto;
 import dk.kb.kaltura.client.DsKalturaClient;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-
-import javax.ws.rs.core.Response;
 
 public class KalturaUtil {
 
