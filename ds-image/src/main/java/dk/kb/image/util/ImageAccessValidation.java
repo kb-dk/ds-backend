@@ -107,7 +107,7 @@ public class ImageAccessValidation {
         
          Matcher matcher = IIIF_SIZE_PATTERN.matcher(size);
          if (!matcher.find()) {
-             log.debug("Fullsize for IIIF request since size parameter did was not of accepted form:"+size);
+             log.debug("Fullsize for IIIF request since size parameter did was not of accepted form: '{}'.", size);
         	 return false;
          }
                                                       

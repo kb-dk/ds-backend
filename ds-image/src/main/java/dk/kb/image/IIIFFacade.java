@@ -57,7 +57,7 @@ public class IIIFFacade {
     }
 
     private IIIFFacade() {
-        log.info("Created " + this);
+        log.info("Created: '{}'", this);
     }
 
 

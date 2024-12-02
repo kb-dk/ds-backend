@@ -139,7 +139,7 @@ public class IIPParamValidation {
                 throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r. Input was: '" + ptl + "'");
             }
             else if (ptl.size() > 2) {
-                log.warn("PTL contains more than 2 values. PTL can only contain two values: index x and resolution level r. Input was: '" + ptl + "'");
+                log.warn("PTL contains more than 2 values. PTL can only contain two values: index x and resolution level r. Input was: '{}'", ptl);
                 throw new InvalidArgumentServiceException("The parameter PTL has to contain two values index x and resolution level r. Input was: '" + ptl + "'");
             }
         }

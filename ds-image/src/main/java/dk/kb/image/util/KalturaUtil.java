@@ -92,7 +92,7 @@ public class KalturaUtil {
         String tokenId= ServiceConfig.getConfig().getString("kaltura.tokenId");
 
         long sessionKeepAliveSeconds=3600L; //1 hour
-        log.info("creating kaltura client for partnerID:"+partnerId);           
+        log.info("Creating kaltura client for partnerID: '{}'.", partnerId);
         DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl,userId,partnerId,token,tokenId,adminSecret,sessionKeepAliveSeconds);
         kalturaClientInstance=kalturaClient;
         return kalturaClient;    

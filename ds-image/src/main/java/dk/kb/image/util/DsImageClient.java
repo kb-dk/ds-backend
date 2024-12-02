@@ -40,7 +40,7 @@ public class DsImageClient extends AccessApi {
      */
     public DsImageClient(String serviceURI) {
         super(createClient(serviceURI));
-        log.info("Created OpenAPI client for '" + serviceURI + "'");
+        log.info("Created OpenAPI client for '{}'", serviceURI);
     }
 
     /**

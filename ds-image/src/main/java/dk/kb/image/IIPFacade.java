@@ -117,7 +117,7 @@ public class IIPFacade {
     }
 
     private IIPFacade() {
-        log.info("Created " + this);
+        log.info("Created: '{}'", this);
     }
 
 
