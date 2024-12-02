@@ -450,7 +450,7 @@ public class LicenseValidator {
                 }
             }
         }
-        log.info("Validate completed, access="+validatedForAtLeastOneLicense);
+        log.debug("Validate completed, access="+validatedForAtLeastOneLicense +" for userdata:"+attributes);
         return licenses;
     }
 
