@@ -6,10 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.5.1](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.5.0) 2024-12-02
+- make all loggers static
+- changed spammy log.info to log.debug and added information about user data.
+
+
 ## [1.5.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.5.0) 2024-09-10
 ### Changed
 - Bumped kb-util version to improve YAML logging and remove double logging.
-- make all loggers static
+
 
 ### Removed
 - Removed non-resolvable git.tag from build.properties
