@@ -132,7 +132,7 @@ public class IIIFFacade {
 
     /**
      * Validates IIIF Image API parameters and throws appropriate exceptions if they are not valid.
-     * See https://iiif.io/api/image/3.0/
+     * See <a href="https://iiif.io/api/image/3.0/">IIIF documentation</a>
      * @throws ServiceException thrown if any parameters are not conforming to the IIIF specification.
      */
     private void validateIIIFImageRequest(URI requestUri, String identifier, String region, String size,

@@ -111,9 +111,9 @@ public class ProxyHelper {
         if (httpServletResponse != null) {
             copyHeaders(connection, httpServletResponse);
         }
-        return output -> {
-            pipeContent(request, uri, clientRequestURI, connection, output);
-        };
+
+        return output -> pipeContent(request, uri, clientRequestURI, connection, output);
+
     }
 
     /**

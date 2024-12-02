@@ -45,7 +45,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       *   <li>code = 200, message = "Succes!", response = DeepzoomDZIDto.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
+      * <p>
       * Deep Zoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
@@ -119,7 +119,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       *   <li>code = 200, message = "Succes!", response = File.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
+      * <p>
       * DeepZoom can be used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below.
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes

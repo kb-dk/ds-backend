@@ -21,7 +21,7 @@ public class IIPParamValidation {
 
     /**
      * Validates IIP parameters and throws appropriate exceptions if any parameters are invalid.
-     * See https://iipimage.sourceforge.io/documentation/protocol/
+     * See <a href="https://iipimage.sourceforge.io/documentation/protocol/">the protocol</a>
      * @throws ServiceException if any parameters are not conforming to the IIP specification.
      */
     public static void validateIIPRequest(
@@ -63,9 +63,9 @@ public class IIPParamValidation {
 
     /**
      * Validates Deepzoom parameters and throws appropriate exceptions if any are invalid.
-     * See https://iipimage.sourceforge.io/documentation/protocol/
-     * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon documentation
-     * https://openseadragon.github.io/docs/
+     * See <a href="https://iipimage.sourceforge.io/documentation/protocol/">the docs</a>
+     * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon
+     * <a href="https://openseadragon.github.io/docs/">documentation</a>
      * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
      */
     static void validateDeepzoomTileRequest(
