@@ -58,7 +58,7 @@ public class ImageAccessValidation {
      * <p>
      * Will be full size if most other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.
      * <p>
-     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#iIPImageRequest() IIP-parameters}      
+     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#iIPImageRequest(String, Long, Long, List, Integer, Float, String, Float, String, String, String, Boolean, String, List, List, String)}IIP-parameters}
      *    
      * @return true if image request is classified as thumbnail request. Else false 
      */
@@ -88,9 +88,9 @@ public class ImageAccessValidation {
      * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
      * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
      * <p>
-     * Will be full size if any other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.
+     * Will be full size if any other parameters than FIF and CVT is defined. Also, WID and HEI must be below a defined limit in the configuration, or it will also be full size.
 
-     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#ifffImageRequest() IIUF-parameters} 
+     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#iIIFImageRequest(String, String, String, String, String, String)} IIUF-parameters}
      * @return true if image request is classified as thumbnail request. Else false.    
      */
     public static boolean isThumbnailIIIF(String identifier, String region, String size, String rotation, String quality, String format) {
