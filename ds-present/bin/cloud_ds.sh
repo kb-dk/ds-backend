@@ -106,6 +106,7 @@ resolve_derived_settings() {
     : ${REPLICAS:=1}
     
     : ${CONFIG_FOLDER:="config/solr/conf"}
+    : ${PREFIX:= "ds"}
 }
 
 upload_config() {
@@ -212,7 +213,60 @@ new_collection_name() {
     COLLECTION="ds-$(date +%Y%m%d-%H%M)"
 }
 
-# Reqires COLLECTION_OR_ALIAS
+# Delete the collection given as first argument to the method.
+delete_collection() {
+    DELETE_URL="$SOLR/solr/admin/collections?action=DELETE&name=$1"
+    echo "Calling $DELETE_URL"
+    status_code=$(curl -s -o /dev/null -w "%{http_code}" "$DELETE_URL")
+
+    if [ $status_code -eq 400 ]; then
+        echo "Could not delete collection $1. There's probably one or more aliases pointing at it."
+        return 1
+    else
+        return 0
+    fi
+}
+
+# Solr can get a hard time, with to many collections. To handle this, the cloud_ds.sh script deletes old collections prefixed with ds.
+cleanup_collections() {
+    set +e
+    # Filtering the result to only contain collections that are create with the cloud_ds.sh new command, which are all prefixed with 'ds'.
+    ds_collections=$(curl -m 30 -s "http://$SOLR/solr/admin/collections?action=LIST" | jq --arg prefix $PREFIX '[.collections[] | select(startswith($prefix))]')
+    # Count of ds collections
+    collection_count=$(echo $ds_collections | jq '. | length')
+    # Do clean up if more than 6 collections with prefix 'ds' exists.
+    if [ $collection_count -gt 6 ]; then
+        echo ""
+        echo "More than 6 DS collections are available, deleting the oldest."
+        counter=$collection_count
+        # Sort collections to make sure oldest collections appear first in the array.
+        sorted_collections=$(echo $ds_collections | jq '[sort | .[]]')
+        entry_to_extract=0
+
+        # We want to preserve the six newest collections.
+        while [ $counter -gt 6 ]
+        do
+          # Get name of first collection in array
+          current_collection=$(echo $sorted_collections | jq -r --argjson entry $entry_to_extract '.[$entry]')
+          echo "Deleting collection: $current_collection"
+          delete_collection $current_collection
+
+          # If the delete method returned an error code only increment the entry iterator.
+          if [ $? -eq 1 ]; then
+              ((entry_to_extract ++))
+          else
+            # If no error code has been thrown, delete the entry from our array, increment the entry and decrement the loop iteration counter.
+            sorted_collections=$(echo $sorted_collections | jq --argjson entry $entry_to_extract 'del(.[$entry])')
+            ((entry_to_extract ++))
+            ((counter--))
+          fi
+
+          echo ""
+        done
+    fi
+    }
+
+# Requires COLLECTION_OR_ALIAS
 # Set COLLECTION=<resolved from alias or directly from COLLECTION_OR_ALIAS>
 # Set EXISTS=<COLLECTION exists in the Solr Cloud>
 resolve_collection() {
@@ -300,6 +354,8 @@ case $COMMAND in
             exit 53
         fi
         align_ds_ds_write
+        # Cleanup after aligning
+        cleanup_collections
         exit
         ;;
     *)

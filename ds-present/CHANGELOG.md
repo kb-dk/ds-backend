@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added functionality to the solr cloud script `cloud_ds.sh` 
+  Six collections prefixed with `ds` are kept.
+
 ## [2.2.4](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.4) 2024-11-29
 ### Changed 
 - Split genre `Rodekassen` to `TV-rodekasse` and `Radio-rodekasse`.
