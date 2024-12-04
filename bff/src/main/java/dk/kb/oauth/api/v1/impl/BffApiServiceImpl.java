@@ -43,12 +43,9 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
     private static final Logger log = LoggerFactory.getLogger(BffApiServiceImpl.class);
 
     @Override
-    public Map<String, String> getMessages() {
+    public Map<String, Object> getMessages() {
         YAML messages = ServiceConfig.getMessagesConfig();
-        return messages.keySet().stream().collect(Collectors.toMap(
-            key -> key,
-            messages::getString
-        ));
+        return messages;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class BffApiServiceImplTest {
     @Test
     public void testMessages() {
         BffApiServiceImpl service = new BffApiServiceImpl();
-        Map<String, String> messages = service.getMessages();
+        Map<String, Object> messages = service.getMessages();
         assertEquals(2, messages.size());
         assertEquals("text1",messages.get("msg1"));
         assertEquals("text2",messages.get("msg2"));
