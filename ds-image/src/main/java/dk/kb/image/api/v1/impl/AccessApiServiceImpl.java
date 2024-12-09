@@ -3,13 +3,11 @@ package dk.kb.image.api.v1.impl;
 import dk.kb.image.IIIFFacade;
 import dk.kb.image.IIPFacade;
 import dk.kb.image.api.v1.AccessApi;
-import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.DeepzoomDZIDto;
 import dk.kb.image.model.v1.IIIFInfoDto;
 import dk.kb.image.model.v1.ThumbnailsDto;
 import dk.kb.image.util.ImageAccessValidation;
 import dk.kb.image.util.KalturaUtil;
-import dk.kb.util.Pair;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -22,11 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.File;
 import java.util.List;
@@ -51,7 +45,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       *   <li>code = 200, message = "Succes!", response = DeepzoomDZIDto.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
+      * <p>
       * Deep Zoom provides the ability to interactively view high-resolution images. You can zoom in and out of images rapidly without affecting the performance of your application. Deep Zoom enables smooth loading and panning by serving up multi-resolution images and using spring animations.
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
@@ -125,7 +119,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
       *   <li>code = 200, message = "Succes!", response = File.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
+      * <p>
       * DeepZoom can be used with the Internet Imaging Protocol (IIP). This endpoint only requires the DeepZoom parameter to work. Besides, this endpoint has the capability to make use of the IIP parameters shown below.
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes

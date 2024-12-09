@@ -117,12 +117,12 @@ public class IIPFacade {
     }
 
     private IIPFacade() {
-        log.info("Created " + this);
+        log.info("Created: '{}'", this);
     }
 
 
     /**
-     * Internet Imaging Protocol available through OpenAPI specification. The specification can be found at: https://iipimage.sourceforge.io/documentation/protocol/
+     * Internet Imaging Protocol available through OpenAPI specification. The specification can be found <a href="https://iipimage.sourceforge.io/documentation/protocol/">here</a>.
      *
      * @param requestURI full request URI, used for logging af debugging.
      *
@@ -157,7 +157,7 @@ public class IIPFacade {
      * @param CVT: Export the full image or a region in the specified format (JPEG and PNG currently supported)
      *
      * @param httpHeaders the original httpHeaders from the client. Used to transfer specific header fields to image server request.
-     * 
+     *
      * @return a bitmap.
      * @throws ServiceException when other http codes should be returned
      */
@@ -314,9 +314,9 @@ public class IIPFacade {
 
     /**
      * Validates Deepzoom DZI parameters and throws appropriate exceptions if any are invalid.
-     * See https://iipimage.sourceforge.io/documentation/protocol/
-     * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon documentation
-     * https://openseadragon.github.io/docs/
+     * See <a href="https://iipimage.sourceforge.io/documentation/protocol/">documentation</a>
+     * The documentation is very subtle on Deepzoom. One could also look at OpenSeadragon
+     * <a href="https://openseadragon.github.io/docs/">documentation</a>
      * @throws ServiceException thrown if any parameters are not conforming to the IIP specification.
      */
     private void validateDeepzoomDZIRequest(

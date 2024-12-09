@@ -12,30 +12,27 @@ import org.slf4j.LoggerFactory;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.ThumbnailsDto;
 import dk.kb.kaltura.client.DsKalturaClient;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-
-import javax.ws.rs.core.Response;
 
 public class KalturaUtil {
 
     private static final Logger log = LoggerFactory.getLogger(KalturaUtil.class);
     private static DsKalturaClient kalturaClientInstance;
     /**
-     * 
+     *
      * Example url to the sprite with all thumbnails:<br>
-     * https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_jym3ia3g/width/200/vid_slices/10/<br>
+     * {@code https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_jym3ia3g/width/200/vid_slices/10/}<br>
      * <br>
      * Example url to slice #5 out of 10<br>
-     * https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_jym3ia3g/width/200/vid_slices/10/vid_slice/5<br>
+     * {@code https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_jym3ia3g/width/200/vid_slices/10/vid_slice/5}<br>
      * 
      * See <a href="https://developer.kaltura.com/api-docs/Engage_and_Publish/kaltura-thumbnail-api.html">Kaltura Thumbnail API</a> 
-     * 
-     * 
+     *
+     *
      * @param fileId The externalId we have for the record. 
      * @param numberOfSlices Number of thumbnails. They be divided uniform over the video.
      * @param width Optional width parameter in pixels. Aspect ratio will be kept.
      * @param height Optiomal height parameter in pixels. Aspect ratio will be kept. 
-     * 
+     *
      * @return ThumbnailsDto. Has a default thumbnail, a sprite and list of time sliced thumbnails.
      * @throws IOException If the fileId is not found or internal server error with Kaltura.
      */
@@ -53,10 +50,10 @@ public class KalturaUtil {
             }
             log.debug("ReferenceId lookup at kaltura resolved to internalId {} -> {}",fileId,kalturaId);
             String baseUrl=kalturaUrl+"/p/"+partnerId+"/thumbnail/entry_id/"+kalturaId;
-            if (width != null && width.intValue() > 0) {
+            if (width != null && width > 0) {
                 baseUrl=baseUrl+"/width/"+width;
             }
-            if (height != null && height.intValue() > 0) {
+            if (height != null && height > 0) {
                 baseUrl=baseUrl+"/height/"+height;
             }
 
@@ -66,7 +63,7 @@ public class KalturaUtil {
             //Example: https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_dtvciomh/width/200/vid_slices/10
             baseUrl=baseUrl+"/vid_slices/"+numberOfSlices;
 
-            List<String> timeSliceThumbnails= new ArrayList<String>();
+            List<String> timeSliceThumbnails= new ArrayList<>();
             thumbnails.setSprite(baseUrl);
             //Add the images slices
             for (int i=0;i<numberOfSlices;i++ ) {
@@ -95,7 +92,7 @@ public class KalturaUtil {
         String tokenId= ServiceConfig.getConfig().getString("kaltura.tokenId");
 
         long sessionKeepAliveSeconds=3600L; //1 hour
-        log.info("creating kaltura client for partnerID:"+partnerId);           
+        log.info("Creating kaltura client for partnerID: '{}'.", partnerId);
         DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl,userId,partnerId,token,tokenId,adminSecret,sessionKeepAliveSeconds);
         kalturaClientInstance=kalturaClient;
         return kalturaClient;    

@@ -19,7 +19,6 @@ import dk.kb.util.string.Strings;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -113,9 +111,9 @@ public class ProxyHelper {
         if (httpServletResponse != null) {
             copyHeaders(connection, httpServletResponse);
         }
-        return output -> {
-            pipeContent(request, uri, clientRequestURI, connection, output);
-        };
+
+        return output -> pipeContent(request, uri, clientRequestURI, connection, output);
+
     }
 
     /**

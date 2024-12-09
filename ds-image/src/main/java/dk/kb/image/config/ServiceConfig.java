@@ -12,8 +12,8 @@ import java.util.List;
 
 /**
  * Sample configuration class using the Singleton and Observer patterns.
- * See {@link {@url https://en.wikipedia.org/wiki/Observer_pattern}}
- *
+ * See <a href="https://en.wikipedia.org/wiki/Observer_pattern">Wiki</a>
+ * <p>
  * If wanted, changes to the configuration source (typically files) can result in an update of the ServiceConfig and
  * a callback to relevant classes. To enable this, add autoupdate keys to the YAML config:
  * <pre>
@@ -22,10 +22,10 @@ import java.util.List;
  *   intervalms: 60000
  * </pre>
  * Notifications on config changes can be received using {@link #registerObserver(Observer)}.
- *
+ * <p>
  * Alternatively {@link #AUTO_UPDATE_DEFAULT} and {@link #AUTO_UPDATE_MS_DEFAULT} can be set so that auto-update is
  * enabled by default for the application.
- *
+ * <p>
  * Implementation note: Watching for changes is a busy-wait, i.e. the ServiceConfig actively reloads the configuration
  * each x milliseconds and checks if is has changed. This is necessary as the source for the configuration is not
  * guaranteed to be a file (it could be a URL or packed in a WAR instead), so watching for file system changes is not

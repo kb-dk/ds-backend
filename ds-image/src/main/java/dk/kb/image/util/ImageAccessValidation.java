@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
-import dk.kb.license.invoker.v1.ApiException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,6 @@ import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.util.DsLicenseClient;
-import dk.kb.util.Pair;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
 
@@ -34,7 +32,7 @@ public class ImageAccessValidation {
 
     public static enum ACCESS_TYPE {
         ACCESS, NO_ACCESS, ID_NON_EXISTING
-    };
+    }
 
 	/*
 	 * This pattern validates the IIIF size parameter, but has the additional restriction that both height and size must be defined.    
@@ -53,14 +51,14 @@ public class ImageAccessValidation {
     
     /**     
      * Is request classified as a thumbnail or fullsize for IIP requests.
-     * 
+     * <p>
      * This implementation is very conservative and will determine if request is for a thumbnail. For thumbnail validation to succeed both width and height must be define,
      * while most other control parameters must not be defined.    
      * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
-     * 
+     * <p>
      * Will be full size if most other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.
-     * 
-     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#iIPImageRequest() IIP-parameters}      
+     * <p>
+     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#iIPImageRequest(String, Long, Long, List, Integer, Float, String, Float, String, String, String, Boolean, String, List, List, String)}IIP-parameters}
      *    
      * @return true if image request is classified as thumbnail request. Else false 
      */
@@ -68,7 +66,7 @@ public class ImageAccessValidation {
             List<Integer> JTL, List<Integer> PTL, String CVT) {
         
         //FIF and CVT allowed. WID and HEI checked below
-        if (  (RGN != null && RGN.size() !=0) || QLT != null || CNT != null ||  (ROT != null && !"0".equals(ROT)) || GAM != null || CMP != null || PFL != null || INV != null || COL != null  || (JTL != null && JTL.size() >0 ) || (PTL != null && PTL.size() >0 )) {            
+        if (  (RGN != null && !RGN.isEmpty()) || QLT != null || CNT != null ||  (ROT != null && !"0".equals(ROT)) || GAM != null || CMP != null || PFL != null || INV != null || COL != null  || (JTL != null && !JTL.isEmpty()) || (PTL != null && !PTL.isEmpty())) {
             log.debug("Fullsize for IIP request since a custom parameter was defined. Identifier={}", FIF);
             return false;
         }
@@ -86,13 +84,13 @@ public class ImageAccessValidation {
 
     
     /** Is request classified as a thumbnail or fullsize for IIIF requests.
-     * 
+     * <p>
      * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
      * It is better to be conservative and later loosen up than giving too much control over thumbnail extraction.
-     * 
-     * Will be full size if any other parameters than FIF and CVT is defined. Also WID and HEI must be below a defined limit in the configuration or it will also be fullsize.
+     * <p>
+     * Will be full size if any other parameters than FIF and CVT is defined. Also, WID and HEI must be below a defined limit in the configuration, or it will also be full size.
 
-     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#ifffImageRequest() IIUF-parameters} 
+     * For a full description of all arguments see method:  {@link AccessApiServiceImpl#iIIFImageRequest(String, String, String, String, String, String)} IIUF-parameters}
      * @return true if image request is classified as thumbnail request. Else false.    
      */
     public static boolean isThumbnailIIIF(String identifier, String region, String size, String rotation, String quality, String format) {
@@ -109,7 +107,7 @@ public class ImageAccessValidation {
         
          Matcher matcher = IIIF_SIZE_PATTERN.matcher(size);
          if (!matcher.find()) {
-             log.debug("Fullsize for IIIF request since size parameter did was not of accepted form:"+size);
+             log.debug("Fullsize for IIIF request since size parameter did was not of accepted form: '{}'.", size);
         	 return false;
          }
                                                       
@@ -181,15 +179,15 @@ public class ImageAccessValidation {
         // TODO these attributes must come from Keycloak
         UserObjAttributeDto everybodyUserAttribute = new UserObjAttributeDto();
         everybodyUserAttribute.setAttribute("everybody");
-        ArrayList<String> values = new ArrayList<String>();
+        ArrayList<String> values = new ArrayList<>();
         values.add("yes");
         everybodyUserAttribute.setValues(values);
 
-        List<UserObjAttributeDto> allAttributes = new ArrayList<UserObjAttributeDto>();
+        List<UserObjAttributeDto> allAttributes = new ArrayList<>();
         allAttributes.add(everybodyUserAttribute);        
         idsDto.setAttributes(allAttributes);
 
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         ids.add(resource_id);
         idsDto.setAccessIds(ids);
         return idsDto;
