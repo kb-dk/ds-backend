@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+
 -fixed genre_sub misspelling in solrshield.yaml
+- Upgraded dependency cxf-rt-transports-http to v.3.6.4 (fix memory leak)
 
 ## [1.5.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.0) - 2024-11-25
 ### Added 
