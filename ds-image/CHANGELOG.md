@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Changed http error code, when thumbnails cant be found at Kaltura from 400 to 404.
-
+- Upgraded dependency cxf-rt-transports-http to v.3.6.4 (fix memory leak)
 
 
 ## [1.7.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.7.0) - 2024-10-15
