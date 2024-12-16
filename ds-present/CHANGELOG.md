@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Upgraded dependency cxf-rt-transports-http to v.3.6.4 (fix memory leak)
-
+- Make HoldbackDatePicker.getHoldbackDateForRecord threadsafe
 
 ### Added
 - Added functionality to the solr cloud script `cloud_ds.sh` 
