@@ -62,11 +62,6 @@ public class HoldbackDatePicker {
 
     private static SAXParserFactory factory;
 
-    /**
-     * StartDate from XML content of the record. This date is used to calculate the holdback date from.
-     */
-    private static String startDate;
-
     HoldbackDatePicker() {}
 
     public static void init(){
@@ -80,7 +75,6 @@ public class HoldbackDatePicker {
     }
 
     public HoldbackObject getHoldbackDateForRecord(ExtractedPreservicaValues extractedValues, String origin) throws IOException {
-        HoldbackDatePicker.startDate = extractedValues.getStartTime();
         HoldbackObject result = new HoldbackObject();
         if (origin == null){
             log.error("Origin was null. Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'. Returning a result object without " +
@@ -93,7 +87,7 @@ public class HoldbackDatePicker {
         if (origin.equals("ds.tv")){
             return getHoldbackForTvRecord(extractedValues, result);
         } else if (origin.equals("ds.radio")) {
-            return getHoldbackForRadioRecord(result);
+            return getHoldbackForRadioRecord(extractedValues, result);
         } else {
             log.error("Holdback cannot be calculated for records that are not from origins 'ds.radio' or 'ds.tv'." +
                     " Returning a result object without values.");
@@ -104,13 +98,15 @@ public class HoldbackDatePicker {
 
     /**
      * Calculate holdback for a Radio record by adding 3 years to its aired time. This value has been requested/defined by DR.
+     * @param extractedValues containing values used to calculate holdback.
      * @param result holdbackDTO object, which the calculated holdback date is added to. This will never contain a value
      *               for {@code holdbackPurposeName} as these are not present for radio records.
      *
      * @return the updated HoldbackObject.
      */
-    private HoldbackObject getHoldbackForRadioRecord(HoldbackObject result) {
+    private HoldbackObject getHoldbackForRadioRecord(ExtractedPreservicaValues extractedValues, HoldbackObject result) {
         // Radio should be held back by three years by DR request.
+        String startDate = extractedValues.getStartTime();
         result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), 1096));
         result.setHoldbackPurposeName("");
         return result;
@@ -132,6 +128,7 @@ public class HoldbackDatePicker {
                 result.setHoldbackDate("9999-01-01T00:00:00Z");
             } else {
                 int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
+                String startDate = extractedValues.getStartTime();
                 result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), holdbackDays));
             }
 
