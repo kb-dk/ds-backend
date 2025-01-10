@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 
+### Fixed
+- Fixed resolving of same jars from multiple locations.
 
 ## [1.5.1](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.1) - 2025-01-07
 ### Changed
