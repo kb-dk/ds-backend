@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Fixed
+- Fixed inclusion of the same dependencies from multiple sources.
+
 ## [1.7.1](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.7.1) - 2025-01-07
 ### Changed
 - Changed http error code, when thumbnails cant be found at Kaltura from 400 to 404.
