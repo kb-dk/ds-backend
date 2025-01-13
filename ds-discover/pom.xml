@@ -63,7 +63,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.5.11</version>
+            <version>1.6.2</version>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -119,6 +119,16 @@
             <groupId>javax.xml.ws</groupId>
             <artifactId>jaxws-api</artifactId>
             <version>2.3.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.annotation</groupId>
+                    <artifactId>javax.annotation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -213,8 +223,6 @@
             </exclusions>
         </dependency>
 
-
-
         <!-- To get client generation to work -->
         <!-- https://mvnrepository.com/artifact/org.openapitools/openapi-generator -->
         <dependency>
@@ -282,6 +290,16 @@
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-junit-jupiter</artifactId>
             <version>5.15.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
