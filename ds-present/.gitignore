@@ -27,3 +27,4 @@ bin/cache
 src/test/resources/internal-test-setup.yaml
 internal_test_files/
 !/bin/custom.conf
+!/src/test/resources/transformations.log
