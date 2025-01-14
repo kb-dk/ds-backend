@@ -52,6 +52,7 @@ import java.util.stream.Stream;
 public class DSOrigin {
     // Origin-specific properties
     private static final Logger log = LoggerFactory.getLogger(DSOrigin.class);
+    private static final Logger transformationLog = LoggerFactory.getLogger("dk.kb.transformations");
     private static final String PREFIX_KEY = "prefix"; // IDs for this origin starts with <prefix>_ (note the underscore)
     private static final String DESCRIPTION_KEY = "description";
     private static final String STORAGE_KEY = "storage";
@@ -199,6 +200,7 @@ public class DSOrigin {
         log.debug("Calling storage.getDSRecordsRecordTypeLocalTree(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
+            transformationLog.info("Getting multiple records.");
             // splitToLists creates new streams so this cannot be a single long stream chain
             ContinuationStream<DsRecordDto, Long> allRecords =
                     storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords);
