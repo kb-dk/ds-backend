@@ -26,5 +26,5 @@ bin/cache
 # Contains KB-internal information for testing
 src/test/resources/internal-test-setup.yaml
 internal_test_files/
-!/bin/custom.conf
-!/src/test/resources/transformations.log
+bin/custom.conf
+src/test/resources/transformations.log
