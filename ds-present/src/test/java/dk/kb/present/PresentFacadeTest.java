@@ -259,7 +259,8 @@ public class PresentFacadeTest {
         // No access checking
         StreamingOutput out = PresentFacade.getRecords(testResponse, "ds.radiotv", 0L, -1L, FormatDto.SOLRJSON, ids -> ids);
         String result = toString(out);
-
+        // Solr result should never contain the error marker as that would create an indexing problem.
+        assertFalse(result.contains("\"recordsWithErrors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
     }
 
     @Test
