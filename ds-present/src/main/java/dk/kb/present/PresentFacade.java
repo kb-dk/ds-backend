@@ -20,6 +20,7 @@ import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
+import dk.kb.present.util.ErrorList;
 import dk.kb.present.util.SolrDocumentationExtractor;
 import dk.kb.util.webservice.stream.*;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -229,9 +230,12 @@ public class PresentFacade {
             DSOrigin origin, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, FormatDto recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
             Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
+        // List to hold errors from records failing transformations.
+        ErrorList failedTransformations = new ErrorList();
+
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
         ContinuationStream<DsRecordDto, Long> records =
-                origin.getDSRecords(mTime, maxRecords, recordFormat, accessFilter);
+                origin.getDSRecords(mTime, maxRecords, recordFormat, accessFilter, failedTransformations);
         records.setHeaders(httpServletResponse);
 
         return output -> {
@@ -241,7 +245,12 @@ public class PresentFacade {
                         .map(DsRecordDto::getData)
                         .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
+                // Write overview of failed records to the end of the produced JSON.
+                writer.write(failedTransformations.getOverview());
             }
+
+            // Clear errors list
+            failedTransformations.clearErrors();
         };
     }
 

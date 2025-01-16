@@ -18,6 +18,8 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.RuntimeTransformerException;
+import dk.kb.present.util.ErrorList;
+import dk.kb.present.util.ErrorRecord;
 import dk.kb.storage.model.v1.DsRecordDto;
 
 import dk.kb.storage.model.v1.RecordTypeDto;
@@ -33,6 +35,7 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -191,23 +194,26 @@ public class DSOrigin {
      * @param maxRecords   the maximum number of records to deliver. -1 means no limit.
      * @param format       the format of the record. See {@link #getViews()} for available formats.
      * @param accessFilter filters which records should be delivered.
+     * @param errorList    if errorList is not null and {@link #stopOnError} is false, then all records failing the transformation are added to this list.
      * @return a stream of records in the requested format.
      * @throws ServiceException if anything went wrong during construction of the stream.
      */
     public ContinuationStream<DsRecordDto, Long> getDSRecords(
-            Long mTime, Long maxRecords, FormatDto format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
+            Long mTime, Long maxRecords, FormatDto format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter, ErrorList errorList) {
         View view = getView(format);
         log.debug("Calling storage.getDSRecordsRecordTypeLocalTree(origin='{}', mTime={}, maxRecords={})",
                 origin, mTime, maxRecords);
         try {
-            transformationLog.info("Getting multiple records.");
             // splitToLists creates new streams so this cannot be a single long stream chain
             ContinuationStream<DsRecordDto, Long> allRecords =
                     storage.getDSRecordsByRecordTypeLocalTree(origin, recordRequestType, mTime, maxRecords);
             Stream<DsRecordDto> filteredRecords =  ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
+                    // Apply access filter
                     .flatMap(accessFilter)
-                    .map(safeView(format, view, stopOnError()))
+                    // The line below is the one transforming the records.
+                    .map(safeView(format, view, stopOnError(), errorList))
                     .filter(Objects::nonNull);
+
             return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore(), allRecords.getRecordCount());
         } catch (Exception e) {
             log.warn("Exception calling getDSRecords with origin='{}', mTime={}, maxRecords={}, format='{}'",
@@ -215,6 +221,26 @@ public class DSOrigin {
             throw new InternalServiceException(
                     "Internal exception requesting records from origin '" + getId() + "' in format " + format);
         }
+    }
+
+    /**
+     * Return a stream of records where the data are transformed to the given format.
+     * Only records of type DELIVERABLEUNIT are returned as these are the main metadata format.
+     * <p>
+     * The logic is complicated by the need to check for access to the IDs:
+     * The raw stream of records is split into batches in order to lower the amount of external calls to ds-license.
+     * The {@code flatMap(accessFilter)} processes such a batch (a list of {@code DsRecordDto}s) and flattens the
+     * result to a regular stream of {@code DsRecordDto}s.
+     * @param mTime        point in time (epoch * 1000) for the records to deliver, exclusive.
+     * @param maxRecords   the maximum number of records to deliver. -1 means no limit.
+     * @param format       the format of the record. See {@link #getViews()} for available formats.
+     * @param accessFilter filters which records should be delivered.
+     * @return a stream of records in the requested format.
+     * @throws ServiceException if anything went wrong during construction of the stream.
+     */
+    public ContinuationStream<DsRecordDto, Long> getDSRecords(
+            Long mTime, Long maxRecords, FormatDto format, Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter){
+        return getDSRecords(mTime, maxRecords, format, accessFilter, null);
     }
 
     /**
@@ -241,9 +267,12 @@ public class DSOrigin {
         try {
             ContinuationStream<DsRecordDto, Long> allRecords = storage.getDSRecords(origin, mTime, maxRecords);
             Stream<DsRecordDto> filteredRecords = ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
+                    // Apply license filter
                     .flatMap(accessFilter)
-                    .map(safeView(format, view, stopOnError()))
+                    // transform data part of records to wanted format. No errorList is provided.
+                    .map(safeView(format, view, stopOnError(), null))
                     .filter(Objects::nonNull);
+
             return new ContinuationStream<>(filteredRecords, allRecords.getContinuationToken(), allRecords.hasMore());
         } catch (Exception e) {
             log.warn("Exception calling getDSRecordsAll with origin='{}', mTime={}, maxRecords={}, format='{}'",
@@ -257,20 +286,36 @@ public class DSOrigin {
      * Applies the given view to record
      * @param format which the transformation is transforming to.
      * @param view to apply to record.
+     * @param stopOnError representing how to program should handle errors. If true, then the program stops, otherwise it continues and handles errors based on the presence of
+     *                    an errorList.
+     * @param errorList if not null, all failing records are added to the list.
      * @return a transformed record, transformed with input view.
      */
-    private static UnaryOperator<DsRecordDto> safeView(FormatDto format, View view, boolean stopOnError) {
+    private static UnaryOperator<DsRecordDto> safeView(FormatDto format, View view, boolean stopOnError, ErrorList errorList) {
         return record -> {
             try {
                 record.data(view.apply(record));
                 return record;
             } catch (Exception e) {
+                transformationLog.error("An error occurred when transforming record with ID: '{}' to format '{}'. Error is caused by: '{}'.", record.getId(), format,
+                        e.toString());
                 if (stopOnError) {
+                    // Execution stops because stopOnError = true (This can be set)
+                    log.error("A transformation error has occurred. Execution of program has stopped as stopOnError=true. See transformations log for further debugging.");
                     throw new RuntimeTransformerException(
                             "Exception transforming record '" + record.getId() + "' to format '" + format + "'. The following exception was thrown: '" + e + "'.");
+                } else if (errorList != null) {
+                    // Program keeps running, and returns failed records at the end of the response.
+                    ErrorRecord failedRecord = new ErrorRecord(record.getId(), e.getMessage());
+                    errorList.addErrorToList(failedRecord);
+
+                    log.debug("Added record with id: '{}' to failed list, which gets returned with transformed records.", record.getId());
+                    // Return null to not include the error record in the middle of the stream
+                    return null;
                 } else {
-                    log.warn("Non-critical Exception transforming record '{}' to format '{}'. " +
-                            "Overall processing will continue as stopOnError=", record.getId(), format, e);
+                    // No errorList has been provided. Program continues to run, failed records are not appended to the result.
+                    log.warn("A transformation error has occurred. Execution of program continues as stopOnError=false. See transformations log for further debugging.");
+                    // Return null to not include the error record in the middle of the stream
                     return null;
                 }
             }
