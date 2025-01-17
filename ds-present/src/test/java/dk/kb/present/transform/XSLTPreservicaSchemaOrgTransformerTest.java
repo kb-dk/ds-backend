@@ -560,4 +560,10 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         prettyPrintJson(transformedJSON);
     }
 
+    @Test
+    public void noGenreTest() throws IOException {
+        String transformedJson = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_03f18f50);
+        assertTrue(transformedJson.contains("\"genre\":\"Radio-rodekasse\""));
+    }
+
 }
