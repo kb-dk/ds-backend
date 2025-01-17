@@ -35,7 +35,6 @@ import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -210,7 +209,7 @@ public class DSOrigin {
             Stream<DsRecordDto> filteredRecords =  ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
                     // Apply access filter
                     .flatMap(accessFilter)
-                    // The line below is the one transforming the records.
+                    // Transform records.
                     .map(safeView(format, view, stopOnError(), errorList))
                     .filter(Objects::nonNull);
 
@@ -226,6 +225,8 @@ public class DSOrigin {
     /**
      * Return a stream of records where the data are transformed to the given format.
      * Only records of type DELIVERABLEUNIT are returned as these are the main metadata format.
+     * <p>
+     * This method does not include failing records as part of the returned stream.
      * <p>
      * The logic is complicated by the need to check for access to the IDs:
      * The raw stream of records is split into batches in order to lower the amount of external calls to ds-license.
@@ -269,7 +270,7 @@ public class DSOrigin {
             Stream<DsRecordDto> filteredRecords = ExtractionUtils.splitToLists(allRecords, LICENSE_BATCH_SIZE)
                     // Apply license filter
                     .flatMap(accessFilter)
-                    // transform data part of records to wanted format. No errorList is provided.
+                    // Transform records. No errorList is provided.
                     .map(safeView(format, view, stopOnError(), null))
                     .filter(Objects::nonNull);
 
@@ -286,7 +287,7 @@ public class DSOrigin {
      * Applies the given view to record
      * @param format which the transformation is transforming to.
      * @param view to apply to record.
-     * @param stopOnError representing how to program should handle errors. If true, then the program stops, otherwise it continues and handles errors based on the presence of
+     * @param stopOnError representing how the program should handle errors. If true, then the program stops, otherwise it continues and handles errors based on the presence of
      *                    an errorList.
      * @param errorList if not null, all failing records are added to the list.
      * @return a transformed record, transformed with input view.
