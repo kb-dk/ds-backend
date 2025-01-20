@@ -274,6 +274,7 @@ public class PresentFacadeTest {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                    // It is especially important that the amount is always=1 in each of the test cases.
                     assertTrue(result.contains("\"recordsWithErrors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
                 }
             });
