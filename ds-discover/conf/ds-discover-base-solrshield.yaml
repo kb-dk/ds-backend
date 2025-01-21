@@ -17,7 +17,7 @@ solr:
     # Whether SolrShield is enabled. If false, SolrShield evaluation is still performed but the response is only logged.
     # It is recommended to control SolrShield 'enabled' and 'defaultMaxWeight' in the general
     # configuration for the application
-    enabled: false
+    enabled: true
 
     # The default max weight should be kept conservative and perhaps even disabled by setting it to -1.
     # Ideally the max weight is taken from general application properties or derived per user group

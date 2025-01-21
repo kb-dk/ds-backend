@@ -56,7 +56,7 @@ solr:
   shield:
     # Whether SolrShield is enabled.
     # If false, SolrShield evaluation is still performed but the response is only logged.
-    enabled: false
+    enabled: true
 
     # Current max weight is very likely to be too low for practical use.
     # More experimenting with SolrShield is needed in order to determine a proper max weight

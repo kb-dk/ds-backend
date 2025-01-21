@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- SolrShield now enabled by default
 
 ### Fixed
 - Fixed resolving of same jars from multiple locations.
