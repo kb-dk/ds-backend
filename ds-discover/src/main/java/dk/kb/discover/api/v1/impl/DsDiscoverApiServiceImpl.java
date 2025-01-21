@@ -307,6 +307,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             }
 
             Response shieldResponse = SolrShield.evaluate(httpServletRequest.getParameterMap());
+            log.debug("solrSearch(collection='{}', has weight={} with maximum weight allowed={} ",collection, shieldResponse.getWeight(), shieldResponse.getMaxWeight());
             if (!shieldResponse.isAllowed()) {
                 throw new ServiceException("Call blocked by SolrShield: " + shieldResponse.getReasons(),
                         javax.ws.rs.core.Response.Status.FORBIDDEN);
