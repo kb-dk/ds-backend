@@ -247,14 +247,7 @@ public class PresentFacade {
                 origin.getDSRecords(mTime, maxRecords, recordFormat, accessFilter, failedTransformations);
         records.setHeaders(httpServletResponse);
 
-
-        // Write error object if errors are present. Otherwise, do not write it.
-        if (failedTransformations.size() > 0){
-            return writeRecordsWithErrorsObject(httpServletResponse, deliveryFormat, records, failedTransformations);
-        } else {
-            return writeRecordsToDataObject(httpServletResponse, deliveryFormat, records);
-        }
-
+        return writeRecordsWithErrorsObject(httpServletResponse, deliveryFormat, records, failedTransformations);
     }
 
     /**

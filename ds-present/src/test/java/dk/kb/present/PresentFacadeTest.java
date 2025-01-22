@@ -234,7 +234,7 @@ public class PresentFacadeTest {
 
     @Test
     @Tag("integration")
-    void errorHandlingTest() throws IOException, InterruptedException {
+    void errorHandlingTest() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             fail("Missing internal_test_files");
         }
@@ -259,7 +259,7 @@ public class PresentFacadeTest {
         StreamingOutput out = PresentFacade.getRecords(testResponse, "ds.radiotv", 0L, -1L, FormatDto.SOLRJSON, ids -> ids);
         String result = toString(out);
         // Solr result should never contain the error marker as that would create an indexing problem.
-        assertFalse(result.contains("\"recordsWithErrors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
+        assertFalse(result.contains("\"errors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
     }
 
     @Test
@@ -278,7 +278,7 @@ public class PresentFacadeTest {
                         throw new RuntimeException(e);
                     }
                     // It is especially important that the amount is always=1 in each of the test cases.
-                    assertTrue(result.contains("\"recordsWithErrors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
+                    assertTrue(result.contains("\"errors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
                 }
             });
         }
