@@ -39,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static dk.kb.present.TestUtil.prettyPrintJson;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -242,7 +243,9 @@ public class PresentFacadeTest {
         StreamingOutput out = PresentFacade.getRecords(testResponse, "ds.radiotv", 0L, -1L, FormatDto.JSON_LD, ids -> ids);
 
         String result = toString(out);
-        assertTrue(result.contains("\"recordsWithErrors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
+
+        System.out.println(result);
+        assertTrue(result.contains("\"errors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
     }
 
     @Test

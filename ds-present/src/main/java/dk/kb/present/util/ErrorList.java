@@ -1,10 +1,9 @@
 package dk.kb.present.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import dk.kb.util.webservice.exception.InternalServiceException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class ErrorList {
 
     /**
      * Get an overview of entries in the list. This object contains the count of entries in the list and all the failed records.
-     * This returns a JSON structure on the format:
+     * This returns a JSONNode on the format:
      * <pre>
      * {
      *   "recordsWithErrors":{
@@ -60,7 +59,7 @@ public class ErrorList {
      * </pre>
      * @return a JSON formatted overview of the {@link #errors} in the list.
      */
-    public String getOverview(){
+    public ObjectNode getOverview(){
         ObjectMapper mapper = new ObjectMapper();
 
         ObjectNode outerObject = mapper.createObjectNode();
@@ -76,13 +75,8 @@ public class ErrorList {
 
         innerObject.put("amount", size());
         innerObject.set("records", errorsArray);
-        outerObject.set("recordsWithErrors", innerObject);
-
-        try {
-            return mapper.writeValueAsString(outerObject);
-        } catch (JsonProcessingException e) {
-            throw new InternalServiceException(e);
-        }
+        outerObject.set("errors", innerObject);
+        return outerObject;
     }
 
 

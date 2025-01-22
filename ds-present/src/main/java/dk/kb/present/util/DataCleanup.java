@@ -14,6 +14,7 @@
  */
 package dk.kb.present.util;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dk.kb.present.util.saxhandlers.ElementsExtractionHandler;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
@@ -90,5 +91,23 @@ public class DataCleanup {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Remove outer brackets from a JSON object. This does not produce valid JSON in itself.
+     * When using this utility you should wrap the resulting string in brackets at some point to produce valid JSON.
+     * @param jsonObject to remove outer brackets from.
+     * @return a string representation of the input JSON where the outer brackets have been removed.
+     */
+    public static String convertJsonObjectToInnerObject(ObjectNode jsonObject){
+        StringBuilder formattedJson = new StringBuilder();
+        jsonObject.fields().forEachRemaining(entry -> {
+            if (formattedJson.length() > 0) {
+                formattedJson.append(",");
+            }
+            formattedJson.append("\"").append(entry.getKey()).append("\":").append(entry.getValue().toString());
+        });
+
+        return formattedJson.toString();
     }
 }
