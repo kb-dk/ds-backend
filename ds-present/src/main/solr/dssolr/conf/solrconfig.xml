@@ -814,8 +814,9 @@
        <str name="facet.field">catalog</str>
        <str name="facet.field">collection</str>
        <str name="facet.field">categories</str>
-       <str name="facet.field">genre</str>
+       <str name="facet.field">genre</str> <!-- TODO: At some point this and genre_sub sould be removed. Coordinate this with frontenders! -->
        <str name="facet.field">genre_sub</str>
+       <str name="facet.field">genre_facet</str>
        <!-- Describes the type of material. Should be available across collections. -->
        <str name="facet.field">resource_description</str>
        <str name="facet.field">resource_description_general</str>
