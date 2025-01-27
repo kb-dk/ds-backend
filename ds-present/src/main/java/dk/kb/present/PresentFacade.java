@@ -260,15 +260,20 @@ public class PresentFacade {
      */
     private static StreamingOutput writeRecordsWithErrorsObject(HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT format, ContinuationStream<DsRecordDto, Long> records, ErrorList errorList) {
         return output -> {
-
+            // TODO: When back at the office implement a new .wrap() function in util, which takes the errorList and make that method handle error object creation. Also moves
+            //  errorList objects to kb util.
             output.write("{\n\"data\":".getBytes(StandardCharsets.UTF_8));
 
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, format, false, "records")) {
+
                 records
+                        .peek(record -> log.info("start writing record with id: '{}'", record.getId()))
                         .map(DsRecordDto::getData)
                         .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
+
+                writer.flush();
             }
 
             output.write(",".getBytes(StandardCharsets.UTF_8));
