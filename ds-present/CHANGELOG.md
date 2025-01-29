@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Bumped multiple OpenAPI dependency versions
+
+### Fixed
+- Fixed /api-docs wrongly showing petstore example API spec
+
 ## [2.2.6](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.6) 2025-01-27
 ### Changed
 - Bumped SwaggerUI dependency to v5.18.2
