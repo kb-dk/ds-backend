@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
+- Fixed genre unittests failing wrongly
 
 ## [2.2.6](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.6) 2025-01-27
 ### Changed
