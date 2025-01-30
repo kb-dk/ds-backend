@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Upgraded dependency cxf-rt-transports-http to v.3.6.4 (fix memory leak)
+- Bumped multiple OpenAPI dependency versions
 
 ### Fixed
 - Fixed inclusion of identical dependencies from multiple sources.
+- Fixed /api-docs wrongly showing petstore example API spec
 
 
 ## [1.2.3]
