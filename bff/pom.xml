@@ -86,7 +86,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.3</version>
         </dependency>
 
         <dependency>
@@ -143,7 +143,7 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>openapi-generator</artifactId>
-            <version>7.1.0</version>
+            <version>7.11.0</version>
         </dependency>
         <dependency>
             <!--For the swagger UI endpoint /api-docs?url=openapi.json-->
@@ -278,7 +278,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>4.2.2</version>
+                <version>4.3.1</version>
                 <!-- Running this gives
                      [WARNING] The value (generator's option) must be either boolean or string. Default to `false`.
                      which seems to be an unresolved issue: https://github.com/OpenAPITools/openapi-generator/issues/9008 -->
