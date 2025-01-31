@@ -6,9 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Bumped multiple OpenAPI dependency versions
+
+### Fixed
+- Fixed /api-docs wrongly showing petstore example API spec
+- Fixed genre unittests failing wrongly
+
+## [2.2.6](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.6) 2025-01-27
+### Changed
+- Bumped SwaggerUI dependency to v5.18.2
+
 ### Fixed
 - Fixed inclusion of the same dependencies from multiple sources.
 - Fixed that not all records did get a fallback genre.
+- Solr 1.7.9: Fixed field genre_facet not being added as a facet field.
+
 
 ## [2.2.5](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.5) 2025-01-06
 ### Added 
