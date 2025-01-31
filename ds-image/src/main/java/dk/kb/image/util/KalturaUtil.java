@@ -36,7 +36,7 @@ public class KalturaUtil {
      * @return ThumbnailsDto. Has a default thumbnail, a sprite and list of time sliced thumbnails.
      * @throws IOException If the fileId is not found or internal server error with Kaltura.
      */
-    public static ThumbnailsDto getThumbnails(String fileId,Integer numberOfSlices, Integer width, Integer height) throws ServiceException {
+    public static ThumbnailsDto getThumbnails(String fileId,Integer numberOfSlices, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) throws ServiceException {
         ThumbnailsDto thumbnails = new ThumbnailsDto();
         String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
         Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
@@ -57,6 +57,11 @@ public class KalturaUtil {
                 baseUrl=baseUrl+"/height/"+height;
             }
 
+            String seek=""; //if seek not defined, this empty string will just be added
+            if ((secondsEndSeek != null && secondsEndSeek>=0)  || (secondsStartSeek != null && secondsStartSeek>=0)) {
+                seek="?start_sec="+secondsStartSeek+"&end_sec="+secondsEndSeek; 
+            }
+            
             thumbnails.setDefault(baseUrl); // Example: https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_dtvciomh/width/200/
 
             //This is the sprite version will all thumbnails.
@@ -68,7 +73,7 @@ public class KalturaUtil {
             //Add the images slices
             for (int i=0;i<numberOfSlices;i++ ) {
                 //example: https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_dtvciomh/width/200/vid_slices/10/vid_slice/5
-                timeSliceThumbnails.add(baseUrl +"/vid_slice/"+i);  //Yes, slices start with value=0.
+                timeSliceThumbnails.add(baseUrl +"/vid_slice/"+i+seek);  //Yes, slices start with value=0.
             }
             thumbnails.setThumbnails(timeSliceThumbnails);
 

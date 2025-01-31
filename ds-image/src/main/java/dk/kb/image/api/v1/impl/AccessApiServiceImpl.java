@@ -462,13 +462,13 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      * @return ThumbnailsDto. Has a default thumbnail, a sprite and list of time sliced thumbnails.
      */
     @Override
-    public ThumbnailsDto kalturaThumbnails(String fileId, Integer numberOfThumbnails, Integer width, Integer height) throws  ServiceException {
+    public ThumbnailsDto kalturaThumbnails(String fileId, Integer numberOfThumbnails, Integer secondStartSeek, Integer secondEndSeek, Integer width, Integer height) throws  ServiceException {
      
         if (fileId == null) {
             throw new InvalidArgumentServiceException("FileId must not be null");
         }        
         try {
-           ThumbnailsDto thumbnails = KalturaUtil.getThumbnails(fileId, numberOfThumbnails, width, height);
+           ThumbnailsDto thumbnails = KalturaUtil.getThumbnails(fileId, numberOfThumbnails, secondStartSeek, secondEndSeek,width, height);
             return thumbnails;
         }
         catch(Exception e) {

@@ -518,9 +518,7 @@ paths:
         Will contain a default thumbnail, a sprite and list of time sliced thumbnails.     
         [Kaltura Thumbnail API](https://developer.kaltura.com/api-docs/Engage_and_Publish/kaltura-thumbnail-api.html)                     
       operationId: kalturaThumbnails
-      security:
-        - KBOAuth:
-          - any
+   
       parameters:
         - name: fileId
           in: query
@@ -537,6 +535,21 @@ paths:
             minimum: 1
             maximum: 100            
             default: 10
+        - name: secondSstartSeek
+          in: query
+          description: 'secondsEndSeek must also be defined for seeking to be  activated. The thumbnails will be generated from between secondStartSeek and secondEndSeek '          
+          schema:            
+            type: integer
+            minimum: 0
+            maximum: 86400
+            default: 0            
+        - name: secondsEndSeek
+          in: query
+          description: 'If secondsEndSeek is defined the thumbnails will be generated from between secondStartSeek and secondEndSeek.'          
+          schema:            
+            type: integer
+            minimum: 5
+            maximum: 86400                                
         - name: width
           in: query
           description: 'Width of the thumbnails'
