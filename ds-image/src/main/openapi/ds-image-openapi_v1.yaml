@@ -535,9 +535,9 @@ paths:
             minimum: 1
             maximum: 100            
             default: 10
-        - name: secondSstartSeek
+        - name: secondsStartSeek
           in: query
-          description: 'secondsEndSeek must also be defined for seeking to be  activated. The thumbnails will be generated from between secondStartSeek and secondEndSeek '          
+          description: 'secondsEndSeek must also be defined for seeking to be  activated. The thumbnails will be generated from between secondsStartSeek and secondsEndSeek '          
           schema:            
             type: integer
             minimum: 0
@@ -545,7 +545,7 @@ paths:
             default: 0            
         - name: secondsEndSeek
           in: query
-          description: 'If secondsEndSeek is defined the thumbnails will be generated from between secondStartSeek and secondEndSeek.'          
+          description: 'If secondsEndSeek is defined the thumbnails will be generated from between secondsStartSeek and secondsEndSeek.'          
           schema:            
             type: integer
             minimum: 5

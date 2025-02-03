@@ -30,6 +30,8 @@ public class KalturaUtil {
      *
      * @param fileId The externalId we have for the record. 
      * @param numberOfSlices Number of thumbnails. They be divided uniform over the video.
+     * @param secondsStartSeek Generated thumbnails in stream from between secondsStartSeek and secondsEndSeek
+     * @param secondsEndSeek Generated thumbnails in stream from between secondsStartSeek and secondsEndSeek. secondsEndSeek must be set for seeking to be active. 
      * @param width Optional width parameter in pixels. Aspect ratio will be kept.
      * @param height Optiomal height parameter in pixels. Aspect ratio will be kept. 
      *
