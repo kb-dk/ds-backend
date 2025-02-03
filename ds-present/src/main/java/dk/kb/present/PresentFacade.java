@@ -263,7 +263,6 @@ public class PresentFacade {
             try (ExportWriter writer = ExportWriterFactory.wrapWithErrors(
                     output, httpServletResponse, format, false, errorList)) {
                 records
-                        .peek(record -> log.info("start writing record with id: '{}'", record.getId()))
                         .map(DsRecordDto::getData)
                         .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
