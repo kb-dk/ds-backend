@@ -23,7 +23,7 @@ import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
-import dk.kb.present.util.ErrorList;
+import dk.kb.util.webservice.stream.ErrorList;
 import dk.kb.present.util.SolrDocumentationExtractor;
 import dk.kb.util.webservice.stream.*;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -260,25 +260,15 @@ public class PresentFacade {
      */
     private static StreamingOutput writeRecordsWithErrorsObject(HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT format, ContinuationStream<DsRecordDto, Long> records, ErrorList errorList) {
         return output -> {
-            // TODO: When back at the office implement a new .wrap() function in util, which takes the errorList and make that method handle error object creation. Also moves
-            //  errorList objects to kb util.
-            output.write("{\n\"data\":".getBytes(StandardCharsets.UTF_8));
-
-            try (ExportWriter writer = ExportWriterFactory.wrap(
-                    output, httpServletResponse, format, false, "records")) {
-
+            try (ExportWriter writer = ExportWriterFactory.wrapWithErrors(
+                    output, httpServletResponse, format, false, errorList)) {
                 records
                         .peek(record -> log.info("start writing record with id: '{}'", record.getId()))
                         .map(DsRecordDto::getData)
                         .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
 
-                writer.flush();
             }
-
-            output.write(",".getBytes(StandardCharsets.UTF_8));
-            output.write(DataCleanup.convertJsonObjectToInnerObject(errorList.getOverview()).getBytes(StandardCharsets.UTF_8));
-            output.write("\n}".getBytes(StandardCharsets.UTF_8));
 
             errorList.clearErrors();
         };

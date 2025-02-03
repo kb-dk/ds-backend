@@ -18,8 +18,8 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.RuntimeTransformerException;
-import dk.kb.present.util.ErrorList;
-import dk.kb.present.util.ErrorRecord;
+import dk.kb.util.webservice.stream.ErrorList;
+import dk.kb.util.webservice.stream.ErrorRecord;
 import dk.kb.storage.model.v1.DsRecordDto;
 
 import dk.kb.storage.model.v1.RecordTypeDto;
