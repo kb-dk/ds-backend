@@ -274,28 +274,6 @@ public class PresentFacade {
         };
     }
 
-    /**
-     * Wrap records in a JSON structure, where all records are delivered in a data-object.
-     * @param httpServletResponse used to set the propper content type. Can be null.
-     * @param format to deliver records in.
-     * @param records stream of records that are to be delivered.
-     * @return a JSON formatted streamingOutput of records.
-     */
-    private static StreamingOutput writeRecordsToDataObject(HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT format, ContinuationStream<DsRecordDto, Long> records) {
-        return output -> {
-            output.write("{\n\"data\":".getBytes(StandardCharsets.UTF_8));
-
-            try (ExportWriter writer = ExportWriterFactory.wrap(
-                    output, httpServletResponse, format, false, "records")) {
-                records
-                        .map(DsRecordDto::getData)
-                        .map(DataCleanup::removeXMLDeclaration)
-                        .forEach(writer::write);
-            }
-            output.write("\n}".getBytes(StandardCharsets.UTF_8));
-        };
-    }
-
     // Retrieve full records to support deletions
     private static StreamingOutput getRecordsFull(
             DSOrigin origin, Long mTime, Long maxRecords,
