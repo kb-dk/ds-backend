@@ -20,6 +20,7 @@ import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.model.v1.ViewDto;
 import dk.kb.present.util.DataCleanup;
+import dk.kb.util.webservice.stream.ErrorList;
 import dk.kb.present.util.SolrDocumentationExtractor;
 import dk.kb.util.webservice.stream.*;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -229,19 +230,36 @@ public class PresentFacade {
             DSOrigin origin, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, FormatDto recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
             Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter) {
+        // List to hold errors from records failing transformations.
+        ErrorList failedTransformations = new ErrorList();
+
         setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
         ContinuationStream<DsRecordDto, Long> records =
-                origin.getDSRecords(mTime, maxRecords, recordFormat, accessFilter);
+                origin.getDSRecords(mTime, maxRecords, recordFormat, accessFilter, failedTransformations);
         records.setHeaders(httpServletResponse);
 
+        return writeRecordsWithErrorsObject(httpServletResponse, deliveryFormat, records, failedTransformations);
+    }
+
+    /**
+     * Wrap records in a JSON structure, where all records are delivered in a data-object, while errors are delivered in an errors-object.
+     * @param httpServletResponse used to set the propper content type. Can be null.
+     * @param format to deliver records in.
+     * @param records stream of records that are to be delivered.
+     * @param errorList containing IDs of records that have failed XSLT transformation. When the errorList has been consumed, all entries are cleared from it.
+     * @return a JSON formatted streamingOutput of records.
+     */
+    private static StreamingOutput writeRecordsWithErrorsObject(HttpServletResponse httpServletResponse, ExportWriterFactory.FORMAT format, ContinuationStream<DsRecordDto, Long> records, ErrorList errorList) {
         return output -> {
-            try (ExportWriter writer = ExportWriterFactory.wrap(
-                    output, httpServletResponse, deliveryFormat, false, "records")) {
+            try (ExportWriter writer = ExportWriterFactory.wrapWithErrors(
+                    output, httpServletResponse, format, false, errorList)) {
                 records
                         .map(DsRecordDto::getData)
                         .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
             }
+
+            errorList.clearErrors();
         };
     }
 

@@ -407,6 +407,20 @@ class ViewTest {
         assertTrue(solrdoc.contains("\"has_kaltura_id\":\"false\""));
     }
 
+    @Test
+    void alwaysFailingRecordTest() throws IOException {
+        HoldbackDatePicker.init();
+        View solrView = getSolrTvViewForPreservicaRecord();
+        String preservicaRecord = Resolver.resolveUTF8String("internal_test_files/preservica7/errorRecord.xml");
+        DsRecordDto recordDto = new DsRecordDto().data(preservicaRecord).id("test.id")
+                .mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
+
+
+        assertThrows(RuntimeException.class, () -> {
+            solrView.apply(recordDto);
+        } );
+    }
+
     //********************************************** PRIVATE HELPER METHODS BELOW ***************************************************************
 
     /**

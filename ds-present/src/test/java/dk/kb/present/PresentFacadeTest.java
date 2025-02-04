@@ -32,10 +32,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static dk.kb.present.TestUtil.prettyPrintJson;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -226,6 +230,62 @@ public class PresentFacadeTest {
         }
         StreamingOutput out = PresentFacade.getRecords(testResponse, "dsfl", 0L, -1L, FormatDto.SOLRJSON, ids -> ids);
         String result = toString(out);
+    }
+
+    @Test
+    @Tag("integration")
+    void errorHandlingTest() throws IOException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            fail("Missing internal_test_files");
+        }
+
+        // No access checking
+        StreamingOutput out = PresentFacade.getRecords(testResponse, "ds.radiotv", 0L, -1L, FormatDto.JSON_LD, ids -> ids);
+
+        String result = toString(out);
+
+        System.out.println(result);
+        assertTrue(result.contains("\"errors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
+    }
+
+    @Test
+    @Tag("integration")
+    void errorHandlingTestSolr() throws IOException, InterruptedException {
+        if (Resolver.getPathFromClasspath("internal_test_files") == null){
+            fail("Missing internal_test_files");
+        }
+
+        // No access checking
+        StreamingOutput out = PresentFacade.getRecords(testResponse, "ds.radiotv", 0L, -1L, FormatDto.SOLRJSON, ids -> ids);
+        String result = toString(out);
+        // Solr result should never contain the error marker as that would create an indexing problem.
+        assertFalse(result.contains("\"errors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
+    }
+
+    @Test
+    @Tag("integration")
+    void errorHandlingConcurrencyTest() throws InterruptedException {
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        for (int i = 0; i < 10; i++) {
+            executorService.submit(() -> {
+                // Do the same task five times on each of the 10 threads
+                for (int j = 0; j < 5; j++) {
+                    StreamingOutput out = PresentFacade.getRecords(testResponse, "ds.radiotv", 0L, -1L, FormatDto.JSON_LD, ids -> ids);
+                    String result;
+                    try {
+                        result = toString(out);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    // It is especially important that the amount is always=1 in each of the test cases.
+                    assertTrue(result.contains("\"errors\":{\"amount\":1,\"records\":[{\"id\":\"errorRecord.xml\","));
+                }
+            });
+        }
+
+        // Shutdown the executor and wait for all tasks to complete
+        executorService.shutdown();
+        executorService.awaitTermination(1, TimeUnit.MINUTES);
     }
 
     private static String toString(StreamingOutput out) throws IOException {
