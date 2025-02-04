@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- ds-present-transformation-errors log which logs only transformation errors.
+
 ### Changed
 - Bumped multiple OpenAPI dependency versions
+- Changed the response format for the JSON response in /records to include information on failed transformations.
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
