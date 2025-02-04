@@ -54,7 +54,7 @@ import java.util.stream.Stream;
 public class DSOrigin {
     // Origin-specific properties
     private static final Logger log = LoggerFactory.getLogger(DSOrigin.class);
-    private static final Logger transformationLog = LoggerFactory.getLogger("dk.kb.transformations");
+    private static final Logger transformationErrorsLog = LoggerFactory.getLogger("dk.kb.transformation.errors");
     private static final String PREFIX_KEY = "prefix"; // IDs for this origin starts with <prefix>_ (note the underscore)
     private static final String DESCRIPTION_KEY = "description";
     private static final String STORAGE_KEY = "storage";
@@ -298,7 +298,7 @@ public class DSOrigin {
                 record.data(view.apply(record));
                 return record;
             } catch (Exception e) {
-                transformationLog.error("An error occurred when transforming record with ID: '{}' to format '{}'. Error is caused by: '{}'.", record.getId(), format,
+                transformationErrorsLog.error("An error occurred when transforming record with ID: '{}' to format '{}'. Error is caused by: '{}'.", record.getId(), format,
                         e.toString());
                 if (stopOnError) {
                     // Execution stops because stopOnError = true (This can be set)

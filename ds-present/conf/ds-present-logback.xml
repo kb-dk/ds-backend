@@ -2,7 +2,7 @@
     <contextName>ds-present</contextName>
 
     <property name="LOGFILE" value="${catalina.home}/logs/ds-present.log" />
-    <property name="TRANSFORMATIONSFILE" value="${catalina.home}/logs/ds-present-transformations.log" />
+    <property name="TRANSFORMATIONSFILE" value="${catalina.home}/logs/ds-present-transformation-errors.log" />
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGFILE}</file>
@@ -39,7 +39,7 @@
     </appender>
 
     <!-- Logger that uses the specific appender -->
-    <logger name="dk.kb.transformations" level="INFO" additivity="false">
+    <logger name="dk.kb.transformation.errors" level="INFO" additivity="false">
         <appender-ref ref="DataTransformationAppender" />
     </logger>
 

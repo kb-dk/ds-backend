@@ -14,9 +14,6 @@
  */
 package dk.kb.present;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Charsets;
 import dk.kb.present.api.v1.impl.DsPresentApiServiceImpl;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
@@ -33,18 +30,12 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -266,7 +257,6 @@ public class PresentFacade {
                         .map(DsRecordDto::getData)
                         .map(DataCleanup::removeXMLDeclaration)
                         .forEach(writer::write);
-
             }
 
             errorList.clearErrors();

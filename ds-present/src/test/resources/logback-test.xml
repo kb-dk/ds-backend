@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="5 minutes">
 
-    <property name="TRANSFORMATIONSFILE" value="./src/test/resources/transformations.log" />
+    <property name="TRANSFORMATIONSFILE" value="./src/test/resources/transformation-errors.log" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -28,7 +28,7 @@
     </appender>
 
     <!-- Logger that uses the specific appender -->
-    <logger name="dk.kb.transformations" level="INFO" additivity="false">
+    <logger name="dk.kb.transformation-errors" level="INFO" additivity="false">
         <appender-ref ref="DataTransformationAppender" />
     </logger>
 
