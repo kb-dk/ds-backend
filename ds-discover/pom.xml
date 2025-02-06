@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>dk.statsbiblioteket.sbprojects</groupId>
-        <artifactId>sbprojects-parent</artifactId>
-        <version>80</version>
+        <groupId>dk.kb</groupId>
+        <artifactId>ds-build</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <name>ds-discover</name> <!-- Human readable name, uppercase and spaces welcome -->
     <groupId>dk.kb.discover</groupId>
     <artifactId>ds-discover</artifactId>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>${ds.version}</version>
     
     <packaging>war</packaging>
     <description>ds-discover by the Royal Danish Library</description>
