@@ -9,13 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Kaltura thumbnail API extended to two allow seeking between startSeconds and endSeconds into the stream. Default behaviour unchanged.
 
-
 ### Changed
 - Bumped SwaggerUI dependency to v5.18.2
 - Bumped multiple OpenAPI dependency versions
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
+- Fixed that placeholder images for non-existing and not-allowed to view images are shown again. 
 
 ### Changed
 
