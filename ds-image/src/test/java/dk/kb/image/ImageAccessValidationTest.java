@@ -28,6 +28,7 @@ import javax.ws.rs.core.StreamingOutput;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.regex.Matcher;
 
@@ -92,6 +93,10 @@ public class ImageAccessValidationTest {
 	@Test
 	@Tag("integration")
 	public void testPlaceholderImageStreamingOutput() throws IOException {
+		if (Resolver.getPathFromClasspath("ds-image-integration-test.yaml") == null){
+			fail("Internal test config is not present. 'testPlaceholderImageStreamingOutput' is therefore not run. Please update aegis and do 'kb init' to make this run.");
+		}
+
 		try (ConfigAdjuster configAdjuster = new ConfigAdjuster("ds-image-integration-test.yaml")){
 			// Get test image
 			ByteArrayOutputStream testImageByteArray = getImageAsByteArrayOS("nonExisting.jpg");
