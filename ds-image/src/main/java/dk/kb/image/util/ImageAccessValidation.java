@@ -1,5 +1,11 @@
 package dk.kb.image.util;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -9,10 +15,12 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -236,16 +244,20 @@ public class ImageAccessValidation {
     }
 
     private static StreamingOutput getImageForbidden() throws IOException {
-        String img = ServiceConfig.getConfig().getString("images.noAccess");
-        try (InputStream forbidden = Resolver.resolveStream(img)){
-            return output -> IOUtils.copy(forbidden, output);
-        }
+        String noAccessImageName = ServiceConfig.getConfig().getString("images.noAccess");
+        return writeImgToStreamingOutput(noAccessImageName);
     }
 
+
     private static StreamingOutput getImageNotExist() throws IOException {
-        String img = ServiceConfig.getConfig().getString("images.nonExisting");
-        try (InputStream nonExisting = Resolver.resolveStream(img)){
-            return output -> IOUtils.copy(nonExisting, output);
-        }
+        String nonExistingImageName = ServiceConfig.getConfig().getString("images.nonExisting");
+        return writeImgToStreamingOutput(nonExistingImageName);
+    }
+
+    @NotNull
+    private static StreamingOutput writeImgToStreamingOutput(String imgName) throws IOException {
+        String imgPath = Resolver.getPathFromClasspath(imgName).toString();
+        BufferedImage image = ImageIO.read(new File(imgPath));
+        return output -> ImageIO.write(image, "jpg", output);
     }
 }

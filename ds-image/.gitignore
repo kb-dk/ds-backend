@@ -12,4 +12,5 @@ README_OLD.md
 conf/ds-image-environment.yaml
 conf/ds-image-local.yaml
 src/test/resources/ds-image-kaltura-integration-test.yaml
+/src/test/resources/ds-image-integration-test.yaml
 /deploy2Devel11.sh
