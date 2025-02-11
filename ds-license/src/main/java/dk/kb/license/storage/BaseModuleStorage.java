@@ -12,7 +12,7 @@ import java.util.Date;
  * The BaseModuleStorage, which sets up the connection to the database which is then used by  {@link LicenseModuleStorage} and {@link RightsModuleStorage}.
  * This class only sets up the connection, while the other two are responsible for implementing the interactions with the database.
  */
-public class BaseModuleStorage implements AutoCloseable  {
+public abstract class BaseModuleStorage implements AutoCloseable  {
     private static final Logger log = LoggerFactory.getLogger(BaseModuleStorage.class);
 
     // statistics shown on monitor.jsp page
