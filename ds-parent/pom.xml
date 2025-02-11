@@ -9,7 +9,7 @@
         <version>80</version>
     </parent>
 	
-    <groupId>dk.kb</groupId>
+    <groupId>dk.kb.dsparent</groupId>
     <artifactId>ds-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
