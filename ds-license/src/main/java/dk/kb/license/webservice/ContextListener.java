@@ -105,7 +105,7 @@ public class ContextListener implements ServletContextListener {
          createLocalH2ForJettyEnvironment(driver, url, user, password);
        }
        
-       LicenseModuleStorage.initialize(driver,url,user,password);                        
+       BaseModuleStorage.initialize(driver,url,user,password);
     }
 
 

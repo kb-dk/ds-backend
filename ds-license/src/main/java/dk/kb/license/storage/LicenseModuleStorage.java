@@ -1,14 +1,11 @@
 package dk.kb.license.storage;
 
 import java.io.File;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,17 +22,11 @@ import org.slf4j.LoggerFactory;
  * LICENSECONTENT)
  * 
  */
-public class LicenseModuleStorage implements AutoCloseable {
+public class LicenseModuleStorage extends BaseModuleStorage  {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorage.class);
 
-    private Connection connection = null; // private
-    private static BasicDataSource dataSource = null; // shared
-
     private long lastTimestamp = 0; // Remember last timestamp and make sure each is only used once;
-
-    // statistics shown on monitor.jsp page
-    public static Date INITDATE = null;
 
     // Table and column names
     private static final String LICENSEPRESENTATIONTYPES_TABLE = "PRESENTATIONTYPES";
@@ -189,37 +180,6 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     private final static String deleteLicenseByLicenseIdQuery = " DELETE FROM " + LICENSE_TABLE + " WHERE " + ID_COLUMN
             + " = ?";
-
-    public static void initialize(String driverName, String driverUrl, String userName, String password) {
-        dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(driverName);
-        dataSource.setUsername(userName);
-        dataSource.setPassword(password);
-        dataSource.setUrl(driverUrl);
-
-        dataSource.setDefaultReadOnly(false);
-        dataSource.setDefaultAutoCommit(false);
-
-        // TODO maybe set some datasource options.
-        // enable detection and logging of connection leaks
-        /*
-         * dataSource.setRemoveAbandonedOnBorrow(
-         * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
-         * > 0); dataSource.setRemoveAbandonedOnMaintenance(
-         * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
-         * > 0); dataSource.setRemoveAbandonedTimeout(AlmaPickupNumbersPropertiesHolder.
-         * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM); //1 hour
-         * dataSource.setLogAbandoned(AlmaPickupNumbersPropertiesHolder.
-         * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM > 0);
-         * dataSource.setMaxWaitMillis(AlmaPickupNumbersPropertiesHolder.
-         * PICKUPNUMBERS_DATABASE_POOL_CONNECT_TIMEOUT);
-         */
-        dataSource.setMaxTotal(10); //
-
-        INITDATE = new Date();
-
-        log.info("DsLicence storage initialized");
-    }
 
     public LicenseModuleStorage() throws SQLException {
         connection = dataSource.getConnection();
@@ -1170,29 +1130,6 @@ public class LicenseModuleStorage implements AutoCloseable {
      * Only called from unittests, not exposed on facade class
      * 
      */
- 
-   
-
-    public void commit() throws SQLException {
-        connection.commit();
-    }
-
-    public void rollback() {
-        try {
-            connection.rollback();
-        } catch (SQLException e) {
-            // nothing to do here
-        }
-    }
-
-    @Override
-    public void close() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            // nothing to do here
-        }
-    }
 
     /*
      * Only called from unittests, not exposed on facade class
@@ -1222,21 +1159,6 @@ public class LicenseModuleStorage implements AutoCloseable {
       }
       log.info("All tables cleared for unittest");
     }
-    
-    
-    // This is called by from InialialziationContextListener by the Web-container
-    // when server is shutdown,
-    // Just to be sure the DB lock file is free.
-    public static void shutdown() {
-        log.info("Shutdown ds-license");
-        try {
-            if (dataSource != null) {
-                dataSource.close();
-            }
-        } catch (SQLException e) {
-            // ignore errors during shutdown, we cant do anything about it anyway
-            log.error("shutdown failed", e);
-        }
-    }
+
 
 }
