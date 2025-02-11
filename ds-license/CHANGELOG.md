@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added abstract class BaseModuleStorage, which handles connection to the backing storage in preparation for implementation of rights calculation.
+- Added DTO which contains all needed values for calculating rights.
 
 ### Changed
 - Bumped SwaggerUI dependency to v5.18.2
