@@ -3,15 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dk.kb</groupId>
-        <artifactId>ds-build</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <artifactId>ds-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <name>ds-discover</name> <!-- Human readable name, uppercase and spaces welcome -->
     <groupId>dk.kb.discover</groupId>
     <artifactId>ds-discover</artifactId>
     <version>${ds.version}</version>
-    
+
     <packaging>war</packaging>
     <description>ds-discover by the Royal Danish Library</description>
 
@@ -26,7 +26,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-               
+
     </repositories>
 
     <scm>
@@ -68,26 +68,24 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>4.0.2</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Client for ds-license. This will also require the org.openapitools dependency-->
-      <dependency>
-        <groupId>dk.kb.license</groupId>
-        <artifactId>ds-license</artifactId>
-          <version>1.5.0</version>
-          <type>jar</type>
-          <classifier>classes</classifier>
-          <exclusions>
-            <exclusion>
-              <groupId>*</groupId>
-              <artifactId>*</artifactId>
-            </exclusion>
-        </exclusions>
-      </dependency>
-      
-      <dependency>
+        <dependency>
+            <groupId>dk.kb.license</groupId>
+            <artifactId>ds-license</artifactId>
+            <version>1.5.0</version>
+            <type>jar</type>
+            <classifier>classes</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>dk.kb.present</groupId>
             <artifactId>ds-present</artifactId>
             <version>2.1.5</version>
@@ -100,25 +98,21 @@
                 </exclusion>
             </exclusions>
 
-       </dependency>
+        </dependency>
 
         <!-- Apache CXF and servlet stuff -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>2.1.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
-            <!-- Latest version is 4.0.3. Not tested -->
-            <version>3.6.4</version>            
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.xml.ws/jaxws-api -->
         <dependency>
             <groupId>javax.xml.ws</groupId>
             <artifactId>jaxws-api</artifactId>
-            <version>2.3.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
@@ -134,93 +128,60 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.8</version>
         </dependency>
 
 
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-xml-provider</artifactId>
-            <version>2.10.1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable -->
-        <!--  Used to generate the client for ds-license-->
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.2</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.16.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-client</artifactId>
-            <version>3.6.2</version>
-            <!--<version>3.4.0</version>-->
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-service-description</artifactId>
-            <version>3.6.2</version>
         </dependency>
         <dependency>
             <!--For the openapi endpoint /openapi.json-->
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
-            <version>3.6.2</version>
         </dependency>
         <dependency>
             <!--For the swagger UI endpoint /api-docs?url=openapi.json-->
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>
-            <version>5.18.2</version>
         </dependency>
 
         <!-- openapitools dependency -->
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jsr311-api</artifactId>
-                    <groupId>javax.ws.rs</groupId>
-                </exclusion>
-                <exclusion>
-                    <!-- swagger-jaxrs has 1.1.0.Final, but transitive resolving has 2.0.2 somewhere-->
-                    <groupId>javax.validation</groupId>
-                    <artifactId>validation-api</artifactId>
-                </exclusion>
-            </exclusions>
-            <version>1.5.24</version>
         </dependency>
         <!-- To get date parsing to work? -->
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-modules-java8 -->
-<!--        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-modules-java8</artifactId>
-            <version>2.13.1</version>
-            <type>pom</type>
-            <scope>runtime</scope>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>com.fasterxml.jackson.module</groupId>
+                    <artifactId>jackson-modules-java8</artifactId>
+                    <version>2.13.1</version>
+                    <type>pom</type>
+                    <scope>runtime</scope>
+                </dependency>-->
 
-        <!-- OAuth  support -->
-        <!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-core -->
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
-            <version>24.0.1</version>
-            <exclusions>
-                <exclusion>
-                    <!-- mockserver-junit-jupiter has 1.1, but transitive resolving has 1.2.2 somewhere-->
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- To get client generation to work -->
@@ -228,83 +189,60 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>openapi-generator</artifactId>
-            <version>7.11.0</version>
-               <exclusions>
-                  <exclusion>
+            <exclusions>
+                <exclusion>
                     <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
                     <groupId>org.slf4j</groupId>
                     <artifactId>*</artifactId>
-                  </exclusion>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.11</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
-            <version>2.0.9</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
-            <version>2.0.9</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>2.0.9</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-ext</artifactId>
-            <version>2.0.9</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.14</version>
         </dependency>
 
         <!-- Unit test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.10.1</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.7.0</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter -->
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-junit-jupiter</artifactId>
-            <version>5.15.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>javax.servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.9</version>
         </dependency>
 
 
@@ -393,14 +331,14 @@
                     </configOptions>
                     <packageName>${project.package}</packageName>
                 </configuration>
-              
 
 
-              
+
+
                 <executions>
 
 
-                
+
                     <!-- Version 1 -->
                     <!-- When a new version is needed, make a copy of three v1-related executions below, then change
                          v1 to v2 in the copy.
@@ -530,11 +468,11 @@
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
                         <webResource> <!-- Store application name, version and build time -->
-                          <directory>${basedir}/src/main/resources/</directory>
-                          <includes>
-                            <include>ds-discover.build.properties</include>
-                          </includes>
-                          <filtering>true</filtering>
+                            <directory>${basedir}/src/main/resources/</directory>
+                            <includes>
+                                <include>ds-discover.build.properties</include>
+                            </includes>
+                            <filtering>true</filtering>
                         </webResource>
                         <resource>
                             <!--Include the openapi spec files so we can serve them-->
