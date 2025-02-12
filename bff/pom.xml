@@ -86,7 +86,6 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-            <version>1.6.3</version>
         </dependency>
 
         <dependency>
@@ -138,7 +137,6 @@
             <!--For the swagger UI endpoint /api-docs?url=openapi.json-->
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>
-            <version>5.9.0</version> <!--update to 5.18.2 ?-->
         </dependency>
 
         <dependency>
@@ -183,7 +181,6 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-authz-client</artifactId>
-            <version>23.0.6</version>
         </dependency>
     </dependencies>
 
