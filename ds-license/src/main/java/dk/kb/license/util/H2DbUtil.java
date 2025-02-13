@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,10 @@ import dk.kb.util.Resolver;
  * 
  */
 public class H2DbUtil {
-    protected static final String CREATE_TABLES_DDL_FILE = "ddl/licensemodule_create_h2_unittest.ddl";
+    protected static final List<String> CREATE_TABLES_DDL_FILES = List.of(
+            "ddl/licensemodule_create_h2_unittest.ddl",
+            "ddl/rightsmodule_create_h2_unittest.ddl"
+                  );
     
     private static final Logger log = LoggerFactory.getLogger(H2DbUtil.class);
     
@@ -30,15 +34,16 @@ public class H2DbUtil {
         }
 
         try (Connection connection = DriverManager.getConnection(url,username,password)){
-            File file = getFile(CREATE_TABLES_DDL_FILE);            
-            log.info("Running DDL script:" + file.getAbsolutePath());
+            for(String ddlFile : CREATE_TABLES_DDL_FILES) {
+                File file = getFile(ddlFile);
+                log.info("Running DDL script:" + file.getAbsolutePath());
 
-            if (!file.exists()) {
-                log.error("DDL script not found:" + file.getAbsolutePath());
-                throw new RuntimeException("DDL Script file not found:" + file.getAbsolutePath());
+                if (!file.exists()) {
+                    log.error("DDL script not found:" + file.getAbsolutePath());
+                    throw new RuntimeException("DDL Script file not found:" + file.getAbsolutePath());
+                }
+                connection.createStatement().execute("RUNSCRIPT FROM '" + file.getAbsolutePath() + "'");
             }
-
-            connection.createStatement().execute("RUNSCRIPT FROM '" + file.getAbsolutePath() + "'");
             connection.createStatement().execute("SHUTDOWN");
         }
         catch(RuntimeException e) {

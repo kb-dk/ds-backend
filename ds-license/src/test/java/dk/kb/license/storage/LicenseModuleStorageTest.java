@@ -8,10 +8,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import dk.kb.license.util.H2DbUtil;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +45,30 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
 
+    private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";
     private static PresentationType DOWNLOAD = new  PresentationType(1, "Download","Download_dk", "Download_en");
     private static PresentationType THUMBNAILS = new  PresentationType(1, "Thumbnails" ,"Thumbnails_dk", "Thumbnails_en");
+
+    protected static LicenseModuleStorage storage = null;
+
+    @BeforeAll
+    public static void beforeClass() throws IOException, SQLException {
+
+        ServiceConfig.initialize("conf/ds-license*.yaml");
+
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD);
+        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        storage = new LicenseModuleStorage();
+    }
+
+    /*
+     * Delete all records between each unittest. The clearTableRecords is only called from here.
+     * The facade class is reponsible for committing transactions. So clean up between unittests.
+     */
+    @BeforeEach
+    public void beforeEach() throws SQLException {
+        storage.clearTableRecords();
+    }
 
     @Test
     public void testInsertDomLicensePresentationType() throws SQLException {
@@ -933,7 +959,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     @Test
     public void testGenerateQueryString() throws SQLException {
 
-        DsLicenseUnitTestUtil.insertDefaultConfigurationTypes();
+        insertDefaultConfigurationTypes();
         LicenseCache.reloadCache();
         ArrayList<String> groups = new ArrayList<String>();
         ArrayList<String> missingRestrictionGroups = new ArrayList<String>();
@@ -1049,8 +1075,17 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         assertEquals(auditLog1.getTextAfter(), auditLog2.getTextAfter());
                 
     }
-    
 
+    /**
+     * This will load the DDL (data) file licensemodule_default_configuration.ddl into the storage.
+     * It will be too much work to add all these data programmatic.
+     *
+     * @throws SQLException
+     */
+    public static void insertDefaultConfigurationTypes() throws SQLException {
+        File insert_ddl_file = new File(INSERT_DEFAULT_CONFIGURATION_DDL_FILE);
+        storage.runDDLScript(insert_ddl_file);
+    }
 
 
 }

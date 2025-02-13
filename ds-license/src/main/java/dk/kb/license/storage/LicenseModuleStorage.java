@@ -1104,19 +1104,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         }
     }
 
-    // Used from unittests. Create tables DDL etc.
-    protected synchronized void runDDLScript(File file) throws SQLException {
-        log.info("Running DDL script:" + file.getAbsolutePath());
 
-        if (!file.exists()) {
-            log.error("DDL script not found:" + file.getAbsolutePath());
-            throw new RuntimeException("DDLscript file not found:" + file.getAbsolutePath());
-        }
-
-        String scriptStatement = "RUNSCRIPT FROM '" + file.getAbsolutePath() + "'";
-
-        connection.prepareStatement(scriptStatement).execute();        
-    }
 
     /*
      * FOR TEST JETTY RUN ONLY!

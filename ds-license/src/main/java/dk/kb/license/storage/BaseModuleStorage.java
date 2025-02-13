@@ -4,6 +4,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -87,6 +88,20 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
         INITDATE = new Date();
 
         log.info("DsLicence storage initialized");
+    }
+
+    // Used from unittests. Create tables DDL etc.
+    protected synchronized void runDDLScript(File file) throws SQLException {
+        log.info("Running DDL script:" + file.getAbsolutePath());
+
+        if (!file.exists()) {
+            log.error("DDL script not found:" + file.getAbsolutePath());
+            throw new RuntimeException("DDLscript file not found:" + file.getAbsolutePath());
+        }
+
+        String scriptStatement = "RUNSCRIPT FROM '" + file.getAbsolutePath() + "'";
+
+        connection.prepareStatement(scriptStatement).execute();
     }
 
     // This is called by from InialialziationContextListener by the Web-container
