@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SolrShield now enabled by default
 - Bumped SwaggerUI dependency to v5.18.2
 - Bumped multiple OpenAPI dependency versions
+- Bumped kb-util to v1.6.7 for service2service oauth support.
+- Added injection of Oauth token on all service methods when using DsDiscoverClient
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
