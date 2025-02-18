@@ -35,6 +35,7 @@ import ch.qos.logback.core.util.StatusPrinter;
 
 public class ContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger transformationsLog = LoggerFactory.getLogger("dk.kb.transformation.errors");
 
     public static final String LOGBACK_ENV = "java:/comp/env/ds-present-logback-config";
     public static final String CONFIG_ENV = "java:/comp/env/application-config";
@@ -78,6 +79,7 @@ public class ContextListener implements ServletContextListener {
             throw new RuntimeException("Failed to load settings", e);
         }
         log.info("Service initialized.");
+        transformationsLog.info("Service initialized.");
     }
 
     /**

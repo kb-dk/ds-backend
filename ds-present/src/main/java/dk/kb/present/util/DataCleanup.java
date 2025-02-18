@@ -14,6 +14,7 @@
  */
 package dk.kb.present.util;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dk.kb.present.util.saxhandlers.ElementsExtractionHandler;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;

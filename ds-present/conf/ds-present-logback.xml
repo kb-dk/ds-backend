@@ -2,6 +2,7 @@
     <contextName>ds-present</contextName>
 
     <property name="LOGFILE" value="${catalina.home}/logs/ds-present.log" />
+    <property name="TRANSFORMATIONSFILE" value="${catalina.home}/logs/ds-present-transformation-errors.log" />
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGFILE}</file>
@@ -18,6 +19,29 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+
+
+    <!-- Appender for data transformation errors -->
+    <appender name="DataTransformationAppender" class="ch.qos.logback.core.FileAppender">
+        <file>${TRANSFORMATIONSFILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${TRANSFORMATIONSFILE}.%d{yyyy-MM-dd}</fileNamePattern>
+
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger that uses the specific appender -->
+    <logger name="dk.kb.transformation.errors" level="INFO" additivity="false">
+        <appender-ref ref="DataTransformationAppender" />
+    </logger>
 
     <root level="INFO">
       <appender-ref ref="FILE" />

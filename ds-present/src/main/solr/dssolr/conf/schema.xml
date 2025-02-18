@@ -60,10 +60,11 @@ When adding fields to this schema please have the following guidelines in mind:
        Add fields contains_tvmeter, contains_nielsen & contains_ritzau for better debugging of metadata fragments
        Add copyField which copies description to freetext.
        Add field has_kaltura_id which should be used for filtering records.
-1.7.8  Rename own_production to production_code_allowed
-       Rename own_production_code to production_code_value
+1.7.8: Rename own_production to production_code_allowed.
+       Rename own_production_code to production_code_value.
+1.7.9: Add genre_facet as facet field in configuration.
   -->
-  <field name="_ds_1.7.8_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.9_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
