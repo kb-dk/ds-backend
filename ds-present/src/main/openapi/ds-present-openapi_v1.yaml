@@ -96,6 +96,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Extract records from an origin after a given mTime.'
+      security: 
+        - KBOAuth:
+          - any      
       description: |
         The extracted records are returned in sorted order by mTime increasing. By changing the parameter `maxRecords`, 
         the size of the result can be defined. Records marked with a delete flag will also be returned.
@@ -1155,7 +1158,7 @@ components:
         implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
           #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
           #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
-          authorizationUrl: https://api.example.com/oauth2/authorize 
+          authorizationUrl: 'https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/auth' 
           scopes:
             generic_ds: 'Scope used for all Digitale Samlinger services'
             # Project specific roles

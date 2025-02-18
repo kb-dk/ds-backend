@@ -16,7 +16,9 @@ package dk.kb.present.util;
 
 import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.invoker.v1.ApiException;
 import dk.kb.present.model.v1.FormatDto;
+import dk.kb.present.model.v1.OriginDto;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
@@ -125,4 +127,27 @@ public class DsPresentClientTest {
         assertEquals("anonymous", headers.get(AccessUtil.HEADER_SIMULATED_GROUP),
                 "The group header should be correct");
     }
+    
+    @Test
+    public void testGetOrigin() throws ApiException {
+          OriginDto origin = remote.getOrigin("ds.radio"); //this should always exist 
+          assertNotNull(origin);          
+    }
+    
+    @Test
+    public void testGetOrigins() throws ApiException {
+        List<OriginDto> origins=remote.getOrigins(); // there will always be some        
+        assertTrue(origins.size() >0);
+          
+    }
+    
+    @Test
+    public void testGetRecord() throws ApiException {
+     String id="ds.tv:oai:io:d0df0579-4886-41d3-9177-a2f71f62de19"; //tv-avisen
+        String record = remote.getRecord(id, FormatDto.JSON_LD);        
+        assertNotNull(record); 
+          
+    }
+    
+    
 }
