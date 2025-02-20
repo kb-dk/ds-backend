@@ -16,11 +16,18 @@ package dk.kb.image.util;
 
 import dk.kb.image.client.v1.AccessApi;
 import dk.kb.image.invoker.v1.ApiClient;
+import dk.kb.image.invoker.v1.ApiException;
 import dk.kb.image.invoker.v1.Configuration;
+import dk.kb.image.model.v1.DeepzoomDZIDto;
+import dk.kb.image.model.v1.IIIFInfoDto;
+import dk.kb.image.model.v1.ThumbnailsDto;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.URI;
+import java.util.List;
 
 /**
  * Client for the service. Intended for use by other projects that calls this service.
@@ -58,5 +65,38 @@ public class DsImageClient extends AccessApi {
                 setHost(serviceURI.getHost()).
                 setPort(serviceURI.getPort()).
                 setBasePath(serviceURI.getRawPath());
+    }
+    
+    @Deprecated
+    @Override
+    public DeepzoomDZIDto getDeepzoomDZI (String imageid) throws ApiException {
+        throw new ApiException(403, "Method getDeepzoomDZI not allowed to be called on DsImageClient");         
+        
+    }
+    
+    @Override
+    public File getDeepzoomTile (String imageid, Integer layer, String tiles, String format, Float CNT, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ApiException {
+        throw new ApiException(403, "Method getDeepzoomTile not allowed to be called on DsImageClient");
+    }
+    
+    @Override
+    public IIIFInfoDto getImageInformation (String identifier, String format) throws ApiException {
+        throw new ApiException(403, "Method getImageInformation not allowed to be called on DsImageClient");
+        
+    }
+    
+    @Override
+    public File iIIFImageRequest (String identifier, String region, String size, String rotation, String quality, String format) throws ApiException {
+        throw new ApiException(403, "Method iIIFImageRequest not allowed to be called on DsImageClient");
+    }
+    
+    @Override
+    public File iIPImageRequest (String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL, List<Integer> JTL, List<Integer> PTL, String CVT) throws ApiException {
+        throw new ApiException(403, "Method iIPImageRequest not allowed to be called on DsImageClient");        
+    }
+    
+    @Override
+    public ThumbnailsDto kalturaThumbnails (String fileId, Integer numberOfThumbnails, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) throws ApiException {
+        throw new ApiException(403, "Method kalturaThumbnails not allowed to be called on DsImageClient");   
     }
 }

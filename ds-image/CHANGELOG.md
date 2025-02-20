@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Kaltura thumbnail API extended to two allow seeking between startSeconds and endSeconds into the stream. Default behaviour unchanged.
+- Added injection of Oauth token on all service methods when using DsImageClient. But no methods  are exposed in the client.
+- Bumped kb-util to v1.6.7 for service2service oauth support.
+
 
 ### Changed
 - Bumped SwaggerUI dependency to v5.18.2
