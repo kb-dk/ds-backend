@@ -16,11 +16,13 @@ package dk.kb.discover.util;
 
 import dk.kb.discover.client.v1.DsDiscoverApi;
 import dk.kb.discover.invoker.v1.ApiClient;
+import dk.kb.discover.invoker.v1.ApiException;
 import dk.kb.discover.invoker.v1.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * Client for the service. Intended for use by other projects that calls this service.
@@ -59,4 +61,40 @@ public class DsDiscoverClient extends DsDiscoverApi {
                 setPort(serviceURI.getPort()).
                 setBasePath(serviceURI.getRawPath());
     }
+    
+    @Override
+    public String configAction (String action, String name) throws ApiException {
+        throw new ApiException(403, "Method configAction not allowed to be called on DsDiscoverClient");
+    }
+    
+     @Override
+    public String collectionAction (String action, String name, String async) throws ApiException {
+         throw new ApiException(403, "Method collectionAction  not allowed to be called on DsDiscoverClient");        
+     }
+           
+     @Override
+     public String documentedSchema (String collection, String format) throws ApiException {
+         throw new ApiException(403, "Method documentedSchema not allowed to be called on DsDiscoverClient");
+     }
+         
+     @Override
+     public String solrMLT (String collection, String q, String mltFl, Integer mltMintf, Integer mltMindf, Integer mltMaxdf, Integer mltMaxdfpct, Integer mltMinwl, Integer mltMaxwl, Integer mltMaxqt, Boolean mltBoost, String mltInterestingTerms, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) throws ApiException {
+         throw new ApiException(403, "Method solrMLT not allowed to be called on DsDiscoverClient");        
+     }
+         
+     @Override
+     public String solrSchema (String collection, String wt) throws ApiException {
+         throw new ApiException(403, "Method solrSchema not allowed to be called on DsDiscoverClient");         
+     }
+         
+     @Override
+     public String solrSearch (String collection, String q, List<String> fq, Integer rows, Integer start, String fl, String facet, List<String> facetField, String spellcheck, String spellcheckBuild, String spellcheckReload, String spellcheckQ, String spellcheckDictionary, Integer spellcheckCount, String spellcheckOnlyMorePopular, String spellcheckExtendedResults, String spellcheckCollate, Integer spellcheckMaxCollations, Integer spellcheckMaxCollationTries, Double spellcheckAccuracy, String qOp, String wt, String version, String indent, String debug, String debugExplainStructured) throws ApiException {
+         throw new ApiException(403, "Method  solrSearch not allowed to be called on DsDiscoverClient");              
+     }
+     
+     @Override
+     public String solrSuggest (String collection, String suggestDictionary, String suggestQ, Integer suggestCount, String wt) throws ApiException {
+         throw new ApiException(403, "Method solrSuggest not allowed to be called on DsDiscoverClient");  
+     }
+     
 }
