@@ -132,8 +132,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * @return return value from the action.
      * @throws InternalServiceException if anything goes wrong.
      */
-    public static <T> T performStorageAction(String actionID, BaseModuleStorage.StorageAction<T> action) {
-        try (LicenseModuleStorage storage = new LicenseModuleStorage()) {
+    public static <T> T performStorageAction(String actionID,  BaseModuleStorage storage, BaseModuleStorage.StorageAction<T> action) {
             T result;
             try {
                 result = action.process(storage);
@@ -157,10 +156,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             }
 
             return result;
-        } catch (SQLException e) { //Connecting to storage failed
-            log.error("SQLException performing action '{}'", actionID, e);
-            throw new InternalServiceException(e);
-        }
+
     }
 
     /**
@@ -177,6 +173,6 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
          * @return custom return value.
          * @throws Exception if something went wrong.
          */
-        T process(LicenseModuleStorage storage) throws Exception;
+        T process(BaseModuleStorage storage) throws Exception;
     }
 }
