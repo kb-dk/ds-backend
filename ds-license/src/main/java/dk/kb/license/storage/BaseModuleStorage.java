@@ -1,5 +1,8 @@
 package dk.kb.license.storage;
 
+import dk.kb.license.facade.LicenseModuleFacade;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,5 +120,63 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             // ignore errors during shutdown, we cant do anything about it anyway
             log.error("shutdown failed", e);
         }
+    }
+
+    /**
+     * Start a storage transaction and performs the given action on it, returning the result from the action.
+     * <p>
+     * If the action throws an exception, a {@link LicenseModuleStorage#rollback()} is performed.
+     * If the action passes without exceptions, a {@link LicenseModuleStorage#commit()} is performed.
+     * @param actionID a debug-oriented ID for the action, typically the name of the calling method.
+     * @param action the action to perform on the storage.
+     * @return return value from the action.
+     * @throws InternalServiceException if anything goes wrong.
+     */
+    public static <T> T performStorageAction(String actionID, BaseModuleStorage.StorageAction<T> action) {
+        try (LicenseModuleStorage storage = new LicenseModuleStorage()) {
+            T result;
+            try {
+                result = action.process(storage);
+            }
+            catch(InvalidArgumentServiceException e) {
+                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e.getMessage());
+                storage.rollback();
+                throw new InvalidArgumentServiceException(e);
+            }
+            catch (Exception e) {
+                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
+                storage.rollback();
+                throw new InternalServiceException(e);
+            }
+
+            try {
+                storage.commit();
+            } catch (SQLException e) {
+                log.error("Exception committing after action '{}'", actionID, e);
+                throw new InternalServiceException(e);
+            }
+
+            return result;
+        } catch (SQLException e) { //Connecting to storage failed
+            log.error("SQLException performing action '{}'", actionID, e);
+            throw new InternalServiceException(e);
+        }
+    }
+
+    /**
+     * Callback used with {@link #performStorageAction(String, BaseModuleStorage.StorageAction)}.
+     * @param <T> the object returned from the {@link BaseModuleStorage.StorageAction#process(LicenseModuleStorage)} method.
+     */
+    @FunctionalInterface
+    public interface StorageAction<T> {
+        /**
+         * Access or modify the given storage inside of a transaction.
+         * If the method throws an exception, it will be logged, a {@link LicenseModuleStorage#rollback()} will be performed and
+         * a wrapping {@link dk.kb.util.webservice.exception.InternalServiceException} will be thrown.
+         * @param storage a storage ready for requests and updates.
+         * @return custom return value.
+         * @throws Exception if something went wrong.
+         */
+        T process(LicenseModuleStorage storage) throws Exception;
     }
 }
