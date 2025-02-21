@@ -94,7 +94,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
             stmt.setString(2, idType);
             stmt.setString(3, system);
             ResultSet res = stmt.executeQuery();
-            List<RestrictedId> restrictedIds = new ArrayList<>();
             while (res.next()) {
                 RestrictedIdOutputDto output = new RestrictedIdOutputDto();
                 output.setId(res.getString(RESTRICTED_ID_ID));
