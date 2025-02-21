@@ -25,7 +25,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
         ServiceConfig.initialize("conf/ds-license*.yaml");
 
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD);
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         storage = new RightsModuleStorage();
     }

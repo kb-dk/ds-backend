@@ -16,15 +16,9 @@ import dk.kb.util.Resolver;
  * 
  */
 public class H2DbUtil {
-    protected static final List<String> CREATE_TABLES_DDL_FILES = List.of(
-            "ddl/licensemodule_create_h2_unittest.ddl",
-            "ddl/rightsmodule_create_h2_unittest.ddl"
-                  );
-    
     private static final Logger log = LoggerFactory.getLogger(H2DbUtil.class);
-    
-    
-    public static void createEmptyH2DBFromDDL(String url, String driver, String username, String password) throws SQLException {
+
+    public static void createEmptyH2DBFromDDL(String url, String driver, String username, String password, List<String> ddlFiles) throws SQLException {
         //  
         try {
             Class.forName(driver); // load the driver
@@ -34,7 +28,7 @@ public class H2DbUtil {
         }
 
         try (Connection connection = DriverManager.getConnection(url,username,password)){
-            for(String ddlFile : CREATE_TABLES_DDL_FILES) {
+            for(String ddlFile : ddlFiles) {
                 File file = getFile(ddlFile);
                 log.info("Running DDL script:" + file.getAbsolutePath());
 

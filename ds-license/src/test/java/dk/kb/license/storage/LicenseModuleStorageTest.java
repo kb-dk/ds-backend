@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import dk.kb.license.util.H2DbUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -56,7 +57,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         ServiceConfig.initialize("conf/ds-license*.yaml");
 
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD);
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         storage = new LicenseModuleStorage();
     }
