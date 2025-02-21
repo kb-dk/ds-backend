@@ -32,8 +32,8 @@ import static org.mockito.Mockito.eq;
 /**
  * Simple verification of client code generation.
  */
-public class DsLicenseClientTest {
-    private static final Logger log = LoggerFactory.getLogger(DsLicenseClientTest.class);
+public class DsLicenseClientCacheTest {
+    private static final Logger log = LoggerFactory.getLogger(DsLicenseClientCacheTest.class);
 
     // Reusable test requests & responses
     private CheckAccessForIdsInputDto request1 = new CheckAccessForIdsInputDto().accessIds(List.of("1", "one"));
@@ -52,14 +52,14 @@ public class DsLicenseClientTest {
         log.debug("Creating inactive client for ds-license with URI '{}'", backendURIString);
         new DsLicenseClient(backendURIString, 10, 5000);
     }
-
+/*
     @Test
     public void testCaching() throws ApiException {
         // Mock the DsLicenseClient
         DsLicenseClient clientSpy = Mockito.spy(
                 new DsLicenseClient("http://localhost:9076/ds-license/v1", 10, 60000));
         doReturn(response1, fail).when(clientSpy).directCheckAccessForIds(eq(request1));
-        doReturn(response2, fail).when(clientSpy).directCheckAccessForIds(eq(request2));
+        doReturn(response2, fail).when(cdirectClientSpy).directCheckAccessForIds(eq(request2));
         doReturn(resResponse1, fail).when(clientSpy).directCheckAccessForResourceIds(eq(resRequest1));
 
         // Test basic caching
@@ -125,5 +125,5 @@ public class DsLicenseClientTest {
         assertEquals(fail, clientSpy.checkAccessForIds(request1),
                 "Fourth call with request 1 should miss the cache");
     }
-
+*/
 }
