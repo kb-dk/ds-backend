@@ -26,6 +26,8 @@ import dk.kb.license.model.v1.GetUserGroupsAndLicensesInputDto;
 import dk.kb.license.model.v1.GetUserGroupsAndLicensesOutputDto;
 import dk.kb.license.model.v1.GetUserGroupsInputDto;
 import dk.kb.license.model.v1.GetUserGroupsOutputDto;
+import dk.kb.license.model.v1.GetUserQueryInputDto;
+import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.util.webservice.Service2ServiceRequest;
 import dk.kb.util.yaml.YAML;
 
@@ -226,12 +228,29 @@ public class DsLicenseClient extends DsLicenseApi {
         catch(Exception e) {
             e.printStackTrace();
             throw new ApiException(e);
-        }                        
-        
-        
-        
+        }                                
     }
       
+    
+    /**
+     * Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search
+     * 
+     * @param getUserQueryInputDto  (optional)
+     * @return GetUsersFilterQueryOutputDto
+     * @throws ApiException if fails to make API call
+     */
+    @Override
+    public GetUsersFilterQueryOutputDto getUserLicenseQuery (GetUserQueryInputDto getUserQueryInputDto) throws ApiException {
+        try {
+            URI uri = new URIBuilder(serviceURI + "/getUserLicenseQuery")                                                                
+                    .build();                       
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersFilterQueryOutputDto (),getUserQueryInputDto);              
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            throw new ApiException(e);
+        }                    
+    }
       
     
     
