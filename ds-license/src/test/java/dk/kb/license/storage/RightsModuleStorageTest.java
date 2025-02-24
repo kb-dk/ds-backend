@@ -41,17 +41,17 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
     public void testRestrictedIdCRUD() throws SQLException {
         String id = "test1234";
         String idType = "dr_produktions_id";
-        String system = "dr";
+        String platform = "dr";
         String comment = "a comment";
         String modified_by = "user1";
         long modified_time = 1739439979L;
 
-        storage.persistRestrictedId(id,idType,system,comment,modified_by,modified_time);
-        RestrictedIdOutputDto retreivedFromStorage = storage.getRestrictedId(id, idType, system);
+        storage.persistRestrictedId(id,idType,platform,comment,modified_by,modified_time);
+        RestrictedIdOutputDto retreivedFromStorage = storage.getRestrictedId(id, idType, platform);
         assertNotNull(retreivedFromStorage);
         assertEquals(id,retreivedFromStorage.getId());
         assertEquals(idType,retreivedFromStorage.getIdType());
-        assertEquals(system,retreivedFromStorage.getSystem());
+        assertEquals(platform,retreivedFromStorage.getPlatform());
         assertEquals(comment,retreivedFromStorage.getComment());
         assertEquals(modified_by,retreivedFromStorage.getModifiedBy());
         assertEquals(modified_time,retreivedFromStorage.getModifiedTime());
@@ -60,17 +60,17 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         String new_modified_by = "user2";
         long new_modified_time = 17394500000L;
 
-        storage.updateRestrictedId(id,idType,system,new_comment,new_modified_by,new_modified_time);
-        retreivedFromStorage = storage.getRestrictedId(id, idType, system);
+        storage.updateRestrictedId(id,idType,platform,new_comment,new_modified_by,new_modified_time);
+        retreivedFromStorage = storage.getRestrictedId(id, idType, platform);
         assertNotNull(retreivedFromStorage);
         assertEquals(id,retreivedFromStorage.getId());
         assertEquals(idType,retreivedFromStorage.getIdType());
-        assertEquals(system,retreivedFromStorage.getSystem());
+        assertEquals(platform,retreivedFromStorage.getPlatform());
         assertEquals(new_comment,retreivedFromStorage.getComment());
         assertEquals(new_modified_by,retreivedFromStorage.getModifiedBy());
         assertEquals(new_modified_time,retreivedFromStorage.getModifiedTime());
 
-        storage.deleteRestrictedId(id,idType,system);
-        assertNull(storage.getRestrictedId(id, idType,system));
+        storage.deleteRestrictedId(id,idType,platform);
+        assertNull(storage.getRestrictedId(id, idType,platform));
     }
 }

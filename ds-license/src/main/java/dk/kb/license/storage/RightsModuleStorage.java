@@ -22,25 +22,25 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
     private final String RESTRICTED_ID_ID = "id";
     private final String RESTRICTED_ID_IDTYPE = "idType";
-    private final String RESTRICTED_ID_SYSTEM = "system";
+    private final String RESTRICTED_ID_PLATFORM = "platform";
     private final String RESTRICTED_ID_COMMENT = "comment";
     private final String RESTRICTED_ID_MODIFIED_BY = "modified_by";
     private final String RESTRICTED_ID_MODIFIED_TIME = "modified_time";
 
     private final String createRestrictedIdQuery = "INSERT INTO " + RESTRICTED_ID_TABLE +
-            " ("+ RESTRICTED_ID_ID +","+ RESTRICTED_ID_IDTYPE +","+ RESTRICTED_ID_SYSTEM +","+
+            " ("+ RESTRICTED_ID_ID +","+ RESTRICTED_ID_IDTYPE +","+ RESTRICTED_ID_PLATFORM +","+
             RESTRICTED_ID_COMMENT +","+ RESTRICTED_ID_MODIFIED_BY +","+ RESTRICTED_ID_MODIFIED_TIME +")" +
             " VALUES (?,?,?,?,?,?)";
-    private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_SYSTEM + " = ? ";
+    private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String updateRestrictedIdQuery = "UPDATE " + RESTRICTED_ID_TABLE +" SET "+
-            RESTRICTED_ID_SYSTEM +" = ? , " +
+            RESTRICTED_ID_PLATFORM +" = ? , " +
             RESTRICTED_ID_COMMENT +" = ? , " +
             RESTRICTED_ID_MODIFIED_BY +" = ? , " +
             RESTRICTED_ID_MODIFIED_TIME +" = ? " +
             " WHERE " +
             RESTRICTED_ID_ID +" = ? AND " +
             RESTRICTED_ID_IDTYPE +" = ?" ;
-    private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_SYSTEM + " = ? ";
+    private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
 
     /**
      * Initialize the connection to a database
@@ -98,7 +98,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
                 RestrictedIdOutputDto output = new RestrictedIdOutputDto();
                 output.setId(res.getString(RESTRICTED_ID_ID));
                 output.setIdType(res.getString(RESTRICTED_ID_IDTYPE));
-                output.setSystem(res.getString(RESTRICTED_ID_SYSTEM));
+                output.setPlatform(res.getString(RESTRICTED_ID_PLATFORM));
                 output.setComment(res.getString(RESTRICTED_ID_COMMENT));
                 output.setModifiedBy(res.getString(RESTRICTED_ID_MODIFIED_BY));
                 output.setModifiedTime(res.getLong(RESTRICTED_ID_MODIFIED_TIME));
@@ -161,12 +161,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
      *
      */
     public void clearTableRecords() throws SQLException {
-        ArrayList<String> tables = new ArrayList<String>();
+        ArrayList<String> tables = new ArrayList<>();
         tables.add("RESTRICTED_IDS");
 
         for (String table : tables) {
             String deleteSQL="DELETE FROM " +table;
-            try (PreparedStatement stmt = connection.prepareStatement(deleteSQL);) {
+            try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
                 stmt.execute();
             }
 

@@ -479,7 +479,7 @@ components:
           type: string
         idType:
           type: string
-        system:
+        platform:
           type: string
         comment:
           type: string
@@ -491,7 +491,7 @@ components:
           type: string
         idType:
           type: string
-        system:
+        platform:
           type: string
         comment:
           type: string

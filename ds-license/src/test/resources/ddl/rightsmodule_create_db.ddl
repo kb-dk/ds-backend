@@ -1,7 +1,7 @@
 CREATE TABLE RESTRICTED_IDS (
                          id VARCHAR(256) NOT NULL,
                          idType VARCHAR(32) NOT NULL,
-                         system VARCHAR(32),
+                         platform VARCHAR(32),
                          comment VARCHAR(256),
                          modified_by VARCHAR(256),
                          modified_time BIGINT,
