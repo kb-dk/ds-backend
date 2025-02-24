@@ -1,7 +1,7 @@
 package dk.kb.license.rights;
 
 /**
- * Object containing all values that are to be used as input for any kind of rights calculation in DS-license.
+ * Object containing all values that are to be used as input for all types of rights calculation in DS-license.
  */
 public class RightsInputDTO {
 
