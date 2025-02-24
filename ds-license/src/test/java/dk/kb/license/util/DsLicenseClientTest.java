@@ -26,6 +26,8 @@ import dk.kb.license.model.v1.GetUserGroupsInputDto;
 import dk.kb.license.model.v1.GetUserGroupsOutputDto;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
+import dk.kb.license.model.v1.GetUsersLicensesInputDto;
+import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.model.v1.ValidateAccessInputDto;
 import dk.kb.license.model.v1.ValidateAccessOutputDto;
@@ -116,6 +118,18 @@ public class DsLicenseClientTest {
         assertTrue(output.getFilterQuery().length() >0); //There will always be a query                  
     }
 
+    
+    @Test
+    public void testGetUserLicenses() throws ApiException {      
+        GetUsersLicensesInputDto input=new GetUsersLicensesInputDto();                                                             
+        input.setAttributes(getDefaultAttributes());
+        input.setLocale("da");                
+        GetUsersLicensesOutputDto output = remote.getUserLicenses(input);                       
+        assertTrue(output.getLicenses().size() >0); //There should be at least 1 license                  
+    }
+        
+    
+    
     private ValidateAccessInputDto getValidateAccessInputDto(ArrayList<String> groups) {
         ValidateAccessInputDto input = new ValidateAccessInputDto();             
         input.setAttributes(getDefaultAttributes());                       

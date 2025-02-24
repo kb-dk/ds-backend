@@ -28,6 +28,8 @@ import dk.kb.license.model.v1.GetUserGroupsInputDto;
 import dk.kb.license.model.v1.GetUserGroupsOutputDto;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
+import dk.kb.license.model.v1.GetUsersLicensesInputDto;
+import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
 import dk.kb.util.webservice.Service2ServiceRequest;
 import dk.kb.util.yaml.YAML;
 
@@ -244,7 +246,7 @@ public class DsLicenseClient extends DsLicenseApi {
         try {
             URI uri = new URIBuilder(serviceURI + "/getUserLicenseQuery")                                                                
                     .build();                       
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersFilterQueryOutputDto (),getUserQueryInputDto);              
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersFilterQueryOutputDto(),getUserQueryInputDto);              
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -252,6 +254,27 @@ public class DsLicenseClient extends DsLicenseApi {
         }                    
     }
       
+    
+    /**
+     * Get a list of all licences that validates from user attributes.
+     * 
+     * @param getUsersLicensesInputDto  (optional)
+     * @return GetUsersLicensesOutputDto
+     * @throws ApiException if fails to make API call
+     */
+    public GetUsersLicensesOutputDto getUserLicenses(GetUsersLicensesInputDto getUsersLicensesInputDto) throws ApiException {
+        try {
+            URI uri = new URIBuilder(serviceURI + "/getUserLicenses")                                                                
+                    .build();                       
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersLicensesOutputDto(),getUsersLicensesInputDto);              
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            throw new ApiException(e);
+        }               
+        
+    }
+    
     
     
 
@@ -276,7 +299,7 @@ public class DsLicenseClient extends DsLicenseApi {
                 try {
                     return directID ?
                             checkAccessForIds(inputDTO) :
-                                checkAccessForResourceIds(inputDTO);
+                            checkAccessForResourceIds(inputDTO);
                 } catch (ApiException e) { // ApiException is checked; we cannot throw those directly in lambdas
                     throw new RuntimeException(e);
                 }
