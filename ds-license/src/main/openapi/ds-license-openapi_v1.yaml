@@ -21,6 +21,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. ID filter field is defined in the YAML configuration'
+      security: 
+        - KBOAuth:
+          - any       
       operationId: checkAccessForIds  
       requestBody:
         content:
@@ -43,6 +46,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
+      security: 
+        - KBOAuth:
+          - any       
       operationId: checkAccessForResourceIds  
       requestBody:
         content:
@@ -67,6 +73,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Validate if user has access to all groups in input.' 
+      security: 
+        - KBOAuth:
+          - any       
       operationId: validateAccess 
       requestBody:
         content:
@@ -87,6 +96,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get a list of all licences that validates from user attributes.'
+      security: 
+        - KBOAuth:
+          - any      
       operationId: getUserLicenses       
       requestBody:
         content:
@@ -109,6 +121,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
+      security: 
+        - KBOAuth:
+          - any      
       operationId: getUserLicenseQuery      
       requestBody:
         content:
@@ -152,6 +167,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
+      security: 
+        - KBOAuth:
+          - any      
       operationId: getUserGroupsAndLicenses       
       requestBody:
         content:
