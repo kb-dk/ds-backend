@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="5 minutes">
 
-    <property name="TRANSFORMATIONSFILE" value="./src/test/resources/transformation-errors.log" />
+    <property name="TRANSFORMATIONSFILE" value="./target/transformation-errors.log" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
