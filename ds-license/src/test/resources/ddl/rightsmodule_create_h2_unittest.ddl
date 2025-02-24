@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS RESTRICTED_IDS (
                          modified_by VARCHAR(256),
                          modified_time BIGINT,
                          modified_time_human VARCHAR(256),
-                         PRIMARY KEY (idType,id)
+                         PRIMARY KEY (idType,id,platform)
 );
