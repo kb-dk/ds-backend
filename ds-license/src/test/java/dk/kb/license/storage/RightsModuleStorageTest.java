@@ -3,7 +3,6 @@ package dk.kb.license.storage;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.util.H2DbUtil;
-import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
-    protected static final String CREATE_TABLES_DDL_FILE = "ddl/rightsmodule_create_h2_unittest.ddl";
 
     protected static RightsModuleStorage storage = null;
 
@@ -24,9 +22,9 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
     public static void beforeClass() throws IOException, SQLException {
 
         ServiceConfig.initialize("conf/ds-license*.yaml");
-
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
         storage = new RightsModuleStorage();
     }
 

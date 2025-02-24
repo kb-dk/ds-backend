@@ -29,7 +29,6 @@ import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.solr.AbstractSolrJClient;
 import dk.kb.license.validation.LicenseValidator;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
 
 /*
  * Unittest class for the H2Storage.
@@ -56,9 +55,10 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     public static void beforeClass() throws IOException, SQLException {
 
         ServiceConfig.initialize("conf/ds-license*.yaml");
+        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+
 
         H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         storage = new LicenseModuleStorage();
     }
 
