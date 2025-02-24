@@ -465,8 +465,41 @@ components:
           type: array
           items:
             type: string 
-            
-                    
+
+    # Rights module
+
+    RestrictedIdInput:
+      type: object
+      required:
+        - id
+        - idType
+        - system
+      properties:
+        id:
+          type: string
+        idType:
+          type: string
+        system:
+          type: string
+        comment:
+          type: string
+
+    RestrictedIdOutput:
+      type: object
+      properties:
+        id:
+          type: string
+        idType:
+          type: string
+        system:
+          type: string
+        comment:
+          type: string
+        modifiedBy:
+          type: string
+        modifiedTime:
+          type: long
+
     HelloReply:
       type: object
       required:
