@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added abstract class BaseModuleStorage, which handles connection to the backing storage in preparation for implementation of rights calculation.
-- Bumped kb-util to v1.6.7 for service2service oauth support.
+- Bumped kb-util to v1.6.8 for service2service oauth support.
 - Added injection of Oauth token on all service methods when using DsLicenseClient.
 
 
