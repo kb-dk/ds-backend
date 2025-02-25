@@ -21,7 +21,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
 
     private final String RESTRICTED_ID_ID = "id";
-    private final String RESTRICTED_ID_IDTYPE = "idType";
+    private final String RESTRICTED_ID_IDTYPE = "id_type";
     private final String RESTRICTED_ID_PLATFORM = "platform";
     private final String RESTRICTED_ID_COMMENT = "comment";
     private final String RESTRICTED_ID_MODIFIED_BY = "modified_by";
