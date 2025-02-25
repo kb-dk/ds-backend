@@ -21,6 +21,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
 
     private final String RESTRICTED_ID_ID = "id";
+    private final String RESTRICTED_ID_IDVALUE = "id_value";
     private final String RESTRICTED_ID_IDTYPE = "id_type";
     private final String RESTRICTED_ID_PLATFORM = "platform";
     private final String RESTRICTED_ID_COMMENT = "comment";
@@ -28,19 +29,19 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String RESTRICTED_ID_MODIFIED_TIME = "modified_time";
 
     private final String createRestrictedIdQuery = "INSERT INTO " + RESTRICTED_ID_TABLE +
-            " ("+ RESTRICTED_ID_ID +","+ RESTRICTED_ID_IDTYPE +","+ RESTRICTED_ID_PLATFORM +","+
+            " ("+RESTRICTED_ID_ID+","+ RESTRICTED_ID_IDVALUE +","+ RESTRICTED_ID_IDTYPE +","+ RESTRICTED_ID_PLATFORM +","+
             RESTRICTED_ID_COMMENT +","+ RESTRICTED_ID_MODIFIED_BY +","+ RESTRICTED_ID_MODIFIED_TIME +")" +
-            " VALUES (?,?,?,?,?,?)";
-    private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
+            " VALUES (?,?,?,?,?,?,?)";
+    private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String updateRestrictedIdQuery = "UPDATE " + RESTRICTED_ID_TABLE +" SET "+
             RESTRICTED_ID_PLATFORM +" = ? , " +
             RESTRICTED_ID_COMMENT +" = ? , " +
             RESTRICTED_ID_MODIFIED_BY +" = ? , " +
             RESTRICTED_ID_MODIFIED_TIME +" = ? " +
             " WHERE " +
-            RESTRICTED_ID_ID +" = ? AND " +
+            RESTRICTED_ID_IDVALUE +" = ? AND " +
             RESTRICTED_ID_IDTYPE +" = ?" ;
-    private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
+    private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
 
     /**
      * Initialize the connection to a database
@@ -69,17 +70,18 @@ public class RightsModuleStorage extends BaseModuleStorage{
         connection = dataSource.getConnection();
     }
 
-    public void persistRestrictedId(String id, String idType, String system, String comment, String modifiedBy, long modifiedTime) throws SQLException {
-        validateIdType(idType);
+    public void persistRestrictedId(String id_value, String id_type, String system, String comment, String modifiedBy, long modifiedTime) throws SQLException {
+        validateIdType(id_type);
         validateSystem(system);
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)){
-            stmt.setString(1, id);
-            stmt.setString(2, idType);
-            stmt.setString(3, system);
-            stmt.setString(4, comment);
-            stmt.setString(5, modifiedBy);
-            stmt.setLong(6, modifiedTime);
+            stmt.setLong(1, generateUniqueID());
+            stmt.setString(2, id_value);
+            stmt.setString(3, id_type);
+            stmt.setString(4, system);
+            stmt.setString(5, comment);
+            stmt.setString(6, modifiedBy);
+            stmt.setLong(7, modifiedTime);
             stmt.execute();
         }  catch (SQLException e) {
             log.error("SQL Exception in persistClause:" + e.getMessage());
@@ -87,16 +89,16 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    public RestrictedIdOutputDto getRestrictedId(String id, String idType, String system) throws SQLException {
-        validateIdType(idType);
+    public RestrictedIdOutputDto getRestrictedId(String id_value, String id_type, String system) throws SQLException {
+        validateIdType(id_type);
         try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQuery)) {
-            stmt.setString(1, id);
-            stmt.setString(2, idType);
+            stmt.setString(1, id_value);
+            stmt.setString(2, id_type);
             stmt.setString(3, system);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
                 RestrictedIdOutputDto output = new RestrictedIdOutputDto();
-                output.setId(res.getString(RESTRICTED_ID_ID));
+                output.setIdValue(res.getString(RESTRICTED_ID_IDVALUE));
                 output.setIdType(res.getString(RESTRICTED_ID_IDTYPE));
                 output.setPlatform(res.getString(RESTRICTED_ID_PLATFORM));
                 output.setComment(res.getString(RESTRICTED_ID_COMMENT));
@@ -111,8 +113,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    public void updateRestrictedId(String id, String idType, String system, String comment, String modifiedBy, long modifiedTime) throws SQLException {
-        validateIdType(idType);
+    public void updateRestrictedId(String id_value, String id_type, String system, String comment, String modifiedBy, long modifiedTime) throws SQLException {
+        validateIdType(id_type);
         validateSystem(system);
 
         try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdQuery)){
@@ -120,8 +122,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
             stmt.setString(2, comment);
             stmt.setString(3, modifiedBy);
             stmt.setLong(4, modifiedTime);
-            stmt.setString(5, id);
-            stmt.setString(6, idType);
+            stmt.setString(5, id_value);
+            stmt.setString(6, id_type);
             stmt.execute();
         }  catch (SQLException e) {
             log.error("SQL Exception in persist restricted ID" + e.getMessage());
@@ -129,11 +131,11 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    public void deleteRestrictedId(String id, String idType, String system) throws SQLException {
-        validateIdType(idType);
+    public void deleteRestrictedId(String id_value, String id_type, String system) throws SQLException {
+        validateIdType(id_type);
         try (PreparedStatement stmt = connection.prepareStatement(deleteRestrictedIdQuery)) {
-            stmt.setString(1, id);
-            stmt.setString(2, idType);
+            stmt.setString(1, id_value);
+            stmt.setString(2, id_type);
             stmt.setString(3, system);
             stmt.execute();
         } catch (SQLException e) {
@@ -149,10 +151,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    private void validateIdType(String idType) {
+    private void validateIdType(String id_type) {
         List<String> validIdTypes = List.of("dr_produktions_id","ds_id","egenproduktions_kode","strict_titel"); //TODO get list from config file
-        if (!validIdTypes.contains(idType)) {
-            throw new IllegalArgumentException("IdType '" + idType + "' is not supported in clauses.");
+        if (!validIdTypes.contains(id_type)) {
+            throw new IllegalArgumentException("IdType '" + id_type + "' is not supported in clauses.");
         }
     }
 

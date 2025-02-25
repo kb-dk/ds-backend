@@ -25,6 +25,8 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
     protected Connection connection = null; // private
     protected static BasicDataSource dataSource = null; // shared
 
+    private long lastTimestamp = 0; // Remember last timestamp and make sure each is only used once;
+
     /**
      * Close the connection to the database. You should probably perform a commit or rollback before closing the connection.
      */
@@ -157,6 +159,18 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
 
             return result;
 
+    }
+
+    // Just a simple way to generate unique ID's and make sure they are unique
+    protected synchronized long generateUniqueID() {
+        long now = System.currentTimeMillis();
+        if (now <= lastTimestamp) { // this timestamp has already been used. just +1 and use that
+            lastTimestamp++;
+            return lastTimestamp;
+        } else {
+            lastTimestamp = now;
+            return now;
+        }
     }
 
     /**
