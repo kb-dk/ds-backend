@@ -476,6 +476,61 @@ components:
           type: string
           description: 'Greeting from the API'
 
+    RightsInput:
+      type: object
+      properties:
+        recordId:
+          type: string
+          description: "ID of the record, which this metadata comes from."
+        platform:
+          type: string
+          enum:
+            - drArkiv
+            - generic
+          description: "The platform that rights are calculated for."
+        startTime:
+          type: string
+          description: "Start time of the record this object relates to."
+        holdbackInput:
+          $ref: "#/components/schemas/HoldbackInput"
+        restrictionsInput:
+          $ref: "#/components/schemas/RestrictionsInput"
+
+    HoldbackInput:
+      type: object
+      properties:
+        hensigt:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        form:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        indhold:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        productionCountry:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        productionCode:
+          type: string
+          description: "a metadata value used for holdback and own production calculation."
+
+    RestrictionsInput:
+      type: object
+      properties:
+        recordId:
+          type: string
+          description: "ID of the record, which this metadata comes from."
+        productionCode:
+          type: string
+          description: "a metadata value used for holdback and own production calculation."
+        drProductionId:
+          type: string
+          description: "an internal ID from DR which could be restricted."
+        title:
+          type: string
+          description: "title of the record in hand. There is a chance that it is restricted."
+
     Whoami:
       type: object
       description: 'OAuth2 information derived from the request'
