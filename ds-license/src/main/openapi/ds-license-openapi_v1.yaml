@@ -476,7 +476,8 @@ components:
           type: string
           description: 'Greeting from the API'
 
-    RightsInput:
+    RightsCalculationInput:
+      description: "An overall Data Transfer Object which should be used to carry all values needed for calculating rights for a record between services."
       type: object
       properties:
         recordId:
@@ -492,11 +493,12 @@ components:
           type: string
           description: "Start time of the record this object relates to."
         holdbackInput:
-          $ref: "#/components/schemas/HoldbackInput"
+          $ref: "#/components/schemas/HoldbackCalculationInput"
         restrictionsInput:
-          $ref: "#/components/schemas/RestrictionsInput"
+          $ref: "#/components/schemas/RestrictionsCalculationInput"
 
-    HoldbackInput:
+    HoldbackCalculationInput:
+      description: "A holdback specific Data Transfer Object which should be used to carry all values needed for calculating holdback for a record between services."
       type: object
       properties:
         hensigt:
@@ -515,7 +517,8 @@ components:
           type: string
           description: "a metadata value used for holdback and own production calculation."
 
-    RestrictionsInput:
+    RestrictionsCalculationInput:
+      description: "A restrictions specific Data Transfer Object which should be used to carry all values needed for looking up if a record is restricted between services."
       type: object
       properties:
         recordId:
