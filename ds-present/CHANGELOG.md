@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Bumped kb-util to v1.6.7 for service2service oauth support.
+- Bumped kb-util to v1.6.8 for service2service oauth support.
 - Added injection of Oauth token on all service methods when using DsPresentClient
 - IIIF metods not supported by service2service Oauth since no java client is generated for these methods. Also not intended to be called by other modules.
 
