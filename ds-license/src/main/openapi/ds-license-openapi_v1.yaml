@@ -479,6 +479,7 @@ components:
     RightsCalculationInput:
       description: "An overall Data Transfer Object which should be used to carry all values needed for calculating rights for a record between services."
       type: object
+      x-isRightsCalculationObject: true
       properties:
         recordId:
           type: string
