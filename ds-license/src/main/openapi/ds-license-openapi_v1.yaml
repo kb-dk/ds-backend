@@ -535,6 +535,23 @@ components:
           type: string
           description: "title of the record in hand. There is a chance that it is restricted."
 
+    RightsCalculationOutput:
+      description: "A Data Transfer Object containing the solr fields and values that have been created from the calculations based on a RightsCalculationInput object."
+      properties:
+        holdbackName:
+          type: string
+          description: ""
+        holdbackExpiredDate:
+          type: string
+          description: ""
+        productionCodeAllowed:
+          type: boolean
+          description: ""
+        drIdRestricted:
+          type: boolean
+          description: ""
+
+
     Whoami:
       type: object
       description: 'OAuth2 information derived from the request'
