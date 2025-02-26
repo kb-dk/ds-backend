@@ -45,15 +45,26 @@ public class RightsModuleStorage extends BaseModuleStorage{
         connection = dataSource.getConnection();
     }
 
-    public void createRestrictedId(String id_value, String id_type, String system, String comment, String modifiedBy, long modifiedTime) throws SQLException {
+    /**
+     * Creates an entry in the restrictedID table
+     *
+     * @param id_value The value of the ID
+     * @param id_type The type of the ID
+     * @param platform The platform where the object is restricted (e.g DR)
+     * @param comment Just a comment
+     * @param modifiedBy The id of the user creating the restricted ID
+     * @param modifiedTime timestamp for creation
+     * @throws SQLException
+     */
+    public void createRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
         validateIdType(id_type);
-        validateSystem(system);
+        validateSystem(platform);
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)){
             stmt.setLong(1, generateUniqueID());
             stmt.setString(2, id_value);
             stmt.setString(3, id_type);
-            stmt.setString(4, system);
+            stmt.setString(4, platform);
             stmt.setString(5, comment);
             stmt.setString(6, modifiedBy);
             stmt.setLong(7, modifiedTime);
@@ -64,12 +75,21 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    public RestrictedIdOutputDto getRestrictedId(String id_value, String id_type, String system) throws SQLException {
+    /**
+     * Gets an entry from the restrinctedID table
+     *
+     * @param id_value value of the ID
+     * @param id_type type of ID
+     * @param platform platform where the ID is restricted
+     * @return
+     * @throws SQLException
+     */
+    public RestrictedIdOutputDto getRestrictedId(String id_value, String id_type, String platform) throws SQLException {
         validateIdType(id_type);
         try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQuery)) {
             stmt.setString(1, id_value);
             stmt.setString(2, id_type);
-            stmt.setString(3, system);
+            stmt.setString(3, platform);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
                 RestrictedIdOutputDto output = new RestrictedIdOutputDto();
@@ -88,12 +108,23 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    public void updateRestrictedId(String id_value, String id_type, String system, String comment, String modifiedBy, long modifiedTime) throws SQLException {
+    /**
+     * Updates an entry in the restricted IDs table
+     *
+     * @param id_value The value of the ID
+     * @param id_type The type of the ID
+     * @param platform The platform where the object is restricted (e.g DR)
+     * @param comment Just a comment
+     * @param modifiedBy The id of the user creating the restricted ID
+     * @param modifiedTime timestamp for creation
+     * @throws SQLException
+     */
+    public void updateRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
         validateIdType(id_type);
-        validateSystem(system);
+        validateSystem(platform);
 
         try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdQuery)){
-            stmt.setString(1, system);
+            stmt.setString(1, platform);
             stmt.setString(2, comment);
             stmt.setString(3, modifiedBy);
             stmt.setLong(4, modifiedTime);
@@ -106,12 +137,20 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    public void deleteRestrictedId(String id_value, String id_type, String system) throws SQLException {
+    /**
+     * Delete an entry from the restricted IDs table
+     *
+     * @param id_value value of the ID
+     * @param id_type type of ID
+     * @param platform platform where the ID is restricted
+     * @throws SQLException
+     */
+    public void deleteRestrictedId(String id_value, String id_type, String platform) throws SQLException {
         validateIdType(id_type);
         try (PreparedStatement stmt = connection.prepareStatement(deleteRestrictedIdQuery)) {
             stmt.setString(1, id_value);
             stmt.setString(2, id_type);
-            stmt.setString(3, system);
+            stmt.setString(3, platform);
             stmt.execute();
         } catch (SQLException e) {
             log.error("SQL Exception in delete restricted Id:" + e.getMessage());
