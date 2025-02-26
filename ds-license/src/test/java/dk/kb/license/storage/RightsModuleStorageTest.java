@@ -3,7 +3,6 @@ package dk.kb.license.storage;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.util.H2DbUtil;
-import org.h2.jdbc.JdbcSQLSyntaxErrorException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         String modified_by = "user1";
         long modified_time = 1739439979L;
 
-        storage.persistRestrictedId(idValue,idType,platform,comment,modified_by,modified_time);
+        storage.createRestrictedId(idValue,idType,platform,comment,modified_by,modified_time);
         RestrictedIdOutputDto retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
         assertNotNull(retreivedFromStorage);
         assertEquals(idValue,retreivedFromStorage.getIdValue());
@@ -85,11 +84,11 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         String modified_by = "user1";
         long modified_time = 1739439979L;
 
-        storage.persistRestrictedId(idValue,idType,platform,comment,modified_by,modified_time);
+        storage.createRestrictedId(idValue,idType,platform,comment,modified_by,modified_time);
 
 
         assertThrows(SQLException.class, () -> {
-            storage.persistRestrictedId(idValue, idType, platform, comment, modified_by, modified_time);
+            storage.createRestrictedId(idValue, idType, platform, comment, modified_by, modified_time);
         });
     }
 }

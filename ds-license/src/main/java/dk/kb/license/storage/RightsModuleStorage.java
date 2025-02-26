@@ -1,7 +1,6 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,7 +45,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
         connection = dataSource.getConnection();
     }
 
-    public void persistRestrictedId(String id_value, String id_type, String system, String comment, String modifiedBy, long modifiedTime) throws SQLException {
+    public void createRestrictedId(String id_value, String id_type, String system, String comment, String modifiedBy, long modifiedTime) throws SQLException {
         validateIdType(id_type);
         validateSystem(system);
 
