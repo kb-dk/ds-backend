@@ -1,4 +1,4 @@
-CREATE TYPE clauseIDType AS ENUM ('dr_productionId','ds_id','ownproduction_code','strict_titel');
+CREATE TYPE clauseIDType AS ENUM ('dr_productionId','ds_id','ownproduction_code','strict_title');
 
 CREATE TABLE CLAUSED (
     id VARCHAR(256),

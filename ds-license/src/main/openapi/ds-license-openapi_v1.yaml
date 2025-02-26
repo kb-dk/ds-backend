@@ -471,7 +471,7 @@ components:
     RestrictedIdInput:
       type: object
       required:
-        - id_value
+        - idValue
         - idType
         - system
       properties:
