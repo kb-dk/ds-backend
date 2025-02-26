@@ -499,6 +499,8 @@ components:
           type: string
         modifiedTime:
           type: long
+        modifiedTimeHuman:
+          type: string
 
     HelloReply:
       type: object
