@@ -43,29 +43,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
             RESTRICTED_ID_IDTYPE +" = ?" ;
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
 
-    /**
-     * Initialize the connection to a database
-     * @param driverName name of the database driver
-     * @param dbUrl url of the database
-     * @param username database username
-     * @param password password for the user
-     */
-    public static void initialize(String driverName, String dbUrl, String username, String password) {
-        dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(driverName);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        dataSource.setUrl(dbUrl);
-
-        dataSource.setDefaultReadOnly(false);
-        dataSource.setDefaultAutoCommit(false);
-        dataSource.setMaxTotal(10); //
-
-        INITDATE = new Date();
-
-        log.info("DsLicence storage initialized");
-    }
-
     public RightsModuleStorage() throws SQLException {
         connection = dataSource.getConnection();
     }
