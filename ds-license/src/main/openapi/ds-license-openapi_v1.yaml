@@ -540,16 +540,23 @@ components:
       properties:
         holdbackName:
           type: string
-          description: ""
+          description: "The name of the holdback category for the record."
         holdbackExpiredDate:
           type: string
-          description: ""
+          description: "The date, when the record is out of holdback. This gets calculated by adding X amount of days to the start time of the recording, where X is defined 
+          based on holdbackName."
         productionCodeAllowed:
           type: boolean
-          description: ""
+          description: "A value used to specify if the record in hand is 'ownproduction' and can be shown in the archive."
         drIdRestricted:
           type: boolean
-          description: ""
+          description: "A boolean representing if DRs internal production ID for the record has been restricted."
+        dsIdRestricted:
+          type: boolean
+          description: "A boolean representing if our DS ID for the record has been restricted."
+        titleRestricted:
+          type: boolean
+          description: "Some titles are not allowed to be watched, if this boolean is true, then the record cannot be shown,"
 
 
     Whoami:
