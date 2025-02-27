@@ -538,6 +538,25 @@ components:
     RightsCalculationOutput:
       description: "A Data Transfer Object containing the solr fields and values that have been created from the calculations based on a RightsCalculationInput object."
       properties:
+        # Platform nesting of calculation results. When more platforms need rights calculations output objects should be appended here.
+        generel:
+          $ref: "#/components/schemas/RightsCalculationOutputGeneral"
+        dr:
+          $ref: "#/components/schemas/RightsCalculationOutputDr"
+
+
+    RightsCalculationOutputGeneral:
+      type: object
+      description: "Object containing results from all rights calculations that are applicable in general for the record"
+      properties:
+        dsIdRestricted:
+          type: boolean
+          description: "A boolean representing if our DS ID for the record has been restricted."
+
+    RightsCalculationOutputDr:
+      type: object
+      description: "Object containing results from all rights calculations that are applicable for the DR Archive for the record"
+      properties:
         holdbackName:
           type: string
           description: "The name of the holdback category for the record."
@@ -551,13 +570,9 @@ components:
         drIdRestricted:
           type: boolean
           description: "A boolean representing if DRs internal production ID for the record has been restricted."
-        dsIdRestricted:
-          type: boolean
-          description: "A boolean representing if our DS ID for the record has been restricted."
         titleRestricted:
           type: boolean
           description: "Some titles are not allowed to be watched, if this boolean is true, then the record cannot be shown,"
-
 
     Whoami:
       type: object
