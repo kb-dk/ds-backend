@@ -158,10 +158,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    private void validateSystem(String system) {
+    private void validateSystem(String platform) {
         List<String> validSystems = List.of("dr");//TODO get list from config file
-        if (!validSystems.contains(system)) {
-            throw new IllegalArgumentException("System '" + system + "' is not supported in clauses.");
+        if (!validSystems.contains(platform)) {
+            throw new IllegalArgumentException("System '" + platform + "' is not supported in clauses.");
         }
     }
 
