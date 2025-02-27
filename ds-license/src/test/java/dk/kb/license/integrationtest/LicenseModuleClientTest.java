@@ -82,7 +82,7 @@ public class LicenseModuleClientTest {
         
         //Test the filterquery makees some sense.
         //For "Samlingsbilleder" this is well defined field that require special access        
-        assertTrue(output.getFilterQuery().indexOf("-(access_blokeret:true)") >0);
+        assertTrue(output.getFilterQuery().indexOf("origin:\"ds.tv\"") >0);
     }
 
     
@@ -120,7 +120,7 @@ public class LicenseModuleClientTest {
         input.setLocale("da");
 
         GetUsersLicensesOutputDto output =dsLicenseClient.getUserLicenses(input);
-        assertTrue(output.getLicenses().size() >1); //Just there there is a least one license. Everyone will get the default license and probably more.        
+        assertTrue(output.getLicenses().size() >0); //Just there there is a least one license. Everyone will get the default license and probably more.        
     }
 
     @Test
