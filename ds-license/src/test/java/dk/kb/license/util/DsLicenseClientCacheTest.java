@@ -14,7 +14,6 @@
  */
 package dk.kb.license.util;
 
-import dk.kb.license.invoker.v1.ApiException;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import org.junit.jupiter.api.Tag;
@@ -54,7 +53,7 @@ public class DsLicenseClientCacheTest {
     }
 /*
     @Test
-    public void testCaching() throws ApiException {
+    public void testCaching() throws Exception {
         // Mock the DsLicenseClient
         DsLicenseClient clientSpy = Mockito.spy(
                 new DsLicenseClient("http://localhost:9076/ds-license/v1", 10, 60000));
@@ -80,7 +79,7 @@ public class DsLicenseClientCacheTest {
     }
 
     @Test
-    public void testCachingSize() throws ApiException {
+    public void testCachingSize() throws Exception {
         // Mock the DsLicenseClient
         DsLicenseClient clientSpy = Mockito.spy(
                 new DsLicenseClient("http://localhost:9076/ds-license/v1", 1, 60000));
@@ -101,7 +100,7 @@ public class DsLicenseClientCacheTest {
 
     @Tag("slow")
     @Test
-    public void testCachingTimeout() throws ApiException, InterruptedException {
+    public void testCachingTimeout() throws Exception, InterruptedException {
         // Mock the DsLicenseClient
         DsLicenseClient clientSpy = Mockito.spy(
                 new DsLicenseClient("http://localhost:9076/ds-license/v1", 2, 1000));

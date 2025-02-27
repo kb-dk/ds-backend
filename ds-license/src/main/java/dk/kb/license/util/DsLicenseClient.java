@@ -16,10 +16,6 @@ package dk.kb.license.util;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import dk.kb.license.client.v1.DsLicenseApi;
-import dk.kb.license.invoker.v1.ApiClient;
-import dk.kb.license.invoker.v1.ApiException;
-import dk.kb.license.invoker.v1.Configuration;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.GetUserGroupsAndLicensesInputDto;
@@ -30,7 +26,10 @@ import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.license.model.v1.GetUsersLicensesInputDto;
 import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
+import dk.kb.license.model.v1.ValidateAccessInputDto;
+import dk.kb.license.model.v1.ValidateAccessOutputDto;
 import dk.kb.util.webservice.Service2ServiceRequest;
+import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.yaml.YAML;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -38,9 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.net.http.HttpRequest;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.core.Response;
 
 /**
  * Client for the service. Intended for use by other projects that calls this service.
@@ -54,7 +53,7 @@ import java.util.concurrent.TimeUnit;
  * The client supports caching for {@link #checkAccessForIds} and {@link #checkAccessForResourceIds}.
  * See the {@link DsLicenseApi(YAML)} constructor for details.
  */
-public class DsLicenseClient extends DsLicenseApi {
+public class DsLicenseClient{
     private static final Logger log = LoggerFactory.getLogger(DsLicenseClient.class);
     private final String serviceURI;
 
@@ -94,7 +93,6 @@ public class DsLicenseClient extends DsLicenseApi {
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-license/v1}.
      */
     public DsLicenseClient(String serviceURI, int cacheIDCount, long cacheIDms) {
-        super(createClient(serviceURI));
         cache(cacheIDCount, cacheIDms);
         this.serviceURI = serviceURI;
         log.info("Created OpenAPI client for '{}' with ID-cache(count={}, ms={})",
@@ -110,7 +108,7 @@ public class DsLicenseClient extends DsLicenseApi {
      * @return this object with caching adjusted
      */
     @SuppressWarnings("UnusedReturnValue")
-    public DsLicenseApi cache(int cacheIDCount, long cacheIDms) {
+    public DsLicenseClient cache(int cacheIDCount, long cacheIDms) {
         log.debug("Setting ID cache to count={}, ms={}", cacheIDCount, cacheIDms);
         idcache = Caffeine.newBuilder()
                 .maximumSize(cacheIDCount)
@@ -129,32 +127,16 @@ public class DsLicenseClient extends DsLicenseApi {
         this(serviceURI, CACHE_ID_COUNT_DEFAULT, CACHE_ID_MS_DEFAULT);
     }
 
-    /**
-     * @param serviceURIString a URI to a service.
-     * @return an ApiClient constructed from the serviceURIString.
-     */
-    private static ApiClient createClient(String serviceURIString) {
-        log.debug("Creating OpenAPI client with URI '{}'", serviceURIString);
-
-        URI serviceURI = URI.create(serviceURIString);
-        // No mechanism for just providing the full URI. We have to deconstruct it
-        return Configuration.getDefaultApiClient().
-                setScheme(serviceURI.getScheme()).
-                setHost(serviceURI.getHost()).
-                setPort(serviceURI.getPort()).
-                setBasePath(serviceURI.getRawPath());
-    }
-
+ 
     /**
      * Bypass the cache and always perform a remote check for access. 
      * Use the Cached method for performance instead: {@link DsLicenseClient#checkAccessForIdsGeneral}
      * 
      * @param idInputDto request for access information. 
      * @return direct result from {@link DsLicenseApi#checkAccessForIds} 
-     * @throws ApiException if the remote call failed.
+     * @throws ServiceException if the remote call failed.
      */
-    @Override
-    public CheckAccessForIdsOutputDto checkAccessForResourceIds(CheckAccessForIdsInputDto idInputDto) throws ApiException{
+    public CheckAccessForIdsOutputDto checkAccessForResourceIds(CheckAccessForIdsInputDto idInputDto) throws ServiceException{
         try {
             URI uri = new URIBuilder(serviceURI + "/checkAccessForResourceIds")                                                                
                     .build();
@@ -162,10 +144,31 @@ public class DsLicenseClient extends DsLicenseApi {
         }
         catch(Exception e) {
             e.printStackTrace();
-            throw new ApiException(e);
+            throw new Exception(e);
         }                        
 
     }
+    
+    /**
+     * Validate if user has access to all groups in input.
+     * 
+     * @param ValidateAccessInputDto
+     * @return ValidateAccessOutputDto
+     * @throws ServiceException if fails to make API call
+     */
+    public ValidateAccessOutputDto validateAccess(ValidateAccessInputDto idInputDto) throws ServiceException{
+        try {
+            URI uri = new URIBuilder(serviceURI + "/validateAccess")                                                                
+                    .build();
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new ValidateAccessOutputDto(),idInputDto);              
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            throw new Exception(e);
+        }                        
+
+    }
+    
 
     /**
      * Bypass the cache and always perform a remote check for access.
@@ -174,10 +177,9 @@ public class DsLicenseClient extends DsLicenseApi {
      *   
      * @param idInputDto request for access information.
      * @return direct result from {@link DsLicenseApi#checkAccessForIds} 
-     * @throws ApiException if the remote call failed.
+     * @throws ServiceException if the remote call failed.
      */
-    @Override
-    public CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto idInputDto) throws ApiException {
+    public CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto idInputDto) throws ServiceException {
 
         try {
             URI uri = new URIBuilder(serviceURI + "/checkAccessForIds")                                                                
@@ -186,7 +188,7 @@ public class DsLicenseClient extends DsLicenseApi {
         }
         catch(Exception e) {
             e.printStackTrace();
-            throw new ApiException(e);
+            throw new ServiceException(e);
         }                        
     }
 
@@ -196,10 +198,9 @@ public class DsLicenseClient extends DsLicenseApi {
      * 
      * @param getUserGroupsInputDto  (optional)
      * @return GetUserGroupsOutputDto
-     * @throws ApiException if fails to make API call
+     * @throws ServiceException if fails to make API call
      */
-    @Override
-    public GetUserGroupsOutputDto getUserGroups (GetUserGroupsInputDto getUserGroupsInputDto) throws ApiException {
+    public GetUserGroupsOutputDto getUserGroups (GetUserGroupsInputDto getUserGroupsInputDto) throws ServiceException {
 
         try {
             URI uri = new URIBuilder(serviceURI + "/getUserGroups")                                                                
@@ -208,7 +209,7 @@ public class DsLicenseClient extends DsLicenseApi {
         }
         catch(Exception e) {
             e.printStackTrace();
-            throw new ApiException(e);
+            throw new ServiceException(e);
         }                        
         
     }
@@ -218,18 +219,16 @@ public class DsLicenseClient extends DsLicenseApi {
      * 
      * @param getUserGroupsAndLicensesInputDto  (optional)
      * @return GetUserGroupsAndLicensesOutputDto
-     * @throws ApiException if fails to make API call
+     * @throws Exception if fails to make API call
      */
-    @Override
-    public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses (GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto) throws ApiException {
+    public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses (GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto) throws Exception {
         try {
             URI uri = new URIBuilder(serviceURI + "/getUserGroupsAndLicenses")                                                                
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUserGroupsAndLicensesOutputDto(),getUserGroupsAndLicensesInputDto);              
         }
         catch(Exception e) {
-            e.printStackTrace();
-            throw new ApiException(e);
+            throw new Exception(e);
         }                                
     }
       
@@ -239,18 +238,16 @@ public class DsLicenseClient extends DsLicenseApi {
      * 
      * @param getUserQueryInputDto  (optional)
      * @return GetUsersFilterQueryOutputDto
-     * @throws ApiException if fails to make API call
+     * @throws ServiceException if fails to make API call
      */
-    @Override
-    public GetUsersFilterQueryOutputDto getUserLicenseQuery (GetUserQueryInputDto getUserQueryInputDto) throws ApiException {
+    public GetUsersFilterQueryOutputDto getUserLicenseQuery (GetUserQueryInputDto getUserQueryInputDto) throws Exception {
         try {
             URI uri = new URIBuilder(serviceURI + "/getUserLicenseQuery")                                                                
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersFilterQueryOutputDto(),getUserQueryInputDto);              
         }
         catch(Exception e) {
-            e.printStackTrace();
-            throw new ApiException(e);
+            throw new ServiceException(e);
         }                    
     }
       
@@ -260,24 +257,21 @@ public class DsLicenseClient extends DsLicenseApi {
      * 
      * @param getUsersLicensesInputDto  (optional)
      * @return GetUsersLicensesOutputDto
-     * @throws ApiException if fails to make API call
+     * @throws Exception if fails to make API call
      */
-    public GetUsersLicensesOutputDto getUserLicenses(GetUsersLicensesInputDto getUsersLicensesInputDto) throws ApiException {
+    public GetUsersLicensesOutputDto getUserLicenses(GetUsersLicensesInputDto getUsersLicensesInputDto) throws Exception {
         try {
             URI uri = new URIBuilder(serviceURI + "/getUserLicenses")                                                                
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersLicensesOutputDto(),getUsersLicensesInputDto);              
         }
         catch(Exception e) {
-            e.printStackTrace();
-            throw new ApiException(e);
+            throw new ServiceException(e);
         }               
         
     }
     
     
-    
-
     /**
      * Helper for {@link #checkAccessForIds} and {@link #checkAccessForResourceIds} that takes care of wrapping and
      * unwrapping the use of {@link #idcache}.
@@ -286,10 +280,10 @@ public class DsLicenseClient extends DsLicenseApi {
      *                 This switches between forwarding to {@link #checkAccessForIds} and
      *                 {@link #checkAccessForResourceIds}.
      * @return the response from the forward call, potentially fetched from cache.
-     * @throws ApiException if the ID access check failed.
+     * @throws Exception if the ID access check failed.
      */
     public CheckAccessForIdsOutputDto checkAccessForIdsGeneral(CheckAccessForIdsInputDto idInputDto, boolean directID)
-            throws ApiException {
+            throws ServiceException {
         // This is a mess of try-catches, but it is hard to avoid as we really want to use the Function based
         // idcache.get(idInputDto, inputDTO -> ...)
         // That method guards against multiple concurrent checks for the same IDs,
@@ -300,19 +294,20 @@ public class DsLicenseClient extends DsLicenseApi {
                     return directID ?
                             checkAccessForIds(inputDTO) :
                             checkAccessForResourceIds(inputDTO);
-                } catch (ApiException e) { // ApiException is checked; we cannot throw those directly in lambdas
-                    throw new RuntimeException(e);
+                } catch (Exception e) { // ApiException is checked; we cannot throw those directly in lambdas
+                    throw new ServiceException(Response.Status.INTERNAL_SERVER_ERROR);
+                    
                 }
             });
         } catch (RuntimeException e) {
             // If possible, locate the inner ApiException and throw that. Quite a hack, but what to do?
-            if (e.getCause() != null && e.getCause() instanceof ApiException) {
-                throw (ApiException) e.getCause();
+            if (e.getCause() != null && e.getCause() instanceof Exception) {
+                throw (Exception) e.getCause();
             } else {
                 throw e;
             }
         } catch (Exception e) {
-            ApiException wrapped = new ApiException(
+            Exception wrapped = new Exception(
                     "Unknown Exception calling checkAccessForIds with directID=" + directID);
             wrapped.initCause(e);
             throw wrapped;

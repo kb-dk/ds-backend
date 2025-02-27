@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.license.config.ServiceConfig;
-import dk.kb.license.invoker.v1.ApiException;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.GetUserGroupsAndLicensesInputDto;
@@ -66,7 +65,7 @@ public class DsLicenseClientTest {
     }
 
     @Test
-    public void testCheckAccessForIds() throws ApiException {      
+    public void testCheckAccessForIds() throws Exception {      
         ArrayList<String> ids= new ArrayList<String>();
         ids.add("does_not_exist");
         CheckAccessForIdsInputDto input = getCheckAccessForIdsInputDto(SEARCH_PRESENTATIONTYPE, ids);                         
@@ -75,7 +74,7 @@ public class DsLicenseClientTest {
     }
 
     @Test
-    public void testCheckAccessForResourceIds() throws ApiException {              
+    public void testCheckAccessForResourceIds() throws Exception {              
         ArrayList<String> ids= new ArrayList<String>();
         ids.add("does_not_exist");
         CheckAccessForIdsInputDto input = getCheckAccessForIdsInputDto(SEARCH_PRESENTATIONTYPE, ids);                          
@@ -84,15 +83,17 @@ public class DsLicenseClientTest {
 
     }
 
+    
     @Test
-    public void testValidateAccess() throws ApiException {       
+    public void testValidateAccess() throws Exception {       
         ValidateAccessInputDto input = getValidateAccessInputDto(new ArrayList<String>());      
         ValidateAccessOutputDto output = remote.validateAccess(input);
         assertNotNull(output); //We have a valid response;
     }
 
+
     @Test
-    public void testUserGroups() throws ApiException {      
+    public void testUserGroups() throws Exception {      
         GetUserGroupsInputDto input = new GetUserGroupsInputDto();
         input.setLocale("da");                                                       
         input.setAttributes(getDefaultAttributes());          
@@ -101,7 +102,7 @@ public class DsLicenseClientTest {
     }
     
     @Test
-    public void testUserGroupsAndLicenses() throws ApiException {      
+    public void testUserGroupsAndLicenses() throws Exception {      
         GetUserGroupsAndLicensesInputDto input = new GetUserGroupsAndLicensesInputDto();
         input.setLocale("da");                                                       
         input.setAttributes(getDefaultAttributes());
@@ -110,7 +111,7 @@ public class DsLicenseClientTest {
     }
     
     @Test
-    public void testGetUserLicenseQuery() throws ApiException {      
+    public void testGetUserLicenseQuery() throws Exception {      
         GetUserQueryInputDto input = new GetUserQueryInputDto();                                                             
         input.setAttributes(getDefaultAttributes());
         input.setPresentationType(SEARCH_PRESENTATIONTYPE);                
@@ -120,7 +121,7 @@ public class DsLicenseClientTest {
 
     
     @Test
-    public void testGetUserLicenses() throws ApiException {      
+    public void testGetUserLicenses() throws Exception {      
         GetUsersLicensesInputDto input=new GetUsersLicensesInputDto();                                                             
         input.setAttributes(getDefaultAttributes());
         input.setLocale("da");                
