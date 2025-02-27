@@ -1,9 +1,13 @@
 package dk.kb.license.storage;
 
+import dk.kb.license.facade.LicenseModuleFacade;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -20,6 +24,8 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
 
     protected Connection connection = null; // private
     protected static BasicDataSource dataSource = null; // shared
+
+    private long lastTimestamp = 0; // Remember last timestamp and make sure each is only used once;
 
     /**
      * Close the connection to the database. You should probably perform a commit or rollback before closing the connection.
@@ -89,6 +95,20 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
         log.info("DsLicence storage initialized");
     }
 
+    // Used from unittests. Create tables DDL etc.
+    protected synchronized void runDDLScript(File file) throws SQLException {
+        log.info("Running DDL script:" + file.getAbsolutePath());
+
+        if (!file.exists()) {
+            log.error("DDL script not found:" + file.getAbsolutePath());
+            throw new RuntimeException("DDLscript file not found:" + file.getAbsolutePath());
+        }
+
+        String scriptStatement = "RUNSCRIPT FROM '" + file.getAbsolutePath() + "'";
+
+        connection.prepareStatement(scriptStatement).execute();
+    }
+
     // This is called by from InialialziationContextListener by the Web-container
     // when server is shutdown,
     // Just to be sure the DB lock file is free.
@@ -102,5 +122,71 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             // ignore errors during shutdown, we cant do anything about it anyway
             log.error("shutdown failed", e);
         }
+    }
+
+    /**
+     * Start a storage transaction and performs the given action on it, returning the result from the action.
+     * <p>
+     * If the action throws an exception, a {@link LicenseModuleStorage#rollback()} is performed.
+     * If the action passes without exceptions, a {@link LicenseModuleStorage#commit()} is performed.
+     * @param actionID a debug-oriented ID for the action, typically the name of the calling method.
+     * @param action the action to perform on the storage.
+     * @return return value from the action.
+     * @throws InternalServiceException if anything goes wrong.
+     */
+    public static <T> T performStorageAction(String actionID,  BaseModuleStorage storage, BaseModuleStorage.StorageAction<T> action) {
+            T result;
+            try {
+                result = action.process(storage);
+            }
+            catch(InvalidArgumentServiceException e) {
+                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e.getMessage());
+                storage.rollback();
+                throw new InvalidArgumentServiceException(e);
+            }
+            catch (Exception e) {
+                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
+                storage.rollback();
+                throw new InternalServiceException(e);
+            }
+
+            try {
+                storage.commit();
+            } catch (SQLException e) {
+                log.error("Exception committing after action '{}'", actionID, e);
+                throw new InternalServiceException(e);
+            }
+
+            return result;
+
+    }
+
+    // Just a simple way to generate unique ID's and make sure they are unique
+    protected synchronized long generateUniqueID() {
+        long now = System.currentTimeMillis();
+        if (now <= lastTimestamp) { // this timestamp has already been used. just +1 and use that
+            lastTimestamp++;
+            return lastTimestamp;
+        } else {
+            lastTimestamp = now;
+            return now;
+        }
+    }
+
+    /**
+     * Callback used with {@link #performStorageAction(String, BaseModuleStorage.StorageAction)}.
+     * @param <T> the object returned from the {@link BaseModuleStorage.StorageAction#process(LicenseModuleStorage)} method.
+     */
+    @FunctionalInterface
+    public interface StorageAction<T> {
+        /**
+         * Access or modify the given storage inside of a transaction.
+         * If the method throws an exception, it will be logged, a {@link LicenseModuleStorage#rollback()} will be performed and
+         * a wrapping {@link dk.kb.util.webservice.exception.InternalServiceException} will be thrown.
+         * @param storage a storage ready for requests and updates.
+         * @return custom return value.
+         * @throws Exception if something went wrong.
+         */
+        T process(BaseModuleStorage storage) throws Exception;
     }
 }

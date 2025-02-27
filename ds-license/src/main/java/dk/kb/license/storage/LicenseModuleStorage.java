@@ -26,8 +26,6 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorage.class);
 
-    private long lastTimestamp = 0; // Remember last timestamp and make sure each is only used once;
-
     // Table and column names
     private static final String LICENSEPRESENTATIONTYPES_TABLE = "PRESENTATIONTYPES";
     private static final String LICENSEGROUPTYPES_TABLE = "GROUPTYPES";
@@ -1090,32 +1088,6 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         } 
 
-    }
-
-    // Just a simple way to generate unique ID's and make sure they are unique
-    private synchronized long generateUniqueID() {
-        long now = System.currentTimeMillis();
-        if (now <= lastTimestamp) { // this timestamp has already been used. just +1 and use that
-            lastTimestamp++;
-            return lastTimestamp;
-        } else {
-            lastTimestamp = now;
-            return now;
-        }
-    }
-
-    // Used from unittests. Create tables DDL etc.
-    protected synchronized void runDDLScript(File file) throws SQLException {
-        log.info("Running DDL script:" + file.getAbsolutePath());
-
-        if (!file.exists()) {
-            log.error("DDL script not found:" + file.getAbsolutePath());
-            throw new RuntimeException("DDLscript file not found:" + file.getAbsolutePath());
-        }
-
-        String scriptStatement = "RUNSCRIPT FROM '" + file.getAbsolutePath() + "'";
-
-        connection.prepareStatement(scriptStatement).execute();        
     }
 
     /*

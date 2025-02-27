@@ -483,8 +483,43 @@ components:
           type: array
           items:
             type: string 
-            
-                    
+
+    # Rights module
+
+    RestrictedIdInput:
+      type: object
+      required:
+        - idValue
+        - idType
+        - system
+      properties:
+        idValue:
+          type: string
+        idType:
+          type: string
+        platform:
+          type: string
+        comment:
+          type: string
+
+    RestrictedIdOutput:
+      type: object
+      properties:
+        idValue:
+          type: string
+        idType:
+          type: string
+        platform:
+          type: string
+        comment:
+          type: string
+        modifiedBy:
+          type: string
+        modifiedTime:
+          type: long
+        modifiedTimeHuman:
+          type: string
+
     HelloReply:
       type: object
       required:
@@ -493,6 +528,65 @@ components:
         message:
           type: string
           description: 'Greeting from the API'
+
+    RightsCalculationInput:
+      description: "An overall Data Transfer Object which should be used to carry all values needed for calculating rights for a record between services."
+      type: object
+      x-isRightsCalculationObject: true
+      properties:
+        recordId:
+          type: string
+          description: "ID of the record, which this metadata comes from."
+        platform:
+          type: string
+          enum:
+            - drArkiv
+            - generic
+          description: "The platform that rights are calculated for."
+        startTime:
+          type: string
+          description: "Start time of the record this object relates to."
+        holdbackInput:
+          $ref: "#/components/schemas/HoldbackCalculationInput"
+        restrictionsInput:
+          $ref: "#/components/schemas/RestrictionsCalculationInput"
+
+    HoldbackCalculationInput:
+      description: "A holdback specific Data Transfer Object which should be used to carry all values needed for calculating holdback for a record between services."
+      type: object
+      properties:
+        hensigt:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        form:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        indhold:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        productionCountry:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        productionCode:
+          type: string
+          description: "a metadata value used for holdback and own production calculation."
+
+    RestrictionsCalculationInput:
+      description: "A restrictions specific Data Transfer Object which should be used to carry all values needed for looking up if a record is restricted between services."
+      type: object
+      properties:
+        recordId:
+          type: string
+          description: "ID of the record, which this metadata comes from."
+        productionCode:
+          type: string
+          description: "a metadata value used for holdback and own production calculation."
+        drProductionId:
+          type: string
+          description: "an internal ID from DR which could be restricted."
+        title:
+          type: string
+          description: "title of the record in hand. There is a chance that it is restricted."
 
     Whoami:
       type: object
