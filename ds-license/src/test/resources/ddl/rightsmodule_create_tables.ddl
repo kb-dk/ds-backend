@@ -1,8 +1,8 @@
-CREATE TYPE clauseIDType AS ENUM ('dr_productionId','ds_id','ownproduction_code','strict_title');
+CREATE TYPE restrictedIDType AS ENUM ('dr_productionId','ds_id','ownproduction_code','strict_title');
 
-CREATE TABLE CLAUSED (
+CREATE TABLE RESTRICTED_IDS (
     id VARCHAR(256),
-    idType clauseIDType,
+    idType restrictedIDType,
     system VARCHAR(32),
     comment VARCHAR(256),
     modified_by VARCHAR(256),
