@@ -29,6 +29,7 @@ import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
 import dk.kb.license.model.v1.ValidateAccessInputDto;
 import dk.kb.license.model.v1.ValidateAccessOutputDto;
 import dk.kb.util.webservice.Service2ServiceRequest;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.yaml.YAML;
 
@@ -37,9 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
-
-import javax.ws.rs.core.Response;
 
 /**
  * Client for the service. Intended for use by other projects that calls this service.
@@ -56,7 +56,8 @@ import javax.ws.rs.core.Response;
 public class DsLicenseClient{
     private static final Logger log = LoggerFactory.getLogger(DsLicenseClient.class);
     private final String serviceURI;
-
+    private final static String CLIENT_URL_EXCEPTION="The client url was not constructed correct";
+    
     public static final String URL_KEY = "licensemodule.url";
     public static final String CACHE_ID_COUNT_KEY = "licensemodule.cache.id.count";
     public static final int CACHE_ID_COUNT_DEFAULT = 100;
@@ -142,11 +143,10 @@ public class DsLicenseClient{
                     .build();
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new CheckAccessForIdsOutputDto(),idInputDto);              
         }
-        catch(Exception e) {
-            e.printStackTrace();
-            throw new Exception(e);
-        }                        
-
+        catch (URISyntaxException e) {
+            log.error("Invalid url:"+e.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
+         }                    
     }
     
     /**
@@ -162,11 +162,10 @@ public class DsLicenseClient{
                     .build();
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new ValidateAccessOutputDto(),idInputDto);              
         }
-        catch(Exception e) {
-            e.printStackTrace();
-            throw new Exception(e);
-        }                        
-
+        catch (URISyntaxException e) {                
+            log.error("Invalid url:"+e.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
+         }                   
     }
     
 
@@ -179,19 +178,18 @@ public class DsLicenseClient{
      * @return direct result from {@link DsLicenseApi#checkAccessForIds} 
      * @throws ServiceException if the remote call failed.
      */
-    public CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto idInputDto) throws ServiceException {
-
-        try {
-            URI uri = new URIBuilder(serviceURI + "/checkAccessForIds")                                                                
-                    .build();
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new CheckAccessForIdsOutputDto(),idInputDto);              
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-            throw new ServiceException(e);
-        }                        
+    public CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto idInputDto) throws ServiceException {       
+            URI uri;
+            try {
+                uri = new URIBuilder(serviceURI + "/checkAccessForIds")                                                                
+                        .build();
+            }
+            catch (URISyntaxException e) {                
+                log.error("Invalid url:"+e.getMessage());
+                throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
+            }
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new CheckAccessForIdsOutputDto(),idInputDto);                                                     
     }
-
     
     /**
      * Get the groups that the user has access to
@@ -207,11 +205,10 @@ public class DsLicenseClient{
                     .build();
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUserGroupsOutputDto(),getUserGroupsInputDto);              
         }
-        catch(Exception e) {
-            e.printStackTrace();
-            throw new ServiceException(e);
-        }                        
-        
+        catch (URISyntaxException e) {                
+            log.error("Invalid url:"+e.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
+         }                                
     }
     
     /**
@@ -219,7 +216,7 @@ public class DsLicenseClient{
      * 
      * @param getUserGroupsAndLicensesInputDto  (optional)
      * @return GetUserGroupsAndLicensesOutputDto
-     * @throws Exception if fails to make API call
+     * @throws ServiceException if fails to make API call
      */
     public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses (GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto) throws Exception {
         try {
@@ -227,9 +224,10 @@ public class DsLicenseClient{
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUserGroupsAndLicensesOutputDto(),getUserGroupsAndLicensesInputDto);              
         }
-        catch(Exception e) {
-            throw new Exception(e);
-        }                                
+        catch (URISyntaxException e) {                
+            log.error("Invalid url:"+e.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
+         }                          
     }
       
     
@@ -246,9 +244,10 @@ public class DsLicenseClient{
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersFilterQueryOutputDto(),getUserQueryInputDto);              
         }
-        catch(Exception e) {
-            throw new ServiceException(e);
-        }                    
+        catch (URISyntaxException e) {                
+            log.error("Invalid url:"+e.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
+         }        
     }
       
     
@@ -265,9 +264,10 @@ public class DsLicenseClient{
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersLicensesOutputDto(),getUsersLicensesInputDto);              
         }
-        catch(Exception e) {
-            throw new ServiceException(e);
-        }               
+        catch (URISyntaxException e) {                
+            log.error("Invalid url:"+e.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
+         }    
         
     }
     
@@ -280,38 +280,19 @@ public class DsLicenseClient{
      *                 This switches between forwarding to {@link #checkAccessForIds} and
      *                 {@link #checkAccessForResourceIds}.
      * @return the response from the forward call, potentially fetched from cache.
-     * @throws Exception if the ID access check failed.
+     * @throws ServiceException if the ID access check failed.
      */
     public CheckAccessForIdsOutputDto checkAccessForIdsGeneral(CheckAccessForIdsInputDto idInputDto, boolean directID)
             throws ServiceException {
         // This is a mess of try-catches, but it is hard to avoid as we really want to use the Function based
         // idcache.get(idInputDto, inputDTO -> ...)
         // That method guards against multiple concurrent checks for the same IDs,
-        // which is an extremely common occurrence when handling Tile based image viewing.
-        try {
-            return idcache.get(idInputDto, inputDTO -> {
-                try {
+        // which is an extremely common occurrence when handling Tile based image viewing.       
+            return idcache.get(idInputDto, inputDTO -> {               
                     return directID ?
                             checkAccessForIds(inputDTO) :
-                            checkAccessForResourceIds(inputDTO);
-                } catch (Exception e) { // ApiException is checked; we cannot throw those directly in lambdas
-                    throw new ServiceException(Response.Status.INTERNAL_SERVER_ERROR);
-                    
-                }
-            });
-        } catch (RuntimeException e) {
-            // If possible, locate the inner ApiException and throw that. Quite a hack, but what to do?
-            if (e.getCause() != null && e.getCause() instanceof Exception) {
-                throw (Exception) e.getCause();
-            } else {
-                throw e;
-            }
-        } catch (Exception e) {
-            Exception wrapped = new Exception(
-                    "Unknown Exception calling checkAccessForIds with directID=" + directID);
-            wrapped.initCause(e);
-            throw wrapped;
-        }
+                            checkAccessForResourceIds(inputDTO);                                    
+            });       
     }
 
 }
