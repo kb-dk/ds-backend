@@ -25,6 +25,7 @@ Takes an array of recordIds. Will filter the ids and return only those that the 
 import dk.kb.license.ApiClient;
 import dk.kb.license.ApiException;
 import dk.kb.license.Configuration;
+import dk.kb.license.auth.*;
 import dk.kb.license.models.*;
 import dk.kb.license.api.DsLicenseApi;
 
@@ -32,6 +33,10 @@ public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
     defaultClient.setBasePath("http://$");
+    
+    // Configure OAuth2 access token for authorization: KBOAuth
+    OAuth KBOAuth = (OAuth) defaultClient.getAuthentication("KBOAuth");
+    KBOAuth.setAccessToken("YOUR ACCESS TOKEN");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     CheckAccessForIdsInputDto checkAccessForIdsInputDto = new CheckAccessForIdsInputDto(); // CheckAccessForIdsInputDto | 
@@ -61,7 +66,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[KBOAuth](../README.md#KBOAuth)
 
 ### HTTP request headers
 
@@ -85,6 +90,7 @@ Takes an array of resource Ids. Will filter the ids and return only those that t
 import dk.kb.license.ApiClient;
 import dk.kb.license.ApiException;
 import dk.kb.license.Configuration;
+import dk.kb.license.auth.*;
 import dk.kb.license.models.*;
 import dk.kb.license.api.DsLicenseApi;
 
@@ -92,6 +98,10 @@ public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
     defaultClient.setBasePath("http://$");
+    
+    // Configure OAuth2 access token for authorization: KBOAuth
+    OAuth KBOAuth = (OAuth) defaultClient.getAuthentication("KBOAuth");
+    KBOAuth.setAccessToken("YOUR ACCESS TOKEN");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     CheckAccessForIdsInputDto checkAccessForIdsInputDto = new CheckAccessForIdsInputDto(); // CheckAccessForIdsInputDto | 
@@ -121,7 +131,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[KBOAuth](../README.md#KBOAuth)
 
 ### HTTP request headers
 
@@ -205,6 +215,7 @@ Get all licenses and groups/presentationtypes that the user has access to. Will 
 import dk.kb.license.ApiClient;
 import dk.kb.license.ApiException;
 import dk.kb.license.Configuration;
+import dk.kb.license.auth.*;
 import dk.kb.license.models.*;
 import dk.kb.license.api.DsLicenseApi;
 
@@ -212,6 +223,10 @@ public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
     defaultClient.setBasePath("http://$");
+    
+    // Configure OAuth2 access token for authorization: KBOAuth
+    OAuth KBOAuth = (OAuth) defaultClient.getAuthentication("KBOAuth");
+    KBOAuth.setAccessToken("YOUR ACCESS TOKEN");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto = new GetUserGroupsAndLicensesInputDto(); // GetUserGroupsAndLicensesInputDto | 
@@ -241,7 +256,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[KBOAuth](../README.md#KBOAuth)
 
 ### HTTP request headers
 
@@ -265,6 +280,7 @@ Shows the filter query for Solr generated from the user attributes. Presentation
 import dk.kb.license.ApiClient;
 import dk.kb.license.ApiException;
 import dk.kb.license.Configuration;
+import dk.kb.license.auth.*;
 import dk.kb.license.models.*;
 import dk.kb.license.api.DsLicenseApi;
 
@@ -272,6 +288,10 @@ public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
     defaultClient.setBasePath("http://$");
+    
+    // Configure OAuth2 access token for authorization: KBOAuth
+    OAuth KBOAuth = (OAuth) defaultClient.getAuthentication("KBOAuth");
+    KBOAuth.setAccessToken("YOUR ACCESS TOKEN");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     GetUserQueryInputDto getUserQueryInputDto = new GetUserQueryInputDto(); // GetUserQueryInputDto | 
@@ -301,7 +321,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[KBOAuth](../README.md#KBOAuth)
 
 ### HTTP request headers
 
@@ -325,6 +345,7 @@ Get a list of all licences that validates from user attributes.
 import dk.kb.license.ApiClient;
 import dk.kb.license.ApiException;
 import dk.kb.license.Configuration;
+import dk.kb.license.auth.*;
 import dk.kb.license.models.*;
 import dk.kb.license.api.DsLicenseApi;
 
@@ -332,6 +353,10 @@ public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
     defaultClient.setBasePath("http://$");
+    
+    // Configure OAuth2 access token for authorization: KBOAuth
+    OAuth KBOAuth = (OAuth) defaultClient.getAuthentication("KBOAuth");
+    KBOAuth.setAccessToken("YOUR ACCESS TOKEN");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     GetUsersLicensesInputDto getUsersLicensesInputDto = new GetUsersLicensesInputDto(); // GetUsersLicensesInputDto | 
@@ -361,7 +386,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[KBOAuth](../README.md#KBOAuth)
 
 ### HTTP request headers
 
@@ -385,6 +410,7 @@ Validate if user has access to all groups in input.
 import dk.kb.license.ApiClient;
 import dk.kb.license.ApiException;
 import dk.kb.license.Configuration;
+import dk.kb.license.auth.*;
 import dk.kb.license.models.*;
 import dk.kb.license.api.DsLicenseApi;
 
@@ -392,6 +418,10 @@ public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
     defaultClient.setBasePath("http://$");
+    
+    // Configure OAuth2 access token for authorization: KBOAuth
+    OAuth KBOAuth = (OAuth) defaultClient.getAuthentication("KBOAuth");
+    KBOAuth.setAccessToken("YOUR ACCESS TOKEN");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     ValidateAccessInputDto validateAccessInputDto = new ValidateAccessInputDto(); // ValidateAccessInputDto | 
@@ -421,7 +451,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[KBOAuth](../README.md#KBOAuth)
 
 ### HTTP request headers
 
