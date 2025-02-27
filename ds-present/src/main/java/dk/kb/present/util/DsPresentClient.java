@@ -19,9 +19,12 @@ import dk.kb.present.client.v1.DsPresentApi;
 import dk.kb.present.client.v1.IiifPresentationApi;
 import dk.kb.present.client.v1.ServiceApi;
 import dk.kb.present.invoker.v1.ApiClient;
+import dk.kb.present.invoker.v1.ApiException;
 import dk.kb.present.invoker.v1.Configuration;
 import dk.kb.present.model.v1.FormatDto;
+import dk.kb.present.model.v1.OriginDto;
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.util.webservice.Service2ServiceRequest;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
@@ -103,6 +106,7 @@ public class DsPresentClient extends DsPresentApi {
         this(serviceURI, (Map<String, String>) null);
     }
 
+    
     /**
      * Create a client for the remote ds-present service.
      * <p>
@@ -133,6 +137,67 @@ public class DsPresentClient extends DsPresentApi {
         service = new ServiceApi(apiClient);
         log.info("Created OpenAPI client for '{}' with headers {}", serviceURI, headers);
     }
+    
+    /**
+     * Retrieve a formal description of a single origin.
+     * 
+     * @param id The ID of the origin (required)
+     * @return OriginDto
+     * @throws ApiException if fails to make API call
+     */
+    @Override
+    public OriginDto getOrigin(String id) throws ApiException {        
+        try {
+            URI uri = new URIBuilder(serviceURI + "origin/"+id) // Id is part of path                                                                                   
+                    .build();            
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"GET", new OriginDto(),null);              
+        }
+        catch(Exception e) {
+            throw new ApiException(e);
+        }                      
+    }
+    
+    /**
+    * Retrieve a formal description of all available origins.
+    * 
+    * @return List&lt;OriginDto&gt;
+    * @throws ApiException if fails to make API call
+    */
+    @Override
+    public List<OriginDto> getOrigins() throws ApiException {
+        try {
+            URI uri = new URIBuilder(serviceURI + "origins/") // Id is part of path                                                                                   
+                    .build();            
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"GET", new ArrayList<OriginDto>(),null);              
+        }
+        catch(Exception e) {
+            throw new ApiException(e);
+        }
+        
+    }
+    
+    /**
+     * Retrieve metadata for the record with the given ID and in the given format.
+     * 
+     * @param id The ID of the record (required)
+     * @param format The delivery format for the record: * JSON-LD: [Linked Data in JSON](https://json-ld.org/) (default) * MODS: [Metadata Object Description Schema](http://www.loc.gov/standards/mods/) * SolrJSON: [Solr JSON Formatted Index Updates](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates) * raw: Metadata unchanged from the source.  (optional, default to JSON-LD)
+     * @return String
+     * @throws ApiException if fails to make API call
+     */
+    @Override
+    public String getRecord(String id, FormatDto format) throws ApiException {
+        try {
+        URI uri = new URIBuilder(serviceURI + "record/"+id) // Id is part of path                                                                                   
+                .addParameter("format",""+format.toString())
+                .build();           
+        return Service2ServiceRequest.httpCallWithOAuthToken(uri,"GET", new String(),null);       
+        }
+        catch(Exception e) {
+            throw new ApiException(e);
+        }
+    }
+    
+   
 
     /**
      * Call the remote ds-present {@link #getRecords} and return the response unchanged as a wrapped
