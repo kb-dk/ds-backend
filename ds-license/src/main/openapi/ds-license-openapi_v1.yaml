@@ -557,6 +557,9 @@ components:
       type: object
       description: "Object containing results from all rights calculations that are applicable for the DR Archive for the record"
       properties:
+        dsIdRestricted:
+          type: boolean
+          description: "A boolean representing if our DS ID for the record has been restricted."
         holdbackName:
           type: string
           description: "The name of the holdback category for the record."
