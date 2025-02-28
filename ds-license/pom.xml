@@ -628,6 +628,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/DsLicenseApi.class</exclude>
+                        <exclude>**/DsRightsApi.class</exclude>
                         <exclude>**/ServiceApi.class</exclude>
                     </excludes>
                 </configuration>
