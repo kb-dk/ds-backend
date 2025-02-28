@@ -2,6 +2,7 @@ package dk.kb.license.config;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -116,6 +117,17 @@ public class ServiceConfig {
     
     public static boolean isAdminGuiEnabled() {
        return serviceConfig.getBoolean("gui.adminGuiEnabled",false); //Default not enabled if property not set       
+    }
+
+    public static YAML getRightsPlatformConfig(String platform) {
+        Optional<YAML> result = serviceConfig.getYAMLList("rights.platforms").stream()
+                .filter(yaml -> yaml.getString("name", "").equals(platform))
+                .findFirst();
+
+        if(result.isPresent()) {
+            return result.get();
+        }
+        return new YAML();
     }
     
     public static int getCacheRefreshTimeInSeconds() {

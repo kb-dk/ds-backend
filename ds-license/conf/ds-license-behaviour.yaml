@@ -36,6 +36,16 @@ db:
 #Will disable all access to admin GUI jsp pages and instead show a info page that it has been disabled.
 gui:
   adminGuiEnabled: true
+
+#Configuration of rights module
+rights:
+  platforms:
+    - name: "dr"
+      idTypes:
+        - "ds_id"
+        - "dr_produktions_id"
+        - "egenproduktions_kode"
+        - "strict_title"
   
 #KeyCloakClientSecret can be seen in the KeyCloak server admin page for the AD realm configuration
 #The rsaPublic key can also be seen at the KeyCloak server admin page

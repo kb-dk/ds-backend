@@ -1,13 +1,18 @@
 package dk.kb.license.storage;
 
+import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -59,8 +64,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public void createRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
-        validateIdType(id_type);
-        validateSystem(platform);
+        validatePlatformAndIdType(platform,id_type);
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)){
             stmt.setLong(1, generateUniqueID());
@@ -87,7 +91,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public RestrictedIdOutputDto getRestrictedId(String id_value, String id_type, String platform) throws SQLException {
-        validateIdType(id_type);
+        validatePlatformAndIdType(platform,id_type);
         try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQuery)) {
             stmt.setString(1, id_value);
             stmt.setString(2, id_type);
@@ -122,8 +126,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public void updateRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
-        validateIdType(id_type);
-        validateSystem(platform);
+        validatePlatformAndIdType(platform,id_type);
 
         try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdQuery)){
             stmt.setString(1, platform);
@@ -148,7 +151,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public void deleteRestrictedId(String id_value, String id_type, String platform) throws SQLException {
-        validateIdType(id_type);
+        validatePlatformAndIdType(platform,id_type);
         try (PreparedStatement stmt = connection.prepareStatement(deleteRestrictedIdQuery)) {
             stmt.setString(1, id_value);
             stmt.setString(2, id_type);
@@ -181,21 +184,18 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    private void validateSystem(String platform) {
-        List<String> validSystems = List.of("dr");//TODO get list from config file
-        if (!validSystems.contains(platform)) {
-            throw new IllegalArgumentException("System '" + platform + "' is not supported in clauses.");
+    private void validatePlatformAndIdType(String platform, String idType) {
+        YAML platformConfig = ServiceConfig.getRightsPlatformConfig(platform);
+        if (platformConfig.isEmpty()) {
+            throw new IllegalArgumentException("Invalid platform "+platform);
         }
+        if (!platformConfig.getList("idTypes").contains(idType)) {
+            throw new IllegalArgumentException("Invalid idType "+idType);
+        }
+
     }
 
-    private void validateIdType(String id_type) {
-        List<String> validIdTypes = List.of("dr_produktions_id","ds_id","egenproduktions_kode","strict_title"); //TODO get list from config file
-        if (!validIdTypes.contains(id_type)) {
-            throw new IllegalArgumentException("IdType '" + id_type + "' is not supported in clauses.");
-        }
-    }
-
-    /*
+     /*
      * Only called from unittests, not exposed on facade class
      *
      */
