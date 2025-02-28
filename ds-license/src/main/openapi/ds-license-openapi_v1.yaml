@@ -188,7 +188,154 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
   
+  # Rights
+  /rights/restrictedIds:
+    get:
+      summary: get all restricted ids
+      tags:
+        - 'DsRights'
+      operationId: getAllRestrictedIds
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: idType
+          in: query
+          description: filter on IdType
+          schema:
+            type: string
+        - name: platform
+          in: query
+          description: filter on platform
+          schema:
+            type: string
+      responses:
+        '200':
+          description:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestrictedIdOutput'
 
+
+
+
+  /rights/restrictedId:
+    get:
+      tags:
+        - 'DsRights'
+      operationId: getRestrictedId
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: idType
+          in: query
+          required: true
+          schema:
+            type: string
+          example:
+            - "ds_id"
+            - "dr_produktions_id"
+            - "egenproduktions_kode"
+            - "strict_title"
+        - name: system
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get an stricted ID details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedIdOutput'
+        '404':
+          description: restricted id not found
+    delete:
+      tags:
+        - 'DsRights'
+      operationId: deleteRestrictedId
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: idType
+          in: query
+          required: true
+          schema:
+            type: string
+          example:
+            - "ds_id"
+            - "dr_produktions_id"
+            - "egenproduktions_kode"
+            - "strict_title"
+        - name: platform
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: deleted
+    post:
+      tags:
+        - 'DsRights'
+      operationId: createRestrictedId
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestrictedIdInput'
+            examples:
+              DrProductionID:
+                value:
+                  idValue: 'test1'
+                  idType: 'dr_produktions_id'
+                  platform: 'dr'
+                  comment: 'Dette er en test'
+      responses:
+        '201':
+          description: created
+    put:
+        tags:
+          - 'DsRights'
+        operationId: updateRestrictedId
+        security:
+          - KBOAuth:
+              - any
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedIdInput'
+              examples:
+                DrProductionID:
+                  value:
+                    idValue: 'test1'
+                    idType: 'dr_produktions_id'
+                    platform: 'dr'
+                    comment: 'Dette er en opdateret kommentar'
+
+        responses:
+          '201':
+            description: created
 
 
   /monitor:
@@ -494,7 +641,7 @@ components:
       required:
         - idValue
         - idType
-        - system
+        - platform
       properties:
         idValue:
           type: string
