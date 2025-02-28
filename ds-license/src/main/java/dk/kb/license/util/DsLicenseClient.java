@@ -140,7 +140,7 @@ public class DsLicenseClient{
     public CheckAccessForIdsOutputDto checkAccessForResourceIds(CheckAccessForIdsInputDto idInputDto) throws ServiceException{
         try {
             URI uri = new URIBuilder(serviceURI)
-                    .appendPath("/checkAccessForResourceIds")                                                                
+                    .appendPath("checkAccessForResourceIds")                                                                
                     .build();
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new CheckAccessForIdsOutputDto(),idInputDto);              
         }
@@ -160,7 +160,7 @@ public class DsLicenseClient{
     public ValidateAccessOutputDto validateAccess(ValidateAccessInputDto idInputDto) throws ServiceException{
         try {
             URI uri = new URIBuilder(serviceURI)                                                                
-                     .appendPath("/validateAccess")
+                     .appendPath("validateAccess")
                      .build();
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new ValidateAccessOutputDto(),idInputDto);              
         }
@@ -184,7 +184,7 @@ public class DsLicenseClient{
             URI uri;
             try {
                 uri = new URIBuilder(serviceURI)
-                        .appendPath("/checkAccessForIds")                                                                
+                        .appendPath("checkAccessForIds")                                                                
                         .build();
             }
             catch (URISyntaxException e) {                
@@ -205,7 +205,7 @@ public class DsLicenseClient{
 
         try {
             URI uri = new URIBuilder(serviceURI)
-                    .appendPath("/getUserGroups")                                                                
+                    .appendPath("getUserGroups")                                                                
                     .build();
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUserGroupsOutputDto(),getUserGroupsInputDto);              
         }
@@ -225,7 +225,7 @@ public class DsLicenseClient{
     public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses (GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto) throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
-                    .appendPath("/getUserGroupsAndLicenses")                                                                                   
+                    .appendPath("getUserGroupsAndLicenses")                                                                                   
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUserGroupsAndLicensesOutputDto(),getUserGroupsAndLicensesInputDto);              
         }
@@ -246,7 +246,7 @@ public class DsLicenseClient{
     public GetUsersFilterQueryOutputDto getUserLicenseQuery (GetUserQueryInputDto getUserQueryInputDto) throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
-                      .appendPath("/getUserLicenseQuery")                                                                                   
+                      .appendPath("getUserLicenseQuery")                                                                                   
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersFilterQueryOutputDto(),getUserQueryInputDto);              
         }
@@ -267,7 +267,7 @@ public class DsLicenseClient{
     public GetUsersLicensesOutputDto getUserLicenses(GetUsersLicensesInputDto getUsersLicensesInputDto) throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
-                    .appendPath("/getUserLicenses")                                                                
+                    .appendPath("getUserLicenses")                                                                
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersLicensesOutputDto(),getUsersLicensesInputDto);              
         }
