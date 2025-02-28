@@ -147,6 +147,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get the groups that the user has access to'
+      security: 
+        - KBOAuth:
+          - any            
       operationId: getUserGroups       
       requestBody:
         content:

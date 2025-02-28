@@ -33,7 +33,7 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.yaml.YAML;
 
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,7 +139,8 @@ public class DsLicenseClient{
      */
     public CheckAccessForIdsOutputDto checkAccessForResourceIds(CheckAccessForIdsInputDto idInputDto) throws ServiceException{
         try {
-            URI uri = new URIBuilder(serviceURI + "/checkAccessForResourceIds")                                                                
+            URI uri = new URIBuilder(serviceURI)
+                    .appendPath("/checkAccessForResourceIds")                                                                
                     .build();
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new CheckAccessForIdsOutputDto(),idInputDto);              
         }
@@ -158,8 +159,9 @@ public class DsLicenseClient{
      */
     public ValidateAccessOutputDto validateAccess(ValidateAccessInputDto idInputDto) throws ServiceException{
         try {
-            URI uri = new URIBuilder(serviceURI + "/validateAccess")                                                                
-                    .build();
+            URI uri = new URIBuilder(serviceURI)                                                                
+                     .appendPath("/validateAccess")
+                     .build();
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new ValidateAccessOutputDto(),idInputDto);              
         }
         catch (URISyntaxException e) {                
@@ -181,7 +183,8 @@ public class DsLicenseClient{
     public CheckAccessForIdsOutputDto checkAccessForIds(CheckAccessForIdsInputDto idInputDto) throws ServiceException {       
             URI uri;
             try {
-                uri = new URIBuilder(serviceURI + "/checkAccessForIds")                                                                
+                uri = new URIBuilder(serviceURI)
+                        .appendPath("/checkAccessForIds")                                                                
                         .build();
             }
             catch (URISyntaxException e) {                
@@ -201,7 +204,8 @@ public class DsLicenseClient{
     public GetUserGroupsOutputDto getUserGroups (GetUserGroupsInputDto getUserGroupsInputDto) throws ServiceException {
 
         try {
-            URI uri = new URIBuilder(serviceURI + "/getUserGroups")                                                                
+            URI uri = new URIBuilder(serviceURI)
+                    .appendPath("/getUserGroups")                                                                
                     .build();
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUserGroupsOutputDto(),getUserGroupsInputDto);              
         }
@@ -220,7 +224,8 @@ public class DsLicenseClient{
      */
     public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses (GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto) throws ServiceException {
         try {
-            URI uri = new URIBuilder(serviceURI + "/getUserGroupsAndLicenses")                                                                
+            URI uri = new URIBuilder(serviceURI)
+                    .appendPath("/getUserGroupsAndLicenses")                                                                                   
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUserGroupsAndLicensesOutputDto(),getUserGroupsAndLicensesInputDto);              
         }
@@ -240,7 +245,8 @@ public class DsLicenseClient{
      */
     public GetUsersFilterQueryOutputDto getUserLicenseQuery (GetUserQueryInputDto getUserQueryInputDto) throws ServiceException {
         try {
-            URI uri = new URIBuilder(serviceURI + "/getUserLicenseQuery")                                                                
+            URI uri = new URIBuilder(serviceURI)
+                      .appendPath("/getUserLicenseQuery")                                                                                   
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersFilterQueryOutputDto(),getUserQueryInputDto);              
         }
@@ -260,7 +266,8 @@ public class DsLicenseClient{
      */
     public GetUsersLicensesOutputDto getUserLicenses(GetUsersLicensesInputDto getUsersLicensesInputDto) throws ServiceException {
         try {
-            URI uri = new URIBuilder(serviceURI + "/getUserLicenses")                                                                
+            URI uri = new URIBuilder(serviceURI)
+                    .appendPath("/getUserLicenses")                                                                
                     .build();                       
             return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST",new GetUsersLicensesOutputDto(),getUsersLicensesInputDto);              
         }
