@@ -218,7 +218,7 @@ public class DsLicenseClient{
      * @return GetUserGroupsAndLicensesOutputDto
      * @throws ServiceException if fails to make API call
      */
-    public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses (GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto) throws Exception {
+    public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses (GetUserGroupsAndLicensesInputDto getUserGroupsAndLicensesInputDto) throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI + "/getUserGroupsAndLicenses")                                                                
                     .build();                       
@@ -238,7 +238,7 @@ public class DsLicenseClient{
      * @return GetUsersFilterQueryOutputDto
      * @throws ServiceException if fails to make API call
      */
-    public GetUsersFilterQueryOutputDto getUserLicenseQuery (GetUserQueryInputDto getUserQueryInputDto) throws Exception {
+    public GetUsersFilterQueryOutputDto getUserLicenseQuery (GetUserQueryInputDto getUserQueryInputDto) throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI + "/getUserLicenseQuery")                                                                
                     .build();                       
@@ -258,7 +258,7 @@ public class DsLicenseClient{
      * @return GetUsersLicensesOutputDto
      * @throws Exception if fails to make API call
      */
-    public GetUsersLicensesOutputDto getUserLicenses(GetUsersLicensesInputDto getUsersLicensesInputDto) throws Exception {
+    public GetUsersLicensesOutputDto getUserLicenses(GetUsersLicensesInputDto getUsersLicensesInputDto) throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI + "/getUserLicenses")                                                                
                     .build();                       
