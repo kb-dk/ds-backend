@@ -56,6 +56,8 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         assertEquals(modified_by,retreivedFromStorage.getModifiedBy());
         assertEquals(modified_time,retreivedFromStorage.getModifiedTime());
 
+        List<RestrictedIdOutputDto> ids = storage.getAllRestrictedIds();
+
         String new_comment = "another comment";
         String new_modified_by = "user2";
         long new_modified_time = 17394500000L;

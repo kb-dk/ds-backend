@@ -41,6 +41,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
             RESTRICTED_ID_IDTYPE +" = ?" ;
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
 
+    private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE;
+
     public RightsModuleStorage() throws SQLException {
         connection = dataSource.getConnection();
     }
@@ -158,6 +160,27 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    public List<RestrictedIdOutputDto> getAllRestrictedIds() throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(allRestrictedIdsQuery)) {
+            ResultSet res = stmt.executeQuery();
+            List<RestrictedIdOutputDto> output = new ArrayList<>();
+            while (res.next()) {
+                RestrictedIdOutputDto restrictedIdOutputDto = new RestrictedIdOutputDto();
+                restrictedIdOutputDto.setIdValue(res.getString(RESTRICTED_ID_IDVALUE));
+                restrictedIdOutputDto.setIdType(res.getString(RESTRICTED_ID_IDTYPE));
+                restrictedIdOutputDto.setPlatform(res.getString(RESTRICTED_ID_PLATFORM));
+                restrictedIdOutputDto.setComment(res.getString(RESTRICTED_ID_COMMENT));
+                restrictedIdOutputDto.setModifiedBy(res.getString(RESTRICTED_ID_MODIFIED_BY));
+                restrictedIdOutputDto.setModifiedTime(res.getLong(RESTRICTED_ID_MODIFIED_TIME));
+                output.add(restrictedIdOutputDto);
+            }
+            return output;
+        } catch (SQLException e) {
+            log.error("SQL Exception in readClause:" + e.getMessage());
+            throw e;
+        }
+    }
+
     private void validateSystem(String platform) {
         List<String> validSystems = List.of("dr");//TODO get list from config file
         if (!validSystems.contains(platform)) {
@@ -166,7 +189,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     private void validateIdType(String id_type) {
-        List<String> validIdTypes = List.of("dr_produktions_id","ds_id","egenproduktions_kode","strict_titel"); //TODO get list from config file
+        List<String> validIdTypes = List.of("dr_produktions_id","ds_id","egenproduktions_kode","strict_title"); //TODO get list from config file
         if (!validIdTypes.contains(id_type)) {
             throw new IllegalArgumentException("IdType '" + id_type + "' is not supported in clauses.");
         }
