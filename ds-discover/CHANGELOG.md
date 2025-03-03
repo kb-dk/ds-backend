@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bumped SwaggerUI dependency to v5.18.2
 - Bumped multiple OpenAPI dependency versions
 - Added injection of Oauth token on all service methods when using DsDiscoverClient. But no methods for new are exposed in the client.
-- Bumped kb-util to v1.6.8 for service2service oauth support.
-
+- Bumped kb-util to v1.6.9 for service2service oauth support.
+- Removed auto generated DsLicenseClient class that was a blocker for better exception handling. All DsLicenseClient methods now only throws ServiceException mapped to HTTP status in same way calling the API directly.
+-
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec

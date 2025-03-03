@@ -1,7 +1,6 @@
 package dk.kb.discover.util;
 
 import dk.kb.discover.config.ServiceConfig;
-import dk.kb.license.client.v1.DsLicenseApi;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.util.DsLicenseClient;
@@ -10,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LicenseUtil {
-    private static DsLicenseApi licenseClient;
+    private static DsLicenseClient licenseClient;
 
 
-    public static DsLicenseApi getDsLicenseApiClient() {
+    public static DsLicenseClient  getDsLicenseApiClient() {
 
         if (licenseClient!= null) {
             return licenseClient;
