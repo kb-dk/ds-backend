@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bumped multiple OpenAPI dependency versions
 - Added injection of Oauth token on all service methods when using DsDiscoverClient. But no methods for new are exposed in the client.
 - Bumped kb-util to v1.6.9 for service2service oauth support.
-- Removed auto generated DsLicenseClient class that was a blocker for better exception handling. All DsLicenseClient methods now only throws ServiceException mapped to HTTP status in same way calling the API directly.
+- Removed auto generated DsDiscoverClient class that was a blocker for better exception handling. All DsDiscoverClient methods now only throws ServiceException mapped to HTTP status in same way calling the API directly.
 -
 
 ### Fixed
