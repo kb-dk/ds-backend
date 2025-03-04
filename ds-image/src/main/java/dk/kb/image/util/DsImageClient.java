@@ -13,11 +13,6 @@
  *
  */
 package dk.kb.image.util;
-
-import dk.kb.image.client.v1.AccessApi;
-import dk.kb.image.invoker.v1.ApiClient;
-import dk.kb.image.invoker.v1.ApiException;
-import dk.kb.image.invoker.v1.Configuration;
 import dk.kb.image.model.v1.DeepzoomDZIDto;
 import dk.kb.image.model.v1.IIIFInfoDto;
 import dk.kb.image.model.v1.ThumbnailsDto;
@@ -38,65 +33,20 @@ import java.util.List;
  * The client is Thread safe and handles parallel requests independently.
  * It is recommended to persist the client and to re-use it between calls.
  */
-public class DsImageClient extends AccessApi {
+public class DsImageClient {
     private static final Logger log = LoggerFactory.getLogger(DsImageClient.class);
-
+    private final static String CLIENT_URL_EXCEPTION="The client url was not constructed correct";
+    private final String serviceURI;
     /**
      * Creates a client for the service.
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-image/v1}.
      */
     public DsImageClient(String serviceURI) {
-        super(createClient(serviceURI));
+        this.serviceURI = serviceURI;
         log.info("Created OpenAPI client for '{}'", serviceURI);
     }
 
-    /**
-     * Deconstruct the given URI and use the components to create an ApiClient.
-     * @param serviceURIString an URI to a service.
-     * @return an ApiClient constructed from the serviceURIString.
-     */
-    private static ApiClient createClient(String serviceURIString) {
-        log.debug("Creating OpenAPI client with URI '{}'", serviceURIString);
-
-        URI serviceURI = URI.create(serviceURIString);
-        // No mechanism for just providing the full URI. We have to deconstruct it
-        return Configuration.getDefaultApiClient().
-                setScheme(serviceURI.getScheme()).
-                setHost(serviceURI.getHost()).
-                setPort(serviceURI.getPort()).
-                setBasePath(serviceURI.getRawPath());
-    }
+    //No methods enabled for java client calls yet
     
-    @Deprecated
-    @Override
-    public DeepzoomDZIDto getDeepzoomDZI (String imageid) throws ApiException {
-        throw new ApiException(403, "Method getDeepzoomDZI not allowed to be called on DsImageClient");         
-        
-    }
-    
-    @Override
-    public File getDeepzoomTile (String imageid, Integer layer, String tiles, String format, Float CNT, Float GAM, String CMP, String CTW, Boolean INV, String COL) throws ApiException {
-        throw new ApiException(403, "Method getDeepzoomTile not allowed to be called on DsImageClient");
-    }
-    
-    @Override
-    public IIIFInfoDto getImageInformation (String identifier, String format) throws ApiException {
-        throw new ApiException(403, "Method getImageInformation not allowed to be called on DsImageClient");
-        
-    }
-    
-    @Override
-    public File iIIFImageRequest (String identifier, String region, String size, String rotation, String quality, String format) throws ApiException {
-        throw new ApiException(403, "Method iIIFImageRequest not allowed to be called on DsImageClient");
-    }
-    
-    @Override
-    public File iIPImageRequest (String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT, String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL, List<Integer> JTL, List<Integer> PTL, String CVT) throws ApiException {
-        throw new ApiException(403, "Method iIPImageRequest not allowed to be called on DsImageClient");        
-    }
-    
-    @Override
-    public ThumbnailsDto kalturaThumbnails (String fileId, Integer numberOfThumbnails, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) throws ApiException {
-        throw new ApiException(403, "Method kalturaThumbnails not allowed to be called on DsImageClient");   
-    }
+  
 }
