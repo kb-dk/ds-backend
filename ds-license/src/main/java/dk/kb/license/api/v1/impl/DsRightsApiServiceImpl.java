@@ -2,6 +2,7 @@ package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.*;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 import dk.kb.license.model.v1.RestrictedIdInputDto;
@@ -41,7 +42,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                         restrictedIdInputDto.getIdType(),
                         restrictedIdInputDto.getPlatform(),
                         restrictedIdInputDto.getComment(),
-                        getCurrentUserID(), // TODO get from oauth token
+                        getCurrentUserID(),
                         Instant.now().getEpochSecond());
                 log.info("Created");
                 return null;
@@ -61,7 +62,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                         restrictedIdInputDto.getIdType(),
                         restrictedIdInputDto.getPlatform(),
                         restrictedIdInputDto.getComment(),
-                        getCurrentUserID(), // TODO get from oauth token
+                        getCurrentUserID(),
                         Instant.now().getEpochSecond());
                 log.info("Updated");
                 return null;
@@ -106,6 +107,28 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                 return ((RightsModuleStorage) storage).getAllRestrictedIds();
             });
         } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+
+    @Override
+    public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds) {
+        try {
+            BaseModuleStorage.performStorageAction("delete restricted ID",new RightsModuleStorage(), storage -> {
+                for(RestrictedIdInputDto id : restrictedIds) {
+                    ((RightsModuleStorage) storage).createRestrictedId(
+                        id.getIdValue(),
+                        id.getIdType(),
+                        id.getPlatform(),
+                        id.getComment(),
+                        getCurrentUserID(),
+                        Instant.now().getEpochSecond()
+                    );
+                }
+                return null;
+            });
+        } catch (SQLException e) {
             throw handleException(e);
         }
     }
