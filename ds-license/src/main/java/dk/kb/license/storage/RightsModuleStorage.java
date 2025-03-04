@@ -2,18 +2,20 @@ package dk.kb.license.storage;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
-import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.NotNull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Class for interacting with the part of DS-License which handles the calculation of rights, such as holdbacks and restrictions.
@@ -105,6 +107,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
                 output.setComment(res.getString(RESTRICTED_ID_COMMENT));
                 output.setModifiedBy(res.getString(RESTRICTED_ID_MODIFIED_BY));
                 output.setModifiedTime(res.getLong(RESTRICTED_ID_MODIFIED_TIME));
+                output.setModifiedTimeHuman(convertToHumanReadable(output.getModifiedTime()));
                 return output;
             }
             return null;
@@ -175,6 +178,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
                 restrictedIdOutputDto.setComment(res.getString(RESTRICTED_ID_COMMENT));
                 restrictedIdOutputDto.setModifiedBy(res.getString(RESTRICTED_ID_MODIFIED_BY));
                 restrictedIdOutputDto.setModifiedTime(res.getLong(RESTRICTED_ID_MODIFIED_TIME));
+                restrictedIdOutputDto.setModifiedTimeHuman(convertToHumanReadable(restrictedIdOutputDto.getModifiedTime()));
                 output.add(restrictedIdOutputDto);
             }
             return output;
@@ -182,6 +186,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
             log.error("SQL Exception in readClause:" + e.getMessage());
             throw e;
         }
+    }
+
+    private String convertToHumanReadable(Long modifiedTime) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(modifiedTime), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ServiceConfig.getConfig().getString("human-readable-date-format","yyyy-MM-dd HH:mm:ss"), Locale.ENGLISH);
+        return localDateTime.format(formatter);
     }
 
     private void validatePlatformAndIdType(String platform, String idType) {
