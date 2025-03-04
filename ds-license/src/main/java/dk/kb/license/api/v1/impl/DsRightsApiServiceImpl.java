@@ -133,6 +133,24 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+    @Override
+    public void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds) {
+        try {
+            BaseModuleStorage.performStorageAction("delete restricted ID",new RightsModuleStorage(), storage -> {
+                for(RestrictedIdInputDto id : restrictedIds) {
+                    ((RightsModuleStorage) storage).deleteRestrictedId(
+                            id.getIdValue(),
+                            id.getIdType(),
+                            id.getPlatform()
+                    );
+                }
+                return null;
+            });
+        } catch (SQLException e) {
+            throw handleException(e);
+        }
+    }
+
     private String getCurrentUserID() {
         Message message = JAXRSUtils.getCurrentMessage();
         AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);

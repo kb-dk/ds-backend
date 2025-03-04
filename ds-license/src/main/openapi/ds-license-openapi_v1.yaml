@@ -220,6 +220,7 @@ paths:
                   $ref: '#/components/schemas/RestrictedIdOutput'
 
     post:
+      description: create multiple restricted ids
       tags:
         - 'DsRights'
       operationId: createRestrictedIds
@@ -250,9 +251,32 @@ paths:
       responses:
         '200':
           description: created
-
-
-
+    delete:
+      description: delete multiple restricted IDs
+      tags:
+        - 'DsRights'
+      operationId: deleteRestrictedIds
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RestrictedIdInput'
+            example:
+              - idValue: "test:multi:1"
+                idType: "ds_id"
+                platform: "dr"
+              - idValue: "test:multi:3"
+                idType: "dr_produktions_id"
+                platform: "dr"
+      responses:
+        '200':
+          description: deleted
 
   /rights/restrictedId:
     get:
