@@ -9,8 +9,12 @@ import dk.kb.license.model.v1.RestrictedIdOutputDto;
 
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
+import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.cxf.interceptor.InInterceptors;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.Message;
+import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +41,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                         restrictedIdInputDto.getIdType(),
                         restrictedIdInputDto.getPlatform(),
                         restrictedIdInputDto.getComment(),
-                        "user1", // TODO get from oauth token
+                        getCurrentUserID(), // TODO get from oauth token
                         Instant.now().getEpochSecond());
                 log.info("Created");
                 return null;
@@ -57,7 +61,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                         restrictedIdInputDto.getIdType(),
                         restrictedIdInputDto.getPlatform(),
                         restrictedIdInputDto.getComment(),
-                        "user1", // TODO get from oauth token
+                        getCurrentUserID(), // TODO get from oauth token
                         Instant.now().getEpochSecond());
                 log.info("Updated");
                 return null;
@@ -104,5 +108,14 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         } catch (Exception e) {
             throw handleException(e);
         }
+    }
+
+    private String getCurrentUserID() {
+        Message message = JAXRSUtils.getCurrentMessage();
+        AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
+        if (token != null) {
+            return token.getName();
+        }
+        return "no user";
     }
 }
