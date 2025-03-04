@@ -189,7 +189,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     private String convertToHumanReadable(Long modifiedTime) {
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(modifiedTime), ZoneId.systemDefault());
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(modifiedTime), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ServiceConfig.getConfig().getString("human-readable-date-format","yyyy-MM-dd HH:mm:ss"), Locale.ENGLISH);
         return localDateTime.format(formatter);
     }
