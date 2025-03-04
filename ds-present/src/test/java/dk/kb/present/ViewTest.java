@@ -421,6 +421,22 @@ class ViewTest {
         } );
     }
 
+    @Test
+    @Tag("integration")
+    void testRestrictionOfProductionIds() {
+        HoldbackDatePicker.init();
+        ProductionIdLookup.init();
+
+        // Should be more than 2500 after latest update to the list
+        assertTrue(ProductionIdLookup.getInstance().getAmountOfRestrictedIds() > 2500L);
+
+        // List should contain a sample of the older ids
+        assertTrue(ProductionIdLookup.getInstance().doLookup("2912081400"));
+
+        // List should contain a sample from the newer ids
+        assertTrue(ProductionIdLookup.getInstance().doLookup("8007034000"));
+    }
+
     //********************************************** PRIVATE HELPER METHODS BELOW ***************************************************************
 
     /**
