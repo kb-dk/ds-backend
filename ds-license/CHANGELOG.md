@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Added abstract class BaseModuleStorage, which handles connection to the backing storage in preparation for implementation of rights calculation.
+### Changed
+### Fixed
+
+## [1.5.3](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.5.3) 2025-03-05
+### Added
 
 - Removed auto generated DsLicenseClient class that was a blocker for better exception handling. All DsLicenseClient methods now only throws ServiceException mapped to HTTP status in same way calling the API directly.
 - Bumped kb-util to v1.6.9 for service2service oauth support.
@@ -15,13 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added DTO which contains all needed values for calculating rights.
 - Added ddl scripts and storage methods for restricted IDs
 
-
 ### Changed
 - Bumped SwaggerUI dependency to v5.18.2
 - Bumped multiple OpenAPI dependency versions
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
+
 
 ## [1.5.2](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.5.2) 2025-01-07
 ### Changed
