@@ -259,7 +259,7 @@ paths:
                 platform: "dr"
                 comment: "test multi 1"
       responses:
-        '200':
+        '204':
           description: created
     delete:
       description: delete multiple restricted IDs
