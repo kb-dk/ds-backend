@@ -25,7 +25,7 @@ public class DsIdLookup {
 
 
     /**
-     * Set containing production IDs that cannot be shown to users.
+     * Set containing DS IDs that cannot be shown to users.
      */
     private static Set<String> restrictedDsIds = new HashSet<>();
 
@@ -51,24 +51,27 @@ public class DsIdLookup {
 
 
     /**
-     * Load restricted production IDs from an Excel sheet defined in the configuration for ds-present.
+     * Load restricted DS IDs from an Excel sheet defined in the configuration for ds-present.
      */
     private static void loadRestrictedIdsFromFile() {
         String restrictionsSheetPath = ServiceConfig.getConfig().getString("dr.restrictedDsIdsSheet");
-        Set<String> restrictedIds = new HashSet<>();
 
         // Read Excel sheet specified in configuration.
         try (FileInputStream fis = new FileInputStream(Resolver.resolveURL(restrictionsSheetPath).getPath());
              Workbook workbook = new XSSFWorkbook(fis)) {
-
             Sheet sheet = workbook.getSheetAt(0);
 
-            // TODO: Read the specific column of cells.
             for (Row row : sheet) {
-                Cell cell = row.getCell(0);
+                // Skip first row as it contains a heading
+                if (row.getRowNum() == 0) {
+                    continue;
+                }
+
+                Cell cell = row.getCell(3);
                 if (cell != null) {
                     if (Objects.requireNonNull(cell.getCellType()) == CellType.STRING) {
-                        restrictedDsIds.add(cell.getStringCellValue());
+                        String id = cell.getStringCellValue().stripLeading().stripTrailing();
+                        addIdToRestrictedList(id);
                     }
                 }
             }
@@ -85,6 +88,29 @@ public class DsIdLookup {
         log.info("Loaded '{}' restricted DS IDs from file specified at YAML path: '{}'", restrictedDsIds.size(), restrictionsSheetPath);
     }
 
+    /**
+     * Validate that content of a cell is actually one ID. If leading and trailing spaces are present, they are removed and if spaces are present in the string it means that
+     * there are probably multiple IDs present in the string. If this is the case, all IDs in the cell are added individually to the list.
+     * @param id to validate and add to restriction list.
+     */
+    private static void addIdToRestrictedList(String id) {
+        if (id.equals("Dublet")){
+            return;
+        }
+
+        if (id.contains(" ")){
+            String[] ids = id.split(" ");
+
+            for (String entry : ids){
+                if (!entry.isEmpty()) {
+                    String splitId = entry.stripLeading().stripTrailing();
+                    restrictedDsIds.add(splitId);
+                }
+            }
+        } else {
+            restrictedDsIds.add(id);
+        }
+    }
 
 
 }
