@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.5.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.2) - 2025-03-05
+
 ### Changed
 - SolrShield now enabled by default
 - Bumped SwaggerUI dependency to v5.18.2
@@ -13,13 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added injection of Oauth token on all service methods when using DsDiscoverClient. But no methods for new are exposed in the client.
 - Bumped kb-util to v1.6.9 for service2service oauth support.
 - Removed auto generated DsDiscoverClient class that was a blocker for better exception handling. All DsDiscoverClient methods now only throws ServiceException mapped to HTTP status in same way calling the API directly.
--
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
-
-### Fixed
 - Fixed resolving of same jars from multiple locations.
+
 
 ## [1.5.1](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.1) - 2025-01-07
 ### Changed
