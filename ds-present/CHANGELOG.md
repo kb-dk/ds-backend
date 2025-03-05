@@ -5,21 +5,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Bumped kb-util to v1.6.9 for service2service oauth support.
-- Added injection of Oauth token on all service methods when using DsPresentClient
-- IIIF metods not supported by service2service Oauth since no java client is generated for these methods. Also not intended to be called by other modules.
-- Using new DsLicense and DsStorage client
+
+### Added
+### Changed
+### Fixed
+
+
+## [2.2.7](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.7) 2025-03-05
 
 ### Added
 - ds-present-transformation-errors log which logs only transformation errors.
+- Added injection of Oauth token on all service methods when using DsPresentClient
 
 ### Changed
 - Bumped multiple OpenAPI dependency versions
 - Changed the response format for the JSON response in /records to include information on failed transformations.
+- Bumped kb-util to v1.6.9 for service2service oauth support.
+- IIIF metods not supported by service2service Oauth since no java client is generated for these methods. Also not intended to be called by other modules.
+- Using new DsLicense and DsStorage client
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
 - Fixed genre unittests failing wrongly
+
 
 ## [2.2.6](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.6) 2025-01-27
 ### Changed
