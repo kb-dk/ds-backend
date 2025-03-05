@@ -5,6 +5,8 @@ import dk.kb.license.api.v1.*;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import dk.kb.license.model.v1.RestrictedIdInputDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 
@@ -34,7 +36,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
 
     @Override
     public void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto) {
-        log.info("Creating restricted ID ");
+        log.debug("Creating restricted ID {}", restrictedIdInputDto );
         try {
             BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", new RightsModuleStorage(), storage -> {
                 ((RightsModuleStorage) storage).createRestrictedId(
@@ -44,7 +46,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                         restrictedIdInputDto.getComment(),
                         getCurrentUserID(),
                         Instant.now().getEpochSecond());
-                log.info("Created");
+                log.info("Created restriction {}",restrictedIdInputDto);
                 return null;
             });
         } catch (Exception e) {
@@ -54,7 +56,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
 
     @Override
     public void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto) {
-        log.info("Creating restricted ID ");
+        log.debug("Updating restricted ID {}",restrictedIdInputDto);
         try {
             BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", new RightsModuleStorage(), storage -> {
                 ((RightsModuleStorage) storage).updateRestrictedId(
@@ -64,7 +66,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                         restrictedIdInputDto.getComment(),
                         getCurrentUserID(),
                         Instant.now().getEpochSecond());
-                log.info("Updated");
+                log.info("Updating restricted ID {}",restrictedIdInputDto.toString());
                 return null;
             });
         } catch (Exception e) {
@@ -74,11 +76,13 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
 
     @Override
     public void deleteRestrictedId(String id, String idType, String platform) {
+        log.debug("Deleted restricted id:{} idType:{} platform:{}", id, idType, platform);
         try {
             BaseModuleStorage.performStorageAction("delete restricted ID",new RightsModuleStorage(), storage -> {
                 ((RightsModuleStorage) storage).deleteRestrictedId(id, idType, platform);
                 return null;
             });
+            log.info("Deleted restricted id:{} idType:{} platform:{}", id, idType, platform);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -87,7 +91,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public RestrictedIdOutputDto getRestrictedId(String id, String idType, String platform) {
         try {
-            log.info("Get restricted ID");
+            log.debug("Get restricted ID id:{} idType:{} platform:{}", id, idType, platform);
             return BaseModuleStorage.performStorageAction("Get restricted ID", new RightsModuleStorage(), storage -> {
                 RestrictedIdOutputDto output = ((RightsModuleStorage)storage).getRestrictedId(id, idType, platform);
                 if (output != null) {
@@ -128,6 +132,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                 }
                 return null;
             });
+            log.info("Added restricted IDs: [{}] ",
+                    restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
+
         } catch (SQLException e) {
             throw handleException(e);
         }
@@ -146,6 +153,8 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                 }
                 return null;
             });
+            log.info("Deleted restricted IDs: [{}] ",
+                restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
         } catch (SQLException e) {
             throw handleException(e);
         }
