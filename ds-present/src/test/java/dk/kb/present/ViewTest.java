@@ -408,6 +408,7 @@ class ViewTest {
     }
 
     @Test
+    @Tag("integration")
     void alwaysFailingRecordTest() throws IOException {
         HoldbackDatePicker.init();
         View solrView = getSolrTvViewForPreservicaRecord();
