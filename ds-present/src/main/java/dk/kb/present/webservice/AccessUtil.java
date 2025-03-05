@@ -14,7 +14,7 @@
  */
 package dk.kb.present.webservice;
 
-import dk.kb.license.client.v1.DsLicenseApi;
+
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
@@ -44,7 +44,7 @@ public class AccessUtil {
     private static final String LICENSE_URL_KEY = "licensemodule.url"; // Used for creating licenseClient
     private static final String LICENSE_ALLOWALL_KEY = "licensemodule.allowall";
 
-    public static DsLicenseApi licenseClient;     // Shared between instances
+    public static DsLicenseClient licenseClient;     // Shared between instances
     public static boolean licenseAllowAll = ServiceConfig.getConfig().getBoolean(LICENSE_ALLOWALL_KEY, false);
 
     /**
@@ -157,7 +157,7 @@ public class AccessUtil {
      * The ds-license client is used to verify access to individual records.
      * @return a ds-license client, ready for use.
      */
-    static DsLicenseApi getLicenseClient() {
+    static DsLicenseClient getLicenseClient() {
         if (licenseClient != null) {
           return licenseClient;
         }

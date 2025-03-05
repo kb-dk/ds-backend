@@ -14,13 +14,12 @@
  */
 package dk.kb.present.storage;
 
-import dk.kb.storage.client.v1.DsStorageApi;
-import dk.kb.storage.invoker.v1.ApiException;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,18 +82,18 @@ public class DSStorage implements Storage {
     }
 
     @Override
-    public DsRecordDto getDSRecord(String id){
+    public DsRecordDto getDSRecord(String id) throws ServiceException{
         log.debug("getDSRecord(id='{}') called", id);
         try {
             return storageClient.getRecord(id,false);
-        } catch (ApiException e) {
+        } catch (ServiceException e) {
             log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
-            throw new NotFoundServiceException("Unable to retrieve record '" + id + "'", e);
+           throw e;
         }
     }
 
     @Override
-    public DsRecordDto getDSRecordTreeLocal(String id) {
+    public DsRecordDto getDSRecordTreeLocal(String id) throws ServiceException{
         log.debug("getDSRecordTreeLocal(id='{}') called", id);
         try {
             DsRecordDto record = storageClient.getRecord(id,true);
@@ -103,9 +102,9 @@ public class DSStorage implements Storage {
                 throw new IllegalArgumentException("Requests for anything else than deliverableUnits are not allowed.");
             }
             return record;
-        } catch (ApiException e){
+        } catch (ServiceException e){
             log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
-            throw new NotFoundServiceException("Unable to retrieve record '" + id + "'", e);
+            throw e;
         }
     }
 
