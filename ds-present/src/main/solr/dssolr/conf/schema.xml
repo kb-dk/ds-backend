@@ -779,6 +779,12 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example true?>
   </field>
 
+  <field name="ds_id_restricted" type="boolean">
+    <?description If a record has been restricted by DR, it can have been restricted by the DS ID, which is the general id of the record. If that is the case, this value will be
+            true and therefore the record should not be available.?>
+    <?example true?>
+  </field>
+
   <field name="file_id" type="string">
     <?description An id, used as part of the streaming URL.?>
     <?example     000000e1-0000-462a-a2b4-7488244fcca7?>

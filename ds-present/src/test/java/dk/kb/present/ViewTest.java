@@ -2,6 +2,7 @@ package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.dr.holdback.HoldbackDatePicker;
+import dk.kb.present.dr.restrictions.DsIdLookup;
 import dk.kb.present.dr.restrictions.ProductionIdLookup;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
@@ -365,6 +366,21 @@ class ViewTest {
 
         String solrdoc = jsonldView.apply(recordDto);
         assertTrue(solrdoc.contains("\"dr_id_restricted\":\"true\""));
+    }
+
+    @Test
+    @Tag("integration")
+    void testCreationOfFieldDsIdRestricted() throws IOException {
+        HoldbackDatePicker.init();
+        ProductionIdLookup.init();
+        DsIdLookup.init();
+        View jsonldView = getSolrTvViewForPreservicaRecord();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_4d61dcb3);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+        String solrdoc = jsonldView.apply(recordDto);
+        assertTrue(solrdoc.contains("\"ds_id_restricted\":\"false\""));
     }
 
     @Test
