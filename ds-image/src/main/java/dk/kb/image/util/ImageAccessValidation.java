@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.image.api.v1.impl.AccessApiServiceImpl;
 import dk.kb.image.config.ServiceConfig;
-import dk.kb.license.client.v1.DsLicenseApi;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
@@ -36,7 +35,7 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 
 public class ImageAccessValidation {
     private static final Logger log = LoggerFactory.getLogger(ImageAccessValidation.class);
-    private static DsLicenseApi licenseClient;
+    private static DsLicenseClient licenseClient;
 
     public static enum ACCESS_TYPE {
         ACCESS, NO_ACCESS, ID_NON_EXISTING
@@ -144,7 +143,7 @@ public class ImageAccessValidation {
     public static ACCESS_TYPE accessTypeForImage(String resourceID, boolean thumbnail) {
 
         // Add filter query from license module.
-        DsLicenseApi licenseClient = getDsLicenseApiClient();
+        DsLicenseClient licenseClient = getDsLicenseApiClient();
         CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(resourceID, thumbnail);
         CheckAccessForIdsOutputDto accessResponse;
         try {
@@ -235,7 +234,7 @@ public class ImageAccessValidation {
 
     }
 
-    private static DsLicenseApi getDsLicenseApiClient() {
+    private static DsLicenseClient getDsLicenseApiClient() {
         if (licenseClient == null) {
             licenseClient = new DsLicenseClient(ServiceConfig.getConfig());
         }
