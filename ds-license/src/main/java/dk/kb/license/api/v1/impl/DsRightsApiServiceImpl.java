@@ -3,7 +3,6 @@ package dk.kb.license.api.v1.impl;
 import dk.kb.license.api.v1.*;
 
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,7 @@ import dk.kb.util.webservice.ImplBase;
  */
 @InInterceptors(interceptors = "dk.kb.license.webservice.KBAuthorizationInterceptor")
 public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
-    private Logger log = LoggerFactory.getLogger(this.toString());
+    private final static Logger log = LoggerFactory.getLogger(DsRightsApiServiceImpl.class);
 
 
     @Override
@@ -45,7 +44,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                         restrictedIdInputDto.getPlatform(),
                         restrictedIdInputDto.getComment(),
                         getCurrentUserID(),
-                        Instant.now().getEpochSecond());
+                        System.currentTimeMillis());
                 log.info("Created restriction {}",restrictedIdInputDto);
                 return null;
             });
@@ -65,8 +64,8 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                         restrictedIdInputDto.getPlatform(),
                         restrictedIdInputDto.getComment(),
                         getCurrentUserID(),
-                        Instant.now().getEpochSecond());
-                log.info("Updating restricted ID {}",restrictedIdInputDto.toString());
+                        System.currentTimeMillis());
+                log.info("Updating restricted ID {}",restrictedIdInputDto);
                 return null;
             });
         } catch (Exception e) {
@@ -107,9 +106,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) {
         try {
-            return BaseModuleStorage.performStorageAction("delete restricted ID",new RightsModuleStorage(), storage -> {
-                return ((RightsModuleStorage) storage).getAllRestrictedIds();
-            });
+            return BaseModuleStorage.performStorageAction("delete restricted ID",new RightsModuleStorage(), storage -> ((RightsModuleStorage) storage).getAllRestrictedIds());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -127,7 +124,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
                         id.getPlatform(),
                         id.getComment(),
                         getCurrentUserID(),
-                        Instant.now().getEpochSecond()
+                        System.currentTimeMillis()
                     );
                 }
                 return null;

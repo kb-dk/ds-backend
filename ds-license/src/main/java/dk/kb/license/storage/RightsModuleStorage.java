@@ -67,9 +67,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
      */
     public void createRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
         validatePlatformAndIdType(platform,id_type);
+        long uniqueID = generateUniqueID();
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)){
-            stmt.setLong(1, generateUniqueID());
+            stmt.setLong(1, uniqueID);
             stmt.setString(2, id_value);
             stmt.setString(3, id_type);
             stmt.setString(4, platform);
@@ -189,7 +190,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     private String convertToHumanReadable(Long modifiedTime) {
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(modifiedTime), ZoneId.systemDefault());
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(modifiedTime), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ServiceConfig.getConfig().getString("human-readable-date-format","yyyy-MM-dd HH:mm:ss"), Locale.ENGLISH);
         return localDateTime.format(formatter);
     }

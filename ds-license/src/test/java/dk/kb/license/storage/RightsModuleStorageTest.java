@@ -44,7 +44,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         String platform = "dr";
         String comment = "a comment";
         String modified_by = "user1";
-        long modified_time = 1739439979L;
+        long modified_time = 1739439979000L;
 
         storage.createRestrictedId(idValue,idType,platform,comment,modified_by,modified_time);
         RestrictedIdOutputDto retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
@@ -60,7 +60,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
         String new_comment = "another comment";
         String new_modified_by = "user2";
-        long new_modified_time = 17394500000L;
+        long new_modified_time = 17394500000000L;
 
         storage.updateRestrictedId(idValue,idType,platform,new_comment,new_modified_by,new_modified_time);
         retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
@@ -89,8 +89,6 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         storage.createRestrictedId(idValue,idType,platform,comment,modified_by,modified_time);
 
 
-        assertThrows(SQLException.class, () -> {
-            storage.createRestrictedId(idValue, idType, platform, comment, modified_by, modified_time);
-        });
+        assertThrows(SQLException.class, () -> storage.createRestrictedId(idValue, idType, platform, comment, modified_by, modified_time));
     }
 }
