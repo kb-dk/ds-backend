@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
-## [2.2.8](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.8) 2025-03-05
+## [2.2.7](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.2.7) 2025-03-05
 
 ### Added
 - ds-present-transformation-errors log which logs only transformation errors.
