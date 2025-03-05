@@ -14,17 +14,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Changed
+### Fixed
+### Fixed
+- Fixed inclusion of the same dependencies from multiple sources.
+
+## [1.7.2](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.7.2) - 2025-03-05
+### Added
+- Kaltura thumbnail API extended to two allow seeking between startSeconds and endSeconds into the stream. Default behaviour unchanged.
+- Added injection of Oauth token on all service methods when using DsImageClient. But no methods  are exposed in the client.
+- Bumped kb-util to v1.6.9 for service2service oauth support.
+- Removed auto generated DsImageClient class that was a blocker for better exception handling. All DsImageClient methods now only throws ServiceException mapped to HTTP status in same way calling the API directly.
+
+### Changed
 - Bumped SwaggerUI dependency to v5.18.2
 - Bumped multiple OpenAPI dependency versions
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
 - Fixed that placeholder images for non-existing and not-allowed to view images are shown again. 
-
-### Changed
-
-### Fixed
 - Fixed inclusion of the same dependencies from multiple sources.
+
 
 ## [1.7.1](https://github.com/kb-dk/ds-image/releases/tag/ds-image-1.7.1) - 2025-01-07
 ### Changed
