@@ -204,11 +204,21 @@ paths:
           description: filter on IdType
           schema:
             type: string
+          examples:
+            ds_id:
+              value: "ds_id"
+            dr_produktions_id:
+              value: "dr_produktions_id"
+            egenproduktions_kode:
+              value: "egenproduktions_kode"
+            strict_title:
+              value: "strict_title"
         - name: platform
           in: query
           description: filter on platform
           schema:
             type: string
+          example: "dr"
       responses:
         '200':
           description:
@@ -309,7 +319,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Get an stricted ID details
+          description: Get a restricted ID details
           content:
             application/json:
               schema:
