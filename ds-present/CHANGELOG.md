@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - ds-present-transformation-errors log which logs only transformation errors.
+- Added functionality to restrict records based on DS ID.
 
 ### Changed
 - Bumped multiple OpenAPI dependency versions
