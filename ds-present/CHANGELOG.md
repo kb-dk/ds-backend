@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Bumped multiple OpenAPI dependency versions
 - Changed the response format for the JSON response in /records to include information on failed transformations.
+- Solr version bumped to v. 1.7.10
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
