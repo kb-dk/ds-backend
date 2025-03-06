@@ -18,7 +18,7 @@ CREATE TABLE HOLDBACK_MAP (
     id            VARCHAR(256) PRIMARY KEY,
     content_range INT4RANGE NOT NULL,
     form_range    INT4RANGE NOT NULL,
-    holdback_id   VARCHAR(32)
+    holdback_id   VARCHAR(32) references HOLDBACK_RULES(id)
 );
 
 CREATE TABLE HOLDBACK_RULES (
