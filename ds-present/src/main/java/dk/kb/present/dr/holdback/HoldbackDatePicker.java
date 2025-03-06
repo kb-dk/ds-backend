@@ -2,6 +2,8 @@ package dk.kb.present.dr.holdback;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -128,8 +130,20 @@ public class HoldbackDatePicker {
                 result.setHoldbackDate("9999-01-01T00:00:00Z");
             } else {
                 int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
+
                 String startDate = extractedValues.getStartTime();
-                result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), holdbackDays));
+                if (holdbackDays < 365) {
+                    // Add holdback days directly to startTime if holdback is less than a year
+                    result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), holdbackDays));
+                } else {
+                    // When holdback is more than a year, it should be calculated from the 1st of January the following year
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+                    LocalDateTime date = LocalDateTime.parse(startDate, formatter);
+                    log.info("Parsed date");
+
+
+                }
+
             }
 
             return result;
@@ -137,6 +151,19 @@ public class HoldbackDatePicker {
             throw new RuntimeException(e);
         }
 
+    }
+
+    /**
+     * Get 1st of January for the following year for any LocalDateTime
+     * @param dateTime to
+     * @return
+     */
+    public static LocalDateTime getFirstComingJanuary(LocalDateTime dateTime) {
+        int year = dateTime.getYear();
+
+        LocalDateTime firstJanuary = LocalDateTime.of(year + 1, Month.JANUARY, 1, 0, 0);
+
+        return firstJanuary;
     }
 
     /**
