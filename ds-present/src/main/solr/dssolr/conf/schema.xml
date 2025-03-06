@@ -63,8 +63,9 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.8: Rename own_production to production_code_allowed.
        Rename own_production_code to production_code_value.
 1.7.9: Add genre_facet as facet field in configuration.
+1.7.10: Add boolean field ds_id_restricted.
   -->
-  <field name="_ds_1.7.9_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.10_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -776,6 +777,12 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="dr_id_restricted" type="boolean">
     <?description If a record has been restricted by DR, it has been restricted by the Production ID present in dr_production_id. If that is the case, this value will be true
             and therefore the record should not be available.?>
+    <?example true?>
+  </field>
+
+  <field name="ds_id_restricted" type="boolean">
+    <?description If a record has been restricted by DR, it can have been restricted by the DS ID, which is the general id of the record. If that is the case, this value will be
+            true and therefore the record should not be available.?>
     <?example true?>
   </field>
 

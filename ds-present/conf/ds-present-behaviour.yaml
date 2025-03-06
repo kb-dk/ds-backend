@@ -129,6 +129,7 @@ dr:
     purposeSheet: 'internal_test_files/dr_formaalstabeller_20240704.xlsx'
     holdbackSheet: 'internal_test_files/dr_holdbacktabel_20240902.xlsx'
   restrictionSheet: 'internal_test_files/dr_klausuleringsliste_20250304.xlsx'
+  restrictedDsIdsSheet: 'internal_test_files/ds_id_klausuleringsliste_20250304.xlsx'
   # This number specifies which material gets indexed as own production and therefore gets viewable in the system.
   # value < 2000 = truly own production
   # value < 3000 = co production
