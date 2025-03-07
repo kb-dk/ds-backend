@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SolrShield now enabled by default
 - Bumped SwaggerUI dependency to v5.18.2
 - Bumped multiple OpenAPI dependency versions
+- SolrShield score reduced for start parameter and number of rows.
 
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec
