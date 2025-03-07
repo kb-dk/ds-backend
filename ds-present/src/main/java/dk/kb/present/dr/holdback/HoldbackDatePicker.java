@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -137,11 +138,14 @@ public class HoldbackDatePicker {
                     result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), holdbackDays));
                 } else {
                     // When holdback is more than a year, it should be calculated from the 1st of January the following year
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
                     LocalDateTime date = LocalDateTime.parse(startDate, formatter);
-                    log.info("Parsed date");
 
+                    ZonedDateTime holdbackCalculationStartDate = getFirstComingJanuary(date);
+                    log.info("Parsed date and got first of january next year: '{}'", holdbackCalculationStartDate.format(formatter));
 
+                    result.setHoldbackDate(calculateHoldbackDate(holdbackCalculationStartDate, holdbackDays));
                 }
 
             }
@@ -154,16 +158,14 @@ public class HoldbackDatePicker {
     }
 
     /**
-     * Get 1st of January for the following year for any LocalDateTime
-     * @param dateTime to
-     * @return
+     * Get 1st of January for the following year for any LocalDateTime.
+     * @param dateTime to extract year from
+     * @return a new ZonedDateTime with the date 1st of january next year from the input datetime
      */
-    public static LocalDateTime getFirstComingJanuary(LocalDateTime dateTime) {
+    public static ZonedDateTime getFirstComingJanuary(LocalDateTime dateTime) {
         int year = dateTime.getYear();
 
-        LocalDateTime firstJanuary = LocalDateTime.of(year + 1, Month.JANUARY, 1, 0, 0);
-
-        return firstJanuary;
+        return ZonedDateTime.of(year + 1, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
     }
 
     /**
