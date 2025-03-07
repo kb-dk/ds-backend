@@ -151,7 +151,7 @@ public class PresentFacade {
                     httpServletResponse, FormatDto.JSON_LD_LINES, ExportWriterFactory.FORMAT.jsonl, accessFilter);
             case MODS:
                 httpServletResponse.setContentType("application/xml");
-                return getRecordsData(
+                return getRecordsDataNoErrorsObject(
                     origin, mTime, maxRecords,
                     httpServletResponse, FormatDto.MODS, ExportWriterFactory.FORMAT.xml, accessFilter);
             case SOLRJSON:
@@ -225,7 +225,9 @@ public class PresentFacade {
         return accessFilter;
     }
 
-    // Only deliver the data-part of the Records
+    /**
+     * Only deliver the data-part of the Records in JSON formats.
+     */
     private static StreamingOutput getRecordsData(
             DSOrigin origin, Long mTime, Long maxRecords,
             HttpServletResponse httpServletResponse, FormatDto recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
@@ -239,6 +241,31 @@ public class PresentFacade {
         records.setHeaders(httpServletResponse);
 
         return writeRecordsWithErrorsObject(httpServletResponse, deliveryFormat, records, failedTransformations);
+    }
+
+    /**
+     * The method {@link #getRecordsData(DSOrigin, Long, Long, HttpServletResponse, FormatDto, ExportWriterFactory.FORMAT, Function) currently only works for JSON formats. Use this for XML e.g.}
+     */
+    private static StreamingOutput getRecordsDataNoErrorsObject(DSOrigin origin, Long mTime, Long maxRecords,
+                                                                HttpServletResponse httpServletResponse, FormatDto recordFormat, ExportWriterFactory.FORMAT deliveryFormat,
+                                                                Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter){
+        // List to hold errors from records failing transformations.
+        ErrorList failedTransformations = new ErrorList();
+
+        setFilename(httpServletResponse, mTime, maxRecords, deliveryFormat);
+        ContinuationStream<DsRecordDto, Long> records =
+                origin.getDSRecords(mTime, maxRecords, recordFormat, accessFilter, failedTransformations);
+        records.setHeaders(httpServletResponse);
+
+        return output -> {
+            try (ExportWriter writer = ExportWriterFactory.wrap(
+                    output, httpServletResponse, deliveryFormat, false, "records")) {
+                records
+                        .map(DsRecordDto::getData)
+                        .map(DataCleanup::removeXMLDeclaration)
+                        .forEach(writer::write);
+            }
+        };
     }
 
     /**
