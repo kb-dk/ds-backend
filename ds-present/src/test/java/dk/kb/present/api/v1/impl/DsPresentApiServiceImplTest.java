@@ -14,10 +14,9 @@
  */
 package dk.kb.present.api.v1.impl;
 
-//import dk.kb.license.client.v1.DsLicenseApi;
-//import dk.kb.license.invoker.v1.ApiException;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
+import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.PresentFacade;
 import dk.kb.present.PresentFacadeTest;
 import dk.kb.present.config.ServiceConfig;
@@ -26,6 +25,8 @@ import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -58,13 +59,13 @@ public class DsPresentApiServiceImplTest {
     }
 
     @Test
-    /*
-    public void testSingleRecordLicense() throws NoSuchFieldException, ApiException {
+    
+    public void testSingleRecordLicense() throws NoSuchFieldException, ServiceException {
         final String RECORD_ID = "local.mods:40221e30-1414-11e9-8fb8-00505688346e.xml";
 
         // Setup mock license that allows RECORD_ID
         DsPresentApiServiceImpl presentAPI = getMockedPresentAPI();
-        DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
+        DsLicenseClient mockedLicenseClient = mock(DsLicenseClient.class);
         CheckAccessForIdsOutputDto accessResponse = new CheckAccessForIdsOutputDto().accessIds(List.of(RECORD_ID));
         doReturn(accessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
         AccessUtil.licenseClient = mockedLicenseClient;
@@ -90,8 +91,7 @@ public class DsPresentApiServiceImplTest {
      * @param expectedException the expected inner {@code Exception}.
      * @param executable a code expected to throw an {@code Exception} wrapping an instance of {@code expectedException}.
      * @param message the message to show if the assert fails.
-     */
-    /*
+     */    
     private void assertThrowsInner(Class<? extends Exception> expectedException, Executable executable, String message) {
         try {
             executable.execute();
@@ -105,8 +105,8 @@ public class DsPresentApiServiceImplTest {
         }
     }
 
-    /*@Test
-    public void testMultiRecordsLicense() throws NoSuchFieldException, ApiException, IOException {
+    @Test
+    public void testMultiRecordsLicense() throws NoSuchFieldException, ServiceException, IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             return;
         }
@@ -117,7 +117,7 @@ public class DsPresentApiServiceImplTest {
 
         // Setup mock license that allow only 3 known records.
         DsPresentApiServiceImpl presentAPI = getMockedPresentAPI();
-        DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
+        DsLicenseClient mockedLicenseClient = mock(DsLicenseClient.class);
         CheckAccessForIdsOutputDto accessResponse = new CheckAccessForIdsOutputDto().accessIds(List.of(
                 RECORD_ID1, RECORD_ID2, RECORD_ID3));
         doReturn(accessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
@@ -132,15 +132,15 @@ public class DsPresentApiServiceImplTest {
         StreamingOutput noRecords = presentAPI.getRecords("dsfl", 0L, 1000L, FormatDto.MODS);
         assertEquals(0, PresentFacadeTest.countMETS(noRecords),
                 "Zero accepting license should return exactly 0 records");
-    }*/
-/*
+    }
+
     @Test
-    public void testSingleRecordLicenseAllowAll() throws NoSuchFieldException, ApiException, IOException {
+    public void testSingleRecordLicenseAllowAll() throws NoSuchFieldException, ServiceException, IOException {
         final String RECORD_ID = "local.mods:40221e30-1414-11e9-8fb8-00505688346e.xml";
 
         // Setup mock license that does not allow any records
         DsPresentApiServiceImpl presentAPI = getMockedPresentAPI();
-        DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
+        DsLicenseClient mockedLicenseClient = mock(DsLicenseClient.class);
         CheckAccessForIdsOutputDto noAccessResponse = new CheckAccessForIdsOutputDto().nonAccessIds(List.of(RECORD_ID));
         doReturn(noAccessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
         AccessUtil.licenseClient = mockedLicenseClient;
@@ -162,7 +162,7 @@ public class DsPresentApiServiceImplTest {
 
     @Test
     @Tag("integration")
-    public void testMultiRecordsLicenseAllowAll() throws NoSuchFieldException, ApiException, IOException {
+    public void testMultiRecordsLicenseAllowAll() throws NoSuchFieldException, ServiceException, IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
             fail("Missing internal_test_files");
         }
@@ -171,7 +171,7 @@ public class DsPresentApiServiceImplTest {
 
         // Setup mock license that allow only 1 known record.
         DsPresentApiServiceImpl presentAPI = getMockedPresentAPI();
-        DsLicenseApi mockedLicenseClient = mock(DsLicenseApi.class);
+        DsLicenseClient mockedLicenseClient = mock(DsLicenseClient.class);
         CheckAccessForIdsOutputDto accessResponse = new CheckAccessForIdsOutputDto().accessIds(List.of(RECORD_ID1));
         doReturn(accessResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
         AccessUtil.licenseClient = mockedLicenseClient;
