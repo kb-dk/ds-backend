@@ -11,15 +11,16 @@ CREATE TABLE IF NOT EXISTS RESTRICTED_IDS (
 
 CREATE UNIQUE INDEX IF NOT EXISTS unique_restricted_id ON RESTRICTED_IDS (id_value,id_type,platform);
 
-CREATE TABLE IF NOT EXISTS HOLDBACK_MAP (
+CREATE TABLE IF NOT EXISTS DR_HOLDBACK_RULES (
+                                                 id VARCHAR(256) PRIMARY KEY,
+                                                 name VARCHAR(256),
+                                                 days int
+);
+
+CREATE TABLE IF NOT EXISTS DR_HOLDBACK_MAP (
                               id            VARCHAR(256) PRIMARY KEY,
                               content_range INT4RANGE NOT NULL,
                               form_range    INT4RANGE NOT NULL,
-                              holdback_id   VARCHAR(32) references HOLDBACK_RULES(id)
+                              holdback_id   VARCHAR(32) references DR_HOLDBACK_RULES(id)
 );
 
-CREATE TABLE IF NOT EXISTS HOLDBACK_RULES (
-                                id VARCHAR(256) PRIMARY KEY,
-                                name VARCHAR(256),
-                                days int
-);
