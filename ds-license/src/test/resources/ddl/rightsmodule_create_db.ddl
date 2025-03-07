@@ -11,18 +11,19 @@ CREATE TABLE  RESTRICTED_IDS (
 
 CREATE UNIQUE INDEX unique_restricted_id ON RESTRICTED_IDS (id_value,id_type,platform);
 
-/*
- Table to map content and/or form to holdback
- */
-CREATE TABLE HOLDBACK_MAP (
-    id            VARCHAR(256) PRIMARY KEY,
-    content_range INT4RANGE NOT NULL,
-    form_range    INT4RANGE NOT NULL,
-    holdback_id   VARCHAR(32) references HOLDBACK_RULES(id)
-);
 
-CREATE TABLE HOLDBACK_RULES (
+CREATE TABLE DR_HOLDBACK_RULES (
     id VARCHAR(256) PRIMARY KEY,
     name VARCHAR(256),
     days int
+);
+
+/*
+ Table to map content and/or form to holdback
+ */
+CREATE TABLE DR_HOLDBACK_MAP (
+    id            VARCHAR(256) PRIMARY KEY,
+    content_range INT4RANGE NOT NULL,
+    form_range    INT4RANGE NOT NULL,
+    dr_holdback_id   VARCHAR(32) references DR_HOLDBACK_RULES(id)
 );
