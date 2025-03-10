@@ -128,6 +128,9 @@ dr:
   holdback:
     purposeSheet: 'internal_test_files/dr_formaalstabeller_20240704.xlsx'
     holdbackSheet: 'internal_test_files/dr_holdbacktabel_20250305.xlsx'
+  # An amount of days used to specify, when the holdback logic changes from being calculated from the start date of the record to the following January 1st
+  holdbackLogicChangeDays: 365
+
   restrictionSheet: 'internal_test_files/dr_klausuleringsliste_20250304.xlsx'
   restrictedDsIdsSheet: 'internal_test_files/ds_id_klausuleringsliste_20250304.xlsx'
   # This number specifies which material gets indexed as own production and therefore gets viewable in the system.

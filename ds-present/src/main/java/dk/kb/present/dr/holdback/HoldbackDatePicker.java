@@ -2,12 +2,11 @@ package dk.kb.present.dr.holdback;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import dk.kb.present.util.DataCleanup;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.Resolver;
@@ -110,7 +109,7 @@ public class HoldbackDatePicker {
     private HoldbackObject getHoldbackForRadioRecord(ExtractedPreservicaValues extractedValues, HoldbackObject result) {
         // Radio should be held back by three years by DR request.
         String startDate = extractedValues.getStartTime();
-        result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), 1096));
+        result.setHoldbackDate(calculateHoldbackDateByDays(ZonedDateTime.parse(startDate), 1096));
         result.setHoldbackPurposeName("");
         return result;
     }
@@ -133,21 +132,21 @@ public class HoldbackDatePicker {
                 int holdbackDays = holdbackSheet.getHoldbackDaysForPurpose(result.getHoldbackPurposeName());
 
                 String startDate = extractedValues.getStartTime();
-                if (holdbackDays < 365) {
+                if (holdbackDays < ServiceConfig.getHoldbackLogicChangeDays()) {
+                    log.debug("Calculating holdback on a daily basis for record: '{}'", extractedValues.getId());
                     // Add holdback days directly to startTime if holdback is less than a year
-                    result.setHoldbackDate(calculateHoldbackDate(ZonedDateTime.parse(startDate), holdbackDays));
+                    result.setHoldbackDate(calculateHoldbackDateByDays(ZonedDateTime.parse(startDate), holdbackDays));
                 } else {
-                    // When holdback is more than a year, it should be calculated from the 1st of January the following year
+                    log.debug("Calculating holdback on a yearly basis for record: '{}'", extractedValues.getId());
+                    // When holdback is more than a year, it should be calculated from the 1st of January the following year and days aren't actually needed more, so we convert
+                    // days to years, to make it easier to add correct amount of time
+                    int holdbackYears = holdbackDays / 365;
 
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                    LocalDateTime date = LocalDateTime.parse(startDate, formatter);
+                    ZonedDateTime cleanedStartDate = DataCleanup.getCleanZonedDateTimeFromString(startDate);
+                    ZonedDateTime holdbackCalculationStartDate = getFirstComingJanuary(cleanedStartDate);
 
-                    ZonedDateTime holdbackCalculationStartDate = getFirstComingJanuary(date);
-                    log.info("Parsed date and got first of january next year: '{}'", holdbackCalculationStartDate.format(formatter));
-
-                    result.setHoldbackDate(calculateHoldbackDate(holdbackCalculationStartDate, holdbackDays));
+                    result.setHoldbackDate(calculateHoldbackDateByYears(holdbackCalculationStartDate, holdbackYears));
                 }
-
             }
 
             return result;
@@ -162,10 +161,9 @@ public class HoldbackDatePicker {
      * @param dateTime to extract year from
      * @return a new ZonedDateTime with the date 1st of january next year from the input datetime
      */
-    public static ZonedDateTime getFirstComingJanuary(LocalDateTime dateTime) {
+    public static ZonedDateTime getFirstComingJanuary(ZonedDateTime dateTime) {
         int year = dateTime.getYear();
-
-        return ZonedDateTime.of(year + 1, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        return ZonedDateTime.of(year + 1, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
     }
 
     /**
@@ -174,8 +172,24 @@ public class HoldbackDatePicker {
      * @param holdbackDays the amount of days that has to parse before a program can be retrieved in the archive.
      * @return the date, when the holdback period has expired as a string in the format: yyyy-MM-dd'T'HH:mm:ssZ.
      */
-    private static String calculateHoldbackDate(ZonedDateTime startDate, int holdbackDays) {
+    private static String calculateHoldbackDateByDays(ZonedDateTime startDate, int holdbackDays) {
         ZonedDateTime holdbackExpiredDate = startDate.plusDays(holdbackDays);
+
+        // Using .ISO_INSTANT as this is solr standard
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+
+        String formattedHoldbackDate = holdbackExpiredDate.format(formatter);
+        return formattedHoldbackDate;
+    }
+
+    /**
+     * Apply the amount of holdback years to the start date and return the date for when holdback has expired.
+     * @param startDate a date representing the date when a program was broadcast.
+     * @param holdbackYears the amount of years that has to parse before a program can be retrieved in the archive.
+     * @return the date, when the holdback period has expired as a string in the format: yyyy-MM-dd'T'HH:mm:ssZ.
+     */
+    private static String calculateHoldbackDateByYears(ZonedDateTime startDate, int holdbackYears) {
+        ZonedDateTime holdbackExpiredDate = startDate.plusYears(holdbackYears);
 
         // Using .ISO_INSTANT as this is solr standard
         DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
