@@ -51,30 +51,30 @@ public class DsLicenseClientCacheTest {
         log.debug("Creating inactive client for ds-license with URI '{}'", backendURIString);
         new DsLicenseClient(backendURIString, 10, 5000);
     }
-/*
+
     @Test
     public void testCaching() throws Exception {
         // Mock the DsLicenseClient
         DsLicenseClient clientSpy = Mockito.spy(
                 new DsLicenseClient("http://localhost:9076/ds-license/v1", 10, 60000));
-        doReturn(response1, fail).when(clientSpy).directCheckAccessForIds(eq(request1));
-        doReturn(response2, fail).when(cdirectClientSpy).directCheckAccessForIds(eq(request2));
-        doReturn(resResponse1, fail).when(clientSpy).directCheckAccessForResourceIds(eq(resRequest1));
+        doReturn(response1, fail).when(clientSpy).checkAccessForIds(eq(request1));
+        doReturn(response2, fail).when(clientSpy).checkAccessForIds(eq(request2));
+        doReturn(resResponse1, fail).when(clientSpy).checkAccessForResourceIds(eq(resRequest1));
 
         // Test basic caching
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
+        assertEquals(response1, clientSpy.checkAccessForIdsGeneral(request1,true),
                 "First call with request 1 should return response1");
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
+        assertEquals(response1, clientSpy.checkAccessForIdsGeneral(request1,true),
                 "Second call with request 1 should return the initial response1");
 
-        assertEquals(response2, clientSpy.checkAccessForIds(request2),
+        assertEquals(response2, clientSpy.checkAccessForIdsGeneral(request2,true),
                 "First call with request 2 should return response2");
-        assertEquals(response2, clientSpy.checkAccessForIds(request2),
+        assertEquals(response2, clientSpy.checkAccessForIdsGeneral(request2,true),
                 "Second call with request 2 should return the initial response2");
 
-        assertEquals(resResponse1, clientSpy.checkAccessForResourceIds(resRequest1),
+        assertEquals(resResponse1, clientSpy.checkAccessForIdsGeneral(resRequest1,false),
                 "First call with resource request 1 should return resource response 1");
-        assertEquals(resResponse1, clientSpy.checkAccessForResourceIds(resRequest1),
+        assertEquals(resResponse1, clientSpy.checkAccessForIdsGeneral(resRequest1,false),
                 "Second call with resource request 1 should return initial resource response 1");
     }
 
@@ -83,8 +83,8 @@ public class DsLicenseClientCacheTest {
         // Mock the DsLicenseClient
         DsLicenseClient clientSpy = Mockito.spy(
                 new DsLicenseClient("http://localhost:9076/ds-license/v1", 1, 60000));
-        doReturn(response1, fail).when(clientSpy).directCheckAccessForIds(eq(request1));
-        doReturn(response2, fail).when(clientSpy).directCheckAccessForIds(eq(request2));
+        doReturn(response1, fail).when(clientSpy).checkAccessForIds(eq(request1));
+        doReturn(response2, fail).when(clientSpy).checkAccessForIds(eq(request2));
 
         // Fill the cache beyond capacity
         assertEquals(response1, clientSpy.checkAccessForIds(request1),
@@ -104,18 +104,18 @@ public class DsLicenseClientCacheTest {
         // Mock the DsLicenseClient
         DsLicenseClient clientSpy = Mockito.spy(
                 new DsLicenseClient("http://localhost:9076/ds-license/v1", 2, 1000));
-        doReturn(response1, fail).when(clientSpy).directCheckAccessForIds(eq(request1));
-
+        doReturn(response1, fail).when(clientSpy).checkAccessForIds(eq(request1));
+        
         // Test basic caching
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
+        assertEquals(response1, clientSpy.checkAccessForIdsGeneral(request1,true),
                 "First call with request 1 should return response1");
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
+        assertEquals(response1, clientSpy.checkAccessForIdsGeneral(request1,true),
                 "Second call with request 1 should return the initial response1");
 
         // Actively force the cache to check constraints (max size + age). This should change nothing at this point
         clientSpy.idcache.cleanUp();
 
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
+        assertEquals(response1, clientSpy.checkAccessForIdsGeneral(request1,true),
                 "Third call with request 1 should return the initial response1");
 
         // Sleep longer than the cache timeout period, then force a constraint check
@@ -124,5 +124,5 @@ public class DsLicenseClientCacheTest {
         assertEquals(fail, clientSpy.checkAccessForIds(request1),
                 "Fourth call with request 1 should miss the cache");
     }
-*/
+
 }
