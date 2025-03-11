@@ -735,6 +735,15 @@ components:
           type: long
         modifiedTimeHuman:
           type: string
+    DrHoldbackRule:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        days:
+          type: integer
 
     HelloReply:
       type: object
