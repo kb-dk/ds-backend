@@ -215,6 +215,14 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * Create a holdback rule for DR content
+     *
+     * @param id id of the rule
+     * @param name name of the rule
+     * @param days number of holdback days
+     * @throws SQLException
+     */
     public void createDrHoldbackRule(String id, String name, int days) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(createDrHoldbackRuleQuery)) {
             stmt.setString(1, id);
@@ -227,6 +235,11 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * Delete a holdback rule for DR content
+     * @param id id of the rule
+     * @throws SQLException
+     */
     public void deleteDrHoldbackRule(String id) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(deleteDrHoldbackRuleQuery)) {
             stmt.setString(1,id);
@@ -237,6 +250,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * Get the number of holdback days
+     * @param id id of the holdback rule
+     * @return
+     * @throws SQLException
+     */
     public int getDrHoldbackdaysFromID(String id) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackDaysFromIDQuery)) {
             stmt.setString(1,id);
@@ -251,6 +270,13 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * Get the number of holdback days
+     *
+     * @param name name of the holdback rule
+     * @return
+     * @throws SQLException
+     */
     public int getDrHoldbackDaysFromName(String name) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackDaysFromNameQuery)) {
             stmt.setString(1,name);
@@ -265,6 +291,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * Get a DR holdback rule
+     * @param id id of the rule
+     * @return
+     * @throws SQLException
+     */
     public DrHoldbackRuleDto getDrHoldbackFromID(String id) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleFromId)) {
             stmt.setString(1,id);
@@ -283,6 +315,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * update the number of holdback days of a holdback rule
+     * @param days number of days
+     * @param id id of the rule
+     * @throws SQLException
+     */
     public void updateDrHolbackdaysForId(int days, String id) throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysForId)) {
             stmt.setInt(1,days);
@@ -294,6 +332,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * update the number of holdback days of a holdback rule
+     * @param days number of days
+     * @param name name of the rule
+     * @throws SQLException
+     */
     public void updateDrHolbackdaysForName(int days, String name) throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysForName)) {
             stmt.setInt(1,days);
@@ -305,6 +349,11 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * list all holdback rules
+     * @return
+     * @throws SQLException
+     */
     public List<DrHoldbackRuleDto> getAllDrHoldbackRules() throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(getAllDrHoldbackRulesQuery)) {
             List<DrHoldbackRuleDto> output = new ArrayList<>();
