@@ -403,6 +403,143 @@ paths:
           '201':
             description: created
 
+  /rights/drHoldbackRules:
+    get:
+      tags:
+        - 'DsRights'
+      operationId: getDrHoldbackRules
+      description: get all DR holdback rules
+      security:
+        - KBOAuth:
+            - any
+      responses:
+        '200':
+          description: list of holdback rules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrHoldbackRule'
+
+  /rights/drHoldbackRule:
+    get:
+      tags:
+        - 'DsRights'
+      operationId: getDrHoldbackRule
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: retrieve a holdback rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DrHoldbackRule'
+        '404':
+          description: not found
+    delete:
+      tags:
+        - 'DsRights'
+      operationId: deleteDrHoldbackRule
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: succesfully deleted
+    post:
+      tags:
+        - 'DsRights'
+      operationId: createDrHoldbackRule
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DrHoldbackRule'
+            examples:
+              example1:
+                value:
+                  id: test1
+                  name: "Testing"
+                  days: 100
+      responses:
+        '201':
+          description: sucessfully created
+
+  /rights/drHoldbackDays:
+    get:
+      tags:
+        - 'DsRights'
+      operationId: getDrHoldbackDays
+      description: gets the number of holdbackdays
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: holdback days
+          content:
+            application/json:
+                schema:
+                  type: integer
+        '404':
+          description: holdback not found
+    put:
+      tags:
+        - 'DsRights'
+      operationId: updateDrHoldbackDays
+      description: update the number of holdbackdays for a purpose
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: days
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Updated
+
 
   /monitor:
     post:

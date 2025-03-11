@@ -6,13 +6,17 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.RestrictedIdInputDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.Message;
@@ -153,6 +157,101 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
             log.info("Deleted restricted IDs: [{}] ",
                 restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
         } catch (SQLException e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto) {
+        try {
+            BaseModuleStorage.performStorageAction("Get holdback rule", new RightsModuleStorage(), storage -> {
+                ((RightsModuleStorage)storage).createDrHoldbackRule(
+                        drHoldbackRuleDto.getId(),
+                        drHoldbackRuleDto.getName(),
+                        drHoldbackRuleDto.getDays()
+                );
+                return null;
+            });
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void deleteDrHoldbackRule(String id) {
+        try {
+            BaseModuleStorage.performStorageAction("Get holdback rule", new RightsModuleStorage(), storage -> {
+                ((RightsModuleStorage)storage).deleteDrHoldbackRule(id);
+                return null;
+            });
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public DrHoldbackRuleDto getDrHoldbackRule(String id) {
+        try {
+            return BaseModuleStorage.performStorageAction("Get holdback rule", new RightsModuleStorage(), storage -> {
+                DrHoldbackRuleDto output = ((RightsModuleStorage)storage).getDrHoldbackFromID(id);
+                if (output != null) {
+                    return output;
+                }
+                throw new NotFoundServiceException("holdback rule not found "+id);
+            });
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public List<DrHoldbackRuleDto> getDrHoldbackRules() {
+        try {
+            return BaseModuleStorage.performStorageAction("Get holdback rule", new RightsModuleStorage(), storage -> {
+                return  ((RightsModuleStorage)storage).getAllDrHoldbackRules();
+            });
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public Integer getDrHoldbackDays(String id, String name) {
+        int days;
+        try {
+            if (!StringUtils.isEmpty(id)) {
+                days = BaseModuleStorage.performStorageAction("Get holdback days", new RightsModuleStorage(), storage -> ((RightsModuleStorage) storage).getDrHoldbackdaysFromID(id));
+            } else if (!StringUtils.isEmpty(name)) {
+                days = BaseModuleStorage.performStorageAction("Get holdback days", new RightsModuleStorage(), storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name));
+            } else {
+                throw new InvalidArgumentServiceException("missing id or name");
+            }
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+        if (days > 0) {
+            return days;
+        }
+        throw new NotFoundServiceException("no holdback found for "+ id);
+    }
+
+    @Override
+    public void updateDrHoldbackDays(Integer days, String id, String name) {
+        try {
+            if (!StringUtils.isEmpty(id)) {
+                BaseModuleStorage.performStorageAction("update holdback dayss", new RightsModuleStorage(), storage -> {
+                    ((RightsModuleStorage) storage).updateDrHolbackdaysForId(days.intValue(),id);
+                    return null;
+                });
+            } else if (!StringUtils.isEmpty(name)) {
+                BaseModuleStorage.performStorageAction("update holdback dayss", new RightsModuleStorage(), storage -> {
+                    ((RightsModuleStorage) storage).updateDrHolbackdaysForName(days.intValue(),name);
+                    return null;
+                });
+            } else {
+                throw new InvalidArgumentServiceException("missing id or name");
+            }
+        } catch (Exception e) {
             throw handleException(e);
         }
     }

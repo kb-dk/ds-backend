@@ -155,6 +155,7 @@ Get the groups that the user has access to
 import dk.kb.license.ApiClient;
 import dk.kb.license.ApiException;
 import dk.kb.license.Configuration;
+import dk.kb.license.auth.*;
 import dk.kb.license.models.*;
 import dk.kb.license.api.DsLicenseApi;
 
@@ -162,6 +163,10 @@ public class Example {
   public static void main(String[] args) {
     ApiClient defaultClient = Configuration.getDefaultApiClient();
     defaultClient.setBasePath("http://$");
+    
+    // Configure OAuth2 access token for authorization: KBOAuth
+    OAuth KBOAuth = (OAuth) defaultClient.getAuthentication("KBOAuth");
+    KBOAuth.setAccessToken("YOUR ACCESS TOKEN");
 
     DsLicenseApi apiInstance = new DsLicenseApi(defaultClient);
     GetUserGroupsInputDto getUserGroupsInputDto = new GetUserGroupsInputDto(); // GetUserGroupsInputDto | 
@@ -191,7 +196,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[KBOAuth](../README.md#KBOAuth)
 
 ### HTTP request headers
 

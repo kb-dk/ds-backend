@@ -276,7 +276,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
                 output.setDays(res.getInt(DR_HOLDBACK_RULES_DAYS));
                 return output;
             }
-            throw new NotFoundServiceException("no holdbackdays found for id:" + id);
+            return null;
         } catch (SQLException e) {
             log.error("SQL Exception in createDrHoldbackRule:" + e.getMessage());
             throw e;
