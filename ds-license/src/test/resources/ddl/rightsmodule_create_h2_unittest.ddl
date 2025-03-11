@@ -23,6 +23,6 @@ CREATE TABLE IF NOT EXISTS DR_HOLDBACK_MAP (
                               content_range_to INTEGER NOT NULL,
                               form_range_from INTEGER NOT NULL,
                               form_range_to INTEGER NOT NULL,
-                              holdback_id   VARCHAR(32) references DR_HOLDBACK_RULES(id)
+                              dr_holdback_id   VARCHAR(32) references DR_HOLDBACK_RULES(id)
 );
 
