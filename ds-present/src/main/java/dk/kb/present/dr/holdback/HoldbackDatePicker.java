@@ -141,11 +141,7 @@ public class HoldbackDatePicker {
                     // When holdback is more than a year, it should be calculated from the 1st of January the following year and days aren't actually needed more, so we convert
                     // days to years, to make it easier to add correct amount of time
                     int holdbackYears = holdbackDays / 365;
-
-                    ZonedDateTime cleanedStartDate = DataCleanup.getCleanZonedDateTimeFromString(startDate);
-                    ZonedDateTime holdbackCalculationStartDate = getFirstComingJanuary(cleanedStartDate);
-
-                    result.setHoldbackDate(calculateHoldbackDateByYears(holdbackCalculationStartDate, holdbackYears));
+                    result.setHoldbackDate(calculateHoldbackDateByYears(startDate, holdbackYears));
                 }
             }
 
@@ -188,8 +184,10 @@ public class HoldbackDatePicker {
      * @param holdbackYears the amount of years that has to parse before a program can be retrieved in the archive.
      * @return the date, when the holdback period has expired as a string in the format: yyyy-MM-dd'T'HH:mm:ssZ.
      */
-    private static String calculateHoldbackDateByYears(ZonedDateTime startDate, int holdbackYears) {
-        ZonedDateTime holdbackExpiredDate = startDate.plusYears(holdbackYears);
+    private static String calculateHoldbackDateByYears(String startDate, int holdbackYears) {
+        ZonedDateTime cleanedStartDate = DataCleanup.getCleanZonedDateTimeFromString(startDate);
+        ZonedDateTime holdbackCalculationStartDate = getFirstComingJanuary(cleanedStartDate);
+        ZonedDateTime holdbackExpiredDate = holdbackCalculationStartDate.plusYears(holdbackYears);
 
         // Using .ISO_INSTANT as this is solr standard
         DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
