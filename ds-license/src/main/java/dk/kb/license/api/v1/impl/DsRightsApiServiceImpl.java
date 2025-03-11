@@ -15,7 +15,6 @@ import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
-import dk.kb.util.webservice.exception.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
@@ -207,9 +206,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public List<DrHoldbackRuleDto> getDrHoldbackRules() {
         try {
-            return BaseModuleStorage.performStorageAction("Get holdback rule", new RightsModuleStorage(), storage -> {
-                return  ((RightsModuleStorage)storage).getAllDrHoldbackRules();
-            });
+            return BaseModuleStorage.performStorageAction("Get holdback rule", new RightsModuleStorage(), storage -> ((RightsModuleStorage)storage).getAllDrHoldbackRules());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -240,12 +237,12 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         try {
             if (!StringUtils.isEmpty(id)) {
                 BaseModuleStorage.performStorageAction("update holdback dayss", new RightsModuleStorage(), storage -> {
-                    ((RightsModuleStorage) storage).updateDrHolbackdaysForId(days.intValue(),id);
+                    ((RightsModuleStorage) storage).updateDrHolbackdaysForId(days,id);
                     return null;
                 });
             } else if (!StringUtils.isEmpty(name)) {
                 BaseModuleStorage.performStorageAction("update holdback dayss", new RightsModuleStorage(), storage -> {
-                    ((RightsModuleStorage) storage).updateDrHolbackdaysForName(days.intValue(),name);
+                    ((RightsModuleStorage) storage).updateDrHolbackdaysForName(days,name);
                     return null;
                 });
             } else {

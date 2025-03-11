@@ -3,7 +3,6 @@ package dk.kb.license.storage;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
-import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -351,8 +350,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
     /**
      * list all holdback rules
-     * @return
-     * @throws SQLException
+     * @return a list of rules
+     * @throws SQLException if fails
      */
     public List<DrHoldbackRuleDto> getAllDrHoldbackRules() throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(getAllDrHoldbackRulesQuery)) {
