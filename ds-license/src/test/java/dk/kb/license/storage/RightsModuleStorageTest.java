@@ -1,6 +1,7 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.util.H2DbUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -90,5 +91,34 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
 
         assertThrows(SQLException.class, () -> storage.createRestrictedId(idValue, idType, platform, comment, modified_by, modified_time));
+    }
+
+    @Test
+    public void testHoldbackRuleCRUD() throws SQLException {
+        String id = "2.02";
+        String name = "Aktualitet & Debat";
+        int days = 100;
+
+        storage.createDrHoldbackRule(id,name,100);
+        assertEquals(days,storage.getDrHoldbackdaysFromID(id));
+        assertEquals(days,storage.getDrHoldbackDaysFromName(name));
+        DrHoldbackRuleDto holdbackFromStorage = storage.getDrHoldbackFromID(id);
+        assertEquals(name,holdbackFromStorage.getName());
+
+        days  = 200;
+        storage.updateDrHolbackdaysForId(days,id);
+        assertEquals(days,storage.getDrHoldbackdaysFromID(id));
+        assertEquals(days,storage.getDrHoldbackDaysFromName(name));
+
+        days  = 300;
+        storage.updateDrHolbackdaysForName(days,name);
+        assertEquals(days,storage.getDrHoldbackdaysFromID(id));
+        assertEquals(days,storage.getDrHoldbackDaysFromName(name));
+
+        assertEquals(1,storage.getAllDrHoldbackRules().size());
+        storage.deleteDrHoldbackRule(id);
+        assertEquals(-1,storage.getDrHoldbackdaysFromID(id));
+        assertEquals(-1,storage.getDrHoldbackDaysFromName(name));
+        assertEquals(0,storage.getAllDrHoldbackRules().size());
     }
 }
