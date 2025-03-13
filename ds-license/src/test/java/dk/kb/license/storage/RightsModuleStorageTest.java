@@ -77,7 +77,6 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         assertNull(storage.getRestrictedId(idValue, idType,platform));
     }
 
-
     @Test
     public void testUniqueRestrictedID() throws SQLException {
         String idValue = "test12345";
@@ -121,4 +120,37 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         assertEquals(-1,storage.getDrHoldbackDaysFromName(name));
         assertEquals(0,storage.getAllDrHoldbackRules().size());
     }
+
+    @Test
+    public void testHoldbackMap() throws SQLException {
+        storage.createDrHoldbackRule("test1","Test",100);
+        storage.createDrHoldbackRule("test2","Test2",200);
+
+        storage.createDrHoldbackMapping("1",1000,1000,1200,1900,"test1");
+        storage.createDrHoldbackMapping("2",2000,3000,2200,2900,"test2");
+
+        assertEquals("test1",storage.getHoldbackRuleId(1000,1200));
+        assertEquals("test2",storage.getHoldbackRuleId(2500,2900));
+        assertNull(storage.getHoldbackRuleId(2500,9999));
+        assertNull(storage.getHoldbackRuleId(9999,1200));
+        assertNull(storage.getHoldbackRuleId(9999,9999));
+    }
+
+    @Test
+    public void testDeleteHoldbackRanges() throws SQLException {
+        storage.createDrHoldbackRule("test1","Test",100);
+        storage.createDrHoldbackRule("test2","Test2",200);
+
+        storage.createDrHoldbackMapping("1",1000,1000,1200,1900,"test1");
+        storage.createDrHoldbackMapping("2",2000,3000,2200,2900,"test2");
+
+        assertEquals("test1",storage.getHoldbackRuleId(1000,1200));
+        assertEquals("test2",storage.getHoldbackRuleId(2500,2900));
+
+        storage.deleteMappingsForDrHolbackId("test1");
+
+        assertNull(storage.getHoldbackRuleId(1000,1200));
+        assertEquals("test2",storage.getHoldbackRuleId(2500,2900));
+    }
+
 }

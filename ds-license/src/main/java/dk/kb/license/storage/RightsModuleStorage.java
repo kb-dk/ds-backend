@@ -68,6 +68,14 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String DR_HOLDBACK_RULES_DAYS = "days";
     private final String DR_HOLDBACK_RULES_NAME = "name";
 
+    private final String DR_HOLDBACK_MAP_TABLE = "DR_HOLDBACK_MAP";
+    private final String DR_HOLDBACK_MAP_ID = "id";
+    private final String DR_HOLDBACK_MAP_CONTENT_FROM = "content_range_from";
+    private final String DR_HOLDBACK_MAP_CONTENT_TO = "content_range_to";
+    private final String DR_HOLDBACK_MAP_FORM_FROM = "form_range_from";
+    private final String DR_HOLDBACK_MAP_FORM_TO = "form_range_to";
+    private final String DR_HOLDBACK_MAP_HOLDBACK_ID = "dr_holdback_id";
+
     private final String createDrHoldbackRuleQuery = "INSERT INTO "+DR_HOLDBACK_RULES_TABLE +
             " ("+ DR_HOLDBACK_RULES_ID +","+ DR_HOLDBACK_RULES_NAME +","+ DR_HOLDBACK_RULES_DAYS +")" +
             " VALUES (?,?,?)";
@@ -86,6 +94,19 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String updateDrHoldbackDaysForName = "Update " + DR_HOLDBACK_RULES_TABLE
             + " SET days = ?"
             + " WHERE name = ?";
+
+    private final String createHoldbackMapping = "INSERT INTO " + DR_HOLDBACK_MAP_TABLE +
+            "("+DR_HOLDBACK_MAP_ID+","+DR_HOLDBACK_MAP_CONTENT_FROM+","+DR_HOLDBACK_MAP_CONTENT_TO+","+DR_HOLDBACK_MAP_FORM_FROM+","+DR_HOLDBACK_MAP_FORM_TO+","+DR_HOLDBACK_MAP_HOLDBACK_ID+")"+
+            " VALUES (?,?,?,?,?,?)";
+
+    private final String getHoldbackIdFromContentAndForm = "SELECT " + DR_HOLDBACK_MAP_HOLDBACK_ID +
+            " FROM " + DR_HOLDBACK_MAP_TABLE + " WHERE " +
+            " content_range_from <= ? AND " +
+            " content_range_to >= ?  AND " +
+            " form_range_from <= ? AND " +
+            " form_range_to >= ? ";
+
+    private final String deleteMappingsForDrHolbackId = "DELETE from "+DR_HOLDBACK_MAP_TABLE+" WHERE dr_holdback_id = ?";
 
 
     public RightsModuleStorage() throws SQLException {
@@ -394,6 +415,51 @@ public class RightsModuleStorage extends BaseModuleStorage{
             throw e;
         }
     }
+
+    public String getHoldbackRuleId(int content, int form) throws SQLException {
+        try(PreparedStatement stmt = connection.prepareStatement(getHoldbackIdFromContentAndForm)) {
+            stmt.setInt(1,content);
+            stmt.setInt(2,content);
+            stmt.setInt(3,form);
+            stmt.setInt(4,form);
+            ResultSet res = stmt.executeQuery();
+            if (res.next()) {
+                return res.getString(DR_HOLDBACK_MAP_HOLDBACK_ID);
+            }
+            return null;
+        } catch (SQLException e) {
+            log.error("SQL Exception in get holdback rule ID:" + e.getMessage());
+            throw e;
+        }
+
+    }
+
+    public void createDrHoldbackMapping(String id, int content_range_from, int content_range_to, int form_range_from, int form_range_to, String holdback_id) throws SQLException {
+        try(PreparedStatement stmt = connection.prepareStatement(createHoldbackMapping)) {
+            stmt.setString(1,id);
+            stmt.setInt(2,content_range_from);
+            stmt.setInt(3,content_range_to);
+            stmt.setInt(4,form_range_from);
+            stmt.setInt(5,form_range_to);
+            stmt.setString(6,holdback_id);
+            stmt.execute();
+        } catch (SQLException e) {
+            log.error("SQL Exception in get holdback rule ID:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void deleteMappingsForDrHolbackId(String holdback_id) throws SQLException {
+        try(PreparedStatement stmt = connection.prepareStatement(deleteMappingsForDrHolbackId)) {
+            stmt.setString(1, holdback_id);
+            stmt.execute();
+        } catch (SQLException e) {
+            log.error("SQL Exception in get holdback rule ID:" + e.getMessage());
+            throw e;
+        }
+    }
+
+
 
     private String convertToHumanReadable(Long modifiedTime) {
         LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(modifiedTime), ZoneId.systemDefault());
