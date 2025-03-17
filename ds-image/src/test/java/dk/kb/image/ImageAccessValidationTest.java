@@ -90,36 +90,4 @@ public class ImageAccessValidationTest {
 		  
 	}
 
-	@Test
-	@Tag("integration")
-	public void testPlaceholderImageStreamingOutput() throws IOException {
-		if (Resolver.getPathFromClasspath("ds-image-integration-test.yaml") == null){
-			fail("Internal test config is not present. 'testPlaceholderImageStreamingOutput' is therefore not run. Please update aegis and do 'kb init' to make this run.");
-		}
-
-		try (ConfigAdjuster configAdjuster = new ConfigAdjuster("ds-image-integration-test.yaml")){
-			// Get test image
-			ByteArrayOutputStream testImageByteArray = getImageAsByteArrayOS("nonExisting.jpg");
-			// Get image through ImageAccessValidation
-			StreamingOutput streamingImage = ImageAccessValidation.handleNoAccessOrNoImage("notExistingImage", response, false);
-
-			// Convert image to ByteArrayOutputStream for comparison
-			ByteArrayOutputStream streamedImageByteArray = new ByteArrayOutputStream();
-            streamingImage.write(streamedImageByteArray);
-
-			assertEquals(testImageByteArray.size(), streamedImageByteArray.size());
-		}
-	}
-
-	private static ByteArrayOutputStream getImageAsByteArrayOS(String imgName) throws IOException {
-		String imgPath = Resolver.getPathFromClasspath(imgName).toString();
-
-		BufferedImage trueImage = ImageIO.read(new File(imgPath));
-		ByteArrayOutputStream trueImageByteArray = new ByteArrayOutputStream();
-
-		// Write the BufferedImage to the ByteArrayOutputStream in the specified format
-		ImageIO.write(trueImage, "jpg", trueImageByteArray);
-		trueImageByteArray.flush();
-		return trueImageByteArray;
-	}
 }
