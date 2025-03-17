@@ -44,7 +44,7 @@ public class DsPresentClient {
      * When working with YAML configs, it is suggested to define the present URI as the structure
      * <pre>
      * storage:
-     *   url: 'http://localhost:9072/ds-present/v1'
+     *   url: 'http://localhost:9072/ds-storage/v1'
      * </pre>
      * Then use the path {@link #PRESENT_SERVER_URL_KEY} to extract the URL.
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-present/v1}.
@@ -140,8 +140,6 @@ public class DsPresentClient {
         try {
             uri = new URIBuilder(serviceURI)
                     .appendPath("records")                                        
-                    // .setPath overrides all paths given in the serviceURI. Should be changed using pathSegments in the future
-                    //.setPath("records")
                     .addParameter("origin", origin)
                     .addParameter("mTime", Long.toString(mTime == null ? 0L : mTime))
                     .addParameter("maxRecords", Long.toString(maxRecords == null ? 10 : maxRecords))
