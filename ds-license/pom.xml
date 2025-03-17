@@ -193,6 +193,20 @@
             <artifactId>kb-util</artifactId>
             <version>1.6.9</version>
         </dependency>
+        <!-- Client for ds-storage This will also require the org.openapitools dependency-->
+        <dependency>
+            <groupId>dk.kb.storage</groupId>
+            <artifactId>ds-storage</artifactId>
+            <version>2.3.4-SNAPSHOT</version>
+            <type>jar</type>
+            <classifier>classes</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
