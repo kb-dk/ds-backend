@@ -2,14 +2,25 @@ package dk.kb.discover;
 
 import dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl;
 import dk.kb.discover.config.ServiceConfig;
+import dk.kb.discover.util.DsDiscoverClient;
 import dk.kb.discover.util.SolrParamMerger;
+import dk.kb.util.oauth2.KeycloakUtil;
+import dk.kb.util.webservice.OAuthConstants;
+
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.MessageImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
 
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +38,43 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class SolrServiceTest {
 
+    private static final Logger log = LoggerFactory.getLogger(SolrServiceTest.class);
+    
+    private static DsDiscoverClient remote = null;
+    private static String dsDiscoverDevel=null;  
+    
+    @BeforeAll
+    static void setUp() throws Exception{
+        try {
+            ServiceConfig.initialize("ds-discover-integration-test.yaml"); 
+            dsDiscoverDevel= ServiceConfig.getConfig().getString("discover.url");
+            remote = new DsDiscoverClient(dsDiscoverDevel);
+        } catch (IOException e) { 
+            e.printStackTrace();
+            log.error("Integration yaml 'ds-discover-integration-test.yaml' file most be present. Call 'kb init'"); 
+            fail();
+        }
+        
+        try {            
+            String keyCloakRealmUrl= ServiceConfig.getConfig().getString("integration.devel.keycloak.realmUrl");            
+            String clientId=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientId");
+            String clientSecret=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientSecret");                
+            String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);           
+            log.info("Retrieved keycloak access token:"+token);            
+            
+            //Mock that we have a JaxRS session with an Oauth token as seen from within a service call.
+            MessageImpl message = new MessageImpl();                            
+            message.put(OAuthConstants.ACCESS_TOKEN_STRING,token);            
+            MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);           
+            mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+                                                                         
+        }
+        catch(Exception e) {
+            log.warn("Could not retrieve keycloak access token. Service will be called without Bearer access token");            
+            e.printStackTrace();
+        }                        
+    }
+    
     // Integration test: Requires a local solr at port 10007 from the Digitale Samlinger project with
     // a ds-collection
     //@Test
@@ -152,7 +200,7 @@ class SolrServiceTest {
 
     @Test
     @Tag("integration")
-    void suggestTestMoreThanFiveAvailable() throws IOException {
+    void suggestTest() throws IOException {
         // Integration test towards devel env. Remember to update aegis before running this.
         ServiceConfig.initialize("src/test/resources/ds-discover-integration-test.yaml");
         String suggestDictionary = "radiotv_title_suggest";
@@ -169,7 +217,7 @@ class SolrServiceTest {
         assertTrue(filteredResponse.contains("\"suggest\" : {\n" +
                 "    \"radiotv_title_suggest\" : {\n" +
                 "      \"tes\" : {\n" +
-                "        \"numFound\" : 5,\n"));
+                "        \"numFound\" : 8,\n"));  //This number will change depending on corpus
     }
 
 
