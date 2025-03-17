@@ -252,7 +252,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     /**
      * Get the number of holdback days
      * @param id id of the holdback rule
-     * @return
+     * @return the number of holdback days or -1 if not holdback rule is found.
      * @throws SQLException
      */
     public int getDrHoldbackdaysFromID(String id) throws SQLException {

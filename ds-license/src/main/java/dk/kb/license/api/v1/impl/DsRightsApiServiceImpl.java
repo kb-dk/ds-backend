@@ -160,10 +160,16 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+
+    /**
+     * create a DR holdback rule.
+     *
+     * @param drHoldbackRuleDto
+     */
     @Override
     public void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto) {
         try {
-            BaseModuleStorage.performStorageAction("Get holdback rule", new RightsModuleStorage(), storage -> {
+            BaseModuleStorage.performStorageAction("Create holdback rule", new RightsModuleStorage(), storage -> {
                 ((RightsModuleStorage)storage).createDrHoldbackRule(
                         drHoldbackRuleDto.getId(),
                         drHoldbackRuleDto.getName(),
@@ -176,10 +182,14 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+    /**
+     * Delete a holdback rule
+     * @param id id of the holdback rule
+     */
     @Override
     public void deleteDrHoldbackRule(String id) {
         try {
-            BaseModuleStorage.performStorageAction("Get holdback rule", new RightsModuleStorage(), storage -> {
+            BaseModuleStorage.performStorageAction("Delete holdback rule", new RightsModuleStorage(), storage -> {
                 ((RightsModuleStorage)storage).deleteDrHoldbackRule(id);
                 return null;
             });
@@ -188,6 +198,11 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+    /**
+     * Gets a DR holdback rule
+     * @param id the id of the holdback rule
+     * @return
+     */
     @Override
     public DrHoldbackRuleDto getDrHoldbackRule(String id) {
         try {
@@ -203,6 +218,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+    /**
+     * get all all holdback rules for DR
+     * @return
+     */
     @Override
     public List<DrHoldbackRuleDto> getDrHoldbackRules() {
         try {
@@ -212,6 +231,13 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+    /**
+     * Retrieve the number of days for a holdback rule, either based on either the id or the name of the holdbackrule.
+     *
+     * @param id
+     * @param name
+     * @return the number of
+     */
     @Override
     public Integer getDrHoldbackDays(String id, String name) {
         int days;
@@ -229,9 +255,15 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         if (days > 0) {
             return days;
         }
-        throw new NotFoundServiceException("no holdback found for "+ id);
+        throw new NotFoundServiceException("no holdback found for "+ id+" or name "+name);
     }
 
+    /**
+     * Update the number of holdback days for a holdback rule based on either its id or name
+     * @param days
+     * @param id
+     * @param name
+     */
     @Override
     public void updateDrHoldbackDays(Integer days, String id, String name) {
         try {
@@ -253,6 +285,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+    /**
+     * Gets the name of the current user from the OAuth token.
+     * @return
+     */
     private String getCurrentUserID() {
         Message message = JAXRSUtils.getCurrentMessage();
         AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
