@@ -68,7 +68,10 @@ cache:
  #driver: org.postgresql.Driver
  #username: username
  #password: password
- 
+
+# Storage client is used for touching DS-records in DS-storage, when an ID is updated in the restricted_ids table
+storageClient:
+  url: http://localhost:9072/ds-storage/v1
 
 security:
   # The security mode. Valid values are
