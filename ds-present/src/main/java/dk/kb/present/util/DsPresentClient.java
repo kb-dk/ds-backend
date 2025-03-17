@@ -39,14 +39,9 @@ public class DsPresentClient {
     private final String serviceURI;
     
     /**
+     * <pr>
      * Creates a client for the remote ds-present service.
      * <p>
-     * When working with YAML configs, it is suggested to define the present URI as the structure
-     * <pre>
-     * storage:
-     *   url: 'http://localhost:9072/ds-storage/v1'
-     * </pre>
-     * Then use the path {@link #PRESENT_SERVER_URL_KEY} to extract the URL.
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-present/v1}.
      */
     @SuppressWarnings("JavadocLinkAsPlainText")
