@@ -14,21 +14,69 @@
  */
 package dk.kb.image.util;
 
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mockStatic;
+
+import java.io.IOException;
+
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.MessageImpl;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import dk.kb.image.config.ServiceConfig;
+import dk.kb.util.oauth2.KeycloakUtil;
+import dk.kb.util.webservice.OAuthConstants;
 
 /**
  * Simple verification of client code generation.
  */
+@Tag("integration")
 public class DsImageClientTest {
     private static final Logger log = LoggerFactory.getLogger(DsImageClientTest.class);
-
-    // We cannot test usage as that would require a running instance of ds-image to connect to
-    @Test
-    public void testInstantiation() {
-        String backendURIString = "htp://example.com/ds-image/v1";
-        log.debug("Creating inactive client for ds-image with URI '{}'", backendURIString);
-        new DsImageClient(backendURIString);
+   
+    private static DsImageClient remote = null;
+    private static String dsImageDevel=null;  
+    
+    @BeforeAll
+    static void setUp() throws Exception{
+        try {
+            ServiceConfig.getInstance().initialize("ds-image-integration-test.yaml");            
+            dsImageDevel= ServiceConfig.getConfig().getString("image.url");
+            remote = new DsImageClient(dsImageDevel);
+        } catch (IOException e) { 
+            e.printStackTrace();
+            log.error("Integration yaml 'ds-image-integration-test.yaml' file most be present. Call 'kb init'"); 
+            fail();
+        }
+        
+        try {            
+            String keyCloakRealmUrl= ServiceConfig.getConfig().getString("integration.devel.keycloak.realmUrl");            
+            String clientId=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientId");
+            String clientSecret=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientSecret");                
+            String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);           
+            log.info("Retrieved keycloak access token:"+token);            
+            
+            //Mock that we have a JaxRS session with an Oauth token as seen from within a service call.
+            MessageImpl message = new MessageImpl();                            
+            message.put(OAuthConstants.ACCESS_TOKEN_STRING,token);            
+            MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);           
+            mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+                                                                         
+        }
+        catch(Exception e) {
+            log.warn("Could not retrieve keycloak access token. Service will be called without Bearer access token");            
+            e.printStackTrace();
+        }                        
     }
+
+    @Test
+    public void test() throws IOException {
+    //Must be one unit test to test the setup method is working 
+    }
+        
 }

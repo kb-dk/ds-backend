@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added injection of Oauth token on all service methods when using DsImageClient. But no methods  are exposed in the client.
 - Bumped kb-util to v1.6.9 for service2service oauth support.
 - Removed auto generated DsImageClient class that was a blocker for better exception handling. All DsImageClient methods now only throws ServiceException mapped to HTTP status in same way calling the API directly.
+- Integration unittest with OAuth access token. Require kb-util v.1.6.10 
 
 
 ### Changed
