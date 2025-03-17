@@ -5,9 +5,11 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.yaml.NotFoundException;
 import dk.kb.util.yaml.YAML;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -21,11 +23,22 @@ public class ProxyHelper {
     private static final Logger log = LoggerFactory.getLogger(ProxyHelper.class);
 
     public static HttpURLConnection openConnection(String method, URI uri, HttpHeaders requestHeaders, String accessToken) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
-        connection.setRequestMethod(method);
-        connection.setRequestProperty("Authorization","Bearer "+accessToken);
-        connection.connect();
-        return connection;
+        if ("https".equalsIgnoreCase(uri.getScheme())) {
+            HttpsURLConnection connection = (HttpsURLConnection) uri.toURL().openConnection();
+            connection.setRequestMethod(method);
+            connection.setRequestProperty("Authorization","Bearer "+accessToken);
+            connection.connect();
+            log.debug(connection.getResponseCode()+"");
+            return connection;
+        } else if ("http".equalsIgnoreCase(uri.getScheme())) {
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setRequestMethod(method);
+            connection.setRequestProperty("Authorization","Bearer "+accessToken);
+            connection.connect();
+            return connection;
+        } else {
+            throw new InternalServiceException("Unsupported proxy protocol: " + uri.getScheme());
+        }
     }
 
 
@@ -46,7 +59,11 @@ public class ProxyHelper {
             throw new ServiceException(Response.Status.NOT_FOUND);
         }
 
-        String url = apiConfig.get("baseURL")+"/"+path;
+        String url = (String) apiConfig.get("baseURL");
+
+        if (!StringUtils.isEmpty(path)) {
+            url += "/" + path;
+        }
 
         if (query != null) {
             url += "?"+query;
