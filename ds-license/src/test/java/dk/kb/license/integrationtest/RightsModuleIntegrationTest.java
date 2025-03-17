@@ -8,6 +8,7 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
             BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
             // Instantiate the RightsModuleStorage without it being able to touch records in a backing DS-storage
-            storage = new RightsModuleStorage(false);
+            storage = new RightsModuleStorage();
         } catch (IOException | SQLException e) {
             log.error("Integration yaml 'ds-license-integration-test.yaml' file most be present. Call 'kb init'");
             fail();
@@ -66,6 +67,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
+    @Tag("slow")
     @Tag("integration")
     public void testQueryLookupForProductionCode() {
         int touchedRecords = storage.touchRelatedStorageRecords("3200", "egenproduktions_kode");
@@ -76,10 +78,8 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     @Test
     @Tag("integration")
     public void testTouchNonExistingRecordInStorage() throws SQLException {
-        RightsModuleStorage trueStorage = new RightsModuleStorage(true);
-
         assertThrows(InvalidArgumentServiceException.class,  () -> {
-            trueStorage.touchRelatedStorageRecords("some-non-existing-ds-id", "ds_id");
+            storage.touchRelatedStorageRecords("some-non-existing-ds-id", "ds_id");
         });
     }
 }

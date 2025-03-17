@@ -34,7 +34,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private static final Logger log = LoggerFactory.getLogger(RightsModuleStorage.class);
 
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
-    private static boolean touchStorageRecords = true;
 
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
 
@@ -65,15 +64,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
     public RightsModuleStorage() throws SQLException {
         connection = dataSource.getConnection();
-    }
-
-    /**
-     * Constructor to use when the rights module shouldn't necessarily integrate to a running DS-storage.
-     * @param enableStorageTouch boolean to determine if storage records should be touched.
-     */
-    public RightsModuleStorage(boolean enableStorageTouch) throws SQLException {
-        connection = dataSource.getConnection();
-        touchStorageRecords = enableStorageTouch;
     }
 
     /**
@@ -284,19 +274,13 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @return amount of records touched in DS-Storage.
      */
     private int touchStorageRecordById(String id) {
-        if (!touchStorageRecords){
-            log.warn("The record with id: '{}' in DS-Storage will not be touched as touchStorageRecords = false", id);
+        RecordsCountDto count = storageClient.touchRecord(id);
+
+        if (count == null || count.getCount() == null){
+            return 0;
         }
 
-        if (touchStorageRecords){
-            RecordsCountDto count = storageClient.touchRecord(id);
-
-            if (!(count == null)){
-                return count.getCount();
-            }
-        }
-
-        return 0;
+        return count.getCount();
     }
 
     /**
@@ -341,10 +325,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
         List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
         int touchedRecordsCount = 0;
 
-        if (!touchStorageRecords){
-            log.warn("Related records in DS-Storage will not be touched as touchStorageRecords = false");
-        }
-
         // Ds-license supports multiple backing solr servers. So we have to wrap it in this for-loop
         for (SolrServerClient server : servers) {
             int pageSize = 500;
@@ -363,10 +343,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
                     // For each record in the result touch the related DS-storage record
                     for (SolrDocument doc : results) {
-                        log.info("Handling record");
                         RecordsCountDto touched = touchStorageRecords(doc);
-                        if (!(touched == null)){
-                            log.info("Updating count");
+                        if (touched != null && touched.getCount() != null){
                             touchedRecordsCount = touchedRecordsCount + touched.getCount();
                         }
                     }
@@ -409,12 +387,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @param doc solr document to extract ID from.
      */
     private static RecordsCountDto touchStorageRecords(SolrDocument doc) {
-        if (touchStorageRecords){
-            // For each document in the result, touch its ds-storage record.
-            return storageClient.touchRecord((String) doc.getFieldValue("id"));
-        }
-
-        return null;
+        // For each document in the result, touch its ds-storage record.
+        String id = (String) doc.getFieldValue("id");
+        log.debug("Touching DS-storage record with id: '{}'", id);
+        return storageClient.touchRecord(id);
     }
 }   
 
