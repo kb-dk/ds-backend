@@ -110,6 +110,12 @@ public class ProductionIdLookup {
             productionId = productionId.substring(1);
         }
 
+        // Some production IDs are on the correct formula already, as they are derived by hand in our system. therefore,
+        // if an ID is 10 digits long an ends with two zeros, they are already correct.
+        if (productionId.endsWith("00") && productionId.length() == 10){
+            return productionId;
+        }
+
         //add another zero
         return productionId + "0" ;
     }
