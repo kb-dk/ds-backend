@@ -128,9 +128,13 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
         storage.createDrHoldbackMapping("1",1000,1000,1200,1900,"test1");
         storage.createDrHoldbackMapping("2",2000,3000,2200,2900,"test2");
+        storage.createDrHoldbackMapping("3",2000,3000,3200,3900,"test2");
+
 
         assertEquals("test1",storage.getHoldbackRuleId(1000,1200));
         assertEquals("test2",storage.getHoldbackRuleId(2500,2900));
+        assertEquals(1,storage.getHoldbackRangesForHoldbackId("test1").size());
+        assertEquals(2,storage.getHoldbackRangesForHoldbackId("test2").size());
         assertNull(storage.getHoldbackRuleId(2500,9999));
         assertNull(storage.getHoldbackRuleId(9999,1200));
         assertNull(storage.getHoldbackRuleId(9999,9999));

@@ -1,6 +1,7 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.model.v1.DrHoldbackRangeMappingDto;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.solr.SolrServerClient;
@@ -106,7 +107,9 @@ public class RightsModuleStorage extends BaseModuleStorage{
             " form_range_from <= ? AND " +
             " form_range_to >= ? ";
 
-    private final String deleteMappingsForDrHolbackId = "DELETE from "+DR_HOLDBACK_MAP_TABLE+" WHERE dr_holdback_id = ?";
+
+    private final String getRangesForDrHoldbackId = "SELECT * FROM "+DR_HOLDBACK_MAP_TABLE+" WHERE dr_holdback_id = ?";
+    private final String deleteRangesForDrHoldbackId = "DELETE from "+DR_HOLDBACK_MAP_TABLE+" WHERE dr_holdback_id = ?";
 
 
     public RightsModuleStorage() throws SQLException {
@@ -449,12 +452,34 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    public void deleteMappingsForDrHolbackId(String holdback_id) throws SQLException {
-        try(PreparedStatement stmt = connection.prepareStatement(deleteMappingsForDrHolbackId)) {
-            stmt.setString(1, holdback_id);
+    public List<DrHoldbackRangeMappingDto> getHoldbackRangesForHoldbackId(String holdbackId) throws SQLException {
+        try(PreparedStatement stmt = connection.prepareStatement(getRangesForDrHoldbackId)) {
+            stmt.setString(1, holdbackId);
+            ResultSet result = stmt.executeQuery();
+            List<DrHoldbackRangeMappingDto> output = new ArrayList<>();
+            while(result.next()) {
+                DrHoldbackRangeMappingDto mapping = new DrHoldbackRangeMappingDto();
+                mapping.setId(result.getString(DR_HOLDBACK_MAP_ID));
+                mapping.setContentRangeFrom(result.getInt(DR_HOLDBACK_MAP_CONTENT_FROM));
+                mapping.setContentRangeTo(result.getInt(DR_HOLDBACK_MAP_CONTENT_TO));
+                mapping.setFormRangeFrom(result.getInt(DR_HOLDBACK_MAP_CONTENT_FROM));
+                mapping.setFormRangeTo(result.getInt(DR_HOLDBACK_MAP_CONTENT_TO));
+                mapping.setDrHoldbackId(result.getString(DR_HOLDBACK_MAP_HOLDBACK_ID));
+                output.add(mapping);
+            }
+            return output;
+        } catch (SQLException e) {
+            log.error("SQL Exception delete ranges for holdback id" + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void deleteMappingsForDrHolbackId(String holdbackId) throws SQLException {
+        try(PreparedStatement stmt = connection.prepareStatement(deleteRangesForDrHoldbackId)) {
+            stmt.setString(1, holdbackId);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in get holdback rule ID:" + e.getMessage());
+            log.error("SQL Exception delete ranges for holdback id" + e.getMessage());
             throw e;
         }
     }
