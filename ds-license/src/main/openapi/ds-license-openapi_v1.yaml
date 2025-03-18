@@ -540,6 +540,99 @@ paths:
         '204':
           description: Updated
 
+  /rights/drHoldbackRanges:
+    get:
+      summary: get all holdback ranges for a holdback ID
+      tags:
+        - 'DsRights'
+      operationId: getHoldbackRanges
+      security:
+        - KBOAth:
+            - any
+      parameters:
+        - name: dr_holdback_id
+          in: query
+          description: filter on holdback id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrHoldbackRangeMapping'
+    post:
+      summary: set holdback ranges for a holdback id
+      tags:
+        - 'DsRights'
+      operationId: createHoldbackRanges
+      security:
+        - KBOAth:
+            - any
+      parameters:
+        - name: dr_holdback_id
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DrHoldbackRangeMappingInput'
+
+      responses:
+        '201':
+          description: created
+    delete:
+      summary: set holdback ranges for a holdback id
+      tags:
+        - 'DsRights'
+      operationId: deleteHoldbackRanges
+      security:
+        - KBOAth:
+            - any
+      parameters:
+        - name: dr_holdback_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: deleted
+
+  /rights/getHoldbackIdFromContentAndForm:
+    get:
+      summary: set holdback ranges for a holdback id
+      tags:
+        - 'DsRights'
+      operationId: getHoldbackIdFromContentAndForm
+      security:
+        - KBOAth:
+            - any
+      parameters:
+        - name: content
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: form
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            'application/json':
+              schema:
+                type: string
 
   /monitor:
     post:
@@ -881,7 +974,32 @@ components:
           type: string
         days:
           type: integer
-
+    DrHoldbackRangeMapping:
+      type: object
+      properties:
+        id:
+          type: string
+        content_range_from:
+          type: integer
+        content_range_to:
+          type: integer
+        form_range_from:
+          type: integer
+        form_range_to:
+          type: integer
+        dr_holdback_id:
+          type: string
+    DrHoldbackRangeMappingInput:
+      type: object
+      properties:
+        content_range_from:
+          type: integer
+        content_range_to:
+          type: integer
+        form_range_from:
+          type: integer
+        form_range_to:
+          type: integer
     HelloReply:
       type: object
       required:

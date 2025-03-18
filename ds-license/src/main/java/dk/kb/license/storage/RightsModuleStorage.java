@@ -463,8 +463,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
                 mapping.setId(result.getString(DR_HOLDBACK_MAP_ID));
                 mapping.setContentRangeFrom(result.getInt(DR_HOLDBACK_MAP_CONTENT_FROM));
                 mapping.setContentRangeTo(result.getInt(DR_HOLDBACK_MAP_CONTENT_TO));
-                mapping.setFormRangeFrom(result.getInt(DR_HOLDBACK_MAP_CONTENT_FROM));
-                mapping.setFormRangeTo(result.getInt(DR_HOLDBACK_MAP_CONTENT_TO));
+                mapping.setFormRangeFrom(result.getInt(DR_HOLDBACK_MAP_FORM_FROM));
+                mapping.setFormRangeTo(result.getInt(DR_HOLDBACK_MAP_FORM_TO));
                 mapping.setDrHoldbackId(result.getString(DR_HOLDBACK_MAP_HOLDBACK_ID));
                 output.add(mapping);
             }
