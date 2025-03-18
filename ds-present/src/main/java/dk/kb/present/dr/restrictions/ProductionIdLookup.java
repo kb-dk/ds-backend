@@ -58,7 +58,6 @@ public class ProductionIdLookup {
         return restrictedProductionIds.size();
     }
 
-
     /**
      * Load restricted production IDs from an Excel sheet defined in the configuration for ds-present.
      */
@@ -80,7 +79,7 @@ public class ProductionIdLookup {
                         restrictedProductionIds.add(reformatProductionId(cell.getStringCellValue()));
                     } else if (cell.getCellType() == CellType.NUMERIC) {
                         // The new entries in the document are formatted differently than the old ones
-                        String formattedId = reformatProductionId(Integer.toString((int) cell.getNumericCellValue()));
+                        String formattedId = reformatProductionId(Long.toString((long) cell.getNumericCellValue()));
                         restrictedProductionIds.add(formattedId);
                     }
                 }
@@ -115,7 +114,6 @@ public class ProductionIdLookup {
         if (productionId.endsWith("00") && productionId.length() == 10){
             return productionId;
         }
-
         //add another zero
         return productionId + "0" ;
     }
