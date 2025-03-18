@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS DR_HOLDBACK_RULES (
 );
 
 CREATE TABLE IF NOT EXISTS DR_HOLDBACK_MAP (
-                              id            VARCHAR(256) PRIMARY KEY,
+                              id            BIGINT PRIMARY KEY,
                               content_range_from INTEGER NOT NULL,
                               content_range_to INTEGER NOT NULL,
                               form_range_from INTEGER NOT NULL,

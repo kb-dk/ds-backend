@@ -126,9 +126,9 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         storage.createDrHoldbackRule("test1","Test",100);
         storage.createDrHoldbackRule("test2","Test2",200);
 
-        storage.createDrHoldbackMapping("1",1000,1000,1200,1900,"test1");
-        storage.createDrHoldbackMapping("2",2000,3000,2200,2900,"test2");
-        storage.createDrHoldbackMapping("3",2000,3000,3200,3900,"test2");
+        storage.createDrHoldbackMapping(1000,1000,1200,1900,"test1");
+        storage.createDrHoldbackMapping(2000,3000,2200,2900,"test2");
+        storage.createDrHoldbackMapping(2000,3000,3200,3900,"test2");
 
 
         assertEquals("test1",storage.getHoldbackRuleId(1000,1200));
@@ -145,8 +145,8 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         storage.createDrHoldbackRule("test1","Test",100);
         storage.createDrHoldbackRule("test2","Test2",200);
 
-        storage.createDrHoldbackMapping("1",1000,1000,1200,1900,"test1");
-        storage.createDrHoldbackMapping("2",2000,3000,2200,2900,"test2");
+        storage.createDrHoldbackMapping(1000,1000,1200,1900,"test1");
+        storage.createDrHoldbackMapping(2000,3000,2200,2900,"test2");
 
         assertEquals("test1",storage.getHoldbackRuleId(1000,1200));
         assertEquals("test2",storage.getHoldbackRuleId(2500,2900));

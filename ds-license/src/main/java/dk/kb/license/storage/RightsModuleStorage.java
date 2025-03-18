@@ -437,9 +437,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
     }
 
-    public void createDrHoldbackMapping(String id, int content_range_from, int content_range_to, int form_range_from, int form_range_to, String holdback_id) throws SQLException {
+    public void createDrHoldbackMapping(int content_range_from, int content_range_to, int form_range_from, int form_range_to, String holdback_id) throws SQLException {
+        long uniqueID = generateUniqueID();
         try(PreparedStatement stmt = connection.prepareStatement(createHoldbackMapping)) {
-            stmt.setString(1,id);
+            stmt.setLong(1,uniqueID);
             stmt.setInt(2,content_range_from);
             stmt.setInt(3,content_range_to);
             stmt.setInt(4,form_range_from);
