@@ -1,18 +1,5 @@
-/*
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
-package dk.kb.discover.util;
+package dk.kb.discover.util.integration;
+
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mockStatic;
@@ -29,15 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.discover.config.ServiceConfig;
+import dk.kb.discover.util.DsDiscoverClient;
 import dk.kb.util.oauth2.KeycloakUtil;
 import dk.kb.util.webservice.OAuthConstants;
 
-/**
- * Simple verification of client code generation.
- */
-
-@Tag("integration")
-public class DsDiscoverClientTest {
+public abstract class IntegrationTest {
     private static final Logger log = LoggerFactory.getLogger(DsDiscoverClientTest.class);
    
     private static DsDiscoverClient remote = null;
@@ -61,13 +44,14 @@ public class DsDiscoverClientTest {
             String clientSecret=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientSecret");                
             String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);           
             log.info("Retrieved keycloak access token:"+token);            
-            
+          
             //Mock that we have a JaxRS session with an Oauth token as seen from within a service call.
-            MessageImpl message = new MessageImpl();                            
-            message.put(OAuthConstants.ACCESS_TOKEN_STRING,token);            
-            MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);           
-            mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
-                                                                         
+            if (JAXRSUtils.getCurrentMessage() == null) {            
+                MessageImpl message = new MessageImpl();                            
+                message.put(OAuthConstants.ACCESS_TOKEN_STRING,token);            
+                MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);           
+                mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+            }                                                                        
         }
         catch(Exception e) {
             log.warn("Could not retrieve keycloak access token. Service will be called without Bearer access token");            

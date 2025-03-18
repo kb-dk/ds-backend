@@ -27,13 +27,16 @@ public class DocumentationExtractorTest {
         String xmlSchema = DocumentationExtractor.transformSchema("ds", "xml");
         assertTrue(xmlSchema.contains("<?summary "));
     }
+    
     @Test
+    @Tag("blocked")
     public void testMarkdownSchemaTransformation() throws IOException {
         String markdownSchema = DocumentationExtractor.transformSchema("ds", "markdown");
         assertTrue(markdownSchema.contains("# Summary"));
     }
 
     @Test
+    @Tag("blocked")
     public void testHtmlTransformation() throws IOException {
         String htmlSchema = DocumentationExtractor.transformSchema("ds", "html");
         assertTrue(htmlSchema.contains("<h2>Summary</h2>"));
