@@ -35,6 +35,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private static final Logger log = LoggerFactory.getLogger(RightsModuleStorage.class);
 
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
+    private static boolean enableStorageTouch = true;
 
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
 
@@ -89,6 +90,11 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
     public RightsModuleStorage() throws SQLException {
         connection = dataSource.getConnection();
+    }
+
+    public RightsModuleStorage(boolean enableStorageTouch) throws SQLException {
+        connection = dataSource.getConnection();
+        RightsModuleStorage.enableStorageTouch = enableStorageTouch;
     }
 
     /**
@@ -433,6 +439,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
     public int touchRelatedStorageRecords(String id, String idType){
         // This should be implemented for each valid type specified in the configuration file. Solr queries might be needed for the other three types currently available.
         // "ds_id", "dr_produktions_id", "egenproduktions_kode", "strict_title"
+        if (!enableStorageTouch){
+            log.warn("Storage touch is not enabled. No records are modified in connected DS-Storage.");
+            return 0;
+        }
 
         switch (idType){
             case "ds_id":
