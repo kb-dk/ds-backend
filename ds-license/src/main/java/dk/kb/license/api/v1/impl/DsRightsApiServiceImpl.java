@@ -10,6 +10,8 @@ import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.RestrictedIdInputDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 
+import dk.kb.license.model.v1.RightsCalculationInputDto;
+import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
@@ -160,6 +162,12 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+
+    @Override
+    public RightsCalculationOutputDto calculateRights(RightsCalculationInputDto rightsCalculationInputDto) {
+
+        return null;
+    }
 
     /**
      * create a DR holdback rule.
