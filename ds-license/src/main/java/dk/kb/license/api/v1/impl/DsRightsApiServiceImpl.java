@@ -1,6 +1,5 @@
 package dk.kb.license.api.v1.impl;
 
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonArrayFormatVisitor;
 import dk.kb.license.api.v1.*;
 
 import java.sql.SQLException;
@@ -341,7 +340,13 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public String getHoldbackIdFromContentAndForm(Integer content, Integer form) {
         try {
-            return BaseModuleStorage.performStorageAction("Get holdback ID", new RightsModuleStorage(), storage -> ((RightsModuleStorage) storage).getHoldbackRuleId(content, form));
+            return BaseModuleStorage.performStorageAction("Get holdback ID", new RightsModuleStorage(), storage -> {
+                String id  = ((RightsModuleStorage) storage).getHoldbackRuleId(content, form);
+                if (id == null) {
+                    throw new NotFoundServiceException("No holdback found for content:"+content+" form:"+form);
+                }
+                return id;
+            });
         } catch (Exception e) {
             throw handleException(e);
         }
