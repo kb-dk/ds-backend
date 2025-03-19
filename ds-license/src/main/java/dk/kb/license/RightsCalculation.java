@@ -1,7 +1,9 @@
 package dk.kb.license;
 
-import dk.kb.license.api.v1.impl.DsRightsApiServiceImpl;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
+import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
+import dk.kb.license.model.v1.RightsCalculationInputDto;
+import dk.kb.license.model.v1.RightsCalculationOutputDrDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
@@ -29,7 +31,7 @@ public class RightsCalculation {
      * @param id of DsRecord
      * @return true if restricted, otherwise false.
      */
-    public boolean isDsIdRestricted(String id){
+    public static boolean isDsIdRestricted(String id){
         try {
             return BaseModuleStorage.performStorageAction("Get restricted ID", new RightsModuleStorage(), storage ->
                     performLookupInRestrictionsTable(id, "ds_id",  storage));
@@ -43,7 +45,7 @@ public class RightsCalculation {
      * @param id from DRs production ID metadata.
      * @return true if restricted, otherwise false.
      */
-    public boolean isDrProductionIdRestricted(String id){
+    public static boolean isDrProductionIdRestricted(String id){
         try {
             return BaseModuleStorage.performStorageAction("Get restricted ID", new RightsModuleStorage(), storage ->
                     performLookupInRestrictionsTable(id, "dr_produktions_id", storage));
@@ -56,7 +58,7 @@ public class RightsCalculation {
      * @param id from DRs production ID metadata.
      * @return true if restricted, otherwise false.
      */
-    public boolean isTitleRestricted(String id){
+    public static boolean isTitleRestricted(String id){
         try {
             return BaseModuleStorage.performStorageAction("Get restricted Title", new RightsModuleStorage(), storage ->
                     performLookupInRestrictionsTable(id, "strict_title", storage));
@@ -77,7 +79,7 @@ public class RightsCalculation {
      * @param productionCode from tvmeter/ritzau metadata
      * @return true if allowed, otherwise false
      */
-    public boolean isProductionCodeAllowed(String productionCode){
+    public static boolean isProductionCodeAllowed(String productionCode){
         try {
             return BaseModuleStorage.performStorageAction("Get restricted ID", new RightsModuleStorage(), storage -> {
                 RestrictedIdOutputDto idOutput = ((RightsModuleStorage)storage).getRestrictedId(productionCode, "egenproduktions_kode", "dr");
@@ -93,5 +95,30 @@ public class RightsCalculation {
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking if production code is allowed to be shown.", e);
         }
+    }
+
+    /**
+     * For a {@link RightsCalculationInputDto} do all calculations needed to return a {@link RightsCalculationOutputDto} containing all information needed
+     * for a record in the DR Archive.
+     * @param rightsCalculationInputDto object containing all values needed for RightsCalculation.
+     * @return a {@link RightsCalculationOutputDto} containing all fields and values that are needed as part of a solr document to manage rights and restrictions in the
+     * LicenseModule part of DS-License.
+     */
+    public static RightsCalculationOutputDrDto calculateDrRights(RightsCalculationInputDto rightsCalculationInputDto) {
+        RightsCalculationOutputDrDto drOutput = new RightsCalculationOutputDrDto();
+
+        // TODO: Refactor restrictions based parts to own method and create method for holdback parts as well
+        // Do all restrictions checks against the restricted_ids table of the RightsModule
+        RestrictionsCalculationInputDto restrictionsInput = rightsCalculationInputDto.getRestrictionsInput();
+        boolean dsIdRestricted = isDsIdRestricted(restrictionsInput.getRecordId());
+        boolean drProductionIdRestricted = isDrProductionIdRestricted(restrictionsInput.getDrProductionId());
+        boolean isProductionCodeAllowed = isProductionCodeAllowed(restrictionsInput.getProductionCode());
+        boolean isTitleRestricted = isTitleRestricted(restrictionsInput.getTitle());
+
+        drOutput.setDsIdRestricted(dsIdRestricted);
+        drOutput.setDrIdRestricted(drProductionIdRestricted);
+        drOutput.setProductionCodeAllowed(isProductionCodeAllowed);
+        drOutput.setTitleRestricted(isTitleRestricted);
+        return drOutput;
     }
 }
