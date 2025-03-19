@@ -6,9 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import dk.kb.license.model.v1.DrHoldbackRuleDto;
-import dk.kb.license.model.v1.RestrictedIdInputDto;
-import dk.kb.license.model.v1.RestrictedIdOutputDto;
+import dk.kb.license.model.v1.*;
 
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
@@ -288,6 +286,84 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
             } else {
                 throw new InvalidArgumentServiceException("missing id or name");
             }
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    /**
+     * set the form and content range combinations for a dr_holdback_id
+     * This requires the holdback_id to be present in the DR holback rule table
+     *
+     * @param drHoldbackId
+     * @param drHoldbackRangeMappingInputDto
+     */
+    @Override
+    public void createHoldbackRanges(String drHoldbackId, List<DrHoldbackRangeMappingInputDto> drHoldbackRangeMappingInputDto) {
+        try {
+            BaseModuleStorage.performStorageAction("Create holdback ranges for "+ drHoldbackId, new RightsModuleStorage(), storage -> {
+                for(DrHoldbackRangeMappingInputDto mapping: drHoldbackRangeMappingInputDto) {
+                    if (((RightsModuleStorage)storage).getDrHoldbackFromID(drHoldbackId) == null) {
+                        throw new InvalidArgumentServiceException("No dr holdback_id "+drHoldbackId);
+                    }
+                    ((RightsModuleStorage)storage).createDrHoldbackMapping(
+                            mapping.getContentRangeFrom(),
+                            mapping.getContentRangeTo(),
+                            mapping.getFormRangeFrom(),
+                            mapping.getFormRangeTo(),
+                            drHoldbackId
+                    );
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    /**
+     * Deletes all form and content range combinations for a drHoldbackID
+     * @param drHoldbackId
+     */
+    @Override
+    public void deleteHoldbackRanges(String drHoldbackId) {
+        try {
+            BaseModuleStorage.performStorageAction("Delete holdback ranges for " + drHoldbackId, new RightsModuleStorage(), storage -> {
+                ((RightsModuleStorage)storage).deleteMappingsForDrHolbackId(drHoldbackId);
+                return null;
+            });
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    /**
+     * Gets the dr_holdback_id from a content and form metadata values.
+     *
+     *
+     * @param content
+     * @param form
+     * @return
+     */
+    @Override
+    public String getHoldbackIdFromContentAndForm(Integer content, Integer form) {
+        try {
+            return BaseModuleStorage.performStorageAction("Get holdback ID", new RightsModuleStorage(), storage -> {
+                String id  = ((RightsModuleStorage) storage).getHoldbackRuleId(content, form);
+                if (id == null) {
+                    throw new NotFoundServiceException("No holdback found for content:"+content+" form:"+form);
+                }
+                return id;
+            });
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public List<DrHoldbackRangeMappingDto> getHoldbackRanges(String drHoldbackId) {
+        try {
+            return BaseModuleStorage.performStorageAction("Get holdbackmappings for "+drHoldbackId, new RightsModuleStorage(), storage-> ((RightsModuleStorage)storage).getHoldbackRangesForHoldbackId(drHoldbackId));
         } catch (Exception e) {
             throw handleException(e);
         }

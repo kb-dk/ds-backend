@@ -1,6 +1,7 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.model.v1.DrHoldbackRangeMappingDto;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.solr.SolrServerClient;
@@ -35,6 +36,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private static final Logger log = LoggerFactory.getLogger(RightsModuleStorage.class);
 
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
+    private static boolean enableStorageTouch = true;
 
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
 
@@ -67,6 +69,14 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String DR_HOLDBACK_RULES_DAYS = "days";
     private final String DR_HOLDBACK_RULES_NAME = "name";
 
+    private final String DR_HOLDBACK_MAP_TABLE = "DR_HOLDBACK_MAP";
+    private final String DR_HOLDBACK_MAP_ID = "id";
+    private final String DR_HOLDBACK_MAP_CONTENT_FROM = "content_range_from";
+    private final String DR_HOLDBACK_MAP_CONTENT_TO = "content_range_to";
+    private final String DR_HOLDBACK_MAP_FORM_FROM = "form_range_from";
+    private final String DR_HOLDBACK_MAP_FORM_TO = "form_range_to";
+    private final String DR_HOLDBACK_MAP_HOLDBACK_ID = "dr_holdback_id";
+
     private final String createDrHoldbackRuleQuery = "INSERT INTO "+DR_HOLDBACK_RULES_TABLE +
             " ("+ DR_HOLDBACK_RULES_ID +","+ DR_HOLDBACK_RULES_NAME +","+ DR_HOLDBACK_RULES_DAYS +")" +
             " VALUES (?,?,?)";
@@ -86,9 +96,29 @@ public class RightsModuleStorage extends BaseModuleStorage{
             + " SET days = ?"
             + " WHERE name = ?";
 
+    private final String createHoldbackMapping = "INSERT INTO " + DR_HOLDBACK_MAP_TABLE +
+            "("+DR_HOLDBACK_MAP_ID+","+DR_HOLDBACK_MAP_CONTENT_FROM+","+DR_HOLDBACK_MAP_CONTENT_TO+","+DR_HOLDBACK_MAP_FORM_FROM+","+DR_HOLDBACK_MAP_FORM_TO+","+DR_HOLDBACK_MAP_HOLDBACK_ID+")"+
+            " VALUES (?,?,?,?,?,?)";
+
+    private final String getHoldbackIdFromContentAndForm = "SELECT " + DR_HOLDBACK_MAP_HOLDBACK_ID +
+            " FROM " + DR_HOLDBACK_MAP_TABLE + " WHERE " +
+            " content_range_from <= ? AND " +
+            " content_range_to >= ?  AND " +
+            " form_range_from <= ? AND " +
+            " form_range_to >= ? ";
+
+
+    private final String getRangesForDrHoldbackId = "SELECT * FROM "+DR_HOLDBACK_MAP_TABLE+" WHERE dr_holdback_id = ?";
+    private final String deleteRangesForDrHoldbackId = "DELETE from "+DR_HOLDBACK_MAP_TABLE+" WHERE dr_holdback_id = ?";
+
 
     public RightsModuleStorage() throws SQLException {
         connection = dataSource.getConnection();
+    }
+
+    public RightsModuleStorage(boolean enableStorageTouch) throws SQLException {
+        connection = dataSource.getConnection();
+        RightsModuleStorage.enableStorageTouch = enableStorageTouch;
     }
 
     /**
@@ -389,6 +419,105 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * Get the dr_holdback_id from content and form metadata values.
+     *
+     * @param content the content id
+     * @param form the form id
+     * @return
+     * @throws SQLException
+     */
+    public String getHoldbackRuleId(int content, int form) throws SQLException {
+        try(PreparedStatement stmt = connection.prepareStatement(getHoldbackIdFromContentAndForm)) {
+            stmt.setInt(1,content);
+            stmt.setInt(2,content);
+            stmt.setInt(3,form);
+            stmt.setInt(4,form);
+            ResultSet res = stmt.executeQuery();
+            if (res.next()) {
+                return res.getString(DR_HOLDBACK_MAP_HOLDBACK_ID);
+            }
+            return null;
+        } catch (SQLException e) {
+            log.error("SQL Exception in get holdback rule ID:" + e.getMessage());
+            throw e;
+        }
+
+    }
+
+    /**
+     * add a content and form range to a dr_holdback id
+     *
+     * @param content_range_from
+     * @param content_range_to
+     * @param form_range_from
+     * @param form_range_to
+     * @param holdback_id
+     * @throws SQLException
+     */
+    public void createDrHoldbackMapping(int content_range_from, int content_range_to, int form_range_from, int form_range_to, String holdback_id) throws SQLException {
+        long uniqueID = generateUniqueID();
+        try(PreparedStatement stmt = connection.prepareStatement(createHoldbackMapping)) {
+            stmt.setLong(1,uniqueID);
+            stmt.setInt(2,content_range_from);
+            stmt.setInt(3,content_range_to);
+            stmt.setInt(4,form_range_from);
+            stmt.setInt(5,form_range_to);
+            stmt.setString(6,holdback_id);
+            stmt.execute();
+        } catch (SQLException e) {
+            log.error("SQL Exception in get holdback rule ID:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * get all form and content ranges for a dr holdback-id
+     *
+     * @param holdbackId
+     * @return
+     * @throws SQLException
+     */
+    public List<DrHoldbackRangeMappingDto> getHoldbackRangesForHoldbackId(String holdbackId) throws SQLException {
+        try(PreparedStatement stmt = connection.prepareStatement(getRangesForDrHoldbackId)) {
+            stmt.setString(1, holdbackId);
+            ResultSet result = stmt.executeQuery();
+            List<DrHoldbackRangeMappingDto> output = new ArrayList<>();
+            while(result.next()) {
+                DrHoldbackRangeMappingDto mapping = new DrHoldbackRangeMappingDto();
+                mapping.setId(result.getString(DR_HOLDBACK_MAP_ID));
+                mapping.setContentRangeFrom(result.getInt(DR_HOLDBACK_MAP_CONTENT_FROM));
+                mapping.setContentRangeTo(result.getInt(DR_HOLDBACK_MAP_CONTENT_TO));
+                mapping.setFormRangeFrom(result.getInt(DR_HOLDBACK_MAP_FORM_FROM));
+                mapping.setFormRangeTo(result.getInt(DR_HOLDBACK_MAP_FORM_TO));
+                mapping.setDrHoldbackId(result.getString(DR_HOLDBACK_MAP_HOLDBACK_ID));
+                output.add(mapping);
+            }
+            return output;
+        } catch (SQLException e) {
+            log.error("SQL Exception delete ranges for holdback id" + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Delete all holback mappings for a dr_holdback_id
+     *
+     * @param holdbackId
+     * @throws SQLException
+     */
+    public void deleteMappingsForDrHolbackId(String holdbackId) throws SQLException {
+        try(PreparedStatement stmt = connection.prepareStatement(deleteRangesForDrHoldbackId)) {
+            stmt.setString(1, holdbackId);
+            stmt.execute();
+        } catch (SQLException e) {
+            log.error("SQL Exception delete ranges for holdback id" + e.getMessage());
+            throw e;
+        }
+    }
+
+
+
     private String convertToHumanReadable(Long modifiedTime) {
         LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(modifiedTime), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ServiceConfig.getConfig().getString("human-readable-date-format","yyyy-MM-dd HH:mm:ss"), Locale.ENGLISH);
@@ -413,6 +542,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
     public void clearTableRecords() throws SQLException {
         ArrayList<String> tables = new ArrayList<>();
         tables.add("RESTRICTED_IDS");
+        tables.add("DR_HOLDBACK_MAP");
+        tables.add("DR_HOLDBACK_RULES");
 
         for (String table : tables) {
             String deleteSQL="DELETE FROM " +table;
@@ -433,6 +564,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
     public int touchRelatedStorageRecords(String id, String idType){
         // This should be implemented for each valid type specified in the configuration file. Solr queries might be needed for the other three types currently available.
         // "ds_id", "dr_produktions_id", "egenproduktions_kode", "strict_title"
+        if (!enableStorageTouch){
+            log.warn("Storage touch is not enabled. No records are modified in connected DS-Storage.");
+            return 0;
+        }
 
         switch (idType){
             case "ds_id":
