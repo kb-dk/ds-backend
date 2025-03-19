@@ -284,6 +284,13 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+    /**
+     * set the form and content range combinations for a dr_holdback_id
+     * This requires the holdback_id to be present in the DR holback rule table
+     *
+     * @param drHoldbackId
+     * @param drHoldbackRangeMappingInputDto
+     */
     @Override
     public void createHoldbackRanges(String drHoldbackId, List<DrHoldbackRangeMappingInputDto> drHoldbackRangeMappingInputDto) {
         try {
@@ -307,6 +314,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+    /**
+     * Deletes all form and content range combinations for a drHoldbackID
+     * @param drHoldbackId
+     */
     @Override
     public void deleteHoldbackRanges(String drHoldbackId) {
         try {
@@ -319,6 +330,14 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
+    /**
+     * Gets the dr_holdback_id from a content and form id.
+     *
+     *
+     * @param content
+     * @param form
+     * @return
+     */
     @Override
     public String getHoldbackIdFromContentAndForm(Integer content, Integer form) {
         try {
