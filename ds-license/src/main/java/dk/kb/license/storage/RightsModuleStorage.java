@@ -419,6 +419,14 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * Get the dr_holdback_id from content and form ids
+     *
+     * @param content the content id
+     * @param form the form id
+     * @return
+     * @throws SQLException
+     */
     public String getHoldbackRuleId(int content, int form) throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(getHoldbackIdFromContentAndForm)) {
             stmt.setInt(1,content);
@@ -437,6 +445,16 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
     }
 
+    /**
+     * add a content and form range to a dr_holdback id
+     *
+     * @param content_range_from
+     * @param content_range_to
+     * @param form_range_from
+     * @param form_range_to
+     * @param holdback_id
+     * @throws SQLException
+     */
     public void createDrHoldbackMapping(int content_range_from, int content_range_to, int form_range_from, int form_range_to, String holdback_id) throws SQLException {
         long uniqueID = generateUniqueID();
         try(PreparedStatement stmt = connection.prepareStatement(createHoldbackMapping)) {
@@ -453,6 +471,13 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * get all form and content ranges for a dr holdback-id
+     *
+     * @param holdbackId
+     * @return
+     * @throws SQLException
+     */
     public List<DrHoldbackRangeMappingDto> getHoldbackRangesForHoldbackId(String holdbackId) throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(getRangesForDrHoldbackId)) {
             stmt.setString(1, holdbackId);
@@ -475,6 +500,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * Delete all holback mappings for a dr_holdback_id
+     *
+     * @param holdbackId
+     * @throws SQLException
+     */
     public void deleteMappingsForDrHolbackId(String holdbackId) throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(deleteRangesForDrHoldbackId)) {
             stmt.setString(1, holdbackId);
