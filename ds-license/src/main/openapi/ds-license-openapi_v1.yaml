@@ -589,7 +589,7 @@ paths:
         '201':
           description: created
     delete:
-      summary: set holdback ranges for a holdback id
+      summary: delete holdback ranges for a holdback id
       tags:
         - 'DsRights'
       operationId: deleteHoldbackRanges
@@ -608,7 +608,7 @@ paths:
 
   /rights/getHoldbackIdFromContentAndForm:
     get:
-      summary: set holdback ranges for a holdback id
+      summary: get the holdback id from content and form metadata.
       tags:
         - 'DsRights'
       operationId: getHoldbackIdFromContentAndForm

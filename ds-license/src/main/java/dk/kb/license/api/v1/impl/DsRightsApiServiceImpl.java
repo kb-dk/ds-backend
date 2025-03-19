@@ -330,7 +330,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * Gets the dr_holdback_id from a content and form id.
+     * Gets the dr_holdback_id from a content and form metadata values.
      *
      *
      * @param content

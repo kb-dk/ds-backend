@@ -420,7 +420,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     /**
-     * Get the dr_holdback_id from content and form ids
+     * Get the dr_holdback_id from content and form metadata values.
      *
      * @param content the content id
      * @param form the form id
