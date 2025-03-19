@@ -542,6 +542,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
     public void clearTableRecords() throws SQLException {
         ArrayList<String> tables = new ArrayList<>();
         tables.add("RESTRICTED_IDS");
+        tables.add("DR_HOLDBACK_MAP");
+        tables.add("DR_HOLDBACK_RULES");
 
         for (String table : tables) {
             String deleteSQL="DELETE FROM " +table;
