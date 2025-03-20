@@ -6,16 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.2) - 2025-03-20
 ### Changed
-- SolrShield now enabled by default
-- Bumped SwaggerUI dependency to v5.18.2
-- Bumped multiple OpenAPI dependency versions
+- SolrShield now enabled by default.
 - SolrShield score reduced for start parameter and number of rows.
+- Bumped SwaggerUI dependency to v5.18.2
+- Bumped multiple OpenAPI dependency versions.
 
 ### Fixed
-- Fixed /api-docs wrongly showing petstore example API spec
-
-### Fixed
+- Fixed /api-docs wrongly showing petstore example API spec.
 - Fixed resolving of same jars from multiple locations.
 
 ## [1.5.1](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.1) - 2025-01-07
