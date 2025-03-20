@@ -4,10 +4,10 @@ All notable changes to bff will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased](https://github.com/kb-dk/bff/compare/bff-1.2.4...HEAD)
+## [unreleased](https://github.com/kb-dk/bff/compare/bff-1.2.5...HEAD)
 
 
-## [1.2.4]
+## [1.2.5]
 ### Changed
 - Upgraded dependency cxf-rt-transports-http to v.3.6.4 (fix memory leak)
 - Bumped multiple OpenAPI dependency versions
@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed inclusion of identical dependencies from multiple sources.
 - Fixed /api-docs wrongly showing petstore example API spec
 - Fixed problem with proxying https urls
+
+## [1.2.4]
+Skipped
 
 ## [1.2.3]
 ### Changed
