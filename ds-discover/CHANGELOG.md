@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.5.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.2) - 2025-03-20
+## [1.5.3](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.3) - 2025-03-20
 ### Changed
 - SolrShield now enabled by default.
 - SolrShield score reduced for start parameter and number of rows.
