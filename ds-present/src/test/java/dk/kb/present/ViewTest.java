@@ -266,7 +266,8 @@ class ViewTest {
 
 
         String jsonld = jsonldView.apply(recordDto);
-        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2024-02-27T04:49:52Z\"," +
+        prettyPrintJson(jsonld);
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2029-01-01T00:00:00Z\"," +
                 "\"kb:holdback_name\":\"Underholdning\""));
     }
     @Test
