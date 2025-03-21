@@ -18,7 +18,7 @@ public class DsDiscoverClientTest extends IntegrationTest{
    
     @Test
     public void test() throws IOException {
-    //Must be one unit test to test the setup method is working 
+    //Must be one unit test to test the setup method is working       
     }
          
          

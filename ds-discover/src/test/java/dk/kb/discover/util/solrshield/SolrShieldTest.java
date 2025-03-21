@@ -32,9 +32,8 @@ class SolrShieldTest {
     private static final Logger log = LoggerFactory.getLogger(SolrShieldTest.class);
 
     @BeforeAll
-    static void setup() throws IOException {
-        ServiceConfig.initialize(Resolver.resolveGlob("solrshield-test1.yaml").get(0).toString());
-
+    static void setup() throws IOException {   
+      ServiceConfig.getInstance().initialize("solrshield-test1.yaml");
     }
 
     @Test

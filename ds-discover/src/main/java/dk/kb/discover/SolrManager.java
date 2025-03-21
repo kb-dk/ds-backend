@@ -43,7 +43,7 @@ public class SolrManager implements ServiceConfig.Observer {
 
     public SolrManager() {
         log.info("Creating SolrManager");
-        ServiceConfig.registerObserver(this);
+     //   ServiceConfig.registerObserver(this);
     }
 
     /**
@@ -59,7 +59,7 @@ public class SolrManager implements ServiceConfig.Observer {
      * @param config setup for {@link SolrService}s.
      */
     @Override
-    public synchronized void setConfig(YAML config) {
+    public synchronized void setConfig(YAML config) {       
         YAML majorConf = config.getSubMap(SOLR_KEY);
         List<YAML> solrConfs = majorConf.getYAMLList(COLLECTIONS_KEY);
         log.debug("setConfig called with with {} solr collections", solrConfs.size());
@@ -81,7 +81,7 @@ public class SolrManager implements ServiceConfig.Observer {
      * @return the {@link SolrService} with the given abstract collection ID.
      * @throws NotFoundServiceException if no Solr service with the given abstract collection ID could be found.
      */
-    public static synchronized SolrService getSolrService(String collection) {
+    public static synchronized SolrService getSolrService(String collection) {        
         SolrService solrService = instance.solrs.get(collection);
         if (solrService == null) {
             throw new NotFoundServiceException("The Solr collection '{}' was not available", collection);

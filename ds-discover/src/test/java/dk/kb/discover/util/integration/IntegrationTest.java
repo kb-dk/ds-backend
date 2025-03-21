@@ -15,6 +15,7 @@ import org.mockito.MockedStatic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.discover.SolrManager;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.discover.util.DsDiscoverClient;
 import dk.kb.util.oauth2.KeycloakUtil;
@@ -29,7 +30,10 @@ public abstract class IntegrationTest {
     @BeforeAll
     static void setUp() throws Exception{
         try {
-            ServiceConfig.initialize("ds-discover-integration-test.yaml"); 
+            ServiceConfig.getInstance().initialize("ds-discover-integration-test.yaml"); 
+            //SolrManager must also be initialised. Was automatic notified before (Observer Pattern), but this only worked by luck because several
+            //different yaml configs are initialized in Ds-Discover integration tests.
+            SolrManager.getInstance().setConfig(ServiceConfig.getConfig()); 
             dsDiscoverDevel= ServiceConfig.getConfig().getString("discover.url");
             remote = new DsDiscoverClient(dsDiscoverDevel);
         } catch (IOException e) { 

@@ -16,7 +16,7 @@ public class DocumentationExtractorTest {
     @BeforeAll
     public static void setup() {
         try {
-            ServiceConfig.initialize("ds-discover-integration-test.yaml");
+            ServiceConfig.getInstance().initialize("ds-discover-integration-test.yaml");
         } catch (IOException e) {
             fail("Integration test setup not present. Try running the command kb init");
         }

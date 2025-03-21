@@ -19,17 +19,17 @@ import dk.kb.discover.config.ServiceConfig;
 
 @Tag("integration")
 public class SolrServiceIntegrationTest extends IntegrationTest {
-          
+    
     @Test
     void suggestTestNotAvailable() throws IOException {
-        // Integration test towards devel env. Remember to update aegis before running this.
-        ServiceConfig.initialize("src/test/resources/ds-discover-integration-test.yaml");
+        // Integration test towards devel env. Remember to update aegis before running this.s        
         String suggestDictionary = "radiotv_title_suggest";
         // no suggestions should be available for this query.
         String suggestQuery = "Palle Lauring";
         int suggestCount = 5;
         String wt = "json";
         SolrService solr = SolrManager.getSolrService("ds");
+
 
         String filteredResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);
 
@@ -46,7 +46,6 @@ public class SolrServiceIntegrationTest extends IntegrationTest {
     @Test
     void suggestTest() throws IOException {
         // Integration test towards devel env. Remember to update aegis before running this.
-        ServiceConfig.initialize("src/test/resources/ds-discover-integration-test.yaml");
         String suggestDictionary = "radiotv_title_suggest";
         // no suggestions should be available for this query.
         String suggestQuery = "tes";
