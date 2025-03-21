@@ -70,8 +70,10 @@ public class ContextListener implements ServletContextListener {
             InitialContext ctx = new InitialContext();
             String configFile = (String) ctx.lookup("java:/comp/env/application-config");
             //TODO this should not refer to something in template. Should we perhaps use reflection here?
-            ServiceConfig.getInstance().initialize(configFile);
-            SolrManager.getInstance(); // Early initialization (and fail)
+            ServiceConfig.getInstance().initialize(configFile);                   
+            SolrManager.getInstance().setConfig(ServiceConfig.getInstance().getYAML());// also inititalize SolrManager yaml
+            //Need to initialise SolrShield also. See: https://kb-dk.atlassian.net/browse/DRA-1788
+            
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {
