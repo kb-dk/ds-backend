@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 
 import dk.kb.license.model.v1.RightsCalculationInputDto;
@@ -212,13 +213,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public DrHoldbackRuleDto getDrHoldbackRule(String id) {
         try {
-            return BaseModuleStorage.performStorageAction("Get holdback rule", new RightsModuleStorage(), storage -> {
-                DrHoldbackRuleDto output = ((RightsModuleStorage)storage).getDrHoldbackFromID(id);
-                if (output != null) {
-                    return output;
-                }
-                throw new NotFoundServiceException("holdback rule not found "+id);
-            });
+            return RightsModuleFacade.getDrHoldbackRuleById(id);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -348,13 +343,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public String getHoldbackIdFromContentAndForm(Integer content, Integer form) {
         try {
-            return BaseModuleStorage.performStorageAction("Get holdback ID", new RightsModuleStorage(), storage -> {
-                String id  = ((RightsModuleStorage) storage).getHoldbackRuleId(content, form);
-                if (id == null) {
-                    throw new NotFoundServiceException("No holdback found for content:"+content+" form:"+form);
-                }
-                return id;
-            });
+            return RightsModuleFacade.getHoldbackIdFromContentAndFormValues(content, form);
         } catch (Exception e) {
             throw handleException(e);
         }
