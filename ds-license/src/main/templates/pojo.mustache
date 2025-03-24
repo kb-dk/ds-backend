@@ -103,7 +103,7 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
         */
     public {{classname}}(String recordId, String startTime, RightsCalculationInputDto.PlatformEnum platform,
                             int form, int hensigt, int indhold, int productionCountry, String productionCode,
-                            String title, String drProductionId) {
+                            String title, String drProductionId, String origin) {
         HoldbackCalculationInputDto holdbackDto = new HoldbackCalculationInputDto();
         RestrictionsCalculationInputDto restrictionsDto = new RestrictionsCalculationInputDto();
 
@@ -116,6 +116,7 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
         holdbackDto.setIndhold(indhold);
         holdbackDto.setProductionCode(productionCode);
         holdbackDto.setProductionCountry(productionCountry);
+        holdbackDto.setOrigin(origin);
 
         restrictionsDto.setRecordId(recordId);
         restrictionsDto.setTitle(title);

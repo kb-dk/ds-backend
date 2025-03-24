@@ -23,7 +23,7 @@ public class RightsInputDTOTest {
 
     private RightsCalculationInputDto getTestDto() {
         return new RightsCalculationInputDto("testRecord", "2015-12-17T23:41:29Z", RightsCalculationInputDto.PlatformEnum.DRARKIV,
-                1000, 1200, 1000, 1000, "2000", "Der var engang en test", "123456");
+                1000, 1200, 1000, 1000, "2000", "Der var engang en test", "123456", "ds.tv");
 
     }
 

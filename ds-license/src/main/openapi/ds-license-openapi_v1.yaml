@@ -1055,6 +1055,12 @@ components:
           $ref: "#/components/schemas/HoldbackCalculationInput"
         restrictionsInput:
           $ref: "#/components/schemas/RestrictionsCalculationInput"
+      required:
+        - recordId
+        - platform
+        - startTime
+        - holdbackInput
+        - restrictionsInput
 
     HoldbackCalculationInput:
       description: "A holdback specific Data Transfer Object which should be used to carry all values needed for calculating holdback for a record between services."
@@ -1074,7 +1080,17 @@ components:
           description: "A metadata value used for holdback calculation."
         productionCode:
           type: string
-          description: "a metadata value used for holdback and own production calculation."
+          description: "A metadata value used for holdback and own production calculation."
+        origin:
+          type: string
+          description: "Origin in the DS ecosystem. Used to determine how holdback should be calculated."
+      required:
+        - hensigt
+        - form
+        - indhold
+        - productionCountry
+        - productionCode
+        - origin
 
     RestrictionsCalculationInput:
       description: "A restrictions specific Data Transfer Object which should be used to carry all values needed for looking up if a record is restricted between services."
@@ -1092,6 +1108,11 @@ components:
         title:
           type: string
           description: "title of the record in hand. There is a chance that it is restricted."
+      required:
+        - recordId
+        - productionCode
+        - drProductionId
+        - title
 
     RightsCalculationOutput:
       description: "A Data Transfer Object containing the solr fields and values that have been created from the calculations based on a RightsCalculationInput object."
