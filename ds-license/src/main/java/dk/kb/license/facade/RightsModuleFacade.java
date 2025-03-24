@@ -19,6 +19,14 @@ public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
 
 
+    /**
+     * Creates a restricted ID using the provided input data transfer object (DTO) and user ID.
+     *
+     * @param restrictedIdInputDto the data transfer object containing the details of the restricted ID to be created.
+     *                               This should not be null.
+     * @param userId               the ID of the user performing the action.
+     * @throws SQLException if there is an error while persisting the restricted ID in the database.
+     */
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String userId) throws SQLException {
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", new RightsModuleStorage(), storage -> {
             ((RightsModuleStorage) storage).createRestrictedId(

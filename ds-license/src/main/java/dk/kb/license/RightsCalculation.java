@@ -161,6 +161,18 @@ public class RightsCalculation {
         drOutput.setTitleRestricted(isTitleRestricted);
     }
 
+    /**
+     * Sets the holdback information for a TV record in the DR archive.
+     *
+     * <p>This method retrieves the holdback rule based on the provided input DTO, calculates the holdback
+     * name and expiration date, and updates the output DTO accordingly.</p>
+     *
+     * @param rightsCalculationInputDto the input data transfer object containing the rights calculation details,
+     *                                   including holdback input, record ID, and start time. This should not be null.
+     * @param drOutput                   the output data transfer object where the holdback name and expiration date
+     *                                   will be set. This should not be null.
+     * @throws SQLException if there is an error while accessing the database or performing the necessary calculations.
+     */
     private static void setHoldbackForTvRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput) throws SQLException {
         HoldbackCalculationInputDto holdbackInput = rightsCalculationInputDto.getHoldbackInput();
         String recordId = rightsCalculationInputDto.getRecordId();
@@ -175,6 +187,17 @@ public class RightsCalculation {
         drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
     }
 
+    /**
+     * Sets the holdback information for a radio record in the DR archive.
+     *
+     * <p>This method calculates the holdback expiration date based on the start time provided in the input DTO,
+     * sets the holdback name to "Radio", and updates the output DTO with the calculated holdback expiration date.</p>
+     *
+     * @param rightsCalculationInputDto the input data transfer object containing the rights calculation details,
+     *                                   including the start time. This should not be null.
+     * @param drOutput                   the output data transfer object where the holdback name and expiration date
+     *                                   will be set. This should not be null.
+     */
     private static void setHoldbackForRadioRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput) {
         String holdbackExpiredDate = calculateHoldbackDateByYears(rightsCalculationInputDto.getStartTime(), 3);
 
@@ -182,6 +205,21 @@ public class RightsCalculation {
         drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
     }
 
+
+    /**
+     * Retrieves a holdback rule based on the provided holdback calculation input DTO.
+     *
+     * <p>This method extracts the form and content values from the input DTO, retrieves the corresponding holdback ID,
+     * and checks for specific conditions related to that ID. If the holdback ID is empty, it returns an empty
+     * {@link DrHoldbackRuleDto} with a holdback date of "9999-01-01". If the holdback ID is "2.05", it validates the ID
+     * based on the production country before retrieving the appropriate holdback rule.</p>
+     *
+     * @param holdbackInput the input data transfer object containing the holdback calculation details, including
+     *                      form, content, and production country. This should not be null.
+     * @return the holdback rule data transfer object ({@link DrHoldbackRuleDto}) corresponding to the calculated holdback ID.
+     *         Returns an empty holdback rule if the holdback ID is not found.
+     * @throws SQLException if there is an error while accessing the database or retrieving the holdback rule.
+     */
     private static DrHoldbackRuleDto getHoldbackRule(HoldbackCalculationInputDto holdbackInput) throws SQLException {
         // Get form value
         int form = holdbackInput.getForm();
