@@ -9,7 +9,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -18,6 +21,20 @@ import java.util.Date;
  */
 public abstract class BaseModuleStorage implements AutoCloseable  {
     private static final Logger log = LoggerFactory.getLogger(BaseModuleStorage.class);
+
+    //AUDITLOG
+    private static final String AUDITLOG_TABLE = "AUDITLOG";
+    private static final String MILLIS_COLUMN = "MILLIS";
+    private static final String USERNAME_COLUMN = "USERNAME";
+    private static final String CHANGETYPE_COLUMN = "CHANGETYPE";
+    private static final String OBJECTNAME_COLUMN = "OBJECTNAME";
+    private static final String TEXTBEFORE_COLUMN = "TEXTBEFORE";
+    private static final String TEXTAFTER_COLUMN = "TEXTAFTER";
+
+    private final static String selectAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE MILLIS= ? ";
+    private final static String selectAllAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE +" ORDER BY MILLIS DESC";
+    private final static String persistAuditLog = "INSERT INTO " + AUDITLOG_TABLE + " ("
+            + MILLIS_COLUMN + "," + USERNAME_COLUMN + "," + CHANGETYPE_COLUMN + ","+OBJECTNAME_COLUMN +","+TEXTBEFORE_COLUMN +","+TEXTAFTER_COLUMN+") VALUES (?,?,?,?,?,?)"; // #|?|=6
 
     // statistics shown on monitor.jsp page
     public static Date INITDATE = null;
@@ -201,5 +218,77 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
          * @throws Exception if something went wrong.
          */
         T process(BaseModuleStorage storage) throws Exception;
+    }
+
+    /**
+     *
+     * @param millis ID is of the auditlog
+     * @return
+     * @throws Exception
+     */
+
+
+    public AuditLog getAuditLog(long millis) throws IllegalArgumentException, SQLException {
+
+
+        try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQuery);) {
+            stmt.setLong(1, millis);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) { // maximum one due to unique/primary key constraint
+                String username = rs.getString(USERNAME_COLUMN);
+                String changetype = rs.getString(CHANGETYPE_COLUMN);
+                String objectName = rs.getString(OBJECTNAME_COLUMN);
+                String textBefore = rs.getString(TEXTBEFORE_COLUMN);
+                String textAfter = rs.getString(TEXTAFTER_COLUMN);
+                AuditLog audit=new AuditLog(millis,username, changetype,objectName,textBefore,textAfter);
+                return audit;
+            }
+            throw new IllegalArgumentException("AuditId not found for millis:" + millis);
+
+        } catch (SQLException e) {
+            log.error("SQL Exception in getAuditLog:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    public ArrayList<AuditLog> getAllAudit() throws SQLException {
+
+        ArrayList<AuditLog> logs = new ArrayList<AuditLog>();
+
+        try (PreparedStatement stmt = connection.prepareStatement(selectAllAuditLogQuery);) {
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) { // maximum one due to unique/primary key constraint
+                Long  millis = rs.getLong(MILLIS_COLUMN);
+                String username = rs.getString(USERNAME_COLUMN);
+                String changetype = rs.getString(CHANGETYPE_COLUMN);
+                String objectName = rs.getString(OBJECTNAME_COLUMN);
+                String textBefore = rs.getString(TEXTBEFORE_COLUMN);
+                String textAfter = rs.getString(TEXTAFTER_COLUMN);
+                AuditLog audit=new AuditLog(millis,username, changetype,objectName,textBefore,textAfter);
+                logs.add(audit);
+            }
+            return logs;
+        } catch (SQLException e) {
+            log.error("SQL Exception in getAllAudit:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void persistAuditLog(AuditLog auditlog) throws SQLException {
+        log.info("Persisting  persistAuditLog " + auditlog.getChangeType() +" for username:"+auditlog.getUsername());
+        try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
+            stmt.setLong(1,  auditlog.getMillis());
+            stmt.setString(2,auditlog.getUsername());
+            stmt.setString(3, auditlog.getChangeType());
+            stmt.setString(4, auditlog.getObjectName());
+            stmt.setString(5, auditlog.getTextBefore());
+            stmt.setString(6, auditlog.getTextAfter());
+            stmt.execute();
+        } catch (SQLException e) {
+            log.error("SQL Exception in persistAuditLog:" + e.getMessage());
+            throw e;
+        }
     }
 }
