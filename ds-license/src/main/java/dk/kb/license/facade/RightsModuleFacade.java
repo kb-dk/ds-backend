@@ -1,17 +1,25 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.RightsCalculation;
+import dk.kb.license.api.v1.impl.DsLicenseApiServiceImpl;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
+import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDrDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
+import dk.kb.license.storage.LicenseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
 public class RightsModuleFacade {
+    private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
+
 
 
     /**
@@ -27,10 +35,12 @@ public class RightsModuleFacade {
      *                                   specified content and form.
      */
     public static String getHoldbackIdFromContentAndFormValues(Integer content, Integer form) throws SQLException {
-        return BaseModuleStorage.performStorageAction("Get holdback ID", new RightsModuleStorage(), storage -> {
+        log.info("Entered method: getHoldbackIdFromContentAndFormValues");
+        return BaseModuleStorage.performStorageAction("Get holdback ID", getRightsStorage(), storage -> {
             String id = ((RightsModuleStorage) storage).getHoldbackRuleId(content, form);
             if (id == null) {
-                throw new NotFoundServiceException("No holdback found for content:" + content + " form:" + form);
+                log.warn("No holdback found for content: '{}' and form: '{}'. Returning an empty string", content, form);
+                return "";
             }
             return id;
         });
@@ -56,14 +66,28 @@ public class RightsModuleFacade {
         });
     }
 
-    public RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) {
+    /**
+     * Calculate the rights for a specific record based on the input values provided.
+     *
+     * @param rightsCalculationInputDto the input DTO containing the needed information for rights calculation.
+     * @return a {@link RightsCalculationOutputDto} containing the calculated rights.
+     */
+    public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException {
         RightsCalculationOutputDto output = new RightsCalculationOutputDto();
 
         RightsCalculationOutputDrDto drOutput = RightsCalculation.calculateDrRights(rightsCalculationInputDto);
 
         output.setDr(drOutput);
-
         return output;
+    }
+
+    private static RightsModuleStorage getRightsStorage() {
+        try {
+            return new RightsModuleStorage();
+        } catch (SQLException e) {
+            log.error("Error creating Storage ",e);
+            throw new InternalServiceException("Error creating storage");
+        }
     }
 
 }

@@ -38,6 +38,7 @@ public abstract class DsLicenseUnitTestUtil {
         // This way you can open the DB in a DB-browser after a unittest and see the result.
         // Just run that single test and look in the DB
         LicenseModuleStorage.shutdown();
+        BaseModuleStorage.shutdown();
     }
 
 

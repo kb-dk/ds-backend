@@ -70,15 +70,15 @@ public class RightsCalculation {
      */
     public static boolean isTitleRestricted(String id){
         try {
-            return BaseModuleStorage.performStorageAction("Get restricted Title", new RightsModuleStorage(), storage ->
-                    performLookupInRestrictionsTable(id, "strict_title", storage));
+            return BaseModuleStorage.performStorageAction("Get restricted Title", new RightsModuleStorage(), storage -> {
+                return performLookupInRestrictionsTable(id, "strict_title", storage);
+            });
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
     }
 
     private static boolean performLookupInRestrictionsTable(String id, String idType, BaseModuleStorage storage) throws SQLException {
-        log.debug("Performing lookup in restrictions table for id: '{}', with idType: '{}'", id, idType);
         RestrictedIdOutputDto idOutput = ((RightsModuleStorage)storage).getRestrictedId(id, idType, "dr");
         // If the object is null, then id is not restricted
         return idOutput != null;
@@ -185,7 +185,14 @@ public class RightsCalculation {
         // get contentsitem/indhold value
         int content = holdbackInput.getIndhold();
         String holdbackId = RightsModuleFacade.getHoldbackIdFromContentAndFormValues(content, form);
+
+        if (holdbackId.isEmpty()){
+            // An empty rule should end with a holdback date of 9999-01-01 as we cant calculate holdback for these records.
+            return new DrHoldbackRuleDto();
+        }
+        // Check for ID being 2.05 and correct it to either 2.05.01 or 2.05.02
         holdbackId = validateHoldbackBasedOnProductionCountry(holdbackId, holdbackInput.getProductionCountry());
+
         return RightsModuleFacade.getDrHoldbackRuleById(holdbackId);
     }
 
@@ -215,7 +222,7 @@ public class RightsCalculation {
      * @throws NullPointerException if either {@code holdbackInput} or
      *                              {@code holdbackRule} is null.
      */
-    private static String getHoldbackName(HoldbackCalculationInputDto holdbackInput, DrHoldbackRuleDto holdbackRule) throws SQLException {
+    private static String getHoldbackName(HoldbackCalculationInputDto holdbackInput, DrHoldbackRuleDto holdbackRule) {
         // If purpose is 6000, then the purpose name is "Undervisning" no matter what.
         if (holdbackInput.getHensigt() == 6000){
             log.debug("Nielsen/TVMeter intent is: '6000', therefore the holdback name is set as 'Undervisning'.");
@@ -272,8 +279,13 @@ public class RightsCalculation {
      * @return The calculated holdback expiration date in ISO-8601 ({@link DateTimeFormatter#ISO_INSTANT}-format).
      */
     private static String getHoldbackExpiredDate(DrHoldbackRuleDto holdbackRule, String recordId, String startDate) {
-        if (holdbackRule.getName().isEmpty()){
+        if (holdbackRule.getName() == null || holdbackRule.getName().isEmpty()){
             log.debug("Purpose name was empty for record with id: '{}'. Setting holdback date to 9999-01-01T00:00:00Z", recordId);
+            return "9999-01-01T00:00:00Z";
+        }
+
+        if (holdbackRule.getId().equals("2.05.02")){
+            log.debug("Foreign produced fictional content cannot be shown. Setting holdback date to 9999-01-01T00:00:00Z for record with id: '{}'", recordId);
             return "9999-01-01T00:00:00Z";
         }
 
