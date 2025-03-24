@@ -64,7 +64,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(alwaysEducationRecord);
 
-        assertTrue(output.getDr().getHoldbackName().equals("Undervisning"));
+        assertEquals("Undervisning", output.getDr().getHoldbackName());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(alwaysEducationRecord);
 
-        assertTrue(output.getDr().getHoldbackName().equals(""));
+        assertEquals("", output.getDr().getHoldbackName());
         assertEquals("9999-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
     }
 

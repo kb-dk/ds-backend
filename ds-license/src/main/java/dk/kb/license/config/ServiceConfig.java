@@ -139,6 +139,16 @@ public class ServiceConfig {
 
         return drPlatform.getInteger("holdbackLogicChangeDays", 365);
     }
+
+    public static int getHoldbackYearsForRadio(){
+        YAML drPlatform = getRightsPlatformConfig("dr");
+
+        if (drPlatform.isEmpty()){
+            throw new IllegalStateException("The DR platform config should have been loaded, but was not. Holdback cannot be calculated correctly.");
+        }
+
+        return drPlatform.getInteger("holdbackYearsForRadio", 3);
+    }
     
     public static int getCacheRefreshTimeInSeconds() {
         return serviceConfig.getInteger("cache.reloadInSeconds",300);

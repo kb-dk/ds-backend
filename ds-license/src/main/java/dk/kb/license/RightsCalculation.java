@@ -61,9 +61,8 @@ public class RightsCalculation {
      */
     public static boolean isTitleRestricted(String id){
         try {
-            return BaseModuleStorage.performStorageAction("Get restricted Title", new RightsModuleStorage(), storage -> {
-                return performLookupInRestrictionsTable(id, "strict_title", storage);
-            });
+            return BaseModuleStorage.performStorageAction("Get restricted Title", new RightsModuleStorage(), storage ->
+                    performLookupInRestrictionsTable(id, "strict_title", storage));
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -199,7 +198,7 @@ public class RightsCalculation {
      *                                   will be set. This should not be null.
      */
     private static void setHoldbackForRadioRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput) {
-        String holdbackExpiredDate = calculateHoldbackDateByYears(rightsCalculationInputDto.getStartTime(), 3);
+        String holdbackExpiredDate = calculateHoldbackDateByYears(rightsCalculationInputDto.getStartTime(), ServiceConfig.getHoldbackYearsForRadio());
 
         drOutput.setHoldbackName("Radio");
         drOutput.setHoldbackExpiredDate(holdbackExpiredDate);

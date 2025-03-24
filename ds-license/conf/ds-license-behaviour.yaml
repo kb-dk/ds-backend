@@ -48,6 +48,7 @@ rights:
         - "strict_title"
       # An amount of days used to specify, when the holdback logic changes from being calculated from the start date of the record to the following January 1st
       holdbackLogicChangeDays: 365
+      holdbackYearsForRadio: 3
   
 #KeyCloakClientSecret can be seen in the KeyCloak server admin page for the AD realm configuration
 #The rsaPublic key can also be seen at the KeyCloak server admin page
