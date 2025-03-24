@@ -2,6 +2,7 @@ package dk.kb.license.rights;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
+import dk.kb.license.model.v1.RestrictedIdInputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
@@ -31,16 +32,15 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     public static void beforeClass() throws IOException, SQLException {
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
 
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         H2DbUtil.deleteEntriesInTable(URL, USERNAME, PASSWORD, "DR_HOLDBACK_MAP");
         H2DbUtil.deleteEntriesInTable(URL, USERNAME, PASSWORD, "DR_HOLDBACK_RULES");
         H2DbUtil.deleteEntriesInTable(URL, USERNAME, PASSWORD, "RESTRICTED_IDS");
         H2DbUtil.dropIndex(URL, USERNAME, PASSWORD, "unique_restricted_id");
         // "ddl/rightsmodule_default_holdbackdata.sql"
         H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl", "ddl/rightsmodule_default_holdbackdata.sql"));
+        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         storage = new RightsModuleStorage(false);
-        storage.createRestrictedId("1000", "egenproduktions_kode", "dr", "Egenproduktion", "test", 9999999999L);
     }
 
     @BeforeEach
@@ -97,6 +97,16 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(tenYearHoldbackRecord);
 
         assertEquals("2027-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
+    }
+
+    @Test
+    public void testHoldbackDateNews() throws SQLException {
+        RightsCalculationInputDto newsRecord = new RightsCalculationInputDto("testRecord1", "2016-01-01T10:34:42+0100",
+                RightsCalculationInputDto.PlatformEnum.DRARKIV,1100, 0, 1200, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+
+        RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(newsRecord);
+
+        assertEquals("2016-01-31T09:34:42Z", output.getDr().getHoldbackExpiredDate());
     }
 
     @Test
@@ -158,5 +168,74 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
 
+    @Test
+    public void restrictedDrProductionIdTest() throws SQLException {
+        RestrictedIdInputDto allowedProductionCode = new RestrictedIdInputDto();
+        allowedProductionCode.setIdValue("1234567890");
+        allowedProductionCode.setComment("Not allowed dr production ID");
+        allowedProductionCode.setPlatform("dr");
+        allowedProductionCode.setIdType("dr_produktions_id");
 
+        RightsModuleFacade.createRestrictedId(allowedProductionCode, "TestUser");
+
+        RightsCalculationInputDto drProductionIdRestrictedEntry = new RightsCalculationInputDto("Restricted DR Production ID","1990-06-20T10:00:00+0100",
+                RightsCalculationInputDto.PlatformEnum.DRARKIV,
+                4411, 0, 3190, 1000, "1000", "Program 1", "1234567890", "ds.tv");
+        RightsCalculationOutputDto restrictedDrProductionID = RightsModuleFacade.calculateRightsForRecord(drProductionIdRestrictedEntry);
+
+        assertTrue(restrictedDrProductionID.getDr().getDrIdRestricted());
+    }
+
+    @Test
+    public void restrictedDsIdTest() throws SQLException {
+        RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
+        restrictedId.setIdValue("restrictedId");
+        restrictedId.setComment("dangerous ID");
+        restrictedId.setPlatform("dr");
+        restrictedId.setIdType("ds_id");
+
+        RightsModuleFacade.createRestrictedId(restrictedId, "TestUser");
+
+        RightsCalculationInputDto restrictedDsId = new RightsCalculationInputDto("restrictedId","1990-06-20T10:00:00+0100",
+                RightsCalculationInputDto.PlatformEnum.DRARKIV,
+                4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+        RightsCalculationOutputDto restrictedDsID = RightsModuleFacade.calculateRightsForRecord(restrictedDsId);
+
+        assertTrue(restrictedDsID.getDr().getDsIdRestricted());
+    }
+    @Test
+    public void restrictedTitleTest() throws SQLException {
+        RestrictedIdInputDto restrictedTitle = new RestrictedIdInputDto();
+        restrictedTitle.setIdValue("Restricted Test Title");
+        restrictedTitle.setComment("This title can never be shown");
+        restrictedTitle.setPlatform("dr");
+        restrictedTitle.setIdType("strict_title");
+
+        RightsModuleFacade.createRestrictedId(restrictedTitle, "TestUser");
+
+        RightsCalculationInputDto restrictedTitleRecord = new RightsCalculationInputDto("restrictedId","1990-06-20T10:00:00+0100",
+                RightsCalculationInputDto.PlatformEnum.DRARKIV,
+                4411, 0, 3190, 1000, "1000", "Restricted Test Title", "9283748300", "ds.tv");
+        RightsCalculationOutputDto restrictedTitleOutput = RightsModuleFacade.calculateRightsForRecord(restrictedTitleRecord);
+
+        assertTrue(restrictedTitleOutput.getDr().getTitleRestricted());
+    }
+
+    @Test
+    public void allowedProductionCodeFromMetadataTest() throws SQLException {
+        RestrictedIdInputDto restrictedTitle = new RestrictedIdInputDto();
+        restrictedTitle.setIdValue("1000");
+        restrictedTitle.setComment("1000 equals ownproduction");
+        restrictedTitle.setPlatform("dr");
+        restrictedTitle.setIdType("egenproduktions_kode");
+
+        RightsModuleFacade.createRestrictedId(restrictedTitle, "TestUser");
+
+        RightsCalculationInputDto allowedOwnProductionCode = new RightsCalculationInputDto("restrictedId","1990-06-20T10:00:00+0100",
+                RightsCalculationInputDto.PlatformEnum.DRARKIV,
+                4411, 0, 3190, 1000, "1000", "Random program", "9283748300", "ds.tv");
+        RightsCalculationOutputDto allowedOwnProduction = RightsModuleFacade.calculateRightsForRecord(allowedOwnProductionCode);
+
+        assertTrue(allowedOwnProduction.getDr().getProductionCodeAllowed());
+    }
 }

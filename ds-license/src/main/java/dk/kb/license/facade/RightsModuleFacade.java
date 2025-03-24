@@ -1,14 +1,12 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.RightsCalculation;
-import dk.kb.license.api.v1.impl.DsLicenseApiServiceImpl;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
-import dk.kb.license.model.v1.RestrictedIdOutputDto;
+import dk.kb.license.model.v1.RestrictedIdInputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDrDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.LicenseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
@@ -21,6 +19,19 @@ public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
 
 
+    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String userId) throws SQLException {
+        BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", new RightsModuleStorage(), storage -> {
+            ((RightsModuleStorage) storage).createRestrictedId(
+                    restrictedIdInputDto.getIdValue(),
+                    restrictedIdInputDto.getIdType(),
+                    restrictedIdInputDto.getPlatform(),
+                    restrictedIdInputDto.getComment(),
+                    userId,
+                    System.currentTimeMillis());
+            log.info("Created restriction {}", restrictedIdInputDto);
+            return null;
+        });
+    }
 
     /**
      * Retrieves the holdback ID based on the specified content and form values.
@@ -35,7 +46,6 @@ public class RightsModuleFacade {
      *                                   specified content and form.
      */
     public static String getHoldbackIdFromContentAndFormValues(Integer content, Integer form) throws SQLException {
-        log.info("Entered method: getHoldbackIdFromContentAndFormValues");
         return BaseModuleStorage.performStorageAction("Get holdback ID", getRightsStorage(), storage -> {
             String id = ((RightsModuleStorage) storage).getHoldbackRuleId(content, form);
             if (id == null) {

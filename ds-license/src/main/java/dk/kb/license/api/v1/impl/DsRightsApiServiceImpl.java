@@ -41,17 +41,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Creating restricted ID {}", restrictedIdInputDto );
         try {
-            BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", new RightsModuleStorage(), storage -> {
-                ((RightsModuleStorage) storage).createRestrictedId(
-                        restrictedIdInputDto.getIdValue(),
-                        restrictedIdInputDto.getIdType(),
-                        restrictedIdInputDto.getPlatform(),
-                        restrictedIdInputDto.getComment(),
-                        getCurrentUserID(),
-                        System.currentTimeMillis());
-                log.info("Created restriction {}",restrictedIdInputDto);
-                return null;
-            });
+            RightsModuleFacade.createRestrictedId(restrictedIdInputDto, getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }

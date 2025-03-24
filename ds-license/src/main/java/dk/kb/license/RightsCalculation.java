@@ -27,16 +27,6 @@ public class RightsCalculation {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculation.class);
 
 
-
-    public static void testMethod(){
-        RightsCalculationOutputDto rightsCalculationOutputDto = new RightsCalculationOutputDto();
-
-                // Get holdback name
-        // Get holdback expired - do calculations
-        // Get title restricted
-
-    }
-
     /**
      * Check if a given DS id is restricted.
      * @param id of DsRecord
@@ -305,11 +295,11 @@ public class RightsCalculation {
         int holdbackDays = holdbackRule.getDays();
 
         if (holdbackDays < ServiceConfig.getHoldbackLogicChangeDays()) {
-            log.debug("Calculating holdback on a daily basis for record: '{}'", recordId);
+            log.info("Calculating holdback on a daily basis for record: '{}'", recordId);
             // Add holdback days directly to startTime if holdback is less than a year
-            return calculateHoldbackDateByDays(ZonedDateTime.parse(startDate), holdbackDays);
+            return calculateHoldbackDateByDays(startDate, holdbackDays);
         } else {
-            log.debug("Calculating holdback on a yearly basis for record: '{}'", recordId);
+            log.info("Calculating holdback on a yearly basis for record: '{}'", recordId);
             // When holdback is more than a year, it should be calculated from the 1st of January the following year and days aren't actually needed more, so we convert
             // days to years, to make it easier to add correct amount of time
             int holdbackYears = holdbackDays / 365;
@@ -324,8 +314,9 @@ public class RightsCalculation {
      * @param holdbackDays the amount of days that has to parse before a program can be retrieved in the archive.
      * @return the date, when the holdback period has expired as a string in the format: yyyy-MM-dd'T'HH:mm:ssZ.
      */
-    private static String calculateHoldbackDateByDays(ZonedDateTime startDate, int holdbackDays) {
-        ZonedDateTime holdbackExpiredDate = startDate.plusDays(holdbackDays);
+    private static String calculateHoldbackDateByDays(String startDate, int holdbackDays) {
+        ZonedDateTime cleanedStartDate = getCleanZonedDateTimeFromString(startDate);
+        ZonedDateTime holdbackExpiredDate = cleanedStartDate.plusDays(holdbackDays);
 
         // Using .ISO_INSTANT as this is solr standard
         DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
