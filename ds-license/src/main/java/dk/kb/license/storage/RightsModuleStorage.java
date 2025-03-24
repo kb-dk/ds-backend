@@ -113,12 +113,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
 
     public RightsModuleStorage() throws SQLException {
-        log.info("Initialized RighstModuleStorage");
-
-        log.info("Is datasource null: '{}'", dataSource == null);
-
         connection = dataSource.getConnection();
-        log.info("We dont get here");
     }
 
     public RightsModuleStorage(boolean enableStorageTouch) throws SQLException {
@@ -168,7 +163,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public RestrictedIdOutputDto getRestrictedId(String id_value, String id_type, String platform) throws SQLException {
-        log.info("Entered method getRestrictedId");
         validatePlatformAndIdType(platform,id_type);
         try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQuery)) {
             stmt.setString(1, id_value);

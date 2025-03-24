@@ -14,6 +14,7 @@ import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,11 +119,17 @@ public class RightsCalculation {
         RightsCalculationOutputDrDto drOutput = new RightsCalculationOutputDrDto();
 
         setRestrictionsForRecordDrArchive(rightsCalculationInputDto, drOutput);
-
-        setHoldbackForRecordDrArchive(rightsCalculationInputDto, drOutput);
+        if (rightsCalculationInputDto.getHoldbackInput().getOrigin().equals("ds.tv")){
+            setHoldbackForTvRecordDrArchive(rightsCalculationInputDto, drOutput);
+        } else if (rightsCalculationInputDto.getHoldbackInput().getOrigin().equals("ds.radio")){
+            setHoldbackForRadioRecordDrArchive(rightsCalculationInputDto, drOutput);
+        } else {
+            throw new InvalidArgumentServiceException("DR Holdback can only be calculated for records from origins: 'ds.radio' and 'ds.tv'");
+        }
 
         return drOutput;
     }
+
 
     /**
      * Sets the restrictions for a record in the DR Archive based on the provided
@@ -164,7 +171,7 @@ public class RightsCalculation {
         drOutput.setTitleRestricted(isTitleRestricted);
     }
 
-    private static void setHoldbackForRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput) throws SQLException {
+    private static void setHoldbackForTvRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput) throws SQLException {
         HoldbackCalculationInputDto holdbackInput = rightsCalculationInputDto.getHoldbackInput();
         String recordId = rightsCalculationInputDto.getRecordId();
         String startDate = rightsCalculationInputDto.getStartTime();
@@ -174,8 +181,14 @@ public class RightsCalculation {
         String holdbackName = getHoldbackName(holdbackInput, holdbackRule);
         String holdbackExpiredDate = getHoldbackExpiredDate(holdbackRule, recordId, startDate);
 
-        // End result should be these two values
         drOutput.setHoldbackName(holdbackName);
+        drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
+    }
+
+    private static void setHoldbackForRadioRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput) {
+        String holdbackExpiredDate = calculateHoldbackDateByYears(rightsCalculationInputDto.getStartTime(), 3);
+
+        drOutput.setHoldbackName("Radio");
         drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
     }
 

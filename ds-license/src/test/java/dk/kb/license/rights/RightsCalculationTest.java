@@ -149,6 +149,14 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         assertEquals("2001-01-01T00:00:00Z", output3.getDr().getHoldbackExpiredDate());
     }
 
+    @Test
+    public void holdbackRadioTest() throws SQLException {
+        RightsCalculationInputDto yearlyHoldback3 = new RightsCalculationInputDto("radioHoldback","1990-06-20T10:00:00+0100", RightsCalculationInputDto.PlatformEnum.DRARKIV,
+                4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.radio");
+        RightsCalculationOutputDto radioHoldback = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback3);
+        assertEquals("1994-01-01T00:00:00Z", radioHoldback.getDr().getHoldbackExpiredDate());
+    }
+
 
 
 }
