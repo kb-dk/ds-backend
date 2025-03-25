@@ -81,15 +81,18 @@ public class RightsCalculation {
         RightsCalculationOutputDrDto drOutput = new RightsCalculationOutputDrDto();
 
         setRestrictionsForRecordDrArchive(rightsCalculationInputDto, drOutput);
-        if (rightsCalculationInputDto.getHoldbackInput().getOrigin().equals("ds.tv")){
-            setHoldbackForTvRecordDrArchive(rightsCalculationInputDto, drOutput);
-        } else if (rightsCalculationInputDto.getHoldbackInput().getOrigin().equals("ds.radio")){
-            setHoldbackForRadioRecordDrArchive(rightsCalculationInputDto, drOutput);
-        } else {
-            throw new InvalidArgumentServiceException("DR Holdback can only be calculated for records from origins: 'ds.radio' and 'ds.tv'");
+        switch (rightsCalculationInputDto.getHoldbackInput().getOrigin()) {
+            case "ds.tv":
+                setHoldbackForTvRecordDrArchive(rightsCalculationInputDto, drOutput);
+                return drOutput;
+            case "ds.radio":
+                setHoldbackForRadioRecordDrArchive(rightsCalculationInputDto, drOutput);
+                return drOutput;
+            default:
+                log.error("DR Holdback can only be calculated for records from origins: 'ds.radio' and 'ds.tv'. Provided origin was: '{}'",
+                        rightsCalculationInputDto.getHoldbackInput().getOrigin());
+                throw new InvalidArgumentServiceException("DR Holdback can only be calculated for records from origins: 'ds.radio' and 'ds.tv'");
         }
-
-        return drOutput;
     }
 
 
@@ -101,7 +104,7 @@ public class RightsCalculation {
      *
      * <p>This method processes the following checks:</p>
      * <ul>
-     *   <li>Checks if the dataset ID is restricted.</li>
+     *   <li>Checks if the DS (Digitale samlinger)  ID is restricted.</li>
      *   <li>Checks if the DR production ID is restricted.</li>
      *   <li>Checks if the production code is allowed.</li>
      *   <li>Checks if the title is restricted.</li>
@@ -291,6 +294,8 @@ public class RightsCalculation {
      * @return The calculated holdback expiration date in ISO-8601 ({@link DateTimeFormatter#ISO_INSTANT}-format).
      */
     private static String getHoldbackExpiredDate(DrHoldbackRuleDto holdbackRule, String recordId, String startDate) {
+
+        // In this case holdback cannot be calculated. Pro
         if (holdbackRule.getName() == null || holdbackRule.getName().isEmpty()){
             log.debug("Purpose name was empty for record with id: '{}'. Setting holdback date to 9999-01-01T00:00:00Z", recordId);
             return "9999-01-01T00:00:00Z";
