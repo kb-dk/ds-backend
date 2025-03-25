@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.1](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.3.1) 2025-03-25
+### Changed
+- Holdback for radio records are now calculated by the same algorithm which calculates the holdback for tv records. 
+
 ## [2.3.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.3.0) 2025-03-20
 ### Added
 - ds-present-transformation-errors log which logs only transformation errors.
