@@ -109,7 +109,7 @@ public class HoldbackDatePicker {
     private HoldbackObject getHoldbackForRadioRecord(ExtractedPreservicaValues extractedValues, HoldbackObject result) {
         // Radio should be held back by three years by DR request.
         String startDate = extractedValues.getStartTime();
-        result.setHoldbackDate(calculateHoldbackDateByDays(ZonedDateTime.parse(startDate), 1096));
+        result.setHoldbackDate(calculateHoldbackDateByYears(startDate, 3));
         result.setHoldbackPurposeName("");
         return result;
     }

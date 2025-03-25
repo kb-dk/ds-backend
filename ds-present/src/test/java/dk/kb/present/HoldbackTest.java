@@ -108,7 +108,7 @@ public class HoldbackTest {
     public void radioHoldbackTest() throws IOException {
         HoldbackObject holdbackObject =  HoldbackDatePicker.getInstance().getHoldbackDateForRecord(radioValues, "ds.radio");
 
-        assertEquals("2021-04-03T08:03:00Z", holdbackObject.getHoldbackDate());
+        assertEquals("2022-01-01T00:00:00Z", holdbackObject.getHoldbackDate());
         assertEquals("", holdbackObject.getHoldbackPurposeName());
     }
 
