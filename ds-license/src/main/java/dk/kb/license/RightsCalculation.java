@@ -4,13 +4,10 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.HoldbackCalculationInputDto;
-import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDrDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
-import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -26,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 public class RightsCalculation {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculation.class);
 
-
     /**
      * Check if a given DS id is restricted.
      * @param id of DsRecord
@@ -34,8 +30,7 @@ public class RightsCalculation {
      */
     public static boolean isDsIdRestricted(String id){
         try {
-            return BaseModuleStorage.performStorageAction("Get restricted ID", new RightsModuleStorage(), storage ->
-                    performLookupInRestrictionsTable(id, "ds_id",  storage));
+            return RightsModuleFacade.isIdRestricted(id, "ds_id", "dr");
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -48,8 +43,7 @@ public class RightsCalculation {
      */
     public static boolean isDrProductionIdRestricted(String id){
         try {
-            return BaseModuleStorage.performStorageAction("Get restricted ID", new RightsModuleStorage(), storage ->
-                    performLookupInRestrictionsTable(id, "dr_produktions_id", storage));
+            return RightsModuleFacade.isIdRestricted(id, "dr_produktions_id", "dr");
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -61,17 +55,10 @@ public class RightsCalculation {
      */
     public static boolean isTitleRestricted(String id){
         try {
-            return BaseModuleStorage.performStorageAction("Get restricted Title", new RightsModuleStorage(), storage ->
-                    performLookupInRestrictionsTable(id, "strict_title", storage));
+            return RightsModuleFacade.isIdRestricted(id, "strict_title", "dr");
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
-    }
-
-    private static boolean performLookupInRestrictionsTable(String id, String idType, BaseModuleStorage storage) throws SQLException {
-        RestrictedIdOutputDto idOutput = ((RightsModuleStorage)storage).getRestrictedId(id, idType, "dr");
-        // If the object is null, then id is not restricted
-        return idOutput != null;
     }
 
     /**
@@ -80,21 +67,7 @@ public class RightsCalculation {
      * @return true if allowed, otherwise false
      */
     public static boolean isProductionCodeAllowed(String productionCode){
-        try {
-            return BaseModuleStorage.performStorageAction("Get restricted ID", new RightsModuleStorage(), storage -> {
-                RestrictedIdOutputDto idOutput = ((RightsModuleStorage)storage).getRestrictedId(productionCode, "egenproduktions_kode", "dr");
-
-                if (idOutput == null){
-                    log.warn("The specified production code '{}' is not known in the database. Therefore it cannot be allowed.", productionCode);
-                    return false;
-                } else {
-                    log.debug("Production Code is allowed");
-                    return true;
-                }
-           });
-        } catch (SQLException e) {
-            throw new InternalServiceException("An SQL exception happened while checking if production code is allowed to be shown.", e);
-        }
+        return RightsModuleFacade.isProductionCodeAllowed(productionCode, "dr");
     }
 
     /**
@@ -258,7 +231,6 @@ public class RightsCalculation {
      * @param holdbackRule the holdback rule DTO containing the holdback name.
      *                     Must not be null.
      * @return the determined holdback name as a String.
-     * @throws SQLException if a database access error occurs during the operation.
      * @throws NullPointerException if either {@code holdbackInput} or
      *                              {@code holdbackRule} is null.
      */
@@ -358,8 +330,7 @@ public class RightsCalculation {
         // Using .ISO_INSTANT as this is solr standard
         DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
 
-        String formattedHoldbackDate = holdbackExpiredDate.format(formatter);
-        return formattedHoldbackDate;
+        return holdbackExpiredDate.format(formatter);
     }
 
     /**
@@ -376,8 +347,7 @@ public class RightsCalculation {
         // Using .ISO_INSTANT as this is solr standard
         DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
 
-        String formattedHoldbackDate = holdbackExpiredDate.format(formatter);
-        return formattedHoldbackDate;
+        return holdbackExpiredDate.format(formatter);
     }
 
     /**

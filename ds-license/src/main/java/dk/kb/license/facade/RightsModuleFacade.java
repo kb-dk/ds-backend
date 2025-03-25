@@ -3,6 +3,7 @@ package dk.kb.license.facade;
 import dk.kb.license.RightsCalculation;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.RestrictedIdInputDto;
+import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDrDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
@@ -49,12 +50,10 @@ public class RightsModuleFacade {
      * @param content the content identifier, must be a valid integer.
      * @param form the form identifier, must be a valid integer.
      * @return the holdback ID as a {@link String} if found.
-     * @throws SQLException if a database access error occurs during the
-     *                      storage action.
      * @throws NotFoundServiceException if no holdback ID is found for the
      *                                   specified content and form.
      */
-    public static String getHoldbackIdFromContentAndFormValues(Integer content, Integer form) throws SQLException {
+    public static String getHoldbackIdFromContentAndFormValues(Integer content, Integer form)  {
         return BaseModuleStorage.performStorageAction("Get holdback ID", getRightsStorage(), storage -> {
             String id = ((RightsModuleStorage) storage).getHoldbackRuleId(content, form);
             if (id == null) {
@@ -107,8 +106,56 @@ public class RightsModuleFacade {
                         Arrays.toString(RightsCalculationInputDto.PlatformEnum.values()) + "'");
 
         }
-
     }
+
+
+
+
+    /**
+     * Checks if the specified ID is restricted based on the provided ID type and platform.
+     * The method performs a storage action to retrieve the restriction status
+     * for the ID and returns true if the ID is restricted, and false otherwise.
+     *
+     * @param id the ID to check for restrictions
+     * @param idType the type of the ID. Types are: ds_id, dr_produktions_id, strict_title
+     * @param platform the platform where the ID is being checked (e.g. DR Archive)
+     * @return true if the ID is restricted; false otherwise
+     * @throws SQLException if an error occurs during the SQL process.
+     */
+    public static boolean isIdRestricted(String id, String idType, String platform) throws SQLException {
+        return BaseModuleStorage.performStorageAction("Get restricted id", getRightsStorage(), storage -> {
+            RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(id, idType, platform);
+            // If the object is null, then id is not restricted
+            return idOutput != null;
+        });
+    }
+
+    /**
+     * Checks if the specified production code from metadata is allowed based on the provided platform.
+     *
+     * This method interacts with the storage system to determine whether the given production
+     * code is considered allowed. It performs a storage action to retrieve the restriction status
+     * for the production code and returns true if the code is allowed, and false otherwise.
+     *
+     * @param productionCode the production code to check for allowance
+     * @param platform the platform where the production code is being checked (e.g. DR Archive)
+     * @return true if the production code is allowed; false otherwise
+     */
+    public static boolean isProductionCodeAllowed(String productionCode, String platform)  {
+        return BaseModuleStorage.performStorageAction("Get restricted id", getRightsStorage(), storage -> {
+            RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(productionCode, "egenproduktions_kode", platform);
+            // If the object is null, then productionCode from metadata is not allowed
+
+            if (idOutput == null){
+                log.debug("The specified production code '{}' is not known in the database. Therefore it cannot be allowed.", productionCode);
+                return false;
+            } else {
+                log.debug("Production Code is allowed");
+                return true;
+            }
+        });
+    }
+
 
     private static RightsModuleStorage getRightsStorage() {
         try {
