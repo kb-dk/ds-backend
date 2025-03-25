@@ -154,8 +154,11 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
 
     @Override
     public RightsCalculationOutputDto calculateRights(RightsCalculationInputDto rightsCalculationInputDto) {
-
-        return null;
+        try {
+            return RightsModuleFacade.calculateRightsForRecord(rightsCalculationInputDto);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 
     /**

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
@@ -93,10 +94,20 @@ public class RightsModuleFacade {
     public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException {
         RightsCalculationOutputDto output = new RightsCalculationOutputDto();
 
-        RightsCalculationOutputDrDto drOutput = RightsCalculation.calculateDrRights(rightsCalculationInputDto);
+        switch (rightsCalculationInputDto.getPlatform()){
+            case DRARKIV:
+                RightsCalculationOutputDrDto drOutput = RightsCalculation.calculateDrRights(rightsCalculationInputDto);
+                output.setDr(drOutput);
+                return output;
+            case GENERIC:
+                log.error("The generic format haven't been implemented yet and therefore it cannot be used");
+                throw new InternalServiceException("The generic format haven't been implemented yet");
+            default:
+                throw new InternalServiceException("A valid platform enum should have been specified. Allowed values are: '" +
+                        Arrays.toString(RightsCalculationInputDto.PlatformEnum.values()) + "'");
 
-        output.setDr(drOutput);
-        return output;
+        }
+
     }
 
     private static RightsModuleStorage getRightsStorage() {
