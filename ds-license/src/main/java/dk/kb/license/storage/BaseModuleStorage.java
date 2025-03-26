@@ -27,6 +27,11 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
 
     private long lastTimestamp = 0; // Remember last timestamp and make sure each is only used once;
 
+    public BaseModuleStorage() throws SQLException {
+        connection = dataSource.getConnection();
+    }
+
+
     /**
      * Close the connection to the database. You should probably perform a commit or rollback before closing the connection.
      */

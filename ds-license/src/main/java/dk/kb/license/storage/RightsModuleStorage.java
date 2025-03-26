@@ -113,7 +113,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
 
     public RightsModuleStorage() throws SQLException {
-        connection = dataSource.getConnection();
+       super();
     }
 
     public RightsModuleStorage(boolean enableStorageTouch) throws SQLException {

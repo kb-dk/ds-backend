@@ -180,7 +180,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             + " = ?";
 
     public LicenseModuleStorage() throws SQLException {
-        connection = dataSource.getConnection();
+        super();
     }
 
     public void persistLicensePresentationType(String key, String value_dk, String value_en) throws SQLException {
