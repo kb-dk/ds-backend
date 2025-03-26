@@ -1129,6 +1129,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         }   
         
       }
+      connection.commit();
       log.info("All tables cleared for unittest");
     }
 

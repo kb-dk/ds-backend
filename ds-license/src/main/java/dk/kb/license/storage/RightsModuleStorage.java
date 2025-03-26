@@ -550,8 +550,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
             try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
                 stmt.execute();
             }
-
         }
+        connection.commit();
         log.info("All tables cleared for unittest");
     }
 
