@@ -45,13 +45,30 @@ public class H2DbUtil {
         }
 
     }
-   
-   
+
     
     //Use KB-util to resolve file. 
     protected static File getFile(String resource) {
         return Resolver.getPathFromClasspath(resource).toFile(); 
     }
 
+    public static void deleteEntriesInTable(String url, String username, String password, String tableName) throws SQLException {
+
+        try (Connection connection = DriverManager.getConnection(url,username,password)){
+
+            connection.createStatement().execute("DELETE FROM " + tableName);
+
+            connection.createStatement().execute("SHUTDOWN");
+        }
+    }
+
+    public static void dropIndex(String url, String username, String password, String indexName) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(url,username,password)){
+
+            connection.createStatement().execute("DROP INDEX " + indexName);
+
+            connection.createStatement().execute("SHUTDOWN");
+        }
+    }
 
 }

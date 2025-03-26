@@ -555,6 +555,17 @@ public class RightsModuleStorage extends BaseModuleStorage{
         log.info("All tables cleared for unittest");
     }
 
+    /*
+     * Only called from unittests, not exposed on facade class
+     *
+     */
+    public void clearRestrictedIds() throws SQLException {
+        String deleteSQL="DELETE FROM RESTRICTED_IDS";
+        try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
+            stmt.execute();
+        }
+    }
+
     /**
      * Based on idType, touch related storage records, so that they can be re-indexed with the new information.
      * @param id which have been updated in the rights table

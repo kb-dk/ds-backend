@@ -22,7 +22,7 @@ public class ServiceConfig {
     public static String SOLR_FILTER_ID_FIELD = null;
     public static String SOLR_FILTER_RESOURCE_ID_FIELD = null;
     public static List<SolrServerClient> SOLR_SERVERS = null;
-    
+
     /**
      * Besides parsing of YAML files using SnakeYAML, the YAML helper class provides convenience
      * methods like {@code getInteger("someKey", defaultValue)} and {@code getSubMap("config.sub1.sub2")}.
@@ -128,6 +128,26 @@ public class ServiceConfig {
             return result.get();
         }
         return new YAML();
+    }
+
+    public static int getHoldbackLogicChangeDays(){
+        YAML drPlatform = getRightsPlatformConfig("dr");
+
+        if (drPlatform.isEmpty()){
+            throw new IllegalStateException("The DR platform config should have been loaded, but was not. Holdback cannot be calculated correctly.");
+        }
+
+        return drPlatform.getInteger("holdbackLogicChangeDays", 365);
+    }
+
+    public static int getHoldbackYearsForRadio(){
+        YAML drPlatform = getRightsPlatformConfig("dr");
+
+        if (drPlatform.isEmpty()){
+            throw new IllegalStateException("The DR platform config should have been loaded, but was not. Holdback cannot be calculated correctly.");
+        }
+
+        return drPlatform.getInteger("holdbackYearsForRadio", 3);
     }
     
     public static int getCacheRefreshTimeInSeconds() {

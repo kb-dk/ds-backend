@@ -633,6 +633,27 @@ paths:
             'application/json':
               schema:
                 type: string
+  /rights/calculate:
+    post:
+      tags:
+        - 'DsRights'
+      operationId: calculateRights
+      summary: "Calculate restrictions for a record based on input values"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RightsCalculationInput"
+      responses:
+        '200':
+          description: "Solr compliant fields and values"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RightsCalculationOutput"
+
+
 
   /monitor:
     post:
@@ -965,6 +986,7 @@ components:
           type: long
         modifiedTimeHuman:
           type: string
+
     DrHoldbackRule:
       type: object
       properties:
@@ -974,6 +996,7 @@ components:
           type: string
         days:
           type: integer
+
     DrHoldbackRangeMapping:
       type: object
       properties:
@@ -989,6 +1012,7 @@ components:
           type: integer
         dr_holdback_id:
           type: string
+
     DrHoldbackRangeMappingInput:
       type: object
       properties:
@@ -1000,6 +1024,7 @@ components:
           type: integer
         form_range_to:
           type: integer
+
     HelloReply:
       type: object
       required:
@@ -1020,8 +1045,8 @@ components:
         platform:
           type: string
           enum:
-            - drArkiv
-            - generic
+            - DRARKIV
+            - GENERIC
           description: "The platform that rights are calculated for."
         startTime:
           type: string
@@ -1030,6 +1055,12 @@ components:
           $ref: "#/components/schemas/HoldbackCalculationInput"
         restrictionsInput:
           $ref: "#/components/schemas/RestrictionsCalculationInput"
+      required:
+        - recordId
+        - platform
+        - startTime
+        - holdbackInput
+        - restrictionsInput
 
     HoldbackCalculationInput:
       description: "A holdback specific Data Transfer Object which should be used to carry all values needed for calculating holdback for a record between services."
@@ -1047,9 +1078,15 @@ components:
         productionCountry:
           type: integer
           description: "A metadata value used for holdback calculation."
-        productionCode:
+        origin:
           type: string
-          description: "a metadata value used for holdback and own production calculation."
+          description: "Origin in the DS ecosystem. Used to determine how holdback should be calculated."
+      required:
+        - hensigt
+        - form
+        - indhold
+        - productionCountry
+        - origin
 
     RestrictionsCalculationInput:
       description: "A restrictions specific Data Transfer Object which should be used to carry all values needed for looking up if a record is restricted between services."
@@ -1067,9 +1104,15 @@ components:
         title:
           type: string
           description: "title of the record in hand. There is a chance that it is restricted."
+      required:
+        - recordId
+        - productionCode
+        - drProductionId
+        - title
 
     RightsCalculationOutput:
       description: "A Data Transfer Object containing the solr fields and values that have been created from the calculations based on a RightsCalculationInput object."
+      type: object
       properties:
         # Platform nesting of calculation results. When more platforms need rights calculations output objects should be appended here.
         generel:
@@ -1135,7 +1178,7 @@ components:
               items:
                 type: string
               description: 'The roles stated in the OAuth2 accessToken'
-              example: [read, write, admin]
+              example: [ read, write, admin ]
     
     
     Error:

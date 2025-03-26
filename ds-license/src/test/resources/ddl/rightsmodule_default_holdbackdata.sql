@@ -4,6 +4,8 @@ INSERT INTO DR_HOLDBACK_RULES (id, name, days) VALUES ('2.02', 'Aktualitet og De
 INSERT INTO DR_HOLDBACK_RULES (id, name, days) VALUES ('2.03', 'Oplysning og Kultur', 2190);
 INSERT INTO DR_HOLDBACK_RULES (id, name, days) VALUES ('2.04', 'Undervisning', 2190);
 INSERT INTO DR_HOLDBACK_RULES (id, name, days) VALUES ('2.05', 'Dramatik & Fiktion', 3650);
+INSERT INTO DR_HOLDBACK_RULES (id, name, days) VALUES ('2.05.01', 'Dansk Dramatik & Fiktion', 3650);
+INSERT INTO DR_HOLDBACK_RULES (id, name, days) VALUES ('2.05.02', 'Udenlandsk Dramatik & Fiktion', 99999999);
 INSERT INTO DR_HOLDBACK_RULES (id, name, days) VALUES ('2.06', 'Musik', 2190);
 INSERT INTO DR_HOLDBACK_RULES (id, name, days) VALUES ('2.07', 'Underholdning', 2190);
 INSERT INTO DR_HOLDBACK_RULES (id, name, days) VALUES ('2.08', 'Sport', 2190);

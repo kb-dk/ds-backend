@@ -22,7 +22,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
 
-        ServiceConfig.initialize("conf/ds-license*.yaml");
+        ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));

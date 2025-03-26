@@ -99,11 +99,18 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
 
     {{#vendorExtensions.x-isRightsCalculationObject}}
         /**
+        * Create an empty {@link RightsCalculationInputDto}
+        */
+        public {{classname}}(){
+        }
+
+
+        /**
         * Create a {@link RightsCalculationInputDto} from all needed values
         */
     public {{classname}}(String recordId, String startTime, RightsCalculationInputDto.PlatformEnum platform,
                             int form, int hensigt, int indhold, int productionCountry, String productionCode,
-                            String title, String drProductionId) {
+                            String title, String drProductionId, String origin) {
         HoldbackCalculationInputDto holdbackDto = new HoldbackCalculationInputDto();
         RestrictionsCalculationInputDto restrictionsDto = new RestrictionsCalculationInputDto();
 
@@ -114,8 +121,8 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
         holdbackDto.setForm(form);
         holdbackDto.setHensigt(hensigt);
         holdbackDto.setIndhold(indhold);
-        holdbackDto.setProductionCode(productionCode);
         holdbackDto.setProductionCountry(productionCountry);
+        holdbackDto.setOrigin(origin);
 
         restrictionsDto.setRecordId(recordId);
         restrictionsDto.setTitle(title);
