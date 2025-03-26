@@ -18,7 +18,6 @@ public class RightsInputDTOTest {
     public void testOwnProductionCode() {
         RightsCalculationInputDto testInputDto = getTestDto();
         assertEquals("2000", testInputDto.getRestrictionsInput().getProductionCode());
-        assertEquals("2000", testInputDto.getHoldbackInput().getProductionCode());
     }
 
     private RightsCalculationInputDto getTestDto() {

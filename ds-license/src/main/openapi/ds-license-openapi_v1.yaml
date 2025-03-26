@@ -1045,8 +1045,8 @@ components:
         platform:
           type: string
           enum:
-            - drArkiv
-            - generic
+            - DRARKIV
+            - GENERIC
           description: "The platform that rights are calculated for."
         startTime:
           type: string
@@ -1078,9 +1078,6 @@ components:
         productionCountry:
           type: integer
           description: "A metadata value used for holdback calculation."
-        productionCode:
-          type: string
-          description: "A metadata value used for holdback and own production calculation."
         origin:
           type: string
           description: "Origin in the DS ecosystem. Used to determine how holdback should be calculated."
@@ -1089,7 +1086,6 @@ components:
         - form
         - indhold
         - productionCountry
-        - productionCode
         - origin
 
     RestrictionsCalculationInput:
