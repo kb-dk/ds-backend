@@ -99,6 +99,13 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
 
     {{#vendorExtensions.x-isRightsCalculationObject}}
         /**
+        * Create an empty {@link RightsCalculationInputDto}
+        */
+        public {{classname}}(){
+        }
+
+
+        /**
         * Create a {@link RightsCalculationInputDto} from all needed values
         */
     public {{classname}}(String recordId, String startTime, RightsCalculationInputDto.PlatformEnum platform,
