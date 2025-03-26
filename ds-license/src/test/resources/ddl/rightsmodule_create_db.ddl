@@ -3,7 +3,7 @@ CREATE TABLE  RESTRICTED_IDS (
                                               id_value VARCHAR(256) NOT NULL,
                                               id_type VARCHAR(32) NOT NULL,
                                               platform VARCHAR(32),
-                                              comment VARCHAR(256),
+                                              comment VARCHAR(1024),
                                               modified_by VARCHAR(256),
                                               modified_time BIGINT,
                                               modified_time_human VARCHAR(256)
