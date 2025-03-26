@@ -377,7 +377,7 @@ public class RightsCalculation {
         try {
             return DatetimeParser.parseStringToZonedDateTime(datetime, dateTimeFormat);
         } catch (MalformedIOException e) {
-            throw new RuntimeException(e);
+            throw new InvalidArgumentServiceException(e);
         }
     }
 }
