@@ -9,13 +9,20 @@ import dk.kb.license.model.v1.RightsCalculationOutputDrDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
+import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.Message;
+import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
@@ -30,6 +37,7 @@ public class RightsModuleFacade {
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String userId) throws SQLException {
+        validateCommentLength(restrictedIdInputDto);
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", new RightsModuleStorage(), storage -> {
             ((RightsModuleStorage) storage).createRestrictedId(
                     restrictedIdInputDto.getIdValue(),
@@ -41,6 +49,56 @@ public class RightsModuleFacade {
             log.info("Created restriction {}", restrictedIdInputDto);
             return null;
         });
+    }
+
+    /**
+     * Update a restricted ID using the provided input data transfer object (DTO) and user ID.
+     *
+     * @param restrictedIdInputDto the data transfer object containing the details of the restricted ID to be Updated.
+     *                               This should not be null.
+     * @throws SQLException if there is an error while persisting the restricted ID in the database.
+     */
+    public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto) throws SQLException {
+        validateCommentLength(restrictedIdInputDto);
+        BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", new RightsModuleStorage(), storage -> {
+            ((RightsModuleStorage) storage).updateRestrictedId(
+                    restrictedIdInputDto.getIdValue(),
+                    restrictedIdInputDto.getIdType(),
+                    restrictedIdInputDto.getPlatform(),
+                    restrictedIdInputDto.getComment(),
+                    getCurrentUserID(),
+                    System.currentTimeMillis());
+            log.info("Updating restricted ID {}",restrictedIdInputDto);
+            return null;
+        });
+    }
+
+    /**
+     * Creates a restricted ID for each of the entries in the list using the provided input data transfer object (DTO) and user ID.
+     *
+     * @param restrictedIds list containing the data transfer objects containing the details of the restricted IDs to be created.
+     *                               This should not be null.
+     * @throws SQLException if there is an error while persisting the restricted ID in the database.
+     */
+    public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds) throws SQLException {
+        BaseModuleStorage.performStorageAction("create restricted ID",new RightsModuleStorage(), storage -> {
+            for (RestrictedIdInputDto id : restrictedIds) {
+                validateCommentLength(id);
+
+                ((RightsModuleStorage) storage).createRestrictedId(
+                        id.getIdValue(),
+                        id.getIdType(),
+                        id.getPlatform(),
+                        id.getComment(),
+                        getCurrentUserID(),
+                        System.currentTimeMillis()
+                );
+            }
+            return null;
+        });
+        log.info("Added restricted IDs: [{}] ",
+                restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
+
     }
 
     /**
@@ -163,6 +221,26 @@ public class RightsModuleFacade {
         } catch (SQLException e) {
             log.error("Error creating Storage ",e);
             throw new InternalServiceException("Error creating storage");
+        }
+    }
+
+    /**
+     * Gets the name of the current user from the OAuth token.
+     * @return
+     */
+    private static String getCurrentUserID() {
+        Message message = JAXRSUtils.getCurrentMessage();
+        AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
+        if (token != null) {
+            return token.getName();
+        }
+        return "no user";
+    }
+
+    private static void validateCommentLength(RestrictedIdInputDto id) {
+        if (id.getComment() != null && id.getComment().length() > 1024){
+            log.error("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
+            throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
         }
     }
 

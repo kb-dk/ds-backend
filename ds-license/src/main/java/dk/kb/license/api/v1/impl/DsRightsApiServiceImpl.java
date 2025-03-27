@@ -51,17 +51,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Updating restricted ID {}",restrictedIdInputDto);
         try {
-            BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", new RightsModuleStorage(), storage -> {
-                ((RightsModuleStorage) storage).updateRestrictedId(
-                        restrictedIdInputDto.getIdValue(),
-                        restrictedIdInputDto.getIdType(),
-                        restrictedIdInputDto.getPlatform(),
-                        restrictedIdInputDto.getComment(),
-                        getCurrentUserID(),
-                        System.currentTimeMillis());
-                log.info("Updating restricted ID {}",restrictedIdInputDto);
-                return null;
-            });
+            RightsModuleFacade.updateRestrictedId(restrictedIdInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -110,22 +100,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds) {
         try {
-            BaseModuleStorage.performStorageAction("delete restricted ID",new RightsModuleStorage(), storage -> {
-                for(RestrictedIdInputDto id : restrictedIds) {
-                    ((RightsModuleStorage) storage).createRestrictedId(
-                        id.getIdValue(),
-                        id.getIdType(),
-                        id.getPlatform(),
-                        id.getComment(),
-                        getCurrentUserID(),
-                        System.currentTimeMillis()
-                    );
-                }
-                return null;
-            });
-            log.info("Added restricted IDs: [{}] ",
-                    restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
-
+            RightsModuleFacade.createRestrictedIds(restrictedIds);
         } catch (SQLException e) {
             throw handleException(e);
         }
