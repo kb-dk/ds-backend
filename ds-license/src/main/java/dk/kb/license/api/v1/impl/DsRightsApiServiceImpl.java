@@ -99,7 +99,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds) {
         try {
             RightsModuleFacade.createRestrictedIds(restrictedIds);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw handleException(e);
         }
     }
