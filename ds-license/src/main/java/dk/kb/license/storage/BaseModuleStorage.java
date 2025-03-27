@@ -179,8 +179,8 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
     }
 
     /**
-     * Callback used with {@link #performStorageAction(String, BaseModuleStorage.StorageAction)}.
-     * @param <T> the object returned from the {@link BaseModuleStorage.StorageAction#process(LicenseModuleStorage)} method.
+     * Callback used with {@link #performStorageAction(String, Class, StorageAction)}.
+     * @param <T> the object returned from the {@link BaseModuleStorage.StorageAction#process(BaseModuleStorage)} method.
      */
     @FunctionalInterface
     public interface StorageAction<T> {

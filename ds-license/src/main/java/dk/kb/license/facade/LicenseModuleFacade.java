@@ -19,9 +19,7 @@ import dk.kb.util.webservice.exception.InternalServiceException;
  * This facade class is also responsible for the transactional integrity of a storage. The storage model will never commit or rollback. All storage
  * transactional logic is controlled by this class. This makes it possible to use multiple storage methods as building blocks and rollback
  * everything if one of the steps fails.
- * <p>
- * The method {@link #performStorageAction} is used for all storage calls and responsible for commit or rollback.
- * @author Thomas Egense
+
  */
 
 public class LicenseModuleFacade {
