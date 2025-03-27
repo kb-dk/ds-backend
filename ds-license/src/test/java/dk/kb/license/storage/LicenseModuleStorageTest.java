@@ -1077,6 +1077,24 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
                 
     }
 
+    @Test
+    public void testPerformStorageAction() {
+        ArrayList<PresentationType> list = BaseModuleStorage.performStorageAction("test", LicenseModuleStorage.class, storage -> {
+            String type1 = "unit_test_type1";
+            String type1_en = "unit_test_type1_en";
+            String type2 = "unit_test_type2";
+            ((LicenseModuleStorage) storage).persistLicensePresentationType("key1", type1, type1_en);
+            ((LicenseModuleStorage) storage).persistLicensePresentationType("key2", type2, "unit_test_type2_en");
+
+            return ((LicenseModuleStorage) storage).getLicensePresentationTypes();
+
+        });
+        assertEquals(2, list.size());
+        assertEquals("key1", list.get(0).getKey()); // They are returned in same order they saved (H2 db)
+        assertEquals("unit_test_type1_en", list.get(0).getValue_en()); // They are returned in same order they saved (H2 db)
+        assertEquals("key2", list.get(1).getKey());
+    }
+
     /**
      * This will load the DDL (data) file licensemodule_default_configuration.ddl into the storage.
      * It will be too much work to add all these data programmatic.
@@ -1087,6 +1105,5 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         File insert_ddl_file = new File(INSERT_DEFAULT_CONFIGURATION_DDL_FILE);
         storage.runDDLScript(insert_ddl_file);
     }
-
 
 }
