@@ -534,7 +534,8 @@
                     <modelNameSuffix>Dto</modelNameSuffix>
                     <generateSupportingFiles>false</generateSupportingFiles>
                     <generateApiTests>false</generateApiTests>
-                    <generateModelDocumentation>true</generateModelDocumentation>
+                    <generateModelDocumentation>false</generateModelDocumentation>
+                    <generateApiDocumentation>false</generateApiDocumentation>
                     <generateApis>true</generateApis>
                     <output>${project.basedir}</output>
                     <templateDirectory>src/main/templates/</templateDirectory>
