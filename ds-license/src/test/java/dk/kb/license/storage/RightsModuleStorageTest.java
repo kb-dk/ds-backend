@@ -163,7 +163,10 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
             ((RightsModuleStorage) storage).createRestrictedId("test1", "ds_id", "dr", "comment", "unittest", System.currentTimeMillis());
             return ((RightsModuleStorage) storage).getRestrictedId("test1", "ds_id", "dr");
         });
-        System.out.println(result);
+        assertEquals("test1",result.getIdValue());
+        assertEquals("ds_id",result.getIdType());
+        assertEquals("dr",result.getPlatform());
+
     }
 
 }

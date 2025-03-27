@@ -117,7 +117,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     public RightsModuleStorage(boolean enableStorageTouch) throws SQLException {
-        connection = dataSource.getConnection();
+        super();
         RightsModuleStorage.enableStorageTouch = enableStorageTouch;
     }
 
