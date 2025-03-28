@@ -27,7 +27,15 @@ import java.util.stream.Collectors;
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
 
-
+    /**
+     * Retrieves a restrictedID output object from the database
+     *
+     * @param id the id value
+     * @param idType type of ID
+     * @param platform The platform
+     * @return
+     * @throws SQLException
+     */
     public static RestrictedIdOutputDto getRestrictedId(String id, String idType, String platform) throws SQLException {
         return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getRestrictedId(id, idType, platform));
     }
