@@ -1,6 +1,5 @@
 package dk.kb.license.storage;
 
-import dk.kb.license.facade.LicenseModuleFacade;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -8,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -26,6 +26,11 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
     protected static BasicDataSource dataSource = null; // shared
 
     private long lastTimestamp = 0; // Remember last timestamp and make sure each is only used once;
+
+    public BaseModuleStorage() throws SQLException {
+        connection = dataSource.getConnection();
+    }
+
 
     /**
      * Close the connection to the database. You should probably perform a commit or rollback before closing the connection.
@@ -130,11 +135,13 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * If the action throws an exception, a {@link LicenseModuleStorage#rollback()} is performed.
      * If the action passes without exceptions, a {@link LicenseModuleStorage#commit()} is performed.
      * @param actionID a debug-oriented ID for the action, typically the name of the calling method.
+     * @param storageClass
      * @param action the action to perform on the storage.
      * @return return value from the action.
      * @throws InternalServiceException if anything goes wrong.
      */
-    public static <T> T performStorageAction(String actionID,  BaseModuleStorage storage, BaseModuleStorage.StorageAction<T> action) {
+    public static <T> T performStorageAction(String actionID,  Class<? extends BaseModuleStorage> storageClass, BaseModuleStorage.StorageAction<T> action) {
+        try (BaseModuleStorage storage = storageClass.getDeclaredConstructor().newInstance()) {
             T result;
             try {
                 result = action.process(storage);
@@ -158,7 +165,13 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             }
 
             return result;
-
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            log.error("Exception performing action '{}'", actionID, e);
+            throw new InternalServiceException(e);
+        } catch (Exception e) {
+            log.error("Exception performing action '{}'", actionID, e);
+            throw new InternalServiceException(e);
+        }
     }
 
     // Just a simple way to generate unique ID's and make sure they are unique
@@ -174,8 +187,8 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
     }
 
     /**
-     * Callback used with {@link #performStorageAction(String, BaseModuleStorage.StorageAction)}.
-     * @param <T> the object returned from the {@link BaseModuleStorage.StorageAction#process(LicenseModuleStorage)} method.
+     * Callback used with {@link #performStorageAction(String, Class, StorageAction)}.
+     * @param <T> the object returned from the {@link BaseModuleStorage.StorageAction#process(BaseModuleStorage)} method.
      */
     @FunctionalInterface
     public interface StorageAction<T> {

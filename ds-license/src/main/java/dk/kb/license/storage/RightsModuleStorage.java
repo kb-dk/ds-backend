@@ -113,11 +113,11 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
 
     public RightsModuleStorage() throws SQLException {
-        connection = dataSource.getConnection();
+       super();
     }
 
     public RightsModuleStorage(boolean enableStorageTouch) throws SQLException {
-        connection = dataSource.getConnection();
+        super();
         RightsModuleStorage.enableStorageTouch = enableStorageTouch;
     }
 
@@ -550,8 +550,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
             try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
                 stmt.execute();
             }
-
         }
+        connection.commit();
         log.info("All tables cleared for unittest");
     }
 

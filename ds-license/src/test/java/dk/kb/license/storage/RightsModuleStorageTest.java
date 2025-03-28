@@ -157,4 +157,16 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         assertEquals("test2",storage.getHoldbackRuleId(2500,2900));
     }
 
+    @Test
+    public void testPerformStorageAction() throws SQLException {
+        RestrictedIdOutputDto result = BaseModuleStorage.performStorageAction("Testing", RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage) storage).createRestrictedId("test1", "ds_id", "dr", "comment", "unittest", System.currentTimeMillis());
+            return ((RightsModuleStorage) storage).getRestrictedId("test1", "ds_id", "dr");
+        });
+        assertEquals("test1",result.getIdValue());
+        assertEquals("ds_id",result.getIdType());
+        assertEquals("dr",result.getPlatform());
+
+    }
+
 }
