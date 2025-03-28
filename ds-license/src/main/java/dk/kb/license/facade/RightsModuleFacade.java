@@ -1,18 +1,14 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.RightsCalculation;
-import dk.kb.license.model.v1.DrHoldbackRuleDto;
-import dk.kb.license.model.v1.RestrictedIdInputDto;
-import dk.kb.license.model.v1.RestrictedIdOutputDto;
-import dk.kb.license.model.v1.RightsCalculationInputDto;
-import dk.kb.license.model.v1.RightsCalculationOutputDrDto;
-import dk.kb.license.model.v1.RightsCalculationOutputDto;
+import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.Message;
 import org.keycloak.representations.AccessToken;
@@ -45,10 +41,9 @@ public class RightsModuleFacade {
      *
      * @param restrictedIdInputDto the data transfer object containing the details of the restricted ID to be created.
      *                               This should not be null.
-     * @param userId               the ID of the user performing the action.
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String userId) throws SQLException {
+    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).createRestrictedId(
@@ -56,7 +51,7 @@ public class RightsModuleFacade {
                     restrictedIdInputDto.getIdType(),
                     restrictedIdInputDto.getPlatform(),
                     restrictedIdInputDto.getComment(),
-                    userId,
+                    getCurrentUserID(),
                     System.currentTimeMillis());
             log.info("Created restriction {}", restrictedIdInputDto);
             return null;
@@ -112,6 +107,27 @@ public class RightsModuleFacade {
                 restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
 
     }
+
+    /**
+     * Deletes multiple restricted Ids
+     *
+     * @param restrictedIds list of restricted Ids to be deleted.
+     */
+    public static void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds) {
+        BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
+            for(RestrictedIdInputDto id : restrictedIds) {
+                ((RightsModuleStorage) storage).deleteRestrictedId(
+                        id.getIdValue(),
+                        id.getIdType(),
+                        id.getPlatform()
+                );
+            }
+            return null;
+        });
+        log.info("Deleted restricted IDs: [{}] ",
+                restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
+    }
+
 
     /**
      * Retrieves the holdback ID based on the specified content and form values.
@@ -227,6 +243,129 @@ public class RightsModuleFacade {
     }
 
     /**
+     * create a DR holdback rule.
+     *
+     * @param drHoldbackRuleDto
+     */
+    public static void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto) {
+        BaseModuleStorage.performStorageAction("Create holdback rule", RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage)storage).createDrHoldbackRule(
+                    drHoldbackRuleDto.getId(),
+                    drHoldbackRuleDto.getName(),
+                    drHoldbackRuleDto.getDays()
+            );
+            return null;
+        });
+    }
+
+    /**
+     * Delete a holdback rule
+     * @param id id of the holdback rule
+     */
+    public static void deleteDrHoldbackRule(String id) throws SQLException {
+        BaseModuleStorage.performStorageAction("Delete holdback rule", RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage)storage).deleteDrHoldbackRule(id);
+            return null;
+        });
+    }
+
+    /**
+     * get all holdback rules for DR
+     * @return
+     */
+    public static List<DrHoldbackRuleDto> getAllDrHoldbackRules() throws SQLException {
+        return BaseModuleStorage.performStorageAction("Get holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getAllDrHoldbackRules());
+    }
+
+    /**
+     * Retrieve the number of days for a holdback rule, either based on either the id or the name of the holdbackrule.
+     *
+     * @param id if this parameter is not empty it returns the number of holdback days for the id
+     * @param name if this parameter is not empty it returns the number of holdback days for the name
+     * @return the number of
+     */
+    public static Integer getDrHoldbackDaysByIdOrName(String id, String name) {
+        Integer days;
+        if (!StringUtils.isEmpty(id)) {
+            days = BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackdaysFromID(id));
+        } else if (!StringUtils.isEmpty(name)) {
+            days = BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name));
+        } else {
+            throw new InvalidArgumentServiceException("missing id or name");
+        }
+        return days;
+    }
+
+    /**
+     * Retrieve the number of days for a holdback rule, either based on either the id or the name of the holdbackrule.
+     *
+     * @param days the new number of holdback days for the rule
+     * @param id if this parameter is not empty it updates the number of holdback days for the id
+     * @param name if this parameter is not empty it updates the number of holdback days for the name
+     * @return the number of
+     */
+    public static void updateDrHoldbackDaysByIdOrName(Integer days, String id, String name) {
+        if (!StringUtils.isEmpty(id)) {
+            BaseModuleStorage.performStorageAction("update holdback dayss", RightsModuleStorage.class, storage -> {
+                ((RightsModuleStorage) storage).updateDrHolbackdaysForId(days,id);
+                return null;
+            });
+        } else if (!StringUtils.isEmpty(name)) {
+            BaseModuleStorage.performStorageAction("update holdback dayss", RightsModuleStorage.class, storage -> {
+                ((RightsModuleStorage) storage).updateDrHolbackdaysForName(days,name);
+                return null;
+            });
+        } else {
+            throw new InvalidArgumentServiceException("missing id or name");
+        }
+    }
+    /**
+     * set the form and content range combinations for a list dr_holdback_id
+     * This requires the holdback_id to be present in the DR holback rule table
+     *
+     * @param drHoldbackId
+     * @param drHoldbackRangeMappingInputDto
+     */
+    public static void createHoldbackRanges(String drHoldbackId, List<DrHoldbackRangeMappingInputDto> drHoldbackRangeMappingInputDto) {
+        BaseModuleStorage.performStorageAction("Create holdback ranges for "+ drHoldbackId, RightsModuleStorage.class, storage -> {
+            for(DrHoldbackRangeMappingInputDto mapping: drHoldbackRangeMappingInputDto) {
+                if (((RightsModuleStorage)storage).getDrHoldbackFromID(drHoldbackId) == null) {
+                    throw new InvalidArgumentServiceException("No dr holdback_id "+drHoldbackId);
+                }
+                ((RightsModuleStorage)storage).createDrHoldbackMapping(
+                        mapping.getContentRangeFrom(),
+                        mapping.getContentRangeTo(),
+                        mapping.getFormRangeFrom(),
+                        mapping.getFormRangeTo(),
+                        drHoldbackId
+                );
+            }
+            return null;
+        });
+    }
+    /**
+     * Deletes all form and content range combinations for a drHoldbackID
+     * @param drHoldbackId
+     */
+    public static void deleteHoldbackRanges(String drHoldbackId) {
+        BaseModuleStorage.performStorageAction("Delete holdback ranges for " + drHoldbackId, RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage)storage).deleteMappingsForDrHolbackId(drHoldbackId);
+            return null;
+        });
+    }
+
+    /**
+     * Deletes all form and content range combinations for drHoldbackId
+     *
+     * @param drHoldbackId
+     * @return
+     */
+    public static List<DrHoldbackRangeMappingDto> getHoldbackRanges(String drHoldbackId) {
+        return BaseModuleStorage.performStorageAction("Get holdbackmappings for "+drHoldbackId, RightsModuleStorage.class, storage-> ((RightsModuleStorage)storage).getHoldbackRangesForHoldbackId(drHoldbackId));
+    }
+
+
+    /**
      * Gets the name of the current user from the OAuth token.
      * @return
      */
@@ -245,5 +384,4 @@ public class RightsModuleFacade {
             throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
         }
     }
-
 }

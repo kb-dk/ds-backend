@@ -41,7 +41,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Creating restricted ID {}", restrictedIdInputDto );
         try {
-            RightsModuleFacade.createRestrictedId(restrictedIdInputDto, getCurrentUserID());
+            RightsModuleFacade.createRestrictedId(restrictedIdInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -107,18 +107,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds) {
         try {
-            BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
-                for(RestrictedIdInputDto id : restrictedIds) {
-                    ((RightsModuleStorage) storage).deleteRestrictedId(
-                            id.getIdValue(),
-                            id.getIdType(),
-                            id.getPlatform()
-                    );
-                }
-                return null;
-            });
-            log.info("Deleted restricted IDs: [{}] ",
-                restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
+            RightsModuleFacade.deleteRestrictedIds(restrictedIds);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -142,14 +131,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto) {
         try {
-            BaseModuleStorage.performStorageAction("Create holdback rule", RightsModuleStorage.class, storage -> {
-                ((RightsModuleStorage)storage).createDrHoldbackRule(
-                        drHoldbackRuleDto.getId(),
-                        drHoldbackRuleDto.getName(),
-                        drHoldbackRuleDto.getDays()
-                );
-                return null;
-            });
+            RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -162,10 +144,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void deleteDrHoldbackRule(String id) {
         try {
-            BaseModuleStorage.performStorageAction("Delete holdback rule", RightsModuleStorage.class, storage -> {
-                ((RightsModuleStorage)storage).deleteDrHoldbackRule(id);
-                return null;
-            });
+            RightsModuleFacade.deleteDrHoldbackRule(id);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -186,13 +165,13 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * get all all holdback rules for DR
+     * get all holdback rules for DR
      * @return
      */
     @Override
     public List<DrHoldbackRuleDto> getDrHoldbackRules() {
         try {
-            return BaseModuleStorage.performStorageAction("Get holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getAllDrHoldbackRules());
+            return RightsModuleFacade.getAllDrHoldbackRules();
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -201,28 +180,21 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     /**
      * Retrieve the number of days for a holdback rule, either based on either the id or the name of the holdbackrule.
      *
-     * @param id
-     * @param name
+     * @param id if this parameter is not empty it returns the number of holdback days for the id
+     * @param name if this parameter is not empty it returns the number of holdback days for the name
      * @return the number of
      */
     @Override
     public Integer getDrHoldbackDays(String id, String name) {
-        int days;
         try {
-            if (!StringUtils.isEmpty(id)) {
-                days = BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackdaysFromID(id));
-            } else if (!StringUtils.isEmpty(name)) {
-                days = BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name));
-            } else {
-                throw new InvalidArgumentServiceException("missing id or name");
+            Integer days = RightsModuleFacade.getDrHoldbackDaysByIdOrName(id,name);
+            if (days == null) {
+                throw new NotFoundServiceException("no holdback found for "+ id+" or name "+name);
             }
+            return days;
         } catch (Exception e) {
             throw handleException(e);
         }
-        if (days > 0) {
-            return days;
-        }
-        throw new NotFoundServiceException("no holdback found for "+ id+" or name "+name);
     }
 
     /**
@@ -234,19 +206,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void updateDrHoldbackDays(Integer days, String id, String name) {
         try {
-            if (!StringUtils.isEmpty(id)) {
-                BaseModuleStorage.performStorageAction("update holdback dayss", RightsModuleStorage.class, storage -> {
-                    ((RightsModuleStorage) storage).updateDrHolbackdaysForId(days,id);
-                    return null;
-                });
-            } else if (!StringUtils.isEmpty(name)) {
-                BaseModuleStorage.performStorageAction("update holdback dayss", RightsModuleStorage.class, storage -> {
-                    ((RightsModuleStorage) storage).updateDrHolbackdaysForName(days,name);
-                    return null;
-                });
-            } else {
-                throw new InvalidArgumentServiceException("missing id or name");
-            }
+            RightsModuleFacade.updateDrHoldbackDaysByIdOrName(days,id,name);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -262,21 +222,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createHoldbackRanges(String drHoldbackId, List<DrHoldbackRangeMappingInputDto> drHoldbackRangeMappingInputDto) {
         try {
-            BaseModuleStorage.performStorageAction("Create holdback ranges for "+ drHoldbackId, RightsModuleStorage.class, storage -> {
-                for(DrHoldbackRangeMappingInputDto mapping: drHoldbackRangeMappingInputDto) {
-                    if (((RightsModuleStorage)storage).getDrHoldbackFromID(drHoldbackId) == null) {
-                        throw new InvalidArgumentServiceException("No dr holdback_id "+drHoldbackId);
-                    }
-                    ((RightsModuleStorage)storage).createDrHoldbackMapping(
-                            mapping.getContentRangeFrom(),
-                            mapping.getContentRangeTo(),
-                            mapping.getFormRangeFrom(),
-                            mapping.getFormRangeTo(),
-                            drHoldbackId
-                    );
-                }
-                return null;
-            });
+            RightsModuleFacade.createHoldbackRanges(drHoldbackId, drHoldbackRangeMappingInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -289,10 +235,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void deleteHoldbackRanges(String drHoldbackId) {
         try {
-            BaseModuleStorage.performStorageAction("Delete holdback ranges for " + drHoldbackId, RightsModuleStorage.class, storage -> {
-                ((RightsModuleStorage)storage).deleteMappingsForDrHolbackId(drHoldbackId);
-                return null;
-            });
+            RightsModuleFacade.deleteHoldbackRanges(drHoldbackId);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -318,22 +261,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public List<DrHoldbackRangeMappingDto> getHoldbackRanges(String drHoldbackId) {
         try {
-            return BaseModuleStorage.performStorageAction("Get holdbackmappings for "+drHoldbackId, RightsModuleStorage.class, storage-> ((RightsModuleStorage)storage).getHoldbackRangesForHoldbackId(drHoldbackId));
+            return RightsModuleFacade.getHoldbackRanges(drHoldbackId);
         } catch (Exception e) {
             throw handleException(e);
         }
-    }
-
-    /**
-     * Gets the name of the current user from the OAuth token.
-     * @return
-     */
-    private String getCurrentUserID() {
-        Message message = JAXRSUtils.getCurrentMessage();
-        AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
-        if (token != null) {
-            return token.getName();
-        }
-        return "no user";
     }
 }
