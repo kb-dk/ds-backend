@@ -226,16 +226,6 @@ public class RightsModuleFacade {
         });
     }
 
-
-    private static RightsModuleStorage getRightsStorage() {
-        try {
-            return new RightsModuleStorage();
-        } catch (SQLException e) {
-            log.error("Error creating Storage ",e);
-            throw new InternalServiceException("Error creating storage");
-        }
-    }
-
     /**
      * Gets the name of the current user from the OAuth token.
      * @return
