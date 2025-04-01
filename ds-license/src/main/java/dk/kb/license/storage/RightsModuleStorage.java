@@ -125,7 +125,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public void createRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
-        validatePlatformAndIdType(platform,id_type);
         long uniqueID = generateUniqueID();
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)){
@@ -154,7 +153,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public RestrictedIdOutputDto getRestrictedId(String id_value, String id_type, String platform) throws SQLException {
-        validatePlatformAndIdType(platform,id_type);
         try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQuery)) {
             stmt.setString(1, id_value);
             stmt.setString(2, id_type);
@@ -190,7 +188,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public void updateRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
-        validatePlatformAndIdType(platform,id_type);
 
         try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdQuery)){
             stmt.setString(1, platform);
@@ -215,7 +212,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public void deleteRestrictedId(String id_value, String id_type, String platform) throws SQLException {
-        validatePlatformAndIdType(platform,id_type);
         try (PreparedStatement stmt = connection.prepareStatement(deleteRestrictedIdQuery)) {
             stmt.setString(1, id_value);
             stmt.setString(2, id_type);
@@ -509,17 +505,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
         LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(modifiedTime), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ServiceConfig.getConfig().getString("human-readable-date-format","yyyy-MM-dd HH:mm:ss"), Locale.ENGLISH);
         return localDateTime.format(formatter);
-    }
-
-    private void validatePlatformAndIdType(String platform, String idType) {
-        YAML platformConfig = ServiceConfig.getRightsPlatformConfig(platform);
-        if (platformConfig.isEmpty()) {
-            throw new IllegalArgumentException("Invalid platform "+platform);
-        }
-        if (!platformConfig.getList("idTypes").contains(idType)) {
-            throw new IllegalArgumentException("Invalid idType "+idType);
-        }
-
     }
 
      /*

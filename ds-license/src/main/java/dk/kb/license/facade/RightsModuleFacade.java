@@ -12,6 +12,7 @@ import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.yaml.YAML;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.Message;
@@ -56,6 +57,7 @@ public class RightsModuleFacade {
      */
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
+        validatePlatformAndIdType(restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getIdType());
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).createRestrictedId(
                     restrictedIdInputDto.getIdValue(),
@@ -92,6 +94,7 @@ public class RightsModuleFacade {
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
+        validatePlatformAndIdType(restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getIdType());
         validateCommentLength(restrictedIdInputDto);
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).updateRestrictedId(
@@ -119,6 +122,7 @@ public class RightsModuleFacade {
     public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) throws SQLException {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
+                validatePlatformAndIdType(id.getPlatform(), id.getIdType());
                 validateCommentLength(id);
 
                 ((RightsModuleStorage) storage).createRestrictedId(
@@ -405,6 +409,17 @@ public class RightsModuleFacade {
             log.error("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
             throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
         }
+    }
+
+    private static void validatePlatformAndIdType(String platform, String idType) {
+        YAML platformConfig = ServiceConfig.getRightsPlatformConfig(platform);
+        if (platformConfig.isEmpty()) {
+            throw new IllegalArgumentException("Invalid platform "+platform);
+        }
+        if (!platformConfig.getList("idTypes").contains(idType)) {
+            throw new IllegalArgumentException("Invalid idType "+idType);
+        }
+
     }
 
     /**
