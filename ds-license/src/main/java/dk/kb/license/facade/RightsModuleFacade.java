@@ -332,47 +332,47 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Retrieve the number of days for a holdback rule, either based on either the id or the name of the holdbackrule.
-     *
-     * @param id if this parameter is not empty it returns the number of holdback days for the id
-     * @param name if this parameter is not empty it returns the number of holdback days for the name
+     * Retrieve the number of days for a holdback rule from an holbackrule id
+     * @param id the id of the dr holdback rule
      * @return the number of
-     */
-    public static Integer getDrHoldbackDaysByIdOrName(String id, String name) {
-        Integer days;
-        if (!StringUtils.isEmpty(id)) {
-            days = BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackdaysFromID(id));
-        } else if (!StringUtils.isEmpty(name)) {
-            days = BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name));
-        } else {
-            throw new InvalidArgumentServiceException("missing id or name");
-        }
-        return days;
+     **/
+    public static Integer getDrHolbackDaysById(String id) {
+        return BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackdaysFromID(id));
     }
 
     /**
-     * Retrieve the number of days for a holdback rule, either based on either the id or the name of the holdbackrule.
-     *
-     * @param days the new number of holdback days for the rule
-     * @param id if this parameter is not empty it updates the number of holdback days for the id
-     * @param name if this parameter is not empty it updates the number of holdback days for the name
+     * Retrieve the number of days for a holdback rule from an holbackrule id
+     * @param name the name of the dr holdback rule
      * @return the number of
-     */
-    public static void updateDrHoldbackDaysByIdOrName(Integer days, String id, String name) {
-        if (!StringUtils.isEmpty(id)) {
-            BaseModuleStorage.performStorageAction("update holdback dayss", RightsModuleStorage.class, storage -> {
-                ((RightsModuleStorage) storage).updateDrHolbackdaysForId(days,id);
-                return null;
-            });
-        } else if (!StringUtils.isEmpty(name)) {
-            BaseModuleStorage.performStorageAction("update holdback dayss", RightsModuleStorage.class, storage -> {
-                ((RightsModuleStorage) storage).updateDrHolbackdaysForName(days,name);
-                return null;
-            });
-        } else {
-            throw new InvalidArgumentServiceException("missing id or name");
-        }
+     **/
+    public static Integer getDrHolbackDaysByName(String name) {
+        return BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name));
     }
+
+    /**
+     * Update the number of days for a holdback rule
+     * @param id the id of the dr holdback rule
+     * @return the number of
+     **/
+    public static void updateDrHoldbackDaysForId(String id, Integer days) {
+        BaseModuleStorage.performStorageAction("update holdback dayss", RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage) storage).updateDrHolbackdaysForId(days,id);
+            return null;
+        });
+    }
+
+    /**
+     * Update the number of days for a holdback rule
+     * @param name the name of the dr holdback rule
+     * @return the number of
+     **/
+    public static void updateDrHoldbackDaysForName(String name, Integer days) {
+        BaseModuleStorage.performStorageAction("update holdback days", RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage) storage).updateDrHolbackdaysForName(days,name);
+            return null;
+        });
+    }
+
     /**
      * set the form and content range combinations for a list dr_holdback_id
      * This requires the holdback_id to be present in the DR holback rule table

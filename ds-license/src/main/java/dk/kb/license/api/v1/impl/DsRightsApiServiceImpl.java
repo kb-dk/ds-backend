@@ -13,7 +13,9 @@ import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.Message;
@@ -177,7 +179,14 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public Integer getDrHoldbackDays(String id, String name) {
         try {
-            Integer days = RightsModuleFacade.getDrHoldbackDaysByIdOrName(id,name);
+            Integer days;
+            if (!StringUtils.isEmpty(id)) {
+                days = RightsModuleFacade.getDrHolbackDaysById(id);
+            } else if (!StringUtils.isEmpty(name)) {
+                days = RightsModuleFacade.getDrHolbackDaysByName(name);
+            } else {
+                throw new InvalidArgumentServiceException("missing id or name");
+            }
             if (days == null) {
                 throw new NotFoundServiceException("no holdback found for "+ id+" or name "+name);
             }
@@ -196,7 +205,13 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void updateDrHoldbackDays(Integer days, String id, String name) {
         try {
-            RightsModuleFacade.updateDrHoldbackDaysByIdOrName(days,id,name);
+            if (!StringUtils.isEmpty(id)) {
+                RightsModuleFacade.updateDrHoldbackDaysForId(id,days);
+            } else if (!StringUtils.isEmpty(name)) {
+                RightsModuleFacade.updateDrHoldbackDaysForName(name,days);
+            } else {
+                throw new InvalidArgumentServiceException("missing id or name");
+            }
         } catch (Exception e) {
             throw handleException(e);
         }

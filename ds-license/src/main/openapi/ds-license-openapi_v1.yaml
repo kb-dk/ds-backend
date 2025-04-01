@@ -517,7 +517,7 @@ paths:
       tags:
         - 'DsRights'
       operationId: getDrHoldbackDays
-      description: gets the number of holdbackdays
+      description: gets the number of holdbackdays. One of the parameters id or name should be nonempty. id takes precedence over name.
       security:
         - KBOAuth:
             - any
@@ -525,11 +525,13 @@ paths:
         - name: id
           in: query
           required: false
+          description: id of the holdback rule
           schema:
             type: string
         - name: name
           in: query
           required: false
+          description: name of the holdback rule
           schema:
             type: string
       responses:
@@ -545,7 +547,7 @@ paths:
       tags:
         - 'DsRights'
       operationId: updateDrHoldbackDays
-      description: update the number of holdbackdays for a purpose
+      description: update the number of holdbackdays for a purpose. One of the parameters id or name should be nonempty. id takes precedence over name.
       security:
         - KBOAuth:
             - any
@@ -553,11 +555,13 @@ paths:
         - name: id
           in: query
           required: false
+          description: id of the holdback rule
           schema:
             type: string
         - name: name
           in: query
           required: false
+          description: name of the holdback rule
           schema:
             type: string
         - name: days
