@@ -1,6 +1,7 @@
 package dk.kb.license.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,6 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dk.kb.license.model.v1.HoldbackCalculationInputDto;
+import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
+import dk.kb.license.model.v1.RightsCalculationInputDto;
+import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -127,6 +132,35 @@ public class DsLicenseClientTest {
         input.setLocale("da");                
         GetUsersLicensesOutputDto output = remote.getUserLicenses(input);                       
         assertTrue(output.getLicenses().size() >0); //There should be at least 1 license                  
+    }
+
+    @Test
+    public void calculateRights() {
+        RightsCalculationInputDto inputDto = new RightsCalculationInputDto();
+        HoldbackCalculationInputDto holdbackDto = new HoldbackCalculationInputDto();
+        RestrictionsCalculationInputDto restrictionsDto = new RestrictionsCalculationInputDto();
+
+        holdbackDto.setIndhold(1000);
+        holdbackDto.setForm(1000);
+        holdbackDto.setHensigt(0);
+        holdbackDto.setProductionCountry(1000);
+        holdbackDto.setOrigin("ds.tv");
+
+        restrictionsDto.setProductionCode("1000");
+        restrictionsDto.setTitle("Almindelig udsendelses test");
+        restrictionsDto.setDrProductionId("9393871973197");
+        restrictionsDto.setRecordId("test id");
+
+        inputDto.setPlatform(RightsCalculationInputDto.PlatformEnum.DRARKIV);
+        inputDto.setRestrictionsInput(restrictionsDto);
+        inputDto.setHoldbackInput(holdbackDto);
+
+        inputDto.setRecordId("test ID");
+        inputDto.setStartTime("2016-02-02T00:00:00Z");
+
+        RightsCalculationOutputDto outputDto = remote.calculateRights(inputDto);
+
+        assertFalse(outputDto.getDr().getTitleRestricted());
     }
         
     
