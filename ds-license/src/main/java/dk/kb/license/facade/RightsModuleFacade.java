@@ -419,8 +419,8 @@ public class RightsModuleFacade {
     }
 
     private static void validateCommentLength(RestrictedIdInputDto id) {
-        if (id.getComment() != null && id.getComment().length() > 1024){
-            log.error("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
+        if (id.getComment() != null && id.getComment().length() > 16348){
+            log.error("Comment was too long and cannot be added to rights module. Only 16348 characters are allowed.");
             throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
         }
     }
