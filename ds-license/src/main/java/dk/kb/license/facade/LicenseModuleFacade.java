@@ -1,6 +1,5 @@
 package dk.kb.license.facade;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.license.util.ChangeDifferenceText;
 import dk.kb.license.util.LicenseChangelogGenerator;
-import dk.kb.util.webservice.exception.InternalServiceException;
 
 /**
  * The LicenseModuleFacade exposes all methods that can be called on a LicenceModule. This includes both persistence logic and business logic resolving licence access.

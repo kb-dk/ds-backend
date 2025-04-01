@@ -14,7 +14,6 @@ import dk.kb.license.model.v1.GetUserQueryOutputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.license.model.v1.GetUsersLicensesInputDto;
 import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
-import dk.kb.license.model.v1.HelloReplyDto;
 import dk.kb.license.model.v1.LicenseOverviewDto;
 import dk.kb.license.model.v1.UserGroupDto;
 import dk.kb.license.model.v1.ValidateAccessInputDto;
@@ -22,7 +21,6 @@ import dk.kb.license.model.v1.ValidateAccessOutputDto;
 import dk.kb.license.storage.License;
 import dk.kb.license.storage.PresentationType;
 import dk.kb.license.validation.LicenseValidator;
-import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.ImplBase;
 
 import org.apache.cxf.interceptor.InInterceptors;

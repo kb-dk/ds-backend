@@ -1,7 +1,6 @@
 package dk.kb.license.api.v1.impl;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Set;
 
