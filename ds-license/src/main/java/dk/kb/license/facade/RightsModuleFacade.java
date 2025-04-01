@@ -141,6 +141,15 @@ public class RightsModuleFacade {
     }
 
     /**
+     * Fetch a list of all restricted IDs.
+     *
+     * @return
+     */
+    public static List<RestrictedIdOutputDto> getAllRestrictedIds() {
+        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds());
+    }
+
+    /**
      * Deletes multiple restricted Ids
      *
      * @param restrictedIds        list of restricted Ids to be deleted.
@@ -564,4 +573,5 @@ public class RightsModuleFacade {
         log.debug("Touching DS-storage record with id: '{}'", id);
         return storageClient.touchRecord(id);
     }
+
 }

@@ -80,7 +80,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) {
         try {
-            return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds());
+            return RightsModuleFacade.getAllRestrictedIds();
         } catch (Exception e) {
             throw handleException(e);
         }
