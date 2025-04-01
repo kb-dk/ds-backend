@@ -54,7 +54,7 @@ public class RightsModuleFacade {
      *                               This should not be null.
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) throws SQLException {
+    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).createRestrictedId(
@@ -62,7 +62,7 @@ public class RightsModuleFacade {
                     restrictedIdInputDto.getIdType(),
                     restrictedIdInputDto.getPlatform(),
                     restrictedIdInputDto.getComment(),
-                    getCurrentUserID(),
+                    user,
                     System.currentTimeMillis());
             log.info("Created restriction {}", restrictedIdInputDto);
             if (touchDsStorageRecord) {
@@ -91,7 +91,7 @@ public class RightsModuleFacade {
      * @param touchDsStorageRecord
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) throws SQLException {
+    public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).updateRestrictedId(
@@ -99,7 +99,7 @@ public class RightsModuleFacade {
                     restrictedIdInputDto.getIdType(),
                     restrictedIdInputDto.getPlatform(),
                     restrictedIdInputDto.getComment(),
-                    getCurrentUserID(),
+                    user,
                     System.currentTimeMillis());
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
@@ -116,7 +116,7 @@ public class RightsModuleFacade {
      *                               This should not be null.
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, boolean touchDsStorageRecord) throws SQLException {
+    public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) throws SQLException {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
                 validateCommentLength(id);
@@ -126,7 +126,7 @@ public class RightsModuleFacade {
                         id.getIdType(),
                         id.getPlatform(),
                         id.getComment(),
-                        getCurrentUserID(),
+                        user,
                         System.currentTimeMillis()
                 );
                 if (touchDsStorageRecord) {
@@ -398,20 +398,6 @@ public class RightsModuleFacade {
      */
     public static List<DrHoldbackRangeMappingDto> getHoldbackRanges(String drHoldbackId) {
         return BaseModuleStorage.performStorageAction("Get holdbackmappings for "+drHoldbackId, RightsModuleStorage.class, storage-> ((RightsModuleStorage)storage).getHoldbackRangesForHoldbackId(drHoldbackId));
-    }
-
-
-    /**
-     * Gets the name of the current user from the OAuth token.
-     * @return
-     */
-    private static String getCurrentUserID() {
-        Message message = JAXRSUtils.getCurrentMessage();
-        AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
-        if (token != null) {
-            return token.getName();
-        }
-        return "no user";
     }
 
     private static void validateCommentLength(RestrictedIdInputDto id) {

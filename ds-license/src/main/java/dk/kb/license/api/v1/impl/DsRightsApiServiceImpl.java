@@ -12,8 +12,12 @@ import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
+import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.cxf.interceptor.InInterceptors;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.Message;
+import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +37,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Creating restricted ID {}", restrictedIdInputDto );
         try {
-            RightsModuleFacade.createRestrictedId(restrictedIdInputDto,touchRecord);
+            RightsModuleFacade.createRestrictedId(restrictedIdInputDto,getCurrentUserID(),touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -43,7 +47,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void updateRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Updating restricted ID {}",restrictedIdInputDto);
         try {
-            RightsModuleFacade.updateRestrictedId(restrictedIdInputDto, touchRecord);
+            RightsModuleFacade.updateRestrictedId(restrictedIdInputDto, getCurrentUserID(),touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -85,7 +89,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            RightsModuleFacade.createRestrictedIds(restrictedIds,touchRecord);
+            RightsModuleFacade.createRestrictedIds(restrictedIds,getCurrentUserID(),touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -252,4 +256,18 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
             throw handleException(e);
         }
     }
+
+    /**
+     * Gets the name of the current user from the OAuth token.
+     * @return
+     */
+    private static String getCurrentUserID() {
+        Message message = JAXRSUtils.getCurrentMessage();
+        AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
+        if (token != null) {
+            return token.getName();
+        }
+        return "no user";
+    }
+
 }
