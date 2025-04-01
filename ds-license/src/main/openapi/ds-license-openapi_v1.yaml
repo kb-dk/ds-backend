@@ -237,6 +237,12 @@ paths:
       security:
         - KBOAuth:
             - any
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
       requestBody:
         required: true
         content:
@@ -269,6 +275,12 @@ paths:
       security:
         - KBOAuth:
             - any
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
       requestBody:
         required: true
         content:
@@ -354,6 +366,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
       responses:
         '204':
           description: deleted
@@ -364,6 +381,12 @@ paths:
       security:
         - KBOAuth:
             - any
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
       requestBody:
         content:
           application/json:
@@ -386,6 +409,12 @@ paths:
         security:
           - KBOAuth:
               - any
+        parameters:
+          - name: touchRecord
+            in: query
+            schema:
+              type: boolean
+              default: true
         requestBody:
           content:
             application/json:

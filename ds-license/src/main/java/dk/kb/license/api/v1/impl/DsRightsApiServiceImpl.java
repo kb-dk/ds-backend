@@ -4,7 +4,6 @@ import dk.kb.license.api.v1.*;
 
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
@@ -13,14 +12,8 @@ import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
-import dk.kb.license.webservice.KBAuthorizationInterceptor;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.interceptor.InInterceptors;
-import org.apache.cxf.jaxrs.utils.JAXRSUtils;
-import org.apache.cxf.message.Message;
-import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,36 +29,31 @@ import dk.kb.util.webservice.ImplBase;
 public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     private final static Logger log = LoggerFactory.getLogger(DsRightsApiServiceImpl.class);
 
-
     @Override
-    public void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto) {
+    public void createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Creating restricted ID {}", restrictedIdInputDto );
         try {
-            RightsModuleFacade.createRestrictedId(restrictedIdInputDto);
+            RightsModuleFacade.createRestrictedId(restrictedIdInputDto,touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     @Override
-    public void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto) {
+    public void updateRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Updating restricted ID {}",restrictedIdInputDto);
         try {
-            RightsModuleFacade.updateRestrictedId(restrictedIdInputDto);
+            RightsModuleFacade.updateRestrictedId(restrictedIdInputDto, touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     @Override
-    public void deleteRestrictedId(String id, String idType, String platform) {
+    public void deleteRestrictedId(String id, String idType, String platform, Boolean touchRecord) {
         log.debug("Deleted restricted id:{} idType:{} platform:{}", id, idType, platform);
         try {
-            BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
-                ((RightsModuleStorage) storage).deleteRestrictedId(id, idType, platform);
-                return null;
-            });
-            log.info("Deleted restricted id:{} idType:{} platform:{}", id, idType, platform);
+            RightsModuleFacade.deleteRestrictedId(id, idType, platform, touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -94,25 +82,23 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
-
     @Override
-    public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds) {
+    public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            RightsModuleFacade.createRestrictedIds(restrictedIds);
+            RightsModuleFacade.createRestrictedIds(restrictedIds,touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     @Override
-    public void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds) {
+    public void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            RightsModuleFacade.deleteRestrictedIds(restrictedIds);
+            RightsModuleFacade.deleteRestrictedIds(restrictedIds, touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
-
 
     @Override
     public RightsCalculationOutputDto calculateRights(RightsCalculationInputDto rightsCalculationInputDto) {

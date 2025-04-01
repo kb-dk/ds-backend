@@ -33,7 +33,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
     @BeforeEach
     public void beforeEach() throws SQLException {
-        try (RightsModuleStorage storage = new RightsModuleStorage(false)){
+        try (RightsModuleStorage storage = new RightsModuleStorage()){
             storage.clearTableRecords();
         } catch (Exception e) {
             throw e;
@@ -154,7 +154,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
     @Test
     public void restrictedDrProductionIdTest() throws SQLException {
-        try (RightsModuleStorage storage = new RightsModuleStorage(false)) {
+        try (RightsModuleStorage storage = new RightsModuleStorage()) {
             storage.createRestrictedId("1234567890", "dr_produktions_id", "dr", "Not allowed dr production ID", "TestUser", System.currentTimeMillis());
             storage.commit();
         } catch (Exception e) {
@@ -171,7 +171,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
     @Test
     public void restrictedDsIdTest() throws SQLException {
-        try (RightsModuleStorage storage = new RightsModuleStorage(false)) {
+        try (RightsModuleStorage storage = new RightsModuleStorage()) {
             storage.createRestrictedId("restrictedId","ds_id","dr","dangerous ID","TestUser",System.currentTimeMillis());
             storage.commit();
         } catch (Exception e) {
@@ -187,7 +187,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
     @Test
     public void restrictedTitleTest() throws SQLException {
-        try (RightsModuleStorage storage = new RightsModuleStorage(false)) {
+        try (RightsModuleStorage storage = new RightsModuleStorage()) {
             storage.createRestrictedId("Restricted Test Title","strict_title","dr","This title can never be shown","TestUser",System.currentTimeMillis());
             storage.commit();
         } catch (Exception e) {
@@ -204,7 +204,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
     @Test
     public void allowedProductionCodeFromMetadataTest() throws SQLException {
-        try (RightsModuleStorage storage = new RightsModuleStorage(false)) {
+        try (RightsModuleStorage storage = new RightsModuleStorage()) {
             storage.createRestrictedId("1000","egenproduktions_kode","dr","1000 equals ownproduction","TestUser",System.currentTimeMillis());
             storage.commit();
         } catch (Exception e) {

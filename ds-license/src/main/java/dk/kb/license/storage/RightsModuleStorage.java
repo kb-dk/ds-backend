@@ -35,9 +35,6 @@ import java.util.Locale;
 public class RightsModuleStorage extends BaseModuleStorage{
     private static final Logger log = LoggerFactory.getLogger(RightsModuleStorage.class);
 
-    private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
-    private static boolean enableStorageTouch = true;
-
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
 
     private final String RESTRICTED_ID_ID = "id";
@@ -116,11 +113,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
        super();
     }
 
-    public RightsModuleStorage(boolean enableStorageTouch) throws SQLException {
-        super();
-        RightsModuleStorage.enableStorageTouch = enableStorageTouch;
-    }
-
     /**
      * Creates an entry in the restrictedID table. Also updates the mTime for the related record in ds-storage.
      *
@@ -150,7 +142,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
             throw e;
         }
 
-        touchRelatedStorageRecords(id_value, id_type);
     }
 
     /**
@@ -213,8 +204,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
             log.error("SQL Exception in persist restricted ID" + e.getMessage());
             throw e;
         }
-
-        touchRelatedStorageRecords(id_value, id_type);
     }
 
     /**
@@ -236,8 +225,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
             log.error("SQL Exception in delete restricted Id:" + e.getMessage());
             throw e;
         }
-
-        touchRelatedStorageRecords(id_value, id_type);
     }
 
     public List<RestrictedIdOutputDto> getAllRestrictedIds() throws SQLException {
@@ -564,161 +551,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
         try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
             stmt.execute();
         }
-    }
-
-    /**
-     * Based on idType, touch related storage records, so that they can be re-indexed with the new information.
-     * @param id which have been updated in the rights table
-     * @param idType to determine how related records are updated.
-     * @return amount of records touched in DS-Storage.
-     */
-    public int touchRelatedStorageRecords(String id, String idType){
-        // This should be implemented for each valid type specified in the configuration file. Solr queries might be needed for the other three types currently available.
-        // "ds_id", "dr_produktions_id", "egenproduktions_kode", "strict_title"
-        if (!enableStorageTouch){
-            log.warn("Storage touch is not enabled. No records are modified in connected DS-Storage.");
-            return 0;
-        }
-
-        switch (idType){
-            case "ds_id":
-                return touchStorageRecordById(id);
-            // TODO: Implement the rest of these touches by solr queries-
-            case "dr_produktions_id":
-                return touchStorageRecordsByProductionId(id);
-            case "egenproduktions_kode":
-                return touchStorageRecordsByProductionCode(id);
-            case "strict_title":
-                return touchStorageRecordsByStrictTitle(id);
-            default:
-                throw new IllegalArgumentException("Invalid idType "+idType);
-        }
-
-    }
-
-    /**
-     * Touch a single ID directly in DS-Storage.
-     * @param id to touch in DS-storage.
-     * @return amount of records touched in DS-Storage.
-     */
-    private int touchStorageRecordById(String id) {
-        RecordsCountDto count = storageClient.touchRecord(id);
-
-        if (count == null || count.getCount() == null){
-            return 0;
-        }
-
-        return count.getCount();
-    }
-
-    /**
-     * Query solr for all records where the restricted title is present and touch the records in DS-storage.
-     * @param strictTitle to query solr for.
-     * @return amount of records touched in DS-Storage.
-     */
-    private int touchStorageRecordsByStrictTitle(String strictTitle) {
-        String solrField = "title_strict";
-        return touchStorageRecordsByIdFromSolrQuery(solrField, strictTitle);
-    }
-
-    /**
-     * Query solr for all records where the productionCode is present and touch the records in DS-storage.
-     * @param productionCode to query solr for.
-     * @return amount of records touched in DS-Storage.
-     */
-    private int touchStorageRecordsByProductionCode(String productionCode) {
-        String solrField = "production_code_value";
-        return touchStorageRecordsByIdFromSolrQuery(solrField, productionCode);
-    }
-
-    /**
-     * Query solr for all records where the drProductionId is present and touch the records in DS-storage.
-     * @param drProductionId to query solr for.
-     * @return amount of records touched in DS-Storage.
-     */
-    private int touchStorageRecordsByProductionId(String drProductionId) {
-        String solrField = "dr_production_id";
-        return touchStorageRecordsByIdFromSolrQuery(solrField, drProductionId);
-    }
-
-
-    /**
-     * Perform a solr query as {@code solrField:"fieldValue"} and for each record in the solr response get the id for
-     * each record and touch the related DS-Record in DS-Storage.
-     * @param solrField to query for the fieldValue.
-     * @param fieldValue to query for.
-     * @return the amount of records touched in DS-Storage.
-     */
-    private static int touchStorageRecordsByIdFromSolrQuery(String solrField, String fieldValue) {
-        List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
-        int touchedRecordsCount = 0;
-
-        // Ds-license supports multiple backing solr servers. So we have to wrap it in this for-loop
-        for (SolrServerClient server : servers) {
-            int pageSize = 500;
-            int start = 0;
-
-            try {
-                SolrQuery query = getIdSolrQuery(solrField, fieldValue, pageSize);
-
-                while (true){
-                    // Update start value before the query is fired against the server
-                    query.setStart(start);
-
-                    // Query solr for a response
-                    QueryResponse response = server.query(query);
-                    SolrDocumentList results = response.getResults();
-
-                    // For each record in the result touch the related DS-storage record
-                    for (SolrDocument doc : results) {
-                        RecordsCountDto touched = touchStorageRecords(doc);
-                        if (touched != null && touched.getCount() != null){
-                            touchedRecordsCount = touchedRecordsCount + touched.getCount();
-                        }
-                    }
-
-                    long totalResults = results.getNumFound();
-
-                    // Break the loop of no more records are available
-                    if (start + pageSize >= totalResults) {
-                        break;
-                    }
-
-                    // Increment start by pageSize
-                    start += pageSize;
-                }
-            } catch (SolrServerException | IOException e) {
-                throw new InternalServiceException(e);
-            }
-        }
-
-        return touchedRecordsCount;
-    }
-
-    /**
-     * Create a solr query on the form {@code solrField:"fieldValue"} where the rows param is set to {@code pageSize} The query only returns the field ID from the documents.
-     * @param solrField to query.
-     * @param fieldValue used to query the field defined above.
-     * @param pageSize which determines the amount of documents returned by the query.
-     * @return a {@link SolrQuery} that can be fired as is or further developed for paging etc.
-     */
-    private static SolrQuery getIdSolrQuery(String solrField, String fieldValue, int pageSize) {
-        SolrQuery query = new SolrQuery();
-        query.setQuery(solrField + ":\"" + fieldValue + "\"");
-        query.setRows(pageSize);
-        query.setFields("id");
-        return query;
-    }
-
-    /**
-     * Touch a related DS-Record in the backing DS-Storage extracting the ID from a given solr document and use that ID when querying the DS-StorageClient
-     * @param doc solr document to extract ID from.
-     */
-    private static RecordsCountDto touchStorageRecords(SolrDocument doc) {
-        // For each document in the result, touch its ds-storage record.
-        String id = (String) doc.getFieldValue("id");
-        log.debug("Touching DS-storage record with id: '{}'", id);
-        return storageClient.touchRecord(id);
     }
 }   
 

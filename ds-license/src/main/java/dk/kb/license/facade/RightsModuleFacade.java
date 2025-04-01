@@ -1,20 +1,30 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.RightsCalculation;
+import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
+import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
+import dk.kb.storage.model.v1.RecordsCountDto;
+import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.Message;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +33,7 @@ import java.util.stream.Collectors;
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
 
+    private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
     /**
      * Retrieves a restrictedID output object from the database
      *
@@ -43,7 +54,7 @@ public class RightsModuleFacade {
      *                               This should not be null.
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto) throws SQLException {
+    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).createRestrictedId(
@@ -54,18 +65,33 @@ public class RightsModuleFacade {
                     getCurrentUserID(),
                     System.currentTimeMillis());
             log.info("Created restriction {}", restrictedIdInputDto);
+            if (touchDsStorageRecord) {
+                touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
+            }
             return null;
         });
+    }
+
+    public static void deleteRestrictedId(String id, String idType, String platform, boolean touchDsStorageRecord) throws Exception {
+        BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage) storage).deleteRestrictedId(id, idType, platform);
+            if (touchDsStorageRecord) {
+                touchRelatedStorageRecords(id, idType);
+            }
+            return null;
+        });
+        log.info("Deleted restricted id:{} idType:{} platform:{}", id, idType, platform);
     }
 
     /**
      * Update a restricted ID using the provided input data transfer object (DTO) and user ID.
      *
      * @param restrictedIdInputDto the data transfer object containing the details of the restricted ID to be Updated.
-     *                               This should not be null.
+     *                             This should not be null.
+     * @param touchDsStorageRecord
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto) throws SQLException {
+    public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).updateRestrictedId(
@@ -75,7 +101,10 @@ public class RightsModuleFacade {
                     restrictedIdInputDto.getComment(),
                     getCurrentUserID(),
                     System.currentTimeMillis());
-            log.info("Updating restricted ID {}",restrictedIdInputDto);
+            if (touchDsStorageRecord) {
+                touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
+            }
+            log.info("Updated restricted ID {}",restrictedIdInputDto);
             return null;
         });
     }
@@ -87,7 +116,7 @@ public class RightsModuleFacade {
      *                               This should not be null.
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds) throws SQLException {
+    public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, boolean touchDsStorageRecord) throws SQLException {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
                 validateCommentLength(id);
@@ -100,6 +129,9 @@ public class RightsModuleFacade {
                         getCurrentUserID(),
                         System.currentTimeMillis()
                 );
+                if (touchDsStorageRecord) {
+                    touchRelatedStorageRecords(id.getIdValue(), id.getIdType());
+                }
             }
             return null;
         });
@@ -111,9 +143,10 @@ public class RightsModuleFacade {
     /**
      * Deletes multiple restricted Ids
      *
-     * @param restrictedIds list of restricted Ids to be deleted.
+     * @param restrictedIds        list of restricted Ids to be deleted.
+     * @param touchDsStorageRecord
      */
-    public static void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds) {
+    public static void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, boolean touchDsStorageRecord) {
         BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
             for(RestrictedIdInputDto id : restrictedIds) {
                 ((RightsModuleStorage) storage).deleteRestrictedId(
@@ -121,6 +154,9 @@ public class RightsModuleFacade {
                         id.getIdType(),
                         id.getPlatform()
                 );
+                if (touchDsStorageRecord) {
+                    touchRelatedStorageRecords(id.getIdValue(), id.getIdType());
+                }
             }
             return null;
         });
@@ -383,5 +419,152 @@ public class RightsModuleFacade {
             log.error("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
             throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
         }
+    }
+
+    /**
+     * Based on idType, touch related storage records, so that they can be re-indexed with the new information.
+     * @param id which have been updated in the rights table
+     * @param idType to determine how related records are updated.
+     * @return amount of records touched in DS-Storage.
+     */
+    public static int touchRelatedStorageRecords(String id, String idType){
+        switch (idType){
+            case "ds_id":
+                return touchStorageRecordById(id);
+            // TODO: Implement the rest of these touches by solr queries-
+            case "dr_produktions_id":
+                return touchStorageRecordsByProductionId(id);
+            case "egenproduktions_kode":
+                return touchStorageRecordsByProductionCode(id);
+            case "strict_title":
+                return touchStorageRecordsByStrictTitle(id);
+            default:
+                throw new IllegalArgumentException("Invalid idType "+idType);
+        }
+    }
+
+    /**
+     * Touch a single ID directly in DS-Storage.
+     * @param id to touch in DS-storage.
+     * @return amount of records touched in DS-Storage.
+     */
+    private static int touchStorageRecordById(String id) {
+        RecordsCountDto count = storageClient.touchRecord(id);
+
+        if (count == null || count.getCount() == null){
+            return 0;
+        }
+
+        return count.getCount();
+    }
+
+    /**
+     * Query solr for all records where the restricted title is present and touch the records in DS-storage.
+     * @param strictTitle to query solr for.
+     * @return amount of records touched in DS-Storage.
+     */
+    private static int touchStorageRecordsByStrictTitle(String strictTitle) {
+        String solrField = "title_strict";
+        return touchStorageRecordsByIdFromSolrQuery(solrField, strictTitle);
+    }
+
+    /**
+     * Query solr for all records where the productionCode is present and touch the records in DS-storage.
+     * @param productionCode to query solr for.
+     * @return amount of records touched in DS-Storage.
+     */
+    private static int touchStorageRecordsByProductionCode(String productionCode) {
+        String solrField = "production_code_value";
+        return touchStorageRecordsByIdFromSolrQuery(solrField, productionCode);
+    }
+
+    /**
+     * Query solr for all records where the drProductionId is present and touch the records in DS-storage.
+     * @param drProductionId to query solr for.
+     * @return amount of records touched in DS-Storage.
+     */
+    private static int touchStorageRecordsByProductionId(String drProductionId) {
+        String solrField = "dr_production_id";
+        return touchStorageRecordsByIdFromSolrQuery(solrField, drProductionId);
+    }
+
+
+    /**
+     * Perform a solr query as {@code solrField:"fieldValue"} and for each record in the solr response get the id for
+     * each record and touch the related DS-Record in DS-Storage.
+     * @param solrField to query for the fieldValue.
+     * @param fieldValue to query for.
+     * @return the amount of records touched in DS-Storage.
+     */
+    private static int touchStorageRecordsByIdFromSolrQuery(String solrField, String fieldValue) {
+        List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
+        int touchedRecordsCount = 0;
+
+        // Ds-license supports multiple backing solr servers. So we have to wrap it in this for-loop
+        for (SolrServerClient server : servers) {
+            int pageSize = 500;
+            int start = 0;
+
+            try {
+                SolrQuery query = getIdSolrQuery(solrField, fieldValue, pageSize);
+
+                while (true){
+                    // Update start value before the query is fired against the server
+                    query.setStart(start);
+
+                    // Query solr for a response
+                    QueryResponse response = server.query(query);
+                    SolrDocumentList results = response.getResults();
+
+                    // For each record in the result touch the related DS-storage record
+                    for (SolrDocument doc : results) {
+                        RecordsCountDto touched = touchStorageRecords(doc);
+                        if (touched != null && touched.getCount() != null){
+                            touchedRecordsCount = touchedRecordsCount + touched.getCount();
+                        }
+                    }
+
+                    long totalResults = results.getNumFound();
+
+                    // Break the loop of no more records are available
+                    if (start + pageSize >= totalResults) {
+                        break;
+                    }
+
+                    // Increment start by pageSize
+                    start += pageSize;
+                }
+            } catch (SolrServerException | IOException e) {
+                throw new InternalServiceException(e);
+            }
+        }
+
+        return touchedRecordsCount;
+    }
+
+    /**
+     * Create a solr query on the form {@code solrField:"fieldValue"} where the rows param is set to {@code pageSize} The query only returns the field ID from the documents.
+     * @param solrField to query.
+     * @param fieldValue used to query the field defined above.
+     * @param pageSize which determines the amount of documents returned by the query.
+     * @return a {@link SolrQuery} that can be fired as is or further developed for paging etc.
+     */
+    private static SolrQuery getIdSolrQuery(String solrField, String fieldValue, int pageSize) {
+        SolrQuery query = new SolrQuery();
+        query.setQuery(solrField + ":\"" + fieldValue + "\"");
+        query.setRows(pageSize);
+        query.setFields("id");
+        return query;
+    }
+
+    /**
+     * Touch a related DS-Record in the backing DS-Storage extracting the ID from a given solr document and use that ID when querying the DS-StorageClient
+     * @param doc solr document to extract ID from.
+     */
+    private static RecordsCountDto touchStorageRecords(SolrDocument doc) {
+        // For each document in the result, touch its ds-storage record.
+        String id = (String) doc.getFieldValue("id");
+        log.debug("Touching DS-storage record with id: '{}'", id);
+        return storageClient.touchRecord(id);
     }
 }
