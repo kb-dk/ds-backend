@@ -1,6 +1,8 @@
 package dk.kb.license.integrationtest;
 
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.facade.RightsModuleFacade;
+import dk.kb.license.model.v1.RestrictedIdInputDto;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.DsLicenseUnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
@@ -42,7 +44,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     @Test
     @Tag("integration")
     public void testQueryLookupForProductionId() {
-        int touchedRecords = storage.touchRelatedStorageRecords("9213145700", "dr_produktions_id");
+        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("9213145700", "dr_produktions_id");
 
         // Currently there are five records for this productionId in solr
         assertTrue(touchedRecords > 4);
@@ -51,7 +53,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     @Test
     @Tag("integration")
     public void testQueryLookupForId() {
-        int touchedRecords = storage.touchRelatedStorageRecords("ds.tv:oai:io:5a888d7d-3c0d-4375-9e67-343d88d1dbd9", "ds_id");
+        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("ds.tv:oai:io:5a888d7d-3c0d-4375-9e67-343d88d1dbd9", "ds_id");
 
         assertEquals(1, touchedRecords);
     }
@@ -59,7 +61,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     @Test
     @Tag("integration")
     public void testQueryLookupForTitle() {
-        int touchedRecords = storage.touchRelatedStorageRecords("Øen", "strict_title");
+        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("Øen", "strict_title");
         log.info("touched '{}' records", touchedRecords);
 
 
@@ -70,7 +72,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     @Tag("slow")
     @Tag("integration")
     public void testQueryLookupForProductionCode() {
-        int touchedRecords = storage.touchRelatedStorageRecords("3200", "egenproduktions_kode");
+        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("3200", "egenproduktions_kode");
 
         assertTrue(touchedRecords > 2500);
     }
@@ -79,7 +81,18 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     @Tag("integration")
     public void testTouchNonExistingRecordInStorage() throws SQLException {
         assertThrows(InvalidArgumentServiceException.class,  () -> {
-            storage.touchRelatedStorageRecords("some-non-existing-ds-id", "ds_id");
+            RightsModuleFacade.touchRelatedStorageRecords("some-non-existing-ds-id", "ds_id");
         });
+    }
+
+    @Test
+    @Tag("integration")
+    public void testCreateAndDeleteRestrictedId() throws Exception {
+        RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
+        restrictedId.setIdValue("ds.tv:oai:io:e027e1dc-5006-4f54-b2b7-ec451940c500");
+        restrictedId.setIdType("ds_id");
+        restrictedId.setPlatform("dr");
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),true);
+        RightsModuleFacade.createRestrictedId(restrictedId,"test",true);
     }
 }
