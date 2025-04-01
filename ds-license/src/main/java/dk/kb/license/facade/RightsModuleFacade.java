@@ -70,6 +70,15 @@ public class RightsModuleFacade {
         });
     }
 
+    /**
+     * Delete the resticted id
+     *
+     * @param id value of the id
+     * @param idType
+     * @param platform the platform
+     * @param touchDsStorageRecord
+     * @throws Exception
+     */
     public static void deleteRestrictedId(String id, String idType, String platform, boolean touchDsStorageRecord) throws Exception {
         BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).deleteRestrictedId(id, idType, platform);
