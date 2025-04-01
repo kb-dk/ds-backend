@@ -26,6 +26,8 @@ import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.license.model.v1.GetUsersLicensesInputDto;
 import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
+import dk.kb.license.model.v1.RightsCalculationInputDto;
+import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.model.v1.ValidateAccessInputDto;
 import dk.kb.license.model.v1.ValidateAccessOutputDto;
 import dk.kb.util.webservice.Service2ServiceRequest;
@@ -300,6 +302,31 @@ public class DsLicenseClient{
                             checkAccessForIds(inputDTO) :
                             checkAccessForResourceIds(inputDTO);                                    
             });       
+    }
+
+    /**
+     * Calculates the rights based on the provided input data.
+     * <br/>
+     * This method sends a POST request to the rights calculation endpoint.
+     * It expects an input DTO containing the necessary information for rights calculation
+     * and returns the corresponding output DTO with the results.
+     *
+     * @param inputDto the input DTO containing the parameters for rights calculation.
+     * @return RightsCalculationOutputDto the output DTO containing the results of the rights calculation.
+     * @throws ServiceException if the remote call fails or if there is an error in constructing the request URI.
+     */
+    public RightsCalculationOutputDto calculateRights(RightsCalculationInputDto inputDto) throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                    .appendPathSegments("rights", "calculate")
+                    .build();
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"POST", new RightsCalculationOutputDto(), inputDto);
+        }
+        catch (URISyntaxException e) {
+            log.error("Invalid url: '{}'", e.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
+
     }
 
 }
