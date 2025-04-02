@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ServiceConfig singleton as in other ds-modules. SolrManager will no longer automatic register changes in configuration. If solr collection name  or url is changed, ds-discover most be restarted
 - SolrShield disabled since configuration is not initialised. see: https://kb-dk.atlassian.net/browse/DRA-1788
 
-
 ## [1.5.3](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.3) - 2025-03-20
 ### Changed
 - SolrShield now enabled by default.
@@ -24,7 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed /api-docs wrongly showing petstore example API spec.
 - Fixed resolving of same jars from multiple locations.
-
 
 ## [1.5.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.5.2) - 2025-03-05
 
