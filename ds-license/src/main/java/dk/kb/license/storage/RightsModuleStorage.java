@@ -213,6 +213,13 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+    /**
+     * Get all restricted Ids from the database
+     *
+     * @param idType add clause on this idType
+     * @param platform add clause on this platform
+     * @return
+     */
     public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) throws SQLException {
         StringBuilder query = new StringBuilder(allRestrictedIdsQuery);
         if (!StringUtils.isEmpty(idType)) {

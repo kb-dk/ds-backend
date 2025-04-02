@@ -150,8 +150,10 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Fetch a list of all restricted IDs.
+     * Get all restricted Ids
      *
+     * @param idType only get restricedIds with this idType
+     * @param platform only get retstrictedIds for this platform
      * @return
      */
     public static List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) {
