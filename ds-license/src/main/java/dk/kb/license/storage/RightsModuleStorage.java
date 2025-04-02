@@ -4,6 +4,7 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.DrHoldbackRangeMappingDto;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,8 +213,32 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    public List<RestrictedIdOutputDto> getAllRestrictedIds() throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(allRestrictedIdsQuery)) {
+    public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) throws SQLException {
+        StringBuilder query = new StringBuilder(allRestrictedIdsQuery);
+        if (!StringUtils.isEmpty(idType)) {
+            query.append(" WHERE ");
+            query.append(RESTRICTED_ID_IDTYPE);
+            query.append(" = ?");
+        }
+        if (!StringUtils.isEmpty(platform)) {
+            if (!StringUtils.isEmpty(idType)) {
+                query.append(" AND ");
+            } else {
+                query.append(" WHERE ");
+            }
+            query.append(RESTRICTED_ID_PLATFORM);
+            query.append(" = ?");
+        }
+
+
+        try (PreparedStatement stmt = connection.prepareStatement(query.toString())) {
+            int paramIndex = 1;
+            if (!StringUtils.isEmpty(idType)) {
+                stmt.setString(paramIndex++, idType);
+            }
+            if (!StringUtils.isEmpty(platform)) {
+                stmt.setString(paramIndex, platform);
+            }
             ResultSet res = stmt.executeQuery();
             List<RestrictedIdOutputDto> output = new ArrayList<>();
             while (res.next()) {
