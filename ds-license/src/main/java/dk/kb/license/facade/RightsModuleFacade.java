@@ -154,8 +154,8 @@ public class RightsModuleFacade {
      *
      * @return
      */
-    public static List<RestrictedIdOutputDto> getAllRestrictedIds() {
-        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds());
+    public static List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) {
+        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType,platform));
     }
 
     /**

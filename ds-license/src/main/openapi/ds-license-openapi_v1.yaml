@@ -201,7 +201,7 @@ paths:
       parameters:
         - name: idType
           in: query
-          description: filter on IdType
+          description: Filter on idType
           schema:
             type: string
           examples:
@@ -215,7 +215,7 @@ paths:
               value: "strict_title"
         - name: platform
           in: query
-          description: filter on platform
+          description: Filter On platform
           schema:
             type: string
           example: "dr"

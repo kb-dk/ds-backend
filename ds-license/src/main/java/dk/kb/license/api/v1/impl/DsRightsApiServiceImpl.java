@@ -82,7 +82,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) {
         try {
-            return RightsModuleFacade.getAllRestrictedIds();
+            return RightsModuleFacade.getAllRestrictedIds(idType,platform);
         } catch (Exception e) {
             throw handleException(e);
         }
