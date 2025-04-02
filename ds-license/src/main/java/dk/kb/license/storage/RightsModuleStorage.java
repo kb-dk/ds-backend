@@ -49,7 +49,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             RESTRICTED_ID_IDVALUE +" = ? AND " +
             RESTRICTED_ID_IDTYPE +" = ?" ;
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
-    private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE;
+    private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDTYPE + " LIKE ? AND " + RESTRICTED_ID_PLATFORM + " LIKE ?";
 
     private final String DR_HOLDBACK_RULES_TABLE = "DR_HOLDBACK_RULES";
     private final String DR_HOLDBACK_RULES_ID = "id";
@@ -221,31 +221,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @return
      */
     public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) throws SQLException {
-        StringBuilder query = new StringBuilder(allRestrictedIdsQuery);
-        if (!StringUtils.isEmpty(idType)) {
-            query.append(" WHERE ");
-            query.append(RESTRICTED_ID_IDTYPE);
-            query.append(" = ?");
-        }
-        if (!StringUtils.isEmpty(platform)) {
-            if (!StringUtils.isEmpty(idType)) {
-                query.append(" AND ");
-            } else {
-                query.append(" WHERE ");
-            }
-            query.append(RESTRICTED_ID_PLATFORM);
-            query.append(" = ?");
-        }
+        try (PreparedStatement stmt = connection.prepareStatement(allRestrictedIdsQuery)) {
+            stmt.setString(1,StringUtils.isEmpty(idType) ? "%" : idType);
+            stmt.setString(2,StringUtils.isEmpty(platform) ? "%" : platform);
 
-
-        try (PreparedStatement stmt = connection.prepareStatement(query.toString())) {
-            int paramIndex = 1;
-            if (!StringUtils.isEmpty(idType)) {
-                stmt.setString(paramIndex++, idType);
-            }
-            if (!StringUtils.isEmpty(platform)) {
-                stmt.setString(paramIndex, platform);
-            }
             ResultSet res = stmt.executeQuery();
             List<RestrictedIdOutputDto> output = new ArrayList<>();
             while (res.next()) {
