@@ -1,5 +1,9 @@
 package dk.kb.present.util;
 
+import dk.kb.license.model.v1.HoldbackCalculationInputDto;
+import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
+import dk.kb.license.model.v1.RightsCalculationInputDto;
+
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,6 +128,43 @@ public class ExtractedPreservicaValues {
         }
 
         return paths;
+    }
+
+    /**
+     * Converts the current object's data into a {@link RightsCalculationInputDto} instance.
+     * <p>
+     * This method initializes a new {@link RightsCalculationInputDto} and populates it with
+     * data from the current object, including holdback and restrictions information.
+     * The method sets various properties of the holdback and restrictions DTOs based on
+     * the current object's state and the provided platform.
+     *<p/>
+     * @param platform the platform for which the rights calculation input DTO is being created.
+     * @param dsOrigin the origin of the record in the DS system.
+     * @return a {@link RightsCalculationInputDto} populated with the current object's data.
+     */
+    public RightsCalculationInputDto asRightsCalculationInputDto(RightsCalculationInputDto.PlatformEnum platform, String dsOrigin) {
+        RightsCalculationInputDto rightsInputDto = new RightsCalculationInputDto();
+
+        HoldbackCalculationInputDto holdbackInputDto = new HoldbackCalculationInputDto();
+        RestrictionsCalculationInputDto restrictionsDto = new RestrictionsCalculationInputDto();
+
+        holdbackInputDto.setIndhold(Integer.parseInt(getContent()));
+        holdbackInputDto.setForm(Integer.parseInt(getFormValue()));
+        holdbackInputDto.setProductionCountry(Integer.parseInt(getOriginCountry()));
+        holdbackInputDto.setHensigt(Integer.parseInt(getPurpose()));
+        // TODO: THIS IS DS ORIGIN AND CANNOT BE SET HERE WITHOUT PROVIDING THE ORIGIN AS INPUT
+        holdbackInputDto.setOrigin(dsOrigin);
+
+        restrictionsDto.setRecordId(getId());
+        restrictionsDto.setDrProductionId(getProductionId());
+        restrictionsDto.setProductionCode(getOrigin());
+
+        rightsInputDto.setStartTime(getStartTime());
+        rightsInputDto.setRecordId(getId());
+        rightsInputDto.setPlatform(platform);
+        rightsInputDto.setHoldbackInput(holdbackInputDto);
+        rightsInputDto.setRestrictionsInput(restrictionsDto);
+        return rightsInputDto;
     }
 
     @Override

@@ -14,6 +14,9 @@
  */
 package dk.kb.present;
 
+import dk.kb.license.model.v1.RightsCalculationInputDto;
+import dk.kb.license.model.v1.RightsCalculationOutputDto;
+import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.dr.holdback.HoldbackObject;
 import dk.kb.present.dr.holdback.HoldbackDatePicker;
@@ -182,18 +185,26 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
+
+        String url = ServiceConfig.getConfig().getString("licensemodule.url");
+        DsLicenseClient licenseClient = new DsLicenseClient(url);
+
+        RightsCalculationInputDto.PlatformEnum platform = RightsCalculationInputDto.PlatformEnum.DRARKIV;
+        RightsCalculationOutputDto rightsOutput = licenseClient.calculateRights(extractedValues.asRightsCalculationInputDto(platform, record.getOrigin()));
+
+
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         // The following three methods are all related to holdback and ownproduction calculations.
         updateMetadataMapWithFormAndContent(metadata, extractedValues);
         updateMetadataMapWithProductionCode(metadata, extractedValues);
-        updateMetadataMapWithHoldback(record, metadata, extractedValues);
+        updateMetadataMapWithDrHoldback(metadata, rightsOutput);
         updateMetadataMapWithPreservicaManifestation(record, metadata);
 
         if (!extractedValues.getProductionId().isEmpty()){
             metadata.put("productionId", extractedValues.getProductionId());
             // Check if production ID is restricted from DR.
             log.debug("Performing productionID lookup for id: '{}' in DR restricted ID list.", extractedValues.getProductionId());
-            metadata.put("productionIdRestrictedDr", String.valueOf(ProductionIdLookup.getInstance().doLookup(extractedValues.getProductionId())));
+            metadata.put("productionIdRestrictedDr", String.valueOf(rightsOutput.getDr().getDrIdRestricted()));
         }
     }
 
@@ -323,6 +334,11 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void updateMetadataMapWithDrHoldback(Map<String, String> metadata, RightsCalculationOutputDto rightsOutputDto){
+        metadata.put("holdbackDate", rightsOutputDto.getDr().getHoldbackExpiredDate());
+        metadata.put("holdbackPurposeName", rightsOutputDto.getDr().getHoldbackName());
     }
 
     /**
