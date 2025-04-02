@@ -612,26 +612,22 @@ public class RightsModuleFacade {
     private static void validateDrProductionIdFormat(RestrictedIdInputDto inputDto) {
         String productionId = inputDto.getIdValue();
 
-        // Boolean to check if the first step has made any changes to the ID.
-        boolean hasBeenChanged = false;
-
-        // Remove prefix zeroes
-        while (productionId.startsWith("0")) {
-            productionId = productionId.substring(1);
-            hasBeenChanged = true;
-        }
-
         // Some production IDs are on the correct formula already, as they are derived by hand in our system. therefore,
         // if an ID is 10 digits long an ends with two zeros, they are already correct.
         if (productionId.endsWith("00") && productionId.length() == 10){
             inputDto.setIdValue(productionId);
+            return;
         }
 
-        // Wrap in hasBeenChanged boolean to make sure that extra zeros aren't added if ID is already correct
-        if (hasBeenChanged){
-            // Add another zero to
-            productionId = productionId + "0" ;
+        // Remove prefix zeroes
+        while (productionId.startsWith("0")) {
+            productionId = productionId.substring(1);
         }
+
+
+        // Add another zero to
+        productionId = productionId + "0" ;
+
         inputDto.setIdValue(productionId);
     }
 
