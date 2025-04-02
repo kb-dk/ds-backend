@@ -106,6 +106,12 @@ public class RightsModuleFacade {
     public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
         validatePlatformAndIdType(restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getIdType());
         validateCommentLength(restrictedIdInputDto);
+
+        if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
+            validateDrProductionIdFormat(restrictedIdInputDto);
+        }
+
+
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).updateRestrictedId(
                     restrictedIdInputDto.getIdValue(),
@@ -134,6 +140,11 @@ public class RightsModuleFacade {
             for (RestrictedIdInputDto id : restrictedIds) {
                 validatePlatformAndIdType(id.getPlatform(), id.getIdType());
                 validateCommentLength(id);
+
+                if (id.getIdType().equals("dr_produktions_id")){
+                    validateDrProductionIdFormat(id);
+                }
+
 
                 ((RightsModuleStorage) storage).createRestrictedId(
                         id.getIdValue(),
