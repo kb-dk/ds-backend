@@ -10,7 +10,7 @@
     <name>ds-discover</name> <!-- Human readable name, uppercase and spaces welcome -->
     <groupId>dk.kb.discover</groupId>
     <artifactId>ds-discover</artifactId>
-    <version>1.5.3-SNAPSHOT</version>
+    <version>1.5.4-SNAPSHOT</version>
     
     <packaging>war</packaging>
     <description>ds-discover by the Royal Danish Library</description>
