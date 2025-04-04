@@ -87,7 +87,7 @@ solr:
 
           start:
             weightFactor: 0.01 # Multiplied to value
-            maxValue: 1000     # Hard limit
+            maxValue: 2000     # Hard limit
 
           # Zero cost arguments
           q.op:
