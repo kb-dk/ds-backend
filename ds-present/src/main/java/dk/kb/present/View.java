@@ -192,11 +192,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         RightsCalculationInputDto.PlatformEnum platform = RightsCalculationInputDto.PlatformEnum.DRARKIV;
         RightsCalculationOutputDto rightsOutput = licenseClient.calculateRights(extractedValues.asRightsCalculationInputDto(platform, record.getOrigin()));
 
-
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         // The following three methods are all related to holdback and ownproduction calculations.
         updateMetadataMapWithFormAndContent(metadata, extractedValues);
-        updateMetadataMapWithProductionCode(metadata, extractedValues);
+        updateMetadataMapWithProductionCodeDr(metadata, extractedValues.getOrigin(), rightsOutput);
         updateMetadataMapWithDrHoldback(metadata, rightsOutput);
         updateMetadataMapWithPreservicaManifestation(record, metadata);
 
@@ -250,6 +249,39 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         if (!productionCode.isEmpty()) {
             // Values below 2000 are considered own production. It can in fact be co-production, but these should all be covered by the rights-agreement made.
             boolean allowedProductionCode = Integer.parseInt(productionCode) <= ServiceConfig.getMaxAllowedProductionCode();
+            metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
+            metadataMap.put("productionCodeValue", productionCode);
+        } else if (origin.equals("ds.radio")){
+            metadataMap.put("productionCodeAllowed", "true");
+        }
+    }
+
+    /**
+     * Updates the provided metadata map with the production code information based on the given parameters.
+     * <p>
+     * This method checks the validity of the production code and updates the metadata map accordingly.
+     * If the production code is empty and the origin is "ds.tv", a debug message is logged indicating
+     * that the own production cannot be calculated. If the production code does not have a length of 4,
+     * a debug message is logged to indicate potential issues with the production code allowance calculation.
+     * <p>
+     * If the production code is valid (not empty), it checks if the production code is allowed based on
+     * the rights output and updates the metadata map with the corresponding values. If the origin is "ds.radio"
+     * it sets the production code allowance to true in the metadata map no matter what.
+     *
+     * @param metadataMap the map to be updated with production code information.
+     * @param productionCode the production code to be validated and used for updating the metadata map.
+     * @param rightsOutput the {@link RightsCalculationOutputDto} containing rights information related to the production code.
+     */
+    private void updateMetadataMapWithProductionCodeDr(Map<String, String> metadataMap, String productionCode, RightsCalculationOutputDto rightsOutput){
+        if (productionCode.isEmpty() && origin.equals("ds.tv")) {
+            // Logging at denug as we have lots of records without this information
+            log.debug("Nielsen/Gallup origin was empty. Own production can not be calculated.");
+        } else if (productionCode.length() != 4){
+            log.debug("Nielsen/Gallup origin did not have length 4. Production code allowance will not be calculated correctly. Origin is: '{}'", productionCode);
+        }
+
+        if (!productionCode.isEmpty()) {
+            boolean allowedProductionCode = rightsOutput.getDr().getProductionCodeAllowed();
             metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
             metadataMap.put("productionCodeValue", productionCode);
         } else if (origin.equals("ds.radio")){
@@ -338,7 +370,16 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     private void updateMetadataMapWithDrHoldback(Map<String, String> metadata, RightsCalculationOutputDto rightsOutputDto){
         metadata.put("holdbackDate", rightsOutputDto.getDr().getHoldbackExpiredDate());
-        metadata.put("holdbackPurposeName", rightsOutputDto.getDr().getHoldbackName());
+
+        String holdbackName = rightsOutputDto.getDr().getHoldbackName();
+
+        if (holdbackName == null || holdbackName.isEmpty()){
+            metadata.put("holdbackPurposeName", "");
+        } else {
+            metadata.put("holdbackPurposeName", rightsOutputDto.getDr().getHoldbackName());
+
+        }
+
     }
 
     /**

@@ -148,11 +148,12 @@ public class ExtractedPreservicaValues {
         HoldbackCalculationInputDto holdbackInputDto = new HoldbackCalculationInputDto();
         RestrictionsCalculationInputDto restrictionsDto = new RestrictionsCalculationInputDto();
 
-        holdbackInputDto.setIndhold(Integer.parseInt(getContent()));
-        holdbackInputDto.setForm(Integer.parseInt(getFormValue()));
-        holdbackInputDto.setProductionCountry(Integer.parseInt(getOriginCountry()));
-        holdbackInputDto.setHensigt(Integer.parseInt(getPurpose()));
-        // TODO: THIS IS DS ORIGIN AND CANNOT BE SET HERE WITHOUT PROVIDING THE ORIGIN AS INPUT
+
+        holdbackInputDto.setIndhold(parseIntWithDefaultZero(getContent()));
+        holdbackInputDto.setForm(parseIntWithDefaultZero(getFormValue()));
+        holdbackInputDto.setProductionCountry(parseIntWithDefaultZero(getOriginCountry()));
+        holdbackInputDto.setHensigt(parseIntWithDefaultZero(getPurpose()));
+
         holdbackInputDto.setOrigin(dsOrigin);
 
         restrictionsDto.setRecordId(getId());
@@ -165,6 +166,14 @@ public class ExtractedPreservicaValues {
         rightsInputDto.setHoldbackInput(holdbackInputDto);
         rightsInputDto.setRestrictionsInput(restrictionsDto);
         return rightsInputDto;
+    }
+
+    private int parseIntWithDefaultZero(String value) {
+        if (value == null || value.isEmpty()) {
+            return 0;
+        }
+
+        return Integer.parseInt(value);
     }
 
     @Override
