@@ -258,15 +258,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     /**
      * Updates the provided metadata map with the production code information based on the given parameters.
-     * <p>
-     * This method checks the validity of the production code and updates the metadata map accordingly.
-     * If the production code is empty and the origin is "ds.tv", a debug message is logged indicating
-     * that the own production cannot be calculated. If the production code does not have a length of 4,
-     * a debug message is logged to indicate potential issues with the production code allowance calculation.
-     * <p>
-     * If the production code is valid (not empty), it checks if the production code is allowed based on
-     * the rights output and updates the metadata map with the corresponding values. If the origin is "ds.radio"
-     * it sets the production code allowance to true in the metadata map no matter what.
      *
      * @param metadataMap the map to be updated with production code information.
      * @param productionCode the production code to be validated and used for updating the metadata map.
@@ -368,6 +359,12 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     }
 
+    /**
+     * Updates the provided metadata map with holdback information from the rights output DTO.
+     *
+     * @param metadata the map to be updated with holdback information.
+     * @param rightsOutputDto the {@link RightsCalculationOutputDto} containing holdback details.
+     */
     private void updateMetadataMapWithDrHoldback(Map<String, String> metadata, RightsCalculationOutputDto rightsOutputDto){
         metadata.put("holdbackDate", rightsOutputDto.getDr().getHoldbackExpiredDate());
 
@@ -379,7 +376,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadata.put("holdbackPurposeName", rightsOutputDto.getDr().getHoldbackName());
 
         }
-
     }
 
     /**
