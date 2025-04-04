@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.concurrent.*;
 
-import static dk.kb.present.TestUtil.prettyPrintJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 /*
@@ -86,7 +85,6 @@ class ViewTest {
 
 
         String jsonld = jsonldView.apply(recordDto);
-        prettyPrintJson(jsonld);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"2023-01-01T00:00:00Z\""));
         assertTrue(jsonld.contains("\"@type\":\"PropertyValue\"," +
@@ -238,7 +236,6 @@ class ViewTest {
 
         String jsonld = jsonldView.apply(recordDto);
 
-        prettyPrintJson(jsonld);
         assertTrue(jsonld.contains("\"kb:production_code_allowed\":true," +
                                     "\"kb:production_code_value\":1000"));
     }
@@ -252,7 +249,6 @@ class ViewTest {
                 .mTime(1701261949625000L).origin("ds.radio").kalturaId("randomKalturaId");
 
         String solrDoc = solrView.apply(recordDto);
-        prettyPrintJson(solrDoc);
         assertTrue(solrDoc.contains("\"production_code_allowed\":\"true\""));
     }
 
@@ -267,7 +263,6 @@ class ViewTest {
 
 
         String jsonld = jsonldView.apply(recordDto);
-        prettyPrintJson(jsonld);
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"2029-01-01T00:00:00Z\"," +
                 "\"kb:holdback_name\":\"Underholdning\""));
     }
