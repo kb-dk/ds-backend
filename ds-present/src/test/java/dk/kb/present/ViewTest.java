@@ -88,7 +88,7 @@ class ViewTest {
         String jsonld = jsonldView.apply(recordDto);
         prettyPrintJson(jsonld);
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
-        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2022-07-06T08:05:00Z\""));
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2023-01-01T00:00:00Z\""));
         assertTrue(jsonld.contains("\"@type\":\"PropertyValue\"," +
                                     "\"PropertyID\":\"KalturaID\"," +
                                     "\"value\":\"randomKalturaId\""));
@@ -176,7 +176,7 @@ class ViewTest {
     @Tag("integration")
     void testConcurrency() throws InterruptedException, ExecutionException, IOException {
         HoldbackDatePicker.init();
-        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED);
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML tvConf = conf.getYAMLList(".origins").get(3);
 
@@ -189,7 +189,7 @@ class ViewTest {
             try {
                 View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
                         tvConf.getSubMap("\"ds.tv\"").getString("origin"));
-                DsRecordDto recordDto = new DsRecordDto().data(pvica).mTimeHuman("2023-11-29 13:45:49+0100").id("test.id1").mTime(1701111111111000L);
+                DsRecordDto recordDto = new DsRecordDto().data(pvica).mTimeHuman("2023-11-29 13:45:49+0100").id("test.id1").mTime(1701111111111000L).origin("ds.tv");
                 readyLatch.countDown();
                 startLatch.await();
                 String result = solrView.apply(recordDto);
@@ -203,7 +203,7 @@ class ViewTest {
             try {
                 View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
                         tvConf.getSubMap("\"ds.tv\"").getString("origin"));
-                DsRecordDto recordDto = new DsRecordDto().data(pvica).mTimeHuman("2023-11-30 13:45:49+0100").id("test.id2").mTime(1702222222222000L);
+                DsRecordDto recordDto = new DsRecordDto().data(pvica).mTimeHuman("2023-11-30 13:45:49+0100").id("test.id2").mTime(1702222222222000L).origin("ds.tv");
                 readyLatch.countDown();
                 startLatch.await();
                 String result = solrView.apply(recordDto);
@@ -225,6 +225,7 @@ class ViewTest {
         executorService.shutdown();
     }
 
+
     @Test
     @Tag("integration")
     void ownProductionTrueTestTvmeter() throws Exception {
@@ -237,6 +238,7 @@ class ViewTest {
 
         String jsonld = jsonldView.apply(recordDto);
 
+        prettyPrintJson(jsonld);
         assertTrue(jsonld.contains("\"kb:production_code_allowed\":true," +
                                     "\"kb:production_code_value\":1000"));
     }
@@ -265,7 +267,8 @@ class ViewTest {
 
 
         String jsonld = jsonldView.apply(recordDto);
-        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2024-02-27T04:49:52Z\"," +
+        prettyPrintJson(jsonld);
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2029-01-01T00:00:00Z\"," +
                 "\"kb:holdback_name\":\"Underholdning\""));
     }
     @Test
