@@ -54,6 +54,11 @@ public class RightsModuleFacade {
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
         validatePlatformAndIdType(restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getIdType());
+        
+        if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
+            validateDrProductionIdFormat(restrictedIdInputDto);
+        }
+        
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).createRestrictedId(
                     restrictedIdInputDto.getIdValue(),
@@ -101,6 +106,12 @@ public class RightsModuleFacade {
     public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
         validatePlatformAndIdType(restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getIdType());
         validateCommentLength(restrictedIdInputDto);
+
+        if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
+            validateDrProductionIdFormat(restrictedIdInputDto);
+        }
+
+
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).updateRestrictedId(
                     restrictedIdInputDto.getIdValue(),
@@ -129,6 +140,11 @@ public class RightsModuleFacade {
             for (RestrictedIdInputDto id : restrictedIds) {
                 validatePlatformAndIdType(id.getPlatform(), id.getIdType());
                 validateCommentLength(id);
+
+                if (id.getIdType().equals("dr_produktions_id")){
+                    validateDrProductionIdFormat(id);
+                }
+
 
                 ((RightsModuleStorage) storage).createRestrictedId(
                         id.getIdValue(),
@@ -583,6 +599,38 @@ public class RightsModuleFacade {
         String id = (String) doc.getFieldValue("id");
         log.debug("Touching DS-storage record with id: '{}'", id);
         return storageClient.touchRecord(id);
+    }
+
+    /**
+     * Validates and formats the production ID in the given {@link RestrictedIdInputDto}.
+     * <p>
+     * This method removes leading zeros from the production ID and checks if the ID is
+     * already in the correct format. If the production ID is 10 digits long and ends with
+     * two zeros, it is considered valid and is set back on the input DTO. If not, a zero
+     * is appended to the production ID before updating the input DTO.
+     *
+     * @param inputDto the {@link RestrictedIdInputDto} containing the production ID to be validated.
+     */
+    private static void validateDrProductionIdFormat(RestrictedIdInputDto inputDto) {
+        String productionId = inputDto.getIdValue();
+
+        // Some production IDs are on the correct formula already, as they are derived by hand in our system. therefore,
+        // if an ID is 10 digits long an ends with two zeros, they are already correct.
+        if (productionId.endsWith("00") && productionId.length() == 10){
+            inputDto.setIdValue(productionId);
+            return;
+        }
+
+        // Remove prefix zeroes
+        while (productionId.startsWith("0")) {
+            productionId = productionId.substring(1);
+        }
+
+
+        // Add another zero to
+        productionId = productionId + "0" ;
+
+        inputDto.setIdValue(productionId);
     }
 
 }

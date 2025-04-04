@@ -3,6 +3,7 @@ package dk.kb.license.integrationtest;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.RestrictedIdInputDto;
+import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.DsLicenseUnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
@@ -94,5 +95,56 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setPlatform("dr");
         RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),true);
         RightsModuleFacade.createRestrictedId(restrictedId,"test",true);
+    }
+
+    @Test
+    @Tag("integration")
+    public void testCreateGetAndDeleteRestrictedProductionIdPrefixedZeros() throws Exception {
+        RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
+        restrictedId.setIdValue("00123466486");
+        restrictedId.setIdType("dr_produktions_id");
+        restrictedId.setPlatform("dr");
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),false);
+
+
+        RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
+        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", "dr");
+
+        assertEquals("1234664860", outputRight.getIdValue());
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),false);
+    }
+
+    @Test
+    @Tag("integration")
+    public void testCreateGetAndDeleteRestrictedProductionIdCorrectFormat() throws Exception {
+        RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
+        restrictedId.setIdValue("1234664800");
+        restrictedId.setIdType("dr_produktions_id");
+        restrictedId.setPlatform("dr");
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),false);
+
+
+        RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
+        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", "dr");
+
+        assertEquals("1234664800", outputRight.getIdValue());
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),false);
+    }
+
+    @Test
+    @Tag("integration")
+    public void testCreateGetAndDeleteRestrictedProductionId() throws Exception {
+        RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
+        restrictedId.setIdValue("1234664899");
+        restrictedId.setIdType("dr_produktions_id");
+        restrictedId.setPlatform("dr");
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),false);
+
+
+        RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
+        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", "dr");
+
+        assertEquals("1234664899", outputRight.getIdValue());
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),false);
     }
 }
