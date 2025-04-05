@@ -64,8 +64,10 @@ When adding fields to this schema please have the following guidelines in mind:
        Rename own_production_code to production_code_value.
 1.7.9: Add genre_facet as facet field in configuration.
 1.7.10: Add boolean field ds_id_restricted.
+1.7.11: Fixed use of synonyms filer (SynonymGraphFilterFactory). Require also query filter.
+
   -->
-  <field name="_ds_1.7.10_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.7.11_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -425,7 +427,7 @@ When adding fields to this schema please have the following guidelines in mind:
     <?description The name of the subject written as given name family name.?>
     <?example     John R. Johnsen?>
   </field>
-
+ 
   <field name="subject_full_name_strict" type="text_strict" multiValued="true">
     <?description The name of the subject written as givenName familyName.
                   This is a strict field, which produces a better ranking when querying.?>
@@ -1220,7 +1222,7 @@ When adding fields to this schema please have the following guidelines in mind:
     <analyzer type="index">
        <tokenizer class="solr.StandardTokenizerFactory"/>
        <filter class="solr.LowerCaseFilterFactory"/>
-       <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>
+       <filter class="solr.SynonymFilterFactory" synonyms="lang/dr_synonyms.txt" ignoreCase="true"/>
        <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
        
     </analyzer>
@@ -1288,7 +1290,7 @@ When adding fields to this schema please have the following guidelines in mind:
       <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
       <filter class="solr.LowerCaseFilterFactory"/>
       <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_da.txt" format="snowball"/>
-      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/dr_synonyms.txt"/>
+      <filter class="solr.SynonymFilterFactory" synonyms="lang/dr_synonyms.txt"/>
       <filter class="solr.FlattenGraphFilterFactory"/> <!-- required on index analyzers after graph filters -->
     </analyzer>
     <analyzer type="query">
