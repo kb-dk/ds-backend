@@ -92,7 +92,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdValue("ds.tv:oai:io:e027e1dc-5006-4f54-b2b7-ec451940c500");
         restrictedId.setIdType("ds_id");
         restrictedId.setPlatform("dr");
-        RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),true);
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),"test",true);
         RightsModuleFacade.createRestrictedId(restrictedId,"test",true);
     }
 }
