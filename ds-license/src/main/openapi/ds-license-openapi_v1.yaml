@@ -1035,27 +1035,27 @@ components:
       properties:
         id:
           type: string
-        content_range_from:
+        contentRangeFrom:
           type: integer
-        content_range_to:
+        contentRangeTo:
           type: integer
-        form_range_from:
+        formRangeFrom:
           type: integer
-        form_range_to:
+        formRangeTo:
           type: integer
-        dr_holdback_id:
+        drHoldbackId:
           type: string
 
     DrHoldbackRangeMappingInput:
       type: object
       properties:
-        content_range_from:
+        contentRangeFrom:
           type: integer
-        content_range_to:
+        contentRangeTo:
           type: integer
-        form_range_from:
+        formRangeFrom:
           type: integer
-        form_range_to:
+        formRangeTo:
           type: integer
 
     HelloReply:
