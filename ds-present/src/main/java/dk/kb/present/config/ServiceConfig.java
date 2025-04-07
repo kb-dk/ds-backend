@@ -26,6 +26,8 @@ public class ServiceConfig {
      */
     private static int maxAllowedProductionCode;
 
+    private static int holdbackLogicChangeDays;
+
     /**
      * Initialized the configuration from the provided configFiles.
      * This should normally be called from {@link dk.kb.present.webservice.ContextListener} as
@@ -38,6 +40,7 @@ public class ServiceConfig {
         serviceConfig.setExtrapolate(true);
 
         maxAllowedProductionCode = setValidProductionCode();
+        holdbackLogicChangeDays  = serviceConfig.getInteger("dr.holdbackLogicChangeDays", 365);
     }
 
     /**
@@ -86,5 +89,13 @@ public class ServiceConfig {
 
     public static int getMaxAllowedProductionCode() {
         return maxAllowedProductionCode;
+    }
+
+    /**
+     * Get the configurable value which defines when the holdback logic changes from being calculated from the start time
+     * of the record to being calculated from the 1st of January the following year.
+     */
+    public static int getHoldbackLogicChangeDays() {
+        return holdbackLogicChangeDays;
     }
 }

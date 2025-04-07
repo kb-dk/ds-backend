@@ -10,15 +10,15 @@ linie => linje
 fælleskab => fællesskab
 diciplin => disciplin
 
-# Collapse several terms into one (in this case a multiterm)
-tv-avisen, tva, tvavis, tvavisen, tv-avis, tv avis, tv-avis-sen, tv-a visen => tv avisen
-frank og kastanjegården, kastanjegården, kastanjegård => bondeknolden
-følg pengene => sorte tal
-krop og bevægelse => morgengymnastik
-løvens hule => visionærerne
-melodi grand prix -> mgp
-true crime  => lyssky
-bedøvende  => galt nok
+# No longer several words allowed since this breaks spellcheck.
+tv, avisen, tva, tvavis => tvavisen
+frank, kastanjegården, kastanjegård => bondeknolden
+pengene => sorte
+faktor => factor
+bevægelse => morgengymnastik
+løvens => visionærerne
+melodi, grand, prix => mgp
+true, crime  => lyssky
 genstart => dato
-bamsekylling, bamse kylling => bamse og kylling
-mors afskedsbrev, third ear, ruths hus  =>  mord i kultureliten
+bamsekylling => bamse
+afskedsbrev, third, ruths  =>  kultureliten
