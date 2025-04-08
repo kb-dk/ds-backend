@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,9 +161,15 @@ public class Util {
 				throw new InvalidArgumentServiceException("Field " + field.getName() + " is null");
 			}
 
+			// Validate that enums contains values.
+			if (field.getType() == RightsCalculationInputDto.PlatformEnum.class){
+				if (value.toString().isEmpty()){
+					throw new InvalidArgumentServiceException("Field " + field.getName() + " is null");
+				}
+			}
 
-			// If the field is an object, validate it as well
-			if (!isPrimitiveOrWrapper(field.getType())) {
+			// If the field is an object, validate it as well. Except if it is a PlatformEnum as enums creates stack overflow errors.
+			if (!isPrimitiveOrWrapper(field.getType()) && field.getType() != RightsCalculationInputDto.PlatformEnum.class) {
 				validateNonNull(value);
 			}
 		}
