@@ -41,11 +41,11 @@ public class RightsChangelogGenerator {
 
     private static String restrictedIdText(String id, String idType, String platform) {
         StringBuilder builder = new StringBuilder();
-        builder.append("Restricted ID - value:");
+        builder.append("Restricted ID - value: ");
         builder.append(id);
-        builder.append(" type:");
+        builder.append(" type: ");
         builder.append(idType);
-        builder.append(" platform:");
+        builder.append(" platform: ");
         builder.append(platform);
         return builder.toString();
     }

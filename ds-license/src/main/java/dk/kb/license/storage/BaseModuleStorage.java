@@ -226,8 +226,6 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * @return
      * @throws Exception
      */
-
-
     public AuditLog getAuditLog(long millis) throws IllegalArgumentException, SQLException {
 
 
