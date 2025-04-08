@@ -4,6 +4,7 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.DrHoldbackRangeMappingDto;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             RESTRICTED_ID_IDVALUE +" = ? AND " +
             RESTRICTED_ID_IDTYPE +" = ?" ;
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
-    private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE;
+    private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDTYPE + " LIKE ? AND " + RESTRICTED_ID_PLATFORM + " LIKE ?";
 
     private final String DR_HOLDBACK_RULES_TABLE = "DR_HOLDBACK_RULES";
     private final String DR_HOLDBACK_RULES_ID = "id";
@@ -212,8 +213,18 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-    public List<RestrictedIdOutputDto> getAllRestrictedIds() throws SQLException {
+    /**
+     * Get all restricted Ids from the database
+     *
+     * @param idType add clause on this idType
+     * @param platform add clause on this platform
+     * @return
+     */
+    public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(allRestrictedIdsQuery)) {
+            stmt.setString(1,StringUtils.isEmpty(idType) ? "%" : idType);
+            stmt.setString(2,StringUtils.isEmpty(platform) ? "%" : platform);
+
             ResultSet res = stmt.executeQuery();
             List<RestrictedIdOutputDto> output = new ArrayList<>();
             while (res.next()) {

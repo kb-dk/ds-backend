@@ -57,8 +57,6 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         assertEquals(modified_by,retreivedFromStorage.getModifiedBy());
         assertEquals(modified_time,retreivedFromStorage.getModifiedTime());
 
-        List<RestrictedIdOutputDto> ids = storage.getAllRestrictedIds();
-
         String new_comment = "another comment";
         String new_modified_by = "user2";
         long new_modified_time = 17394500000000L;
@@ -75,6 +73,22 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
         storage.deleteRestrictedId(idValue,idType,platform);
         assertNull(storage.getRestrictedId(idValue, idType,platform));
+    }
+
+    @Test
+    public void testRestrictedIdSearch() throws SQLException {
+        storage.createRestrictedId("test1","ds_id","dr","","test",System.currentTimeMillis());
+        storage.createRestrictedId("test2","ds_id","general","","test",System.currentTimeMillis());
+        storage.createRestrictedId("test3","ds_id","dr","","test",System.currentTimeMillis());
+        storage.createRestrictedId("test4","strict_title","dr","","test",System.currentTimeMillis());
+        storage.createRestrictedId("test5","strict_title","general","","test",System.currentTimeMillis());
+
+        assertEquals(5,storage.getAllRestrictedIds(null,null).size());
+        assertEquals(3,storage.getAllRestrictedIds("ds_id",null).size());
+        assertEquals(2,storage.getAllRestrictedIds("strict_title",null).size());
+        assertEquals(3,storage.getAllRestrictedIds(null,"dr").size());
+        assertEquals(2,storage.getAllRestrictedIds(null,"general").size());
+        assertEquals(2,storage.getAllRestrictedIds("ds_id","dr").size());
     }
 
     @Test
