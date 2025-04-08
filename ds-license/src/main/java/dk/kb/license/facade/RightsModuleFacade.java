@@ -547,13 +547,16 @@ public class RightsModuleFacade {
      * @return amount of records touched in DS-Storage.
      */
     private static int touchStorageRecordById(String id) {
-        RecordsCountDto count = storageClient.touchRecord(id);
-
-        if (count == null || count.getCount() == null){
+        try {
+            RecordsCountDto count = storageClient.touchRecord(id);
+            if (count == null || count.getCount() == null) {
+                return 0;
+            }
+            return count.getCount();
+        } catch (NotFoundServiceException e) {
+            log.info("Touching storage record not found "+id);
             return 0;
         }
-
-        return count.getCount();
     }
 
     /**
