@@ -20,6 +20,7 @@ import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.dr.holdback.HoldbackObject;
 import dk.kb.present.dr.holdback.HoldbackDatePicker;
+import dk.kb.present.dr.restrictions.DsIdLookup;
 import dk.kb.present.dr.restrictions.ProductionIdLookup;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
@@ -205,6 +206,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             log.debug("Performing productionID lookup for id: '{}' in DR restricted ID list.", extractedValues.getProductionId());
             metadata.put("productionIdRestrictedDr", String.valueOf(rightsOutput.getDr().getDrIdRestricted()));
         }
+
+        metadata.put("dsIdRestricted", String.valueOf(DsIdLookup.getInstance().doLookup(record.getId())));
     }
 
     /**

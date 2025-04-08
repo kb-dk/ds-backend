@@ -2,6 +2,7 @@ package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.dr.holdback.HoldbackDatePicker;
+import dk.kb.present.dr.restrictions.DsIdLookup;
 import dk.kb.present.dr.restrictions.ProductionIdLookup;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
@@ -223,7 +224,6 @@ class ViewTest {
         executorService.shutdown();
     }
 
-
     @Test
     @Tag("integration")
     void ownProductionTrueTestTvmeter() throws Exception {
@@ -367,6 +367,21 @@ class ViewTest {
 
     @Test
     @Tag("integration")
+    void testCreationOfFieldDsIdRestricted() throws IOException {
+        HoldbackDatePicker.init();
+        ProductionIdLookup.init();
+        DsIdLookup.init();
+        View jsonldView = getSolrTvViewForPreservicaRecord();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_4d61dcb3);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+        String solrdoc = jsonldView.apply(recordDto);
+        assertTrue(solrdoc.contains("\"ds_id_restricted\":\"false\""));
+    }
+
+    @Test
+    @Tag("integration")
     void testOwnProductionCorrectValue() throws IOException {
         HoldbackDatePicker.init();
         View jsonldView = getSolrTvViewForPreservicaRecord();
@@ -418,6 +433,22 @@ class ViewTest {
         assertThrows(RuntimeException.class, () -> {
             solrView.apply(recordDto);
         } );
+    }
+
+    @Test
+    @Tag("integration")
+    void testRestrictionOfProductionIds() {
+        HoldbackDatePicker.init();
+        ProductionIdLookup.init();
+
+        // Should be more than 2500 after latest update to the list
+        assertTrue(ProductionIdLookup.getInstance().getAmountOfRestrictedIds() > 2500L);
+
+        // List should contain a sample of the older ids
+        assertTrue(ProductionIdLookup.getInstance().doLookup("2912081400"));
+
+        // List should contain a sample from the newer ids
+        assertTrue(ProductionIdLookup.getInstance().doLookup("8007034000"));
     }
 
     //********************************************** PRIVATE HELPER METHODS BELOW ***************************************************************
