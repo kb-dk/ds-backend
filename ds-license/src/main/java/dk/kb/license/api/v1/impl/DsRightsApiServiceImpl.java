@@ -59,7 +59,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void deleteRestrictedId(String id, String idType, String platform, Boolean touchRecord) {
         log.debug("Deleted restricted id:{} idType:{} platform:{}", id, idType, platform);
         try {
-            RightsModuleFacade.deleteRestrictedId(id, idType, platform, touchRecord);
+            RightsModuleFacade.deleteRestrictedId(id, idType, platform, getCurrentUserID(),touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -100,7 +100,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            RightsModuleFacade.deleteRestrictedIds(restrictedIds, touchRecord);
+            RightsModuleFacade.deleteRestrictedIds(restrictedIds, getCurrentUserID(),touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -123,7 +123,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto) {
         try {
-            RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleDto);
+            RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleDto,getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -136,7 +136,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void deleteDrHoldbackRule(String id) {
         try {
-            RightsModuleFacade.deleteDrHoldbackRule(id);
+            RightsModuleFacade.deleteDrHoldbackRule(id,getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -206,9 +206,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void updateDrHoldbackDays(Integer days, String id, String name) {
         try {
             if (!StringUtils.isEmpty(id)) {
-                RightsModuleFacade.updateDrHoldbackDaysForId(id,days);
+                RightsModuleFacade.updateDrHoldbackDaysForId(id,days,getCurrentUserID());
             } else if (!StringUtils.isEmpty(name)) {
-                RightsModuleFacade.updateDrHoldbackDaysForName(name,days);
+                RightsModuleFacade.updateDrHoldbackDaysForName(name,days,getCurrentUserID());
             } else {
                 throw new InvalidArgumentServiceException("missing id or name");
             }
@@ -227,7 +227,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createHoldbackRanges(String drHoldbackId, List<DrHoldbackRangeMappingInputDto> drHoldbackRangeMappingInputDto) {
         try {
-            RightsModuleFacade.createHoldbackRanges(drHoldbackId, drHoldbackRangeMappingInputDto);
+            RightsModuleFacade.createHoldbackRanges(drHoldbackId, drHoldbackRangeMappingInputDto,getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -240,7 +240,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void deleteHoldbackRanges(String drHoldbackId) {
         try {
-            RightsModuleFacade.deleteHoldbackRanges(drHoldbackId);
+            RightsModuleFacade.deleteHoldbackRanges(drHoldbackId,getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }

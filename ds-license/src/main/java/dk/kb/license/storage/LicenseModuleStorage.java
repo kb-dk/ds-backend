@@ -35,7 +35,6 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
     private static final String VALUE_TABLE = "VALUE_ORG";
     private static final String LICENSECONTENT_TABLE = "LICENSECONTENT";
     private static final String PRESENTATION_TABLE = "PRESENTATION";
-    private static final String AUDITLOG_TABLE = "AUDITLOG";
     
     private static final String VALIDTO_COLUMN = "VALIDTO";
     private static final String VALIDFROM_COLUMN = "VALIDFROM";
@@ -57,20 +56,10 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
     private static final String VALUE_EN_COLUMN = "VALUE_EN";
     private static final String RESTRICTION_COLUMN = "RESTRICTION";
 
-    //AUDITLOG
-    private static final String MILLIS_COLUMN = "MILLIS";
-    private static final String USERNAME_COLUMN = "USERNAME";
-    private static final String CHANGETYPE_COLUMN = "CHANGETYPE";
-    private static final String OBJECTNAME_COLUMN = "OBJECTNAME";
-    private static final String TEXTBEFORE_COLUMN = "TEXTBEFORE";
-    private static final String TEXTAFTER_COLUMN = "TEXTAFTER";
-    
     private final static String selectLicensePresentationTypesQuery = " SELECT * FROM "
             + LICENSEPRESENTATIONTYPES_TABLE;
 
     private final static String selectAllLicensesQuery = " SELECT * FROM " + LICENSE_TABLE;
-    private final static String selectAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE MILLIS= ? ";
-    private final static String selectAllAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE +" ORDER BY MILLIS DESC";   
     private final static String selectLicenseQuery = " SELECT * FROM " + LICENSE_TABLE + " WHERE ID = ? ";
     private final static String selectGroupTypeQueryById = " SELECT * FROM " + LICENSEGROUPTYPES_TABLE + " WHERE ID = ? ";
     private final static String selectPresentationTypeQueryById = " SELECT * FROM " + LICENSEPRESENTATIONTYPES_TABLE + " WHERE ID = ? ";
@@ -89,11 +78,6 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
     private final static String persistAttributeForAttributeGroupQuery = "INSERT INTO " + ATTRIBUTE_TABLE + " ("
             + ID_COLUMN + "," + NAME_COLUMN + "," + ATTRIBUTEGROUPID_COLUMN + ") VALUES (?,?,?)"; // #|?|=3
 
-    
-
-    private final static String persistAuditLog = "INSERT INTO " + AUDITLOG_TABLE + " ("
-            + MILLIS_COLUMN + "," + USERNAME_COLUMN + "," + CHANGETYPE_COLUMN + ","+OBJECTNAME_COLUMN +","+TEXTBEFORE_COLUMN +","+TEXTAFTER_COLUMN+") VALUES (?,?,?,?,?,?)"; // #|?|=6
-    
     private final static String selectAttributesForAttributeGroupQuery = " SELECT * FROM " + ATTRIBUTE_TABLE + " WHERE "
             + ATTRIBUTEGROUPID_COLUMN + " = ?";
 
@@ -204,24 +188,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         }
        
     }
-    
-  
-    public void persistAuditLog(AuditLog auditlog) throws SQLException {
-        log.info("Persisting  persistAuditLog " + auditlog.getChangeType() +" for username:"+auditlog.getUsername());
-        try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
-            stmt.setLong(1,  auditlog.getMillis());
-            stmt.setString(2,auditlog.getUsername());            
-            stmt.setString(3, auditlog.getChangeType());
-            stmt.setString(4, auditlog.getObjectName());
-            stmt.setString(5, auditlog.getTextBefore());
-            stmt.setString(6, auditlog.getTextAfter());
-            stmt.execute();
-        } catch (SQLException e) {
-            log.error("SQL Exception in persistAuditLog:" + e.getMessage());
-            throw e;
-        }       
-    }
-    
+
     public ArrayList<PresentationType> getLicensePresentationTypes() throws SQLException {
 
         ArrayList<PresentationType> list = new ArrayList<PresentationType>();
@@ -662,66 +629,6 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         }
     }
 
-   /**
-    *  
-    * @param millis ID is of the auditlog
-    * @return
-    * @throws Exception
-    */
-    
-    
-    public AuditLog getAuditLog(long millis) throws IllegalArgumentException, SQLException {
-
-
-        try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQuery);) {
-            stmt.setLong(1, millis);
-            
-            ResultSet rs = stmt.executeQuery();            
-            while (rs.next()) { // maximum one due to unique/primary key constraint
-                String username = rs.getString(USERNAME_COLUMN);
-                String changetype = rs.getString(CHANGETYPE_COLUMN);
-                String objectName = rs.getString(OBJECTNAME_COLUMN);
-                String textBefore = rs.getString(TEXTBEFORE_COLUMN);
-                String textAfter = rs.getString(TEXTAFTER_COLUMN);
-                AuditLog audit=new AuditLog(millis,username, changetype,objectName,textBefore,textAfter);
-                return audit;
-            }
-            throw new IllegalArgumentException("AuditId not found for millis:" + millis);
-
-        } catch (SQLException e) {
-            log.error("SQL Exception in getAuditLog:" + e.getMessage());
-            throw e;
-        }
-    }
-    
-    public ArrayList<AuditLog> getAllAudit() throws SQLException {
-
-        ArrayList<AuditLog> logs = new ArrayList<AuditLog>();
-
-        try (PreparedStatement stmt = connection.prepareStatement(selectAllAuditLogQuery);) {
-            
-            ResultSet rs = stmt.executeQuery();            
-            while (rs.next()) { // maximum one due to unique/primary key constraint
-                Long  millis = rs.getLong(MILLIS_COLUMN);
-                String username = rs.getString(USERNAME_COLUMN);
-                String changetype = rs.getString(CHANGETYPE_COLUMN);
-                String objectName = rs.getString(OBJECTNAME_COLUMN);
-                String textBefore = rs.getString(TEXTBEFORE_COLUMN);
-                String textAfter = rs.getString(TEXTAFTER_COLUMN);
-                AuditLog audit=new AuditLog(millis,username, changetype,objectName,textBefore,textAfter);
-                logs.add(audit);
-            }            
-            return logs;
-        } catch (SQLException e) {
-            log.error("SQL Exception in getAllAudit:" + e.getMessage());
-            throw e;
-        }
-    }
-    
-    
-    
-    
-    
     public PresentationType getPresentationTypeById(long id) throws IllegalArgumentException, SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryById);) {
             stmt.setLong(1, id);
