@@ -98,7 +98,7 @@ public class RightsModuleFacade {
             }
 
             ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(id,idType,platform);
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", id, "",change.getAfter());
+            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", id, change.getBefore(),"");
             storage.persistAuditLog(logEntry);
             log.info("Deleted restriction {} {} {}",id,idType,platform);
             return null;
