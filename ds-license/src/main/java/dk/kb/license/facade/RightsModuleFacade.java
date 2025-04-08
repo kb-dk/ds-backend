@@ -514,7 +514,7 @@ public class RightsModuleFacade {
     private static void validatedsIdFormat(RestrictedIdInputDto restrictedIdInputDto) {
         Matcher m = dsIdPattern.matcher(restrictedIdInputDto.getIdValue());
         if (!m.matches()) {
-            throw new InternalServiceException("Invalid ds_id format "+restrictedIdInputDto.getIdValue());
+            throw new InvalidArgumentServiceException("Invalid ds_id format "+restrictedIdInputDto.getIdValue());
         }
     }
 
