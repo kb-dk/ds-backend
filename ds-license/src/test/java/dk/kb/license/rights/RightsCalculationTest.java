@@ -9,6 +9,7 @@ import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.DsLicenseUnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.util.H2DbUtil;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RightsCalculationTest extends DsLicenseUnitTestUtil {
@@ -42,7 +44,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackEducationEdgeCase() throws SQLException {
+    public void testHoldbackEducationEdgeCase() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto alwaysEducationRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
                 RightsCalculationInputDto.PlatformEnum.DRARKIV,4411, 6000, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
 
@@ -52,7 +54,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackTrailersEdgeCase() throws SQLException {
+    public void testHoldbackTrailersEdgeCase() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto alwaysEducationRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
                 RightsCalculationInputDto.PlatformEnum.DRARKIV,7000, 1000, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
 
@@ -63,7 +65,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void badHoldbackRecordTest() throws SQLException {
+    public void badHoldbackRecordTest() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto badHoldbackValues = new RightsCalculationInputDto("badValues", "2016-01-06T18:08:17+0100", RightsCalculationInputDto.PlatformEnum.DRARKIV, 1800
                 , 0, 3100, 2211, "1000", "Record with bad holdback values", "9283748300", "ds.tv");
 
@@ -73,7 +75,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackDate() throws SQLException {
+    public void testHoldbackDate() throws SQLException, IllegalAccessException {
 
         RightsCalculationInputDto tenYearHoldbackRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
                 RightsCalculationInputDto.PlatformEnum.DRARKIV,4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
@@ -84,7 +86,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackDateNews() throws SQLException {
+    public void testHoldbackDateNews() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto newsRecord = new RightsCalculationInputDto("testRecord1", "2016-01-01T10:34:42+0100",
                 RightsCalculationInputDto.PlatformEnum.DRARKIV,1100, 0, 1200, 1000, "1000", "Program 1", "9283748300", "ds.tv");
 
@@ -94,7 +96,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackName() throws SQLException {
+    public void testHoldbackName() throws SQLException, IllegalAccessException {
 
         RightsCalculationInputDto tenYearHoldbackRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
                 RightsCalculationInputDto.PlatformEnum.DRARKIV,4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
@@ -105,7 +107,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackForeign() throws SQLException {
+    public void testHoldbackForeign() throws SQLException, IllegalAccessException {
 
         RightsCalculationInputDto foreignRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
                 RightsCalculationInputDto.PlatformEnum.DRARKIV,4411, 0, 3190, 5000, "5000", "Program 1", "9283748300", "ds.tv");
@@ -117,7 +119,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void holdbackJanuaryEdgeTest() throws SQLException {
+    public void holdbackJanuaryEdgeTest() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto yearlyHoldback1 = new RightsCalculationInputDto("yearlyHoldback1","1999-01-01T10:30:00+0100", RightsCalculationInputDto.PlatformEnum.DRARKIV,
                 4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv" );
         RightsCalculationOutputDto output1 = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback1);
@@ -126,7 +128,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void holdbackDecemberEdgeTest() throws SQLException {
+    public void holdbackDecemberEdgeTest() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto yearlyHoldback2 = new RightsCalculationInputDto("yearlyHoldback1", "2010-12-31T10:00:00+0100", RightsCalculationInputDto.PlatformEnum.DRARKIV,
                 4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
         RightsCalculationOutputDto output2 = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback2);
@@ -135,7 +137,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void holdbackYearlyRandomDateTest() throws SQLException {
+    public void holdbackYearlyRandomDateTest() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto yearlyHoldback3 = new RightsCalculationInputDto("yearlyHoldback1","1990-06-20T10:00:00+0100", RightsCalculationInputDto.PlatformEnum.DRARKIV,
                 4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
         RightsCalculationOutputDto output3 = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback3);
@@ -144,7 +146,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void holdbackRadioTest() throws SQLException {
+    public void holdbackRadioTest() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto yearlyHoldback3 = new RightsCalculationInputDto("radioHoldback","1990-06-20T10:00:00+0100", RightsCalculationInputDto.PlatformEnum.DRARKIV,
                 4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.radio");
         RightsCalculationOutputDto radioHoldback = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback3);
@@ -153,7 +155,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
 
     @Test
-    public void restrictedDrProductionIdTest() throws SQLException {
+    public void restrictedDrProductionIdTest() throws SQLException, IllegalAccessException {
         try (RightsModuleStorage storage = new RightsModuleStorage()) {
             storage.createRestrictedId("1234567890", "dr_produktions_id", "dr", "Not allowed dr production ID", "TestUser", System.currentTimeMillis());
             storage.commit();
@@ -170,7 +172,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void restrictedDsIdTest() throws SQLException {
+    public void restrictedDsIdTest() throws SQLException, IllegalAccessException {
         try (RightsModuleStorage storage = new RightsModuleStorage()) {
             storage.createRestrictedId("restrictedId","ds_id","dr","dangerous ID","TestUser",System.currentTimeMillis());
             storage.commit();
@@ -186,7 +188,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         assertTrue(restrictedDsID.getDr().getDsIdRestricted());
     }
     @Test
-    public void restrictedTitleTest() throws SQLException {
+    public void restrictedTitleTest() throws SQLException, IllegalAccessException {
         try (RightsModuleStorage storage = new RightsModuleStorage()) {
             storage.createRestrictedId("Restricted Test Title","strict_title","dr","This title can never be shown","TestUser",System.currentTimeMillis());
             storage.commit();
@@ -203,7 +205,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void allowedProductionCodeFromMetadataTest() throws SQLException {
+    public void allowedProductionCodeFromMetadataTest() throws SQLException, IllegalAccessException {
         try (RightsModuleStorage storage = new RightsModuleStorage()) {
             storage.createRestrictedId("1000","egenproduktions_kode","dr","1000 equals ownproduction","TestUser",System.currentTimeMillis());
             storage.commit();
@@ -217,5 +219,28 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         RightsCalculationOutputDto allowedOwnProduction = RightsModuleFacade.calculateRightsForRecord(allowedOwnProductionCode);
 
         assertTrue(allowedOwnProduction.getDr().getProductionCodeAllowed());
+    }
+
+    @Test
+    public void inputValidationTestTopLevel() {
+
+        RightsCalculationInputDto faultyInput = new RightsCalculationInputDto(null,"1990-06-20T10:00:00+0100",
+                RightsCalculationInputDto.PlatformEnum.DRARKIV,
+                4411, 0, 3190, 1000, "1000", "Random program", "9283748300", "ds.tv");
+
+        InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.calculateRightsForRecord(faultyInput));
+        assertEquals("Field recordId is null", exception.getMessage());
+    }
+
+    @Test
+    public void inputValidationTestNested() {
+
+        RightsCalculationInputDto faultyInput = new RightsCalculationInputDto("TestId","1990-06-20T10:00:00+0100",
+                RightsCalculationInputDto.PlatformEnum.DRARKIV,
+                4411, 0, 3190, 1000, null, "Random program", "9283748300", "ds.tv");
+
+        InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.calculateRightsForRecord(faultyInput));
+        log.info(exception.getMessage());
+
     }
 }

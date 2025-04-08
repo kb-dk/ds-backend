@@ -1,6 +1,7 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.RightsCalculation;
+import dk.kb.license.Util;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
@@ -22,8 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -248,7 +251,10 @@ public class RightsModuleFacade {
      * @param rightsCalculationInputDto the input DTO containing the needed information for rights calculation.
      * @return a {@link RightsCalculationOutputDto} containing the calculated rights.
      */
-    public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException {
+    public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException, IllegalAccessException {
+        Util.validateNonNull(rightsCalculationInputDto);
+        //Util.validateNonNull(rightsCalculationInputDto.getHoldbackInput());
+        //Util.validateNonNull(rightsCalculationInputDto.getRestrictionsInput());
         RightsCalculationOutputDto output = new RightsCalculationOutputDto();
 
         switch (rightsCalculationInputDto.getPlatform()){
@@ -265,8 +271,6 @@ public class RightsModuleFacade {
 
         }
     }
-
-
 
 
     /**

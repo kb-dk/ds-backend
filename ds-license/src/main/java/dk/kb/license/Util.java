@@ -1,11 +1,13 @@
 package dk.kb.license;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,6 +133,60 @@ public class Util {
 		} else {
 			return "error";
 		}
+	}
+
+	/**
+	 * Validates that the given object and all its fields are non-null.
+	 *<p>
+	 * This method checks if the provided object is null. If it is, the method throws an error.
+	 * It then iterates through all declared fields of the object's class, checking each field's value.
+	 * If any field's value is null, the method throws an error. If a field is an object (not a primitive),
+	 * the method recursively validates that object's fields as well.
+	 *
+	 * @param object the object to validate for non-null fields.
+	 * @throws IllegalAccessException if the method cannot access a field due to its access modifier.
+	 */
+	public static void validateNonNull(Object object) throws IllegalAccessException {
+		if (object == null) {
+			throw new InvalidArgumentServiceException("Object is null");
+		}
+
+		Class<?> objClass = object.getClass();
+		for (Field field : objClass.getDeclaredFields()) {
+			field.setAccessible(true); // Access private fields
+			Object value = field.get(object);
+
+			if (value == null) {
+				throw new InvalidArgumentServiceException("Field " + field.getName() + " is null");
+			}
+
+
+			// If the field is an object, validate it as well
+			if (!isPrimitiveOrWrapper(field.getType())) {
+				validateNonNull(value);
+			}
+		}
+	}
+
+	/**
+	 * Checks if the given class is a primitive type or its corresponding wrapper class.
+	 *
+	 * This method determines whether the specified class is a primitive type (e.g., int, boolean)
+	 * or one of its corresponding wrapper classes (e.g., Integer, Boolean).
+	 *
+	 * @param clazz the class to check.
+	 * @return true if the class is a primitive type or a wrapper class; false otherwise.
+	 */
+	private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
+		return clazz.isPrimitive() ||
+				clazz == Boolean.class ||
+				clazz == Character.class ||
+				clazz == Byte.class ||
+				clazz == Short.class ||
+				clazz == Integer.class ||
+				clazz == Long.class ||
+				clazz == Float.class ||
+				clazz == Double.class;
 	}
 
 }
