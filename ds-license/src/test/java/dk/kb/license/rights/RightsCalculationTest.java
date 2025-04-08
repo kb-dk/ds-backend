@@ -234,13 +234,11 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
     @Test
     public void inputValidationTestNested() {
-
         RightsCalculationInputDto faultyInput = new RightsCalculationInputDto("TestId","1990-06-20T10:00:00+0100",
                 RightsCalculationInputDto.PlatformEnum.DRARKIV,
                 4411, 0, 3190, 1000, null, "Random program", "9283748300", "ds.tv");
 
         InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.calculateRightsForRecord(faultyInput));
-        log.info(exception.getMessage());
-
+        assertEquals("Field productionCode is null", exception.getMessage());
     }
 }

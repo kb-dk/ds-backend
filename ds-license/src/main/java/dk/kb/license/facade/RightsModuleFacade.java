@@ -287,8 +287,6 @@ public class RightsModuleFacade {
      */
     public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException, IllegalAccessException {
         Util.validateNonNull(rightsCalculationInputDto);
-        //Util.validateNonNull(rightsCalculationInputDto.getHoldbackInput());
-        //Util.validateNonNull(rightsCalculationInputDto.getRestrictionsInput());
         RightsCalculationOutputDto output = new RightsCalculationOutputDto();
 
         switch (rightsCalculationInputDto.getPlatform()){
