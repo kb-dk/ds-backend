@@ -15,7 +15,6 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -28,10 +27,15 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
+
+    private static final String regexpDsIdPattern="([a-z0-9.]+):([a-zA-Z0-9:._-]+)";
+    private static final Pattern dsIdPattern = Pattern.compile(regexpDsIdPattern);
 
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
     /**
@@ -60,6 +64,10 @@ public class RightsModuleFacade {
 
         if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
             validateDrProductionIdFormat(restrictedIdInputDto);
+        }
+
+        if (restrictedIdInputDto.getIdType().equals("ds_id")) {
+            validatedsIdFormat(restrictedIdInputDto);
         }
 
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
@@ -502,6 +510,14 @@ public class RightsModuleFacade {
         }
 
     }
+
+    private static void validatedsIdFormat(RestrictedIdInputDto restrictedIdInputDto) {
+        Matcher m = dsIdPattern.matcher(restrictedIdInputDto.getIdValue());
+        if (!m.matches()) {
+            throw new InternalServiceException("Invalid ds_id format "+restrictedIdInputDto.getIdValue());
+        }
+    }
+
 
     /**
      * Based on idType, touch related storage records, so that they can be re-indexed with the new information.
