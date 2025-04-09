@@ -62,7 +62,7 @@ public class RightsCalculation {
      * @return true if allowed, otherwise false
      */
     public static boolean isProductionCodeAllowed(String productionCode){
-        return RightsModuleFacade.isProductionCodeAllowed(productionCode, "dr");
+        return RightsModuleFacade.isProductionCodeAllowed(productionCode, PlatformEnumDto.DRARKIV.getValue());
     }
 
     /**
