@@ -108,7 +108,7 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
         /**
         * Create a {@link RightsCalculationInputDto} from all needed values
         */
-    public {{classname}}(String recordId, String startTime, RightsCalculationInputDto.PlatformEnum platform,
+    public {{classname}}(String recordId, String startTime, PlatformEnumDto platform,
                             int form, int hensigt, int indhold, int productionCountry, String productionCode,
                             String title, String drProductionId, String origin) {
         HoldbackCalculationInputDto holdbackDto = new HoldbackCalculationInputDto();
