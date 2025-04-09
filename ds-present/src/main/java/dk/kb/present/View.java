@@ -14,6 +14,9 @@
  */
 package dk.kb.present;
 
+import dk.kb.license.model.v1.RightsCalculationInputDto;
+import dk.kb.license.model.v1.RightsCalculationOutputDto;
+import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.dr.holdback.HoldbackObject;
 import dk.kb.present.dr.holdback.HoldbackDatePicker;
@@ -183,21 +186,28 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
+
+        String url = ServiceConfig.getConfig().getString("licensemodule.url");
+        DsLicenseClient licenseClient = new DsLicenseClient(url);
+
+        RightsCalculationInputDto.PlatformEnum platform = RightsCalculationInputDto.PlatformEnum.DRARKIV;
+        RightsCalculationOutputDto rightsOutput = licenseClient.calculateRights(extractedValues.asRightsCalculationInputDto(platform, record.getOrigin()));
+
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         // The following three methods are all related to holdback and ownproduction calculations.
         updateMetadataMapWithFormAndContent(metadata, extractedValues);
-        updateMetadataMapWithProductionCode(metadata, extractedValues);
-        updateMetadataMapWithHoldback(record, metadata, extractedValues);
+        updateMetadataMapWithProductionCodeDr(metadata, extractedValues.getOrigin(), rightsOutput);
+        updateMetadataMapWithDrHoldback(metadata, rightsOutput);
         updateMetadataMapWithPreservicaManifestation(record, metadata);
 
         if (!extractedValues.getProductionId().isEmpty()){
             metadata.put("productionId", extractedValues.getProductionId());
             // Check if production ID is restricted from DR.
             log.debug("Performing productionID lookup for id: '{}' in DR restricted ID list.", extractedValues.getProductionId());
-            metadata.put("productionIdRestrictedDr", String.valueOf(ProductionIdLookup.getInstance().doLookup(extractedValues.getProductionId())));
+            metadata.put("productionIdRestrictedDr", String.valueOf(rightsOutput.getDr().getDrIdRestricted()));
         }
 
-        metadata.put("dsIdRestricted", String.valueOf(DsIdLookup.getInstance().doLookup(record.getId())));
+        metadata.put("dsIdRestricted", String.valueOf(rightsOutput.getDr().getDsIdRestricted()));
     }
 
     /**
@@ -242,6 +252,30 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         if (!productionCode.isEmpty()) {
             // Values below 2000 are considered own production. It can in fact be co-production, but these should all be covered by the rights-agreement made.
             boolean allowedProductionCode = Integer.parseInt(productionCode) <= ServiceConfig.getMaxAllowedProductionCode();
+            metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
+            metadataMap.put("productionCodeValue", productionCode);
+        } else if (origin.equals("ds.radio")){
+            metadataMap.put("productionCodeAllowed", "true");
+        }
+    }
+
+    /**
+     * Updates the provided metadata map with the production code information based on the given parameters.
+     *
+     * @param metadataMap the map to be updated with production code information.
+     * @param productionCode the production code to be validated and used for updating the metadata map.
+     * @param rightsOutput the {@link RightsCalculationOutputDto} containing rights information related to the production code.
+     */
+    private void updateMetadataMapWithProductionCodeDr(Map<String, String> metadataMap, String productionCode, RightsCalculationOutputDto rightsOutput){
+        if (productionCode.isEmpty() && origin.equals("ds.tv")) {
+            // Logging at denug as we have lots of records without this information
+            log.debug("Nielsen/Gallup origin was empty. Own production can not be calculated.");
+        } else if (productionCode.length() != 4){
+            log.debug("Nielsen/Gallup origin did not have length 4. Production code allowance will not be calculated correctly. Origin is: '{}'", productionCode);
+        }
+
+        if (!productionCode.isEmpty()) {
+            boolean allowedProductionCode = rightsOutput.getDr().getProductionCodeAllowed();
             metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
             metadataMap.put("productionCodeValue", productionCode);
         } else if (origin.equals("ds.radio")){
@@ -326,6 +360,25 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             throw new RuntimeException(e);
         }
 
+    }
+
+    /**
+     * Updates the provided metadata map with holdback information from the rights output DTO.
+     *
+     * @param metadata the map to be updated with holdback information.
+     * @param rightsOutputDto the {@link RightsCalculationOutputDto} containing holdback details.
+     */
+    private void updateMetadataMapWithDrHoldback(Map<String, String> metadata, RightsCalculationOutputDto rightsOutputDto){
+        metadata.put("holdbackDate", rightsOutputDto.getDr().getHoldbackExpiredDate());
+
+        String holdbackName = rightsOutputDto.getDr().getHoldbackName();
+
+        if (holdbackName == null || holdbackName.isEmpty()){
+            metadata.put("holdbackPurposeName", "");
+        } else {
+            metadata.put("holdbackPurposeName", rightsOutputDto.getDr().getHoldbackName());
+
+        }
     }
 
     /**
