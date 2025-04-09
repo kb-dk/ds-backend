@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.3.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-2.3.2) 2025-04-09
 - Fixed use of synonyms filer (SynonymGraphFilterFactory). Require also query filter.
 - Removed all multi terms synonyms in dr_synonyms.txt due to bug in spellcheck(Solr) compontent.
 - Solr version bumped to v. 1.7.11
