@@ -2,12 +2,7 @@ package dk.kb.license;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
-import dk.kb.license.model.v1.DrHoldbackRuleDto;
-import dk.kb.license.model.v1.HoldbackCalculationInputDto;
-import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
-import dk.kb.license.model.v1.RightsCalculationInputDto;
-import dk.kb.license.model.v1.RightsCalculationOutputDrDto;
-import dk.kb.license.model.v1.RightsCalculationOutputDto;
+import dk.kb.license.model.v1.*;
 import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -30,7 +25,7 @@ public class RightsCalculation {
      */
     public static boolean isDsIdRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, "ds_id", "dr");
+            return RightsModuleFacade.isIdRestricted(id, "ds_id", PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -43,7 +38,7 @@ public class RightsCalculation {
      */
     public static boolean isDrProductionIdRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, "dr_produktions_id", "dr");
+            return RightsModuleFacade.isIdRestricted(id, "dr_produktions_id", PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -55,7 +50,7 @@ public class RightsCalculation {
      */
     public static boolean isTitleRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, "strict_title", "dr");
+            return RightsModuleFacade.isIdRestricted(id, "strict_title", PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }

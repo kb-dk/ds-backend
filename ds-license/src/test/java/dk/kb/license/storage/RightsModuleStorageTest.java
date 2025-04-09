@@ -2,6 +2,7 @@ package dk.kb.license.storage;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
+import dk.kb.license.model.v1.PlatformEnumDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.util.H2DbUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,7 +43,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
     public void testRestrictedIdCRUD() throws SQLException {
         String idValue = "test1234";
         String idType = "dr_produktions_id";
-        String platform = "dr";
+        String platform = PlatformEnumDto.DRARKIV.getValue();
         String comment = "a comment";
         String modified_by = "user1";
         long modified_time = 1739439979000L;
@@ -52,7 +53,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         assertNotNull(retreivedFromStorage);
         assertEquals(idValue,retreivedFromStorage.getIdValue());
         assertEquals(idType,retreivedFromStorage.getIdType());
-        assertEquals(platform,retreivedFromStorage.getPlatform());
+        assertEquals(platform,retreivedFromStorage.getPlatform().getValue());
         assertEquals(comment,retreivedFromStorage.getComment());
         assertEquals(modified_by,retreivedFromStorage.getModifiedBy());
         assertEquals(modified_time,retreivedFromStorage.getModifiedTime());
@@ -66,7 +67,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         assertNotNull(retreivedFromStorage);
         assertEquals(idValue,retreivedFromStorage.getIdValue());
         assertEquals(idType,retreivedFromStorage.getIdType());
-        assertEquals(platform,retreivedFromStorage.getPlatform());
+        assertEquals(platform,retreivedFromStorage.getPlatform().getValue());
         assertEquals(new_comment,retreivedFromStorage.getComment());
         assertEquals(new_modified_by,retreivedFromStorage.getModifiedBy());
         assertEquals(new_modified_time,retreivedFromStorage.getModifiedTime());
@@ -77,18 +78,18 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
     @Test
     public void testRestrictedIdSearch() throws SQLException {
-        storage.createRestrictedId("test1","ds_id","dr","","test",System.currentTimeMillis());
-        storage.createRestrictedId("test2","ds_id","general","","test",System.currentTimeMillis());
-        storage.createRestrictedId("test3","ds_id","dr","","test",System.currentTimeMillis());
-        storage.createRestrictedId("test4","strict_title","dr","","test",System.currentTimeMillis());
-        storage.createRestrictedId("test5","strict_title","general","","test",System.currentTimeMillis());
+        storage.createRestrictedId("test1","ds_id",PlatformEnumDto.DRARKIV.getValue(),"","test",System.currentTimeMillis());
+        storage.createRestrictedId("test2","ds_id",PlatformEnumDto.GENERIC.getValue(),"","test",System.currentTimeMillis());
+        storage.createRestrictedId("test3","ds_id",PlatformEnumDto.DRARKIV.getValue(),"","test",System.currentTimeMillis());
+        storage.createRestrictedId("test4","strict_title",PlatformEnumDto.DRARKIV.getValue(),"","test",System.currentTimeMillis());
+        storage.createRestrictedId("test5","strict_title",PlatformEnumDto.GENERIC.getValue(),"","test",System.currentTimeMillis());
 
         assertEquals(5,storage.getAllRestrictedIds(null,null).size());
         assertEquals(3,storage.getAllRestrictedIds("ds_id",null).size());
         assertEquals(2,storage.getAllRestrictedIds("strict_title",null).size());
-        assertEquals(3,storage.getAllRestrictedIds(null,"dr").size());
-        assertEquals(2,storage.getAllRestrictedIds(null,"general").size());
-        assertEquals(2,storage.getAllRestrictedIds("ds_id","dr").size());
+        assertEquals(3,storage.getAllRestrictedIds(null,PlatformEnumDto.DRARKIV.getValue()).size());
+        assertEquals(2,storage.getAllRestrictedIds(null,PlatformEnumDto.GENERIC.getValue()).size());
+        assertEquals(2,storage.getAllRestrictedIds("ds_id",PlatformEnumDto.DRARKIV.getValue()).size());
     }
 
     @Test
@@ -174,12 +175,12 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
     @Test
     public void testPerformStorageAction() throws SQLException {
         RestrictedIdOutputDto result = BaseModuleStorage.performStorageAction("Testing", RightsModuleStorage.class, storage -> {
-            ((RightsModuleStorage) storage).createRestrictedId("test1", "ds_id", "dr", "comment", "unittest", System.currentTimeMillis());
-            return ((RightsModuleStorage) storage).getRestrictedId("test1", "ds_id", "dr");
+            ((RightsModuleStorage) storage).createRestrictedId("test1", "ds_id", PlatformEnumDto.DRARKIV.getValue(), "comment", "unittest", System.currentTimeMillis());
+            return ((RightsModuleStorage) storage).getRestrictedId("test1", "ds_id", PlatformEnumDto.DRARKIV.getValue());
         });
         assertEquals("test1",result.getIdValue());
         assertEquals("ds_id",result.getIdType());
-        assertEquals("dr",result.getPlatform());
+        assertEquals(PlatformEnumDto.DRARKIV,result.getPlatform());
 
     }
 

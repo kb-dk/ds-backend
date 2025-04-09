@@ -48,8 +48,8 @@ public class RightsModuleFacade {
      * @return
      * @throws SQLException
      */
-    public static RestrictedIdOutputDto getRestrictedId(String id, String idType, String platform) throws SQLException {
-        return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getRestrictedId(id, idType, platform));
+    public static RestrictedIdOutputDto getRestrictedId(String id, String idType, PlatformEnumDto platform) throws SQLException {
+        return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getRestrictedId(id, idType, platform.getValue()));
     }
 
     /**
@@ -61,7 +61,7 @@ public class RightsModuleFacade {
      */
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
-        validatePlatformAndIdType(restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getIdType());
+        validatePlatformAndIdType(restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getIdType());
 
         if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
             String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
@@ -76,7 +76,7 @@ public class RightsModuleFacade {
             ((RightsModuleStorage) storage).createRestrictedId(
                     restrictedIdInputDto.getIdValue(),
                     restrictedIdInputDto.getIdType(),
-                    restrictedIdInputDto.getPlatform(),
+                    restrictedIdInputDto.getPlatform().getValue(),
                     restrictedIdInputDto.getComment(),
                     user,
                     System.currentTimeMillis());
@@ -130,7 +130,7 @@ public class RightsModuleFacade {
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
-        validatePlatformAndIdType(restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getIdType());
+        validatePlatformAndIdType(restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getIdType());
         validateCommentLength(restrictedIdInputDto);
 
         if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
@@ -142,14 +142,14 @@ public class RightsModuleFacade {
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             RestrictedIdOutputDto oldVersion = ((RightsModuleStorage)storage).getRestrictedId(restrictedIdInputDto.getIdValue(),
                     restrictedIdInputDto.getIdType(),
-                    restrictedIdInputDto.getPlatform());
+                    restrictedIdInputDto.getPlatform().getValue());
             if (oldVersion == null) {
                 throw new NotFoundServiceException("updated restricted Id not found "+restrictedIdInputDto.toString());
             }
             ((RightsModuleStorage) storage).updateRestrictedId(
                     restrictedIdInputDto.getIdValue(),
                     restrictedIdInputDto.getIdType(),
-                    restrictedIdInputDto.getPlatform(),
+                    restrictedIdInputDto.getPlatform().getValue(),
                     restrictedIdInputDto.getComment(),
                     user,
                     System.currentTimeMillis());
@@ -174,7 +174,7 @@ public class RightsModuleFacade {
     public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) throws SQLException {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
-                validatePlatformAndIdType(id.getPlatform(), id.getIdType());
+                validatePlatformAndIdType(id.getPlatform().getValue(), id.getIdType());
                 validateCommentLength(id);
 
                 if (id.getIdType().equals("dr_produktions_id")){
@@ -186,7 +186,7 @@ public class RightsModuleFacade {
                 ((RightsModuleStorage) storage).createRestrictedId(
                         id.getIdValue(),
                         id.getIdType(),
-                        id.getPlatform(),
+                        id.getPlatform().getValue(),
                         id.getComment(),
                         user,
                         System.currentTimeMillis()
@@ -212,8 +212,8 @@ public class RightsModuleFacade {
      * @param platform only get retstrictedIds for this platform
      * @return
      */
-    public static List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) {
-        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType,platform));
+    public static List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, PlatformEnumDto platform) {
+        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType,platform.getValue()));
     }
 
     /**
@@ -309,7 +309,7 @@ public class RightsModuleFacade {
                 throw new InternalServiceException("The generic format haven't been implemented yet");
             default:
                 throw new InternalServiceException("A valid platform enum should have been specified. Allowed values are: '" +
-                        Arrays.toString(RightsCalculationInputDto.PlatformEnum.values()) + "'");
+                        Arrays.toString(PlatformEnumDto.values()) + "'");
 
         }
     }
@@ -326,9 +326,9 @@ public class RightsModuleFacade {
      * @return true if the ID is restricted; false otherwise
      * @throws SQLException if an error occurs during the SQL process.
      */
-    public static boolean isIdRestricted(String id, String idType, String platform) throws SQLException {
+    public static boolean isIdRestricted(String id, String idType, PlatformEnumDto platform) throws SQLException {
         return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> {
-            RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(id, idType, platform);
+            RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(id, idType, platform.getValue());
             // If the object is null, then id is not restricted
             return idOutput != null;
         });

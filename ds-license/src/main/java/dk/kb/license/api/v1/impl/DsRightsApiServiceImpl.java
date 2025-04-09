@@ -69,7 +69,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public RestrictedIdOutputDto getRestrictedId(String id, String idType, String platform) {
+    public RestrictedIdOutputDto getRestrictedId(String id, String idType, PlatformEnumDto platform) {
         try {
             log.debug("Get restricted ID id:{} idType:{} platform:{}", id, idType, platform);
             RestrictedIdOutputDto result = RightsModuleFacade.getRestrictedId(id, idType, platform);
@@ -83,7 +83,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) {
+    public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, PlatformEnumDto platform) {
         try {
             return RightsModuleFacade.getAllRestrictedIds(idType,platform);
         } catch (Exception e) {

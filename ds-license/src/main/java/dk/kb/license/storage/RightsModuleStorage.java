@@ -3,6 +3,7 @@ package dk.kb.license.storage;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.DrHoldbackRangeMappingDto;
 import dk.kb.license.model.v1.DrHoldbackRuleDto;
+import dk.kb.license.model.v1.PlatformEnumDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

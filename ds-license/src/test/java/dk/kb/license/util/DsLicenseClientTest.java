@@ -11,10 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import dk.kb.license.model.v1.HoldbackCalculationInputDto;
-import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
-import dk.kb.license.model.v1.RightsCalculationInputDto;
-import dk.kb.license.model.v1.RightsCalculationOutputDto;
+import dk.kb.license.model.v1.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -22,19 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.license.config.ServiceConfig;
-import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
-import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
-import dk.kb.license.model.v1.GetUserGroupsAndLicensesInputDto;
-import dk.kb.license.model.v1.GetUserGroupsAndLicensesOutputDto;
-import dk.kb.license.model.v1.GetUserGroupsInputDto;
-import dk.kb.license.model.v1.GetUserGroupsOutputDto;
-import dk.kb.license.model.v1.GetUserQueryInputDto;
-import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
-import dk.kb.license.model.v1.GetUsersLicensesInputDto;
-import dk.kb.license.model.v1.GetUsersLicensesOutputDto;
-import dk.kb.license.model.v1.UserObjAttributeDto;
-import dk.kb.license.model.v1.ValidateAccessInputDto;
-import dk.kb.license.model.v1.ValidateAccessOutputDto;
 
 
 /**
@@ -151,7 +135,7 @@ public class DsLicenseClientTest {
         restrictionsDto.setDrProductionId("9393871973197");
         restrictionsDto.setRecordId("test id");
 
-        inputDto.setPlatform(RightsCalculationInputDto.PlatformEnum.DRARKIV);
+        inputDto.setPlatform(PlatformEnumDto.DRARKIV);
         inputDto.setRestrictionsInput(restrictionsDto);
         inputDto.setHoldbackInput(holdbackDto);
 
