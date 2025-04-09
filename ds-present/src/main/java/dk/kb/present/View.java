@@ -18,10 +18,6 @@ import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.dr.holdback.HoldbackObject;
-import dk.kb.present.dr.holdback.HoldbackDatePicker;
-import dk.kb.present.dr.restrictions.DsIdLookup;
-import dk.kb.present.dr.restrictions.ProductionIdLookup;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.DataCleanup;
@@ -233,33 +229,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Create values related to production codes from a {@link ExtractedPreservicaValues}-object and ad them to the metadata map.
-     * @param metadataMap which the values should be added to.
-     * @param extractedValues to extract Nielsen/Gallup origin from used to determine availability based on production code.
-     */
-    private void updateMetadataMapWithProductionCode(Map<String, String> metadataMap, ExtractedPreservicaValues extractedValues) {
-        // If origin is below 2000 the record is produced by DR themselves. See internal notes on subpages to this site for explanations:
-        // https://kb-dk.atlassian.net/wiki/spaces/DRAR/pages/40632339/Metadata
-        String productionCode = extractedValues.getOrigin();
-        if (productionCode.isEmpty() && origin.equals("ds.tv")) {
-            log.debug("Nielsen/Gallup origin was empty. Own production can not be calculated.");
-            // TODO: When we at some point have extra DR metadata, origin should be available there for records before 1993
-            //throw new InternalServiceException("The Nielsen/Gallup origin was empty. Own production cannot be defined.");
-        } else if (productionCode.length() != 4){
-            log.debug("Nielsen/Gallup origin did not have length 4. Production code allowance will not be calculated correctly. Origin is: '{}'", productionCode);
-        }
-
-        if (!productionCode.isEmpty()) {
-            // Values below 2000 are considered own production. It can in fact be co-production, but these should all be covered by the rights-agreement made.
-            boolean allowedProductionCode = Integer.parseInt(productionCode) <= ServiceConfig.getMaxAllowedProductionCode();
-            metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
-            metadataMap.put("productionCodeValue", productionCode);
-        } else if (origin.equals("ds.radio")){
-            metadataMap.put("productionCodeAllowed", "true");
-        }
-    }
-
-    /**
      * Updates the provided metadata map with the production code information based on the given parameters.
      *
      * @param metadataMap the map to be updated with production code information.
@@ -341,25 +310,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         if (!(manifestationName == null) && !manifestationName.isEmpty()){
             metadata.put("manifestation", manifestationName);
         }
-    }
-
-    /**
-     * Update the map of metadata with holdback values calculated from specific fields inside the content.
-     * @param record A DsStorage record containing a preservica XML record.
-     * @param metadata map, which holds values that are to be used in the XSLT transformation later on.
-     *                 Holdback values are added to this map.
-     */
-    private void updateMetadataMapWithHoldback(DsRecordDto record, Map<String, String> metadata, ExtractedPreservicaValues extractedValues) {
-        try {
-            HoldbackObject holdbackObject = HoldbackDatePicker.getInstance().getHoldbackDateForRecord(extractedValues, record.getOrigin());
-
-            metadata.put("holdbackDate", holdbackObject.getHoldbackDate());
-            metadata.put("holdbackPurposeName", holdbackObject.getHoldbackPurposeName());
-        } catch (IOException e) {
-            log.warn("An IOException occurred during holdback calculation for record: '{}'.", record.getId());
-            throw new RuntimeException(e);
-        }
-
     }
 
     /**
