@@ -40,7 +40,7 @@ gui:
 #Configuration of rights module
 rights:
   platforms:
-    - name: "dr"
+    - name: "DRARKIV"
       idTypes:
         - "ds_id"
         - "dr_produktions_id"
