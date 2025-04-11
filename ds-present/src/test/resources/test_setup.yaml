@@ -202,12 +202,6 @@ origins:
           description: 'Local records'
           recordRequestType: 'DELIVERABLEUNIT'
           views: *PRESERVICA_VIEWS
-  - "ds.radio.test": # ds-present internal
-          prefix: 'local.radio.test' # The prefix to match on incoming IDs
-          origin: 'ds.radio.test'
-          description: 'Local records'
-          recordRequestType: 'DELIVERABLEUNIT'
-          views: *NONDRVIEWS
   - "ds.tv": # ds-present internal
           prefix: 'local.tv' # The prefix to match on incoming IDs
           origin: 'ds.tv'
@@ -220,5 +214,11 @@ origins:
           description: 'Devel records'
           recordRequestType: 'DELIVERABLEUNIT'
           views: *PRESERVICA_VIEWS
+  - "ds.radio.test": # ds-present internal
+      prefix: 'local.radio.test' # The prefix to match on incoming IDs
+      origin: 'ds.radio.test'
+      description: 'Local records'
+      recordRequestType: 'DELIVERABLEUNIT'
+      views: *NONDRVIEWS
 transformations:
   threads: 3
