@@ -1,9 +1,6 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.dr.holdback.HoldbackDatePicker;
-import dk.kb.present.dr.restrictions.DsIdLookup;
-import dk.kb.present.dr.restrictions.ProductionIdLookup;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
@@ -78,7 +75,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void jsonldPvica() throws Exception {
-        HoldbackDatePicker.init();
         View jsonldView = getPreservicaRadioJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -96,7 +92,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testNoKalturaIdPvica() throws Exception {
-        HoldbackDatePicker.init();
         View jsonldView = getPreservicaRadioJsonView();
         String preservicaData = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
 
@@ -117,7 +112,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void solrFromPvica() throws Exception {
-        HoldbackDatePicker.init();
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
@@ -137,7 +131,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testPreservicaSolrNoKalturaId() throws Exception {
-        HoldbackDatePicker.init();
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
@@ -174,7 +167,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testConcurrency() throws InterruptedException, ExecutionException, IOException {
-        HoldbackDatePicker.init();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED);
         YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
         YAML tvConf = conf.getYAMLList(".origins").get(3);
@@ -227,7 +219,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void ownProductionTrueTestTvmeter() throws Exception {
-        HoldbackDatePicker.init();
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -255,7 +246,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void holdbackNameTestNielsen() throws Exception {
-        HoldbackDatePicker.init();
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_0e89456b);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -269,7 +259,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void holdbackNameEducationTvMeterTest() throws Exception {
-        HoldbackDatePicker.init();
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_f1a6492f);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -282,7 +271,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void holdbackNameEducationNielsenTest() throws Exception {
-        HoldbackDatePicker.init();
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_e8c664f9);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -296,7 +284,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void ownProductionFalseTest() throws Exception {
-        HoldbackDatePicker.init();
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_NOT_OWNPROD);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -312,7 +299,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void holdbackNameSolrTest() throws Exception {
-        HoldbackDatePicker.init();
         View jsonldView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_0e89456b);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -326,7 +312,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testFormAndContentInTransformation() throws Exception {
-        HoldbackDatePicker.init();
         View jsonldView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_0e89456b);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -339,7 +324,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testDRProductionID() throws IOException {
-        HoldbackDatePicker.init();
         View jsonldView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -354,8 +338,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testRestrictedDRProductionID() throws IOException {
-        HoldbackDatePicker.init();
-        ProductionIdLookup.init();
         View jsonldView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_4d61dcb3);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -368,9 +350,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testCreationOfFieldDsIdRestricted() throws IOException {
-        HoldbackDatePicker.init();
-        ProductionIdLookup.init();
-        DsIdLookup.init();
         View jsonldView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_4d61dcb3);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -383,7 +362,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testOwnProductionCorrectValue() throws IOException {
-        HoldbackDatePicker.init();
         View jsonldView = getSolrTvViewForPreservicaRecord();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_DOMS_MIG_5d6db06e);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -397,7 +375,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testHasKalturaIdBoolean() throws IOException {
-        HoldbackDatePicker.init();
         View solrView = getSolrTvViewForPreservicaRecord();
         String preservicaRecord = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_4d61dcb3);
         DsRecordDto recordDto = new DsRecordDto().data(preservicaRecord).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
@@ -410,7 +387,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void testNoKalturaIdBoolean() throws IOException {
-        HoldbackDatePicker.init();
         View solrView = getSolrTvViewForPreservicaRecord();
         String preservicaRecord = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_4d61dcb3);
         DsRecordDto recordDto = new DsRecordDto().data(preservicaRecord).id("test.id")
@@ -423,7 +399,6 @@ class ViewTest {
     @Test
     @Tag("integration")
     void alwaysFailingRecordTest() throws IOException {
-        HoldbackDatePicker.init();
         View solrView = getSolrTvViewForPreservicaRecord();
         String preservicaRecord = Resolver.resolveUTF8String("internal_test_files/preservica7/errorRecord.xml");
         DsRecordDto recordDto = new DsRecordDto().data(preservicaRecord).id("test.id")
@@ -433,22 +408,6 @@ class ViewTest {
         assertThrows(RuntimeException.class, () -> {
             solrView.apply(recordDto);
         } );
-    }
-
-    @Test
-    @Tag("integration")
-    void testRestrictionOfProductionIds() {
-        HoldbackDatePicker.init();
-        ProductionIdLookup.init();
-
-        // Should be more than 2500 after latest update to the list
-        assertTrue(ProductionIdLookup.getInstance().getAmountOfRestrictedIds() > 2500L);
-
-        // List should contain a sample of the older ids
-        assertTrue(ProductionIdLookup.getInstance().doLookup("2912081400"));
-
-        // List should contain a sample from the newer ids
-        assertTrue(ProductionIdLookup.getInstance().doLookup("8007034000"));
     }
 
     //********************************************** PRIVATE HELPER METHODS BELOW ***************************************************************

@@ -1,7 +1,6 @@
 package dk.kb.present;
 
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.dr.holdback.HoldbackDatePicker;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.util.Resolver;
 import dk.kb.util.yaml.YAML;
@@ -95,14 +94,13 @@ class OriginHandlerTest {
     @Test
     @Tag("integration")
     void localCorpusPvica() {
-        HoldbackDatePicker.init();
         if (Resolver.getPathFromClasspath("internal_test_files/preservica7/9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml") == null){
             log.error("Preservica test file is not present. Test for file 9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml");
             fail();
         }
         OriginHandler ch = new OriginHandler(config);
-        String record = ch.getRecord("local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
-        assertTrue(record.contains("\"id\":\"local.radio:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
+        String record = ch.getRecord("local.radio.test:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
+        assertTrue(record.contains("\"id\":\"local.radio.test:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
     }
 
 
