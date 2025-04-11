@@ -302,15 +302,15 @@ paths:
             example:
               - idValue: "test:multi:1"
                 idType: "ds_id"
-                platform: "drArkiv"
+                platform: DRARKIV
                 comment: "test multi 2"
               - idValue: "test:multi:2"
                 idType: "ds_id"
-                platform: "drArkiv"
+                platform: DRARKIV
                 comment: "test multi 1"
               - idValue: "test:multi:3"
                 idType: "dr_produktions_id"
-                platform: "drArkiv"
+                platform: DRARKIV
                 comment: "test multi 1"
       responses:
         '204':
@@ -340,6 +340,7 @@ paths:
             example:
               - internalId: "internalId1"
               - internalId: "internalId2"
+
       responses:
         '200':
           description: deleted
@@ -434,7 +435,7 @@ paths:
                 value:
                   idValue: 'test1'
                   idType: 'dr_produktions_id'
-                  platform: 'drArkiv'
+                  platform: DRARKIV
                   comment: 'Dette er en test'
       responses:
         '201':
@@ -462,7 +463,7 @@ paths:
                   value:
                     idValue: 'test1'
                     idType: 'dr_produktions_id'
-                    platform: 'drArkiv'
+                    platform: DRARKIV
                     comment: 'Dette er en opdateret kommentar'
 
         responses:
