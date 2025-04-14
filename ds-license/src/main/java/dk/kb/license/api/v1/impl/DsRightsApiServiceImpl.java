@@ -275,12 +275,20 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
 
     @Override
     public List<String> getIdTypes(String platform) {
-        return ServiceConfig.getRightsPlatformConfig(platform).getList("idTypes");
+        try {
+            return ServiceConfig.getRightsPlatformConfig(platform).getList("idTypes");
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 
     @Override
     public List<Object> getPlatforms() {
-        return ServiceConfig.getConfig().getList("rights.platforms");
+        try {
+            return ServiceConfig.getConfig().getList("rights.platforms");
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 
     /**
