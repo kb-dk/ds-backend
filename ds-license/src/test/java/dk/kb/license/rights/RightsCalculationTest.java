@@ -223,13 +223,12 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
     @Test
     public void inputValidationTestTopLevel() {
-
         RightsCalculationInputDto faultyInput = new RightsCalculationInputDto(null,"1990-06-20T10:00:00+0100",
                 RightsCalculationInputDto.PlatformEnum.DRARKIV,
                 4411, 0, 3190, 1000, "1000", "Random program", "9283748300", "ds.tv");
 
         InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.calculateRightsForRecord(faultyInput));
-        assertEquals("Field recordId is null", exception.getMessage());
+        assertEquals("Field 'recordId' in class dk.kb.license.model.v1.RightsCalculationInputDto is null.", exception.getMessage());
     }
 
     @Test
@@ -239,6 +238,6 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
                 4411, 0, 3190, 1000, null, "Random program", "9283748300", "ds.tv");
 
         InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.calculateRightsForRecord(faultyInput));
-        assertEquals("Field productionCode is null", exception.getMessage());
+        assertEquals("Field 'productionCode' in class dk.kb.license.model.v1.RestrictionsCalculationInputDto is null.", exception.getMessage());
     }
 }

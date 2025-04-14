@@ -1,13 +1,23 @@
 package dk.kb.license;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import dk.kb.license.model.v1.RightsCalculationInputDto;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,55 +155,109 @@ public class Util {
 	 * the method recursively validates that object's fields as well.
 	 *
 	 * @param object the object to validate for non-null fields.
-	 * @throws IllegalAccessException if the method cannot access a field due to its access modifier.
 	 */
-	public static void validateNonNull(Object object) throws IllegalAccessException {
-		if (object == null) {
-			throw new InvalidArgumentServiceException("Object is null");
-		}
+	public static void validateNoNullFields(Object object) {
+		AtomicReference<String> errorMessage = new AtomicReference<>("");
+        boolean result;
 
-		Class<?> objClass = object.getClass();
-		for (Field field : objClass.getDeclaredFields()) {
-			field.setAccessible(true); // Access private fields
-			Object value = field.get(object);
+		try {
+            result = hasNoNullFields(object, errorMessage);
+        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
+            throw new InternalServiceException("An error occurred while checking object for null fields: ", e);
+        }
 
-			if (value == null) {
-				throw new InvalidArgumentServiceException("Field " + field.getName() + " is null");
-			}
-
-			// Validate that enums contains values.
-			if (field.getType() == RightsCalculationInputDto.PlatformEnum.class){
-				if (value.toString().isEmpty()){
-					throw new InvalidArgumentServiceException("Field " + field.getName() + " is null");
-				}
-			}
-
-			// If the field is an object, validate it as well. Except if it is a PlatformEnum as enums creates stack overflow errors.
-			if (!isPrimitiveOrWrapper(field.getType()) && field.getType() != RightsCalculationInputDto.PlatformEnum.class) {
-				validateNonNull(value);
-			}
+        if (!result) {
+			throw new InvalidArgumentServiceException(errorMessage.get());
 		}
 	}
 
 	/**
-	 * Checks if the given class is a primitive type or its corresponding wrapper class.
+	 * Checks if the specified object has no null fields.
+	 * <p>
+	 * This method serves as an entry point for validating that the given object
+	 * and all its fields (including nested objects and collections) are non-null.
 	 *
-	 * This method determines whether the specified class is a primitive type (e.g., int, boolean)
-	 * or one of its corresponding wrapper classes (e.g., Integer, Boolean).
-	 *
-	 * @param clazz the class to check.
-	 * @return true if the class is a primitive type or a wrapper class; false otherwise.
+	 * @param obj the object to validate for null fields.
+	 * @param errorMessage an {@link AtomicReference} to hold an error message if a null field is found.
+	 * @return true if the object has no null fields; false otherwise.
 	 */
-	private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
-		return clazz.isPrimitive() ||
-				clazz == Boolean.class ||
-				clazz == Character.class ||
-				clazz == Byte.class ||
-				clazz == Short.class ||
-				clazz == Integer.class ||
-				clazz == Long.class ||
-				clazz == Float.class ||
-				clazz == Double.class;
+	public static boolean hasNoNullFields(Object obj, AtomicReference<String> errorMessage)
+			throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+		return hasNoNullFields(obj, new HashSet<>(), errorMessage);
 	}
 
+	/**
+	 * Recursively checks if the specified object and its fields have no null values.
+	 * <p>
+	 * This private method performs a deep validation of the given object, checking
+	 * each field for null values. It handles collections and maps, ensuring that
+	 * all elements and entries are also validated. The method avoids cycles by
+	 * keeping track of visited objects. If a null field is found, an appropriate
+	 * error message is set in the provided {@link AtomicReference}.
+	 *
+	 * @param object the object to validate for null fields.
+	 * @param visited a set of visited objects to avoid cycles during validation.
+	 * @param errorMessage an {@link AtomicReference} to hold an error message if a null field is found.
+	 * @return true if the object and all its fields are non-null; false otherwise.
+	 */
+	private static boolean hasNoNullFields(Object object, Set<Object> visited, AtomicReference<String> errorMessage)
+			throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+		if (object == null) {
+			errorMessage.set("Input object is null");
+			return false;
+		}
+
+		// Avoid cycles
+		if (visited.contains(object)) {
+			return true;
+		}
+		visited.add(object);
+
+		Class<?> objectClass = object.getClass();
+
+		// Handle collections
+		if (object instanceof Collection<?>) {
+            Collection<?> collection = (Collection<?>) object;
+            for (Object item : collection) {
+				if (!hasNoNullFields(item, visited, errorMessage)){
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// Handle maps
+		if (object instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) object;
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+				if (!hasNoNullFields(entry.getKey(), visited, errorMessage) || !hasNoNullFields(entry.getValue(), visited, errorMessage)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// Handle primitives and their wrappers
+		if (objectClass.isPrimitive() || objectClass.getName().startsWith("java.")) {
+			return true;
+		}
+
+		// Handle nested objects without using forbidden reelection APIs
+		for (PropertyDescriptor pd : Introspector.getBeanInfo(objectClass, Object.class).getPropertyDescriptors()) {
+			var readMethod = pd.getReadMethod();
+			if (readMethod != null) {
+				Object value = readMethod.invoke(object);
+				if (value == null) {
+					errorMessage.set("Field '" + pd.getName() + "' in class " + objectClass.getName() + " is null.");
+					return false;
+				}
+
+				if (!hasNoNullFields(value, visited, errorMessage)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
 }

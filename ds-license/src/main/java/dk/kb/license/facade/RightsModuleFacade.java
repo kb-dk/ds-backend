@@ -24,8 +24,10 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -285,8 +287,9 @@ public class RightsModuleFacade {
      * @param rightsCalculationInputDto the input DTO containing the needed information for rights calculation.
      * @return a {@link RightsCalculationOutputDto} containing the calculated rights.
      */
-    public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException, IllegalAccessException {
-        Util.validateNonNull(rightsCalculationInputDto);
+    public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException {
+        Util.validateNoNullFields(rightsCalculationInputDto);
+
         RightsCalculationOutputDto output = new RightsCalculationOutputDto();
 
         switch (rightsCalculationInputDto.getPlatform()){
