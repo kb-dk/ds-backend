@@ -49,6 +49,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
             RESTRICTED_ID_IDVALUE +" = ? AND " +
             RESTRICTED_ID_IDTYPE +" = ?" ;
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
+    private final String deleteRestrictedIdByInternalIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
+
     private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDTYPE + " LIKE ? AND " + RESTRICTED_ID_PLATFORM + " LIKE ?";
 
     private final String DR_HOLDBACK_RULES_TABLE = "DR_HOLDBACK_RULES";
@@ -150,6 +152,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
                 RestrictedIdOutputDto output = new RestrictedIdOutputDto();
+                output.setInternalId(res.getString(RESTRICTED_ID_ID));
                 output.setIdValue(res.getString(RESTRICTED_ID_IDVALUE));
                 output.setIdType(res.getString(RESTRICTED_ID_IDTYPE));
                 output.setPlatform(res.getString(RESTRICTED_ID_PLATFORM));
@@ -194,7 +197,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     /**
-     * Delete an entry from the restricted IDs table. Also updates the mTime of the related record in ds-storage.
+     * Delete an entry from the restricted IDs table.
      *
      * @param id_value value of the ID
      * @param id_type type of ID
@@ -209,6 +212,22 @@ public class RightsModuleStorage extends BaseModuleStorage{
             stmt.execute();
         } catch (SQLException e) {
             log.error("SQL Exception in delete restricted Id:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Delete an entry from the restricted IDs table by internal ID.
+     *
+     * @param internalId to delete entry for.
+     */
+    public void deleteRestrictedIdByInternalId(String internalId) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(deleteRestrictedIdByInternalIdQuery)) {
+            statement.setString(1, internalId);
+            int result = statement.executeUpdate();
+            log.info("Deleted '{}' documents by internal ID: '{}'", result, internalId);
+        } catch (SQLException e){
+            log.error("SQL Exception in delete internal ID: " + e.getMessage());
             throw e;
         }
     }
@@ -229,6 +248,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             List<RestrictedIdOutputDto> output = new ArrayList<>();
             while (res.next()) {
                 RestrictedIdOutputDto restrictedIdOutputDto = new RestrictedIdOutputDto();
+                restrictedIdOutputDto.setInternalId(res.getString(RESTRICTED_ID_ID));
                 restrictedIdOutputDto.setIdValue(res.getString(RESTRICTED_ID_IDVALUE));
                 restrictedIdOutputDto.setIdType(res.getString(RESTRICTED_ID_IDTYPE));
                 restrictedIdOutputDto.setPlatform(res.getString(RESTRICTED_ID_PLATFORM));
