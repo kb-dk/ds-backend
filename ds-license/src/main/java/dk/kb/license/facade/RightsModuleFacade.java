@@ -689,14 +689,13 @@ public class RightsModuleFacade {
             return;
         }
 
+        // Add another zero to
+        productionId = productionId + "0";
+
         // Remove prefix zeroes
-        while (productionId.startsWith("0")) {
+        while (productionId.startsWith("0") && productionId.length() > 10) {
             productionId = productionId.substring(1);
         }
-
-
-        // Add another zero to
-        productionId = productionId + "0" ;
 
         inputDto.setIdValue(productionId);
     }
