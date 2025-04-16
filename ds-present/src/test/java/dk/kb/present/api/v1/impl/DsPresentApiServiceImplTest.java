@@ -22,7 +22,7 @@ import dk.kb.present.PresentFacadeTest;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.webservice.AccessUtil;
-import dk.kb.present.webservice.exception.ForbiddenServiceException;
+import dk.kb.util.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
