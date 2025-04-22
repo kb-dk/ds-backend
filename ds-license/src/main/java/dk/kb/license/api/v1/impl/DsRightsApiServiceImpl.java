@@ -56,10 +56,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public void deleteRestrictedId(String internalId, String id, String idType, String platform, Boolean touchRecord) {
-        log.debug("Deleted restricted id:{} idType:{} platform:{}", id, idType, platform);
+    public void deleteRestrictedId(String internalId, Boolean touchRecord) {
+        log.debug("Deleted restricted id from internalId: '{}'.", internalId);
         try {
-            RightsModuleFacade.deleteRestrictedId(internalId, id, idType, platform, getCurrentUserID(),touchRecord);
+            RightsModuleFacade.deleteRestrictedId(internalId, getCurrentUserID(), touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }

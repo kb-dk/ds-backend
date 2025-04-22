@@ -122,7 +122,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
         RestrictedIdOutputDto outputObject = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), restrictedId.getIdType(), restrictedId.getPlatform());
 
-        RightsModuleFacade.deleteRestrictedId(outputObject.getInternalId(), restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),"test",false);
+        RightsModuleFacade.deleteRestrictedId(outputObject.getInternalId(),"test",false);
     }
 
     @Test
@@ -132,14 +132,14 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdValue("00123466486");
         restrictedId.setIdType("dr_produktions_id");
         restrictedId.setPlatform("dr");
-        RightsModuleFacade.deleteRestrictedId(restrictedId.getInternalId(), restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),"test",false);
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getInternalId(), "test",false);
 
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", "dr");
 
         assertEquals("1234664860", outputRight.getIdValue());
-        RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(), restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),"test",false);
+        RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(),"test",false);
     }
 
     @Test
@@ -150,14 +150,14 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdType("dr_produktions_id");
         restrictedId.setPlatform("dr");
         restrictedId.setInternalId("1");
-        RightsModuleFacade.deleteRestrictedId(restrictedId.getInternalId(), restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),"test",false);
+        RightsModuleFacade.deleteRestrictedId(restrictedId.getInternalId(), "test",false);
 
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", "dr");
 
         assertEquals("1234664800", outputRight.getIdValue());
-        RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(), restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),"test",false);
+        RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(), "test",false);
     }
 
     @Test
@@ -172,6 +172,6 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", "dr");
 
         assertEquals("12346648990", outputRight.getIdValue());
-        RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(), restrictedId.getIdValue(),restrictedId.getIdType(), restrictedId.getPlatform(),"test",false);
+        RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(),"test",false);
     }
 }

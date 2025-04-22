@@ -96,23 +96,25 @@ public class RightsModuleFacade {
      * and logs the deletion in the audit log. If specified, it also touches related storage records
      *
      * @param internalId in the database of the restricted ID to be deleted.
-     * @param id of the restricted ID.
-     * @param idType  of the restricted ID.
-     * @param platform the platform from which the restricted ID is being deleted.
      * @param user the user performing the deletion action, used for audit logging.
      * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
      */
-    public static void deleteRestrictedId(String internalId, String id, String idType, String platform, String user, boolean touchDsStorageRecord) throws Exception {
+    public static void deleteRestrictedId(String internalId, String user, boolean touchDsStorageRecord) throws Exception {
         BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
+            // Retrieve object from database
+            RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId);
+
+            // Delete entry from database
             ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId);
             if (touchDsStorageRecord) {
-                touchRelatedStorageRecords(id, idType);
+                touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
             }
 
-            ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(id,idType,platform);
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", id, change.getBefore(),"");
+            ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
+            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", idToDelete.getIdValue(), change.getBefore(),"");
             storage.persistAuditLog(logEntry);
-            log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.", internalId, id, idType, platform);
+            log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.",
+                    internalId, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
             return null;
         });
     }
@@ -218,13 +220,17 @@ public class RightsModuleFacade {
      */
     public static void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) {
         BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
-            for(RestrictedIdInputDto id : restrictedIds) {
-                ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(id.getInternalId());
+            for(RestrictedIdInputDto internalId : restrictedIds) {
+                // Get ID for deletion to extract value and type from internal ID
+                RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId.getInternalId());
+
+                // Delete each entry by internal ID
+                ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId.getInternalId());
                 if (touchDsStorageRecord) {
-                    touchRelatedStorageRecords(id.getIdValue(), id.getIdType());
+                    touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
                 }
-                ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(id.getIdValue(),id.getIdType(),id.getPlatform());
-                AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", id.getIdValue(), change.getBefore(),"");
+                ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
+                AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", idToDelete.getIdValue(), change.getBefore(),"");
                 storage.persistAuditLog(logEntry);
             }
             return null;

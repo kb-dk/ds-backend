@@ -291,13 +291,7 @@ paths:
                 $ref: '#/components/schemas/RestrictedIdInput'
             example:
               - internalId: "internalId1"
-                idValue: "test:multi:1"
-                idType: "ds_id"
-                platform: "dr"
               - internalId: "internalId2"
-                idValue: "test:multi:3"
-                idType: "dr_produktions_id"
-                platform: "dr"
       responses:
         '200':
           description: deleted
@@ -349,26 +343,6 @@ paths:
             - any
       parameters:
         - name: internalId
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: idType
-          in: query
-          required: true
-          schema:
-            type: string
-          example:
-            - "ds_id"
-            - "dr_produktions_id"
-            - "egenproduktions_kode"
-            - "strict_title"
-        - name: platform
           in: query
           required: true
           schema:

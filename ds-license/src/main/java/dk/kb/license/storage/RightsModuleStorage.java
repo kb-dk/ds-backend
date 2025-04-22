@@ -40,6 +40,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
             RESTRICTED_ID_COMMENT +","+ RESTRICTED_ID_MODIFIED_BY +","+ RESTRICTED_ID_MODIFIED_TIME +")" +
             " VALUES (?,?,?,?,?,?,?)";
     private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
+    private final String readRestrictedIdQueryByInternalId = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
+
     private final String updateRestrictedIdQuery = "UPDATE " + RESTRICTED_ID_TABLE +" SET "+
             RESTRICTED_ID_PLATFORM +" = ? , " +
             RESTRICTED_ID_COMMENT +" = ? , " +
@@ -151,16 +153,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             stmt.setString(3, platform);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
-                RestrictedIdOutputDto output = new RestrictedIdOutputDto();
-                output.setInternalId(res.getString(RESTRICTED_ID_ID));
-                output.setIdValue(res.getString(RESTRICTED_ID_IDVALUE));
-                output.setIdType(res.getString(RESTRICTED_ID_IDTYPE));
-                output.setPlatform(res.getString(RESTRICTED_ID_PLATFORM));
-                output.setComment(res.getString(RESTRICTED_ID_COMMENT));
-                output.setModifiedBy(res.getString(RESTRICTED_ID_MODIFIED_BY));
-                output.setModifiedTime(res.getLong(RESTRICTED_ID_MODIFIED_TIME));
-                output.setModifiedTimeHuman(convertToHumanReadable(output.getModifiedTime()));
-                return output;
+                return createRestrictedIdOutputDtoFromResultSet(res);
             }
             return null;
         } catch (SQLException e) {
@@ -216,6 +209,27 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
+
+    /**
+     * Get an entry from the restricted IDs table by internal ID.
+     *
+     * @param internalId to get entry for.
+     * @return a {@link RestrictedIdOutputDto}
+     */
+    public RestrictedIdOutputDto getRestrictedIdByInternalId(String internalId) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQueryByInternalId)) {
+            stmt.setString(1, internalId);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                return createRestrictedIdOutputDtoFromResultSet(res);
+            }
+            return null;
+        } catch (SQLException e) {
+            log.error("SQL Exception in readClause:" + e.getMessage());
+            throw e;
+        }
+    }
+
     /**
      * Delete an entry from the restricted IDs table by internal ID.
      *
@@ -247,15 +261,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             ResultSet res = stmt.executeQuery();
             List<RestrictedIdOutputDto> output = new ArrayList<>();
             while (res.next()) {
-                RestrictedIdOutputDto restrictedIdOutputDto = new RestrictedIdOutputDto();
-                restrictedIdOutputDto.setInternalId(res.getString(RESTRICTED_ID_ID));
-                restrictedIdOutputDto.setIdValue(res.getString(RESTRICTED_ID_IDVALUE));
-                restrictedIdOutputDto.setIdType(res.getString(RESTRICTED_ID_IDTYPE));
-                restrictedIdOutputDto.setPlatform(res.getString(RESTRICTED_ID_PLATFORM));
-                restrictedIdOutputDto.setComment(res.getString(RESTRICTED_ID_COMMENT));
-                restrictedIdOutputDto.setModifiedBy(res.getString(RESTRICTED_ID_MODIFIED_BY));
-                restrictedIdOutputDto.setModifiedTime(res.getLong(RESTRICTED_ID_MODIFIED_TIME));
-                restrictedIdOutputDto.setModifiedTimeHuman(convertToHumanReadable(restrictedIdOutputDto.getModifiedTime()));
+                RestrictedIdOutputDto restrictedIdOutputDto = createRestrictedIdOutputDtoFromResultSet(res);
                 output.add(restrictedIdOutputDto);
             }
             return output;
@@ -545,6 +551,23 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
         connection.commit();
         log.info("All tables cleared for unittest");
+    }
+
+    /**
+     * Create a {@link RestrictedIdOutputDto} from a ResultSet, which should contain all needed values for the DTO
+     * @param resultSet containing values from the backing Rights database
+     */
+    private RestrictedIdOutputDto createRestrictedIdOutputDtoFromResultSet(ResultSet resultSet) throws SQLException {
+        RestrictedIdOutputDto output = new RestrictedIdOutputDto();
+        output.setInternalId(resultSet.getString(RESTRICTED_ID_ID));
+        output.setIdValue(resultSet.getString(RESTRICTED_ID_IDVALUE));
+        output.setIdType(resultSet.getString(RESTRICTED_ID_IDTYPE));
+        output.setPlatform(resultSet.getString(RESTRICTED_ID_PLATFORM));
+        output.setComment(resultSet.getString(RESTRICTED_ID_COMMENT));
+        output.setModifiedBy(resultSet.getString(RESTRICTED_ID_MODIFIED_BY));
+        output.setModifiedTime(resultSet.getLong(RESTRICTED_ID_MODIFIED_TIME));
+        output.setModifiedTimeHuman(convertToHumanReadable(output.getModifiedTime()));
+        return output;
     }
 
     /*
