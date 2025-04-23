@@ -1,6 +1,7 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.RightsCalculation;
+import dk.kb.license.Util;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
@@ -23,9 +24,13 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -283,6 +288,8 @@ public class RightsModuleFacade {
      * @return a {@link RightsCalculationOutputDto} containing the calculated rights.
      */
     public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException {
+        Util.validateNoNullFields(rightsCalculationInputDto);
+
         RightsCalculationOutputDto output = new RightsCalculationOutputDto();
 
         switch (rightsCalculationInputDto.getPlatform()){
@@ -299,8 +306,6 @@ public class RightsModuleFacade {
 
         }
     }
-
-
 
 
     /**
