@@ -339,15 +339,15 @@ paths:
               items:
                 $ref: '#/components/schemas/RestrictedIdInput'
             example:
-              - idValue: "test:multi:1"
-                idType: "ds_id"
-                platform: "dr"
-              - idValue: "test:multi:3"
-                idType: "dr_produktions_id"
-                platform: "dr"
+              - internalId: "internalId1"
+              - internalId: "internalId2"
       responses:
         '200':
           description: deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
   /rights/restrictedId:
     get:
@@ -395,22 +395,7 @@ paths:
         - KBOAuth:
             - any
       parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: idType
-          in: query
-          required: true
-          schema:
-            type: string
-          example:
-            - "ds_id"
-            - "dr_produktions_id"
-            - "egenproduktions_kode"
-            - "strict_title"
-        - name: platform
+        - name: internalId
           in: query
           required: true
           schema:
@@ -421,8 +406,12 @@ paths:
             type: boolean
             default: true
       responses:
-        '204':
+        '200':
           description: deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
     post:
       tags:
         - 'DsRights'
@@ -1041,6 +1030,8 @@ components:
         - idType
         - platform
       properties:
+        internalId:
+          type: string
         idValue:
           type: string
         idType:
@@ -1053,6 +1044,8 @@ components:
     RestrictedIdOutput:
       type: object
       properties:
+        internalId:
+          type: string
         idValue:
           type: string
         idType:
@@ -1325,7 +1318,14 @@ components:
         gitCommitTime:
           type: string
           description: 'The time for the latest commit of the deplyed branch.'
-          
+
+    RecordsCount:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: 'Number of records updated'
           
   securitySchemes:
 

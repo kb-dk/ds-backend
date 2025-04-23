@@ -26,3 +26,12 @@ CREATE TABLE IF NOT EXISTS DR_HOLDBACK_MAP (
                               dr_holdback_id   VARCHAR(32) references DR_HOLDBACK_RULES(id)
 );
 
+CREATE TABLE IF NOT EXISTS AUDITLOG (
+                                        MILLIS BIGINT PRIMARY KEY,
+                                        USERNAME VARCHAR(256) NOT NULL,
+                                        CHANGETYPE VARCHAR(256) NOT NULL,
+                                        OBJECTNAME VARCHAR(256) NOT NULL,
+                                        TEXTBEFORE VARCHAR(65535) NOT NULL,
+                                        TEXTAFTER VARCHAR(65535) NOT NULL
+);
+
