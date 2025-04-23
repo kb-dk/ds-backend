@@ -5,6 +5,7 @@ import dk.kb.license.api.v1.*;
 
 import java.util.List;
 
+import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 
@@ -267,6 +268,24 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public List<DrHoldbackRangeMappingDto> getHoldbackRanges(String drHoldbackId) {
         try {
             return RightsModuleFacade.getHoldbackRanges(drHoldbackId);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public List<String> getIdTypes(String platform) {
+        try {
+            return ServiceConfig.getRightsPlatformConfig(platform).getList("idTypes");
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public List<Object> getPlatforms() {
+        try {
+            return ServiceConfig.getConfig().getList("rights.platforms");
         } catch (Exception e) {
             throw handleException(e);
         }
