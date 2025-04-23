@@ -24,13 +24,9 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.beans.IntrospectionException;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -68,7 +64,8 @@ public class RightsModuleFacade {
         validatePlatformAndIdType(restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getIdType());
 
         if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
-            validateDrProductionIdFormat(restrictedIdInputDto);
+            String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
+            restrictedIdInputDto.setIdValue(validProductionId);
         }
 
         if (restrictedIdInputDto.getIdType().equals("ds_id")) {
@@ -137,7 +134,8 @@ public class RightsModuleFacade {
         validateCommentLength(restrictedIdInputDto);
 
         if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
-            validateDrProductionIdFormat(restrictedIdInputDto);
+            String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
+            restrictedIdInputDto.setIdValue(validProductionId);
         }
 
 
@@ -180,7 +178,8 @@ public class RightsModuleFacade {
                 validateCommentLength(id);
 
                 if (id.getIdType().equals("dr_produktions_id")){
-                    validateDrProductionIdFormat(id);
+                    String validProductionId = Util.validateDrProductionIdFormat(id.getIdValue());
+                    id.setIdValue(validProductionId);;
                 }
 
 
@@ -680,37 +679,6 @@ public class RightsModuleFacade {
         String id = (String) doc.getFieldValue("id");
         log.debug("Touching DS-storage record with id: '{}'", id);
         return storageClient.touchRecord(id);
-    }
-
-    /**
-     * Validates and formats the production ID in the given {@link RestrictedIdInputDto}.
-     * <p>
-     * This method removes leading zeros from the production ID and checks if the ID is
-     * already in the correct format. If the production ID is 10 digits long and ends with
-     * two zeros, it is considered valid and is set back on the input DTO. If not, a zero
-     * is appended to the production ID before updating the input DTO.
-     *
-     * @param inputDto the {@link RestrictedIdInputDto} containing the production ID to be validated.
-     */
-    private static void validateDrProductionIdFormat(RestrictedIdInputDto inputDto) {
-        String productionId = inputDto.getIdValue();
-
-        // Some production IDs are on the correct formula already, as they are derived by hand in our system. therefore,
-        // if an ID is 10 digits long an ends with two zeros, they are already correct.
-        if (productionId.endsWith("00") && productionId.length() == 10){
-            inputDto.setIdValue(productionId);
-            return;
-        }
-
-        // Add another zero to
-        productionId = productionId + "0";
-
-        // Remove prefix zeroes
-        while (productionId.startsWith("0") && productionId.length() > 10) {
-            productionId = productionId.substring(1);
-        }
-
-        inputDto.setIdValue(productionId);
     }
 
 }

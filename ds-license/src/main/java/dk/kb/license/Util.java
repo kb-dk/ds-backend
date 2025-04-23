@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import dk.kb.license.model.v1.RestrictedIdInputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -260,4 +261,44 @@ public class Util {
 
 		return true;
 	}
+
+    /**
+     * Validates and formats the production ID in the given {@link RestrictedIdInputDto}.
+     * <p>
+     * This method removes leading zeros from the production ID and checks if the ID is
+     * already in the correct format. If the production ID is 10 digits long and ends with
+     * two zeros, it is considered valid and is set back on the input DTO. If not, a zero
+     * is appended to the production ID before updating the input DTO.
+     *
+     * @param inputProductionId the {@link RestrictedIdInputDto} containing the production ID to be validated.
+     */
+    public static String validateDrProductionIdFormat(String inputProductionId) {
+		String productionId = inputProductionId;
+
+        // Some production IDs are on the correct formula already, as they are derived by hand in our system. therefore,
+        // if an ID is 10 digits long an ends with two zeros, they are already correct.
+        if (productionId.endsWith("00") && productionId.length() == 10){
+            return productionId;
+        }
+
+        // Add another zero to
+        productionId = productionId + "0";
+
+        // Remove prefix zeroes
+        while (productionId.startsWith("0") && productionId.length() > 10) {
+            productionId = productionId.substring(1);
+        }
+
+		if (productionId.length() > 10) {
+			throw new InvalidArgumentServiceException("The input production ID: '" + inputProductionId + "' got formattet to '" + productionId +
+					"' which is longer than 10 digits. This is not an allowed production ID.");
+		}
+
+		if (productionId.length() <= 7){
+			throw new InvalidArgumentServiceException("The input production ID: '" + inputProductionId + "' got formattet to '" + productionId +
+					"' which is shorter than 8 digits. This is not an allowed production ID.");
+		}
+
+        return productionId;
+    }
 }
