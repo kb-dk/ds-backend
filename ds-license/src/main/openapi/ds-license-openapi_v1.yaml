@@ -189,6 +189,55 @@ paths:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
   
   # Rights
+  /rights/platforms:
+    get:
+      summary: Get all available platforms
+      tags:
+        - 'DsRights'
+      operationId: getPlatforms
+      security:
+        - KBOAuth:
+            - any
+      responses:
+        '200':
+          description: A JSON array of available platforms.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /rights/idTypes:
+    get:
+      summary: Get all allowed ID Types in the rights component.
+      tags:
+        - 'DsRights'
+      operationId: getIdTypes
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: platform
+          in: query
+          description: "The platform to extract ID Types for"
+          schema:
+            type: string
+            # TODO: When DRA-1816 is merged this should use the ENUM implemented as PlatformEnum
+            enum:
+              - dr
+              - generic
+      responses:
+        '200':
+          description: A JSON array of allowed ID types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+
   /rights/restrictedIds:
     get:
       summary: get all restricted ids
@@ -290,15 +339,15 @@ paths:
               items:
                 $ref: '#/components/schemas/RestrictedIdInput'
             example:
-              - idValue: "test:multi:1"
-                idType: "ds_id"
-                platform: "dr"
-              - idValue: "test:multi:3"
-                idType: "dr_produktions_id"
-                platform: "dr"
+              - internalId: "internalId1"
+              - internalId: "internalId2"
       responses:
         '200':
           description: deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
   /rights/restrictedId:
     get:
@@ -346,22 +395,7 @@ paths:
         - KBOAuth:
             - any
       parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: idType
-          in: query
-          required: true
-          schema:
-            type: string
-          example:
-            - "ds_id"
-            - "dr_produktions_id"
-            - "egenproduktions_kode"
-            - "strict_title"
-        - name: platform
+        - name: internalId
           in: query
           required: true
           schema:
@@ -372,8 +406,12 @@ paths:
             type: boolean
             default: true
       responses:
-        '204':
+        '200':
           description: deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
     post:
       tags:
         - 'DsRights'
@@ -985,7 +1023,6 @@ components:
             type: string 
 
     # Rights module
-
     RestrictedIdInput:
       type: object
       required:
@@ -993,6 +1030,8 @@ components:
         - idType
         - platform
       properties:
+        internalId:
+          type: string
         idValue:
           type: string
         idType:
@@ -1005,6 +1044,8 @@ components:
     RestrictedIdOutput:
       type: object
       properties:
+        internalId:
+          type: string
         idValue:
           type: string
         idType:
@@ -1277,7 +1318,14 @@ components:
         gitCommitTime:
           type: string
           description: 'The time for the latest commit of the deplyed branch.'
-          
+
+    RecordsCount:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: 'Number of records updated'
           
   securitySchemes:
 
