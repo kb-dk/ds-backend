@@ -56,10 +56,12 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public void deleteRestrictedId(String internalId, Boolean touchRecord) {
+    public RecordsCountDto deleteRestrictedId(String internalId, Boolean touchRecord) {
         log.debug("Deleted restricted id from internalId: '{}'.", internalId);
         try {
-            RightsModuleFacade.deleteRestrictedId(internalId, getCurrentUserID(), touchRecord);
+            RecordsCountDto count = new RecordsCountDto();
+            count.setCount(RightsModuleFacade.deleteRestrictedId(internalId, getCurrentUserID(), touchRecord));
+            return count;
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -98,9 +100,11 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
+    public RecordsCountDto deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            RightsModuleFacade.deleteRestrictedIds(restrictedIds, getCurrentUserID(),touchRecord);
+            RecordsCountDto count = new RecordsCountDto();
+            count.setCount(RightsModuleFacade.deleteRestrictedIds(restrictedIds, getCurrentUserID(),touchRecord));
+            return count;
         } catch (Exception e) {
             throw handleException(e);
         }

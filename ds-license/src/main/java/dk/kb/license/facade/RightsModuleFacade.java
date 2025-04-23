@@ -99,13 +99,13 @@ public class RightsModuleFacade {
      * @param user the user performing the deletion action, used for audit logging.
      * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
      */
-    public static void deleteRestrictedId(String internalId, String user, boolean touchDsStorageRecord) throws Exception {
-        BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
+    public static int deleteRestrictedId(String internalId, String user, boolean touchDsStorageRecord) throws Exception {
+        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
             // Retrieve object from database
             RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId);
 
             // Delete entry from database
-            ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId);
+            int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId);
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
             }
@@ -115,7 +115,7 @@ public class RightsModuleFacade {
             storage.persistAuditLog(logEntry);
             log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.",
                     internalId, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
-            return null;
+            return deletedCount;
         });
     }
 
@@ -218,25 +218,28 @@ public class RightsModuleFacade {
      * @param restrictedIds        list of restricted Ids to be deleted.
      * @param touchDsStorageRecord
      */
-    public static void deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) {
-        BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
+    public static int deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) {
+        int deletedRecords = BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
+            int totalDeleted = 0;
             for(RestrictedIdInputDto internalId : restrictedIds) {
                 // Get ID for deletion to extract value and type from internal ID
                 RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId.getInternalId());
 
                 // Delete each entry by internal ID
-                ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId.getInternalId());
+                int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId.getInternalId());
                 if (touchDsStorageRecord) {
                     touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
                 }
                 ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
                 AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", idToDelete.getIdValue(), change.getBefore(),"");
                 storage.persistAuditLog(logEntry);
+                totalDeleted += deletedCount;
             }
-            return null;
+            return totalDeleted;
         });
         log.info("Deleted restricted IDs: [{}] ",
                 restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
+        return deletedRecords;
     }
 
 

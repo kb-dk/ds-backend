@@ -235,11 +235,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
      *
      * @param internalId to delete entry for.
      */
-    public void deleteRestrictedIdByInternalId(String internalId) throws SQLException {
+    public int deleteRestrictedIdByInternalId(String internalId) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(deleteRestrictedIdByInternalIdQuery)) {
             statement.setString(1, internalId);
             int result = statement.executeUpdate();
             log.info("Deleted '{}' documents by internal ID: '{}'", result, internalId);
+            return result;
         } catch (SQLException e){
             log.error("SQL Exception in delete internal ID: " + e.getMessage());
             throw e;

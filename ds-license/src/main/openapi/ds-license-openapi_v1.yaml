@@ -295,6 +295,10 @@ paths:
       responses:
         '200':
           description: deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
   /rights/restrictedId:
     get:
@@ -353,8 +357,12 @@ paths:
             type: boolean
             default: true
       responses:
-        '204':
+        '200':
           description: deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
     post:
       tags:
         - 'DsRights'
@@ -1262,7 +1270,14 @@ components:
         gitCommitTime:
           type: string
           description: 'The time for the latest commit of the deplyed branch.'
-          
+
+    RecordsCount:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: 'Number of records updated'
           
   securitySchemes:
 

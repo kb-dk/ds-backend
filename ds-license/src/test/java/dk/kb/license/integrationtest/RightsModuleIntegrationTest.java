@@ -7,6 +7,7 @@ import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.DsLicenseUnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
+import dk.kb.license.util.H2DbUtil;
 import dk.kb.util.oauth2.KeycloakUtil;
 import dk.kb.util.webservice.OAuthConstants;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,6 +42,8 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
             ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml");
 
             BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+            H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
+
             // Instantiate the RightsModuleStorage without it being able to touch records in a backing DS-storage
             storage = new RightsModuleStorage();
         } catch (IOException | SQLException e) {
@@ -122,7 +126,8 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
         RestrictedIdOutputDto outputObject = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), restrictedId.getIdType(), restrictedId.getPlatform());
 
-        RightsModuleFacade.deleteRestrictedId(outputObject.getInternalId(),"test",false);
+        int deleted = RightsModuleFacade.deleteRestrictedId(outputObject.getInternalId(),"test",false);
+        assertEquals(1, deleted);
     }
 
     @Test
@@ -132,14 +137,13 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdValue("00123466486");
         restrictedId.setIdType("dr_produktions_id");
         restrictedId.setPlatform("dr");
-        RightsModuleFacade.deleteRestrictedId(restrictedId.getInternalId(), "test",false);
-
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", "dr");
 
         assertEquals("1234664860", outputRight.getIdValue());
-        RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(),"test",false);
+        int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(),"test",false);
+        assertEquals(1, deletedCount);
     }
 
     @Test
@@ -150,14 +154,13 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdType("dr_produktions_id");
         restrictedId.setPlatform("dr");
         restrictedId.setInternalId("1");
-        RightsModuleFacade.deleteRestrictedId(restrictedId.getInternalId(), "test",false);
-
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", "dr");
 
         assertEquals("1234664800", outputRight.getIdValue());
-        RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(), "test",false);
+        int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId(), "test",false);
+        assertEquals(1, deletedCount);
     }
 
     @Test
