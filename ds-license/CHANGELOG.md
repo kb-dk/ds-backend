@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added client method for the APi endpoint: `rights/calculate`
 
 ### Changed
+- Deletion of rights restrictions now returns the amount of records deleted instead of nothing.
 ### Fixed
 
 ## [1.5.3](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.5.3) 2025-03-05
