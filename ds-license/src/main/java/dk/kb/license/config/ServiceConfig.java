@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import dk.kb.license.model.v1.PlatformEnumDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +132,7 @@ public class ServiceConfig {
     }
 
     public static int getHoldbackLogicChangeDays(){
-        YAML drPlatform = getRightsPlatformConfig("dr");
+        YAML drPlatform = getRightsPlatformConfig(PlatformEnumDto.DRARKIV.getValue());
 
         if (drPlatform.isEmpty()){
             throw new IllegalStateException("The DR platform config should have been loaded, but was not. Holdback cannot be calculated correctly.");
@@ -141,7 +142,7 @@ public class ServiceConfig {
     }
 
     public static int getHoldbackYearsForRadio(){
-        YAML drPlatform = getRightsPlatformConfig("dr");
+        YAML drPlatform = getRightsPlatformConfig(PlatformEnumDto.DRARKIV.getValue());
 
         if (drPlatform.isEmpty()){
             throw new IllegalStateException("The DR platform config should have been loaded, but was not. Holdback cannot be calculated correctly.");
