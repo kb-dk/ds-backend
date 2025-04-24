@@ -222,11 +222,7 @@ paths:
           in: query
           description: "The platform to extract ID Types for"
           schema:
-            type: string
-            # TODO: When DRA-1816 is merged this should use the ENUM implemented as PlatformEnum
-            enum:
-              - dr
-              - generic
+            $ref: '#/components/schemas/PlatformEnum'
       responses:
         '200':
           description: A JSON array of allowed ID types
