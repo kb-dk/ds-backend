@@ -399,7 +399,7 @@ paths:
           in: query
           required: true
           schema:
-            $ref: '#/components/schemas/PlatformEnum'
+            type: string
         - name: touchRecord
           in: query
           schema:

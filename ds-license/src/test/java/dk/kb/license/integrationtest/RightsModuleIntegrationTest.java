@@ -122,7 +122,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("ds.tv:oai:io:e027e1dc-5006-4f54-b2b7-ec451940c500");
         restrictedId.setIdType("ds_id");
-        restrictedId.setPlatform("dr");
+        restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
 
         RestrictedIdOutputDto outputObject = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), restrictedId.getIdType(), restrictedId.getPlatform());
@@ -137,7 +137,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("00123466486");
         restrictedId.setIdType("dr_produktions_id");
-        restrictedId.setPlatform("dr");
+        restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", PlatformEnumDto.DRARKIV);
@@ -153,7 +153,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("1234664800");
         restrictedId.setIdType("dr_produktions_id");
-        restrictedId.setPlatform("dr");
+        restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
         restrictedId.setInternalId("1");
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
@@ -170,7 +170,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("1234664899");
         restrictedId.setIdType("dr_produktions_id");
-        restrictedId.setPlatform("dr");
+        restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), "dr_produktions_id", PlatformEnumDto.DRARKIV);

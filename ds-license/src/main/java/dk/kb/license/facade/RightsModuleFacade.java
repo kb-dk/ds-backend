@@ -112,7 +112,7 @@ public class RightsModuleFacade {
                 touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
             }
 
-            ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
+            ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform().toString());
             AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", idToDelete.getIdValue(), change.getBefore(),"");
             storage.persistAuditLog(logEntry);
             log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.",
@@ -234,7 +234,7 @@ public class RightsModuleFacade {
                 if (touchDsStorageRecord) {
                     touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
                 }
-                ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
+                ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform().toString());
                 AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", idToDelete.getIdValue(), change.getBefore(),"");
                 storage.persistAuditLog(logEntry);
                 totalDeleted += deletedCount;
