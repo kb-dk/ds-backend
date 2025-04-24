@@ -564,7 +564,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
         output.setInternalId(resultSet.getString(RESTRICTED_ID_ID));
         output.setIdValue(resultSet.getString(RESTRICTED_ID_IDVALUE));
         output.setIdType(resultSet.getString(RESTRICTED_ID_IDTYPE));
-        output.setPlatform(resultSet.getString(RESTRICTED_ID_PLATFORM));
+        output.setPlatform(PlatformEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_PLATFORM)));
         output.setComment(resultSet.getString(RESTRICTED_ID_COMMENT));
         output.setModifiedBy(resultSet.getString(RESTRICTED_ID_MODIFIED_BY));
         output.setModifiedTime(resultSet.getLong(RESTRICTED_ID_MODIFIED_TIME));
