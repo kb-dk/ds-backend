@@ -217,9 +217,9 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @param internalId to get entry for.
      * @return a {@link RestrictedIdOutputDto}
      */
-    public RestrictedIdOutputDto getRestrictedIdByInternalId(String internalId) throws SQLException {
+    public RestrictedIdOutputDto getRestrictedIdByInternalId(Long internalId) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQueryByInternalId)) {
-            stmt.setString(1, internalId);
+            stmt.setLong(1, internalId);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
                 return createRestrictedIdOutputDtoFromResultSet(res);
@@ -236,9 +236,9 @@ public class RightsModuleStorage extends BaseModuleStorage{
      *
      * @param internalId to delete entry for.
      */
-    public int deleteRestrictedIdByInternalId(String internalId) throws SQLException {
+    public int deleteRestrictedIdByInternalId(Long internalId) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(deleteRestrictedIdByInternalIdQuery)) {
-            statement.setString(1, internalId);
+            statement.setLong(1, internalId);
             int result = statement.executeUpdate();
             log.info("Deleted '{}' documents by internal ID: '{}'", result, internalId);
             return result;
@@ -561,7 +561,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      */
     private RestrictedIdOutputDto createRestrictedIdOutputDtoFromResultSet(ResultSet resultSet) throws SQLException {
         RestrictedIdOutputDto output = new RestrictedIdOutputDto();
-        output.setInternalId(resultSet.getString(RESTRICTED_ID_ID));
+        output.setInternalId(resultSet.getLong(RESTRICTED_ID_ID));
         output.setIdValue(resultSet.getString(RESTRICTED_ID_IDVALUE));
         output.setIdType(resultSet.getString(RESTRICTED_ID_IDTYPE));
         output.setPlatform(PlatformEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_PLATFORM)));

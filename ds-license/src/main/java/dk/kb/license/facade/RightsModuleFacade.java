@@ -101,7 +101,7 @@ public class RightsModuleFacade {
      * @param user the user performing the deletion action, used for audit logging.
      * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
      */
-    public static int deleteRestrictedId(String internalId, String user, boolean touchDsStorageRecord) throws Exception {
+    public static int deleteRestrictedId(Long internalId, String user, boolean touchDsStorageRecord) throws Exception {
         return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
             // Retrieve object from database
             RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId);
@@ -227,10 +227,10 @@ public class RightsModuleFacade {
             int totalDeleted = 0;
             for(RestrictedIdInputDto internalId : restrictedIds) {
                 // Get ID for deletion to extract value and type from internal ID
-                RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId.getInternalId());
+                RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId.getInternalId().longValue());
 
                 // Delete each entry by internal ID
-                int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId.getInternalId());
+                int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId.getInternalId().longValue());
                 if (touchDsStorageRecord) {
                     touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
                 }
