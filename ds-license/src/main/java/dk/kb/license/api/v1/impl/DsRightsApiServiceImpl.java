@@ -3,6 +3,7 @@ package dk.kb.license.api.v1.impl;
 import dk.kb.license.api.v1.*;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import dk.kb.license.config.ServiceConfig;
@@ -57,7 +58,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public RecordsCountDto deleteRestrictedId(String internalId, Boolean touchRecord) {
+    public RecordsCountDto deleteRestrictedId(Long internalId, Boolean touchRecord) {
         log.debug("Deleted restricted id from internalId: '{}'.", internalId);
         try {
             RecordsCountDto count = new RecordsCountDto();

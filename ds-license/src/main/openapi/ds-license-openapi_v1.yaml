@@ -399,7 +399,8 @@ paths:
           in: query
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - name: touchRecord
           in: query
           schema:
@@ -1033,7 +1034,8 @@ components:
         - platform
       properties:
         internalId:
-          type: string
+          type: integer
+          format: int64
         idValue:
           type: string
         idType:
@@ -1047,7 +1049,8 @@ components:
       type: object
       properties:
         internalId:
-          type: string
+          type: integer
+          format: int64
         idValue:
           type: string
         idType:
