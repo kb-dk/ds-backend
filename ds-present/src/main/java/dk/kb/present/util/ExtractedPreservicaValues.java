@@ -159,6 +159,7 @@ public class ExtractedPreservicaValues {
         restrictionsDto.setRecordId(getId());
         restrictionsDto.setDrProductionId(getProductionId());
         restrictionsDto.setProductionCode(getOrigin());
+        restrictionsDto.setTitle("Test title"); // TODO: Title should be sent here as well
 
         rightsInputDto.setStartTime(getStartTime());
         rightsInputDto.setRecordId(getId());

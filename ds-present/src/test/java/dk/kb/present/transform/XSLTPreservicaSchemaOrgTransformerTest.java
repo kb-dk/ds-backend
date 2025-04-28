@@ -47,8 +47,8 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
     @Test
     void testUrlPreservica7() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithVideoChildAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_b346acc8, null);
-        Assertions.assertTrue(transformedJSON.contains("\"kb:file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\""));
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_TRANSCODINGSTATUS, null);
+        Assertions.assertTrue(transformedJSON.contains("\"kb:file_id\":\"\\/radio-tv\\/2\\/e\\/e\\/6\\/2ee62889-a4d0-43c4-bfe5-4d7e3dcca7c8.mp3\""));
     }
 
     @Test
@@ -382,8 +382,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
     @Test
     public void testNotANumberPlusSign() throws IOException {
-        Map<String, String> fakeManifestation = Map.of("manifestation", "test");
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_INVALID_NUMBERS_PLUSSIGN, fakeManifestation);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_INVALID_NUMBERS_PLUSSIGN);
 
         assertFalse(transformedJSON.contains("\"kb:transformation_error_description\":\"err:FOJS0006: xml-to-json: Invalid number: 2+3 \""));
     }
@@ -403,8 +402,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     //@Test
     void testErrorCatching() throws IOException {
         // This does not produce an error anymore, however I would like to produce an error to test the error handling.
-        Map<String, String> fakeManifestation = Map.of("manifestation", "test");
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_INVALID_NUMBERS_PLUSSIGN, fakeManifestation);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_INVALID_NUMBERS_PLUSSIGN);
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:transformation_error_description\":\"err:FOJS0006: xml-to-json: Invalid number: 2+3 \""));
     }

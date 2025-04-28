@@ -79,10 +79,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         DR,
         /**
          *  Manifestation strategy, used when the metadata to transform is dependent on one MANIFESTATION. This
-         *  strategy is oriented towards metadata from preservica 7 and expects the metadata to conform to the preservica 7
-         *  datamodel, where metadata delivered from OAI-PMH doesn't contain information on manifestations.
-         *  Manifestations for records have been extracted from the Preservica 7 REST API and are presented as
-         *  {@code referenceId}s in {@link DsRecordDto}s.
+         *  strategy is oriented towards metadata from preservica 7 and expects the metadata to conform to the preservica 7.6
+         *  datamodel, where metadata delivered from OAI-PMH does contain information on manifestations in the transcoding status XML fragment.
          */
         MANIFESTATION
     }
@@ -169,7 +167,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      *     <li>Clean start- and end-date and add them to the metadata map.</li>
      *     <li>Create metadata map entries for own production.</li>
      *     <li>Calculate holdback for the record in hand and add these values to the metadata map.</li>
-     *     <li>Add the access manifestation from the {@link DsRecordDto#referenceId} to the metadata map.</li>
      * </ul>
      * @param record to apply the strategy to.
      * @param content of the record.
@@ -194,7 +191,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         updateMetadataMapWithFormAndContent(metadata, extractedValues);
         updateMetadataMapWithProductionCodeDr(metadata, extractedValues.getOrigin(), rightsOutput);
         updateMetadataMapWithDrHoldback(metadata, rightsOutput);
-        updateMetadataMapWithPreservicaManifestation(record, metadata);
 
         if (!extractedValues.getProductionId().isEmpty()){
             metadata.put("productionId", extractedValues.getProductionId());
@@ -211,7 +207,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * <ul>
      *     <li>Extract values from preservica record. (Dates, values for holdback calculation and own-production).</li>
      *     <li>Clean start- and end-date and add them to the metadata map.</li>
-     *     <li>Add the access manifestation from the {@link DsRecordDto#referenceId} to the metadata map.</li>
      * </ul>
      * @param record to apply the strategy to.
      * @param content of the record.
@@ -225,7 +220,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             throw new RuntimeException(e);
         }
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
-        updateMetadataMapWithPreservicaManifestation(record, metadata);
     }
 
     /**
@@ -298,18 +292,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         // https://schema.org/DateTime and https://solr.apache.org/guide/6_6/working-with-dates.html#WorkingwithDates-DateFormatting
         DateTimeFormatter isoInstantFormatter = DateTimeFormatter.ISO_INSTANT;
         return instant.atOffset(offsetDateTime.getOffset()).format(isoInstantFormatter);
-    }
-
-    /**
-     * Update the map of metadata with manifestation from the input {@link DsRecordDto}s referenceId.
-     * @param record with a referenceId.
-     * @param metadata map that values from the record is extracted to.
-     */
-    private void updateMetadataMapWithPreservicaManifestation(DsRecordDto record, Map<String, String> metadata) {
-        String manifestationName = record.getReferenceId();
-        if (!(manifestationName == null) && !manifestationName.isEmpty()){
-            metadata.put("manifestation", manifestationName);
-        }
     }
 
     /**

@@ -69,7 +69,7 @@ public class TestFiles {
     public static final String PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS = "internal_test_files/homemade/radioWithContributors.xml";
     public static final String PVICA_HOMEMADE_INVALID_NUMBERS = "internal_test_files/homemade/invalid_numbers.xml";
     public static final String PVICA_HOMEMADE_INVALID_NUMBERS_PLUSSIGN = "internal_test_files/homemade/invalid_numbers_2.xml";
-
+    public static final String PVICA_WITH_TRANSCODINGSTATUS = "internal_test_files/withFileInfo.xml";
 
     // From preservica 6, not in preservica 7 stage
     public static final String PVICA6_RECORD_00a9e71c = "internal_test_files/preservica6/00a9e71c-1264-4e57-9238-b38ec5672fb2.xml";

@@ -14,6 +14,7 @@
                xmlns:pidhandle="http://kuana.kb.dk/types/pidhandle/0/1/#"
                xmlns:program_structure="http://doms.statsbiblioteket.dk/types/program_structure/0/1/#"
                xmlns:err="http://www.w3.org/2005/xqt-errors"
+               xmlns:transcoding="http://id.kb.dk/schemas/radiotv_access/transcoding_status"
                version="3.0">
 
   <xsl:output method="text"/>
@@ -28,8 +29,6 @@
   <xsl:param name="endTime"/>
   <!-- ID created by kaltura. This ID is the ID of the stream containing the newest presentation copy for this resource. Used for video and audio objects.-->
   <xsl:param name="kalturaID"/>
-  <!-- XML containing the presentation manifestation for the record in hand-->
-  <xsl:param name="manifestation"/>
   <!-- Representation of when the record was last modified in the backing ds-storage. The value is a long representing time
        since epoch with microsecond precision (milliseconds with 3 extra digits). -->
   <xsl:param name="mTime"/>
@@ -1093,9 +1092,9 @@
       <xsl:value-of select="format-number($mTime, '0')"/>
     </f:string>
 
-    <xsl:if test="$manifestation != ''">
+    <xsl:if test="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/radiotv_access/transcoding_status']">
       <f:string key="kb:file_id">
-        <xsl:value-of select="$manifestation"/>
+        <xsl:value-of select="/XIP/Metadata/Content/transcoding:radiotvTranscodingStatus/transcoding:specificRadioTvTranscodingStatus/transcoding:accessFilePath"/>
       </f:string>
     </xsl:if>
 

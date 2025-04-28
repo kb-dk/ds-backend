@@ -68,24 +68,6 @@ public class TestUtil {
 		return transformer.apply(xml, metadata);
 	}
 
-	public static String getTransformedWithVideoChildAdded(
-			String xsltResource, String xmlResource, Map<String, String> injections) throws IOException {
-		XSLTTransformer transformer = new XSLTTransformer(xsltResource, injections);
-		String xml = Resolver.resolveUTF8String(xmlResource);
-		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
-		// Preservica 7 delivers very small children, containing just the name of the file
-		String childData = "8946d31d-a81c-447f-b84d-ff80644353d2.mp4";
-
-		metadata.put("recordID", "ds.test:" + Path.of(xmlResource).getFileName().toString());
-		metadata.put("origin", "ds.test");
-		metadata.put("manifestation", childData);
-		metadata.put("mTime", "1701261949625000");
-		metadata.put("startTime", "1987-05-04T14:45:00Z");
-		metadata.put("endTime", "1987-05-04T16:45:00Z");
-		//System.out.println("access fields:"+metadata);
-		return transformer.apply(xml, metadata);
-	}
-
     /**
      * Implicit test of {@link dk.kb.present.transform.XSLTFactory}.
      * @param config XSLTFactory compliant YAML.
@@ -113,7 +95,6 @@ public class TestUtil {
 	 */
 	public static String getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(String schemaOrgTransformer, String record) throws IOException {
 		Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
-				"manifestation", "8946d31d-a81c-447f-b84d-ff80644353d2.mp4",
 				"holdbackDate", "2026-01-17T09:34:42Z",
 				"holdbackPurposeName","Aktualitet og debat",
 				"kalturaID", "aVeryTrueKalturaID",
