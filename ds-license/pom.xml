@@ -139,6 +139,41 @@
     Method only takes the userattributes and returns a list of licences that the userattributes give access to. For each license
     the name, validFrom,ValidTo and a description will be returned. This information can be shown to the user.
 
+    ## Rights API
+    The methods exposed in the Rights API enables the add and editing data for rights calculations. (Basically extrac fi
+
+    There are to types of righs calculations.
+
+    ### restricted IDs (klausuleringer)
+    The restricted IDs API enables blacklisting (and whitelisting) of records based on an ID in the metadata. 
+    Whenevner a restricted ID is added or deleted, the corresponding records a reindexed.
+
+    There are 4 different types of Ids supported.
+    #### ds_id
+    Restrict (blacklist) a record based on the local id in ds
+
+    #### dr_produktion_id
+    Restrict (blacklist) records based on the DR production ID. Only relevant for 'DR Arkivet'. Note that multiple records in ds can have the same DR production ID
+
+    #### strict_title
+    Restrict (blacklist) records based on their title. Note that the title of the record has to match the restricted title exactly.
+
+    #### own_production_code 
+    When a production code is added to the list all shown
+
+    ### Holdback calculations
+    The rights API exposes methods to update two types of data for calculating when the holdback of a record expires.
+
+    #### Holdback Rules
+    A set of rules (formål) specifying the number of holdback days. The rules are identified by their name and id.
+    If the number of days is less than 365, the holdback days are added directly to the publication date. If the holdback days are
+    equal to or greater 365, the holdback days are added to the first January 1. following the publication date.
+
+    #### Holdback ranges
+    Each record is mapped to a holdback rule by looking at the values for their form and content (indhold).
+    The ranges are used to to map a record to a holdback rule.
+
+
     Developed and maintained by the Royal Danish Library.
 </description>
     
