@@ -22,23 +22,6 @@ import dk.kb.license.util.H2DbUtil;
  * 
  */
 public abstract class DsLicenseUnitTestUtil {
-
-
-    private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";
-
-
-
-    /**
-     * This will load the DDL (data) file licensemodule_default_configuration.ddl into the storage. 
-     * It will be too much work to add all these data programmatic. 
-     * 
-     * @throws SQLException
-     */
-    public static void insertDefaultConfigurationTypes() throws SQLException {
-        File insert_ddl_file = new File(INSERT_DEFAULT_CONFIGURATION_DDL_FILE);
-        storage.runDDLScript(insert_ddl_file);        
-    }
-
     protected static final String DRIVER = "org.h2.Driver";
 
     //We need the relative location. This works both in IDE's and Maven.
@@ -47,32 +30,7 @@ public abstract class DsLicenseUnitTestUtil {
     protected static final String USERNAME = "";
     protected static final String PASSWORD = "";
 
-    protected static LicenseModuleStorage storage = null;
-
     private static final Logger log = LoggerFactory.getLogger(DsLicenseUnitTestUtil.class);
-
-
-    @BeforeAll
-    public static void beforeClass() throws IOException, SQLException {
-
-        ServiceConfig.initialize("conf/ds-license*.yaml"); 	    
-
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD);        
-        LicenseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-        storage = new LicenseModuleStorage();
-
-
-    }
-
-    /*
-     * Delete all records between each unittest. The clearTableRecords is only called from here. 
-     * The facade class is reponsible for committing transactions. So clean up between unittests.
-     */
-    @BeforeEach
-    public void beforeEach() throws SQLException {
-        storage.clearTableRecords();                     
-    }
-
 
     @AfterAll
     public static void afterClass() {
@@ -80,8 +38,7 @@ public abstract class DsLicenseUnitTestUtil {
         // This way you can open the DB in a DB-browser after a unittest and see the result.
         // Just run that single test and look in the DB
         LicenseModuleStorage.shutdown();
-
-
+        BaseModuleStorage.shutdown();
     }
 
 

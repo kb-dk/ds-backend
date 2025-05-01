@@ -7,6 +7,7 @@ import java.util.Set;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.fasterxml.jackson.jaxrs.xml.JacksonXMLProvider;
 import dk.kb.license.api.v1.impl.DsLicenseApiServiceImpl;
+import dk.kb.license.api.v1.impl.DsRightsApiServiceImpl;
 import dk.kb.license.api.v1.impl.ServiceApiServiceImpl;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.util.webservice.OpenApiResource;
@@ -23,6 +24,7 @@ public class Application_v1 extends javax.ws.rs.core.Application {
                 JacksonJsonProvider.class,
                 JacksonXMLProvider.class,
                 DsLicenseApiServiceImpl.class,
+                DsRightsApiServiceImpl.class,
                 ServiceApiServiceImpl.class,
                 ServiceExceptionMapper.class,
                 OpenApiResource.class

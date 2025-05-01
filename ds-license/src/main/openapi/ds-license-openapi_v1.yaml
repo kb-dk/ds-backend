@@ -21,6 +21,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. ID filter field is defined in the YAML configuration'
+      security: 
+        - KBOAuth:
+          - any       
       operationId: checkAccessForIds  
       requestBody:
         content:
@@ -43,6 +46,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
+      security: 
+        - KBOAuth:
+          - any       
       operationId: checkAccessForResourceIds  
       requestBody:
         content:
@@ -67,6 +73,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Validate if user has access to all groups in input.' 
+      security: 
+        - KBOAuth:
+          - any       
       operationId: validateAccess 
       requestBody:
         content:
@@ -87,6 +96,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get a list of all licences that validates from user attributes.'
+      security: 
+        - KBOAuth:
+          - any      
       operationId: getUserLicenses       
       requestBody:
         content:
@@ -109,6 +121,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
+      security: 
+        - KBOAuth:
+          - any      
       operationId: getUserLicenseQuery      
       requestBody:
         content:
@@ -132,6 +147,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get the groups that the user has access to'
+      security: 
+        - KBOAuth:
+          - any            
       operationId: getUserGroups       
       requestBody:
         content:
@@ -152,6 +170,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
+      security: 
+        - KBOAuth:
+          - any      
       operationId: getUserGroupsAndLicenses       
       requestBody:
         content:
@@ -167,6 +188,538 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
   
+  # Rights
+  /rights/platforms:
+    get:
+      summary: Get all available platforms
+      tags:
+        - 'DsRights'
+      operationId: getPlatforms
+      security:
+        - KBOAuth:
+            - any
+      responses:
+        '200':
+          description: A JSON array of available platforms.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /rights/idTypes:
+    get:
+      summary: Get all allowed ID Types in the rights component.
+      tags:
+        - 'DsRights'
+      operationId: getIdTypes
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: platform
+          in: query
+          description: "The platform to extract ID Types for"
+          schema:
+            $ref: '#/components/schemas/PlatformEnum'
+      responses:
+        '200':
+          description: A JSON array of allowed ID types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+
+  /rights/restrictedIds:
+    get:
+      summary: get all restricted ids
+      tags:
+        - 'DsRights'
+      operationId: getAllRestrictedIds
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: idType
+          in: query
+          description: Filter on idType
+          schema:
+            type: string
+          examples:
+            ds_id:
+              value: "ds_id"
+            dr_produktions_id:
+              value: "dr_produktions_id"
+            egenproduktions_kode:
+              value: "egenproduktions_kode"
+            strict_title:
+              value: "strict_title"
+        - name: platform
+          in: query
+          description: Filter On platform
+          schema:
+            $ref: '#/components/schemas/PlatformEnum'
+      responses:
+        '200':
+          description:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestrictedIdOutput'
+
+    post:
+      description: create multiple restricted ids
+      tags:
+        - 'DsRights'
+      operationId: createRestrictedIds
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RestrictedIdInput'
+            example:
+              - idValue: "test:multi:1"
+                idType: "ds_id"
+                platform: DRARKIV
+                comment: "test multi 2"
+              - idValue: "test:multi:2"
+                idType: "ds_id"
+                platform: DRARKIV
+                comment: "test multi 1"
+              - idValue: "test:multi:3"
+                idType: "dr_produktions_id"
+                platform: DRARKIV
+                comment: "test multi 1"
+      responses:
+        '204':
+          description: created
+    delete:
+      description: delete multiple restricted IDs
+      tags:
+        - 'DsRights'
+      operationId: deleteRestrictedIds
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RestrictedIdInput'
+            example:
+              - internalId: "internalId1"
+              - internalId: "internalId2"
+
+      responses:
+        '200':
+          description: deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
+
+  /rights/restrictedId:
+    get:
+      tags:
+        - 'DsRights'
+      operationId: getRestrictedId
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: idType
+          in: query
+          required: true
+          schema:
+            type: string
+          example:
+            - "ds_id"
+            - "dr_produktions_id"
+            - "egenproduktions_kode"
+            - "strict_title"
+        - name: platform
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/PlatformEnum"
+      responses:
+        '200':
+          description: Get a restricted ID details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedIdOutput'
+        '404':
+          description: restricted id not found
+    delete:
+      tags:
+        - 'DsRights'
+      operationId: deleteRestrictedId
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: internalId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
+    post:
+      tags:
+        - 'DsRights'
+      operationId: createRestrictedId
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestrictedIdInput'
+            examples:
+              DrProductionID:
+                value:
+                  idValue: 'test1'
+                  idType: 'dr_produktions_id'
+                  platform: DRARKIV
+                  comment: 'Dette er en test'
+      responses:
+        '201':
+          description: created
+    put:
+        tags:
+          - 'DsRights'
+        operationId: updateRestrictedId
+        security:
+          - KBOAuth:
+              - any
+        parameters:
+          - name: touchRecord
+            in: query
+            schema:
+              type: boolean
+              default: true
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedIdInput'
+              examples:
+                DrProductionID:
+                  value:
+                    idValue: 'test1'
+                    idType: 'dr_produktions_id'
+                    platform: DRARKIV
+                    comment: 'Dette er en opdateret kommentar'
+
+        responses:
+          '201':
+            description: created
+
+  /rights/drHoldbackRules:
+    get:
+      tags:
+        - 'DsRights'
+      operationId: getDrHoldbackRules
+      description: get all DR holdback rules
+      security:
+        - KBOAuth:
+            - any
+      responses:
+        '200':
+          description: list of holdback rules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrHoldbackRule'
+
+  /rights/drHoldbackRule:
+    get:
+      tags:
+        - 'DsRights'
+      operationId: getDrHoldbackRule
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: retrieve a holdback rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DrHoldbackRule'
+        '404':
+          description: not found
+    delete:
+      tags:
+        - 'DsRights'
+      operationId: deleteDrHoldbackRule
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: succesfully deleted
+    post:
+      tags:
+        - 'DsRights'
+      operationId: createDrHoldbackRule
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DrHoldbackRule'
+            examples:
+              example1:
+                value:
+                  id: test1
+                  name: "Testing"
+                  days: 100
+      responses:
+        '201':
+          description: sucessfully created
+
+  /rights/drHoldbackDays:
+    get:
+      tags:
+        - 'DsRights'
+      operationId: getDrHoldbackDays
+      description: gets the number of holdbackdays. One of the parameters id or name should be nonempty. id takes precedence over name.
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: id of the holdback rule
+          schema:
+            type: string
+        - name: name
+          in: query
+          required: false
+          description: name of the holdback rule
+          schema:
+            type: string
+      responses:
+        '200':
+          description: holdback days
+          content:
+            application/json:
+                schema:
+                  type: integer
+        '404':
+          description: holdback not found
+    put:
+      tags:
+        - 'DsRights'
+      operationId: updateDrHoldbackDays
+      description: update the number of holdbackdays for a purpose. One of the parameters id or name should be nonempty. id takes precedence over name.
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: id of the holdback rule
+          schema:
+            type: string
+        - name: name
+          in: query
+          required: false
+          description: name of the holdback rule
+          schema:
+            type: string
+        - name: days
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Updated
+
+  /rights/drHoldbackRanges:
+    get:
+      summary: get all holdback ranges for a holdback ID
+      tags:
+        - 'DsRights'
+      operationId: getHoldbackRanges
+      security:
+        - KBOAth:
+            - any
+      parameters:
+        - name: dr_holdback_id
+          in: query
+          description: filter on holdback id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrHoldbackRangeMapping'
+    post:
+      summary: set holdback ranges for a holdback id
+      tags:
+        - 'DsRights'
+      operationId: createHoldbackRanges
+      security:
+        - KBOAth:
+            - any
+      parameters:
+        - name: dr_holdback_id
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DrHoldbackRangeMappingInput'
+
+      responses:
+        '201':
+          description: created
+    delete:
+      summary: delete holdback ranges for a holdback id
+      tags:
+        - 'DsRights'
+      operationId: deleteHoldbackRanges
+      security:
+        - KBOAth:
+            - any
+      parameters:
+        - name: dr_holdback_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: deleted
+
+  /rights/getHoldbackIdFromContentAndForm:
+    get:
+      summary: get the holdback id from content and form metadata.
+      tags:
+        - 'DsRights'
+      operationId: getHoldbackIdFromContentAndForm
+      security:
+        - KBOAth:
+            - any
+      parameters:
+        - name: content
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: form
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            'application/json':
+              schema:
+                type: string
+  /rights/calculate:
+    post:
+      tags:
+        - 'DsRights'
+      operationId: calculateRights
+      summary: "Calculate restrictions for a record based on input values"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RightsCalculationInput"
+      responses:
+        '200':
+          description: "Solr compliant fields and values"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RightsCalculationOutput"
 
 
 
@@ -323,7 +876,6 @@ components:
         access:
           type: boolean
 
-
     LicenseOverview:
       type: object
       properties: 
@@ -349,7 +901,6 @@ components:
            example: ['teg@kb.dk']
            items:
              type: string     
-
 
     GetUserGroupsAndLicensesInput:
       type: object
@@ -393,7 +944,6 @@ components:
           items:
             $ref: '#/components/schemas/UserObjAttribute'
 
-
     GetUsersLicensesOutput:
       type: object
       properties:                
@@ -401,7 +951,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LicenseOverview'
-
 
     GetUsersFilterQueryOutput:
       type: object
@@ -465,8 +1014,92 @@ components:
           type: array
           items:
             type: string 
-            
-                    
+
+    # Rights module
+    PlatformEnum:
+      type: string
+      enum:
+        - DRARKIV
+        - GENERIC
+
+    RestrictedIdInput:
+      type: object
+      required:
+        - idValue
+        - idType
+        - platform
+      properties:
+        internalId:
+          type: integer
+          format: int64
+        idValue:
+          type: string
+        idType:
+          type: string
+        platform:
+          $ref: "#/components/schemas/PlatformEnum"
+        comment:
+          type: string
+
+    RestrictedIdOutput:
+      type: object
+      properties:
+        internalId:
+          type: integer
+          format: int64
+        idValue:
+          type: string
+        idType:
+          type: string
+        platform:
+          $ref: "#/components/schemas/PlatformEnum"
+        comment:
+          type: string
+        modifiedBy:
+          type: string
+        modifiedTime:
+          type: long
+        modifiedTimeHuman:
+          type: string
+
+    DrHoldbackRule:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        days:
+          type: integer
+
+    DrHoldbackRangeMapping:
+      type: object
+      properties:
+        id:
+          type: string
+        contentRangeFrom:
+          type: integer
+        contentRangeTo:
+          type: integer
+        formRangeFrom:
+          type: integer
+        formRangeTo:
+          type: integer
+        drHoldbackId:
+          type: string
+
+    DrHoldbackRangeMappingInput:
+      type: object
+      properties:
+        contentRangeFrom:
+          type: integer
+        contentRangeTo:
+          type: integer
+        formRangeFrom:
+          type: integer
+        formRangeTo:
+          type: integer
+
     HelloReply:
       type: object
       required:
@@ -475,6 +1108,121 @@ components:
         message:
           type: string
           description: 'Greeting from the API'
+
+    RightsCalculationInput:
+      description: "An overall Data Transfer Object which should be used to carry all values needed for calculating rights for a record between services."
+      type: object
+      x-isRightsCalculationObject: true
+      properties:
+        recordId:
+          type: string
+          description: "ID of the record, which this metadata comes from."
+        platform:
+          $ref: "#/components/schemas/PlatformEnum"
+          description: "The platform that rights are calculated for."
+        startTime:
+          type: string
+          description: "Start time of the record this object relates to."
+        holdbackInput:
+          $ref: "#/components/schemas/HoldbackCalculationInput"
+        restrictionsInput:
+          $ref: "#/components/schemas/RestrictionsCalculationInput"
+      required:
+        - recordId
+        - platform
+        - startTime
+        - holdbackInput
+        - restrictionsInput
+
+    HoldbackCalculationInput:
+      description: "A holdback specific Data Transfer Object which should be used to carry all values needed for calculating holdback for a record between services."
+      type: object
+      properties:
+        hensigt:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        form:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        indhold:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        productionCountry:
+          type: integer
+          description: "A metadata value used for holdback calculation."
+        origin:
+          type: string
+          description: "Origin in the DS ecosystem. Used to determine how holdback should be calculated."
+      required:
+        - hensigt
+        - form
+        - indhold
+        - productionCountry
+        - origin
+
+    RestrictionsCalculationInput:
+      description: "A restrictions specific Data Transfer Object which should be used to carry all values needed for looking up if a record is restricted between services."
+      type: object
+      properties:
+        recordId:
+          type: string
+          description: "ID of the record, which this metadata comes from."
+        productionCode:
+          type: string
+          description: "a metadata value used for holdback and own production calculation."
+        drProductionId:
+          type: string
+          description: "an internal ID from DR which could be restricted."
+        title:
+          type: string
+          description: "title of the record in hand. There is a chance that it is restricted."
+      required:
+        - recordId
+        - productionCode
+        - drProductionId
+        - title
+
+    RightsCalculationOutput:
+      description: "A Data Transfer Object containing the solr fields and values that have been created from the calculations based on a RightsCalculationInput object."
+      type: object
+      properties:
+        # Platform nesting of calculation results. When more platforms need rights calculations output objects should be appended here.
+        generel:
+          $ref: "#/components/schemas/RightsCalculationOutputGeneral"
+        dr:
+          $ref: "#/components/schemas/RightsCalculationOutputDr"
+
+    RightsCalculationOutputGeneral:
+      type: object
+      description: "Object containing results from all rights calculations that are applicable in general for the record"
+      properties:
+        dsIdRestricted:
+          type: boolean
+          description: "A boolean representing if our DS ID for the record has been restricted."
+
+    RightsCalculationOutputDr:
+      type: object
+      description: "Object containing results from all rights calculations that are applicable for the DR Archive for the record"
+      properties:
+        dsIdRestricted:
+          type: boolean
+          description: "A boolean representing if our DS ID for the record has been restricted."
+        holdbackName:
+          type: string
+          description: "The name of the holdback category for the record."
+        holdbackExpiredDate:
+          type: string
+          description: "The date, when the record is out of holdback. This gets calculated by adding X amount of days to the start time of the recording, where X is defined 
+          based on holdbackName."
+        productionCodeAllowed:
+          type: boolean
+          description: "A value used to specify if the record in hand is 'ownproduction' and can be shown in the archive."
+        drIdRestricted:
+          type: boolean
+          description: "A boolean representing if DRs internal production ID for the record has been restricted."
+        titleRestricted:
+          type: boolean
+          description: "Some titles are not allowed to be watched, if this boolean is true, then the record cannot be shown,"
 
     Whoami:
       type: object
@@ -501,9 +1249,8 @@ components:
               items:
                 type: string
               description: 'The roles stated in the OAuth2 accessToken'
-              example: [read, write, admin]
-    
-    
+              example: [ read, write, admin ]
+
     Error:
       type: object
       required:
@@ -567,7 +1314,14 @@ components:
         gitCommitTime:
           type: string
           description: 'The time for the latest commit of the deplyed branch.'
-          
+
+    RecordsCount:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: 'Number of records updated'
           
   securitySchemes:
 

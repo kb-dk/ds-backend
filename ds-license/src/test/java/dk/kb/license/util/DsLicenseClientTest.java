@@ -1,129 +1,194 @@
-/*
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
 package dk.kb.license.util;
 
-import dk.kb.license.invoker.v1.ApiException;
-import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
-import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import dk.kb.license.model.v1.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import dk.kb.license.config.ServiceConfig;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 
 /**
- * Simple verification of client code generation.
+ * Integration test on class level, will not be run by automatic build flow.
+ * Call 'kb init' to fetch YAML property file with server urls
+ * 
  */
+@Tag("integration")
 public class DsLicenseClientTest {
-    private static final Logger log = LoggerFactory.getLogger(DsLicenseClientTest.class);
 
-    // Reusable test requests & responses
-    private CheckAccessForIdsInputDto request1 = new CheckAccessForIdsInputDto().accessIds(List.of("1", "one"));
-    private CheckAccessForIdsInputDto request2 = new CheckAccessForIdsInputDto().accessIds(List.of("2", "two"));
-    private CheckAccessForIdsInputDto resRequest1 = new CheckAccessForIdsInputDto().accessIds(List.of("r1", "rthree"));
 
-    private CheckAccessForIdsOutputDto response1 = new CheckAccessForIdsOutputDto().query("1");
-    private CheckAccessForIdsOutputDto response2 = new CheckAccessForIdsOutputDto().query("2");
-    private CheckAccessForIdsOutputDto resResponse1 = new CheckAccessForIdsOutputDto().query("3");
-    private CheckAccessForIdsOutputDto fail = new CheckAccessForIdsOutputDto().query("Should not be returned");
+    private static final Logger log =  LoggerFactory.getLogger(DsLicenseClientTest.class);
 
-    // We cannot test usage as that would require a running instance of ds-license to connect to
-    @Test
-    public void testInstantiation() {
-        String backendURIString = "htp://example.com/ds-license/v1";
-        log.debug("Creating inactive client for ds-license with URI '{}'", backendURIString);
-        new DsLicenseClient(backendURIString, 10, 5000);
+    private static DsLicenseClient remote = null;
+    private static String dsLicenseDevel=null;  
+
+    private static final String SEARCH_PRESENTATIONTYPE="Search";
+
+    @BeforeAll
+    static void setup() {
+        try {
+            ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml"); 
+
+            dsLicenseDevel= ServiceConfig.getConfig().getString("integration.devel.licensemodule"); 
+            System.out.println(dsLicenseDevel);
+            remote = new DsLicenseClient(dsLicenseDevel);
+        } catch (IOException e) { 
+            e.printStackTrace();
+            log.error("Integration yaml 'ds-license-integration-test.yaml' file most be present. Call 'kb init'"); 
+            fail();
+
+        }
     }
 
     @Test
-    public void testCaching() throws ApiException {
-        // Mock the DsLicenseClient
-        DsLicenseClient clientSpy = Mockito.spy(
-                new DsLicenseClient("http://localhost:9076/ds-license/v1", 10, 60000));
-        doReturn(response1, fail).when(clientSpy).directCheckAccessForIds(eq(request1));
-        doReturn(response2, fail).when(clientSpy).directCheckAccessForIds(eq(request2));
-        doReturn(resResponse1, fail).when(clientSpy).directCheckAccessForResourceIds(eq(resRequest1));
-
-        // Test basic caching
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
-                "First call with request 1 should return response1");
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
-                "Second call with request 1 should return the initial response1");
-
-        assertEquals(response2, clientSpy.checkAccessForIds(request2),
-                "First call with request 2 should return response2");
-        assertEquals(response2, clientSpy.checkAccessForIds(request2),
-                "Second call with request 2 should return the initial response2");
-
-        assertEquals(resResponse1, clientSpy.checkAccessForResourceIds(resRequest1),
-                "First call with resource request 1 should return resource response 1");
-        assertEquals(resResponse1, clientSpy.checkAccessForResourceIds(resRequest1),
-                "Second call with resource request 1 should return initial resource response 1");
+    public void testCheckAccessForIds() throws Exception {      
+        ArrayList<String> ids= new ArrayList<String>();
+        ids.add("does_not_exist");
+        CheckAccessForIdsInputDto input = getCheckAccessForIdsInputDto(SEARCH_PRESENTATIONTYPE, ids);                         
+        CheckAccessForIdsOutputDto output = remote.checkAccessForIds(input);
+        assertEquals(output.getNonExistingIds().size(),1); //We have a valid response        
     }
 
     @Test
-    public void testCachingSize() throws ApiException {
-        // Mock the DsLicenseClient
-        DsLicenseClient clientSpy = Mockito.spy(
-                new DsLicenseClient("http://localhost:9076/ds-license/v1", 1, 60000));
-        doReturn(response1, fail).when(clientSpy).directCheckAccessForIds(eq(request1));
-        doReturn(response2, fail).when(clientSpy).directCheckAccessForIds(eq(request2));
+    public void testCheckAccessForResourceIds() throws Exception {              
+        ArrayList<String> ids= new ArrayList<String>();
+        ids.add("does_not_exist");
+        CheckAccessForIdsInputDto input = getCheckAccessForIdsInputDto(SEARCH_PRESENTATIONTYPE, ids);                          
+        CheckAccessForIdsOutputDto output = remote.checkAccessForResourceIds(input);
+        System.out.println(output);  //We have a valid response
 
-        // Fill the cache beyond capacity
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
-                "First call with request 1 should return response1");
-        assertEquals(response2, clientSpy.checkAccessForIds(request2),
-                "First call with request 2 should return response2");
-
-        // Actively force the cache to check constraints (max size + age). This should flush the oldest (request1)
-        clientSpy.idcache.cleanUp();
-        assertEquals(fail, clientSpy.checkAccessForIds(request1),
-                "Fourth call with request 1 should miss the cache");
     }
 
-    @Tag("slow")
+    
     @Test
-    public void testCachingTimeout() throws ApiException, InterruptedException {
-        // Mock the DsLicenseClient
-        DsLicenseClient clientSpy = Mockito.spy(
-                new DsLicenseClient("http://localhost:9076/ds-license/v1", 2, 1000));
-        doReturn(response1, fail).when(clientSpy).directCheckAccessForIds(eq(request1));
+    public void testValidateAccess() throws Exception {       
+        ValidateAccessInputDto input = getValidateAccessInputDto(new ArrayList<String>());      
+        ValidateAccessOutputDto output = remote.validateAccess(input);
+        assertNotNull(output); //We have a valid response;
+    }
 
-        // Test basic caching
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
-                "First call with request 1 should return response1");
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
-                "Second call with request 1 should return the initial response1");
 
-        // Actively force the cache to check constraints (max size + age). This should change nothing at this point
-        clientSpy.idcache.cleanUp();
+    @Test
+    public void testUserGroups() throws Exception {      
+        GetUserGroupsInputDto input = new GetUserGroupsInputDto();
+        input.setLocale("da");                                                       
+        input.setAttributes(getDefaultAttributes());          
+        GetUserGroupsOutputDto output = remote.getUserGroups(input);
+        assertNotNull(output); //We get a valid response          
+    }
+    
+    @Test
+    public void testUserGroupsAndLicenses() throws Exception {      
+        GetUserGroupsAndLicensesInputDto input = new GetUserGroupsAndLicensesInputDto();
+        input.setLocale("da");                                                       
+        input.setAttributes(getDefaultAttributes());
+        GetUserGroupsAndLicensesOutputDto output = remote.getUserGroupsAndLicenses(input);        
+        assertTrue(output.getLicenses().size() >0); //There should be a least 1 license.                  
+    }
+    
+    @Test
+    public void testGetUserLicenseQuery() throws Exception {      
+        GetUserQueryInputDto input = new GetUserQueryInputDto();                                                             
+        input.setAttributes(getDefaultAttributes());
+        input.setPresentationType(SEARCH_PRESENTATIONTYPE);                
+        GetUsersFilterQueryOutputDto output = remote.getUserLicenseQuery(input);               
+        assertTrue(output.getFilterQuery().length() >0); //There will always be a query                  
+    }
 
-        assertEquals(response1, clientSpy.checkAccessForIds(request1),
-                "Third call with request 1 should return the initial response1");
+    
+    @Test
+    public void testGetUserLicenses() throws Exception {      
+        GetUsersLicensesInputDto input=new GetUsersLicensesInputDto();                                                             
+        input.setAttributes(getDefaultAttributes());
+        input.setLocale("da");                
+        GetUsersLicensesOutputDto output = remote.getUserLicenses(input);                       
+        assertTrue(output.getLicenses().size() >0); //There should be at least 1 license                  
+    }
 
-        // Sleep longer than the cache timeout period, then force a constraint check
-        Thread.sleep(1001);
-        clientSpy.idcache.cleanUp();
-        assertEquals(fail, clientSpy.checkAccessForIds(request1),
-                "Fourth call with request 1 should miss the cache");
+    @Test
+    public void calculateRights() {
+        RightsCalculationInputDto inputDto = new RightsCalculationInputDto();
+        HoldbackCalculationInputDto holdbackDto = new HoldbackCalculationInputDto();
+        RestrictionsCalculationInputDto restrictionsDto = new RestrictionsCalculationInputDto();
+
+        holdbackDto.setIndhold(1000);
+        holdbackDto.setForm(1000);
+        holdbackDto.setHensigt(0);
+        holdbackDto.setProductionCountry(1000);
+        holdbackDto.setOrigin("ds.tv");
+
+        restrictionsDto.setProductionCode("1000");
+        restrictionsDto.setTitle("Almindelig udsendelses test");
+        restrictionsDto.setDrProductionId("9393871973197");
+        restrictionsDto.setRecordId("test id");
+
+        inputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        inputDto.setRestrictionsInput(restrictionsDto);
+        inputDto.setHoldbackInput(holdbackDto);
+
+        inputDto.setRecordId("test ID");
+        inputDto.setStartTime("2016-02-02T00:00:00Z");
+
+        RightsCalculationOutputDto outputDto = remote.calculateRights(inputDto);
+
+        assertFalse(outputDto.getDr().getTitleRestricted());
+    }
+        
+    
+    
+    private ValidateAccessInputDto getValidateAccessInputDto(ArrayList<String> groups) {
+        ValidateAccessInputDto input = new ValidateAccessInputDto();             
+        input.setAttributes(getDefaultAttributes());                       
+        input.setPresentationType(SEARCH_PRESENTATIONTYPE);
+        input.setGroups(groups);
+        return input;
+    }
+
+
+    /**
+     * This is the default user with no additional information about the user.
+     */
+    private  List<UserObjAttributeDto>  getDefaultAttributes(){
+        UserObjAttributeDto everybodyUserAttribute = new UserObjAttributeDto();
+        everybodyUserAttribute.setAttribute("everybody");
+        ArrayList<String> values = new ArrayList<>();
+        values.add("yes");
+        everybodyUserAttribute.setValues(values);     
+        List<UserObjAttributeDto> allAttributes = new ArrayList<>();               
+        allAttributes.add(everybodyUserAttribute);                               
+        return allAttributes;     
+    }
+
+    private CheckAccessForIdsInputDto getCheckAccessForIdsInputDto(String presentationType, ArrayList<String> ids) {        
+        CheckAccessForIdsInputDto input = new CheckAccessForIdsInputDto();
+        input.setPresentationType(presentationType);
+
+
+        UserObjAttributeDto everybodyUserAttribute = new UserObjAttributeDto();
+        everybodyUserAttribute.setAttribute("everybody");
+        ArrayList<String> values = new ArrayList<>();
+        values.add("yes");
+        everybodyUserAttribute.setValues(values);
+
+        List<UserObjAttributeDto> allAttributes = new ArrayList<>();
+        allAttributes.add(everybodyUserAttribute);        
+        input.setAttributes(allAttributes);               
+        input.setAccessIds(ids);        
+
+        return input;
     }
 
 }

@@ -1,10 +1,15 @@
 package dk.kb.license.solr;
 
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.params.SolrParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * Create a solr client used for filtering ID's. 
@@ -37,6 +42,10 @@ public class SolrServerClient extends AbstractSolrJClient{
 
     public  String getServerUrl() {
       return serverUrl;
+    }
+
+    public QueryResponse query(SolrParams solrParams) throws SolrServerException, IOException {
+       return solrServer.query(solrParams);
     }
     
 }

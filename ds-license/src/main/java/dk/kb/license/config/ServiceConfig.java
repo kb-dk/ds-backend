@@ -2,8 +2,10 @@ package dk.kb.license.config;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import dk.kb.license.model.v1.PlatformEnumDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,7 @@ public class ServiceConfig {
     public static String SOLR_FILTER_ID_FIELD = null;
     public static String SOLR_FILTER_RESOURCE_ID_FIELD = null;
     public static List<SolrServerClient> SOLR_SERVERS = null;
-    
+
     /**
      * Besides parsing of YAML files using SnakeYAML, the YAML helper class provides convenience
      * methods like {@code getInteger("someKey", defaultValue)} and {@code getSubMap("config.sub1.sub2")}.
@@ -116,6 +118,37 @@ public class ServiceConfig {
     
     public static boolean isAdminGuiEnabled() {
        return serviceConfig.getBoolean("gui.adminGuiEnabled",false); //Default not enabled if property not set       
+    }
+
+    public static YAML getRightsPlatformConfig(String platform) {
+        Optional<YAML> result = serviceConfig.getYAMLList("rights.platforms").stream()
+                .filter(yaml -> yaml.getString("name", "").equals(platform))
+                .findFirst();
+
+        if(result.isPresent()) {
+            return result.get();
+        }
+        return new YAML();
+    }
+
+    public static int getHoldbackLogicChangeDays(){
+        YAML drPlatform = getRightsPlatformConfig(PlatformEnumDto.DRARKIV.getValue());
+
+        if (drPlatform.isEmpty()){
+            throw new IllegalStateException("The DR platform config should have been loaded, but was not. Holdback cannot be calculated correctly.");
+        }
+
+        return drPlatform.getInteger("holdbackLogicChangeDays", 365);
+    }
+
+    public static int getHoldbackYearsForRadio(){
+        YAML drPlatform = getRightsPlatformConfig(PlatformEnumDto.DRARKIV.getValue());
+
+        if (drPlatform.isEmpty()){
+            throw new IllegalStateException("The DR platform config should have been loaded, but was not. Holdback cannot be calculated correctly.");
+        }
+
+        return drPlatform.getInteger("holdbackYearsForRadio", 3);
     }
     
     public static int getCacheRefreshTimeInSeconds() {

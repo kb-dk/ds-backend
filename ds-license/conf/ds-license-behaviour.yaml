@@ -36,6 +36,19 @@ db:
 #Will disable all access to admin GUI jsp pages and instead show a info page that it has been disabled.
 gui:
   adminGuiEnabled: true
+
+#Configuration of rights module
+rights:
+  platforms:
+    - name: "DRARKIV"
+      idTypes:
+        - "ds_id"
+        - "dr_produktions_id"
+        - "egenproduktions_kode"
+        - "strict_title"
+      # An amount of days used to specify, when the holdback logic changes from being calculated from the start date of the record to the following January 1st
+      holdbackLogicChangeDays: 365
+      holdbackYearsForRadio: 3
   
 #KeyCloakClientSecret can be seen in the KeyCloak server admin page for the AD realm configuration
 #The rsaPublic key can also be seen at the KeyCloak server admin page
@@ -58,7 +71,10 @@ cache:
  #driver: org.postgresql.Driver
  #username: username
  #password: password
- 
+
+# Storage client is used for touching DS-records in DS-storage, when an ID is updated in the restricted_ids table
+storageClient:
+  url: http://localhost:9072/ds-storage/v1
 
 security:
   # The security mode. Valid values are

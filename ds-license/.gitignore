@@ -7,6 +7,7 @@ target/
 .idea
 *.iml
 
+src/test/resources/rightsModuleMigratedData/*
 README_OLD.md
 .openapi-generator/
 conf/ds-license-environment.yaml

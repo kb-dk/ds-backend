@@ -1,14 +1,10 @@
 package dk.kb.license.storage;
 
-import java.io.File;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,17 +21,9 @@ import org.slf4j.LoggerFactory;
  * LICENSECONTENT)
  * 
  */
-public class LicenseModuleStorage implements AutoCloseable {
+public class LicenseModuleStorage extends BaseModuleStorage  {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorage.class);
-
-    private Connection connection = null; // private
-    private static BasicDataSource dataSource = null; // shared
-
-    private long lastTimestamp = 0; // Remember last timestamp and make sure each is only used once;
-
-    // statistics shown on monitor.jsp page
-    public static Date INITDATE = null;
 
     // Table and column names
     private static final String LICENSEPRESENTATIONTYPES_TABLE = "PRESENTATIONTYPES";
@@ -47,7 +35,6 @@ public class LicenseModuleStorage implements AutoCloseable {
     private static final String VALUE_TABLE = "VALUE_ORG";
     private static final String LICENSECONTENT_TABLE = "LICENSECONTENT";
     private static final String PRESENTATION_TABLE = "PRESENTATION";
-    private static final String AUDITLOG_TABLE = "AUDITLOG";
     
     private static final String VALIDTO_COLUMN = "VALIDTO";
     private static final String VALIDFROM_COLUMN = "VALIDFROM";
@@ -69,20 +56,10 @@ public class LicenseModuleStorage implements AutoCloseable {
     private static final String VALUE_EN_COLUMN = "VALUE_EN";
     private static final String RESTRICTION_COLUMN = "RESTRICTION";
 
-    //AUDITLOG
-    private static final String MILLIS_COLUMN = "MILLIS";
-    private static final String USERNAME_COLUMN = "USERNAME";
-    private static final String CHANGETYPE_COLUMN = "CHANGETYPE";
-    private static final String OBJECTNAME_COLUMN = "OBJECTNAME";
-    private static final String TEXTBEFORE_COLUMN = "TEXTBEFORE";
-    private static final String TEXTAFTER_COLUMN = "TEXTAFTER";
-    
     private final static String selectLicensePresentationTypesQuery = " SELECT * FROM "
             + LICENSEPRESENTATIONTYPES_TABLE;
 
     private final static String selectAllLicensesQuery = " SELECT * FROM " + LICENSE_TABLE;
-    private final static String selectAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE MILLIS= ? ";
-    private final static String selectAllAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE +" ORDER BY MILLIS DESC";   
     private final static String selectLicenseQuery = " SELECT * FROM " + LICENSE_TABLE + " WHERE ID = ? ";
     private final static String selectGroupTypeQueryById = " SELECT * FROM " + LICENSEGROUPTYPES_TABLE + " WHERE ID = ? ";
     private final static String selectPresentationTypeQueryById = " SELECT * FROM " + LICENSEPRESENTATIONTYPES_TABLE + " WHERE ID = ? ";
@@ -101,11 +78,6 @@ public class LicenseModuleStorage implements AutoCloseable {
     private final static String persistAttributeForAttributeGroupQuery = "INSERT INTO " + ATTRIBUTE_TABLE + " ("
             + ID_COLUMN + "," + NAME_COLUMN + "," + ATTRIBUTEGROUPID_COLUMN + ") VALUES (?,?,?)"; // #|?|=3
 
-    
-
-    private final static String persistAuditLog = "INSERT INTO " + AUDITLOG_TABLE + " ("
-            + MILLIS_COLUMN + "," + USERNAME_COLUMN + "," + CHANGETYPE_COLUMN + ","+OBJECTNAME_COLUMN +","+TEXTBEFORE_COLUMN +","+TEXTAFTER_COLUMN+") VALUES (?,?,?,?,?,?)"; // #|?|=6
-    
     private final static String selectAttributesForAttributeGroupQuery = " SELECT * FROM " + ATTRIBUTE_TABLE + " WHERE "
             + ATTRIBUTEGROUPID_COLUMN + " = ?";
 
@@ -190,39 +162,8 @@ public class LicenseModuleStorage implements AutoCloseable {
     private final static String deleteLicenseByLicenseIdQuery = " DELETE FROM " + LICENSE_TABLE + " WHERE " + ID_COLUMN
             + " = ?";
 
-    public static void initialize(String driverName, String driverUrl, String userName, String password) {
-        dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(driverName);
-        dataSource.setUsername(userName);
-        dataSource.setPassword(password);
-        dataSource.setUrl(driverUrl);
-
-        dataSource.setDefaultReadOnly(false);
-        dataSource.setDefaultAutoCommit(false);
-
-        // TODO maybe set some datasource options.
-        // enable detection and logging of connection leaks
-        /*
-         * dataSource.setRemoveAbandonedOnBorrow(
-         * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
-         * > 0); dataSource.setRemoveAbandonedOnMaintenance(
-         * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
-         * > 0); dataSource.setRemoveAbandonedTimeout(AlmaPickupNumbersPropertiesHolder.
-         * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM); //1 hour
-         * dataSource.setLogAbandoned(AlmaPickupNumbersPropertiesHolder.
-         * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM > 0);
-         * dataSource.setMaxWaitMillis(AlmaPickupNumbersPropertiesHolder.
-         * PICKUPNUMBERS_DATABASE_POOL_CONNECT_TIMEOUT);
-         */
-        dataSource.setMaxTotal(10); //
-
-        INITDATE = new Date();
-
-        log.info("DsLicence storage initialized");
-    }
-
     public LicenseModuleStorage() throws SQLException {
-        connection = dataSource.getConnection();
+        super();
     }
 
     public void persistLicensePresentationType(String key, String value_dk, String value_en) throws SQLException {
@@ -247,24 +188,7 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
        
     }
-    
-  
-    public void persistAuditLog(AuditLog auditlog) throws SQLException {
-        log.info("Persisting  persistAuditLog " + auditlog.getChangeType() +" for username:"+auditlog.getUsername());
-        try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
-            stmt.setLong(1,  auditlog.getMillis());
-            stmt.setString(2,auditlog.getUsername());            
-            stmt.setString(3, auditlog.getChangeType());
-            stmt.setString(4, auditlog.getObjectName());
-            stmt.setString(5, auditlog.getTextBefore());
-            stmt.setString(6, auditlog.getTextAfter());
-            stmt.execute();
-        } catch (SQLException e) {
-            log.error("SQL Exception in persistAuditLog:" + e.getMessage());
-            throw e;
-        }       
-    }
-    
+
     public ArrayList<PresentationType> getLicensePresentationTypes() throws SQLException {
 
         ArrayList<PresentationType> list = new ArrayList<PresentationType>();
@@ -705,66 +629,6 @@ public class LicenseModuleStorage implements AutoCloseable {
         }
     }
 
-   /**
-    *  
-    * @param millis ID is of the auditlog
-    * @return
-    * @throws Exception
-    */
-    
-    
-    public AuditLog getAuditLog(long millis) throws IllegalArgumentException, SQLException {
-
-
-        try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQuery);) {
-            stmt.setLong(1, millis);
-            
-            ResultSet rs = stmt.executeQuery();            
-            while (rs.next()) { // maximum one due to unique/primary key constraint
-                String username = rs.getString(USERNAME_COLUMN);
-                String changetype = rs.getString(CHANGETYPE_COLUMN);
-                String objectName = rs.getString(OBJECTNAME_COLUMN);
-                String textBefore = rs.getString(TEXTBEFORE_COLUMN);
-                String textAfter = rs.getString(TEXTAFTER_COLUMN);
-                AuditLog audit=new AuditLog(millis,username, changetype,objectName,textBefore,textAfter);
-                return audit;
-            }
-            throw new IllegalArgumentException("AuditId not found for millis:" + millis);
-
-        } catch (SQLException e) {
-            log.error("SQL Exception in getAuditLog:" + e.getMessage());
-            throw e;
-        }
-    }
-    
-    public ArrayList<AuditLog> getAllAudit() throws SQLException {
-
-        ArrayList<AuditLog> logs = new ArrayList<AuditLog>();
-
-        try (PreparedStatement stmt = connection.prepareStatement(selectAllAuditLogQuery);) {
-            
-            ResultSet rs = stmt.executeQuery();            
-            while (rs.next()) { // maximum one due to unique/primary key constraint
-                Long  millis = rs.getLong(MILLIS_COLUMN);
-                String username = rs.getString(USERNAME_COLUMN);
-                String changetype = rs.getString(CHANGETYPE_COLUMN);
-                String objectName = rs.getString(OBJECTNAME_COLUMN);
-                String textBefore = rs.getString(TEXTBEFORE_COLUMN);
-                String textAfter = rs.getString(TEXTAFTER_COLUMN);
-                AuditLog audit=new AuditLog(millis,username, changetype,objectName,textBefore,textAfter);
-                logs.add(audit);
-            }            
-            return logs;
-        } catch (SQLException e) {
-            log.error("SQL Exception in getAllAudit:" + e.getMessage());
-            throw e;
-        }
-    }
-    
-    
-    
-    
-    
     public PresentationType getPresentationTypeById(long id) throws IllegalArgumentException, SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypeQueryById);) {
             stmt.setLong(1, id);
@@ -1132,32 +996,6 @@ public class LicenseModuleStorage implements AutoCloseable {
 
     }
 
-    // Just a simple way to generate unique ID's and make sure they are unique
-    private synchronized long generateUniqueID() {
-        long now = System.currentTimeMillis();
-        if (now <= lastTimestamp) { // this timestamp has already been used. just +1 and use that
-            lastTimestamp++;
-            return lastTimestamp;
-        } else {
-            lastTimestamp = now;
-            return now;
-        }
-    }
-
-    // Used from unittests. Create tables DDL etc.
-    protected synchronized void runDDLScript(File file) throws SQLException {
-        log.info("Running DDL script:" + file.getAbsolutePath());
-
-        if (!file.exists()) {
-            log.error("DDL script not found:" + file.getAbsolutePath());
-            throw new RuntimeException("DDLscript file not found:" + file.getAbsolutePath());
-        }
-
-        String scriptStatement = "RUNSCRIPT FROM '" + file.getAbsolutePath() + "'";
-
-        connection.prepareStatement(scriptStatement).execute();        
-    }
-
     /*
      * FOR TEST JETTY RUN ONLY!
      * 
@@ -1170,29 +1008,6 @@ public class LicenseModuleStorage implements AutoCloseable {
      * Only called from unittests, not exposed on facade class
      * 
      */
- 
-   
-
-    public void commit() throws SQLException {
-        connection.commit();
-    }
-
-    public void rollback() {
-        try {
-            connection.rollback();
-        } catch (SQLException e) {
-            // nothing to do here
-        }
-    }
-
-    @Override
-    public void close() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            // nothing to do here
-        }
-    }
 
     /*
      * Only called from unittests, not exposed on facade class
@@ -1220,23 +1035,9 @@ public class LicenseModuleStorage implements AutoCloseable {
         }   
         
       }
+      connection.commit();
       log.info("All tables cleared for unittest");
     }
-    
-    
-    // This is called by from InialialziationContextListener by the Web-container
-    // when server is shutdown,
-    // Just to be sure the DB lock file is free.
-    public static void shutdown() {
-        log.info("Shutdown ds-license");
-        try {
-            if (dataSource != null) {
-                dataSource.close();
-            }
-        } catch (SQLException e) {
-            // ignore errors during shutdown, we cant do anything about it anyway
-            log.error("shutdown failed", e);
-        }
-    }
+
 
 }
