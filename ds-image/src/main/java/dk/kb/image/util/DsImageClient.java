@@ -13,14 +13,16 @@
  *
  */
 package dk.kb.image.util;
+import dk.kb.image.model.v1.DeepzoomDZIDto;
+import dk.kb.image.model.v1.IIIFInfoDto;
+import dk.kb.image.model.v1.ThumbnailsDto;
 
-import dk.kb.image.client.v1.AccessApi;
-import dk.kb.image.invoker.v1.ApiClient;
-import dk.kb.image.invoker.v1.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.URI;
+import java.util.List;
 
 /**
  * Client for the service. Intended for use by other projects that calls this service.
@@ -31,32 +33,20 @@ import java.net.URI;
  * The client is Thread safe and handles parallel requests independently.
  * It is recommended to persist the client and to re-use it between calls.
  */
-public class DsImageClient extends AccessApi {
+public class DsImageClient {
     private static final Logger log = LoggerFactory.getLogger(DsImageClient.class);
-
+    private final static String CLIENT_URL_EXCEPTION="The client url was not constructed correct";
+    private final String serviceURI;
     /**
      * Creates a client for the service.
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-image/v1}.
      */
     public DsImageClient(String serviceURI) {
-        super(createClient(serviceURI));
+        this.serviceURI = serviceURI;
         log.info("Created OpenAPI client for '{}'", serviceURI);
     }
 
-    /**
-     * Deconstruct the given URI and use the components to create an ApiClient.
-     * @param serviceURIString an URI to a service.
-     * @return an ApiClient constructed from the serviceURIString.
-     */
-    private static ApiClient createClient(String serviceURIString) {
-        log.debug("Creating OpenAPI client with URI '{}'", serviceURIString);
-
-        URI serviceURI = URI.create(serviceURIString);
-        // No mechanism for just providing the full URI. We have to deconstruct it
-        return Configuration.getDefaultApiClient().
-                setScheme(serviceURI.getScheme()).
-                setHost(serviceURI.getHost()).
-                setPort(serviceURI.getPort()).
-                setBasePath(serviceURI.getRawPath());
-    }
+    //No methods enabled for java client calls yet
+    
+  
 }

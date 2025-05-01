@@ -12,23 +12,29 @@
  *  limitations under the License.
  *
  */
-package dk.kb.image.util;
+package dk.kb.image.integration;
 
+import java.io.IOException;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
- * Simple verification of client code generation.
+ * Integration unittest inteded to call client methods on DsImageClient. But no methods has been define yet on the client.
  */
-public class DsImageClientTest {
+@Tag("integration")
+public class DsImageClientTest extends IntegrationTest{
     private static final Logger log = LoggerFactory.getLogger(DsImageClientTest.class);
 
-    // We cannot test usage as that would require a running instance of ds-image to connect to
+
     @Test
-    public void testInstantiation() {
-        String backendURIString = "htp://example.com/ds-image/v1";
-        log.debug("Creating inactive client for ds-image with URI '{}'", backendURIString);
-        new DsImageClient(backendURIString);
+    public void test() throws IOException {
+        //Must be one unit test to test the setup method is working 
     }
+
+
+
+   
 }

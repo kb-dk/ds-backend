@@ -33,6 +33,9 @@ paths:
       tags:
         - 'Access'
       summary: 'IIIF Image Request'
+      security:
+        - KBOAuth:
+          - any
       operationId: IIIFImageRequest
       
       # All parameters are required in the original IIIF Image Requests and has to be specified in the implementation in a specific order.
@@ -190,6 +193,9 @@ paths:
       tags:
         - 'Access'
       summary: 'IIIF Image Information'
+      security:
+        - KBOAuth:
+          - any
       operationId: getImageInformation
       parameters:
       - name: identifier
@@ -227,6 +233,9 @@ paths:
       tags:
         - 'Access'
       summary: 'Internet Imaging Protocol'
+      security:
+        - KBOAuth:
+          - any
       description: |-
         Most of our services at the Royal Library makes use of the IIIF standard.
         IIP is currently supported for backwards compatibility and support might be dropped in the future.
@@ -414,6 +423,9 @@ paths:
       tags:
         - 'Access'
       summary: 'DeepZoom Image information'
+      security:
+        - KBOAuth:
+          - any
       description: |- 
         DeepZoom is deprecated. Internally it is used for one specific service, which is to be handled differently in the future.  
 
@@ -451,6 +463,9 @@ paths:
       tags:
         - 'Access'
       summary: 'DeepZoom Tile'
+      security:
+        - KBOAuth:
+          - any
       description: |- 
         DeepZoom is deprecated. Internally it is used for one specific service, which is to be handled differently in the future.
 
@@ -513,6 +528,9 @@ paths:
       tags:
         - 'Access'
       summary: ' Get urls to thumbnail video images at Kaltura for a record identified by file_id field in Solr.'
+      security:
+        - KBOAuth:
+          - any
       description: |-       
         Get a list of url to thumbnail vidoe images at Kaltura for a record identified by file_id field in Solr.          
         Will contain a default thumbnail, a sprite and list of time sliced thumbnails.     
