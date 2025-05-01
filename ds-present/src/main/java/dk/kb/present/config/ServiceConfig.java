@@ -21,12 +21,6 @@ public class ServiceConfig {
     private static YAML serviceConfig;
 
     /**
-     * To calculate which records that are allowed to be shown in the publicly available DR Archive platform, we use this value to check records against. Records with tvmeter
-     * origin less than this value are considered ownProduction and can be shown in the DR Archive.
-     */
-    private static int maxAllowedProductionCode;
-
-    /**
      * Initialized the configuration from the provided configFiles.
      * This should normally be called from {@link dk.kb.present.webservice.ContextListener} as
      * part of web server initialization of the container.
@@ -36,30 +30,8 @@ public class ServiceConfig {
     public static synchronized void initialize(String... configFiles) throws IOException {
         serviceConfig = YAML.resolveLayeredConfigs(configFiles);
         serviceConfig.setExtrapolate(true);
-
-        maxAllowedProductionCode = setValidProductionCode();
     }
 
-    /**
-     * Method to securely load own production code from config. Performs validation on the record being exactly four digits.
-     * Logs a warning if the values is above 3400, which defines the upper limit for DR produced material.
-     * @return the maxAllowedProductionCode from the backing YAML configuration file.
-     */
-    private static int setValidProductionCode() {
-        // Setting default value to include own, co- and enterprise production
-        int valueFromConf = serviceConfig.getInteger("dr.maxAllowedProductionCode", 3300);
-        if (valueFromConf > 3400){
-            log.warn("The specified maxAllowedProductionCode is '{}' which is greater than 3400. This means that records produced by other broadcasters than DR can be marked as " +
-                    "own production", valueFromConf);
-        }
-
-        if (valueFromConf >= 1000 && valueFromConf <= 9999) {
-            return valueFromConf;
-        } else {
-            throw new IllegalArgumentException("Invalid own production code: '" + valueFromConf + "'. The own production code must be a four digit number.");
-        }
-
-    }
 
     /**
      * Demonstration of a first-class property, meaning that an explicit method has been provided.
@@ -82,9 +54,5 @@ public class ServiceConfig {
             throw new IllegalStateException("The configuration should have been loaded, but was not");
         }
         return serviceConfig;
-    }
-
-    public static int getMaxAllowedProductionCode() {
-        return maxAllowedProductionCode;
     }
 }

@@ -43,6 +43,7 @@
   <!-- ProductionId has been extracted from either tvmeter or nielsen metadata, and is then injected as a single value. -->
   <xsl:param name="productionId"/>
   <xsl:param name="productionIdRestrictedDr"/>
+  <xsl:param name="dsIdRestricted"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
@@ -1101,6 +1102,12 @@
     <xsl:if test="$productionIdRestrictedDr != ''">
       <f:boolean key="kb:dr_id_restricted">
         <xsl:value-of select="$productionIdRestrictedDr"/>
+      </f:boolean>
+    </xsl:if>
+
+    <xsl:if test="$dsIdRestricted != ''">
+      <f:boolean key="kb:ds_id_restricted">
+        <xsl:value-of select="$dsIdRestricted"/>
       </f:boolean>
     </xsl:if>
 

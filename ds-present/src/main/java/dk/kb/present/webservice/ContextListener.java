@@ -13,9 +13,7 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import dk.kb.present.dr.holdback.HoldbackDatePicker;
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.present.dr.restrictions.ProductionIdLookup;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
 import dk.kb.util.Resolver;
@@ -70,9 +68,6 @@ public class ContextListener implements ServletContextListener {
             String configFile = (String) ctx.lookup("java:/comp/env/application-config");
             //TODO this should not refer to something in template. Should we perhaps use reflection here?
             ServiceConfig.initialize(configFile);
-            // Early initialization of HoldbackDatePicker
-            HoldbackDatePicker.init();
-            ProductionIdLookup.init();
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {

@@ -14,7 +14,7 @@
  */
 package dk.kb.present.storage;
 
-import dk.kb.present.webservice.exception.ForbiddenServiceException;
+import dk.kb.util.webservice.exception.ForbiddenServiceException;
 import dk.kb.storage.model.v1.DsRecordDto;
 
 import dk.kb.storage.model.v1.RecordTypeDto;

@@ -37,11 +37,11 @@ paths:
     get:
       tags:
         - '${project.name}'
-      summary: 'Retrieve metadata for the record with the given ID and in the given format.'
-      operationId: getRecord
+      summary: 'Retrieve metadata for the record with the given ID and in the given format.'      
       security: 
         - KBOAuth:
           - any      
+      operationId: getRecord
       parameters:
         - name: id
           in: path
@@ -96,6 +96,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Extract records from an origin after a given mTime.'
+      security: 
+        - KBOAuth:
+          - any      
       description: |
         The extracted records are returned in sorted order by mTime increasing. By changing the parameter `maxRecords`, 
         the size of the result can be defined. Records marked with a delete flag will also be returned.
@@ -180,6 +183,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Extract raw records from a collection after a given mTime.'
+      security:
+        - KBOAuth:
+          - any
       description: |
         The raw records are returned wrapped in JSON. The records are extracted in sorted order by mTime increasing. 
         By changing the parameter `maxRecords`, the size of the result can be defined. 
@@ -244,6 +250,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Retrieve a formal description of a single origin.'
+      security:
+        - KBOAuth:
+          - any
       operationId: getOrigin
       parameters:
         - name: id
@@ -273,6 +282,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Retrieve a formal description of all available origins.'
+      security:
+        - KBOAuth:
+          - any
       operationId: getOrigins
       responses:
         '200':
@@ -290,6 +302,9 @@ paths:
       tags:
         - 'IIIFPresentation'
       summary: "IIIF Presentation Collection"
+      security:
+        - KBOAuth:
+          - any
       operationId: getPresentationCollection
       description: "Collections are used to list the Manifests available for viewing. Collections may include both other Collections and Manifests, in order to form a tree-structured hierarchy."
       parameters:
@@ -315,6 +330,9 @@ paths:
       tags:
         - 'IIIFPresentation'
       summary: "IIIF Presentation manifest"
+      security:
+        - KBOAuth:
+          - any
       operationId: getPresentationManifest
       description: "The manifest resource represents a single object and any intellectual work or works embodied within that object. In particular it includes the descriptive, rights and linking information for the object."
       parameters:
@@ -1155,7 +1173,7 @@ components:
         implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
           #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
           #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
-          authorizationUrl: https://api.example.com/oauth2/authorize 
+          authorizationUrl: 'https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/auth' 
           scopes:
             generic_ds: 'Scope used for all Digitale Samlinger services'
             # Project specific roles

@@ -14,30 +14,35 @@
  */
 package dk.kb.present.util;
 
-import dk.kb.present.webservice.AccessUtil;
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.invoker.v1.ApiException;
 import dk.kb.present.model.v1.FormatDto;
+import dk.kb.present.model.v1.OriginDto;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
+import dk.kb.util.oauth2.KeycloakUtil;
+import dk.kb.util.webservice.OAuthConstants;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import dk.kb.util.webservice.stream.ContinuationUtil;
-import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.MessageImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
 
 /**
  * Integration test, will not be run by automatic build flow.
@@ -49,18 +54,40 @@ public class DsPresentClientTest {
     private static final Logger log = LoggerFactory.getLogger(DsPresentClientTest.class);
 
     public static final String TEST_CONF = "internal-test-setup.yaml";
-
+    private static String dsPresentDevel=null;  
+    
     private static DsPresentClient remote = null;
 
     @BeforeAll
     static void setup() {
         try {
             ServiceConfig.initialize(TEST_CONF);                        
-            remote = new DsPresentClient(ServiceConfig.getConfig());
+            dsPresentDevel= ServiceConfig.getConfig().getString("present.url");                        
+            remote = new DsPresentClient(dsPresentDevel);
         } catch (IOException e) {          
             log.error("Integration yaml "+TEST_CONF+" file most be present. Call 'kb init'");            
             fail();
         }
+        
+        try {            
+            String keyCloakRealmUrl= ServiceConfig.getConfig().getString("integration.devel.keycloak.realmUrl");            
+            String clientId=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientId");
+            String clientSecret=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientSecret");                
+            String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);           
+            log.info("Retrieved keycloak access token:"+token);            
+
+            //Mock that we have a JaxRS session with an Oauth token as seen from within a service call.
+            MessageImpl message = new MessageImpl();                            
+            message.put(OAuthConstants.ACCESS_TOKEN_STRING,token);            
+            MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);           
+            mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+        }
+        catch(Exception e) {
+            log.warn("Could not retrieve keycloak access token. Service will be called without Bearer access token");            
+            e.printStackTrace();
+        }                       
+        
+        
     }
 
     @Test
@@ -111,18 +138,28 @@ public class DsPresentClientTest {
         String result = remote.transformSolrSchema(schema, "markdown");
         assertTrue(result.startsWith("# Schema documentation"));
     }
-
-    @SuppressWarnings("unchecked")
+   
+    
     @Test
-    void getFixedHeaders() {
-        YAML conf = ServiceConfig.getConfig();
-        Map<String, String> newHeaders= Map.of("Simulated-OAuth2-Group", "anonymous",
-                                        "Some-Other-Header", "foo");
-        Map<String, String> immutableHeaders = DsPresentClient.getAllHeaders(conf, newHeaders);
-        Map<String, String> headers = new HashMap<>(immutableHeaders);
-        assertEquals(2, headers.size(),
-                "The right number of headers should be extracted");
-        assertEquals("anonymous", headers.get(AccessUtil.HEADER_SIMULATED_GROUP),
-                "The group header should be correct");
+    public void testGetOrigin() throws ApiException {
+          OriginDto origin = remote.getOrigin("ds.radio"); //this should always exist 
+          assertNotNull(origin);          
     }
+    
+    @Test
+    public void testGetOrigins() throws ApiException {
+        List<OriginDto> origins=remote.getOrigins(); // there will always be some        
+        assertTrue(origins.size() >0);
+          
+    }
+    
+    @Test
+    public void testGetRecord() throws ApiException {
+     String id="ds.tv:oai:io:d0df0579-4886-41d3-9177-a2f71f62de19"; //tv-avisen
+        String record = remote.getRecord(id, FormatDto.JSON_LD);        
+        assertNotNull(record); 
+          
+    }
+    
+    
 }

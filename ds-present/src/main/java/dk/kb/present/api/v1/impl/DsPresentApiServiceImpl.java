@@ -6,7 +6,7 @@ import dk.kb.present.api.v1.DsPresentApi;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.present.webservice.AccessUtil;
-import dk.kb.present.webservice.exception.ForbiddenServiceException;
+import dk.kb.util.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;

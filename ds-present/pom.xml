@@ -52,7 +52,7 @@
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
-        <solr.config.version>1.7.9</solr.config.version> <!-- Semantic versioning of solr config and schema -->
+        <solr.config.version>1.7.11</solr.config.version> <!-- Semantic versioning of solr config and schema -->
 
         <project.package>dk.kb.present</project.package>
     </properties>
@@ -257,8 +257,6 @@
         <dependency>
            <groupId>com.google.code.gson</groupId>
            <artifactId>gson</artifactId>
-           <version>2.10.1</version>
-           <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter -->
@@ -351,6 +349,13 @@
                 <artifactId>solr-analysis-extras</artifactId>
                 <version>9.4.1</version>
               </dependency>
+
+             <dependency>
+                 <groupId>org.apache.httpcomponents.client5</groupId>
+                 <artifactId>httpclient5</artifactId>
+             </dependency>
+
+
     </dependencies>
 
     <build>
