@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -213,7 +214,11 @@ public class RightsModuleFacade {
      * @return
      */
     public static List<RestrictedIdOutputDto> getAllRestrictedIds(IdTypeEnumDto idType, PlatformEnumDto platform) {
-        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType.getValue(),platform.getValue()));
+        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage ->
+                ((RightsModuleStorage) storage).getAllRestrictedIds(
+                        Optional.ofNullable(idType).map(IdTypeEnumDto::getValue).orElse(null),
+                        Optional.ofNullable(platform).map(PlatformEnumDto::getValue).orElse(null))
+        );
     }
 
     /**
