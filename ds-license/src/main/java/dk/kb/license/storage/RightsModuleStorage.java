@@ -1,10 +1,7 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.config.ServiceConfig;
-import dk.kb.license.model.v1.DrHoldbackRangeMappingDto;
-import dk.kb.license.model.v1.DrHoldbackRuleDto;
-import dk.kb.license.model.v1.PlatformEnumDto;
-import dk.kb.license.model.v1.RestrictedIdOutputDto;
+import dk.kb.license.model.v1.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -563,7 +560,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
         RestrictedIdOutputDto output = new RestrictedIdOutputDto();
         output.setInternalId(resultSet.getLong(RESTRICTED_ID_ID));
         output.setIdValue(resultSet.getString(RESTRICTED_ID_IDVALUE));
-        output.setIdType(resultSet.getString(RESTRICTED_ID_IDTYPE));
+        output.setIdType(IdTypeEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_IDTYPE)));
         output.setPlatform(PlatformEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_PLATFORM)));
         output.setComment(resultSet.getString(RESTRICTED_ID_COMMENT));
         output.setModifiedBy(resultSet.getString(RESTRICTED_ID_MODIFIED_BY));

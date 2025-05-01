@@ -42,10 +42,10 @@ rights:
   platforms:
     - name: "DRARKIV"
       idTypes:
-        - "ds_id"
-        - "dr_produktions_id"
-        - "egenproduktions_kode"
-        - "strict_title"
+        - DS_ID
+        - DR_PRODUKTIONS_ID
+        - EGENPRODUKTIONS_KODE
+        - STRICT_TITLE
       # An amount of days used to specify, when the holdback logic changes from being calculated from the start date of the record to the following January 1st
       holdbackLogicChangeDays: 365
       holdbackYearsForRadio: 3

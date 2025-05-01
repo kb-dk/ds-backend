@@ -25,7 +25,7 @@ public class RightsCalculation {
      */
     public static boolean isDsIdRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, "ds_id", PlatformEnumDto.DRARKIV);
+            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DS_ID, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -38,7 +38,7 @@ public class RightsCalculation {
      */
     public static boolean isDrProductionIdRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, "dr_produktions_id", PlatformEnumDto.DRARKIV);
+            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DR_PRODUKTIONS_ID, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -50,7 +50,7 @@ public class RightsCalculation {
      */
     public static boolean isTitleRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, "strict_title", PlatformEnumDto.DRARKIV);
+            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.STRICT_TITLE, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }

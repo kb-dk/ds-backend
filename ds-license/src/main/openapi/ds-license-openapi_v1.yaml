@@ -248,16 +248,7 @@ paths:
           in: query
           description: Filter on idType
           schema:
-            type: string
-          examples:
-            ds_id:
-              value: "ds_id"
-            dr_produktions_id:
-              value: "dr_produktions_id"
-            egenproduktions_kode:
-              value: "egenproduktions_kode"
-            strict_title:
-              value: "strict_title"
+            $ref: '#/components/schemas/IdTypeEnum'
         - name: platform
           in: query
           description: Filter On platform
@@ -297,15 +288,15 @@ paths:
                 $ref: '#/components/schemas/RestrictedIdInput'
             example:
               - idValue: "test:multi:1"
-                idType: "ds_id"
+                idType: DS_ID
                 platform: DRARKIV
                 comment: "test multi 2"
               - idValue: "test:multi:2"
-                idType: "ds_id"
+                idType: DS_ID
                 platform: DRARKIV
                 comment: "test multi 1"
               - idValue: "test:multi:3"
-                idType: "dr_produktions_id"
+                idType: DR_PRODUKTIONS_ID
                 platform: DRARKIV
                 comment: "test multi 1"
       responses:
@@ -363,12 +354,7 @@ paths:
           in: query
           required: true
           schema:
-            type: string
-          example:
-            - "ds_id"
-            - "dr_produktions_id"
-            - "egenproduktions_kode"
-            - "strict_title"
+            $ref: "#/components/schemas/IdTypeEnum"
         - name: platform
           in: query
           required: true
@@ -431,7 +417,7 @@ paths:
               DrProductionID:
                 value:
                   idValue: 'test1'
-                  idType: 'dr_produktions_id'
+                  idType: DR_PRODUKTIONS_ID
                   platform: DRARKIV
                   comment: 'Dette er en test'
       responses:
@@ -459,7 +445,7 @@ paths:
                 DrProductionID:
                   value:
                     idValue: 'test1'
-                    idType: 'dr_produktions_id'
+                    idType: DR_PRODUKTIONS_ID
                     platform: DRARKIV
                     comment: 'Dette er en opdateret kommentar'
 
@@ -1022,6 +1008,14 @@ components:
         - DRARKIV
         - GENERIC
 
+    IdTypeEnum:
+      type: string
+      enum:
+        - DS_ID
+        - DR_PRODUKTIONS_ID
+        - STRICT_TITLE
+        - EGENPRODUKTIONS_KODE
+
     RestrictedIdInput:
       type: object
       required:
@@ -1035,7 +1029,7 @@ components:
         idValue:
           type: string
         idType:
-          type: string
+          $ref: "#/components/schemas/IdTypeEnum"
         platform:
           $ref: "#/components/schemas/PlatformEnum"
         comment:
@@ -1050,7 +1044,7 @@ components:
         idValue:
           type: string
         idType:
-          type: string
+          $ref: "#/components/schemas/IdTypeEnum"
         platform:
           $ref: "#/components/schemas/PlatformEnum"
         comment:
