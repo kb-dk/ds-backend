@@ -34,7 +34,6 @@ import dk.kb.discover.SolrManager;
 import dk.kb.discover.SolrService;
 import dk.kb.discover.api.v1.DsDiscoverApi;
 import dk.kb.discover.config.ServiceConfig;
-import dk.kb.license.client.v1.DsLicenseApi;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
@@ -108,7 +107,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     private transient MessageContext messageContext;
 
 
-    private static DsLicenseApi licenseClient;  
+    private static DsLicenseClient licenseClient;  
     
     /**
      * Solr [Collection Management Commands](https://solr.apache.org/guide/8_10/collection-management.html)
@@ -370,7 +369,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
      */
     private List<String> addAccessFilter(String designation, List<String> fq) {
         //Add filter query from license module.
-        DsLicenseApi licenseClient = getDsLicenseApiClient();
+        DsLicenseClient licenseClient = getDsLicenseApiClient();
         GetUserQueryInputDto licenseQueryDto = getLicenseQueryDto();
         GetUsersFilterQueryOutputDto filterQuery;
         try {
@@ -408,7 +407,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
        return LicenseUtil.getLicenseQueryDto();
     }
     
-    private static DsLicenseApi getDsLicenseApiClient() {
+    private static DsLicenseClient getDsLicenseApiClient() {
         return LicenseUtil.getDsLicenseApiClient();
     }
     

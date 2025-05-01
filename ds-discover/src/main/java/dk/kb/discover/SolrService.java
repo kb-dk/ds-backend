@@ -22,9 +22,9 @@ import dk.kb.discover.util.LicenseUtil;
 import dk.kb.discover.util.SolrParamMerger;
 import dk.kb.discover.util.SolrSuggestLimiter;
 import dk.kb.discover.util.responses.suggest.SuggestResponse;
-import dk.kb.license.client.v1.DsLicenseApi;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUsersFilterQueryOutputDto;
+import dk.kb.license.util.DsLicenseClient;
 import dk.kb.util.other.StringListUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -694,7 +694,7 @@ public class SolrService {
      */
     public List<String> createAccessFilter(String designation) {
         //Add filter query from license module.
-        DsLicenseApi licenseClient = LicenseUtil.getDsLicenseApiClient();
+        DsLicenseClient licenseClient = LicenseUtil.getDsLicenseApiClient();
         GetUserQueryInputDto licenseQueryDto = LicenseUtil.getLicenseQueryDto();
         GetUsersFilterQueryOutputDto filterQuery;
         try {

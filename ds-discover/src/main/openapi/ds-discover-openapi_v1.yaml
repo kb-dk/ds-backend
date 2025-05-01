@@ -72,6 +72,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get a rendered version of the schema for the given collection. This version of the schema contains documentation of all fields and examples of some usecases.'
+      security:
+        - KBOAuth:
+          - any
       operationId: documentedSchema
       parameters:
         - name: collection
@@ -118,8 +121,10 @@ paths:
         - '${project.name}'
       summary: 'Get the schema behind the solr index for the given collection. The schema contains information on all fields available for the collection.'
       operationId: solrSchema
+      security:
+        - KBOAuth:
+          - any
       parameters:
-
         - name: collection
           in: path
           description: 'The ID of the Solr collection to get schema for. Available collections can be requested from /solr/admin/collections'
@@ -167,10 +172,8 @@ paths:
       operationId: solrSearch
       security:
         - KBOAuth:
-          - any      
-      
-      parameters:
-      
+          - any            
+      parameters:      
         - name: collection
           in: path
           description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections'
@@ -540,6 +543,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Perform a Solr-compatible More Like This (MLT) request in the stated collection. See https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#request-handler-configuration for details'
+      security:
+        - KBOAuth:
+          - any
       operationId: solrMLT
       parameters:
 
@@ -813,8 +819,10 @@ paths:
         - '${project.name}'
       summary: 'Perform a Solr suggest in the stated collection and dictionary.  [Solr-Suggest](https://solr.apache.org/guide/solr/9_3/query-guide/suggester.html#adding-the-suggest-request-handler)'
       operationId: solrSuggest
+      security:
+        - KBOAuth:
+          - any
       parameters:
-
         - name: collection
           in: path
           description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections.'
@@ -904,6 +912,9 @@ paths:
         - '${project.name}'
       summary: 'Solr [Collection Management Commands](https://solr.apache.org/guide/8_10/collection-management.html)'
       operationId: collectionAction
+      security:
+        - KBOAuth:
+          - any
       parameters:
         - name: action
           in: query
@@ -948,6 +959,9 @@ paths:
         - '${project.name}'
       summary: 'Solr [Configsets Commands](https://solr.apache.org/guide/8_10/configsets-api.html)'
       operationId: configAction
+      security:
+        - KBOAuth:
+          - any   
       parameters:
         - name: action
           in: query

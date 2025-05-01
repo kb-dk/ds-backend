@@ -82,12 +82,12 @@ solr:
           rows:
             defaultEnabled: true
             defaultValue: 20   # Must match the one defined in solrconfig.xml
-            weightFactor: 0.1  # Multiplied to value and multiplied to fl compound weight
+            weightFactor: 0.02  # Multiplied to value and multiplied to fl compound weight
             maxValue: 5000     # Hard limit
 
           start:
             weightFactor: 0.01 # Multiplied to value
-            maxValue: 1000     # Hard limit
+            maxValue: 2000     # Hard limit
 
           # Zero cost arguments
           q.op:

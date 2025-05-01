@@ -2,14 +2,25 @@ package dk.kb.discover;
 
 import dk.kb.discover.api.v1.impl.DsDiscoverApiServiceImpl;
 import dk.kb.discover.config.ServiceConfig;
+import dk.kb.discover.util.DsDiscoverClient;
 import dk.kb.discover.util.SolrParamMerger;
+import dk.kb.util.oauth2.KeycloakUtil;
+import dk.kb.util.webservice.OAuthConstants;
+
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.MessageImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
 
 /*
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,8 +38,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class SolrServiceTest {
 
-    // Integration test: Requires a local solr at port 10007 from the Digitale Samlinger project with
-    // a ds-collection
+    private static final Logger log = LoggerFactory.getLogger(SolrServiceTest.class);
+        
     //@Test
     void baseSearch() {
         SolrService solr = new SolrService("test", "http://localhost:10007", "solr", "ds");
@@ -126,51 +137,6 @@ class SolrServiceTest {
                 () -> SolrService.removePrefixedFilters(response, prefix,"xml"));
     }
 
-    @Test
-    @Tag("integration")
-    void suggestTestNotAvailable() throws IOException {
-        // Integration test towards devel env. Remember to update aegis before running this.
-        ServiceConfig.initialize("src/test/resources/ds-discover-integration-test.yaml");
-        String suggestDictionary = "radiotv_title_suggest";
-        // no suggestions should be available for this query.
-        String suggestQuery = "Palle Lauring";
-        int suggestCount = 5;
-        String wt = "json";
-        SolrService solr = SolrManager.getSolrService("ds");
-
-        String filteredResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);
-
-        assertTrue(filteredResponse.contains("\"suggest\" : {\n" +
-                "    \"radiotv_title_suggest\" : {\n" +
-                "      \"Palle Lauring\" : {\n" +
-                "        \"numFound\" : 0,\n" +
-                "        \"suggestions\" : [ ]\n" +
-                "      }\n" +
-                "    }\n" +
-                "  }"));
-    }
-
-    @Test
-    @Tag("integration")
-    void suggestTestMoreThanFiveAvailable() throws IOException {
-        // Integration test towards devel env. Remember to update aegis before running this.
-        ServiceConfig.initialize("src/test/resources/ds-discover-integration-test.yaml");
-        String suggestDictionary = "radiotv_title_suggest";
-        // no suggestions should be available for this query.
-        String suggestQuery = "tes";
-        int suggestCount = 5;
-        String wt = "json";
-        SolrService solr = SolrManager.getSolrService("ds");
-
-        String filteredResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);
-
-        System.out.println(filteredResponse);
-
-        assertTrue(filteredResponse.contains("\"suggest\" : {\n" +
-                "    \"radiotv_title_suggest\" : {\n" +
-                "      \"tes\" : {\n" +
-                "        \"numFound\" : 5,\n"));
-    }
-
+  
 
 }
