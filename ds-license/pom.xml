@@ -140,13 +140,15 @@
     the name, validFrom,ValidTo and a description will be returned. This information can be shown to the user.
 
     ## Rights API
-    The methods exposed in the Rights API enables the add and editing data for rights calculations. (Basically extrac fi
+    The methods exposed in the Rights API enables the add and editing data for rights calculations.
 
-    There are to types of righs calculations.
+    There are to types of rights calculations.
+    - restricted IDs (klausuleringer)
+    - holdback expire date
 
     ### restricted IDs (klausuleringer)
     The restricted IDs API enables blacklisting (and whitelisting) of records based on an ID in the metadata. 
-    Whenevner a restricted ID is added or deleted, the corresponding records a reindexed.
+    Whenever a restricted ID is added or deleted, the corresponding records are reindexed.
 
     There are 4 different types of Ids supported.
     #### ds_id
@@ -158,11 +160,12 @@
     #### strict_title
     Restrict (blacklist) records based on their title. Note that the title of the record has to match the restricted title exactly.
 
-    #### own_production_code 
-    When a production code is added to the list all shown
+    #### own_production_code
+    The Rightsmodule also contains a list of production codes, used for identifying if a radio or tv record is ownproduction and thus can be shown in the DR archive.
 
     ### Holdback calculations
     The rights API exposes methods to update two types of data for calculating when the holdback of a record expires.
+    The holdback calculations are only relevant for the DR Arkiv
 
     #### Holdback Rules
     A set of rules (formål) specifying the number of holdback days. The rules are identified by their name and id.
