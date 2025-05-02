@@ -40,6 +40,9 @@ gui:
 #Configuration of rights module
 rights:
   platforms:
+    # Platform specific configuration for the different platforms supported by the righgs module
+    # Note that names of the platform should correspond to the names in the Platform enum, and
+    # the id types should correspond to the id Types enum defined in the openapi definition
     - name: "DRARKIV"
       idTypes:
         - DS_ID
