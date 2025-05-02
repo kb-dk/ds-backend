@@ -95,11 +95,22 @@
             <classifier>classes</classifier>
             <exclusions>
                 <exclusion>
-                    <groupId>*</groupId>
+                    <groupId>dk.kb.storage</groupId>
+                    <artifactId>ds-storage</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.ben-manes.caffeine</groupId>
+                    <artifactId>caffeine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.solr</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-
        </dependency>
 
         <!-- Apache CXF and servlet stuff -->

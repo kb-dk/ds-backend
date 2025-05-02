@@ -36,6 +36,11 @@ public class DocumentationExtractor {
      */
     public static String transformSchema(String collection, String format) throws IOException {
         String rawSchema = getRawSchema(collection);
+
+        // As we are using DS-Present facade here, we need to have the ServiceConfig for DS-present initialized to some file, even though the method used doesn't require any
+        // values form the configuration. This is an odd way of doing just that.
+        //TODO: We should consider providing the transformSolrSchema method on he DS-Present API and then query it through the Ds-present client here.
+        dk.kb.present.config.ServiceConfig.initialize("conf/ds-discover-behaviour.yaml");
         return PresentFacade.transformSolrSchema(rawSchema, format);
     }
 
