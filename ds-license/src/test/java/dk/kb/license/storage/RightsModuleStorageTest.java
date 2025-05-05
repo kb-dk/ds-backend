@@ -43,7 +43,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
     @Test
     public void testRestrictedIdCRUD() throws SQLException {
         String idValue = "test1234";
-        String idType = IdTypeEnumDto.DR_PRODUKTIONS_ID.getValue();
+        String idType = IdTypeEnumDto.DR_PRODUCTION_ID.getValue();
         String platform = PlatformEnumDto.DRARKIV.getValue();
         String comment = "a comment";
         String modified_by = "user1";

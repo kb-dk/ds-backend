@@ -352,7 +352,7 @@ public class RightsModuleFacade {
      */
     public static boolean isProductionCodeAllowed(String productionCode, String platform)  {
         return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> {
-            RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(productionCode, IdTypeEnumDto.EGENPRODUKTIONS_KODE.getValue(), platform);
+            RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(productionCode, IdTypeEnumDto.OWNPRODUCTION_CODE.getValue(), platform);
             // If the object is null, then productionCode from metadata is not allowed
 
             if (idOutput == null){
@@ -547,9 +547,9 @@ public class RightsModuleFacade {
             case DS_ID:
                 return touchStorageRecordById(id);
             // TODO: Implement the rest of these touches by solr queries-
-            case DR_PRODUKTIONS_ID:
+            case DR_PRODUCTION_ID:
                 return touchStorageRecordsByProductionId(id);
-            case EGENPRODUKTIONS_KODE:
+            case OWNPRODUCTION_CODE:
                 return touchStorageRecordsByProductionCode(id);
             case STRICT_TITLE:
                 return touchStorageRecordsByStrictTitle(id);

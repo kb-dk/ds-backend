@@ -159,7 +159,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void restrictedDrProductionIdTest() throws SQLException, IllegalAccessException {
         try (RightsModuleStorage storage = new RightsModuleStorage()) {
-            storage.createRestrictedId("1234567890", IdTypeEnumDto.DR_PRODUKTIONS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Not allowed dr production ID", "TestUser", System.currentTimeMillis());
+            storage.createRestrictedId("1234567890", IdTypeEnumDto.DR_PRODUCTION_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Not allowed dr production ID", "TestUser", System.currentTimeMillis());
             storage.commit();
         } catch (Exception e) {
             throw e;
@@ -209,7 +209,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void allowedProductionCodeFromMetadataTest() throws SQLException, IllegalAccessException {
         try (RightsModuleStorage storage = new RightsModuleStorage()) {
-            storage.createRestrictedId("1000",IdTypeEnumDto.EGENPRODUKTIONS_KODE.getValue(), PlatformEnumDto.DRARKIV.getValue(),"1000 equals ownproduction","TestUser",System.currentTimeMillis());
+            storage.createRestrictedId("1000",IdTypeEnumDto.OWNPRODUCTION_CODE.getValue(), PlatformEnumDto.DRARKIV.getValue(),"1000 equals ownproduction","TestUser",System.currentTimeMillis());
             storage.commit();
         } catch (Exception e) {
             throw e;

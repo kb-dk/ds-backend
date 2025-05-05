@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -77,7 +76,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     @Test
     @Tag("integration")
     public void testQueryLookupForProductionId() {
-        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("9213145700", IdTypeEnumDto.DR_PRODUKTIONS_ID);
+        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("9213145700", IdTypeEnumDto.DR_PRODUCTION_ID);
 
         // Currently there are five records for this productionId in solr
         assertTrue(touchedRecords > 4);
@@ -105,7 +104,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     @Tag("slow")
     @Tag("integration")
     public void testQueryLookupForProductionCode() {
-        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("3200", IdTypeEnumDto.EGENPRODUKTIONS_KODE);
+        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("3200", IdTypeEnumDto.OWNPRODUCTION_CODE);
 
         assertTrue(touchedRecords > 2500);
     }
@@ -138,11 +137,11 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     public void testCreateGetAndDeleteRestrictedProductionIdPrefixedZeros() throws Exception {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("00123466486");
-        restrictedId.setIdType(IdTypeEnumDto.DR_PRODUKTIONS_ID);
+        restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
-        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUKTIONS_ID, PlatformEnumDto.DRARKIV);
+        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664860", outputRight.getIdValue());
         int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId().longValue(),"test",false);
@@ -154,12 +153,12 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     public void testCreateGetAndDeleteRestrictedProductionIdCorrectFormat() throws Exception {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("1234664800");
-        restrictedId.setIdType(IdTypeEnumDto.DR_PRODUKTIONS_ID);
+        restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
         restrictedId.setInternalId(1L);
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
-        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUKTIONS_ID, PlatformEnumDto.DRARKIV);
+        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664800", outputRight.getIdValue());
         int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId().longValue(), "test",false);
@@ -171,11 +170,11 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     public void testCreateGetAndDeleteRestrictedProductionId() throws Exception {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("123466489");
-        restrictedId.setIdType(IdTypeEnumDto.DR_PRODUKTIONS_ID);
+        restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
-        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUKTIONS_ID, PlatformEnumDto.DRARKIV);
+        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664890", outputRight.getIdValue());
         RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId().longValue(),"test",false);

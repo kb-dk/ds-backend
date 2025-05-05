@@ -38,7 +38,7 @@ public class RightsCalculation {
      */
     public static boolean isDrProductionIdRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DR_PRODUKTIONS_ID, PlatformEnumDto.DRARKIV);
+            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }

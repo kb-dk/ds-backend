@@ -296,7 +296,7 @@ paths:
                 platform: DRARKIV
                 comment: "test multi 1"
               - idValue: "test:multi:3"
-                idType: DR_PRODUKTIONS_ID
+                idType: DR_PRODUCTION_ID
                 platform: DRARKIV
                 comment: "test multi 1"
       responses:
@@ -417,7 +417,7 @@ paths:
               DrProductionID:
                 value:
                   idValue: 'test1'
-                  idType: DR_PRODUKTIONS_ID
+                  idType: DR_PRODUCTION_ID
                   platform: DRARKIV
                   comment: 'Dette er en test'
       responses:
@@ -445,7 +445,7 @@ paths:
                 DrProductionID:
                   value:
                     idValue: 'test1'
-                    idType: DR_PRODUKTIONS_ID
+                    idType: DR_PRODUCTION_ID
                     platform: DRARKIV
                     comment: 'Dette er en opdateret kommentar'
 
@@ -1012,9 +1012,9 @@ components:
       type: string
       enum:
         - DS_ID
-        - DR_PRODUKTIONS_ID
+        - DR_PRODUCTION_ID
         - STRICT_TITLE
-        - EGENPRODUKTIONS_KODE
+        - OWNPRODUCTION_CODE
 
     RestrictedIdInput:
       type: object
