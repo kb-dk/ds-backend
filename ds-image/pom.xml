@@ -4,29 +4,16 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
 
     <name>ds-image</name> <!-- Human readable name, uppercase and spaces welcome -->
     <groupId>dk.kb.image</groupId>
     <artifactId>ds-image</artifactId>
-    <version>${ds.version}</version>
+    <version>${project.parent.version}</version>
     
     <packaging>war</packaging>
     <description>ds-image by the Royal Danish Library</description>
-
-    <repositories>
-        <repository>
-            <id>sbforge-nexus</id>
-            <url>https://sbforge.org/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <scm>
         <url>https://github.com/kb-dk/ds-image</url>
@@ -44,11 +31,6 @@
     </licenses>
 
     <properties>
-        <!-- Specify java version here, to support forbiddenapis plugin -->
-        <!-- If the version is changed from 17 to something else, Jenkinsfile must also be updated -->
-        <!-- ds-image: We use Java 11 for now, as our devel server is still at that level -->
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
         <!-- Enable forbiddenapis plugin, do disable set to none -->
         <api.check.phase>process-test-classes</api.check.phase>
         <!--Specify the licenses here, so they can be picked up by openAPI-->
@@ -73,7 +55,7 @@
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>${ds.version}</version>
+          <version>${project.parent.version}</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
@@ -88,7 +70,7 @@
         <dependency>
             <groupId>dk.kb.kaltura</groupId>
             <artifactId>ds-kaltura</artifactId>
-            <version>${ds.version}</version>
+            <version>${project.parent.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -163,15 +145,6 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs</artifactId>
         </dependency>
-        <!-- To get date parsing to work? -->
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-modules-java8 -->
-<!--        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-modules-java8</artifactId>
-            <version>2.13.1</version>
-            <type>pom</type>
-            <scope>runtime</scope>
-        </dependency>-->
 
         <!-- To get client generation to work -->
         <!-- https://mvnrepository.com/artifact/org.openapitools/openapi-generator -->
@@ -191,7 +164,6 @@
         <dependency>
           <groupId>com.damnhandy</groupId>
           <artifactId>handy-uri-templates</artifactId>
-          <version>2.1.7</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
