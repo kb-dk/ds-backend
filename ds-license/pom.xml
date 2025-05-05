@@ -152,10 +152,10 @@
 
     There are 4 different types of Ids supported.
     #### ds_id
-    Restrict (blacklist) a record based on the local id in ds
+    Restrict (blacklist) a record based on the local id in ds.
 
     #### dr_produktion_id
-    Restrict (blacklist) records based on the DR production ID. Only relevant for 'DR Arkivet'. Note that multiple records in ds can have the same DR production ID
+    Restrict (blacklist) records based on the DR production ID. Only relevant for 'DR Arkivet'. Note that multiple records in ds can have the same DR production ID.
 
     #### strict_title
     Restrict (blacklist) records based on their title. Note that the title of the record has to match the restricted title exactly.
@@ -165,7 +165,7 @@
 
     ### Holdback calculations
     The rights API exposes methods to update two types of data for calculating when the holdback of a record expires.
-    The holdback calculations are only relevant for the DR Arkiv
+    The holdback calculations are only relevant for the DR Arkiv records.
 
     #### Holdback Rules
     A set of rules (formål) specifying the number of holdback days. The rules are identified by their name and id.
