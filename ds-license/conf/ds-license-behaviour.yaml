@@ -46,8 +46,8 @@ rights:
     - name: "DRARKIV"
       idTypes:
         - DS_ID
-        - DR_PRODUKTIONS_ID
-        - EGENPRODUKTIONS_KODE
+        - DR_PRODUCTION_ID
+        - OWNPRODUCTION_KODE
         - STRICT_TITLE
       # An amount of days used to specify, when the holdback logic changes from being calculated from the start date of the record to the following January 1st
       holdbackLogicChangeDays: 365
