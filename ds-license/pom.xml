@@ -4,12 +4,12 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
-    <version>${ds.version}</version>
+    <version>${project.parent.version}</version>
     <packaging>war</packaging>
 <description>
     # Ds-license(Digitale Samlinger) by the Royal Danish Library.    
@@ -141,21 +141,6 @@
 
     Developed and maintained by the Royal Danish Library.
 </description>
-    
-
-    <repositories>
-        <repository>
-            <id>sbforge-nexus</id>
-            <url>https://sbforge.org/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
 
     <scm>
         <url>https://github.com/kb-dk/ds-license</url>
@@ -196,7 +181,7 @@
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
-            <version>${ds.version}</version>
+            <version>${project.parent.version}</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
