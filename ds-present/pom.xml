@@ -4,28 +4,14 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
-    <version>${ds.version}</version>
+    <version>${project.parent.version}</version>
     <packaging>war</packaging>
     <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
-
-    <repositories>
-        <repository>
-            <id>sbforge-nexus</id>
-            <url>https://sbforge.org/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
 
     <scm>
         <url>https://github.com/kb-dk/ds-present</url>
@@ -43,9 +29,6 @@
     </licenses>
 
     <properties>
-        <!-- Specify java version here, to support forbiddenapis plugin -->
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
         <!-- Enable forbiddenapis plugin, do disable set to none -->
         <api.check.phase>process-test-classes</api.check.phase>
         <!--Specify the licenses here, so they can be picked up by openAPI-->
@@ -68,7 +51,7 @@
         <dependency>
           <groupId>dk.kb.storage</groupId>
           <artifactId>ds-storage</artifactId>
-            <version>${ds.version}</version>
+            <version>${project.parent.version}</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
@@ -83,7 +66,7 @@
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>${ds.version}</version>
+          <version>${project.parent.version}</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
@@ -240,8 +223,6 @@
         <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-inline</artifactId>
-          <version>5.2.0</version>
-         <scope>test</scope>
         </dependency>
         <!-- Mockito-core is needed for FieldSetter used in tests.
              Tests using this functionality should probably be re-written to use an updated version of mockito -->
