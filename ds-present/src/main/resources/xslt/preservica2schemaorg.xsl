@@ -1094,7 +1094,7 @@
 
     <xsl:if test="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/radiotv_access/transcoding_status']">
       <f:string key="kb:file_id">
-        <xsl:value-of select="/XIP/Metadata/Content/transcoding:radiotvTranscodingStatus/transcoding:specificRadioTvTranscodingStatus/transcoding:accessFilePath"/>
+        <xsl:value-of select="/XIP/Metadata/Content/radiotvTranscodingStatus/specificRadioTvTranscodingStatus/accessFilePath"/>
       </f:string>
     </xsl:if>
 
