@@ -1,6 +1,7 @@
 package dk.kb.present.util;
 
 import dk.kb.license.model.v1.HoldbackCalculationInputDto;
+import dk.kb.license.model.v1.PlatformEnumDto;
 import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 
@@ -142,7 +143,7 @@ public class ExtractedPreservicaValues {
      * @param dsOrigin the origin of the record in the DS system.
      * @return a {@link RightsCalculationInputDto} populated with the current object's data.
      */
-    public RightsCalculationInputDto asRightsCalculationInputDto(RightsCalculationInputDto.PlatformEnum platform, String dsOrigin) {
+    public RightsCalculationInputDto asRightsCalculationInputDto(PlatformEnumDto platform, String dsOrigin) {
         RightsCalculationInputDto rightsInputDto = new RightsCalculationInputDto();
 
         HoldbackCalculationInputDto holdbackInputDto = new HoldbackCalculationInputDto();

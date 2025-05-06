@@ -14,6 +14,7 @@
  */
 package dk.kb.present;
 
+import dk.kb.license.model.v1.PlatformEnumDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.util.DsLicenseClient;
@@ -183,7 +184,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         String url = ServiceConfig.getConfig().getString("licensemodule.url");
         DsLicenseClient licenseClient = new DsLicenseClient(url);
 
-        RightsCalculationInputDto.PlatformEnum platform = RightsCalculationInputDto.PlatformEnum.DRARKIV;
+        PlatformEnumDto platform = PlatformEnumDto.DRARKIV;
         RightsCalculationOutputDto rightsOutput = licenseClient.calculateRights(extractedValues.asRightsCalculationInputDto(platform, record.getOrigin()));
 
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
