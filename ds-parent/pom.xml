@@ -42,7 +42,7 @@
             </snapshots>
         </repository>
         <repository>
-            <id>sbforge-nexus</id>
+            <id>sbprojects-nexus</id>
             <url>https://sbprojects.statsbiblioteket.dk/nexus/content/repositories/public/</url>
             <releases>
                 <enabled>true</enabled>
