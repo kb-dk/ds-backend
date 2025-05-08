@@ -43,7 +43,7 @@
         </repository>
         <repository>
             <id>sbprojects-nexus</id>
-            <url>https://sbprojects.statsbiblioteket.dk/nexus/content/repositories/public/</url>
+            <url>https://sbprojects.statsbiblioteket.dk/nexus/content/repositories/public</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
