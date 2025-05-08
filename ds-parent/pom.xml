@@ -19,16 +19,16 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
-    <modules>
-        <module>ds-datahandler</module>
-        <module>ds-discover</module>
-        <module>ds-image</module>
-        <module>ds-license</module>
-        <module>ds-present</module>
-        <module>ds-storage</module>
-        <module>bff</module>
-        <module>ds-kaltura</module>
-    </modules>
+<!--    <modules>-->
+<!--        <module>ds-datahandler</module>-->
+<!--        <module>ds-discover</module>-->
+<!--        <module>ds-image</module>-->
+<!--        <module>ds-license</module>-->
+<!--        <module>ds-present</module>-->
+<!--        <module>ds-storage</module>-->
+<!--        <module>bff</module>-->
+<!--        <module>ds-kaltura</module>-->
+<!--    </modules>-->
 
     <repositories>
         <repository>
