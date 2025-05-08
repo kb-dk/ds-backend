@@ -9,7 +9,7 @@ pipeline {
                     checkout scm
                 }
                 // Execute Maven build
-                sh 'mvn clean package -Dmaven.test.skip=true'
+                sh 'mvn clean package -Dmaven.test.skip=true -X'
             }
         }
     }
