@@ -54,8 +54,18 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Test
     void testUrlDomsMig() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_WITH_TRANSCODINGSTATUS, null);
-        assertTrue(transformedJSON.contains("\"kb:file_id\":\"0\\/8\\/9\\/0\\/08909897-cf37-4bd9-a230-1b48c87cea18.mp4\""));
+
+        assertTrue(transformedJSON.contains("\"kb:file_id\":\"08909897-cf37-4bd9-a230-1b48c87cea18\""));
+        assertTrue(transformedJSON.contains("\"kb:file_path\":\"0\\/8\\/9\\/0\\/08909897-cf37-4bd9-a230-1b48c87cea18.mp4\""));
     }
+
+    @Test
+    void testUrlPreservicaRecord() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_CORRECT_PRESENTATION, null);
+
+        assertTrue(transformedJSON.contains("\"kb:file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\""));
+        assertTrue(transformedJSON.contains("\"kb:file_path\":\"c8\\/d2\\/e7\\/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\""));}
+
 
     @Test
     void testName() throws IOException {

@@ -1093,8 +1093,30 @@
     </f:string>
 
     <xsl:if test="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/radiotv_access/transcoding_status']">
-      <f:string key="kb:file_id">
+
+      <xsl:variable name="filePath">
         <xsl:value-of select="/XIP/Metadata/Content/radiotvTranscodingStatus/specificRadioTvTranscodingStatus/accessFilePath"/>
+      </xsl:variable>
+
+      <xsl:variable name="fileIdWithExtension">
+        <xsl:value-of select="tokenize($filePath, '/')[last()]"/>
+      </xsl:variable>
+
+      <xsl:choose>
+        <xsl:when test="contains($fileIdWithExtension, '.')">
+          <f:string key="kb:file_id">
+            <xsl:value-of select="substring-before($fileIdWithExtension, '.')"/>
+          </f:string>
+        </xsl:when>
+        <xsl:otherwise>
+          <f:string key="kb:file_id">
+            <xsl:value-of select="$fileIdWithExtension"/>
+          </f:string>
+        </xsl:otherwise>
+      </xsl:choose>
+
+      <f:string key="kb:file_path">
+        <xsl:value-of select="$filePath"/>
       </f:string>
     </xsl:if>
 
