@@ -45,10 +45,16 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
                                                         "\"name\":\"Det Kgl. Bibliotek; Radio\\/TV-Samlingen\"}"));
     }
 
-    @Test
+    /*@Test
     void testUrlPreservica7() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_TRANSCODINGSTATUS, null);
         Assertions.assertTrue(transformedJSON.contains("\"kb:file_id\":\"\\/radio-tv\\/2\\/e\\/e\\/6\\/2ee62889-a4d0-43c4-bfe5-4d7e3dcca7c8.mp3\""));
+    }*/
+
+    @Test
+    void testUrlDomsMig() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_WITH_TRANSCODINGSTATUS, null);
+        assertTrue(transformedJSON.contains("\"kb:file_id\":\"0\\/8\\/9\\/0\\/08909897-cf37-4bd9-a230-1b48c87cea18.mp4\""));
     }
 
     @Test
@@ -326,7 +332,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
                                                         "\"kb:series_id\":\"0\""));
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:maingenre_id\":\"1\"," +
-                                                        "\"kb:channel_id\":3," +
+                                                        "\"kb:ritzau_channel_id\":3," +
                                                         "\"kb:ritzau_program_id\":\"25101114\"" ));
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:format_identifier_ritzau\":\"81213310\"," +
@@ -561,6 +567,15 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     public void noGenreTest() throws IOException {
         String transformedJson = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_03f18f50);
         assertTrue(transformedJson.contains("\"genre\":\"Radio-rodekasse\""));
+    }
+
+    @Test
+    public void testDoubleChannelIds() throws IOException {
+        String transformedJson = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOUBLE_CHANNEL);
+        prettyPrintJson(transformedJson);
+        assertTrue(transformedJson.contains("\"kb:ritzau_channel_id\":325"));
+        assertTrue(transformedJson.contains("\"kb:nielsen_channel_id\":103"));
+
     }
 
 }
