@@ -65,9 +65,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.9: Add genre_facet as facet field in configuration.
 1.7.10: Add boolean field ds_id_restricted.
 1.7.11: Fixed use of synonyms filer (SynonymGraphFilterFactory). Require also query filter.
+1.8.0: Add fields ritzau_channel_id and nielsen_channel_id
 
   -->
-  <field name="_ds_1.7.11_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8_0_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -892,7 +893,12 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     ?> <!-- TODO: figure if these IDs are always integers -->
   </field>
 
-  <field name="internal_channel_id" type="string">
+  <field name="ritzau_channel_id" type="string">
+    <?description ?> <!-- TODO: figure what this value represents -->
+    <?example     ?> <!-- TODO: figure if these IDs are always integers -->
+  </field>
+
+  <field name="nielsen_channel_id" type="string">
     <?description ?> <!-- TODO: figure what this value represents -->
     <?example     ?> <!-- TODO: figure if these IDs are always integers -->
   </field>

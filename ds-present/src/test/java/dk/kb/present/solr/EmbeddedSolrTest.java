@@ -52,6 +52,7 @@ import static dk.kb.present.TestFiles.CUMULUS_RECORD_e2519ce0;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_054c55b3;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_e2dfb840;
 import static dk.kb.present.TestFiles.PVICA_DOMS_MIG_eaea0362;
+import static dk.kb.present.TestFiles.PVICA_DOUBLE_CHANNEL;
 import static dk.kb.present.TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED;
 import static dk.kb.present.TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS;
 import static dk.kb.present.TestFiles.PVICA_RECORD_0b3f6a54;
@@ -552,7 +553,14 @@ public class EmbeddedSolrTest {
     @Test
     @Tag("integration")
     void testInternalChannelId() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "internal_channel_id", "3");
+        testStringValuePreservicaField(PVICA_RECORD_9d9785a8, "ritzau_channel_id", "3");
+    }
+
+    @Test
+    @Tag("integration")
+    void testDoubleInternalChannelId() throws Exception {
+        testStringValuePreservicaField(PVICA_DOUBLE_CHANNEL, "ritzau_channel_id", "325");
+        testStringValuePreservicaField(PVICA_DOUBLE_CHANNEL, "nielsen_channel_id", "103");
     }
 
     @Test
