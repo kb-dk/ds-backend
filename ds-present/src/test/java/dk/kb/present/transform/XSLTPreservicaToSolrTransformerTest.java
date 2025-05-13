@@ -432,6 +432,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testFileIdAndPath(){
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"");
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_path\":\"c8\\/d2\\/e7\\/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"");
+    }
+
+    @Test
     void testOriginatesFromDoms(){
         assertPvicaContains(TestFiles.PVICA_DOMS_MIG_e2dfb840, "\"originates_from\":\"DOMS\"");
     }
@@ -614,6 +620,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString;
         try {
             solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, record);
+            prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);
