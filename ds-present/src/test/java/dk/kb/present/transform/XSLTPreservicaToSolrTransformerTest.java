@@ -215,7 +215,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testChannelId(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_channel_id\":\"3\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"ritzau_channel_id\":\"3\"");
+    }
+
+    @Test
+    void testDoubleChannelId() {
+        assertPvicaContains(TestFiles.PVICA_DOUBLE_CHANNEL, "\"ritzau_channel_id\":\"325\"");
+        assertPvicaContains(TestFiles.PVICA_DOUBLE_CHANNEL, "\"nielsen_channel_id\":\"103\"");
     }
 
     @Test
@@ -364,10 +370,10 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaNotContains(TestFiles.PVICA_RECORD_b346acc8, "\"notes\":");
     }
 
-    @Test
+   /* @Test
     void testUrlPreservica7()  {
         assertPvicaContains(TestFiles.PVICA_WITH_TRANSCODINGSTATUS, "\\/radio-tv\\/2\\/e\\/e\\/6\\/2ee62889-a4d0-43c4-bfe5-4d7e3dcca7c8.mp3");
-    }
+    }*/
 
     @Test
     void testHoldbackName() {

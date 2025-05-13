@@ -701,9 +701,14 @@
       </f:string>
     </xsl:if>
 
-    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:channel_id') != ''">
-      <f:string key="internal_channel_id">
-        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:channel_id')"/>
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:ritzau_channel_id') != ''">
+      <f:string key="ritzau_channel_id">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:ritzau_channel_id')"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:nielsen_channel_id') != ''">
+      <f:string key="nielsen_channel_id">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:nielsen_channel_id')"/>
       </f:string>
     </xsl:if>
 
