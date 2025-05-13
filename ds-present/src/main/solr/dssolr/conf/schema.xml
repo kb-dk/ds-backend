@@ -65,7 +65,7 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.9: Add genre_facet as facet field in configuration.
 1.7.10: Add boolean field ds_id_restricted.
 1.7.11: Fixed use of synonyms filer (SynonymGraphFilterFactory). Require also query filter.
-1.8.0: Add fields ritzau_channel_id and nielsen_channel_id
+1.8.0: Add fields ritzau_channel_id, nielsen_channel_id and file_path
 
   -->
   <field name="_ds_1.8_0_" type="string" indexed="false" stored="false"/>
@@ -792,6 +792,11 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="file_id" type="string">
     <?description An id, used as part of the streaming URL.?>
     <?example     000000e1-0000-462a-a2b4-7488244fcca7?>
+  </field>
+
+  <field name="file_path" type="string">
+    <?description An id, used as part of the streaming URL.?>
+    <?example     0/0/0/0/000000e1-0000-462a-a2b4-7488244fcca7?>
   </field>
 
   <field name="temporal_start_year" type="string" docValues="true">

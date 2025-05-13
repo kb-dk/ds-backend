@@ -67,6 +67,7 @@ import static dk.kb.present.TestFiles.PVICA_RECORD_a8aafb121;
 import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_c6fde2f4;
 import static dk.kb.present.TestFiles.PVICA_RECORD_e683b0b8;
+import static dk.kb.present.TestFiles.PVICA_WITH_CORRECT_PRESENTATION;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -561,6 +562,12 @@ public class EmbeddedSolrTest {
     void testDoubleInternalChannelId() throws Exception {
         testStringValuePreservicaField(PVICA_DOUBLE_CHANNEL, "ritzau_channel_id", "325");
         testStringValuePreservicaField(PVICA_DOUBLE_CHANNEL, "nielsen_channel_id", "103");
+    }
+
+    @Test
+    void testPaths() throws Exception {
+        testStringValuePreservicaField(PVICA_WITH_CORRECT_PRESENTATION, "file_id", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
+        testStringValuePreservicaField(PVICA_WITH_CORRECT_PRESENTATION, "file_path", "c8/d2/e7/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
     }
 
     @Test
