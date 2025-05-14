@@ -69,7 +69,9 @@ public class TestFiles {
     public static final String PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS = "internal_test_files/homemade/radioWithContributors.xml";
     public static final String PVICA_HOMEMADE_INVALID_NUMBERS = "internal_test_files/homemade/invalid_numbers.xml";
     public static final String PVICA_HOMEMADE_INVALID_NUMBERS_PLUSSIGN = "internal_test_files/homemade/invalid_numbers_2.xml";
-
+    public static final String PVICA_DOMS_MIG_WITH_TRANSCODINGSTATUS = "internal_test_files/domsMigrated/08909897-cf37-4bd9-a230-1b48c87cea18.xml";
+    public static final String PVICA_DOUBLE_CHANNEL = "internal_test_files/preservica7/42de3472-0fa2-4ad3-b8a4-5e99d4ac8242.xml";
+    public static final String PVICA_WITH_CORRECT_PRESENTATION = "internal_test_files/preservica7/aaa668c2-bf17-4ce7-bf24-d0ff5d29d097.xml";
 
     // From preservica 6, not in preservica 7 stage
     public static final String PVICA6_RECORD_00a9e71c = "internal_test_files/preservica6/00a9e71c-1264-4e57-9238-b38ec5672fb2.xml";

@@ -317,6 +317,12 @@
         </f:string>
       </xsl:if>
 
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:file_path') != ''">
+        <f:string key="file_path">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:file_path') "/>
+        </f:string>
+      </xsl:if>
+
 
       <!-- Extract data on the encoded creative work, if present-->
       <xsl:if test="map:contains($schemaorg-xml, 'encodesCreativeWork')">
@@ -701,9 +707,14 @@
       </f:string>
     </xsl:if>
 
-    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:channel_id') != ''">
-      <f:string key="internal_channel_id">
-        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:channel_id')"/>
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:ritzau_channel_id') != ''">
+      <f:string key="ritzau_channel_id">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:ritzau_channel_id')"/>
+      </f:string>
+    </xsl:if>
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:nielsen_channel_id') != ''">
+      <f:string key="nielsen_channel_id">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:nielsen_channel_id')"/>
       </f:string>
     </xsl:if>
 

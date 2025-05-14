@@ -4,6 +4,7 @@ import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.present.util.TestFileProvider;
 import dk.kb.util.Resolver;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -214,7 +215,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testChannelId(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_channel_id\":\"3\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"ritzau_channel_id\":\"3\"");
+    }
+
+    @Test
+    void testDoubleChannelId() {
+        assertPvicaContains(TestFiles.PVICA_DOUBLE_CHANNEL, "\"ritzau_channel_id\":\"325\"");
+        assertPvicaContains(TestFiles.PVICA_DOUBLE_CHANNEL, "\"nielsen_channel_id\":\"103\"");
     }
 
     @Test
@@ -363,10 +370,10 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaNotContains(TestFiles.PVICA_RECORD_b346acc8, "\"notes\":");
     }
 
-    @Test
+   /* @Test
     void testUrlPreservica7()  {
-        assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"file_id\":\"8946d31d-a81c-447f-b84d-ff80644353d2.mp4\"");
-    }
+        assertPvicaContains(TestFiles.PVICA_WITH_TRANSCODINGSTATUS, "\\/radio-tv\\/2\\/e\\/e\\/6\\/2ee62889-a4d0-43c4-bfe5-4d7e3dcca7c8.mp3");
+    }*/
 
     @Test
     void testHoldbackName() {
@@ -422,6 +429,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"abstract_length\":\"15\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"description_length\":\"374\"");
 
+    }
+
+    @Test
+    void testFileIdAndPath(){
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"");
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_path\":\"c8\\/d2\\/e7\\/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"");
     }
 
     @Test
@@ -607,6 +620,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString;
         try {
             solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, record);
+            prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);

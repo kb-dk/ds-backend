@@ -14,6 +14,7 @@
                xmlns:pidhandle="http://kuana.kb.dk/types/pidhandle/0/1/#"
                xmlns:program_structure="http://doms.statsbiblioteket.dk/types/program_structure/0/1/#"
                xmlns:err="http://www.w3.org/2005/xqt-errors"
+               xmlns:transcoding="http://id.kb.dk/schemas/radiotv_access/transcoding_status"
                version="3.0">
 
   <xsl:output method="text"/>
@@ -28,8 +29,6 @@
   <xsl:param name="endTime"/>
   <!-- ID created by kaltura. This ID is the ID of the stream containing the newest presentation copy for this resource. Used for video and audio objects.-->
   <xsl:param name="kalturaID"/>
-  <!-- XML containing the presentation manifestation for the record in hand-->
-  <xsl:param name="manifestation"/>
   <!-- Representation of when the record was last modified in the backing ds-storage. The value is a long representing time
        since epoch with microsecond precision (milliseconds with 3 extra digits). -->
   <xsl:param name="mTime"/>
@@ -1093,9 +1092,31 @@
       <xsl:value-of select="format-number($mTime, '0')"/>
     </f:string>
 
-    <xsl:if test="$manifestation != ''">
-      <f:string key="kb:file_id">
-        <xsl:value-of select="$manifestation"/>
+    <xsl:if test="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/radiotv_access/transcoding_status']">
+
+      <xsl:variable name="filePath">
+        <xsl:value-of select="/XIP/Metadata/Content/radiotvTranscodingStatus/specificRadioTvTranscodingStatus/accessFilePath"/>
+      </xsl:variable>
+
+      <xsl:variable name="fileIdWithExtension">
+        <xsl:value-of select="tokenize($filePath, '/')[last()]"/>
+      </xsl:variable>
+
+      <xsl:choose>
+        <xsl:when test="contains($fileIdWithExtension, '.')">
+          <f:string key="kb:file_id">
+            <xsl:value-of select="substring-before($fileIdWithExtension, '.')"/>
+          </f:string>
+        </xsl:when>
+        <xsl:otherwise>
+          <f:string key="kb:file_id">
+            <xsl:value-of select="$fileIdWithExtension"/>
+          </f:string>
+        </xsl:otherwise>
+      </xsl:choose>
+
+      <f:string key="kb:file_path">
+        <xsl:value-of select="$filePath"/>
       </f:string>
     </xsl:if>
 
@@ -1177,7 +1198,7 @@
     </xsl:choose>
     <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
          Some have external value, while others primarily are for internal usage.-->
-    <xsl:for-each select="$pbCore/pbcoreExtension/extension">
+    <xsl:for-each select="$pbCore/pbcoreExtension">
       <xsl:call-template name="extension-extractor">
       <xsl:with-param name="type" select="$type"/>
       </xsl:call-template>
@@ -1312,56 +1333,64 @@
     <xsl:param name="type"/>
     <!-- Extracts multiple internal ids. -->
     <xsl:choose>
-      <xsl:when test="f:starts-with(. , 'hovedgenre_id:')">
+      <xsl:when test="f:starts-with(extension, 'hovedgenre_id:')">
         <f:string key="kb:maingenre_id">
-          <xsl:value-of select="substring-after(. , 'hovedgenre_id:')"/>
+          <xsl:value-of select="substring-after(extension , 'hovedgenre_id:')"/>
         </f:string>
       </xsl:when>
-      <xsl:when test="f:starts-with(. , 'kanalid:') and f:string-length(normalize-space(substring-after(. , 'kanalid:'))) > 0">
+      <xsl:when test="f:starts-with(extension , 'kanalid:') and f:string-length(normalize-space(substring-after(extension , 'kanalid:'))) > 0">
         <xsl:variable name="channelId">
-          <xsl:value-of select="number(normalize-space(substring-after(. , 'kanalid:')))"/>
+          <xsl:value-of select="number(normalize-space(substring-after(extension , 'kanalid:')))"/>
         </xsl:variable>
-        <xsl:if test="string($channelId) != 'NaN'">
-          <f:number key="kb:channel_id">
-            <xsl:value-of select="$channelId"/>
-          </f:number>
-        </xsl:if>
+
+        <xsl:choose>
+          <xsl:when test="extensionAuthorityUsed = 'ritzau' and string($channelId) != 'NaN'">
+            <f:number key="kb:ritzau_channel_id">
+              <xsl:value-of select="$channelId"/>
+            </f:number>
+          </xsl:when>
+          <xsl:when test="extensionAuthorityUsed = 'nielsen' and string($channelId) != 'NaN'">
+            <f:number key="kb:nielsen_channel_id">
+              <xsl:value-of select="$channelId"/>
+            </f:number>
+          </xsl:when>
+        </xsl:choose>
       </xsl:when>
-      <xsl:when test="f:starts-with(. , 'program_id:')">
+      <xsl:when test="f:starts-with(extension , 'program_id:')">
         <f:string key="kb:ritzau_program_id">
-          <xsl:value-of select="f:substring-after(. , 'program_id:')"/>
+          <xsl:value-of select="f:substring-after(extension , 'program_id:')"/>
         </f:string>
       </xsl:when>
-      <xsl:when test="f:starts-with(. , 'undergenre_id:')">
+      <xsl:when test="f:starts-with(extension , 'undergenre_id:')">
         <f:string key="kb:subgenre_id">
-          <xsl:value-of select="f:substring-after(. , 'undergenre_id:')"/>
+          <xsl:value-of select="f:substring-after(extension , 'undergenre_id:')"/>
         </f:string>
       </xsl:when>
-      <xsl:when test="f:starts-with(. , 'afsnit_id:')">
+      <xsl:when test="f:starts-with(extension , 'afsnit_id:')">
         <f:string key="kb:episode_id">
-          <xsl:value-of select="f:substring-after(. , 'afsnit_id:')"/>
+          <xsl:value-of select="f:substring-after(extension , 'afsnit_id:')"/>
         </f:string>
       </xsl:when>
-      <xsl:when test="f:starts-with(. , 'saeson_id:')">
+      <xsl:when test="f:starts-with(extension , 'saeson_id:')">
         <f:string key="kb:season_id">
-          <xsl:value-of select="f:substring-after(. , 'saeson_id:')"/>
+          <xsl:value-of select="f:substring-after(extension , 'saeson_id:')"/>
         </f:string>
       </xsl:when>
-      <xsl:when test="f:starts-with(. , 'serie_id:')">
+      <xsl:when test="f:starts-with(extension , 'serie_id:')">
         <f:string key="kb:series_id">
-          <xsl:value-of select="f:substring-after(. , 'serie_id:')"/>
+          <xsl:value-of select="f:substring-after(extension , 'serie_id:')"/>
         </f:string>
       </xsl:when>
       <!-- Check if there has been a stop in the transmission-->
-      <xsl:when test="f:starts-with(. , 'program_ophold:')">
+      <xsl:when test="f:starts-with(extension , 'program_ophold:')">
         <!-- inner XSLT Choose which determines if program_ophold is false or true -->
         <xsl:choose>
-          <xsl:when test=". = 'program_ophold:ikke program ophold'">
+          <xsl:when test="extension = 'program_ophold:ikke program ophold'">
             <f:boolean key="kb:program_ophold">
               <xsl:value-of select="false()"/>
             </f:boolean>
           </xsl:when>
-          <xsl:when test=". = 'program_ophold:program ophold'">
+          <xsl:when test="extension = 'program_ophold:program ophold'">
             <f:boolean key="kb:program_ophold">
               <xsl:value-of select="true()"/>
             </f:boolean>
