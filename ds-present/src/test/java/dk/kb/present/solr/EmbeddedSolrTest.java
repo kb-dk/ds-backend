@@ -565,6 +565,7 @@ public class EmbeddedSolrTest {
     }
 
     @Test
+    @Tag("integration")
     void testPaths() throws Exception {
         testStringValuePreservicaField(PVICA_WITH_CORRECT_PRESENTATION, "file_id", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
         testStringValuePreservicaField(PVICA_WITH_CORRECT_PRESENTATION, "file_path", "c8/d2/e7/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
