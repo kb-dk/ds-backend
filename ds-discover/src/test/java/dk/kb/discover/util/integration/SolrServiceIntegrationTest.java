@@ -48,7 +48,7 @@ public class SolrServiceIntegrationTest extends IntegrationTest {
         // Integration test towards devel env. Remember to update aegis before running this.
         String suggestDictionary = "radiotv_title_suggest";
         // no suggestions should be available for this query.
-        String suggestQuery = "tes";
+        String suggestQuery = "deb";
         int suggestCount = 5;
         String wt = "json";
         SolrService solr = SolrManager.getSolrService("ds");
@@ -59,8 +59,26 @@ public class SolrServiceIntegrationTest extends IntegrationTest {
 
         assertTrue(filteredResponse.contains("\"suggest\" : {\n" +
                 "    \"radiotv_title_suggest\" : {\n" +
-                "      \"tes\" : {\n" +
-                "        \"numFound\" : 8,\n"));  //This number will change depending on corpus
+                "      \"deb\" : {\n" +
+                "        \"numFound\" : 2,\n"));  //This number will change depending on corpus
+    }
+
+    @Test
+    void holdbackSuggestTest() {
+        // Integration test towards devel env. Remember to update aegis before running this.
+        String suggestDictionary = "radiotv_title_suggest";
+        // no suggestions should be available for this query.
+        String suggestQuery = "skråt op på 3";
+        int suggestCount = 5;
+        String wt = "json";
+        SolrService solr = SolrManager.getSolrService("ds");
+
+        String filteredResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);
+
+        assertTrue(filteredResponse.contains("\"suggest\" : {\n" +
+                "    \"radiotv_title_suggest\" : {\n" +
+                "      \"skråt op på 3\" : {\n" +
+                "        \"numFound\" : 0,\n"));  //This number will change depending on corpus
     }
 
 }
