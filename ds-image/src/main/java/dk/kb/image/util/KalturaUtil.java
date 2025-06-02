@@ -45,7 +45,7 @@ public class KalturaUtil {
 
         try {
             DsKalturaClient client = getKalturaClient();
-            String kalturaId = client.getKulturaInternalId(fileId);
+            String kalturaId = client.getKalturaInternalId(fileId);
 
             if (kalturaId == null) {
                 throw new NotFoundServiceException("FileId not found at Kaltura: '" + fileId + "'.");
