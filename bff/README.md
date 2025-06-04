@@ -4,6 +4,10 @@
 
 OAuth proxy for The Royal Library
 
+## ⚠️ Warning: Copyright Notice
+Vær opmærksom på, at det ikke er lovligt at downloade og/eller på anden vis videreanvende indholdet i Det Kgl. Biblioteks DR-arkiv.
+
+
 ## Requirements
 
 
