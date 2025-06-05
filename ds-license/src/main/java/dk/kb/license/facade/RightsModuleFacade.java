@@ -40,6 +40,8 @@ public class RightsModuleFacade {
     private static final Pattern dsIdPattern = Pattern.compile(regexpDsIdPattern);
 
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
+    private static final int MAX_COMMENT_LENGTH = 16348;
+
     /**
      * Retrieves a restrictedID output object from the database
      *
@@ -62,14 +64,13 @@ public class RightsModuleFacade {
      */
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
-        validatePlatformAndIdType(restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getIdType().getValue());
 
-        if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
+        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
             String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
             restrictedIdInputDto.setIdValue(validProductionId);
         }
 
-        if (restrictedIdInputDto.getIdType().equals("ds_id")) {
+        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DS_ID) {
             validatedsIdFormat(restrictedIdInputDto);
         }
 
@@ -131,10 +132,9 @@ public class RightsModuleFacade {
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
-        validatePlatformAndIdType(restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getIdType().getValue());
         validateCommentLength(restrictedIdInputDto);
 
-        if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
+        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
             String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
             restrictedIdInputDto.setIdValue(validProductionId);
         }
@@ -175,10 +175,9 @@ public class RightsModuleFacade {
     public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) throws SQLException {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
-                validatePlatformAndIdType(id.getPlatform().getValue(), id.getIdType().getValue());
                 validateCommentLength(id);
 
-                if (id.getIdType().equals("dr_produktions_id")){
+                if (id.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
                     String validProductionId = Util.validateDrProductionIdFormat(id.getIdValue());
                     id.setIdValue(validProductionId);;
                 }
@@ -511,27 +510,16 @@ public class RightsModuleFacade {
     }
 
     private static void validateCommentLength(RestrictedIdInputDto id) {
-        if (id.getComment() != null && id.getComment().length() > 16348){
-            log.error("Comment was too long and cannot be added to rights module. Only 16348 characters are allowed.");
-            throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
+        if (id.getComment() != null && id.getComment().length() > MAX_COMMENT_LENGTH){
+            log.error("Comment was too long and cannot be added to rights module. Only {} characters are allowed.", MAX_COMMENT_LENGTH);
+            throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.");
         }
-    }
-
-    private static void validatePlatformAndIdType(String platform, String idType) {
-        YAML platformConfig = ServiceConfig.getRightsPlatformConfig(platform);
-        if (platformConfig.isEmpty()) {
-            throw new IllegalArgumentException("Invalid platform "+platform);
-        }
-        if (!platformConfig.getList("idTypes").contains(idType)) {
-            throw new IllegalArgumentException("Invalid idType "+idType);
-        }
-
     }
 
     private static void validatedsIdFormat(RestrictedIdInputDto restrictedIdInputDto) {
         Matcher m = dsIdPattern.matcher(restrictedIdInputDto.getIdValue());
         if (!m.matches()) {
-            throw new InvalidArgumentServiceException("Invalid ds_id format "+restrictedIdInputDto.getIdValue());
+            throw new InvalidArgumentServiceException("Invalid ds_id format " + restrictedIdInputDto.getIdValue());
         }
     }
 
@@ -554,7 +542,7 @@ public class RightsModuleFacade {
             case STRICT_TITLE:
                 return touchStorageRecordsByStrictTitle(id);
             default:
-                throw new IllegalArgumentException("Invalid idType "+idType);
+                throw new IllegalArgumentException("Invalid idType " + idType);
         }
     }
 
