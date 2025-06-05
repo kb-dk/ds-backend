@@ -151,16 +151,16 @@
     Whenever a restricted ID is added or deleted, the corresponding records are reindexed.
 
     There are 4 different types of Ids supported.
-    #### ds_id
+    #### DS_ID
     Restrict (blacklist) a record based on the local id in ds.
 
-    #### dr_produktion_id
+    #### DR_PRODUCTION_ID
     Restrict (blacklist) records based on the DR production ID. Only relevant for 'DR Arkivet'. Note that multiple records in ds can have the same DR production ID.
 
-    #### strict_title
+    #### STRICT_TITLE
     Restrict (blacklist) records based on their title. Note that the title of the record has to match the restricted title exactly.
 
-    #### own_production_code
+    #### OWNPRODUCTION_CODE
     The Rightsmodule also contains a list of production codes, used for identifying if a radio or tv record is ownproduction and thus can be shown in the DR archive.
 
     ### Holdback calculations
