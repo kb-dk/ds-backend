@@ -175,6 +175,7 @@ public class RightsModuleFacade {
     public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) throws SQLException {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
+                log.debug("Adding restricted id type='{}' with value='{}'",id.getIdType(),id.getIdValue());
                 validateCommentLength(id);
 
                 if (id.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
