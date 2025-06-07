@@ -276,6 +276,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
 
     public void persistAuditLog(AuditLog auditlog) throws SQLException {
         log.info("Persisting  persistAuditLog " + auditlog.getChangeType() +" for username:"+auditlog.getUsername());
+        sleep(1L);  //So system millis will be different
         try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
             stmt.setLong(1,  auditlog.getMillis());
             stmt.setString(2,auditlog.getUsername());
@@ -288,5 +289,16 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             log.error("SQL Exception in persistAuditLog:" + e.getMessage());
             throw e;
         }
+    }
+    
+    
+    //Called because since bulk upload the system millis can  be the same and breaking unique constraint.
+    private void sleep(long milis) {
+      try {
+        Thread.sleep(1);
+      } catch (InterruptedException e) {
+        // ignore
+      }  
+        
     }
 }
