@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased](https://github.com/kb-dk/bff/compare/bff-1.2.5...HEAD)
 
+## [3.0.0]
 
 ## [1.2.5]
 ### Changed
