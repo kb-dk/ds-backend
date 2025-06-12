@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <packaging>war</packaging>
     <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
 
@@ -17,7 +17,7 @@
         <url>https://github.com/kb-dk/ds-present</url>
         <connection>scm:git:git@github.com:kb-dk/ds-present.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds-present.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>ds-present-3.0.0</tag>
     </scm>
 
     <licenses>
