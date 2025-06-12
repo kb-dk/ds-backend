@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+
+
+## [3.0.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.0) 2025-06-12
+### Added
 - Added client method for the APi endpoint: `rights/calculate`
 
 ### Changed
