@@ -1049,6 +1049,10 @@ components:
           $ref: "#/components/schemas/PlatformEnum"
         comment:
           type: string
+        createdBy:
+          type: string
+        createdTime:
+          type: long
         modifiedBy:
           type: string
         modifiedTime:
