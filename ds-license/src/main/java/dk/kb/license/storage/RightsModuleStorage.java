@@ -163,7 +163,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     /**
-     * Updates an entry in the restricted IDs table. Also updates the mTime of the related record in ds-storage.
+     * Updates an entry in the restricted IDs table. Also updates the modifiedTime of the related record in ds-storage.
      *
      * @param id_value The value of the ID
      * @param id_type The type of the ID
