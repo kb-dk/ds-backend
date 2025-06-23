@@ -30,14 +30,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String RESTRICTED_ID_IDTYPE = "id_type";
     private final String RESTRICTED_ID_PLATFORM = "platform";
     private final String RESTRICTED_ID_COMMENT = "comment";
-    private final String RESTRICTED_ID_CREATED_BY = "created_by";
-    private final String RESTRICTED_ID_CREATED_TIME = "created_time";
     private final String RESTRICTED_ID_MODIFIED_BY = "modified_by";
     private final String RESTRICTED_ID_MODIFIED_TIME = "modified_time";
 
     private final String createRestrictedIdQuery = "INSERT INTO " + RESTRICTED_ID_TABLE +
             " ("+RESTRICTED_ID_ID+","+ RESTRICTED_ID_IDVALUE +","+ RESTRICTED_ID_IDTYPE +","+ RESTRICTED_ID_PLATFORM +","+
-            RESTRICTED_ID_COMMENT +","+ RESTRICTED_ID_CREATED_BY +","+ RESTRICTED_ID_CREATED_TIME +")" +
+            RESTRICTED_ID_COMMENT +","+ RESTRICTED_ID_MODIFIED_BY +","+ RESTRICTED_ID_MODIFIED_TIME +")" +
             " VALUES (?,?,?,?,?,?,?)";
     private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String readRestrictedIdQueryByInternalId = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
@@ -108,17 +106,17 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     /**
-     * Creates an entry in the restrictedID table.
+     * Creates an entry in the restrictedID table. Also updates the mTime for the related record in ds-storage.
      *
      * @param id_value The value of the ID
      * @param id_type The type of the ID
      * @param platform The platform where the object is restricted (e.g DR)
      * @param comment Just a comment
-     * @param createdBy The id of the user creating the restricted ID
-     * @param createdTime timestamp for creation
+     * @param modifiedBy The id of the user creating the restricted ID
+     * @param modifiedTime timestamp for creation
      * @throws SQLException
      */
-    public void createRestrictedId(String id_value, String id_type, String platform, String comment, String createdBy, long createdTime) throws SQLException {
+    public void createRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
         long uniqueID = generateUniqueID();
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)){
@@ -127,8 +125,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
             stmt.setString(3, id_type);
             stmt.setString(4, platform);
             stmt.setString(5, comment);
-            stmt.setString(6, createdBy);
-            stmt.setLong(7, createdTime);
+            stmt.setString(6, modifiedBy);
+            stmt.setLong(7, modifiedTime);
             stmt.execute();
         }  catch (SQLException e) {
             log.error("SQL Exception in persistClause:" + e.getMessage());
@@ -163,7 +161,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     /**
-     * Updates an entry in the restricted IDs table. Also updates the modifiedTime of the related record in ds-storage.
+     * Updates an entry in the restricted IDs table. Also updates the mTime of the related record in ds-storage.
      *
      * @param id_value The value of the ID
      * @param id_type The type of the ID
@@ -565,8 +563,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
         output.setIdType(IdTypeEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_IDTYPE)));
         output.setPlatform(PlatformEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_PLATFORM)));
         output.setComment(resultSet.getString(RESTRICTED_ID_COMMENT));
-        output.setCreatedBy(resultSet.getString(RESTRICTED_ID_CREATED_BY));
-        output.setCreatedTime(resultSet.getLong(RESTRICTED_ID_CREATED_TIME));
         output.setModifiedBy(resultSet.getString(RESTRICTED_ID_MODIFIED_BY));
         output.setModifiedTime(resultSet.getLong(RESTRICTED_ID_MODIFIED_TIME));
         output.setModifiedTimeHuman(convertToHumanReadable(output.getModifiedTime()));
