@@ -93,16 +93,6 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public List<AuditEntryOutputDto> getAuditEntries() {
-        return List.of();
-    }
-
-    @Override
-    public AuditEntryOutputDto getAuditEntry(String id) {
-        return null;
-    }
-
-    @Override
     public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
             RightsModuleFacade.createRestrictedIds(restrictedIds,getCurrentUserID(),touchRecord);
