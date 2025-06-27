@@ -64,9 +64,7 @@ public class DsAuditApiServiceImpl extends ImplBase implements DsAuditApi {
         try {
 //          log.debug("Get restricted ID id:{} idType:{} platform:{}", id, idType, platform);
             ArrayList<AuditEntryOutputDto> result = AuditFacade.getAuditEntries(objectId);
-            if (result == null) {
-                throw new NotFoundServiceException("Auditlog id not found");
-            }
+           
             return result;
         } catch (Exception e) {
             throw handleException(e);
