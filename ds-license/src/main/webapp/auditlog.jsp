@@ -1,14 +1,12 @@
 <%@ page import="
     java.util.*,
     java.text.SimpleDateFormat,
-     dk.kb.license.Util,
-     dk.kb.license.storage.AuditLog,
-     dk.kb.license.facade.LicenseModuleFacade"%>
+     dk.kb.license.Util,dk.kb.license.storage.AuditLogEntry,dk.kb.license.facade.LicenseModuleFacade"%>
 
 <%@ include file="check_gui_enabled.jsp" %>
 
-<%  
-   ArrayList<AuditLog> logs = LicenseModuleFacade.getAllAuditLogs();
+<%
+ArrayList<AuditLogEntry> logs = LicenseModuleFacade.getAllAuditLogs();
    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 %>
   <table class="table table-condensed table-hover">
@@ -21,8 +19,9 @@
    </tr>
    </thead>
    <tbody>
-<% for (int i = 0;i<logs.size();i++ ){
-      AuditLog current = logs.get(i);
+<%
+for (int i = 0;i<logs.size();i++ ){
+      AuditLogEntry current = logs.get(i);
 %>
    <tr class="<%=Util.getStyle(i)%>" onclick="window.open( 'showlog.jsp?auditlogId=<%=current.getMillis()%>','_new');">
       <td><%=dateFormat.format(new Date(current.getMillis()))%></td>

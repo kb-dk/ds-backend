@@ -9,11 +9,11 @@
 <%@ include file="check_gui_enabled.jsp" %>
 
     <%
-     String auditId = request.getParameter("auditlogId");   
-     AuditLog log = LicenseModuleFacade.getAuditLog(Long.parseLong(auditId));
-     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-     int i =0;
-     %>
+    String auditId = request.getParameter("auditlogId");   
+         AuditLogEntry log = LicenseModuleFacade.getAuditLog(Long.parseLong(auditId));
+         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+         int i =0;
+    %>
    
 <!DOCTYPE html>
 <html>

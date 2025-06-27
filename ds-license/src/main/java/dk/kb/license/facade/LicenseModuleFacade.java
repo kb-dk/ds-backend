@@ -42,7 +42,9 @@ public class LicenseModuleFacade {
             PresentationType newType = new PresentationType(0, key, value_dk, value_en);
             ((LicenseModuleStorage) storage).persistLicensePresentationType(key, value_dk, value_en);
             ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(null, newType);
-            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Create presentationtype", key, changes.getBefore(), changes.getAfter());
+            
+            AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Create presentationtype", key, changes.getBefore(), changes.getAfter());
+
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
 
             return null;
@@ -74,9 +76,9 @@ public class LicenseModuleFacade {
      * @param millis The ID of the log. 
      * @return AuditLog The auditlog with this id
      */
-    public static AuditLog getAuditLog(Long millis) {
+    public static AuditLogEntry getAuditLog(Long auditLogId) {
         return BaseModuleStorage.performStorageAction("getAuditLog()", LicenseModuleStorage.class, storage -> {
-             return ((LicenseModuleStorage) storage).getAuditLog(millis);
+             return ((LicenseModuleStorage) storage).getAuditLogById(auditLogId);
          });                
      }
      
@@ -85,7 +87,7 @@ public class LicenseModuleFacade {
      * <p>
      * @return List of all auditlogs.
      */    
-    public static ArrayList<AuditLog> getAllAuditLogs() {
+    public static ArrayList<AuditLogEntry> getAllAuditLogs() {
        return BaseModuleStorage.performStorageAction("getAllAuditLogs()", LicenseModuleStorage.class, storage -> {
             return ((LicenseModuleStorage) storage).getAllAudit();
         });                
@@ -104,7 +106,7 @@ public class LicenseModuleFacade {
             License license = ((LicenseModuleStorage) storage).getLicense(licenseId);
             ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(license,null);              
 
-            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Delete License", license.getLicenseName(), changes.getBefore(), changes.getAfter());
+            AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Delete License", license.getLicenseName(), changes.getBefore(), changes.getAfter());
 
             ((LicenseModuleStorage) storage).deleteLicense(licenseId);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
@@ -144,7 +146,7 @@ public class LicenseModuleFacade {
         GroupType g = new GroupType(0L,key,value,value_en,description,description_en,query, isRestriction);
 
         ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(null, g);
-        AuditLog auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Create grouptype", key, changes.getBefore(), changes.getAfter());        
+        AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Create grouptype", key, changes.getBefore(), changes.getAfter());        
         ((LicenseModuleStorage) storage).persistLicenseGroupType(key, value, value_en, description, description_en, query,  isRestriction);
         ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
         return null;
@@ -175,7 +177,7 @@ public class LicenseModuleFacade {
             
             GroupType updateGroupType = new GroupType(0L,oldGroupType.getKey(),value_dk,value_en,description,description_en,query, isRestriction);
             ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(oldGroupType, updateGroupType);
-            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Update grouptype", value_dk, changes.getBefore(), changes.getAfter());        
+            AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Update grouptype", value_dk, changes.getBefore(), changes.getAfter());        
                       
             ((LicenseModuleStorage) storage).updateLicenseGroupType(id, value_dk, value_en, description, description_en, query,  isRestriction);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
@@ -202,7 +204,7 @@ public class LicenseModuleFacade {
            ((LicenseModuleStorage) storage).updatePresentationType(id, value_dk, value_en);
 
            ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(oldType, newType);
-           AuditLog auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Update presentationtype", oldType.getKey(), changes.getBefore(), changes.getAfter());
+           AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Update presentationtype", oldType.getKey(), changes.getBefore(), changes.getAfter());
            ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
            return null;        
         });
@@ -217,7 +219,7 @@ public class LicenseModuleFacade {
     public static void deleteLicenseGroupType(String groupName,HttpSession session) {
    
         BaseModuleStorage.performStorageAction("deleteLicenseGroupType(" + groupName +")", LicenseModuleStorage.class, storage -> {
-           AuditLog auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Delete grouptype",groupName,groupName,"");
+           AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Delete grouptype",groupName,groupName,"");
            ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
             ((LicenseModuleStorage) storage).deleteLicenseGroupType(groupName);
             return null;        
@@ -239,7 +241,7 @@ public class LicenseModuleFacade {
             ((LicenseModuleStorage) storage).deletePresentationType(presentationName);
 
            ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(oldType, null);
-           AuditLog auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Delete presentationtype", oldType.getKey(), changes.getBefore(), changes.getAfter());                   
+           AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Delete presentationtype", oldType.getKey(), changes.getBefore(), changes.getAfter());                   
            ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
             return null;        
         });
@@ -257,17 +259,17 @@ public class LicenseModuleFacade {
     public static void persistLicense(License license,HttpSession session) {
         
         BaseModuleStorage.performStorageAction("persistLicense(description_dk=" + license.getDescription_dk() +")", LicenseModuleStorage.class, storage -> {
-            AuditLog auditLog = null;
+            AuditLogEntry auditLog = null;
             //audit log
             if (license.getId() == 0 ) {
                ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null,license);              
-               auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Create New License", license.getLicenseName(), changes.getBefore(), changes.getAfter());               
+               auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Create New License", license.getLicenseName(), changes.getBefore(), changes.getAfter());               
 
             }
             else {
                License oldLicense = ((LicenseModuleStorage) storage).getLicense(license.getId());
                ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(oldLicense, license);
-               auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Update License", license.getLicenseName(), changes.getBefore(), changes.getAfter());                                               
+               auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Update License", license.getLicenseName(), changes.getBefore(), changes.getAfter());                                               
             }
             
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
@@ -295,7 +297,7 @@ public class LicenseModuleFacade {
      */
     public static void persistAttributeType(String attributeTypeName,HttpSession session) {
         BaseModuleStorage.performStorageAction("persistAttributeType("+attributeTypeName+")", LicenseModuleStorage.class, storage -> {
-            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Create attribute", attributeTypeName,"",attributeTypeName);
+            AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Create attribute", attributeTypeName,"",attributeTypeName);
             ((LicenseModuleStorage) storage).persistAttributeType(attributeTypeName);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
             return null;        
@@ -313,7 +315,7 @@ public class LicenseModuleFacade {
      */    
     public static void deleteAttributeType(String attributeTypeName,HttpSession session) {
         BaseModuleStorage.performStorageAction("deleteAttributeType("+attributeTypeName+")", LicenseModuleStorage.class, storage -> {
-            AuditLog auditLog = new AuditLog(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Delete attribute", attributeTypeName,attributeTypeName,"");
+            AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Delete attribute", attributeTypeName,attributeTypeName,"");
             ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
             return null;        

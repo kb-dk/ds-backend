@@ -1026,7 +1026,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
       tables.add("VALUE_ORG");
       tables.add("LICENSECONTENT");    
       tables.add("PRESENTATION");
-      
+      tables.add("AUDITLOG");
       
       for (String table : tables) {
           String deleteSQL="DELETE FROM " +table; 
