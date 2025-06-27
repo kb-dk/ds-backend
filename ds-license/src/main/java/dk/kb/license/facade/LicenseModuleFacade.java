@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
 
+import dk.kb.license.model.v1.AuditEntryOutputDto;
 import dk.kb.license.storage.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,33 +68,6 @@ public class LicenseModuleFacade {
                 
     }
 
-    
-    /**
-     * Retrieve a specific audit log by id.
-     * <p>
-     * The id is milliseconds at the time for the change.
-     * Call the getAllAuditLogs {@link #getAllAuditLogs()} to see all entries with their ids
-     * @param millis The ID of the log. 
-     * @return AuditLog The auditlog with this id
-     */
-    public static AuditLogEntry getAuditLog(Long auditLogId) {
-        return BaseModuleStorage.performStorageAction("getAuditLog()", LicenseModuleStorage.class, storage -> {
-             return ((LicenseModuleStorage) storage).getAuditLogById(auditLogId);
-         });                
-     }
-     
-    /**
-     * Returns a list of all auditlogs.
-     * <p>
-     * @return List of all auditlogs.
-     */    
-    public static ArrayList<AuditLogEntry> getAllAuditLogs() {
-       return BaseModuleStorage.performStorageAction("getAllAuditLogs()", LicenseModuleStorage.class, storage -> {
-            return ((LicenseModuleStorage) storage).getAllAudit();
-        });                
-    }
-    
-    
     
     /**
      * Delete a license completely.

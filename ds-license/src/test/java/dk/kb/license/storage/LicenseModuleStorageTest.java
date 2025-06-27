@@ -23,7 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.license.Util;
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.model.v1.AuditEntryOutputDto;
+import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.GetUserGroupsInputDto;
+import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.model.v1.UserGroupDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
 import dk.kb.license.solr.AbstractSolrJClient;
@@ -1059,19 +1062,17 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
          
          Long objectId=123456789L;
          String userName="teg";
-         String changeType="hangeType";
-         String changeName="changeName";
+         ChangeTypeEnumDto changeType= ChangeTypeEnumDto.UPDATE;
+         ObjectTypeEnumDto changeName= ObjectTypeEnumDto.CLAUSE_RESTRICTED_ID;
          String changeComment="changeComment";
          String textBefore="before";
          String textAfter="after";
-                          
-         
+                                   
         AuditLogEntry auditLog = new AuditLogEntry(objectId,userName,changeType,changeName,changeComment,textBefore,textAfter);
         
-        long auditLogId=storage.persistAuditLog(auditLog);
-                
-        //Load and validate entries
-  //      AuditLog auditLog2 = storage.getAuditLog(millis);        
+        long auditLogId=storage.persistAuditLog(auditLog);                
+        AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
+        //TODO validate fields from storage
         
                 
     }

@@ -1,5 +1,8 @@
 package dk.kb.license.storage;
 
+import dk.kb.license.model.v1.AuditEntryOutputDto;
+import dk.kb.license.model.v1.ChangeTypeEnumDto;
+import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -12,10 +15,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * The BaseModuleStorage, which sets up the connection to the database which is then used by  {@link LicenseModuleStorage} and {@link RightsModuleStorage}.
@@ -242,7 +243,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * @return AuditLog object 
      * @throws Exception
      */
-    public AuditLogEntry getAuditLogById(long id) throws IllegalArgumentException, SQLException {
+    public AuditEntryOutputDto getAuditLogById(long id) throws IllegalArgumentException, SQLException {
 
         try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQueryById);) {
             stmt.setLong(1, id);
@@ -265,12 +266,12 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
     * @return List of AuditLog objects. Will return empty list if objectId is not found. 
     * @throws Exception
     */
-   public ArrayList<AuditLogEntry> getAuditLogByObjectId(long objectId) throws IllegalArgumentException, SQLException {
+   public ArrayList<AuditEntryOutputDto> getAuditLogByObjectId(long objectId) throws IllegalArgumentException, SQLException {
 
        try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQueryByObjectId);) {
            stmt.setLong(1, objectId);
 
-           ArrayList<AuditLogEntry> entries = new ArrayList<AuditLogEntry>(); 
+           ArrayList<AuditEntryOutputDto> entries = new ArrayList<AuditEntryOutputDto>(); 
            ResultSet rs = stmt.executeQuery();
            while (rs.next()) { 
              entries.add(convertRsToAuditLog(rs));                                                         
@@ -285,13 +286,13 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
 
     
     
-    public ArrayList<AuditLogEntry> getAllAudit() throws SQLException {
+    public ArrayList<AuditEntryOutputDto> getAllAudit() throws SQLException {
 
-        ArrayList<AuditLogEntry> entryList = new ArrayList<AuditLogEntry>();
+        ArrayList<AuditEntryOutputDto> entryList = new ArrayList<AuditEntryOutputDto>();
         try (PreparedStatement stmt = connection.prepareStatement(selectAllAuditLogQuery);) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) { // maximum one due to unique/primary key constraint
-               AuditLogEntry auditLog= convertRsToAuditLog(rs);   
+                AuditEntryOutputDto auditLog= convertRsToAuditLog(rs);   
                entryList.add(auditLog);
             }
             return entryList;
@@ -319,9 +320,9 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             stmt.setLong(2, auditLog.getObjectId());
             stmt.setLong(3, System.currentTimeMillis());                         
             stmt.setString(4,auditLog.getUserName());            
-            stmt.setString(5, auditLog.getChangeType());
-            stmt.setString(6, auditLog.getChangeName());
-            stmt.setString(7, auditLog.getChangeValue());               
+            stmt.setString(5, auditLog.getChangeType().getValue());
+            stmt.setString(6, auditLog.getChangeName().getValue());
+            stmt.setString(7, auditLog.getChangeComment());               
             stmt.setString(8, auditLog.getTextBefore());
             stmt.setString(9, auditLog.getTextAfter());
             stmt.execute();
@@ -332,21 +333,29 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
         return id;
     }
             
-      //CHANGE TO OUTPUT
-      private AuditLogEntry convertRsToAuditLog( ResultSet rs)  throws SQLException{
+    
+      private AuditEntryOutputDto convertRsToAuditLog( ResultSet rs)  throws SQLException{
           long auditLogId = rs.getLong(AUDITLOG_ID_COLUMN);
           long objectId = rs.getLong(AUDITLOG_OBJECTID_COLUMN);
           long modifiedTime = rs.getLong(AUDITLOG_MODIFIEDTIME_COLUMN);
           String userName= rs.getString(AUDITLOG_USERNAME_COLUMN);
           String changeType= rs.getString(AUDITLOG_CHANGETYPE_COLUMN);
           String changeName= rs.getString(AUDITLOG_CHANGENAME_COLUMN);
-          String changeValue= rs.getString(AUDITLOG_CHANGECOMMENT_COLUMN);
+          String changeComment= rs.getString(AUDITLOG_CHANGECOMMENT_COLUMN);
           String textBefore= rs.getString(AUDITLOG_TEXTBEFORE_COLUMN);
           String textAfter = rs.getString(AUDITLOG_TEXTAFTER_COLUMN);                
-          AuditLogEntry audit=new AuditLogEntry(objectId,userName,changeType,changeName,changeValue,textBefore,textAfter);
-          //audit.setModifiedTime(modifiedTime);  //Not part of constructor.
-          //audit.setId(auditLogId); //Not part of constructor.
-          return audit;
+                        
+          AuditEntryOutputDto auditEntry= new AuditEntryOutputDto();
+          auditEntry.setId(auditLogId);
+          auditEntry.setObjectId(objectId);
+          auditEntry.setModifiedTime(modifiedTime);
+          auditEntry.setUserName(userName);
+          auditEntry.setChangeType(ChangeTypeEnumDto.valueOf(changeType));
+          auditEntry.setChangeName(ObjectTypeEnumDto.valueOf(changeName));
+          auditEntry.setChangeComment(changeComment);
+          auditEntry.setTextAfter(textAfter);
+          auditEntry.setTextBefore(textBefore);          
+          return auditEntry;
           
       }
     

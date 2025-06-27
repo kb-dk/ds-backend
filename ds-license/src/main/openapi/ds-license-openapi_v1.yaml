@@ -203,7 +203,8 @@ paths:
           in: query
           description: Filter on id
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Get specific Audit log by id
@@ -228,7 +229,8 @@ paths:
           in: query
           description: Filter on objectid
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: return all auditlogs related to objectid
