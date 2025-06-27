@@ -39,50 +39,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAccessForIdsOutput'
-                 
-                
+
+
   /checkAccessForResourceIds:
     post:
       tags:
         - '${project.name}'
       summary: 'Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
-      security: 
+      security:
         - KBOAuth:
-          - any       
-      operationId: checkAccessForResourceIds  
+          - any
+      operationId: checkAccessForResourceIds
       requestBody:
         content:
           application/json:    # Media type
             schema:            # Request body contents
               $ref: '#/components/schemas/CheckAccessForIdsInput'
-                
-    
+
+
       responses:
         '200':
-          description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. IDs that exists but with no access will be return in nonAccessId field' 
+          description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. IDs that exists but with no access will be return in nonAccessId field'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAccessForIdsOutput'
 
-                
+
 
 
   /validateAccess:
     post:
       tags:
         - '${project.name}'
-      summary: 'Validate if user has access to all groups in input.' 
-      security: 
+      summary: 'Validate if user has access to all groups in input.'
+      security:
         - KBOAuth:
-          - any       
-      operationId: validateAccess 
+          - any
+      operationId: validateAccess
       requestBody:
         content:
           application/json:    # Media type
             schema:            # Request body contents
               $ref: '#/components/schemas/ValidateAccessInput'
-                
+
       responses:
         '200':
           description: 'True or false'
@@ -90,7 +90,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidateAccessOutput'
-             
+
   /getUserLicenses:
     post:
       tags:
@@ -189,6 +189,52 @@ paths:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
   
   # Rights
+  /rights/auditEntry:
+    get:
+      summary: return single auditlog
+      tags:
+        - 'DsRights'
+      operationId: getAuditEntry
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          description: Filter on objectid
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get Audit log
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEntryOutput'
+        '404':
+          description: objectId not found
+
+  /rights/auditEntries:
+    get:
+      summary: return all auditlogs
+      tags:
+        - 'DsRights'
+      operationId: getAuditEntries
+      security:
+        - KBOAuth:
+            - any
+      responses:
+        '200':
+          description: Get Auditlogs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditEntryOutput'
+        '404':
+          description: Not found
+
   /rights/platforms:
     get:
       summary: Get all available platforms
@@ -1015,6 +1061,48 @@ components:
         - DR_PRODUCTION_ID
         - STRICT_TITLE
         - OWNPRODUCTION_CODE
+
+    ChangeTypeEnum:
+      type: string
+      enum:
+        - CREATE
+        - UPDATE
+        - DELETE
+
+    ObjectTypeEnum:
+      type: string
+      enum:
+        - CLAUSE_RESTRICTED_ID
+        - CLAUSE_PRODUCTION_CODE
+        - CLAUSE_STRICT_TITLE
+        - PRESENTATION_TYPE
+        - LICENSE
+        - GROUP_TYPE
+        - HOLDBACK_DAY
+
+    AuditEntryOutput:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        objectId:
+          type: integer
+          format: int64
+        modifiedTime:
+          type: long
+        userName:
+          type: string
+        changeType:
+          $ref: "#/components/schemas/ChangeTypeEnum"
+        changeName:
+          $ref: "#/components/schemas/ObjectTypeEnum"
+        changeComment:
+          type: string
+        textBefore:
+          type: string
+        textAfter:
+          type: string
 
     RestrictedIdInput:
       type: object
