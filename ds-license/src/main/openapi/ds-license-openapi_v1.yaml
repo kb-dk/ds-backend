@@ -188,12 +188,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
   
-  # Rights
-  /rights/auditEntry:
+  # Audit
+  /audit/auditEntry:
     get:
-      summary: return single auditlog
+      summary: return specific auditlog by id
       tags:
-        - 'DsRights'
+        - 'DsAudit'
       operationId: getAuditEntry
       security:
         - KBOAuth:
@@ -201,31 +201,37 @@ paths:
       parameters:
         - name: id
           in: query
-          description: Filter on objectid
+          description: Filter on id
           schema:
             type: string
       responses:
         '200':
-          description: Get Audit log
+          description: Get specific Audit log by id
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuditEntryOutput'
         '404':
-          description: objectId not found
+          description: id not found
 
-  /rights/auditEntries:
+  /audit/auditEntries:
     get:
-      summary: return all auditlogs
+      summary: return all auditlogs related to objectid
       tags:
-        - 'DsRights'
+        - 'DsAudit'
       operationId: getAuditEntries
       security:
         - KBOAuth:
             - any
+      parameters:
+        - name: objectid
+          in: query
+          description: Filter on objectid
+          schema:
+            type: string
       responses:
         '200':
-          description: Get Auditlogs
+          description: return all auditlogs related to objectid
           content:
             application/json:
               schema:
@@ -233,8 +239,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/AuditEntryOutput'
         '404':
-          description: Not found
-
+          description: No logs found for given objectid
+  # Rights
   /rights/platforms:
     get:
       summary: Get all available platforms
