@@ -426,9 +426,9 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw new IllegalArgumentException("Validation error. Attributes or values can not be empty");
         }
 
-        Long licenseId;
+        long licenseId = license.getId();
         if (license.getId() > 0) { // This is an existing license in the DB, delete it before updating
-            licenpersistLicenseseId = license.getId();
+            // licenpersistLicenseseId = license.getId();
             // Delete old license before updating (creating new)
             log.info("Deleting license before updating");
             deleteLicense(licenseId);

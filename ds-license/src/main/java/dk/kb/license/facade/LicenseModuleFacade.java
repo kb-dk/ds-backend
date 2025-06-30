@@ -307,7 +307,7 @@ public class LicenseModuleFacade {
      */    
     public static void deleteAttributeType(String attributeTypeName,HttpSession session) {
         BaseModuleStorage.performStorageAction("deleteAttributeType("+attributeTypeName+")", LicenseModuleStorage.class, storage -> {
-            AuditLogEntry auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE,  ObjectTypeEnumDto.ATTRIBUTE_NAME, "", null, attributeTypeName);
+            AuditLogEntry auditLog = new AuditLogEntry(0,(String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE,  ObjectTypeEnumDto.ATTRIBUTE_NAME, "", null, attributeTypeName);
 
             ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
