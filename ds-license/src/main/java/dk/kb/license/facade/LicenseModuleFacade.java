@@ -247,20 +247,23 @@ public class LicenseModuleFacade {
         
         BaseModuleStorage.performStorageAction("persistLicense(description_dk=" + license.getDescription_dk() +")", LicenseModuleStorage.class, storage -> {
             AuditLogEntry auditLog = null;
+
             //audit log
             if (license.getId() == 0 ) {
-               ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null,license);              
-               auditLog = new AuditLogEntry(0,(String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.LICENSE,"", changes.getBefore(), changes.getAfter());
+               ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null,license);
+               long id = ((LicenseModuleStorage) storage).persistLicense(license);
+               auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.LICENSE,"", changes.getBefore(), changes.getAfter());
 
             }
             else {
                License oldLicense = ((LicenseModuleStorage) storage).getLicense(license.getId());
                ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(oldLicense, license);
-               auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Update License", license.getLicenseName(), changes.getBefore(), changes.getAfter());
+               long id = ((LicenseModuleStorage) storage).persistLicense(license);
+               auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.LICENSE,"", changes.getBefore(), changes.getAfter());
             }
             
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
-            ((LicenseModuleStorage) storage).persistLicense(license);
+
             return null;        
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache        
@@ -284,8 +287,10 @@ public class LicenseModuleFacade {
      */
     public static void persistAttributeType(String attributeTypeName,HttpSession session) {
         BaseModuleStorage.performStorageAction("persistAttributeType("+attributeTypeName+")", LicenseModuleStorage.class, storage -> {
-            AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Create attribute", attributeTypeName,"",attributeTypeName);
-            ((LicenseModuleStorage) storage).persistAttributeType(attributeTypeName);
+
+            long id = ((LicenseModuleStorage) storage).persistAttributeType(attributeTypeName);
+
+            AuditLogEntry auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE,  ObjectTypeEnumDto.ATTRIBUTE_NAME, "", null, attributeTypeName);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
             return null;        
         });
@@ -302,7 +307,8 @@ public class LicenseModuleFacade {
      */    
     public static void deleteAttributeType(String attributeTypeName,HttpSession session) {
         BaseModuleStorage.performStorageAction("deleteAttributeType("+attributeTypeName+")", LicenseModuleStorage.class, storage -> {
-            AuditLogEntry auditLog = new AuditLogEntry(System.currentTimeMillis(),(String) session.getAttribute("oauth_user"),"Delete attribute", attributeTypeName,attributeTypeName,"");
+            AuditLogEntry auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE,  ObjectTypeEnumDto.ATTRIBUTE_NAME, "", null, attributeTypeName);
+
             ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
             return null;        
