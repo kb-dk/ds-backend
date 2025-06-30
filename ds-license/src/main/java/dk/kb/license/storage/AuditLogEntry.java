@@ -8,11 +8,11 @@ import dk.kb.license.model.v1.ObjectTypeEnumDto;
  * Every time a user changes any license or configuration definitions there will be generated an entry in the auditlog table.
  * The entry will have the objectId of the modified objects so all changes on that object can be extracted.
  * 
- *  The service generated AuditLogDto object is used when extracting information from the AuditLog
+ *  The service generated AuditEntryOutputDto object is used when extracting information from the AuditLog
  * 
  */
-public class AuditLogEntry {
-   
+public class AuditLogEntry {   
+    
     private long objectId;
     private String userName;   
     private ChangeTypeEnumDto changeType;
@@ -21,6 +21,21 @@ public class AuditLogEntry {
     private String textBefore; 
     private String textAfter;
        
+    /**
+     * Create a AuditLogEntry object. The modified time will be set automatic in the storage method.
+     * The userName will later be removed from this constructor when license-module GUI also has been written
+     * in a new frontend and use OAuth. The userName will then be automatic set just as the modifiedTime.
+     * 
+     * @param objectId The id of the business object that has been modified.
+     * @param userName FullName of the user. Taken from the Oath Token or session. Will be removed later.
+     * @param changeType The type of change. UPDATE, CREATE, DELETE
+     * @param changeName Name of the business object that has been changed
+     * @param changeComment Optional custom comment that is tied to the ChangeName. The restricted ID method could log the id in this field.
+     * @param textBefore The generated text from the business object before change.
+     * @param textAfter  The generated text from the business object after change.
+     * 
+     * 
+     */
     public AuditLogEntry (long objectId,  String userName, ChangeTypeEnumDto changeType, ObjectTypeEnumDto changeName,
                     String changeComment, String textBefore, String textAfter) {        
         this.objectId = objectId;
@@ -93,8 +108,6 @@ public class AuditLogEntry {
         return "AuditLogEntry [objectId=" + objectId + ", userName=" + userName + ", changeType=" + changeType + ", changeName=" + changeName + ", changeComment="
                 + changeComment + ", textBefore=" + textBefore + ", textAfter=" + textAfter + "]";
     }
-
-    
-    
+        
 }
     
