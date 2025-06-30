@@ -1076,7 +1076,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         
                 
     }
-
+    
     @Test
     public void testPerformStorageAction() {
         ArrayList<PresentationType> list = BaseModuleStorage.performStorageAction("test", LicenseModuleStorage.class, storage -> {

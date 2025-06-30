@@ -308,9 +308,8 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * @return databaseID for the new AuditLog entry
      */
     public long persistAuditLog(AuditLogEntry auditLog) throws SQLException {
-        log.info("Persisting  persistAuditLog1 " + auditLog.getChangeType() +" for username:"+auditLog.getUserName());
-        
-       
+        log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'",auditLog.getChangeType(),auditLog.getChangeName(),auditLog.getUserName()); 
+              
         Long id=generateUniqueID();      
         log.info("1");
         try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
@@ -355,17 +354,6 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
           auditEntry.setChangeComment(changeComment);
           auditEntry.setTextAfter(textAfter);
           auditEntry.setTextBefore(textBefore);          
-          return auditEntry;
-          
-      }
-    
-    //Called because since bulk upload the system millis can  be the same and breaking unique constraint.
-    private void sleep(long milis) {
-      try {
-        Thread.sleep(1);
-      } catch (InterruptedException e) {
-        // ignore
-      }  
-        
-    }
+          return auditEntry;          
+      }      
 }
