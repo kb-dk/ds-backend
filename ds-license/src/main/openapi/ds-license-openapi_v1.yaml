@@ -1087,6 +1087,7 @@ components:
         - LICENSE
         - GROUP_TYPE
         - HOLDBACK_DAY
+        - HOLDBACK_MAP
 
     AuditEntryOutput:
       type: object
