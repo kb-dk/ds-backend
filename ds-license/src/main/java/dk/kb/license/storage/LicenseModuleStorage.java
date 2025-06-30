@@ -411,7 +411,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void persistLicense(License license) throws IllegalArgumentException, SQLException {
+    public long persistLicense(License license) throws IllegalArgumentException, SQLException {
 
         log.info("Persisting new license: " + license.getLicenseName());
 
@@ -428,7 +428,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
 
         Long licenseId;
         if (license.getId() > 0) { // This is an existing license in the DB, delete it before updating
-            licenseId = license.getId();
+            licenpersistLicenseseId = license.getId();
             // Delete old license before updating (creating new)
             log.info("Deleting license before updating");
             deleteLicense(licenseId);
@@ -456,7 +456,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         }
     
-        
+        return licenseId;
         //TODO! Important! Remove to facade!
         //LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
@@ -487,15 +487,15 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         }
     }
 
-    public void persistAttributeType(String value) throws SQLException {
+    public long persistAttributeType(String value) throws SQLException {
 
         log.info("Persisting new  attribute type: " + value);
 
         validateValue(value);
         value = value.trim();
-
+          long id= generateUniqueID();
         try (PreparedStatement stmt = connection.prepareStatement(persistAttributeTypeQuery);) {
-            stmt.setLong(1, generateUniqueID());
+            stmt.setLong(1, id);
             stmt.setString(2, value);
             stmt.execute();
 
@@ -504,6 +504,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         }
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
+        return id;
     }
 
     public void deleteAttributeType(String attributeTypeName) throws IllegalArgumentException, SQLException {

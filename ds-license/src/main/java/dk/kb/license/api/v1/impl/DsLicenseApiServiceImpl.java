@@ -33,9 +33,8 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 	public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
 		log.debug("checkAccessForIds(...) called with call details: {}", getCallDetails());
 
-		try{
-
-			PresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
+		try {
+                    PresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
 		}
 		catch(IllegalArgumentException e){
 			log.error("Unknown presentationtype:"+input.getPresentationType());
