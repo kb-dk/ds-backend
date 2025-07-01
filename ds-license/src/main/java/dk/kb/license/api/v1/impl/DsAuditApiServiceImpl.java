@@ -60,10 +60,10 @@ import io.swagger.annotations.Api;
 public class DsAuditApiServiceImpl extends ImplBase implements DsAuditApi {
 
     @Override
-    public List<AuditEntryOutputDto> getAuditEntries(Long objectId) {
+    public List<AuditEntryOutputDto> getAuditEntriesByObjectId(Long objectId) {
         try {
 //          log.debug("Get restricted ID id:{} idType:{} platform:{}", id, idType, platform);
-            ArrayList<AuditEntryOutputDto> result = AuditFacade.getAuditEntries(objectId);
+            ArrayList<AuditEntryOutputDto> result = AuditFacade.getAuditEntriesByObjectId(objectId);
            
             return result;
         } catch (Exception e) {
@@ -72,10 +72,10 @@ public class DsAuditApiServiceImpl extends ImplBase implements DsAuditApi {
     }
 
     @Override
-    public AuditEntryOutputDto getAuditEntry(Long id) {
+    public AuditEntryOutputDto getAuditEntryById(Long id) {
         try {
 //          log.debug("Get restricted ID id:{} idType:{} platform:{}", id, idType, platform);
-            AuditEntryOutputDto result = AuditFacade.getAuditEntry(id);
+            AuditEntryOutputDto result = AuditFacade.getAuditEntryById(id);
             if (result == null) {
                 throw new NotFoundServiceException("Auditlog id not found");
             }
