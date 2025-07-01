@@ -1090,10 +1090,7 @@ components:
         - idValue
         - idType
         - platform
-      properties:
-        internalId:
-          type: integer
-          format: int64
+      properties:   
         idValue:
           type: string
         idType:
