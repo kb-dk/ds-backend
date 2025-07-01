@@ -51,6 +51,17 @@ public class RightsModuleFacade {
      * @return
      * @throws SQLException
      */
+
+    private static ObjectTypeEnumDto getObjectTypeEnumFromRestrictedIdType(IdTypeEnumDto restrictedIdType) {
+        ObjectTypeEnumDto result = null;
+        try {
+            result = ObjectTypeEnumDto.valueOf(restrictedIdType.getValue());
+        } catch (IllegalArgumentException e) {
+            System.out.println("No such object type");
+        }
+        return result;
+    }
+
     public static RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) throws SQLException {
         return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
     }
@@ -86,7 +97,7 @@ public class RightsModuleFacade {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
             ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(restrictedIdInputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.CLAUSE_RESTRICTED_ID, "","", change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), "","", change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Created restriction {}", restrictedIdInputDto);
             return id;
@@ -115,7 +126,7 @@ public class RightsModuleFacade {
             }
 
             ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType().getValue(), idToDelete.getPlatform().toString());
-            AuditLogEntry logEntry = new AuditLogEntry(internalId, user,ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.CLAUSE_RESTRICTED_ID, "","", change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(internalId, user,ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), "","", change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.",
                     internalId, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
@@ -158,7 +169,7 @@ public class RightsModuleFacade {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
             ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion,restrictedIdInputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(restrictedIdInputDto.getInternalId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.CLAUSE_RESTRICTED_ID, "", "",change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(oldVersion.getInternalId(), user, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), "", "",change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Updated restricted ID {}",restrictedIdInputDto);
             return null;
@@ -183,7 +194,7 @@ public class RightsModuleFacade {
                     id.setIdValue(validProductionId);;
                 }
 
-                ((RightsModuleStorage) storage).createRestrictedId(
+                long objectId = ((RightsModuleStorage) storage).createRestrictedId(
                         id.getIdValue(),
                         id.getIdType().getValue(),
                         id.getPlatform().getValue(),
@@ -195,7 +206,7 @@ public class RightsModuleFacade {
                     touchRelatedStorageRecords(id.getIdValue(), id.getIdType());
                 }
                 ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(id);
-                AuditLogEntry logEntry = new AuditLogEntry(id.getInternalId(), user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.CLAUSE_RESTRICTED_ID, "",change.getBefore(), change.getAfter());
+                AuditLogEntry logEntry = new AuditLogEntry(objectId, user, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(id.getIdType()), "",change.getBefore(), change.getAfter());
                 storage.persistAuditLog(logEntry);
             }
             return null;
