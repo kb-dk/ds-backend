@@ -150,7 +150,9 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         ArrayList<AttributeType> list = storage.getAttributeTypes();
         assertEquals(11, list.size());
-        storage.deleteAttributeType("wayf.mail");
+        long objectId=storage.deleteAttributeType("wayf.mail");
+        assertTrue(objectId >0); 
+        
         list = storage.getAttributeTypes();
         assertEquals(10, list.size()); // only 10 now
 
