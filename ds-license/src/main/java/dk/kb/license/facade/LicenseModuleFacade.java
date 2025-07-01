@@ -43,10 +43,10 @@ public class LicenseModuleFacade {
         BaseModuleStorage.performStorageAction("persistLicensePresentationType(" + key + ","+value_dk +","+value_en+")", LicenseModuleStorage.class, storage -> {
 
             PresentationType newType = new PresentationType(0, key, value_dk, value_en);
-            ((LicenseModuleStorage) storage).persistLicensePresentationType(key, value_dk, value_en);
+            long id = ((LicenseModuleStorage) storage).persistLicensePresentationType(key, value_dk, value_en);
             ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(null, newType);
             
-            AuditLogEntry auditLog = new AuditLogEntry(newType.getId(),(String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE,  ObjectTypeEnumDto.PRESENTATION_TYPE, "", changes.getBefore(), changes.getAfter());
+            AuditLogEntry auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE,  ObjectTypeEnumDto.PRESENTATION_TYPE, "", changes.getBefore(), changes.getAfter());
 
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
 
