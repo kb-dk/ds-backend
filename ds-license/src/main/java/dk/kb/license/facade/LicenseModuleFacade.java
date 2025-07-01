@@ -243,7 +243,7 @@ public class LicenseModuleFacade {
      * @param license A licenseDTO having all information about date to/from, PresentationTypes,
      *                attribute groups and GroupTypes.
      */    
-    public static void persistLicense(License license,HttpSession session) {
+    public static long persistLicense(License license,HttpSession session) {
         
         BaseModuleStorage.performStorageAction("persistLicense(description_dk=" + license.getDescription_dk() +")", LicenseModuleStorage.class, storage -> {
             AuditLogEntry auditLog = null;

@@ -110,6 +110,11 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
     private final static String selectAttributeTypesQuery = " SELECT * FROM " + ATTRIBUTETYPES_TABLE
             + " ORDER BY " + VALUE_COLUMN;;
 
+            
+    private final static String selectAttributeTypesByNameQuery = " SELECT * FROM " + ATTRIBUTETYPES_TABLE
+            +" WHERE " + VALUE_COLUMN + " = ?";
+
+            
     private final static String deleteAttributeTypeByNameQuery = " DELETE FROM " + ATTRIBUTETYPES_TABLE
             + " WHERE " + VALUE_COLUMN + " = ?";
 
@@ -529,6 +534,21 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         }
 
+        //GetId
+
+        long id;
+        
+        try (PreparedStatement stmt = connection.prepareStatement(selectAttributeTypesByNameQuery);) {
+            stmt.setString(1, attributeTypeName);
+            ResultSet rs = stmt.executeQuery();
+            id= rs.getLong(ATTRIBUTEID_COLUMN);
+            
+        } catch (SQLException e) {
+            log.error("SQL Exception in deleteAttributeType:" + e.getMessage());
+            throw e;
+        }
+                        
+        
         try (PreparedStatement stmt = connection.prepareStatement(deleteAttributeTypeByNameQuery);) {
             stmt.setString(1, attributeTypeName);
             int updated = stmt.executeUpdate();
@@ -539,6 +559,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         }
 
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
+        return id;
     }
 
     public ArrayList<AttributeType> getAttributeTypes() throws SQLException {
