@@ -122,8 +122,9 @@ public class LicenseModuleFacade {
         GroupType g = new GroupType(0L,key,value,value_en,description,description_en,query, isRestriction);
 
         ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(null, g);
-        AuditLogEntry auditLog = new AuditLogEntry(g.getId(), (String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.GROUP_TYPE, "", changes.getBefore(), changes.getAfter());
-        ((LicenseModuleStorage) storage).persistLicenseGroupType(key, value, value_en, description, description_en, query,  isRestriction);
+        long id = ((LicenseModuleStorage) storage).persistLicenseGroupType(key, value, value_en, description, description_en, query,  isRestriction);
+        AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.GROUP_TYPE, key, changes.getBefore(), changes.getAfter());
+
         ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
         return null;
         
