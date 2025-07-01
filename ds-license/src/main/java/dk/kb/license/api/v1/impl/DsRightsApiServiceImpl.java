@@ -102,17 +102,6 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public RecordsCountDto deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
-        try {
-            RecordsCountDto count = new RecordsCountDto();
-            count.setCount(RightsModuleFacade.deleteRestrictedIds(restrictedIds, getCurrentUserID(),touchRecord));
-            return count;
-        } catch (Exception e) {
-            throw handleException(e);
-        }
-    }
-
-    @Override
     public RightsCalculationOutputDto calculateRights(RightsCalculationInputDto rightsCalculationInputDto) {
         try {
             return RightsModuleFacade.calculateRightsForRecord(rightsCalculationInputDto);

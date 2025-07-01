@@ -222,37 +222,6 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Deletes multiple restricted Ids
-     *
-     * @param restrictedIds        list of restricted Ids to be deleted.
-     * @param touchDsStorageRecord
-     */
-    public static int deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) {
-        int deletedRecords = BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
-            int totalDeleted = 0;
-            for(RestrictedIdInputDto internalId : restrictedIds) {
-                // Get ID for deletion to extract value and type from internal ID
-                RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId.getInternalId().longValue());
-
-                // Delete each entry by internal ID
-                int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId.getInternalId().longValue());
-                if (touchDsStorageRecord) {
-                    touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
-                }
-                ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType().getValue(), idToDelete.getPlatform().toString());
-                AuditLogEntry logEntry = new AuditLogEntry(internalId.getInternalId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.CLAUSE_RESTRICTED_ID, "", "",change.getAfter());
-                storage.persistAuditLog(logEntry);
-                totalDeleted += deletedCount;
-            }
-            return totalDeleted;
-        });
-        log.info("Deleted restricted IDs: [{}] ",
-                restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
-        return deletedRecords;
-    }
-
-
-    /**
      * Retrieves the holdback ID based on the specified content and form values.
      * If no holdback ID is found for the given content and form, a {@link NotFoundServiceException} is thrown.
      *

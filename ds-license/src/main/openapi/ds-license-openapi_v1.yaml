@@ -356,40 +356,7 @@ paths:
       responses:
         '204':
           description: created
-    delete:
-      description: delete multiple restricted IDs
-      tags:
-        - 'DsRights'
-      operationId: deleteRestrictedIds
-      security:
-        - KBOAuth:
-            - any
-      parameters:
-        - name: touchRecord
-          in: query
-          schema:
-            type: boolean
-            default: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/RestrictedIdInput'
-            example:
-              - internalId: "internalId1"
-              - internalId: "internalId2"
-
-      responses:
-        '200':
-          description: deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordsCount'
-
+  
   /rights/restrictedId:
     get:
       tags:
