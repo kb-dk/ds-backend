@@ -51,6 +51,9 @@ public class RightsModuleFacade {
      * @return
      * @throws SQLException
      */
+    public static RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) throws SQLException {
+        return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
+    }
 
     private static ObjectTypeEnumDto getObjectTypeEnumFromRestrictedIdType(IdTypeEnumDto restrictedIdType) {
         ObjectTypeEnumDto result = null;
@@ -60,10 +63,6 @@ public class RightsModuleFacade {
             System.out.println("No such object type");
         }
         return result;
-    }
-
-    public static RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) throws SQLException {
-        return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
     }
 
     /**

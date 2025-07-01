@@ -1066,7 +1066,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
          Long objectId=123456789L;
          String userName="teg";
          ChangeTypeEnumDto changeType= ChangeTypeEnumDto.UPDATE;
-         ObjectTypeEnumDto changeName= ObjectTypeEnumDto.CLAUSE_RESTRICTED_ID;
+         ObjectTypeEnumDto changeName= ObjectTypeEnumDto.DR_PRODUCTION_ID;
          String changeComment="changeComment";
          String textBefore="before";
          String textAfter="after";
