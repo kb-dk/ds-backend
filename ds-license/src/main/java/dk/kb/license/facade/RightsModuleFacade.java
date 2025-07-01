@@ -75,7 +75,7 @@ public class RightsModuleFacade {
         }
 
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
-            ((RightsModuleStorage) storage).createRestrictedId(
+            long id=((RightsModuleStorage) storage).createRestrictedId(
                     restrictedIdInputDto.getIdValue(),
                     restrictedIdInputDto.getIdType().getValue(),
                     restrictedIdInputDto.getPlatform().getValue(),
@@ -86,10 +86,10 @@ public class RightsModuleFacade {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
             ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(restrictedIdInputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(restrictedIdInputDto.getInternalId(), user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.CLAUSE_RESTRICTED_ID, "","", change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.CLAUSE_RESTRICTED_ID, "","", change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Created restriction {}", restrictedIdInputDto);
-            return null;
+            return id;
         });
     }
 
