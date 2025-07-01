@@ -177,7 +177,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         super();
     }
 
-    public void persistLicensePresentationType(String key, String value_dk, String value_en) throws SQLException {
+    public long persistLicensePresentationType(String key, String value_dk, String value_en) throws SQLException {
         log.info("Persisting new license presentationtype: " + key);
 
         validateValue(key);
@@ -187,8 +187,10 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         validateValue(value_en);
         value_en = value_en.trim();
 
+        long id =generateUniqueID();
+        
         try (PreparedStatement stmt = connection.prepareStatement(persistLicensePresentationTypeQuery);) {
-            stmt.setLong(1, generateUniqueID());
+            stmt.setLong(1, id);
             stmt.setString(2, key);
             stmt.setString(3, value_dk);
             stmt.setString(4, value_en);
@@ -197,6 +199,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             log.error("SQL Exception in persistPresentationType:" + e.getMessage());
             throw e;
         }
+        return id;
        
     }
 

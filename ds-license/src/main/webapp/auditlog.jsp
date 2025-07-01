@@ -16,10 +16,13 @@ ArrayList<AuditEntryOutputDto> logs = LicenseModuleFacade.getAllAuditLogs();
   <table class="table table-condensed table-hover">
    <thead>
    <tr>
-    <th>Time</th>
-    <th>User</th>
-    <th>Changetype</th>
-   <th>Object</th>
+    <th>Id</th>
+    <th>ObjectId</th>
+    <th>ModifiedTime</th>
+    <th>UserName</th>
+    <th>ChangeType</th>
+    <th>ChangeName</th>    
+    <th>ChangeComment</th>
    </tr>
    </thead>
    <tbody>
