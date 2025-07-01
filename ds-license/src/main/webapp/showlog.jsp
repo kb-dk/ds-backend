@@ -11,7 +11,7 @@
 
     <%
         String auditId = request.getParameter("auditlogId");   
-         AuditEntryOutputDto log = AuditFacade.getAuditEntry(Long.parseLong(auditId));
+         AuditEntryOutputDto log = AuditFacade.getAuditEntryById(Long.parseLong(auditId));
          SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
          int i =0;
          String textBefore= log.getTextBefore(); 

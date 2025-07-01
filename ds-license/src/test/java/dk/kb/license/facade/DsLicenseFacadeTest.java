@@ -10,11 +10,15 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
     @Test
     public void testAuditLog()  {
 
-        //TODO Jonathan
+        //TODO Jonathan Create, update and delete and object of this type:
         
+        //LicenseModuleFacade.persistLicensePresentationType(..); 
+        //LicenseModuleFacade.updatePresentationType(..);
+        //LicenseModuleFacade.deletePresentationType(..);
         
-        //Create,update,delete.
-        //Retrieve all auditlogs for that object 
+
+        //Retrieve all auditlogs for that object  by ObjectId.
+        //Validate everything is correct.               
         
     }
     
