@@ -180,7 +180,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         ArrayList<GroupType> list = storage.getLicenseGroupTypes();
         assertEquals(9, list.size());
-        storage.deleteLicenseGroupType("Pligtafleveret170Aar");//dom_licensemodule_default_configuration.ddl
+        long id=storage.deleteLicenseGroupType("Pligtafleveret170Aar");//dom_licensemodule_default_configuration.ddl
+        assertTrue(id > 0);
         list = storage.getLicenseGroupTypes();
         assertEquals(8, list.size()); // only 8 now
 

@@ -122,6 +122,9 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
 
     private final static String deleteGroupTypeByKeyQuery = " DELETE FROM " + LICENSEGROUPTYPES_TABLE + " WHERE "
             + KEY_COLUMN + " = ?";
+    
+    private final static String selectGroupTypeByKeyQuery = " SELECT * FROM " + LICENSEGROUPTYPES_TABLE + " WHERE "
+            + KEY_COLUMN + " = ?";
 
     private final static String deletePresentationTypeByKeyQuery = " DELETE FROM "
             + LICENSEPRESENTATIONTYPES_TABLE + " WHERE " + KEY_COLUMN + " = ?";
@@ -156,7 +159,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
 
     private final static String countGroupTypeByGroupNameQuery = " SELECT COUNT(*) FROM " + LICENSECONTENT_TABLE
             + " WHERE " + NAME_COLUMN + " = ?";
-
+   
+    
     private final static String countPresentationTypeByPresentationNameQuery = " SELECT COUNT(*) FROM "
             + PRESENTATION_TABLE + " WHERE " + NAME_COLUMN + " = ?";
 
@@ -352,7 +356,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void deleteLicenseGroupType(String groupName) throws IllegalArgumentException, SQLException {
+    public long deleteLicenseGroupType(String groupName) throws IllegalArgumentException, SQLException {
 
         log.info("Deleting grouptype: " + groupName);
         // First check it is not used in any license, in that case throw exception.
@@ -363,6 +367,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
 
             if (rs.next()) {
                 int number = rs.getInt(1);
+                System.out.println("found:"+number);
                 if (number > 0) {
                     throw new IllegalArgumentException("Can not delete group with name:" + groupName
                             + " because it is used in at least 1 license");
@@ -374,15 +379,31 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         }
 
+   
+        long id;
+        try (PreparedStatement stmt = connection.prepareStatement(selectGroupTypeByKeyQuery);) {
+            stmt.setString(1, groupName);
+            ResultSet rs=stmt.executeQuery();
+            
+            rs.next();
+            id = rs.getLong(ID_COLUMN);
+                                    
+        } catch (SQLException e) {
+            log.error("SQL Exception in deleteLicenseGroupType:" + e.getMessage());
+            throw e;
+        }
+                        
         try (PreparedStatement stmt = connection.prepareStatement(deleteGroupTypeByKeyQuery);) {
             stmt.setString(1, groupName);
             int updated = stmt.executeUpdate();
+            System.out.println("deleted:"+updated);
         } catch (SQLException e) {
             log.error("SQL Exception in deleteLicenseGroupType:" + e.getMessage());
             throw e;
         }
 
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
+        return id;
     }
 
     public void deletePresentationType(String presentationName) throws IllegalArgumentException, SQLException {
