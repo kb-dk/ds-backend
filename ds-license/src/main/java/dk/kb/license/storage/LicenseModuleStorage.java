@@ -389,8 +389,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             ResultSet rs=stmt.executeQuery();
             
             rs.next();
-            id = rs.getLong(ID_COLUMN);
-                                    
+            id = rs.getLong(ID_COLUMN);                                  
+            
         } catch (SQLException e) {
             log.error("SQL Exception in deleteLicenseGroupType:" + e.getMessage());
             throw e;
@@ -399,7 +399,6 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         try (PreparedStatement stmt = connection.prepareStatement(deleteGroupTypeByKeyQuery);) {
             stmt.setString(1, groupName);
             int updated = stmt.executeUpdate();
-            System.out.println("deleted:"+updated);
         } catch (SQLException e) {
             log.error("SQL Exception in deleteLicenseGroupType:" + e.getMessage());
             throw e;
