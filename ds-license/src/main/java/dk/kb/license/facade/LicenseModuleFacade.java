@@ -195,20 +195,11 @@ public class LicenseModuleFacade {
     public static void deleteLicenseGroupType(String groupName,HttpSession session) {
 
         BaseModuleStorage.performStorageAction("deleteLicenseGroupType(" + groupName +")", LicenseModuleStorage.class, storage -> {
-            long id = 0;
-            ChangeDifferenceText changes;
-            ArrayList<GroupType> groups = ((LicenseModuleStorage) storage).getLicenseGroupTypes();
-            for (GroupType group : groups) {
-                if (group.getKey().equals(groupName)) {
-                    id = group.getId();
-                    changes = LicenseChangelogGenerator.getGroupTypeChanges(group, null);
-                    break;
-                }
-            }
 
+            long id = ((LicenseModuleStorage) storage).deleteLicenseGroupType(groupName);
             AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.GROUP_TYPE, "", "", "");
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
-            ((LicenseModuleStorage) storage).deleteLicenseGroupType(groupName);
+
             return null;        
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache  
