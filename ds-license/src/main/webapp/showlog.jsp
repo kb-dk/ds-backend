@@ -10,10 +10,19 @@
 <%@ include file="check_gui_enabled.jsp" %>
 
     <%
-    String auditId = request.getParameter("auditlogId");   
-         AuditEntryOutputDto log = AuditFacade.getAuditEntry(Long.parseLong(auditId));
+        String auditId = request.getParameter("auditlogId");   
+         AuditEntryOutputDto log = AuditFacade.getAuditEntryById(Long.parseLong(auditId));
          SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
          int i =0;
+         String textBefore= log.getTextBefore(); 
+         String textAfter= log.getTextAfter();
+         if (textBefore==null){
+             textBefore ="";
+         }
+         if (textAfter==null){
+             textAfter ="";
+         }
+         
     %>
    
 <!DOCTYPE html>
@@ -38,19 +47,23 @@
      <tbody>
       <tr>
        <td>Time</td>
-       <td><%=dateFormat.format(new Date(log.getMillis()))%></td>      
+       <td><%=dateFormat.format(new Date(log.getModifiedTime()))%></td>      
       </tr>
       <tr>
        <td>User</td>
-       <td><%=log.getUsername()%></td>      
+       <td><%=log.getUserName()%></td>      
     </tr>
       <tr>
-       <td>Change type</td>
+       <td>ChangeType</td>
        <td><%=log.getChangeType()%></td>      
     </tr>
       <tr>
-       <td>Object name</td>
-       <td><%=log.getObjectName()%></td>      
+       <td>ChangeName</td>
+       <td><%=log.getChangeName()%></td>      
+    </tr>
+          <tr>
+       <td>ChangeComment</td>
+       <td><%=log.getChangeComment()%></td>      
     </tr>
 
   </tbody>
@@ -66,8 +79,8 @@ Changes:
    </thead>
    <tbody>
     <tr>
-    <td><%=log.getTextBefore().replaceAll("\\n","<br>")%></td>
-    <td><%=log.getTextAfter().replaceAll("\\n","<br>")%></td>
+    <td><%=textBefore.replaceAll("\\n","<br>")%></td>
+    <td><%=textAfter.replaceAll("\\n","<br>")%></td>
    </tr>   
   </tbody>  
 </html>
