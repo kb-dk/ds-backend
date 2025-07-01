@@ -1,12 +1,16 @@
 <%@ page import="
     java.util.*,
     java.text.SimpleDateFormat,
-     dk.kb.license.Util,dk.kb.license.storage.AuditLogEntry,dk.kb.license.facade.LicenseModuleFacade"%>
+     dk.kb.license.Util,
+     dk.kb.license.model.v1.AuditEntryOutputDto,
+     dk.kb.license.storage.AuditLogEntry,
+     dk.kb.license.storage.BaseModuleStorage,
+     dk.kb.license.facade.LicenseModuleFacade"%>
 
 <%@ include file="check_gui_enabled.jsp" %>
 
 <%
-ArrayList<AuditLogEntry> logs = LicenseModuleFacade.getAllAuditLogs();
+ArrayList<AuditEntryOutputDto> logs = LicenseModuleFacade.getAllAuditLogs();
    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 %>
   <table class="table table-condensed table-hover">
@@ -21,13 +25,16 @@ ArrayList<AuditLogEntry> logs = LicenseModuleFacade.getAllAuditLogs();
    <tbody>
 <%
 for (int i = 0;i<logs.size();i++ ){
-      AuditLogEntry current = logs.get(i);
+    AuditEntryOutputDto current = logs.get(i);
 %>
-   <tr class="<%=Util.getStyle(i)%>" onclick="window.open( 'showlog.jsp?auditlogId=<%=current.getMillis()%>','_new');">
-      <td><%=dateFormat.format(new Date(current.getMillis()))%></td>
-      <td><%=current.getUsername()%></td>
+   <tr class="<%=Util.getStyle(i)%>" onclick="window.open( 'showlog.jsp?auditlogId=<%=current.getId()%>','_new');">
+      <td><%=current.getId()%></td>
+      <td><%=current.getObjectId()%></td>
+      <td><%=current.getModifiedTime()%></td>
+      <td><%=current.getUserName()%></td>
       <td><%=current.getChangeType()%></td>
-      <td><%=current.getObjectName()%></td>
+      <td><%=current.getChangeName()%></td>
+      <td><%=current.getChangeComment()%></td>      
   </tr>
 <%}%>
    </tbody>
