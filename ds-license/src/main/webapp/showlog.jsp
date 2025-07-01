@@ -1,16 +1,17 @@
+<%@page import="dk.kb.license.model.v1.AuditEntryOutputDto"%>
 <%@page pageEncoding="UTF-8"%>
 <%@ page import="
      java.util.*,
      java.text.SimpleDateFormat,
      dk.kb.license.storage.*,
      dk.kb.license.Util,    
-     dk.kb.license.facade.LicenseModuleFacade"%>
+     dk.kb.license.facade.AuditFacade"%>
 
 <%@ include file="check_gui_enabled.jsp" %>
 
     <%
     String auditId = request.getParameter("auditlogId");   
-         AuditLogEntry log = LicenseModuleFacade.getAuditLog(Long.parseLong(auditId));
+         AuditEntryOutputDto log = AuditFacade.getAuditEntry(Long.parseLong(auditId));
          SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
          int i =0;
     %>

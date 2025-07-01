@@ -40,7 +40,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
     private final static String selectAuditLogQueryById = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE "+AUDITLOG_ID_COLUMN+" = ? ";
     private final static String selectAuditLogQueryByObjectId = " SELECT * FROM " + AUDITLOG_TABLE + " WHERE "+AUDITLOG_OBJECTID_COLUMN+" = ? ";
     
-    private final static String selectAllAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE +" ORDER BY" + AUDITLOG_MODIFIEDTIME_COLUMN +" DESC";
+    private final static String selectAllAuditLogQuery = " SELECT * FROM " + AUDITLOG_TABLE +" ORDER BY " + AUDITLOG_MODIFIEDTIME_COLUMN +" DESC";
     private final static String persistAuditLog = "INSERT INTO " + AUDITLOG_TABLE + " (" +
                                                                    AUDITLOG_ID_COLUMN + ", " + 
                                                                    AUDITLOG_OBJECTID_COLUMN + ", " +

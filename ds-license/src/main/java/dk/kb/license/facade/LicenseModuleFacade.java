@@ -273,6 +273,18 @@ public class LicenseModuleFacade {
     }
     
 
+    
+    /**
+     * Get a list of all defined {@link GroupType}s.
+     * @return List of all GroupTypes define in this instance of LicenseModule
+     */
+    public static ArrayList<AuditEntryOutputDto> getAllAuditLogs() {   
+        return BaseModuleStorage.performStorageAction("getAllAuditLogs()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getAllAudit();
+        });                               
+    }
+    
+    
     /**
      * Get a list of all defined {@link GroupType}s.
      * @return List of all GroupTypes define in this instance of LicenseModule
