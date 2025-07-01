@@ -191,7 +191,7 @@ paths:
   # Audit
   /audit/auditEntryById:
     get:
-      summary: return specific auditlog by id
+      summary: return the AuditLogEntry with the given id
       tags:
         - 'DsAudit'
       operationId: getAuditEntryById
@@ -217,7 +217,7 @@ paths:
 
   /audit/auditEntriesByObjectId:
     get:
-      summary: return all auditlogs related to objectid
+      summary: Return a list of AuditLogEntry related to an object by object id
       tags:
         - 'DsAudit'
       operationId: getAuditEntriesByObjectId
