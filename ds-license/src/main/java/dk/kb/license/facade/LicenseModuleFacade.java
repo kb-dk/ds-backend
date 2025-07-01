@@ -195,20 +195,11 @@ public class LicenseModuleFacade {
     public static void deleteLicenseGroupType(String groupName,HttpSession session) {
 
         BaseModuleStorage.performStorageAction("deleteLicenseGroupType(" + groupName +")", LicenseModuleStorage.class, storage -> {
-            long id = 0;
-            ChangeDifferenceText changes;
-            ArrayList<GroupType> groups = ((LicenseModuleStorage) storage).getLicenseGroupTypes();
-            for (GroupType group : groups) {
-                if (group.getKey().equals(groupName)) {
-                    id = group.getId();
-                    changes = LicenseChangelogGenerator.getGroupTypeChanges(group, null);
-                    break;
-                }
-            }
 
-            AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.GROUP_TYPE, "", "", "");
+            long id = ((LicenseModuleStorage) storage).deleteLicenseGroupType(groupName);
+            AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.GROUP_TYPE, "", groupName, "");
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
-            ((LicenseModuleStorage) storage).deleteLicenseGroupType(groupName);
+
             return null;        
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache  
@@ -250,9 +241,9 @@ public class LicenseModuleFacade {
 
             //audit log
             if (license.getId() == 0 ) {
-               ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null,license);
-               long id = ((LicenseModuleStorage) storage).persistLicense(license);
-               auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.LICENSE,"", changes.getBefore(), changes.getAfter());
+                long id = ((LicenseModuleStorage) storage).persistLicense(license);
+                ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null,license);
+                auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.LICENSE,"", changes.getBefore(), changes.getAfter());
 
             }
             else {
@@ -264,7 +255,6 @@ public class LicenseModuleFacade {
             
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
 
-        
             return null;   
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
@@ -322,9 +312,8 @@ public class LicenseModuleFacade {
      */    
     public static void deleteAttributeType(String attributeTypeName,HttpSession session) {
         BaseModuleStorage.performStorageAction("deleteAttributeType("+attributeTypeName+")", LicenseModuleStorage.class, storage -> {
-            AuditLogEntry auditLog = new AuditLogEntry(0,(String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE,  ObjectTypeEnumDto.ATTRIBUTE_NAME, "", null, attributeTypeName);
-
-            ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
+            long id = ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
+            AuditLogEntry auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE,  ObjectTypeEnumDto.ATTRIBUTE_NAME, "", attributeTypeName, "");
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
             return null;        
         });

@@ -189,7 +189,7 @@ paths:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
   
   # Audit
-  /audit/auditEntry:
+  /audit/auditEntryById:
     get:
       summary: return specific auditlog by id
       tags:
@@ -215,7 +215,7 @@ paths:
         '404':
           description: id not found
 
-  /audit/auditEntries:
+  /audit/auditEntriesByObjectId:
     get:
       summary: return all auditlogs related to objectid
       tags:
