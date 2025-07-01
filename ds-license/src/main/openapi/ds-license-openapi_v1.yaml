@@ -1047,7 +1047,10 @@ components:
     ObjectTypeEnum:
       type: string
       enum:
-        - CLAUSE_RESTRICTED_ID
+        - DS_ID
+        - DR_PRODUCTION_ID
+        - STRICT_TITLE
+        - OWNPRODUCTION_CODE
         - CLAUSE_PRODUCTION_CODE
         - CLAUSE_STRICT_TITLE
         - PRESENTATION_TYPE

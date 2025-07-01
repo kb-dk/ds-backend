@@ -183,7 +183,6 @@ public class RightsModuleFacade {
                     id.setIdValue(validProductionId);;
                 }
 
-
                 ((RightsModuleStorage) storage).createRestrictedId(
                         id.getIdValue(),
                         id.getIdType().getValue(),
@@ -464,7 +463,7 @@ public class RightsModuleFacade {
             List<DrHoldbackRangeMappingDto> oldRanges = ((RightsModuleStorage) storage).getHoldbackRangesForHoldbackId(drHoldbackId);
             ((RightsModuleStorage)storage).deleteMappingsForDrHolbackId(drHoldbackId);
             ChangeDifferenceText changes = RightsChangelogGenerator.deleteHoldbackRangesChanges(oldRanges);
-            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackId,"", changes.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackId,changes.getBefore(), "");
             storage.persistAuditLog(logEntry);
             return null;
         });
