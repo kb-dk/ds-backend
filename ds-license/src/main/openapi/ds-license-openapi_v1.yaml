@@ -1088,6 +1088,7 @@ components:
         - GROUP_TYPE
         - HOLDBACK_DAY
         - HOLDBACK_MAP
+        - ATTRIBUTE_NAME
 
     AuditEntryOutput:
       type: object
