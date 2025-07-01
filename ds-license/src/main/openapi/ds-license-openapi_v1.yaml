@@ -194,7 +194,7 @@ paths:
       summary: return specific auditlog by id
       tags:
         - 'DsAudit'
-      operationId: getAuditEntry
+      operationId: getAuditEntryById
       security:
         - KBOAuth:
             - any
@@ -220,7 +220,7 @@ paths:
       summary: return all auditlogs related to objectid
       tags:
         - 'DsAudit'
-      operationId: getAuditEntries
+      operationId: getAuditEntriesByObjectId
       security:
         - KBOAuth:
             - any

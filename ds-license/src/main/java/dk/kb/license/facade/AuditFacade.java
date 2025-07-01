@@ -13,10 +13,10 @@ public class AuditFacade {
     /**
      * Retrieve a specific audit log by id.
      * <p>
-     * @param millis The ID of the log. 
+     * @param auditLogId The ID of the log.
      * @return AuditLog The auditlog with this id
      */
-    public static AuditEntryOutputDto getAuditEntry(Long auditLogId) {
+    public static AuditEntryOutputDto getAuditEntryById(Long auditLogId) {
         return BaseModuleStorage.performStorageAction("getAuditEntries()", LicenseModuleStorage.class, storage -> {
              return ((LicenseModuleStorage) storage).getAuditLogById(auditLogId);
          });                
@@ -30,7 +30,7 @@ public class AuditFacade {
      * @param objectId The ID of the object to retrieve audit entries for. 
      * @return AuditLog The auditlog with this id
      */
-    public static ArrayList<AuditEntryOutputDto> getAuditEntries(Long objectId) {
+    public static ArrayList<AuditEntryOutputDto> getAuditEntriesByObjectId(Long objectId) {
         return BaseModuleStorage.performStorageAction("getAuditLogByObjectId()", LicenseModuleStorage.class, storage -> {
              return ((LicenseModuleStorage) storage).getAuditLogByObjectId(objectId);
          });                
