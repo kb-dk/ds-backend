@@ -212,8 +212,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuditEntryOutput'
-        '404':
-          description: id not found
+
 
   /audit/auditEntriesByObjectId:
     get:
@@ -240,8 +239,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AuditEntryOutput'
-        '404':
-          description: No logs found for given objectid
+
   # Rights
   /rights/platforms:
     get:

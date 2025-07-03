@@ -613,6 +613,7 @@
                         <exclude>**/DsLicenseApi.class</exclude>
                         <exclude>**/DsRightsApi.class</exclude>
                         <exclude>**/ServiceApi.class</exclude>
+                        <exclude>**/DsAuditApi.class</exclude>
                     </excludes>
                 </configuration>
             </plugin>

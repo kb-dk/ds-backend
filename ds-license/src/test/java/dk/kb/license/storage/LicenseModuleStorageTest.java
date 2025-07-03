@@ -1075,9 +1075,9 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         
         long auditLogId=storage.persistAuditLog(auditLog);                
         AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
+
+        assertEquals(ChangeTypeEnumDto.UPDATE, auditFromStorage.getChangeType());
         //TODO validate fields from storage
-        
-                
     }
     
     @Test
