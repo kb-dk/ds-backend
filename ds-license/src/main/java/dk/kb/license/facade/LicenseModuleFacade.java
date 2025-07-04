@@ -36,11 +36,10 @@ public class LicenseModuleFacade {
      * @param value_dk This text (danish) will be shown to end users. Keep it short.
      * @param value_en This text (english) will be shown to end users. Keep it short.
      */
-    public static void persistLicensePresentationType(String key, String value_dk, String value_en, HttpSession session) {
+    public static long persistLicensePresentationType(String key, String value_dk, String value_en, HttpSession session) {
 
 
-
-        BaseModuleStorage.performStorageAction("persistLicensePresentationType(" + key + ","+value_dk +","+value_en+")", LicenseModuleStorage.class, storage -> {
+        Long objectId = BaseModuleStorage.performStorageAction("persistLicensePresentationType(" + key + ","+value_dk +","+value_en+")", LicenseModuleStorage.class, storage -> {
 
             PresentationType newType = new PresentationType(0, key, value_dk, value_en);
             long id = ((LicenseModuleStorage) storage).persistLicensePresentationType(key, value_dk, value_en);
@@ -50,10 +49,11 @@ public class LicenseModuleFacade {
 
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
 
-            return null;
+            return id;
 
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
+        return objectId;
     }
 
     /**
