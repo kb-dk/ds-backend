@@ -12,11 +12,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-
 import org.mockito.Mockito;
-import org.mockito.exceptions.base.MockitoException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,21 +26,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-
 
 public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
     protected static LicenseModuleStorage storage = null;
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
-//    HttpSession mockedSession = mock(HttpSession.class);
-//    HttpSession mockedSession = Mockito.
-//    verify(mockedSession).setAttribute("name", "mockedName"");
-//    MockitoException
-//    MockedStatic<HttpSession> mockedSession = mockStatic(HttpSession.class);
-
-//    mockedSession.when(HttpSession::getAttribute("currentUserUsername")).thenReturn("name");
-
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
