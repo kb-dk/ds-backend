@@ -449,7 +449,7 @@ public class RightsModuleFacade {
                 if (((RightsModuleStorage)storage).getDrHoldbackFromID(drHoldbackId) == null) {
                     throw new InvalidArgumentServiceException("No dr holdback_id "+drHoldbackId);
                 }
-                ((RightsModuleStorage)storage).createDrHoldbackMapping(
+                long objectId = ((RightsModuleStorage)storage).createDrHoldbackMapping(
                         mapping.getContentRangeFrom(),
                         mapping.getContentRangeTo(),
                         mapping.getFormRangeFrom(),
@@ -457,7 +457,7 @@ public class RightsModuleFacade {
                         drHoldbackId
                 );
                 ChangeDifferenceText changes = RightsChangelogGenerator.createHoldbackRangesChanges(drHoldbackRangeMappingInputDto);
-                AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackId,"", changes.getAfter());
+                AuditLogEntry logEntry = new AuditLogEntry(objectId, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackId,"", changes.getAfter());
                 storage.persistAuditLog(logEntry);
             }
             return null;
@@ -473,7 +473,7 @@ public class RightsModuleFacade {
             List<DrHoldbackRangeMappingDto> oldRanges = ((RightsModuleStorage) storage).getHoldbackRangesForHoldbackId(drHoldbackId);
             ((RightsModuleStorage)storage).deleteMappingsForDrHolbackId(drHoldbackId);
             ChangeDifferenceText changes = RightsChangelogGenerator.deleteHoldbackRangesChanges(oldRanges);
-            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackId,changes.getBefore(), "");
+            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackId,changes.getAfter(), "");
             storage.persistAuditLog(logEntry);
             return null;
         });
