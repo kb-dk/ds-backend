@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 /**
  * 
  * The DB consist of the following tables:
@@ -110,10 +112,18 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
     private final static String selectAttributeTypesQuery = " SELECT * FROM " + ATTRIBUTETYPES_TABLE
             + " ORDER BY " + VALUE_COLUMN;;
 
+            
+    private final static String selectAttributeTypesByNameQuery = " SELECT * FROM " + ATTRIBUTETYPES_TABLE
+            +" WHERE " + VALUE_COLUMN + " = ?";
+
+            
     private final static String deleteAttributeTypeByNameQuery = " DELETE FROM " + ATTRIBUTETYPES_TABLE
             + " WHERE " + VALUE_COLUMN + " = ?";
 
     private final static String deleteGroupTypeByKeyQuery = " DELETE FROM " + LICENSEGROUPTYPES_TABLE + " WHERE "
+            + KEY_COLUMN + " = ?";
+    
+    private final static String selectGroupTypeByKeyQuery = " SELECT * FROM " + LICENSEGROUPTYPES_TABLE + " WHERE "
             + KEY_COLUMN + " = ?";
 
     private final static String deletePresentationTypeByKeyQuery = " DELETE FROM "
@@ -149,7 +159,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
 
     private final static String countGroupTypeByGroupNameQuery = " SELECT COUNT(*) FROM " + LICENSECONTENT_TABLE
             + " WHERE " + NAME_COLUMN + " = ?";
-
+   
+    
     private final static String countPresentationTypeByPresentationNameQuery = " SELECT COUNT(*) FROM "
             + PRESENTATION_TABLE + " WHERE " + NAME_COLUMN + " = ?";
 
@@ -166,7 +177,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         super();
     }
 
-    public void persistLicensePresentationType(String key, String value_dk, String value_en) throws SQLException {
+    public long persistLicensePresentationType(String key, String value_dk, String value_en) throws SQLException {
         log.info("Persisting new license presentationtype: " + key);
 
         validateValue(key);
@@ -176,8 +187,10 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         validateValue(value_en);
         value_en = value_en.trim();
 
+        long id =generateUniqueID();
+        
         try (PreparedStatement stmt = connection.prepareStatement(persistLicensePresentationTypeQuery);) {
-            stmt.setLong(1, generateUniqueID());
+            stmt.setLong(1, id);
             stmt.setString(2, key);
             stmt.setString(3, value_dk);
             stmt.setString(4, value_en);
@@ -186,6 +199,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             log.error("SQL Exception in persistPresentationType:" + e.getMessage());
             throw e;
         }
+        return id;
        
     }
 
@@ -202,8 +216,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
                 String key = rs.getString(KEY_COLUMN);
                 String value = rs.getString(VALUE_DK_COLUMN);
                 String value_en = rs.getString(VALUE_EN_COLUMN);
-                PresentationType item = new PresentationType(id, key, value,
-                        value_en);
+                PresentationType item = new PresentationType( key, value, value_en);
+                item.setId(id);
                 list.add(item);
             }
             return list;
@@ -214,14 +228,15 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
     }
 
 
-    public void deleteLicense(long licenseId) throws SQLException {
+    public long deleteLicense(long licenseId) throws SQLException {
         log.info("Deleting license with id: " + licenseId);
         License license = null;
         try {
             license = getLicense(licenseId);
         } catch (IllegalArgumentException e) {
             // No license in DB with that ID, nothing to delete
-            return;
+            log.warn("No license with id:"+licenseId);
+            return 0;//      
         }
 
         for (AttributeGroup currentAttributeGroup : license.getAttributeGroups()) {
@@ -243,10 +258,11 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         deleteById(deleteLicenseByLicenseIdQuery, licenseId);
 
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
+        return licenseId;
     }
 
     // query can be null or empty
-    public void persistLicenseGroupType(String key, String value, String value_en, String description,
+    public long persistLicenseGroupType(String key, String value, String value_en, String description,
             String description_en, String query, boolean restriction) throws IllegalArgumentException, SQLException {
 
         if (!StringUtils.isNotEmpty(key)) {
@@ -269,9 +285,9 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
 
         validateValue(value);
         value = value.trim();
-
+        long id=generateUniqueID();
         try (PreparedStatement stmt = connection.prepareStatement(persistLicenseGroupTypeQuery);) {
-            stmt.setLong(1, generateUniqueID());
+            stmt.setLong(1, id);
             stmt.setString(2, key);
             stmt.setString(3, value);
             stmt.setString(4, value_en);
@@ -286,6 +302,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         }
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
+        return id;
     }
 
     public void updateLicenseGroupType(long id, String value_dk, String value_en, String description,
@@ -342,7 +359,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void deleteLicenseGroupType(String groupName) throws IllegalArgumentException, SQLException {
+    public long deleteLicenseGroupType(String groupName) throws IllegalArgumentException, SQLException {
 
         log.info("Deleting grouptype: " + groupName);
         // First check it is not used in any license, in that case throw exception.
@@ -364,6 +381,20 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         }
 
+   
+        long id;
+        try (PreparedStatement stmt = connection.prepareStatement(selectGroupTypeByKeyQuery);) {
+            stmt.setString(1, groupName);
+            ResultSet rs=stmt.executeQuery();
+            
+            rs.next();
+            id = rs.getLong(ID_COLUMN);                                  
+            
+        } catch (SQLException e) {
+            log.error("SQL Exception in deleteLicenseGroupType:" + e.getMessage());
+            throw e;
+        }
+                        
         try (PreparedStatement stmt = connection.prepareStatement(deleteGroupTypeByKeyQuery);) {
             stmt.setString(1, groupName);
             int updated = stmt.executeUpdate();
@@ -373,6 +404,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         }
 
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
+        return id;
     }
 
     public void deletePresentationType(String presentationName) throws IllegalArgumentException, SQLException {
@@ -411,7 +443,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
 
-    public void persistLicense(License license) throws IllegalArgumentException, SQLException {
+    public long persistLicense(License license) throws IllegalArgumentException, SQLException {
 
         log.info("Persisting new license: " + license.getLicenseName());
 
@@ -426,9 +458,9 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw new IllegalArgumentException("Validation error. Attributes or values can not be empty");
         }
 
-        Long licenseId;
+        long licenseId = license.getId();
         if (license.getId() > 0) { // This is an existing license in the DB, delete it before updating
-            licenseId = license.getId();
+            // licenpersistLicenseseId = license.getId();
             // Delete old license before updating (creating new)
             log.info("Deleting license before updating");
             deleteLicense(licenseId);
@@ -456,7 +488,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         }
     
-        
+        return licenseId;
         //TODO! Important! Remove to facade!
         //LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
     }
@@ -487,15 +519,15 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         }
     }
 
-    public void persistAttributeType(String value) throws SQLException {
+    public long persistAttributeType(String value) throws SQLException {
 
         log.info("Persisting new  attribute type: " + value);
 
         validateValue(value);
         value = value.trim();
-
+          long id= generateUniqueID();
         try (PreparedStatement stmt = connection.prepareStatement(persistAttributeTypeQuery);) {
-            stmt.setLong(1, generateUniqueID());
+            stmt.setLong(1, id);
             stmt.setString(2, value);
             stmt.execute();
 
@@ -504,9 +536,10 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         }
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
+        return id;
     }
 
-    public void deleteAttributeType(String attributeTypeName) throws IllegalArgumentException, SQLException {
+    public long deleteAttributeType(String attributeTypeName) throws IllegalArgumentException, SQLException {
 
         log.info("Deleting attributetype: " + attributeTypeName);
         // First check it is not used in any license, in that case throw exception.
@@ -528,6 +561,22 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             throw e;
         }
 
+        //GetId
+
+        long id;
+        
+        try (PreparedStatement stmt = connection.prepareStatement(selectAttributeTypesByNameQuery);) {
+            stmt.setString(1, attributeTypeName);
+            ResultSet rs = stmt.executeQuery();
+            rs.next(); //There is 1
+            id= rs.getLong(ID_COLUMN);
+            
+        } catch (SQLException e) {
+            log.error("SQL Exception in deleteAttributeType:" + e.getMessage());
+            throw e;
+        }
+                        
+        
         try (PreparedStatement stmt = connection.prepareStatement(deleteAttributeTypeByNameQuery);) {
             stmt.setString(1, attributeTypeName);
             int updated = stmt.executeUpdate();
@@ -538,6 +587,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         }
 
         LicenseCache.reloadCache(); // Force reload so the change will be instant in the cache
+        return id;
     }
 
     public ArrayList<AttributeType> getAttributeTypes() throws SQLException {
@@ -549,7 +599,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             while (rs.next()) {
                 Long id = rs.getLong(ID_COLUMN);
                 String value = rs.getString(VALUE_COLUMN);
-                AttributeType item = new AttributeType(id, value);
+                AttributeType item = new AttributeType(value);
+                item.setId(id); 
                 list.add(item);
             }
             return list;
@@ -638,7 +689,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
                 String key = rs.getString( KEY_COLUMN);
                 String dk = rs.getString( VALUE_DK_COLUMN);
                 String en = rs.getString( VALUE_EN_COLUMN);                
-                PresentationType type = new PresentationType(id, key, dk, en);
+                PresentationType type = new PresentationType( key, dk, en);
+                type.setId(id);
                 return type;                                
             }
             throw new IllegalArgumentException("Presentationtype not found for id:" + id);
@@ -684,7 +736,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
                 Long id = rs.getLong( ID_COLUMN);
                 String dk = rs.getString( VALUE_DK_COLUMN);
                 String en = rs.getString( VALUE_EN_COLUMN);                
-                PresentationType type = new PresentationType(id, key, dk, en);
+                PresentationType type = new PresentationType(key, dk, en);
+                type.setId(id);
                 return type;                                
             }
             throw new IllegalArgumentException("Presentationtype not found for key:" + key);
@@ -1026,7 +1079,7 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
       tables.add("VALUE_ORG");
       tables.add("LICENSECONTENT");    
       tables.add("PRESENTATION");
-      
+      tables.add("AUDITLOG");
       
       for (String table : tables) {
           String deleteSQL="DELETE FROM " +table; 
