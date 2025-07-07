@@ -12,9 +12,8 @@ public class AttributeType extends Persistent{
 
 	private String value;
 				
-	public AttributeType(Long id, String value) {
+	public AttributeType( String value) {
 		super();
-		this.id = id;
 		this.value = value;
 	}
 

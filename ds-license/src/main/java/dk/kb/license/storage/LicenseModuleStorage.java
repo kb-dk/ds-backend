@@ -216,8 +216,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
                 String key = rs.getString(KEY_COLUMN);
                 String value = rs.getString(VALUE_DK_COLUMN);
                 String value_en = rs.getString(VALUE_EN_COLUMN);
-                PresentationType item = new PresentationType(id, key, value,
-                        value_en);
+                PresentationType item = new PresentationType( key, value, value_en);
+                item.setId(id);
                 list.add(item);
             }
             return list;
@@ -370,7 +370,6 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
 
             if (rs.next()) {
                 int number = rs.getInt(1);
-                System.out.println("found:"+number);
                 if (number > 0) {
                     throw new IllegalArgumentException("Can not delete group with name:" + groupName
                             + " because it is used in at least 1 license");
@@ -600,7 +599,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
             while (rs.next()) {
                 Long id = rs.getLong(ID_COLUMN);
                 String value = rs.getString(VALUE_COLUMN);
-                AttributeType item = new AttributeType(id, value);
+                AttributeType item = new AttributeType(value);
+                item.setId(id); 
                 list.add(item);
             }
             return list;
@@ -689,7 +689,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
                 String key = rs.getString( KEY_COLUMN);
                 String dk = rs.getString( VALUE_DK_COLUMN);
                 String en = rs.getString( VALUE_EN_COLUMN);                
-                PresentationType type = new PresentationType(id, key, dk, en);
+                PresentationType type = new PresentationType( key, dk, en);
+                type.setId(id);
                 return type;                                
             }
             throw new IllegalArgumentException("Presentationtype not found for id:" + id);
@@ -735,7 +736,8 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
                 Long id = rs.getLong( ID_COLUMN);
                 String dk = rs.getString( VALUE_DK_COLUMN);
                 String en = rs.getString( VALUE_EN_COLUMN);                
-                PresentationType type = new PresentationType(id, key, dk, en);
+                PresentationType type = new PresentationType(key, dk, en);
+                type.setId(id);
                 return type;                                
             }
             throw new IllegalArgumentException("Presentationtype not found for key:" + key);

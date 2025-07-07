@@ -49,8 +49,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
 
     private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";
-    private static PresentationType DOWNLOAD = new  PresentationType(1, "Download","Download_dk", "Download_en");
-    private static PresentationType THUMBNAILS = new  PresentationType(1, "Thumbnails" ,"Thumbnails_dk", "Thumbnails_en");
+    private static PresentationType DOWNLOAD = new  PresentationType("Download","Download_dk", "Download_en");
+    private static PresentationType THUMBNAILS = new  PresentationType("Thumbnails" ,"Thumbnails_dk", "Thumbnails_en");
 
     protected static LicenseModuleStorage storage = null;
 
@@ -1075,9 +1075,13 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         
         long auditLogId=storage.persistAuditLog(auditLog);                
         AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
-
-        assertEquals(ChangeTypeEnumDto.UPDATE, auditFromStorage.getChangeType());
-        //TODO validate fields from storage
+        assertEquals(userName, auditFromStorage.getUserName());
+        assertEquals(changeType, auditFromStorage.getChangeType());
+        assertEquals(changeName, auditFromStorage.getChangeName());
+        assertEquals(changeComment, auditFromStorage.getChangeComment());
+        assertEquals(textBefore, auditFromStorage.getTextBefore());
+        assertEquals(textAfter, auditFromStorage.getTextAfter());
+        assertTrue(auditFromStorage.getModifiedTime() >0); //modifiedtime has been set
     }
     
     @Test

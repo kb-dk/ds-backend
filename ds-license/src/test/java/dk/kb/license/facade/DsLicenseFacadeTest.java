@@ -12,8 +12,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.mockito.Mockito;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
 
+import org.mockito.Mockito;
+import org.mockito.exceptions.base.MockitoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +29,21 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+
 
 public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
     protected static LicenseModuleStorage storage = null;
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
+//    HttpSession mockedSession = mock(HttpSession.class);
+//    HttpSession mockedSession = Mockito.
+//    verify(mockedSession).setAttribute("name", "mockedName"");
+//    MockitoException
+//    MockedStatic<HttpSession> mockedSession = mockStatic(HttpSession.class);
+
+//    mockedSession.when(HttpSession::getAttribute("currentUserUsername")).thenReturn("name");
+
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
@@ -74,9 +88,11 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, deleteAuditLog.getChangeName());
 
         assertEquals("", createAuditLog.getTextBefore());
-        assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value / unit_test_value_en\n", updateAuditLog.getTextBefore()); //Tjek op på det
+        //TODO Jonatan, value not as expected. 
+        assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value / unit_test_value_en\n", updateAuditLog.getTextBefore());
         assertEquals("PresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", deleteAuditLog.getTextBefore());
 
+      //TODO Jonatan, value not as expected.
         assertEquals("PresentationType value DK/En:unit_test_value / unit_test_value_en\n", createAuditLog.getTextAfter());
         assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", updateAuditLog.getTextAfter()); //Tjek op på det
         assertEquals("", deleteAuditLog.getTextAfter());

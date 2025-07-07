@@ -13,9 +13,8 @@ public class PresentationType extends Persistent {
 	private String value_dk;
 	private String value_en;
 		
-	public PresentationType(long id, String key, String value_dk, String value_en) {
+	public PresentationType( String key, String value_dk, String value_en) {
 		super();
-		this.id = id;
 		this.key=key;
 		this.value_dk = value_dk;
 		this.value_en= value_en;

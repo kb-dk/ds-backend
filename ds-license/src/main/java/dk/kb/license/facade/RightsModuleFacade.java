@@ -60,7 +60,9 @@ public class RightsModuleFacade {
         try {
             result = ObjectTypeEnumDto.valueOf(restrictedIdType.getValue());
         } catch (IllegalArgumentException e) {
-            System.out.println("No such object type");
+            String message="Can not map to ObjectTypeEnumDto from IdTypeEnumDto:"+ restrictedIdType;
+            log.info(message);
+            throw new InvalidArgumentServiceException(message);
         }
         return result;
     }

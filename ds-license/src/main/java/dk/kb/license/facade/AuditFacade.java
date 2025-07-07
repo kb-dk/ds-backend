@@ -1,12 +1,11 @@
 package dk.kb.license.facade;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import dk.kb.license.model.v1.AuditEntryOutputDto;
 import dk.kb.license.storage.AuditLogEntry;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.LicenseModuleStorage;
-import dk.kb.license.storage.PresentationType;
 
 
 public class AuditFacade {
@@ -33,7 +32,7 @@ public class AuditFacade {
      * @param objectId The ID of the object for which to retrieve audit entries.
      * @return A list of AuditLogEntry related to
      */
-    public static ArrayList<AuditEntryOutputDto> getAuditEntriesByObjectId(Long objectId) {
+    public static List<AuditEntryOutputDto> getAuditEntriesByObjectId(Long objectId) {
         return BaseModuleStorage.performStorageAction("getAuditLogByObjectId()", LicenseModuleStorage.class, storage -> {
              return ((LicenseModuleStorage) storage).getAuditLogByObjectId(objectId);
          });                
