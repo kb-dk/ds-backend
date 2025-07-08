@@ -12,7 +12,7 @@ public class AttributeType extends Persistent{
 
 	private String value;
 				
-	public AttributeType( String value) {
+	public AttributeType(String value) {
 		super();
 		this.value = value;
 	}

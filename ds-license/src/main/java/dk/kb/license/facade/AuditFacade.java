@@ -7,10 +7,8 @@ import dk.kb.license.storage.AuditLogEntry;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.LicenseModuleStorage;
 
-
 public class AuditFacade {
 
-    
     /**
      * Retrieves a {@link AuditLogEntry} by id
      * This method does not have an immediate usecase.
@@ -23,8 +21,6 @@ public class AuditFacade {
              return ((LicenseModuleStorage) storage).getAuditLogById(auditLogId);
          });                
      }
-     
-
     
     /**
      * Retrieves a list of all {@link AuditLogEntry} related to a given object.
@@ -37,7 +33,4 @@ public class AuditFacade {
              return ((LicenseModuleStorage) storage).getAuditLogByObjectId(objectId);
          });                
      }
-
-    
-
 }

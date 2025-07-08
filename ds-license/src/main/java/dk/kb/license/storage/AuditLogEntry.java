@@ -36,7 +36,7 @@ public class AuditLogEntry {
      * 
      * 
      */
-    public AuditLogEntry (long objectId,  String userName, ChangeTypeEnumDto changeType, ObjectTypeEnumDto changeName,
+    public AuditLogEntry(long objectId, String userName, ChangeTypeEnumDto changeType, ObjectTypeEnumDto changeName,
                     String changeComment, String textBefore, String textAfter) {        
         this.objectId = objectId;
         this.userName = userName;
