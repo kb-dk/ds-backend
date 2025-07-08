@@ -306,7 +306,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
     public long persistAuditLog(AuditLogEntry auditLog) throws SQLException {
         log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), auditLog.getUserName());
               
-        Long id=generateUniqueID();      
+        Long id = generateUniqueID();
         log.info("1");
         try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
           log.info("generating id: " + id);

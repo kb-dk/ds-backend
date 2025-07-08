@@ -39,13 +39,13 @@ public class LicenseModuleFacade {
     public static long persistLicensePresentationType(String key, String value_dk, String value_en, HttpSession session) {
 
 
-        Long objectId = BaseModuleStorage.performStorageAction("persistLicensePresentationType(" + key + ","+value_dk +","+value_en+")", LicenseModuleStorage.class, storage -> {
+        Long objectId = BaseModuleStorage.performStorageAction("persistLicensePresentationType(" + key + "," + value_dk + "," + value_en + ")", LicenseModuleStorage.class, storage -> {
 
             PresentationType newType = new PresentationType(key, value_dk, value_en);
             long id = ((LicenseModuleStorage) storage).persistLicensePresentationType(key, value_dk, value_en);
             ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(null, newType);
             
-            AuditLogEntry auditLog = new AuditLogEntry(id,(String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE,  ObjectTypeEnumDto.PRESENTATION_TYPE, key, changes.getBefore(), changes.getAfter());
+            AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.PRESENTATION_TYPE, key, changes.getBefore(), changes.getAfter());
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
 
             return id;
@@ -81,7 +81,7 @@ public class LicenseModuleFacade {
             License license = ((LicenseModuleStorage) storage).getLicense(licenseId);
             ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(license,null);              
 
-            AuditLogEntry auditLog = new AuditLogEntry(licenseId,(String) session.getAttribute("oauth_user"),ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.LICENSE,license.getLicenseName(), changes.getBefore(), changes.getAfter());
+            AuditLogEntry auditLog = new AuditLogEntry(licenseId, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), changes.getBefore(), changes.getAfter());
 
             ((LicenseModuleStorage) storage).deleteLicense(licenseId);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);

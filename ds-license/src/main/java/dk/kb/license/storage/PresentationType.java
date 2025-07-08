@@ -31,5 +31,4 @@ public class PresentationType extends Persistent {
 	public String getKey() {
 		return key;
 	}
-	
 }
