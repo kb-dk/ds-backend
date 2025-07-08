@@ -351,7 +351,7 @@ public class RightsModuleFacade {
      * @param drHoldbackRuleDto
      * @param user the user performing the action
      */
-    public static void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto, tring user) {
+    public static void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto, String user) {
         BaseModuleStorage.performStorageAction("Create holdback rule", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage)storage).createDrHoldbackRule(
                     drHoldbackRuleDto.getId(),
