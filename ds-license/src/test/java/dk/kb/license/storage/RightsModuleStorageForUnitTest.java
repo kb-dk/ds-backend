@@ -27,7 +27,7 @@ public class RightsModuleStorageForUnitTest extends RightsModuleStorage  {
     public void clearTableRecords(List<String> tables) throws SQLException {
     
       for (String table : tables) {
-          String deleteSQL="DELETE FROM " +table; 
+          String deleteSQL="DELETE FROM " + table; 
         try (PreparedStatement stmt = connection.prepareStatement(deleteSQL);) {
             stmt.execute();
         }           
@@ -37,7 +37,7 @@ public class RightsModuleStorageForUnitTest extends RightsModuleStorage  {
     }
     
     public void clearRestrictedIds() throws SQLException {
-        String deleteSQL="DELETE FROM RESTRICTED_IDS";
+        String deleteSQL = "DELETE FROM RESTRICTED_IDS";
         try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
             stmt.execute();
         }

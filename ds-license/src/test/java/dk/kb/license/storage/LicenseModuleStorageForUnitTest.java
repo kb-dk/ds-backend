@@ -27,7 +27,7 @@ public class LicenseModuleStorageForUnitTest extends LicenseModuleStorage  {
     public void clearTableRecords(List<String> tables) throws SQLException {
     
       for (String table : tables) {
-          String deleteSQL="DELETE FROM " +table; 
+          String deleteSQL="DELETE FROM " + table; 
         try (PreparedStatement stmt = connection.prepareStatement(deleteSQL);) {
             stmt.execute();
         }           
