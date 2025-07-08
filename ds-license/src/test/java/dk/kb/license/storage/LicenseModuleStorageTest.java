@@ -52,25 +52,36 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     private static PresentationType DOWNLOAD = new PresentationType("Download", "Download_dk", "Download_en");
     private static PresentationType THUMBNAILS = new PresentationType("Thumbnails", "Thumbnails_dk", "Thumbnails_en");
 
-    protected static LicenseModuleStorage storage = null;
+    protected static LicenseModuleStorageForUnitTest  storage = null;
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
 
         ServiceConfig.initialize("conf/ds-license*.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
+        storage = new LicenseModuleStorageForUnitTest ();
 
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
-        storage = new LicenseModuleStorage();
     }
 
     /*
-     * Delete all records between each unittest. The clearTableRecords is only called from here.
+     * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module
      * The facade class is reponsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
-    public void beforeEach() throws SQLException {
-        storage.clearTableRecords();
+    public void beforeEach() throws SQLException {        
+       ArrayList<String> tables = new ArrayList<String>();
+       tables.add("PRESENTATIONTYPES");
+       tables.add("GROUPTYPES");
+       tables.add("ATTRIBUTETYPES");
+       tables.add("LICENSE");
+       tables.add("ATTRIBUTEGROUP");
+       tables.add("ATTRIBUTE");
+       tables.add("VALUE_ORG");
+       tables.add("LICENSECONTENT");    
+       tables.add("PRESENTATION");
+       tables.add("AUDITLOG");    
+       storage.clearTableRecords(tables);
     }
 
     @Test

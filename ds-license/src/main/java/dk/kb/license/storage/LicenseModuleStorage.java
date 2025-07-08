@@ -1046,37 +1046,4 @@ public class LicenseModuleStorage extends BaseModuleStorage  {
         connection.createStatement().execute("RUNSCRIPT FROM '" + ddlFile + "'");
     }
 
-    /*
-     * Only called from unittests, not exposed on facade class
-     * 
-     */
-
-    /*
-     * Only called from unittests, not exposed on facade class
-     * 
-     */
-    
-    public void clearTableRecords() throws SQLException {
-      ArrayList<String> tables = new ArrayList<String>();
-      tables.add("PRESENTATIONTYPES");
-      tables.add("GROUPTYPES");
-      tables.add("ATTRIBUTETYPES");
-      tables.add("LICENSE");
-      tables.add("ATTRIBUTEGROUP");
-      tables.add("ATTRIBUTE");
-      tables.add("VALUE_ORG");
-      tables.add("LICENSECONTENT");    
-      tables.add("PRESENTATION");
-      tables.add("AUDITLOG");
-      
-      for (String table : tables) {
-          String deleteSQL="DELETE FROM " + table;
-        try (PreparedStatement stmt = connection.prepareStatement(deleteSQL);) {
-            stmt.execute();
-        }   
-        
-      }
-      connection.commit();
-      log.info("All tables cleared for unittest");
-    }
 }

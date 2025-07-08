@@ -533,26 +533,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
         return localDateTime.format(formatter);
     }
 
-     /*
-     * Only called from unittests, not exposed on facade class
-     *
-     */
-    public void clearTableRecords() throws SQLException {
-        ArrayList<String> tables = new ArrayList<>();
-        tables.add("RESTRICTED_IDS");
-        tables.add("DR_HOLDBACK_MAP");
-        tables.add("DR_HOLDBACK_RULES");
-
-        for (String table : tables) {
-            String deleteSQL="DELETE FROM " +table;
-            try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
-                stmt.execute();
-            }
-        }
-        connection.commit();
-        log.info("All tables cleared for unittest");
-    }
-
     /**
      * Create a {@link RestrictedIdOutputDto} from a ResultSet, which should contain all needed values for the DTO
      * @param resultSet containing values from the backing Rights database
@@ -570,16 +550,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
         return output;
     }
 
-    /*
-     * Only called from unittests, not exposed on facade class
-     *
-     */
-    public void clearRestrictedIds() throws SQLException {
-        String deleteSQL="DELETE FROM RESTRICTED_IDS";
-        try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
-            stmt.execute();
-        }
-    }
+  
 }   
 
 
