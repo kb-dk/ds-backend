@@ -238,7 +238,7 @@ public class LicenseModuleFacade {
             //audit log
             if (license.getId() == 0 ) {
                 long id = ((LicenseModuleStorage) storage).persistLicense(license);
-                ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null,license);
+                ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null, license);
                 auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), changes.getBefore(), changes.getAfter());
 
             }
