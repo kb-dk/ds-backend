@@ -49,8 +49,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
 
     private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";
-    private static PresentationType DOWNLOAD = new  PresentationType("Download","Download_dk", "Download_en");
-    private static PresentationType THUMBNAILS = new  PresentationType("Thumbnails" ,"Thumbnails_dk", "Thumbnails_en");
+    private static PresentationType DOWNLOAD = new PresentationType("Download", "Download_dk", "Download_en");
+    private static PresentationType THUMBNAILS = new PresentationType("Thumbnails", "Thumbnails_dk", "Thumbnails_en");
 
     protected static LicenseModuleStorage storage = null;
 
@@ -60,8 +60,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         ServiceConfig.initialize("conf/ds-license*.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
-
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
         storage = new LicenseModuleStorage();
     }
 
@@ -79,8 +78,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         String type1 = "unit_test_type1";
         String type1_en = "unit_test_type1_en";
         String type2 = "unit_test_type2";
-        storage.persistLicensePresentationType("key1",type1,type1_en);
-        storage.persistLicensePresentationType("key2",type2, "unit_test_type2_en");
+        storage.persistLicensePresentationType("key1", type1, type1_en);
+        storage.persistLicensePresentationType("key2", type2, "unit_test_type2_en");
 
         ArrayList<PresentationType> list = storage.getLicensePresentationTypes();
         assertEquals(2, list.size());
@@ -100,7 +99,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         String type1_query = "type1_query";
         String type2 = "unit_test_type2";
         storage.persistLicenseGroupType( type1Key,type1, type1_en,type1_description, type1_description_en,type1_query, false);
-        storage.persistLicenseGroupType(type2Key,type2, "type_en","type2_description", "description_en","type2_query", false);
+        storage.persistLicenseGroupType(type2Key,type2, "type_en", "type2_description", "description_en","type2_query", false);
 
         ArrayList<GroupType> list = storage.getLicenseGroupTypes();
         assertEquals(2, list.size());
@@ -115,7 +114,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         String newDescription = "new Description";
         String value_dk = "value_dk";
         String value_en = "value_en";
-        storage.updateLicenseGroupType(toUpdate.getId(),value_dk, value_en, newDescription, "new description (en)", "new query", true);
+        storage.updateLicenseGroupType(toUpdate.getId(), value_dk, value_en, newDescription, "new description (en)", "new query", true);
         list = storage.getLicenseGroupTypes();
         assertEquals(value_en, list.get(0).getValue_en());
         assertEquals(newDescription, list.get(0).getDescription_dk());
@@ -150,8 +149,8 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         ArrayList<AttributeType> list = storage.getAttributeTypes();
         assertEquals(11, list.size());
-        long objectId=storage.deleteAttributeType("wayf.mail");
-        assertTrue(objectId >0); 
+        long objectId = storage.deleteAttributeType("wayf.mail");
+        assertTrue(objectId > 0);
         
         list = storage.getAttributeTypes();
         assertEquals(10, list.size()); // only 10 now
@@ -180,7 +179,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         ArrayList<GroupType> list = storage.getLicenseGroupTypes();
         assertEquals(9, list.size());
-        long id=storage.deleteLicenseGroupType("Pligtafleveret170Aar");//dom_licensemodule_default_configuration.ddl
+        long id = storage.deleteLicenseGroupType("Pligtafleveret170Aar");//dom_licensemodule_default_configuration.ddl
         assertTrue(id > 0);
         list = storage.getLicenseGroupTypes();
         assertEquals(8, list.size()); // only 8 now
@@ -207,8 +206,6 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         License license = createTestLicenseWithAssociations(1L);
         storage.persistLicense(license);
 
-        
-        
         ArrayList<PresentationType> list = storage.getLicensePresentationTypes();
         assertEquals(5, list.size());
         storage.deletePresentationType("10_sec_stream");
@@ -956,8 +953,6 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         catch (InvalidArgumentServiceException e){
             //Expected
         }
-
-
         
         PresentationType downloadType = LicenseValidator.matchPresentationtype("Download");
         assertEquals("Download", downloadType.getKey());            
@@ -1025,7 +1020,6 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         //TV3: 10_sec_stream
         list.add(l2);
 
-
         ArrayList<UserGroupDto> filtered2 = LicenseValidator.filterGroupsWithPresentationtype(list);
         assertEquals(3, filtered2.size());
 
@@ -1047,7 +1041,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         ids.add("testId1");
         ids.add("testId2");
         String solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids,filterField);
-        assertEquals("(" +filterField+":\"testId1\" OR "+filterField+":\"testId2\")", solrIdsQuery); 
+        assertEquals("(" + filterField + ":\"testId1\" OR " + filterField + ":\"testId2\")", solrIdsQuery);
 
         //prevent Lucene query injection. Remove all " and / from the string
         ids = new ArrayList<String>(); 
@@ -1055,7 +1049,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
         solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids,filterField); 
 
-        assertEquals("("+filterField+":\"testId3\")", solrIdsQuery);                 
+        assertEquals("(" + filterField + ":\"testId3\")", solrIdsQuery);
     }
 
 
@@ -1063,17 +1057,17 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
     @Test
     public void testPersistAndLoadAuditLogEntry() throws SQLException, IllegalArgumentException {
          
-         Long objectId=123456789L;
-         String userName="teg";
-         ChangeTypeEnumDto changeType= ChangeTypeEnumDto.UPDATE;
-         ObjectTypeEnumDto changeName= ObjectTypeEnumDto.DR_PRODUCTION_ID;
-         String changeComment="changeComment";
-         String textBefore="before";
-         String textAfter="after";
+         Long objectId = 123456789L;
+         String userName = "teg";
+         ChangeTypeEnumDto changeType = ChangeTypeEnumDto.UPDATE;
+         ObjectTypeEnumDto changeName = ObjectTypeEnumDto.DR_PRODUCTION_ID;
+         String changeComment = "changeComment";
+         String textBefore = "before";
+         String textAfter = "after";
                                    
-        AuditLogEntry auditLog = new AuditLogEntry(objectId,userName,changeType,changeName,changeComment,textBefore,textAfter);
+        AuditLogEntry auditLog = new AuditLogEntry(objectId, userName, changeType, changeName, changeComment, textBefore, textAfter);
         
-        long auditLogId=storage.persistAuditLog(auditLog);                
+        long auditLogId = storage.persistAuditLog(auditLog);
         AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
         assertEquals(userName, auditFromStorage.getUserName());
         assertEquals(changeType, auditFromStorage.getChangeType());
@@ -1081,7 +1075,7 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         assertEquals(changeComment, auditFromStorage.getChangeComment());
         assertEquals(textBefore, auditFromStorage.getTextBefore());
         assertEquals(textAfter, auditFromStorage.getTextAfter());
-        assertTrue(auditFromStorage.getModifiedTime() >0); //modifiedtime has been set
+        assertTrue(auditFromStorage.getModifiedTime() > 0); //modifiedtime has been set
     }
     
     @Test
@@ -1112,5 +1106,4 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         File insert_ddl_file = new File(INSERT_DEFAULT_CONFIGURATION_DDL_FILE);
         storage.runDDLScript(insert_ddl_file);
     }
-
 }

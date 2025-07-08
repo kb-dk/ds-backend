@@ -51,8 +51,7 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         ServiceConfig.initialize("conf/ds-license*.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
-
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
         storage = new LicenseModuleStorage();
     }
 
@@ -112,6 +111,4 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         assertTrue(createAuditLog.getModifiedTime()<updateAuditLog.getModifiedTime());
         assertTrue(updateAuditLog.getModifiedTime()<deleteAuditLog.getModifiedTime());
     }
-    
-    
 }
