@@ -12,13 +12,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
-    protected static RightsModuleStorage storage = null;
+    protected static RightsModuleStorageForUnitTest storage = null;
 
 
     @BeforeAll
@@ -28,7 +29,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
-        storage = new RightsModuleStorage();
+        storage = new RightsModuleStorageForUnitTest();
     }
 
     /*
@@ -37,7 +38,11 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
-        storage.clearTableRecords();
+        ArrayList<String> tables = new ArrayList<>();
+        tables.add("RESTRICTED_IDS");
+        tables.add("DR_HOLDBACK_MAP");
+        tables.add("DR_HOLDBACK_RULES");        
+        storage.clearTableRecords(tables);
     }
 
     @Test
