@@ -155,7 +155,6 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdValue("1234664800");
         restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
-        restrictedId.setInternalId(1L);
 
         RightsModuleFacade.createRestrictedId(restrictedId,"test",false);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);

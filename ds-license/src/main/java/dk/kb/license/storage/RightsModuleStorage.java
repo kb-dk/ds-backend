@@ -116,7 +116,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @param modifiedTime timestamp for creation
      * @throws SQLException
      */
-    public void createRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
+    public long createRestrictedId(String id_value, String id_type, String platform, String comment, String modifiedBy, long modifiedTime) throws SQLException {
         long uniqueID = generateUniqueID();
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)){
@@ -132,7 +132,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             log.error("SQL Exception in persistClause:" + e.getMessage());
             throw e;
         }
-
+      return uniqueID;        
     }
 
     /**
@@ -463,7 +463,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @param holdback_id
      * @throws SQLException
      */
-    public void createDrHoldbackMapping(int content_range_from, int content_range_to, int form_range_from, int form_range_to, String holdback_id) throws SQLException {
+    public long createDrHoldbackMapping(int content_range_from, int content_range_to, int form_range_from, int form_range_to, String holdback_id) throws SQLException {
         long uniqueID = generateUniqueID();
         try(PreparedStatement stmt = connection.prepareStatement(createHoldbackMapping)) {
             stmt.setLong(1,uniqueID);
@@ -477,6 +477,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             log.error("SQL Exception in get holdback rule ID:" + e.getMessage());
             throw e;
         }
+        return uniqueID;
     }
 
     /**
@@ -532,26 +533,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
         return localDateTime.format(formatter);
     }
 
-     /*
-     * Only called from unittests, not exposed on facade class
-     *
-     */
-    public void clearTableRecords() throws SQLException {
-        ArrayList<String> tables = new ArrayList<>();
-        tables.add("RESTRICTED_IDS");
-        tables.add("DR_HOLDBACK_MAP");
-        tables.add("DR_HOLDBACK_RULES");
-
-        for (String table : tables) {
-            String deleteSQL="DELETE FROM " +table;
-            try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
-                stmt.execute();
-            }
-        }
-        connection.commit();
-        log.info("All tables cleared for unittest");
-    }
-
     /**
      * Create a {@link RestrictedIdOutputDto} from a ResultSet, which should contain all needed values for the DTO
      * @param resultSet containing values from the backing Rights database
@@ -569,16 +550,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
         return output;
     }
 
-    /*
-     * Only called from unittests, not exposed on facade class
-     *
-     */
-    public void clearRestrictedIds() throws SQLException {
-        String deleteSQL="DELETE FROM RESTRICTED_IDS";
-        try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
-            stmt.execute();
-        }
-    }
+  
 }   
 
 

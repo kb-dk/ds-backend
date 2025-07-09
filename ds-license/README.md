@@ -1,5 +1,8 @@
 # Ds-license(Digitale Samlinger) by the Royal Danish Library.    
-      
+
+## ⚠️ Warning: Copyright Notice
+Please note that it is not permitted to download and/or otherwise reuse content from the DR-archive at The Danish Royal Library.
+
 ## Ds-license restricts access to items in collections based on the user credential information.
 The primary method in Ds-license is to filter a list of IDs (recordIds) and only return the subset 
 ID's that the user has access to based in the user information. Access can be restricted 

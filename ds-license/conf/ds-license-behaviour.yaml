@@ -47,7 +47,7 @@ rights:
       idTypes:
         - DS_ID
         - DR_PRODUCTION_ID
-        - OWNPRODUCTION_KODE
+        - OWNPRODUCTION_CODE
         - STRICT_TITLE
       # An amount of days used to specify, when the holdback logic changes from being calculated from the start date of the record to the following January 1st
       holdbackLogicChangeDays: 365

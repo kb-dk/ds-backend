@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Added new /audit/ path in API 
+- Added API GET request /audit/auditEntryById returning a single AuditLog by id
+- Added API GET request /audit/auditEntriesByObjectId returning a list of all AuditLogs related to a specific object by object id.
+- Added Audit Logging to all methods changing the configurations through UI or API
+- Added and Changed  columns to the table AUDITLOG to accommodate the new API calls (**Remember to create new delta migrations for OPS**)
+
+### Changed
+- Deleted API request to delete multiple restricted IDs
+- Moved storage method that is only used by unit tests to a storage subclass used by unittest. The methods are very destructive such as clearing all tables.
+
+### Fixed
+
+
+
+## [3.0.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.0) 2025-06-12
+### Added
 - Added client method for the APi endpoint: `rights/calculate`
 
 ### Changed

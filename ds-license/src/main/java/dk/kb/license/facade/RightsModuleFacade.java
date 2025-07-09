@@ -5,7 +5,7 @@ import dk.kb.license.Util;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
-import dk.kb.license.storage.AuditLog;
+import dk.kb.license.storage.AuditLogEntry;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.util.ChangeDifferenceText;
@@ -40,6 +40,8 @@ public class RightsModuleFacade {
     private static final Pattern dsIdPattern = Pattern.compile(regexpDsIdPattern);
 
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
+    private static final int MAX_COMMENT_LENGTH = 16348;
+
     /**
      * Retrieves a restrictedID output object from the database
      *
@@ -53,6 +55,18 @@ public class RightsModuleFacade {
         return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
     }
 
+    private static ObjectTypeEnumDto getObjectTypeEnumFromRestrictedIdType(IdTypeEnumDto restrictedIdType) {
+        ObjectTypeEnumDto result = null;
+        try {
+            result = ObjectTypeEnumDto.valueOf(restrictedIdType.getValue());
+        } catch (IllegalArgumentException e) {
+            String message = "Can not map to ObjectTypeEnumDto from IdTypeEnumDto:" + restrictedIdType;
+            log.info(message);
+            throw new InvalidArgumentServiceException(message);
+        }
+        return result;
+    }
+
     /**
      * Creates a restricted ID using the provided input data transfer object (DTO) and user ID.
      *
@@ -62,19 +76,18 @@ public class RightsModuleFacade {
      */
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto);
-        validatePlatformAndIdType(restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getIdType().getValue());
 
-        if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
+        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
             String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
             restrictedIdInputDto.setIdValue(validProductionId);
         }
 
-        if (restrictedIdInputDto.getIdType().equals("ds_id")) {
+        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DS_ID) {
             validatedsIdFormat(restrictedIdInputDto);
         }
 
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
-            ((RightsModuleStorage) storage).createRestrictedId(
+            long id = ((RightsModuleStorage) storage).createRestrictedId(
                     restrictedIdInputDto.getIdValue(),
                     restrictedIdInputDto.getIdType().getValue(),
                     restrictedIdInputDto.getPlatform().getValue(),
@@ -85,10 +98,10 @@ public class RightsModuleFacade {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
             ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(restrictedIdInputDto);
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Create restricted ID (klausulering)", restrictedIdInputDto.getIdValue(), "",change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), "", change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Created restriction {}", restrictedIdInputDto);
-            return null;
+            return id;
         });
     }
 
@@ -103,7 +116,7 @@ public class RightsModuleFacade {
      * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
      */
     public static int deleteRestrictedId(Long internalId, String user, boolean touchDsStorageRecord) throws Exception {
-        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
+        return BaseModuleStorage.performStorageAction("delete restricted ID", RightsModuleStorage.class, storage -> {
             // Retrieve object from database
             RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId);
 
@@ -114,7 +127,7 @@ public class RightsModuleFacade {
             }
 
             ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType().getValue(), idToDelete.getPlatform().toString());
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", idToDelete.getIdValue(), change.getBefore(),"");
+            AuditLogEntry logEntry = new AuditLogEntry(internalId, user, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), idToDelete.getIdValue(), "", change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.",
                     internalId, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
@@ -131,10 +144,9 @@ public class RightsModuleFacade {
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
-        validatePlatformAndIdType(restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getIdType().getValue());
         validateCommentLength(restrictedIdInputDto);
 
-        if (restrictedIdInputDto.getIdType().equals("dr_produktions_id")){
+        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
             String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
             restrictedIdInputDto.setIdValue(validProductionId);
         }
@@ -145,7 +157,7 @@ public class RightsModuleFacade {
                     restrictedIdInputDto.getIdType().getValue(),
                     restrictedIdInputDto.getPlatform().getValue());
             if (oldVersion == null) {
-                throw new NotFoundServiceException("updated restricted Id not found "+restrictedIdInputDto.toString());
+                throw new NotFoundServiceException("updated restricted Id not found " + restrictedIdInputDto.toString());
             }
             ((RightsModuleStorage) storage).updateRestrictedId(
                     restrictedIdInputDto.getIdValue(),
@@ -157,10 +169,10 @@ public class RightsModuleFacade {
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
-            ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion,restrictedIdInputDto);
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", restrictedIdInputDto.getIdValue(), "",change.getAfter());
+            ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion, restrictedIdInputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(oldVersion.getInternalId(), user, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), "", change.getAfter());
             storage.persistAuditLog(logEntry);
-            log.info("Updated restricted ID {}",restrictedIdInputDto);
+            log.info("Updated restricted ID {}", restrictedIdInputDto);
             return null;
         });
     }
@@ -175,16 +187,15 @@ public class RightsModuleFacade {
     public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) throws SQLException {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
-                validatePlatformAndIdType(id.getPlatform().getValue(), id.getIdType().getValue());
+                log.debug("Adding restricted id type='{}' with value='{}'", id.getIdType(), id.getIdValue());
                 validateCommentLength(id);
 
-                if (id.getIdType().equals("dr_produktions_id")){
+                if (id.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
                     String validProductionId = Util.validateDrProductionIdFormat(id.getIdValue());
-                    id.setIdValue(validProductionId);;
+                    id.setIdValue(validProductionId);
                 }
 
-
-                ((RightsModuleStorage) storage).createRestrictedId(
+                long objectId = ((RightsModuleStorage) storage).createRestrictedId(
                         id.getIdValue(),
                         id.getIdType().getValue(),
                         id.getPlatform().getValue(),
@@ -196,7 +207,7 @@ public class RightsModuleFacade {
                     touchRelatedStorageRecords(id.getIdValue(), id.getIdType());
                 }
                 ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(id);
-                AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Create restricted ID (klausulering)", id.getIdValue(), "",change.getAfter());
+                AuditLogEntry logEntry = new AuditLogEntry(objectId, user, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(id.getIdType()), id.getIdValue(), change.getBefore(), change.getAfter());
                 storage.persistAuditLog(logEntry);
             }
             return null;
@@ -214,43 +225,12 @@ public class RightsModuleFacade {
      * @return
      */
     public static List<RestrictedIdOutputDto> getAllRestrictedIds(IdTypeEnumDto idType, PlatformEnumDto platform) {
-        return BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage ->
+        return BaseModuleStorage.performStorageAction("delete restricted ID", RightsModuleStorage.class, storage ->
                 ((RightsModuleStorage) storage).getAllRestrictedIds(
                         Optional.ofNullable(idType).map(IdTypeEnumDto::getValue).orElse(null),
                         Optional.ofNullable(platform).map(PlatformEnumDto::getValue).orElse(null))
         );
     }
-
-    /**
-     * Deletes multiple restricted Ids
-     *
-     * @param restrictedIds        list of restricted Ids to be deleted.
-     * @param touchDsStorageRecord
-     */
-    public static int deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, String user, boolean touchDsStorageRecord) {
-        int deletedRecords = BaseModuleStorage.performStorageAction("delete restricted ID",RightsModuleStorage.class, storage -> {
-            int totalDeleted = 0;
-            for(RestrictedIdInputDto internalId : restrictedIds) {
-                // Get ID for deletion to extract value and type from internal ID
-                RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId.getInternalId().longValue());
-
-                // Delete each entry by internal ID
-                int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId.getInternalId().longValue());
-                if (touchDsStorageRecord) {
-                    touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
-                }
-                ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType().getValue(), idToDelete.getPlatform().toString());
-                AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete restricted ID (klausulering)", idToDelete.getIdValue(), change.getBefore(),"");
-                storage.persistAuditLog(logEntry);
-                totalDeleted += deletedCount;
-            }
-            return totalDeleted;
-        });
-        log.info("Deleted restricted IDs: [{}] ",
-                restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
-        return deletedRecords;
-    }
-
 
     /**
      * Retrieves the holdback ID based on the specified content and form values.
@@ -371,7 +351,7 @@ public class RightsModuleFacade {
      * @param drHoldbackRuleDto
      * @param user the user performing the action
      */
-    public static void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto,String user) {
+    public static void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto, String user) {
         BaseModuleStorage.performStorageAction("Create holdback rule", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage)storage).createDrHoldbackRule(
                     drHoldbackRuleDto.getId(),
@@ -379,7 +359,7 @@ public class RightsModuleFacade {
                     drHoldbackRuleDto.getDays()
             );
             ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleChanges(drHoldbackRuleDto);
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Create DR HolbackRule", drHoldbackRuleDto.getId(), "",changes.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackRuleDto.getId(), "", changes.getAfter());
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -390,10 +370,11 @@ public class RightsModuleFacade {
      * @param id id of the holdback rule
      * @param user the user performing the action
      */
-    public static void deleteDrHoldbackRule(String id,String user) throws SQLException {
+    public static void deleteDrHoldbackRule(String id, String user) throws SQLException {
         BaseModuleStorage.performStorageAction("Delete holdback rule", RightsModuleStorage.class, storage -> {
+            ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleChanges(((RightsModuleStorage)storage).getDrHoldbackFromID(id));
             ((RightsModuleStorage)storage).deleteDrHoldbackRule(id);
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Delete DR HoldbackRule", id, "","");
+            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_DAY, id, changes.getBefore(), "");
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -430,11 +411,11 @@ public class RightsModuleFacade {
      * @param id the id of the dr holdback rule
      * @param user the user performing the action
      **/
-    public static void updateDrHoldbackDaysForId(String id, Integer days,String user) {
+    public static void updateDrHoldbackDaysForId(String id, Integer days, String user) {
         BaseModuleStorage.performStorageAction("update holdback days", RightsModuleStorage.class, storage -> {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackdaysFromID(id);
-            ((RightsModuleStorage) storage).updateDrHolbackdaysForId(days,id);
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Update Holdback days for DR holdback rules for id", id, "Days before: "+daysBefore,"Days after: "+days);
+            ((RightsModuleStorage) storage).updateDrHolbackdaysForId(days, id);
+            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, id, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -449,8 +430,8 @@ public class RightsModuleFacade {
     public static void updateDrHoldbackDaysForName(String name, Integer days, String user) {
         BaseModuleStorage.performStorageAction("update holdback days", RightsModuleStorage.class, storage -> {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromName(name);
-            ((RightsModuleStorage) storage).updateDrHolbackdaysForName(days,name);
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user,"Update Holdback days for DR holdback rules for name", name, "Days before: "+daysBefore,"Days after: "+days);
+            ((RightsModuleStorage) storage).updateDrHolbackdaysForName(days, name);
+            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, name, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -465,12 +446,12 @@ public class RightsModuleFacade {
      * @param user: the user performing the action
      */
     public static void createHoldbackRanges(String drHoldbackId, List<DrHoldbackRangeMappingInputDto> drHoldbackRangeMappingInputDto, String user) {
-        BaseModuleStorage.performStorageAction("Create holdback ranges for "+ drHoldbackId, RightsModuleStorage.class, storage -> {
+        BaseModuleStorage.performStorageAction("Create holdback ranges for " + drHoldbackId, RightsModuleStorage.class, storage -> {
             for(DrHoldbackRangeMappingInputDto mapping: drHoldbackRangeMappingInputDto) {
                 if (((RightsModuleStorage)storage).getDrHoldbackFromID(drHoldbackId) == null) {
-                    throw new InvalidArgumentServiceException("No dr holdback_id "+drHoldbackId);
+                    throw new InvalidArgumentServiceException("No dr holdback_id " + drHoldbackId);
                 }
-                ((RightsModuleStorage)storage).createDrHoldbackMapping(
+                long objectId = ((RightsModuleStorage)storage).createDrHoldbackMapping(
                         mapping.getContentRangeFrom(),
                         mapping.getContentRangeTo(),
                         mapping.getFormRangeFrom(),
@@ -478,23 +459,24 @@ public class RightsModuleFacade {
                         drHoldbackId
                 );
                 ChangeDifferenceText changes = RightsChangelogGenerator.createHoldbackRangesChanges(drHoldbackRangeMappingInputDto);
-                AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user, "Create holdback ranges for ",drHoldbackId,"",changes.getAfter());
+                AuditLogEntry logEntry = new AuditLogEntry(objectId, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackId, "", changes.getAfter());
                 storage.persistAuditLog(logEntry);
             }
             return null;
         });
     }
+
     /**
      * Deletes all form and content range combinations for a drHoldbackID
      * @param drHoldbackId
      * @param user the user performing the action
      */
-    public static void deleteHoldbackRanges(String drHoldbackId,String user) {
+    public static void deleteHoldbackRanges(String drHoldbackId, String user) {
         BaseModuleStorage.performStorageAction("Delete holdback ranges for " + drHoldbackId, RightsModuleStorage.class, storage -> {
             List<DrHoldbackRangeMappingDto> oldRanges = ((RightsModuleStorage) storage).getHoldbackRangesForHoldbackId(drHoldbackId);
             ((RightsModuleStorage)storage).deleteMappingsForDrHolbackId(drHoldbackId);
             ChangeDifferenceText changes = RightsChangelogGenerator.deleteHoldbackRangesChanges(oldRanges);
-            AuditLog logEntry = new AuditLog(System.currentTimeMillis(), user, "Create holdback ranges for ",drHoldbackId,changes.getAfter(),"");
+            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackId, changes.getAfter(), "");
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -507,34 +489,22 @@ public class RightsModuleFacade {
      * @return
      */
     public static List<DrHoldbackRangeMappingDto> getHoldbackRanges(String drHoldbackId) {
-        return BaseModuleStorage.performStorageAction("Get holdbackmappings for "+drHoldbackId, RightsModuleStorage.class, storage-> ((RightsModuleStorage)storage).getHoldbackRangesForHoldbackId(drHoldbackId));
+        return BaseModuleStorage.performStorageAction("Get holdbackmappings for " + drHoldbackId, RightsModuleStorage.class, storage-> ((RightsModuleStorage)storage).getHoldbackRangesForHoldbackId(drHoldbackId));
     }
 
     private static void validateCommentLength(RestrictedIdInputDto id) {
-        if (id.getComment() != null && id.getComment().length() > 16348){
-            log.error("Comment was too long and cannot be added to rights module. Only 16348 characters are allowed.");
-            throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only 1024 characters are allowed.");
+        if (id.getComment() != null && id.getComment().length() > MAX_COMMENT_LENGTH) {
+            log.error("Comment was too long and cannot be added to rights module. Only {} characters are allowed.", MAX_COMMENT_LENGTH);
+            throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.");
         }
-    }
-
-    private static void validatePlatformAndIdType(String platform, String idType) {
-        YAML platformConfig = ServiceConfig.getRightsPlatformConfig(platform);
-        if (platformConfig.isEmpty()) {
-            throw new IllegalArgumentException("Invalid platform "+platform);
-        }
-        if (!platformConfig.getList("idTypes").contains(idType)) {
-            throw new IllegalArgumentException("Invalid idType "+idType);
-        }
-
     }
 
     private static void validatedsIdFormat(RestrictedIdInputDto restrictedIdInputDto) {
         Matcher m = dsIdPattern.matcher(restrictedIdInputDto.getIdValue());
         if (!m.matches()) {
-            throw new InvalidArgumentServiceException("Invalid ds_id format "+restrictedIdInputDto.getIdValue());
+            throw new InvalidArgumentServiceException("Invalid ds_id format " + restrictedIdInputDto.getIdValue());
         }
     }
-
 
     /**
      * Based on idType, touch related storage records, so that they can be re-indexed with the new information.
@@ -542,7 +512,7 @@ public class RightsModuleFacade {
      * @param idType to determine how related records are updated.
      * @return amount of records touched in DS-Storage.
      */
-    public static int touchRelatedStorageRecords(String id, IdTypeEnumDto idType){
+    public static int touchRelatedStorageRecords(String id, IdTypeEnumDto idType) {
         switch (idType){
             case DS_ID:
                 return touchStorageRecordById(id);
@@ -554,7 +524,7 @@ public class RightsModuleFacade {
             case STRICT_TITLE:
                 return touchStorageRecordsByStrictTitle(id);
             default:
-                throw new IllegalArgumentException("Invalid idType "+idType);
+                throw new IllegalArgumentException("Invalid idType " + idType);
         }
     }
 
@@ -571,7 +541,7 @@ public class RightsModuleFacade {
             }
             return count.getCount();
         } catch (NotFoundServiceException e) {
-            log.info("Touching storage record not found "+id);
+            log.info("Touching storage record not found " +id);
             return 0;
         }
     }
@@ -685,5 +655,4 @@ public class RightsModuleFacade {
         log.debug("Touching DS-storage record with id: '{}'", id);
         return storageClient.touchRecord(id);
     }
-
 }
