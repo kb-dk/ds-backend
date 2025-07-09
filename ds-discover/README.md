@@ -4,6 +4,10 @@ Gateway for Solr text search, image similarity, sound location and other discove
 
 Developed and maintained by the Royal Danish Library.
 
+## ⚠️ Warning: Copyright Notice
+Please note that it is not permitted to download and/or otherwise reuse content from the DR-archive at The Danish Royal Library.
+
+
 ## Requirements
 
 * Maven 3

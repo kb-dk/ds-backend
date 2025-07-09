@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## Added
+
+### Changed
+
+### Fixed
+
+## [3.0.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-3.0.0) - 2025-06-12
+## Added
 - Integration unittest with OAuth access token. Require kb-util v.1.6.10
 
 ### Changed
