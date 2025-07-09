@@ -91,16 +91,17 @@ public class KalturaUtil {
             return kalturaClientInstance;
         }
 
-        String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
+        String kalturaUrl = ServiceConfig.getConfig().getString("kaltura.url");
         String adminSecret = ServiceConfig.getConfig().getString("kaltura.adminSecret"); //Must not be shared or exposed. Use token,tokenId.
         Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
         String userId = ServiceConfig.getConfig().getString("kaltura.userId");                               
-        String token= ServiceConfig.getConfig().getString("kaltura.token");
-        String tokenId= ServiceConfig.getConfig().getString("kaltura.tokenId");
+        String token = ServiceConfig.getConfig().getString("kaltura.token");
+        String tokenId = ServiceConfig.getConfig().getString("kaltura.tokenId");
+        int sessionDurationSeconds = ServiceConfig.getConfig().getInteger("kaltura.sessionDurationSeconds");
+        int sessionRefreshThreshold = ServiceConfig.getConfig().getInteger("kaltura.sessionRefreshThreshold");
 
-        long sessionKeepAliveSeconds=3600L; //1 hour
         log.info("Creating kaltura client for partnerID: '{}'.", partnerId);
-        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl,userId,partnerId,token,tokenId,adminSecret,sessionKeepAliveSeconds);
+        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl, userId, partnerId, token, tokenId, adminSecret, sessionDurationSeconds, sessionRefreshThreshold);
         kalturaClientInstance=kalturaClient;
         return kalturaClient;    
     }
