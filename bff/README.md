@@ -4,6 +4,10 @@
 
 OAuth proxy for The Royal Library
 
+## ⚠️ Warning: Copyright Notice
+Please note that it is not permitted to download and/or otherwise reuse content from the DR-archive at The Danish Royal Library.
+
+
 ## Requirements
 
 
