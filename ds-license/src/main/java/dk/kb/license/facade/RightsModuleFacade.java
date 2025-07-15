@@ -115,22 +115,22 @@ public class RightsModuleFacade {
      * @param user the user performing the deletion action, used for audit logging.
      * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
      */
-    public static int deleteRestrictedId(Long internalId, String user, boolean touchDsStorageRecord) throws Exception {
+    public static int deleteRestrictedId(Long id, String user, boolean touchDsStorageRecord) throws Exception {
         return BaseModuleStorage.performStorageAction("delete restricted ID", RightsModuleStorage.class, storage -> {
             // Retrieve object from database
-            RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdByInternalId(internalId);
+            RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdById(id);
 
             // Delete entry from database
-            int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdByInternalId(internalId);
+            int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdById(id);
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
             }
 
             ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType().getValue(), idToDelete.getPlatform().toString());
-            AuditLogEntry logEntry = new AuditLogEntry(internalId, user, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), idToDelete.getIdValue(), "", change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), idToDelete.getIdValue(), "", change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.",
-                    internalId, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
+                    id, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
             return deletedCount;
         });
     }
@@ -170,7 +170,7 @@ public class RightsModuleFacade {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
             ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion, restrictedIdInputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(oldVersion.getInternalId(), user, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), "", change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(oldVersion.getId(), user, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), "", change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Updated restricted ID {}", restrictedIdInputDto);
             return null;

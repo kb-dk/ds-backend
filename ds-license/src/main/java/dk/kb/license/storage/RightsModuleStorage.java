@@ -38,7 +38,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             RESTRICTED_ID_COMMENT +","+ RESTRICTED_ID_MODIFIED_BY +","+ RESTRICTED_ID_MODIFIED_TIME +")" +
             " VALUES (?,?,?,?,?,?,?)";
     private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
-    private final String readRestrictedIdQueryByInternalId = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
+    private final String readRestrictedIdQueryById = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
 
     private final String updateRestrictedIdQuery = "UPDATE " + RESTRICTED_ID_TABLE +" SET "+
             RESTRICTED_ID_PLATFORM +" = ? , " +
@@ -49,7 +49,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             RESTRICTED_ID_IDVALUE +" = ? AND " +
             RESTRICTED_ID_IDTYPE +" = ?" ;
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
-    private final String deleteRestrictedIdByInternalIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
+    private final String deleteRestrictedIdByIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
 
     private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDTYPE + " LIKE ? AND " + RESTRICTED_ID_PLATFORM + " LIKE ?";
 
@@ -209,14 +209,14 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
 
     /**
-     * Get an entry from the restricted IDs table by internal ID.
+     * Get an entry from the restricted IDs table by ID.
      *
-     * @param internalId to get entry for.
+     * @param id to get entry for.
      * @return a {@link RestrictedIdOutputDto}
      */
-    public RestrictedIdOutputDto getRestrictedIdByInternalId(Long internalId) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQueryByInternalId)) {
-            stmt.setLong(1, internalId);
+    public RestrictedIdOutputDto getRestrictedIdById(Long id) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQueryById)) {
+            stmt.setLong(1,id);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
                 return createRestrictedIdOutputDtoFromResultSet(res);
@@ -229,18 +229,18 @@ public class RightsModuleStorage extends BaseModuleStorage{
     }
 
     /**
-     * Delete an entry from the restricted IDs table by internal ID.
+     * Delete an entry from the restricted IDs table by id
      *
-     * @param internalId to delete entry for.
+     * @param id to delete entry for.
      */
-    public int deleteRestrictedIdByInternalId(Long internalId) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(deleteRestrictedIdByInternalIdQuery)) {
-            statement.setLong(1, internalId);
+    public int deleteRestrictedIdById(Long id) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(deleteRestrictedIdByIdQuery)) {
+            statement.setLong(1, id);
             int result = statement.executeUpdate();
-            log.info("Deleted '{}' documents by internal ID: '{}'", result, internalId);
+            log.info("Deleted '{}' documents by id: '{}'", result, id);
             return result;
         } catch (SQLException e){
-            log.error("SQL Exception in delete internal ID: " + e.getMessage());
+            log.error("SQL Exception in delete by id: " + e.getMessage());
             throw e;
         }
     }
@@ -539,7 +539,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      */
     private RestrictedIdOutputDto createRestrictedIdOutputDtoFromResultSet(ResultSet resultSet) throws SQLException {
         RestrictedIdOutputDto output = new RestrictedIdOutputDto();
-        output.setInternalId(resultSet.getLong(RESTRICTED_ID_ID));
+        output.id(resultSet.getLong(RESTRICTED_ID_ID));
         output.setIdValue(resultSet.getString(RESTRICTED_ID_IDVALUE));
         output.setIdType(IdTypeEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_IDTYPE)));
         output.setPlatform(PlatformEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_PLATFORM)));
