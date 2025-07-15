@@ -128,7 +128,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
         RestrictedIdOutputDto outputObject = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), restrictedId.getIdType(), restrictedId.getPlatform());
 
-        int deleted = RightsModuleFacade.deleteRestrictedId(outputObject.getInternalId().longValue(),"test",false);
+        int deleted = RightsModuleFacade.deleteRestrictedId(outputObject.getId().longValue(),"test",false);
         assertEquals(1, deleted);
     }
 
@@ -144,7 +144,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664860", outputRight.getIdValue());
-        int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId().longValue(),"test",false);
+        int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getId().longValue(),"test",false);
         assertEquals(1, deletedCount);
     }
 
@@ -160,7 +160,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664800", outputRight.getIdValue());
-        int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId().longValue(), "test",false);
+        int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getId().longValue(), "test",false);
         assertEquals(1, deletedCount);
     }
 
@@ -176,6 +176,6 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664890", outputRight.getIdValue());
-        RightsModuleFacade.deleteRestrictedId(outputRight.getInternalId().longValue(),"test",false);
+        RightsModuleFacade.deleteRestrictedId(outputRight.getId().longValue(),"test",false);
     }
 }
