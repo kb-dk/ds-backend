@@ -64,7 +64,6 @@ public class SolrShield {
      * @see #evaluate(Iterable request, Double maxWeight)
      */
     public static Response evaluate(Map<String, String[]> request) {
-        ensureConfig();
         return evaluate(request.entrySet(), defaultMaxWeight);
     }
 
@@ -78,7 +77,6 @@ public class SolrShield {
      * @see #evaluate(Iterable request, Double maxWeight)
      */
     public static Response evaluate(Iterable<Map.Entry<String, String[]>> request) {
-        ensureConfig();
         return evaluate(request, defaultMaxWeight);
     }
 
@@ -95,7 +93,6 @@ public class SolrShield {
      * @see #evaluate(Iterable request)
      */
     public static Response evaluate(Iterable<Map.Entry<String, String[]>> request, Double maxWeight) {
-        ensureConfig();
         Response response = weigh(request).maxWeight(maxWeight);
 
         // Is the weight acceptable?
@@ -137,7 +134,8 @@ public class SolrShield {
      * Load the configuration for SolrShield, if not already loaded. The configuration for SolrShield is a sub-config
      * in the overall application config, located at {@code solr.shield}.
      */
-    static void ensureConfig() {
+    public static void ensureConfig() {
+        log.debug("Load SolrShield configuration");
         if (conf != null) {
             return;
         }
