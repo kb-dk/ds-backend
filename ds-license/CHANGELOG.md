@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Deleted API request to delete multiple restricted IDs
 - Moved storage method that is only used by unit tests to a storage subclass used by unittest. The methods are very destructive such as clearing all tables.
+- OAuth enabled on all methods except  /rights/calculate (and monitor  methods). In Ingest(write) environment OAuth must be enabled for ds-license as well, since new ds-license-web calls methods that modifies configuration in the database. All calls are logged in the audit log with username from Oauth token.
+
 
 ### Fixed
 

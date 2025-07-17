@@ -706,12 +706,14 @@ paths:
             'application/json':
               schema:
                 type: string
+  
   /rights/calculate:
     post:
       tags:
         - 'DsRights'
       operationId: calculateRights
       summary: "Calculate restrictions for a record based on input values"
+#     No Oauth. Only called by system calls when indexing and no oauth is used system2system in ingest(write) environment.
       requestBody:
         required: true
         content:
