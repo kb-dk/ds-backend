@@ -27,6 +27,7 @@
     </properties>
 
     <modules>
+        <module>ds-shared</module>
         <module>ds-storage</module>
         <module>ds-license</module>
         <module>ds-present</module>
@@ -59,15 +60,6 @@
             </snapshots>
         </repository>
     </repositories>
-
-    <!-- Make all submodules depend on the shared module -->
-    <dependencies>
-        <dependency>
-            <groupId>dk.kb.dsshared</groupId>
-            <artifactId>ds-shared</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
 
     <dependencyManagement>
         <dependencies>
