@@ -60,6 +60,15 @@
         </repository>
     </repositories>
 
+    <!-- Make all submodules depend on the shared module -->
+    <dependencies>
+        <dependency>
+            <groupId>dk.kb.dsshared</groupId>
+            <artifactId>ds-shared</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
