@@ -27,6 +27,7 @@
     </properties>
 
     <modules>
+        <module>ds-shared</module>
         <module>ds-storage</module>
         <module>ds-license</module>
         <module>ds-present</module>
