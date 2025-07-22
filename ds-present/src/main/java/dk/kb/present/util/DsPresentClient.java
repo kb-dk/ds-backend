@@ -1,10 +1,10 @@
 package dk.kb.present.util;
 
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.present.PresentFacade;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.model.v1.OriginDto;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -15,11 +15,13 @@ import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.nio.channels.InterruptedByTimeoutException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import org.apache.hc.core5.net.URIBuilder;
 
@@ -221,10 +223,33 @@ public class DsPresentClient {
      * @return the transformed solr schema in the specified format.
      */
     public String transformSolrSchema(String rawSchema, String format) throws IOException {
-        return PresentFacade.transformSolrSchema(rawSchema, format);
-    }
+        URI uri;
+        try {
+            uri = new URIBuilder(serviceURI + "/transformsolrschema")
+                    .addParameter("format",format)
+                    .build();
+            Map<String, String> requestHeaders = Map.of("content-type", "application/xml");
+            String token = Service2ServiceRequest.getOAuth2Token();
+            if (token != null) {
+                requestHeaders.put("Authorization", "Bearer " + token);
+            }
+            HttpURLConnection con = (HttpURLConnection)uri.toURL().openConnection();
+            con.setRequestMethod("POST");
+            requestHeaders.forEach(con::setRequestProperty);
+            con.setDoOutput(true);
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = rawSchema.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+            int status = con.getResponseCode();
+            if (status >= 200 && status <= 299) {
+                return IOUtils.toString(con.getInputStream(), StandardCharsets.UTF_8);
+            } else {
+                throw new InternalServiceException("transformation of schema failed. Got http status "+status);
+            }
 
-    
-    
-    
+        } catch (URISyntaxException e) {
+            throw new InternalServiceException(e);
+        }
+    }
 }
