@@ -8,10 +8,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 
-import dk.kb.present.PresentFacade;
+import dk.kb.present.util.DsPresentClient;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
+
 
 /**
  * Delivers documentation from the backing solr. The primary functionality is to deliver the solr schema in a
@@ -39,9 +40,9 @@ public class DocumentationExtractor {
 
         // As we are using DS-Present facade here, we need to have the ServiceConfig for DS-present initialized to some file, even though the method used doesn't require any
         // values form the configuration. This is an odd way of doing just that.
-        //TODO: We should consider providing the transformSolrSchema method on he DS-Present API and then query it through the Ds-present client here.
-        dk.kb.present.config.ServiceConfig.initialize("conf/ds-discover-behaviour.yaml");
-        return PresentFacade.transformSolrSchema(rawSchema, format);
+
+        DsPresentClient presentClient = new DsPresentClient(ServiceConfig.getDsPresentUrl());
+        return presentClient.transformSolrSchema(rawSchema, format);
     }
 
     /**
