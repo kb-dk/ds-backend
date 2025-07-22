@@ -295,7 +295,42 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Origin'
-  
+
+  /transformsolrschema:
+     post:
+       tags:
+         - '${project.name}'
+       summary: 'Transform solr schema to a different format'
+       parameters:
+         - name: format
+           in: query
+           description: 'the requested output format'
+           required: true
+           schema:
+             type: string
+             enum: [ 'html', 'markdown']
+             default: 'html'
+             example: 'html'
+       requestBody:
+         required: true
+         content:
+           application/xml:
+             schema:
+               type: string
+               description: the raw schema.xml
+       responses:
+         '200':
+           description: Successfully transformed the solr schema.
+           content:
+             application/xml:
+               schema:
+                 description: |
+                   Transformed schema
+                 type: string
+         '500':
+           description: Internal server error.
+
+
 # IIIF Presentation endpoints
   /IIIF/collection/{name}:
     get:
