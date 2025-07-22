@@ -217,12 +217,13 @@ public class DsPresentClient {
     }
 
     /**
-     * Converts a raw solr schema to a human-readable version.
+     * Calls the transformsolrschema in ds-present to convert the schema.
      * @param rawSchema the schema to convert.
      * @param format the format which it gets converted to.
      * @return the transformed solr schema in the specified format.
      */
     public String transformSolrSchema(String rawSchema, String format) throws IOException {
+       // TODO: move this to Service2ServiceRequest in kb-util ?
         URI uri;
         try {
             uri = new URIBuilder(serviceURI + "/transformsolrschema")
