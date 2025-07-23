@@ -443,34 +443,33 @@ paths:
         '201':
           description: created
     put:
-        tags:
-          - 'DsRights'
-        operationId: updateRestrictedId
-        security:
-          - KBOAuth:
-              - any
-        parameters:
-          - name: touchRecord
-            in: query
+      tags:
+        - 'DsRights'
+      operationId: updateRestrictedId
+      security:
+        - KBOAuth:
+           - any
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        content:
+          application/json:
             schema:
-              type: boolean
-              default: true
-        requestBody:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RestrictedIdInput'
-              examples:
-                DrProductionID:
-                  value:
-                    idValue: 'test1'
-                    idType: DR_PRODUCTION_ID
-                    platform: DRARKIV
-                    comment: 'Dette er en opdateret kommentar'
-
-        responses:
-          '201':
-            description: created
+              $ref: '#/components/schemas/RestrictedIdInput'
+            examples:
+              DrProductionID:
+                value:
+                  idValue: 'test1'
+                  idType: DR_PRODUCTION_ID
+                  platform: DRARKIV
+                  comment: 'Dette er en opdateret kommentar'
+      responses:
+        '201':
+          description: created
 
   /rights/drHoldbackRules:
     get:
@@ -706,12 +705,14 @@ paths:
             'application/json':
               schema:
                 type: string
+  
   /rights/calculate:
     post:
       tags:
         - 'DsRights'
       operationId: calculateRights
       summary: "Calculate restrictions for a record based on input values"
+#     No Oauth. Only called by system calls when indexing and no oauth is used system2system in ingest(write) environment.
       requestBody:
         required: true
         content:
