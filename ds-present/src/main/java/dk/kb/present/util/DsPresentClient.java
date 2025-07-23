@@ -16,9 +16,8 @@ import dk.kb.util.webservice.stream.ContinuationStream;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
 import java.nio.channels.InterruptedByTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -222,7 +221,7 @@ public class DsPresentClient {
      * @param format the format which it gets converted to.
      * @return the transformed solr schema in the specified format.
      */
-    public String transformSolrSchema(String rawSchema, String format) throws IOException {
+    public String transformSolrSchema(String rawSchema, String format) {
        // TODO: move this to Service2ServiceRequest in kb-util ?
         URI uri;
         try {
@@ -250,7 +249,11 @@ public class DsPresentClient {
             }
 
         } catch (URISyntaxException e) {
-            throw new InternalServiceException(e);
+            log.error("Invalid url:"+e.getMessage());
+            throw new InternalServiceException("Invalid url:"+e.getMessage(),e);
+        } catch (IOException e) {
+            log.error("Unable to connect to '{}': {}", serviceURI, e.getMessage());
+            throw new InternalServiceException("Unable to connecot to service "+serviceURI,e);
         }
     }
 }
