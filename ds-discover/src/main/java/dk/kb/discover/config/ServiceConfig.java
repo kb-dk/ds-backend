@@ -57,4 +57,7 @@ public class ServiceConfig extends AutoYAML {
         return getInstance().getYAML();
     }
 
+    public static String getDsPresentUrl() {
+        return getConfig().getString("present.url");
+    }
 }
