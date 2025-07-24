@@ -4,7 +4,16 @@ import dk.kb.license.model.v1.HoldbackCalculationInputDto;
 import dk.kb.license.model.v1.PlatformEnumDto;
 import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
+import dk.kb.present.util.saxhandlers.ElementsExtractionHandler;
+import org.apache.commons.io.IOUtils;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +58,28 @@ public class ExtractedPreservicaValues {
 
     private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
     private static final String endTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
+
+    /**
+     * Extract all needed values from a preservica record. These values are either tricky values such as dates, where we know that extra parsing is needed or values that are
+     * used in multiple parts of the processing of the record.
+     * @param content of the record. i.e. the XML data.
+     * @param recordId of the processed record. Used for logging and debugging.
+     * @return a {@link ExtractedPreservicaValues}-object containing the extracted values.
+     */
+    public static ExtractedPreservicaValues extractValuesFromPreservicaContent(String content, String recordId) throws ParserConfigurationException, SAXException {
+        try (InputStream xml = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(false);
+            SAXParser saxParser = factory.newSAXParser();
+
+            ElementsExtractionHandler handler = new ElementsExtractionHandler(recordId);
+            saxParser.parse(xml, handler);
+
+            return handler.getDataValues();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public String getStartTime() {
         return values.get(STARTTIME_KEY).getValue();

@@ -15,13 +15,11 @@
 package dk.kb.present;
 
 import dk.kb.license.model.v1.PlatformEnumDto;
-import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
-import dk.kb.present.util.DataCleanup;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -32,7 +30,6 @@ import org.xml.sax.SAXException;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -176,7 +173,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private void applyDrStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
         ExtractedPreservicaValues extractedValues;
         try {
-            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content, record.getId());
+            extractedValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(content, record.getId());
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
@@ -217,7 +214,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private void applyManifestationStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
         ExtractedPreservicaValues extractedValues;
         try {
-            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content, record.getId());
+            extractedValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(content, record.getId());
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
