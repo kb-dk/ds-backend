@@ -32,6 +32,7 @@ public class ExtractedPreservicaValues {
     public static final String ORIGIN_COUNTRY_KEY = "originCountry";
     public static final String PURPOSE_KEY = "purpose";
     public static final String PRODUCTION_ID_KEY = "productionId";
+    public static final String TITLE_KEY = "title";
 
     public ExtractedPreservicaValues(){
         values.put(RECORD_ID_KEY, new PathPair<>("id", ""));
@@ -43,6 +44,7 @@ public class ExtractedPreservicaValues {
         values.put(ORIGIN_COUNTRY_KEY, new PathPair<>("", ""));
         values.put(PURPOSE_KEY, new PathPair<>("", ""));
         values.put(PRODUCTION_ID_KEY, new PathPair<>("",""));
+        values.put(TITLE_KEY, new PathPair<>("",""));
     }
 
     private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
@@ -121,6 +123,12 @@ public class ExtractedPreservicaValues {
         values.get(FORM_KEY).setValue(formValue);
     }
 
+    public String getTitle(){
+        return values.get(TITLE_KEY).getValue();
+    }
+    public void setTitle(String title){
+        values.get(TITLE_KEY).setValue(title);
+    }
 
     public List<String> getPaths(){
         List<String> paths = new ArrayList<>();
