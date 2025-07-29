@@ -75,7 +75,7 @@ public class RightsModuleFacade {
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
-        validateCommentLength(restrictedIdInputDto);
+        validateCommentLength(restrictedIdInputDto.getComment());
 
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
             String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
@@ -141,28 +141,27 @@ public class RightsModuleFacade {
      * @param touchDsStorageRecord
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void updateRestrictedId(UpdateRestrictedIdInputDto updateRestrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
-        validateCommentLength(updateRestrictedIdInputDto);
+    public static void updateRestrictedIdComment(UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
+        validateCommentLength(updateRestrictedIdCommentInputDto.getComment());
 
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
-            long id = updateRestrictedIdInputDto.getId();
+            long id = updateRestrictedIdCommentInputDto.getId();
             RestrictedIdOutputDto oldVersion = ((RightsModuleStorage)storage).getRestrictedIdById(id);
             if (oldVersion == null) {
-                throw new NotFoundServiceException("updated restricted Id not found " + updateRestrictedIdInputDto.toString());
+                throw new NotFoundServiceException("updated restricted Id not found " + updateRestrictedIdCommentInputDto.toString());
             }
-            ((RightsModuleStorage) storage).updateRestrictedId(
-                    updateRestrictedIdInputDto.getId(),
-                    updateRestrictedIdInputDto.getPlatform().getValue(),
-                    updateRestrictedIdInputDto.getComment());
+            ((RightsModuleStorage) storage).updateRestrictedIdComment(
+                    updateRestrictedIdCommentInputDto.getId(),
+                    updateRestrictedIdCommentInputDto.getComment());
             if (touchDsStorageRecord) {
-                touchRelatedStorageRecords(oldVersion.getIdValue(), oldVersion.getIdType()); //TODO - dette bør måske gøres smartere?
+                touchRelatedStorageRecords(oldVersion.getIdValue(), oldVersion.getIdType());
             }
             RestrictedIdOutputDto newVersion = ((RightsModuleStorage)storage).getRestrictedIdById(id);
 
             ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion, newVersion);
-            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(newVersion.getIdType()), newVersion.getIdValue(), "", change.getAfter()); //TODO: ok?
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(newVersion.getIdType()), newVersion.getIdValue(), "", change.getAfter());
             storage.persistAuditLog(logEntry);
-            log.info("Updated restricted ID {}", updateRestrictedIdInputDto);
+            log.info("Updated restricted ID {}", updateRestrictedIdCommentInputDto);
             return null;
         });
     }
@@ -178,7 +177,7 @@ public class RightsModuleFacade {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
                 log.debug("Adding restricted id type='{}' with value='{}'", id.getIdType(), id.getIdValue());
-                validateCommentLength(id);
+                validateCommentLength(id.getComment());
 
                 if (id.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
                     String validProductionId = Util.validateDrProductionIdFormat(id.getIdValue());
@@ -480,15 +479,8 @@ public class RightsModuleFacade {
         return BaseModuleStorage.performStorageAction("Get holdbackmappings for " + drHoldbackId, RightsModuleStorage.class, storage-> ((RightsModuleStorage)storage).getHoldbackRangesForHoldbackId(drHoldbackId));
     }
 
-    private static void validateCommentLength(RestrictedIdInputDto id) {
-        if (id.getComment() != null && id.getComment().length() > MAX_COMMENT_LENGTH) {
-            log.error("Comment was too long and cannot be added to rights module. Only {} characters are allowed.", MAX_COMMENT_LENGTH);
-            throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.");
-        }
-    }
-
-    private static void validateCommentLength(UpdateRestrictedIdInputDto id) { // TODO: Hvordan skal dette laves rigtigt?
-        if (id.getComment() != null && id.getComment().length() > MAX_COMMENT_LENGTH) {
+    private static void validateCommentLength(String comment) {
+        if (comment != null && comment.length() > MAX_COMMENT_LENGTH) {
             log.error("Comment was too long and cannot be added to rights module. Only {} characters are allowed.", MAX_COMMENT_LENGTH);
             throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.");
         }

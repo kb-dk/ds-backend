@@ -1,0 +1,1 @@
+ALTER TABLE RESTRICTED_IDS DROP COLUMN modified_by, modified_time, modified_time_human;

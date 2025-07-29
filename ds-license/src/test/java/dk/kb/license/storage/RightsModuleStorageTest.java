@@ -62,7 +62,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
         String new_comment = "another comment";
 
-        storage.updateRestrictedId(id,platform,new_comment);
+        storage.updateRestrictedIdComment(id,new_comment);
         retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
         assertNotNull(retreivedFromStorage);
         assertEquals(idValue,retreivedFromStorage.getIdValue());

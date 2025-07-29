@@ -48,10 +48,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public void updateRestrictedId(Boolean touchRecord, UpdateRestrictedIdInputDto updateRestrictedIdInputDto) {
-        log.debug("Updating restricted ID {}",updateRestrictedIdInputDto);
+    public void updateRestrictedIdComment(Boolean touchRecord, UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto) {
+        log.debug("Updating restricted ID {}",updateRestrictedIdCommentInputDto);
         try {
-            RightsModuleFacade.updateRestrictedId(updateRestrictedIdInputDto, getCurrentUserID(),touchRecord);
+            RightsModuleFacade.updateRestrictedIdComment(updateRestrictedIdCommentInputDto, getCurrentUserID(),touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }

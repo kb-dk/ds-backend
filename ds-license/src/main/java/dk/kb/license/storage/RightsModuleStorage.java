@@ -38,8 +38,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String readRestrictedIdQueryById = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
 
-    private final String updateRestrictedIdQuery = "UPDATE " + RESTRICTED_ID_TABLE +" SET "+
-            RESTRICTED_ID_PLATFORM +" = ? , " +
+    private final String updateRestrictedIdCommentQuery = "UPDATE " + RESTRICTED_ID_TABLE +" SET "+
             RESTRICTED_ID_COMMENT +" = ? " +
             " WHERE " +
             RESTRICTED_ID_ID +" = ?" ;
@@ -154,20 +153,14 @@ public class RightsModuleStorage extends BaseModuleStorage{
     /**
      * Updates an entry in the restricted IDs table. Also updates the mTime of the related record in ds-storage.
      *
-     * @param id_value The value of the ID
-     * @param id_type The type of the ID
-     * @param platform The platform where the object is restricted (e.g DR)
      * @param comment Just a comment
-     * @param modifiedBy The id of the user creating the restricted ID
-     * @param modifiedTime timestamp for creation
      * @throws SQLException
      */
-    public void updateRestrictedId(long id, String platform, String comment) throws SQLException {
+    public void updateRestrictedIdComment(long id, String comment) throws SQLException {
 
-        try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdQuery)){
-            stmt.setString(1, platform);
-            stmt.setString(2, comment);
-            stmt.setLong(3, id);
+        try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdCommentQuery)){
+            stmt.setString(1, comment);
+            stmt.setLong(2, id);
             stmt.execute();
         }  catch (SQLException e) {
             log.error("SQL Exception in persist restricted ID" + e.getMessage());

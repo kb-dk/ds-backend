@@ -445,7 +445,7 @@ paths:
     put:
       tags:
         - 'DsRights'
-      operationId: updateRestrictedId
+      operationId: updateRestrictedIdComment
       security:
         - KBOAuth:
            - any
@@ -459,7 +459,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateRestrictedIdInput'
+              $ref: '#/components/schemas/UpdateRestrictedIdCommentInput'
             examples:
               DrProductionID:
                 value:
@@ -1099,18 +1099,15 @@ components:
         comment:
           type: string
 
-    UpdateRestrictedIdInput:
+    UpdateRestrictedIdCommentInput:
       type: object
       required:
         - id
-        - platform
 
       properties:
         id:
           type: integer
           format: int64
-        platform:
-          $ref: "#/components/schemas/PlatformEnum"
         comment:
           type: string
 
