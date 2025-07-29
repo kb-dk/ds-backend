@@ -105,10 +105,6 @@ public class ExtractedPreservicaValues {
         return values.get(FORM_KEY).getValue();
     }
 
-    public void setFormValue(String formValue) {
-        values.get(FORM_KEY).setValue(formValue);
-    }
-
     public String getContent() {
         return values.get(CONTENT_KEY).getValue();
     }
@@ -121,9 +117,6 @@ public class ExtractedPreservicaValues {
         return values.get(ORIGIN_COUNTRY_KEY).getValue();
     }
 
-    public void setOriginCountry(String origin){
-        values.get(ORIGIN_COUNTRY_KEY).setValue(origin);
-    }
     public String getOrigin(){
         return values.get(ORIGIN_KEY).getValue();
     }
@@ -151,17 +144,18 @@ public class ExtractedPreservicaValues {
     public String getProductionId() {
         return values.get(PRODUCTION_ID_KEY).getValue();
     }
-
-    public void setProductionId(String formValue) {
-        values.get(FORM_KEY).setValue(formValue);
-    }
-
     public String getTitle(){
         return values.get(TITLE_KEY).getValue();
     }
-    public void setTitle(String title){
-        values.get(TITLE_KEY).setValue(title);
+
+    public String getOriginalTitle() {
+        return values.get(ORIGINAL_TITLE_KEY).getValue();
     }
+
+    public void setValue(String key, String value){
+        values.get(key).setValue(value);
+    }
+
 
     public List<String> getPaths(){
         List<String> paths = new ArrayList<>();
