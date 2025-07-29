@@ -51,32 +51,24 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         String idType = IdTypeEnumDto.DR_PRODUCTION_ID.getValue();
         String platform = PlatformEnumDto.DRARKIV.getValue();
         String comment = "a comment";
-        String modified_by = "user1";
-        long modified_time = 1739439979000L;
 
-        storage.createRestrictedId(idValue,idType,platform,comment,modified_by,modified_time);
+        storage.createRestrictedId(idValue,idType,platform,comment);
         RestrictedIdOutputDto retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
         assertNotNull(retreivedFromStorage);
         assertEquals(idValue,retreivedFromStorage.getIdValue());
         assertEquals(idType,retreivedFromStorage.getIdType().getValue());
         assertEquals(platform,retreivedFromStorage.getPlatform().getValue());
         assertEquals(comment,retreivedFromStorage.getComment());
-        assertEquals(modified_by,retreivedFromStorage.getModifiedBy());
-        assertEquals(modified_time,retreivedFromStorage.getModifiedTime());
 
         String new_comment = "another comment";
-        String new_modified_by = "user2";
-        long new_modified_time = 17394500000000L;
 
-        storage.updateRestrictedId(idValue,idType,platform,new_comment,new_modified_by,new_modified_time);
+        storage.updateRestrictedId(idValue,idType,platform,new_comment);
         retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
         assertNotNull(retreivedFromStorage);
         assertEquals(idValue,retreivedFromStorage.getIdValue());
         assertEquals(idType,retreivedFromStorage.getIdType().getValue());
         assertEquals(platform,retreivedFromStorage.getPlatform().getValue());
         assertEquals(new_comment,retreivedFromStorage.getComment());
-        assertEquals(new_modified_by,retreivedFromStorage.getModifiedBy());
-        assertEquals(new_modified_time,retreivedFromStorage.getModifiedTime());
 
         storage.deleteRestrictedId(idValue,idType,platform);
         assertNull(storage.getRestrictedId(idValue, idType,platform));
@@ -84,11 +76,11 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
     @Test
     public void testRestrictedIdSearch() throws SQLException {
-        storage.createRestrictedId("test1",IdTypeEnumDto.DS_ID.getValue(),PlatformEnumDto.DRARKIV.getValue(),"","test",System.currentTimeMillis());
-        storage.createRestrictedId("test2",IdTypeEnumDto.DS_ID.getValue(),PlatformEnumDto.GENERIC.getValue(),"","test",System.currentTimeMillis());
-        storage.createRestrictedId("test3",IdTypeEnumDto.DS_ID.getValue(),PlatformEnumDto.DRARKIV.getValue(),"","test",System.currentTimeMillis());
-        storage.createRestrictedId("test4",IdTypeEnumDto.STRICT_TITLE.getValue(),PlatformEnumDto.DRARKIV.getValue(),"","test",System.currentTimeMillis());
-        storage.createRestrictedId("test5",IdTypeEnumDto.STRICT_TITLE.getValue(),PlatformEnumDto.GENERIC.getValue(),"","test",System.currentTimeMillis());
+        storage.createRestrictedId("test1",IdTypeEnumDto.DS_ID.getValue(),PlatformEnumDto.DRARKIV.getValue(),"");
+        storage.createRestrictedId("test2",IdTypeEnumDto.DS_ID.getValue(),PlatformEnumDto.GENERIC.getValue(),"");
+        storage.createRestrictedId("test3",IdTypeEnumDto.DS_ID.getValue(),PlatformEnumDto.DRARKIV.getValue(),"");
+        storage.createRestrictedId("test4",IdTypeEnumDto.STRICT_TITLE.getValue(),PlatformEnumDto.DRARKIV.getValue(),"");
+        storage.createRestrictedId("test5",IdTypeEnumDto.STRICT_TITLE.getValue(),PlatformEnumDto.GENERIC.getValue(),"");
 
         assertEquals(5,storage.getAllRestrictedIds(null,null).size());
         assertEquals(3,storage.getAllRestrictedIds(IdTypeEnumDto.DS_ID.getValue(),null).size());
@@ -107,10 +99,10 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         String modified_by = "user1";
         long modified_time = 1739439979L;
 
-        storage.createRestrictedId(idValue,idType,platform,comment,modified_by,modified_time);
+        storage.createRestrictedId(idValue,idType,platform,comment);
 
 
-        assertThrows(SQLException.class, () -> storage.createRestrictedId(idValue, idType, platform, comment, modified_by, modified_time));
+        assertThrows(SQLException.class, () -> storage.createRestrictedId(idValue, idType, platform, comment));
     }
 
     @Test
@@ -181,7 +173,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
     @Test
     public void testPerformStorageAction() throws SQLException {
         RestrictedIdOutputDto result = BaseModuleStorage.performStorageAction("Testing", RightsModuleStorage.class, storage -> {
-            ((RightsModuleStorage) storage).createRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "comment", "unittest", System.currentTimeMillis());
+            ((RightsModuleStorage) storage).createRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "comment");
             return ((RightsModuleStorage) storage).getRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue());
         });
         assertEquals("test1",result.getIdValue());

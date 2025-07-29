@@ -91,9 +91,7 @@ public class RightsModuleFacade {
                     restrictedIdInputDto.getIdValue(),
                     restrictedIdInputDto.getIdType().getValue(),
                     restrictedIdInputDto.getPlatform().getValue(),
-                    restrictedIdInputDto.getComment(),
-                    user,
-                    System.currentTimeMillis());
+                    restrictedIdInputDto.getComment());
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
@@ -163,9 +161,7 @@ public class RightsModuleFacade {
                     restrictedIdInputDto.getIdValue(),
                     restrictedIdInputDto.getIdType().getValue(),
                     restrictedIdInputDto.getPlatform().getValue(),
-                    restrictedIdInputDto.getComment(),
-                    user,
-                    System.currentTimeMillis());
+                    restrictedIdInputDto.getComment());
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
@@ -199,9 +195,7 @@ public class RightsModuleFacade {
                         id.getIdValue(),
                         id.getIdType().getValue(),
                         id.getPlatform().getValue(),
-                        id.getComment(),
-                        user,
-                        System.currentTimeMillis()
+                        id.getComment()
                 );
                 if (touchDsStorageRecord) {
                     touchRelatedStorageRecords(id.getIdValue(), id.getIdType());
