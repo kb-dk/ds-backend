@@ -42,6 +42,7 @@ public class ExtractedPreservicaValues {
     public static final String PURPOSE_KEY = "purpose";
     public static final String PRODUCTION_ID_KEY = "productionId";
     public static final String TITLE_KEY = "title";
+    public static final String ORIGINAL_TITLE_KEY = "originalTitle";
 
     public ExtractedPreservicaValues(){
         values.put(RECORD_ID_KEY, new PathPair<>("id", ""));
@@ -54,6 +55,7 @@ public class ExtractedPreservicaValues {
         values.put(PURPOSE_KEY, new PathPair<>("", ""));
         values.put(PRODUCTION_ID_KEY, new PathPair<>("",""));
         values.put(TITLE_KEY, new PathPair<>("",""));
+        values.put(ORIGINAL_TITLE_KEY, new PathPair<>("",""));
     }
 
     private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
