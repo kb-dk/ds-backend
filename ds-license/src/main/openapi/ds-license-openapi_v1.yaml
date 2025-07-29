@@ -459,12 +459,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RestrictedIdInput'
+              $ref: '#/components/schemas/UpdateRestrictedIdInput'
             examples:
               DrProductionID:
                 value:
-                  idValue: 'test1'
-                  idType: DR_PRODUCTION_ID
+                  id: 'test1'
                   platform: DRARKIV
                   comment: 'Dette er en opdateret kommentar'
       responses:
@@ -1089,6 +1088,7 @@ components:
         - idValue
         - idType
         - platform
+
       properties:   
         idValue:
           type: string
@@ -1098,6 +1098,22 @@ components:
           $ref: "#/components/schemas/PlatformEnum"
         comment:
           type: string
+
+    UpdateRestrictedIdInput:
+      type: object
+      required:
+        - id
+        - platform
+
+      properties:
+        id:
+          type: integer
+          format: int64
+        platform:
+          $ref: "#/components/schemas/PlatformEnum"
+        comment:
+          type: string
+
 
     RestrictedIdOutput:
       type: object

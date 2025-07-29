@@ -141,34 +141,28 @@ public class RightsModuleFacade {
      * @param touchDsStorageRecord
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void updateRestrictedId(RestrictedIdInputDto restrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
-        validateCommentLength(restrictedIdInputDto);
-
-        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
-            String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
-            restrictedIdInputDto.setIdValue(validProductionId);
-        }
-
+    public static void updateRestrictedId(UpdateRestrictedIdInputDto updateRestrictedIdInputDto, String user, boolean touchDsStorageRecord) throws SQLException {
+        validateCommentLength(updateRestrictedIdInputDto);
 
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
-            RestrictedIdOutputDto oldVersion = ((RightsModuleStorage)storage).getRestrictedId(restrictedIdInputDto.getIdValue(),
-                    restrictedIdInputDto.getIdType().getValue(),
-                    restrictedIdInputDto.getPlatform().getValue());
+            long id = updateRestrictedIdInputDto.getId();
+            RestrictedIdOutputDto oldVersion = ((RightsModuleStorage)storage).getRestrictedIdById(id);
             if (oldVersion == null) {
-                throw new NotFoundServiceException("updated restricted Id not found " + restrictedIdInputDto.toString());
+                throw new NotFoundServiceException("updated restricted Id not found " + updateRestrictedIdInputDto.toString());
             }
             ((RightsModuleStorage) storage).updateRestrictedId(
-                    restrictedIdInputDto.getIdValue(),
-                    restrictedIdInputDto.getIdType().getValue(),
-                    restrictedIdInputDto.getPlatform().getValue(),
-                    restrictedIdInputDto.getComment());
+                    updateRestrictedIdInputDto.getId(),
+                    updateRestrictedIdInputDto.getPlatform().getValue(),
+                    updateRestrictedIdInputDto.getComment());
             if (touchDsStorageRecord) {
-                touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
+                touchRelatedStorageRecords(oldVersion.getIdValue(), oldVersion.getIdType()); //TODO - dette bør måske gøres smartere?
             }
-            ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion, restrictedIdInputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(oldVersion.getId(), user, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), "", change.getAfter());
+            RestrictedIdOutputDto newVersion = ((RightsModuleStorage)storage).getRestrictedIdById(id);
+
+            ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion, newVersion);
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(newVersion.getIdType()), newVersion.getIdValue(), "", change.getAfter()); //TODO: ok?
             storage.persistAuditLog(logEntry);
-            log.info("Updated restricted ID {}", restrictedIdInputDto);
+            log.info("Updated restricted ID {}", updateRestrictedIdInputDto);
             return null;
         });
     }
@@ -487,6 +481,13 @@ public class RightsModuleFacade {
     }
 
     private static void validateCommentLength(RestrictedIdInputDto id) {
+        if (id.getComment() != null && id.getComment().length() > MAX_COMMENT_LENGTH) {
+            log.error("Comment was too long and cannot be added to rights module. Only {} characters are allowed.", MAX_COMMENT_LENGTH);
+            throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.");
+        }
+    }
+
+    private static void validateCommentLength(UpdateRestrictedIdInputDto id) { // TODO: Hvordan skal dette laves rigtigt?
         if (id.getComment() != null && id.getComment().length() > MAX_COMMENT_LENGTH) {
             log.error("Comment was too long and cannot be added to rights module. Only {} characters are allowed.", MAX_COMMENT_LENGTH);
             throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.");

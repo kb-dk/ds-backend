@@ -19,7 +19,7 @@ public class RightsChangelogGenerator {
         return new ChangeDifferenceText(restrictedIdText(id, idType, platform),null);
     }
 
-    public static ChangeDifferenceText updateRestrictedIdChanges(RestrictedIdOutputDto oldVersion, RestrictedIdInputDto newVersion) {
+    public static ChangeDifferenceText updateRestrictedIdChanges(RestrictedIdOutputDto oldVersion, RestrictedIdOutputDto newVersion) {
         return new ChangeDifferenceText(oldVersion.toString(),newVersion.toString());
     }
 

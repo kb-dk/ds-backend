@@ -42,8 +42,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             RESTRICTED_ID_PLATFORM +" = ? , " +
             RESTRICTED_ID_COMMENT +" = ? " +
             " WHERE " +
-            RESTRICTED_ID_IDVALUE +" = ? AND " +
-            RESTRICTED_ID_IDTYPE +" = ?" ;
+            RESTRICTED_ID_ID +" = ?" ;
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String deleteRestrictedIdByIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
 
@@ -163,13 +162,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @param modifiedTime timestamp for creation
      * @throws SQLException
      */
-    public void updateRestrictedId(String id_value, String id_type, String platform, String comment) throws SQLException {
+    public void updateRestrictedId(long id, String platform, String comment) throws SQLException {
 
         try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdQuery)){
             stmt.setString(1, platform);
             stmt.setString(2, comment);
-            stmt.setString(3, id_value);
-            stmt.setString(4, id_type);
+            stmt.setLong(3, id);
             stmt.execute();
         }  catch (SQLException e) {
             log.error("SQL Exception in persist restricted ID" + e.getMessage());

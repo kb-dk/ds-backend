@@ -52,7 +52,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         String platform = PlatformEnumDto.DRARKIV.getValue();
         String comment = "a comment";
 
-        storage.createRestrictedId(idValue,idType,platform,comment);
+        long id = storage.createRestrictedId(idValue,idType,platform,comment);
         RestrictedIdOutputDto retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
         assertNotNull(retreivedFromStorage);
         assertEquals(idValue,retreivedFromStorage.getIdValue());
@@ -62,7 +62,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
         String new_comment = "another comment";
 
-        storage.updateRestrictedId(idValue,idType,platform,new_comment);
+        storage.updateRestrictedId(id,platform,new_comment);
         retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
         assertNotNull(retreivedFromStorage);
         assertEquals(idValue,retreivedFromStorage.getIdValue());
