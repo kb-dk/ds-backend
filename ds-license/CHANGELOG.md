@@ -17,7 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deleted API request to delete multiple restricted IDs
 - Moved storage method that is only used by unit tests to a storage subclass used by unittest. The methods are very destructive such as clearing all tables.
 - OAuth enabled on all methods except  /rights/calculate (and monitor  methods). In Ingest(write) environment OAuth must be enabled for ds-license as well, since new ds-license-web calls methods that modifies configuration in the database. All calls are logged in the audit log with username from Oauth token.
-
+- Deleted redundant audit columns from the restricted_ids table (**Remember: Delta migrations for OPS to be found in rightsmodule_remove_redundant_audit_columns.ddl**)
+- Changed API for updating restricted_id to use id instead of unique combination of other columns
+- Deleted ability to use API for updating platform in restricted_ids
 
 ### Fixed
 

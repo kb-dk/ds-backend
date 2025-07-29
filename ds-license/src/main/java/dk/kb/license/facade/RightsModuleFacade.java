@@ -109,7 +109,7 @@ public class RightsModuleFacade {
      * This method performs the deletion of a restricted ID by its internal ID in the database
      * and logs the deletion in the audit log. If specified, it also touches related storage records
      *
-     * @param internalId in the database of the restricted ID to be deleted.
+     * @param id in the database of the restricted ID to be deleted.
      * @param user the user performing the deletion action, used for audit logging.
      * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
      */
@@ -125,7 +125,7 @@ public class RightsModuleFacade {
             }
 
             ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType().getValue(), idToDelete.getPlatform().toString());
-            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), idToDelete.getIdValue(), "", change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), idToDelete.getIdValue(), change.getBefore(), change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.",
                     id, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
@@ -136,7 +136,7 @@ public class RightsModuleFacade {
     /**
      * Update a restricted ID using the provided input data transfer object (DTO) and user ID.
      *
-     * @param restrictedIdInputDto the data transfer object containing the details of the restricted ID to be Updated.
+     * @param updateRestrictedIdCommentInputDto the data transfer object containing the details of the restricted ID to be Updated.
      *                             This should not be null.
      * @param touchDsStorageRecord
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
@@ -159,7 +159,7 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto newVersion = ((RightsModuleStorage)storage).getRestrictedIdById(id);
 
             ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion, newVersion);
-            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(newVersion.getIdType()), newVersion.getIdValue(), "", change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(newVersion.getIdType()), newVersion.getIdValue(), change.getBefore(), change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Updated restricted ID {}", updateRestrictedIdCommentInputDto);
             return null;

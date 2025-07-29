@@ -463,8 +463,7 @@ paths:
             examples:
               DrProductionID:
                 value:
-                  id: 'test1'
-                  platform: DRARKIV
+                  id: '1753788094315'
                   comment: 'Dette er en opdateret kommentar'
       responses:
         '201':
