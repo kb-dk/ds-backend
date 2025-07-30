@@ -288,7 +288,7 @@ paths:
 
   /rights/restrictedIds:
     get:
-      summary: get all restricted ids
+      summary: get restricted ids from idType and platform
       tags:
         - 'DsRights'
       operationId: getAllRestrictedIds
@@ -298,12 +298,14 @@ paths:
       parameters:
         - name: idType
           in: query
-          description: Filter on idType
+          required: true
+          description: Required filter on idType
           schema:
             $ref: '#/components/schemas/IdTypeEnum'
         - name: platform
           in: query
-          description: Filter On platform
+          required: true
+          description: Required filter on platform
           schema:
             $ref: '#/components/schemas/PlatformEnum'
       responses:

@@ -45,7 +45,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String deleteRestrictedIdByIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
 
-    private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDTYPE + " LIKE ? AND " + RESTRICTED_ID_PLATFORM + " LIKE ?";
+    private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ?";
 
     private final String DR_HOLDBACK_RULES_TABLE = "DR_HOLDBACK_RULES";
     private final String DR_HOLDBACK_RULES_ID = "id";
@@ -235,8 +235,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
      */
     public List<RestrictedIdOutputDto> getAllRestrictedIds(String idType, String platform) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(allRestrictedIdsQuery)) {
-            stmt.setString(1,StringUtils.isEmpty(idType) ? "%" : idType);
-            stmt.setString(2,StringUtils.isEmpty(platform) ? "%" : platform);
+            stmt.setString(1, idType);
+            stmt.setString(2, platform);
 
             ResultSet res = stmt.executeQuery();
             List<RestrictedIdOutputDto> output = new ArrayList<>();
@@ -246,7 +246,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return output;
         } catch (SQLException e) {
-            log.error("SQL Exception in readClause:" + e.getMessage());
+            log.error("SQL Exception in getAllRestrictedIds:" + e.getMessage());
             throw e;
         }
     }
