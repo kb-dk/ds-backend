@@ -1129,12 +1129,6 @@ components:
           $ref: "#/components/schemas/PlatformEnum"
         comment:
           type: string
-        modifiedBy:
-          type: string
-        modifiedTime:
-          type: long
-        modifiedTimeHuman:
-          type: string
 
     DrHoldbackRule:
       type: object
