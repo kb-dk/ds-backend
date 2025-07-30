@@ -506,14 +506,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
         }
     }
 
-
-
-    private String convertToHumanReadable(Long modifiedTime) {
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(modifiedTime), ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ServiceConfig.getConfig().getString("human-readable-date-format","yyyy-MM-dd HH:mm:ss"), Locale.ENGLISH);
-        return localDateTime.format(formatter);
-    }
-
     /**
      * Create a {@link RestrictedIdOutputDto} from a ResultSet, which should contain all needed values for the DTO
      * @param resultSet containing values from the backing Rights database

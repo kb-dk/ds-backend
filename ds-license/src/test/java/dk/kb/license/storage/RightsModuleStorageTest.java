@@ -82,11 +82,6 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         storage.createRestrictedId("test4",IdTypeEnumDto.STRICT_TITLE.getValue(),PlatformEnumDto.DRARKIV.getValue(),"");
         storage.createRestrictedId("test5",IdTypeEnumDto.STRICT_TITLE.getValue(),PlatformEnumDto.GENERIC.getValue(),"");
 
-        //assertEquals(5,storage.getAllRestrictedIds(null,null).size());
-        //assertEquals(3,storage.getAllRestrictedIds(IdTypeEnumDto.DS_ID.getValue(),null).size());
-        //assertEquals(2,storage.getAllRestrictedIds(IdTypeEnumDto.STRICT_TITLE.getValue(), null).size());
-        //assertEquals(3,storage.getAllRestrictedIds(null,PlatformEnumDto.DRARKIV.getValue()).size());
-        //assertEquals(2,storage.getAllRestrictedIds(null,PlatformEnumDto.GENERIC.getValue()).size());
         assertEquals(2,storage.getAllRestrictedIds(IdTypeEnumDto.DS_ID.getValue(),PlatformEnumDto.DRARKIV.getValue()).size());
     }
 

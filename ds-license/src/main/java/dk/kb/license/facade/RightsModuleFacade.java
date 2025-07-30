@@ -212,7 +212,7 @@ public class RightsModuleFacade {
      * @return
      */
     public static List<RestrictedIdOutputDto> getAllRestrictedIds(IdTypeEnumDto idType, PlatformEnumDto platform) {
-        return BaseModuleStorage.performStorageAction("get restricted ID", RightsModuleStorage.class, storage ->
+        return BaseModuleStorage.performStorageAction("get restricted IDs", RightsModuleStorage.class, storage ->
                 ((RightsModuleStorage) storage).getAllRestrictedIds(
                         idType.getValue(),
                         platform.getValue()
