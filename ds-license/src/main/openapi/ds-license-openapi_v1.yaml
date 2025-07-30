@@ -443,9 +443,11 @@ paths:
         '201':
           description: created
     put:
+      summary: Updates comment of restricted id
       tags:
         - 'DsRights'
       operationId: updateRestrictedIdComment
+      description: Only comment can be updated
       security:
         - KBOAuth:
            - any
