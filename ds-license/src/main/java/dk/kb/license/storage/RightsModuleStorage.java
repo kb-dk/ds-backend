@@ -512,6 +512,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      */
     private RestrictedIdOutputDto createRestrictedIdOutputDtoFromResultSet(ResultSet resultSet) throws SQLException {
         RestrictedIdOutputDto output = new RestrictedIdOutputDto();
+        output.setId(resultSet.getLong(RESTRICTED_ID_ID));
         output.setIdValue(resultSet.getString(RESTRICTED_ID_IDVALUE));
         output.setIdType(IdTypeEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_IDTYPE)));
         output.setPlatform(PlatformEnumDto.fromValue(resultSet.getString(RESTRICTED_ID_PLATFORM)));
