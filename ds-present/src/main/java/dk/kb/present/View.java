@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -174,8 +175,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         ExtractedPreservicaValues extractedValues;
         try {
             extractedValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(content, record.getId());
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            log.error("Error extracting values from Preservica content. recordId:'{}'.",record.getId(),e);
+            throw new InternalServiceException("Error extracting values from Preservica content for record:" + record.getId(), e);
         }
 
         String url = ServiceConfig.getConfig().getString("licensemodule.url");
@@ -215,8 +217,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         ExtractedPreservicaValues extractedValues;
         try {
             extractedValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(content, record.getId());
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            log.error("Error extracting values from Preservica content. recordId:'{}'.",record.getId(),e);
+            throw new InternalServiceException("Error extracting values from Preservica content for record:" + record.getId(), e);
         }
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
     }
