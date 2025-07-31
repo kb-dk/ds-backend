@@ -288,7 +288,7 @@ paths:
 
   /rights/restrictedIds:
     get:
-      summary: get all restricted ids
+      summary: get restricted ids from idType and platform
       tags:
         - 'DsRights'
       operationId: getAllRestrictedIds
@@ -298,12 +298,14 @@ paths:
       parameters:
         - name: idType
           in: query
-          description: Filter on idType
+          required: true
+          description: Required filter on idType
           schema:
             $ref: '#/components/schemas/IdTypeEnum'
         - name: platform
           in: query
-          description: Filter On platform
+          required: true
+          description: Required filter on platform
           schema:
             $ref: '#/components/schemas/PlatformEnum'
       responses:
@@ -443,9 +445,11 @@ paths:
         '201':
           description: created
     put:
+      summary: Updates comment of restricted id
       tags:
         - 'DsRights'
-      operationId: updateRestrictedId
+      operationId: updateRestrictedIdComment
+      description: Only comment can be updated
       security:
         - KBOAuth:
            - any
@@ -459,13 +463,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RestrictedIdInput'
+              $ref: '#/components/schemas/UpdateRestrictedIdCommentInput'
             examples:
               DrProductionID:
                 value:
-                  idValue: 'test1'
-                  idType: DR_PRODUCTION_ID
-                  platform: DRARKIV
+                  id: '1753788094315'
                   comment: 'Dette er en opdateret kommentar'
       responses:
         '201':
@@ -1089,6 +1091,7 @@ components:
         - idValue
         - idType
         - platform
+
       properties:   
         idValue:
           type: string
@@ -1098,6 +1101,19 @@ components:
           $ref: "#/components/schemas/PlatformEnum"
         comment:
           type: string
+
+    UpdateRestrictedIdCommentInput:
+      type: object
+      required:
+        - id
+
+      properties:
+        id:
+          type: integer
+          format: int64
+        comment:
+          type: string
+
 
     RestrictedIdOutput:
       type: object
@@ -1112,12 +1128,6 @@ components:
         platform:
           $ref: "#/components/schemas/PlatformEnum"
         comment:
-          type: string
-        modifiedBy:
-          type: string
-        modifiedTime:
-          type: long
-        modifiedTimeHuman:
           type: string
 
     DrHoldbackRule:
