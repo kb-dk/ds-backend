@@ -75,7 +75,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
 
     public ElementsExtractionHandler(String recordId) {
         extractedPreservicaValues = new ExtractedPreservicaValues();
-        extractedPreservicaValues.setId(recordId);
+        extractedPreservicaValues.setValue(ExtractedPreservicaValues.RECORD_ID_KEY, recordId);
     }
 
     /**
