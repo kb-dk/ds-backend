@@ -1140,7 +1140,7 @@ components:
         days:
           type: integer
 
-    DrHoldbackRangeMapping:
+    DrHoldbackRangeMappingOutput:
       type: object
       properties:
         id:

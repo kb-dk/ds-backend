@@ -12,7 +12,8 @@ CREATE INDEX RESTRICTED_IDS_ID_VALUE_PLATFORM_IN ON RESTRICTED_IDS(ID_VALUE,PLAT
 
 
 CREATE TABLE DR_HOLDBACK_RULES (
-    id VARCHAR(256) PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
+    dr_holdback_value VARCHAR(256),
     name VARCHAR(256),
     days int
 );
@@ -21,10 +22,10 @@ CREATE TABLE DR_HOLDBACK_RULES (
  Table to map content and/or form to holdback
  */
 CREATE TABLE DR_HOLDBACK_MAP (
-    id            BIGINT PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     content_range_from INTEGER NOT NULL,
     content_range_to INTEGER NOT NULL,
     form_range_from INTEGER NOT NULL,
     form_range_to INTEGER NOT NULL,
-    dr_holdback_id   VARCHAR(32) references DR_HOLDBACK_RULES(id)
+    dr_holdback_id   VARCHAR(256) references DR_HOLDBACK_RULES(dr_holdback_value)
 );
