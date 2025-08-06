@@ -67,8 +67,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String getDrHoldbackRuleFromValue = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
             + " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
     private final String updateDrHoldbackDaysForValue = "Update " + DR_HOLDBACK_RULES_TABLE
-            + " SET " + DR_HOLDBACK_RULES_VALUE + " = ?"
-            + " WHERE " + DR_HOLDBACK_RULES_DAYS + " = ?";
+            + " SET " + DR_HOLDBACK_RULES_DAYS + " = ?"
+            + " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
     private final String updateDrHoldbackDaysForName = "Update " + DR_HOLDBACK_RULES_TABLE
             + " SET " + DR_HOLDBACK_RULES_DAYS + " = ?"
             + " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
@@ -357,8 +357,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
      */
     public void updateDrHoldbackDaysForValue(String drHoldbackValue, int days) throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysForValue)) {
-            stmt.setString(1, drHoldbackValue);
-            stmt.setInt(2, days);
+            stmt.setInt(1, days);
+            stmt.setString(2, drHoldbackValue);
             stmt.execute();
         } catch (SQLException e) {
             log.error("SQL Exception in updateDrHoldbackDaysForValue: " + e.getMessage());
@@ -375,8 +375,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
      */
     public void updateDrHoldbackDaysForName(String name, int days) throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysForName)) {
-            stmt.setString(1, name);
-            stmt.setInt(2, days);
+            stmt.setInt(1, days);
+            stmt.setString(2, name);
             stmt.execute();
         } catch (SQLException e) {
             log.error("SQL Exception in updateDrHoldbackDaysForName: " + e.getMessage());
