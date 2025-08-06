@@ -106,27 +106,27 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         String name = "Aktualitet & Debat";
         int days = 100;
 
-        storage.createDrHoldbackRule(drHoldbackValue,name,100);
-        assertEquals(days,storage.getDrHoldbackDaysFromValue(drHoldbackValue));
-        assertEquals(days,storage.getDrHoldbackDaysFromName(name));
+        storage.createDrHoldbackRule(drHoldbackValue, name, 100);
+        assertEquals(days, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
+        assertEquals(days, storage.getDrHoldbackDaysFromName(name));
         DrHoldbackRuleOutputDto holdbackFromStorage = storage.getDrHoldbackRuleFromValue(drHoldbackValue);
         assertEquals(name,holdbackFromStorage.getName());
 
         days  = 200;
         storage.updateDrHoldbackDaysForValue(drHoldbackValue, days);
-        assertEquals(days,storage.getDrHoldbackDaysFromValue(drHoldbackValue));
-        assertEquals(days,storage.getDrHoldbackDaysFromName(name));
+        assertEquals(days, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
+        assertEquals(days, storage.getDrHoldbackDaysFromName(name));
 
         days  = 300;
         storage.updateDrHoldbackDaysForName(name, days);
-        assertEquals(days,storage.getDrHoldbackDaysFromValue(drHoldbackValue));
-        assertEquals(days,storage.getDrHoldbackDaysFromName(name));
+        assertEquals(days, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
+        assertEquals(days, storage.getDrHoldbackDaysFromName(name));
 
-        assertEquals(1,storage.getAllDrHoldbackRules().size());
+        assertEquals(1, storage.getAllDrHoldbackRules().size());
         storage.deleteDrHoldbackRule(drHoldbackValue);
-        assertEquals(-1,storage.getDrHoldbackDaysFromValue(drHoldbackValue));
-        assertEquals(-1,storage.getDrHoldbackDaysFromName(name));
-        assertEquals(0,storage.getAllDrHoldbackRules().size());
+        assertEquals(-1, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
+        assertEquals(-1, storage.getDrHoldbackDaysFromName(name));
+        assertEquals(0, storage.getAllDrHoldbackRules().size());
     }
 
     @Test
