@@ -249,11 +249,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * Create a holdback rule for DR content
      *
      * @param drHoldbackValue value of the rule
-     * @param name name of the rule
-     * @param days number of holdback days
+     * @param name            name of the rule
+     * @param days            number of holdback days
+     * @return uniqueId       id of the rule
      * @throws SQLException
      */
-    public void createDrHoldbackRule(String drHoldbackValue, String name, int days) throws SQLException {
+    public long createDrHoldbackRule(String drHoldbackValue, String name, int days) throws SQLException {
         long uniqueId = generateUniqueID();
         try (PreparedStatement stmt = connection.prepareStatement(createDrHoldbackRuleQuery)) {
             stmt.setLong(1, uniqueId);
@@ -265,6 +266,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
             log.error("SQL Exception in createDrHoldbackRule: " + e.getMessage());
             throw e;
         }
+
+        return uniqueId;
     }
 
     /**

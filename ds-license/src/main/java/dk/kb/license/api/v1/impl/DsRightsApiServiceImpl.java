@@ -3,7 +3,6 @@ package dk.kb.license.api.v1.impl;
 import dk.kb.license.api.v1.*;
 
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import dk.kb.license.config.ServiceConfig;
@@ -12,8 +11,6 @@ import dk.kb.license.model.v1.*;
 
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
-import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
@@ -192,20 +189,20 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * Update the number of holdback days for a holdback rule based on either its id or name
+     * Update the number of holdback days for a holdback rule based on either its drHoldbackValue or name
      * @param days
-     * @param id
+     * @param drHoldbackValue
      * @param name
      */
     @Override
-    public void updateDrHoldbackDays(Integer days, String id, String name) {
+    public void updateDrHoldbackDays(Integer days, String drHoldbackValue, String name) {
         try {
-            if (!StringUtils.isEmpty(id)) {
-                RightsModuleFacade.updateDrHoldbackDaysForId(id,days,getCurrentUserID());
+            if (!StringUtils.isEmpty(drHoldbackValue)) {
+                RightsModuleFacade.updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue,days,getCurrentUserID());
             } else if (!StringUtils.isEmpty(name)) {
-                RightsModuleFacade.updateDrHoldbackDaysForName(name,days,getCurrentUserID());
+                RightsModuleFacade.updateDrHoldbackDaysFromName(name,days,getCurrentUserID());
             } else {
-                throw new InvalidArgumentServiceException("missing id or name");
+                throw new InvalidArgumentServiceException("missing drHoldbackValue or name");
             }
         } catch (Exception e) {
             throw handleException(e);
