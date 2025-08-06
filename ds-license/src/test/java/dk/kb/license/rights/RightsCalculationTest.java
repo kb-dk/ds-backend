@@ -41,7 +41,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         try (RightsModuleStorageForUnitTest storage = new RightsModuleStorageForUnitTest()){
             List<String> tables = new ArrayList<String>();
             tables.add("RESTRICTED_IDS");
-            tables.add("DR_HOLDBACK_MAP");
+            tables.add("DR_HOLDBACK_RANGES");
             tables.add("DR_HOLDBACK_RULES");       
                        
             storage.clearTableRecords(tables);

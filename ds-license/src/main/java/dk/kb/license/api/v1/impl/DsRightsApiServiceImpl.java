@@ -116,7 +116,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * @param drHoldbackRuleDto
      */
     @Override
-    public void createDrHoldbackRule(DrHoldbackRuleDto drHoldbackRuleDto) {
+    public void createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleDto) {
         try {
             RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleDto,getCurrentUserID());
         } catch (Exception e) {
@@ -143,7 +143,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * @return
      */
     @Override
-    public DrHoldbackRuleDto getDrHoldbackRule(String id) {
+    public DrHoldbackRuleOutputDto getDrHoldbackRule(String id) {
         try {
             return RightsModuleFacade.getDrHoldbackRuleById(id);
         } catch (Exception e) {
@@ -156,7 +156,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * @return
      */
     @Override
-    public List<DrHoldbackRuleDto> getDrHoldbackRules() {
+    public List<DrHoldbackRuleOutputDto> getDrHoldbackRules() {
         try {
             return RightsModuleFacade.getAllDrHoldbackRules();
         } catch (Exception e) {
@@ -217,12 +217,12 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * This requires the holdback_id to be present in the DR holback rule table
      *
      * @param drHoldbackId
-     * @param drHoldbackRangeMappingInputDto
+     * @param drHoldbackRangeInputDto
      */
     @Override
-    public void createHoldbackRanges(String drHoldbackId, List<DrHoldbackRangeMappingInputDto> drHoldbackRangeMappingInputDto) {
+    public void createHoldbackRanges(String drHoldbackId, List<DrHoldbackRangeInputDto> drHoldbackRangeInputDto) {
         try {
-            RightsModuleFacade.createHoldbackRanges(drHoldbackId, drHoldbackRangeMappingInputDto,getCurrentUserID());
+            RightsModuleFacade.createHoldbackRanges(drHoldbackId, drHoldbackRangeInputDto,getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -259,7 +259,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public List<DrHoldbackRangeMappingDto> getHoldbackRanges(String drHoldbackId) {
+    public List<DrHoldbackRangeOutputDto> getHoldbackRanges(String drHoldbackId) {
         try {
             return RightsModuleFacade.getHoldbackRanges(drHoldbackId);
         } catch (Exception e) {

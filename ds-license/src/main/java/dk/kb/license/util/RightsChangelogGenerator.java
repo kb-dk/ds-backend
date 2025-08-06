@@ -23,18 +23,22 @@ public class RightsChangelogGenerator {
         return new ChangeDifferenceText(oldVersion.toString(),newVersion.toString());
     }
 
-    public static ChangeDifferenceText createDrHoldbackRuleChanges(DrHoldbackRuleDto drHoldbackRuleDto) {
-        return new ChangeDifferenceText(null,drHoldbackRuleDto.toString());
+    public static ChangeDifferenceText createDrHoldbackRuleInputDtoChanges(DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
+        return new ChangeDifferenceText(null,drHoldbackRuleInputDto.toString());
     }
 
-    public static ChangeDifferenceText createHoldbackRangesChanges(List<DrHoldbackRangeMappingInputDto> ranges) {
-        String rangesString = ranges.stream().map(DrHoldbackRangeMappingInputDto::toString)
+    public static ChangeDifferenceText createDrHoldbackRuleOutputDtoChanges(DrHoldbackRuleOutputDto drHoldbackRuleOutputDto) {
+        return new ChangeDifferenceText(null,drHoldbackRuleOutputDto.toString());
+    }
+
+    public static ChangeDifferenceText createHoldbackRangesChanges(List<DrHoldbackRangeInputDto> ranges) {
+        String rangesString = ranges.stream().map(DrHoldbackRangeInputDto::toString)
                 .collect(Collectors.joining(", "));
         return new ChangeDifferenceText(null,"["+rangesString+"]");
     }
 
-    public static ChangeDifferenceText deleteHoldbackRangesChanges(List<DrHoldbackRangeMappingDto> oldRanges) {
-        String rangesString = oldRanges.stream().map(DrHoldbackRangeMappingDto::toString)
+    public static ChangeDifferenceText deleteHoldbackRangesChanges(List<DrHoldbackRangeOutputDto> oldRanges) {
+        String rangesString = oldRanges.stream().map(DrHoldbackRangeOutputDto::toString)
                 .collect(Collectors.joining(", "));
         return new ChangeDifferenceText(null,"["+rangesString+"]");
     }

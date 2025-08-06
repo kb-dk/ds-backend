@@ -148,7 +148,7 @@ public class RightsCalculation {
         String recordId = rightsCalculationInputDto.getRecordId();
         String startDate = rightsCalculationInputDto.getStartTime();
 
-        DrHoldbackRuleDto holdbackRule = getHoldbackRule(holdbackInput);
+        DrHoldbackRuleOutputDto holdbackRule = getHoldbackRule(holdbackInput);
 
         String holdbackName = getHoldbackName(holdbackInput, holdbackRule);
         String holdbackExpiredDate = getHoldbackExpiredDate(holdbackRule, recordId, startDate);
@@ -181,16 +181,16 @@ public class RightsCalculation {
      *
      * <p>This method extracts the form and content values from the input DTO, retrieves the corresponding holdback ID,
      * and checks for specific conditions related to that ID. If the holdback ID is empty, it returns an empty
-     * {@link DrHoldbackRuleDto} with a holdback date of "9999-01-01". If the holdback ID is "2.05", it validates the ID
+     * {@link DrHoldbackRuleOutputDto} with a holdback date of "9999-01-01". If the holdback ID is "2.05", it validates the ID
      * based on the production country before retrieving the appropriate holdback rule.</p>
      *
      * @param holdbackInput the input data transfer object containing the holdback calculation details, including
      *                      form, content, and production country. This should not be null.
-     * @return the holdback rule data transfer object ({@link DrHoldbackRuleDto}) corresponding to the calculated holdback ID.
+     * @return the holdback rule data transfer object ({@link DrHoldbackRuleOutputDto}) corresponding to the calculated holdback ID.
      *         Returns an empty holdback rule if the holdback ID is not found.
      * @throws SQLException if there is an error while accessing the database or retrieving the holdback rule.
      */
-    private static DrHoldbackRuleDto getHoldbackRule(HoldbackCalculationInputDto holdbackInput) throws SQLException {
+    private static DrHoldbackRuleOutputDto getHoldbackRule(HoldbackCalculationInputDto holdbackInput) throws SQLException {
         // Get form value
         int form = holdbackInput.getForm();
         // get contentsitem/indhold value
@@ -199,7 +199,7 @@ public class RightsCalculation {
 
         if (holdbackId.isEmpty()){
             // An empty rule should end with a holdback date of 9999-01-01 as we cant calculate holdback for these records.
-            return new DrHoldbackRuleDto();
+            return new DrHoldbackRuleOutputDto();
         }
         // Check for ID being 2.05 and correct it to either 2.05.01 or 2.05.02
         holdbackId = validateHoldbackBasedOnProductionCountry(holdbackId, holdbackInput.getProductionCountry());
@@ -221,7 +221,7 @@ public class RightsCalculation {
      *       which is later interpreted as a holdback date of year `9999`. This is
      *       because records with a form of `7000` are trailers and should be filtered away.</li>
      *   <li>For any other cases, the method returns the name from the provided
-     *       {@link DrHoldbackRuleDto} object.</li>
+     *       {@link DrHoldbackRuleOutputDto} object.</li>
      * </ul>
      *
      * @param holdbackInput the input DTO containing holdback calculation data.
@@ -232,7 +232,7 @@ public class RightsCalculation {
      * @throws NullPointerException if either {@code holdbackInput} or
      *                              {@code holdbackRule} is null.
      */
-    private static String getHoldbackName(HoldbackCalculationInputDto holdbackInput, DrHoldbackRuleDto holdbackRule) {
+    private static String getHoldbackName(HoldbackCalculationInputDto holdbackInput, DrHoldbackRuleOutputDto holdbackRule) {
         // If purpose is 6000, then the purpose name is "Undervisning" no matter what.
         if (holdbackInput.getHensigt() == 6000){
             log.debug("Nielsen/TVMeter intent is: '6000', therefore the holdback name is set as 'Undervisning'.");
@@ -288,7 +288,7 @@ public class RightsCalculation {
      * @param startDate The start date which the holdbackExpiredDate will be calculated from.
      * @return The calculated holdback expiration date in ISO-8601 ({@link DateTimeFormatter#ISO_INSTANT}-format).
      */
-    private static String getHoldbackExpiredDate(DrHoldbackRuleDto holdbackRule, String recordId, String startDate) {
+    private static String getHoldbackExpiredDate(DrHoldbackRuleOutputDto holdbackRule, String recordId, String startDate) {
 
         // In this case holdback cannot be calculated. Pro
         if (holdbackRule.getName() == null || holdbackRule.getName().isEmpty()){

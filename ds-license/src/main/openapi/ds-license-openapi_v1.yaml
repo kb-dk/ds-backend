@@ -490,7 +490,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DrHoldbackRule'
+                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
 
   /rights/drHoldbackRule:
     get:
@@ -512,7 +512,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DrHoldbackRule'
+                $ref: '#/components/schemas/DrHoldbackRuleOutput'
         '404':
           description: not found
     delete:
@@ -542,7 +542,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DrHoldbackRule'
+              $ref: '#/components/schemas/DrHoldbackRuleInput'
             examples:
               example1:
                 value:
@@ -637,7 +637,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DrHoldbackRangeMapping'
+                  $ref: '#/components/schemas/DrHoldbackRangeOutput'
     post:
       summary: set holdback ranges for a holdback id
       tags:
@@ -657,7 +657,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/DrHoldbackRangeMappingInput'
+                $ref: '#/components/schemas/DrHoldbackRangeInput'
 
       responses:
         '201':
@@ -728,7 +728,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RightsCalculationOutput"
-
 
 
   /monitor:
@@ -860,7 +859,6 @@ components:
            type: array
            items:
              type: string             
-
 
     ValidateAccessInput:
       type: object
@@ -1130,33 +1128,30 @@ components:
         comment:
           type: string
 
-    DrHoldbackRule:
+    DrHoldbackRuleInput:
       type: object
       properties:
-        id:
+        drHoldbackValue:
           type: string
         name:
           type: string
         days:
           type: integer
 
-    DrHoldbackRangeMappingOutput:
+    DrHoldbackRuleOutput:
       type: object
       properties:
         id:
+          type: integer
+          format: int64
+        drHoldbackValue:
           type: string
-        contentRangeFrom:
-          type: integer
-        contentRangeTo:
-          type: integer
-        formRangeFrom:
-          type: integer
-        formRangeTo:
-          type: integer
-        drHoldbackId:
+        name:
           type: string
+        days:
+          type: integer
 
-    DrHoldbackRangeMappingInput:
+    DrHoldbackRangeInput:
       type: object
       properties:
         contentRangeFrom:
@@ -1167,6 +1162,23 @@ components:
           type: integer
         formRangeTo:
           type: integer
+
+    DrHoldbackRangeOutput:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        contentRangeFrom:
+          type: integer
+        contentRangeTo:
+          type: integer
+        formRangeFrom:
+          type: integer
+        formRangeTo:
+          type: integer
+        drHoldbackValue:
+          type: string
 
     HelloReply:
       type: object

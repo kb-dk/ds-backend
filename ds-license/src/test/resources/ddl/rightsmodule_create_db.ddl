@@ -21,11 +21,11 @@ CREATE TABLE DR_HOLDBACK_RULES (
 /*
  Table to map content and/or form to holdback
  */
-CREATE TABLE DR_HOLDBACK_MAP (
+CREATE TABLE DR_HOLDBACK_RANGES (
     id BIGINT PRIMARY KEY,
     content_range_from INTEGER NOT NULL,
     content_range_to INTEGER NOT NULL,
     form_range_from INTEGER NOT NULL,
     form_range_to INTEGER NOT NULL,
-    dr_holdback_id   VARCHAR(256) references DR_HOLDBACK_RULES(dr_holdback_value)
+    dr_holdback_value VARCHAR(256) references DR_HOLDBACK_RULES(dr_holdback_value)
 );
