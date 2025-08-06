@@ -130,39 +130,39 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
     }
 
     @Test
-    public void testHoldbackMap() throws SQLException {
-        storage.createDrHoldbackRule("test1","Test",100);
-        storage.createDrHoldbackRule("test2","Test2",200);
+    public void testCreateHoldbackRanges() throws SQLException {
+        storage.createDrHoldbackRule("test1", "Test", 100);
+        storage.createDrHoldbackRule("test2", "Test2", 200);
 
-        storage.createDrHoldbackRange(1000,1000,1200,1900,"test1");
-        storage.createDrHoldbackRange(2000,3000,2200,2900,"test2");
-        storage.createDrHoldbackRange(2000,3000,3200,3900,"test2");
+        storage.createDrHoldbackRange(1000, 1000, 1200, 1900, "test1");
+        storage.createDrHoldbackRange(2000, 3000, 2200, 2900, "test2");
+        storage.createDrHoldbackRange(2000, 3000, 3200, 3900, "test2");
 
 
-        assertEquals("test1",storage.getDrHoldbackValueFromContentAndForm(1000,1200));
-        assertEquals("test2",storage.getDrHoldbackValueFromContentAndForm(2500,2900));
-        assertEquals(1,storage.getHoldbackRangesForHoldbackValue("test1").size());
-        assertEquals(2,storage.getHoldbackRangesForHoldbackValue("test2").size());
-        assertNull(storage.getDrHoldbackValueFromContentAndForm(2500,9999));
-        assertNull(storage.getDrHoldbackValueFromContentAndForm(9999,1200));
-        assertNull(storage.getDrHoldbackValueFromContentAndForm(9999,9999));
+        assertEquals("test1", storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
+        assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
+        assertEquals(1, storage.getHoldbackRangesForHoldbackValue("test1").size());
+        assertEquals(2, storage.getHoldbackRangesForHoldbackValue("test2").size());
+        assertNull(storage.getDrHoldbackValueFromContentAndForm(2500, 9999));
+        assertNull(storage.getDrHoldbackValueFromContentAndForm(9999, 1200));
+        assertNull(storage.getDrHoldbackValueFromContentAndForm(9999, 9999));
     }
 
     @Test
     public void testDeleteHoldbackRanges() throws SQLException {
-        storage.createDrHoldbackRule("test1","Test",100);
-        storage.createDrHoldbackRule("test2","Test2",200);
+        storage.createDrHoldbackRule("test1", "Test", 100);
+        storage.createDrHoldbackRule("test2", "Test2", 200);
 
-        storage.createDrHoldbackRange(1000,1000,1200,1900,"test1");
-        storage.createDrHoldbackRange(2000,3000,2200,2900,"test2");
+        storage.createDrHoldbackRange(1000, 1000, 1200, 1900, "test1");
+        storage.createDrHoldbackRange(2000, 3000, 2200, 2900, "test2");
 
-        assertEquals("test1",storage.getDrHoldbackValueFromContentAndForm(1000,1200));
-        assertEquals("test2",storage.getDrHoldbackValueFromContentAndForm(2500,2900));
+        assertEquals("test1", storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
+        assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
 
         storage.deleteRangesForDrHoldbackValue("test1");
 
-        assertNull(storage.getDrHoldbackValueFromContentAndForm(1000,1200));
-        assertEquals("test2",storage.getDrHoldbackValueFromContentAndForm(2500,2900));
+        assertNull(storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
+        assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
     }
 
     @Test

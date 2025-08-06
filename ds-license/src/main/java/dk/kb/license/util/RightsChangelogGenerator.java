@@ -34,13 +34,13 @@ public class RightsChangelogGenerator {
     public static ChangeDifferenceText createHoldbackRangesChanges(List<DrHoldbackRangeInputDto> ranges) {
         String rangesString = ranges.stream().map(DrHoldbackRangeInputDto::toString)
                 .collect(Collectors.joining(", "));
-        return new ChangeDifferenceText(null,"["+rangesString+"]");
+        return new ChangeDifferenceText(null, "[" + rangesString + "]");
     }
 
     public static ChangeDifferenceText deleteHoldbackRangesChanges(List<DrHoldbackRangeOutputDto> oldRanges) {
         String rangesString = oldRanges.stream().map(DrHoldbackRangeOutputDto::toString)
                 .collect(Collectors.joining(", "));
-        return new ChangeDifferenceText(null,"["+rangesString+"]");
+        return new ChangeDifferenceText(null, "[" + rangesString + "]");
     }
 
     private static String restrictedIdText(String id, String idType, String platform) {
