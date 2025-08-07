@@ -213,13 +213,12 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * set the form and content range combinations for a dr_holdback_id
      * This requires the holdback_id to be present in the DR holback rule table
      *
-     * @param drHoldbackId
      * @param drHoldbackRangeInputDto
      */
     @Override
-    public void createHoldbackRanges(String drHoldbackId, List<DrHoldbackRangeInputDto> drHoldbackRangeInputDto) {
+    public void createHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
         try {
-            RightsModuleFacade.createHoldbackRanges(drHoldbackId, drHoldbackRangeInputDto,getCurrentUserID());
+            RightsModuleFacade.createHoldbackRanges(drHoldbackRangeInputDto.getDrHoldbackValue(), drHoldbackRangeInputDto.getRanges(), getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -227,29 +226,28 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
 
     /**
      * Deletes all form and content range combinations for a drHoldbackID
-     * @param drHoldbackId
+     * @param drHoldbackValue
      */
     @Override
-    public void deleteHoldbackRanges(String drHoldbackId) {
+    public void deleteHoldbackRanges(String drHoldbackValue) {
         try {
-            RightsModuleFacade.deleteHoldbackRanges(drHoldbackId,getCurrentUserID());
+            RightsModuleFacade.deleteHoldbackRanges(drHoldbackValue,getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     /**
-     * Gets the dr_holdback_id from a content and form metadata values.
-     *
+     * Gets the drHoldbackValue from a content and form metadata values.
      *
      * @param content
      * @param form
      * @return
      */
     @Override
-    public String getHoldbackIdFromContentAndForm(Integer content, Integer form) {
+    public String getDrHoldbackValueFromContentAndForm(Integer content, Integer form) {
         try {
-            return RightsModuleFacade.getHoldbackIdFromContentAndFormValues(content, form);
+            return RightsModuleFacade.getDrHoldbackValueFromContentAndFormValues(content, form);
         } catch (Exception e) {
             throw handleException(e);
         }

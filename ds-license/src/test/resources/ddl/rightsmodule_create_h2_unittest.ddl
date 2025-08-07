@@ -10,23 +10,32 @@ CREATE UNIQUE INDEX IF NOT EXISTS unique_restricted_id ON RESTRICTED_IDS (id_val
 CREATE UNIQUE INDEX IF NOT EXISTS RESTRICTED_IDS_ID_IN ON RESTRICTED_IDS(ID);
 CREATE INDEX IF NOT EXISTS RESTRICTED_IDS_ID_VALUE_PLATFORM_IN ON RESTRICTED_IDS(ID_VALUE,PLATFORM);
 
-CREATE TABLE IF NOT EXISTS DR_HOLDBACK_RULES (
+CREATE TABLE IF NOT EXISTS dr_holdback_rules (
     id BIGINT PRIMARY KEY,
     dr_holdback_value VARCHAR(256) UNIQUE,
     name VARCHAR(256),
     days int
 );
 
-CREATE INDEX IF NOT EXISTS dr_holdback_rules_dr_holdback_value_in ON DR_HOLDBACK_RULES(dr_holdback_value); -- Is this needed?
+CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_rules_id_in ON dr_holdback_rules(id); -- Is this needed, since we dont really use the id in searches?
+CREATE INDEX IF NOT EXISTS dr_holdback_rules_dr_holdback_value_in ON dr_holdback_rules(dr_holdback_value); -- Is this needed?
+CREATE INDEX IF NOT EXISTS dr_holdback_rules_name_in ON dr_holdback_rules(name);
 
-CREATE TABLE IF NOT EXISTS DR_HOLDBACK_RANGES (
+/*
+ Table to map content and/or form to holdback
+ */
+CREATE TABLE IF NOT EXISTS dr_holdback_ranges (
     id BIGINT PRIMARY KEY,
     content_range_from INTEGER NOT NULL,
     content_range_to INTEGER NOT NULL,
     form_range_from INTEGER NOT NULL,
     form_range_to INTEGER NOT NULL,
-    dr_holdback_value VARCHAR(256) references DR_HOLDBACK_RULES(dr_holdback_value)
+    dr_holdback_value VARCHAR(256) references dr_holdback_rules(dr_holdback_value)
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_ranges_id_in ON dr_holdback_ranges(id); -- Is this needed, since we dont really use the id in searches?
+CREATE INDEX IF NOT EXISTS dr_holdback_ranges_dr_holdback_value_in ON dr_holdback_ranges(dr_holdback_value);
+CREATE INDEX IF NOT EXISTS dr_holdback_ranges_content_form_in ON dr_holdback_ranges(content_range_from, content_range_to, form_range_from, form_range_to);
 
 CREATE TABLE IF NOT EXISTS AUDITLOG (
     ID BIGINT PRIMARY KEY,

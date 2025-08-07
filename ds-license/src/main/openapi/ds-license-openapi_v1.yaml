@@ -646,19 +646,12 @@ paths:
       security:
         - KBOAth:
             - any
-      parameters:
-        - name: dr_holdback_id
-          in: query
-          schema:
-            type: string
       requestBody:
+        required: true
         content:
-          'application/json':
+          application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/DrHoldbackRangeInput'
-
+              $ref: '#/components/schemas/DrHoldbackRangeInput'
       responses:
         '201':
           description: created
@@ -680,12 +673,12 @@ paths:
         '204':
           description: deleted
 
-  /rights/getHoldbackIdFromContentAndForm:
+  /rights/getDrHoldbackValueFromContentAndForm:
     get:
-      summary: get the holdback id from content and form metadata.
+      summary: get the DR holdback value from content and form metadata.
       tags:
         - 'DsRights'
-      operationId: getHoldbackIdFromContentAndForm
+      operationId: getDrHoldbackValueFromContentAndForm
       security:
         - KBOAth:
             - any
@@ -1151,7 +1144,7 @@ components:
         days:
           type: integer
 
-    DrHoldbackRangeInput:
+    DrHoldbackRanges:
       type: object
       properties:
         contentRangeFrom:
@@ -1162,9 +1155,21 @@ components:
           type: integer
         formRangeTo:
           type: integer
-
+    
+    DrHoldbackRangeInput:
+      type: object
+      properties:
+        drHoldbackValue:
+          type: string
+        ranges:
+          type: array
+          items:
+            $ref: "#/components/schemas/DrHoldbackRanges"
+    
     DrHoldbackRangeOutput:
       type: object
+      required:
+        - id
       properties:
         id:
           type: integer

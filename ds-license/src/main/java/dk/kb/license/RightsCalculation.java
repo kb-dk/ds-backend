@@ -195,7 +195,7 @@ public class RightsCalculation {
         int form = holdbackInput.getForm();
         // get contentsitem/indhold value
         int content = holdbackInput.getIndhold();
-        String holdbackId = RightsModuleFacade.getHoldbackIdFromContentAndFormValues(content, form);
+        String holdbackId = RightsModuleFacade.getDrHoldbackValueFromContentAndFormValues(content, form);
 
         if (holdbackId.isEmpty()){
             // An empty rule should end with a holdback date of 9999-01-01 as we cant calculate holdback for these records.

@@ -31,7 +31,6 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
-        // "ddl/rightsmodule_default_holdbackdata.sql"
         H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
     }
@@ -48,7 +47,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         } catch (Exception e) {
             throw e;
         }
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_default_holdbackdata.sql"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_default_holdbackrulesdata.sql", "ddl/rightsmodule_default_holdbackrangesdata.sql"));
     }
 
     @Test

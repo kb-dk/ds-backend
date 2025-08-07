@@ -1,18 +1,3 @@
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (1, '2.01.01', 'Almene Nyheder', 30);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (2, '2.01.02', 'Sportsnyheder', 30);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (3, '2.02', 'Aktualitet og Debat', 2190);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (4, '2.03', 'Oplysning og Kultur', 2190);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (5, '2.04', 'Undervisning', 2190);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (6, '2.05', 'Dramatik & Fiktion', 3650);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (7, '2.05.01', 'Dansk Dramatik & Fiktion', 3650);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (8, '2.05.02', 'Udenlandsk Dramatik & Fiktion', 99999999);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (9, '2.06', 'Musik', 2190);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (10, '2.07', 'Underholdning', 2190);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (11, '2.08', 'Sport', 2190);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (12, '2.09', 'Præsentation', 2190);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (13, '2.09*', 'Øvrigt (TTV + Pauser)', 2190);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (14, '2.20', 'Sponsorskilte', 2190);
-
 INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (1, 1000, 1900, 1000, 1000, '2.02');
 INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (2, 1000, 1900, 1100, 1100, '2.01.01');
 INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (3, 1000, 1900, 1200, 1500, '2.02');

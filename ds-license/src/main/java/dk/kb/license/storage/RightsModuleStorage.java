@@ -337,7 +337,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public long getDrHoldbackRuleIdFromValue(String drHoldbackRuleValue) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleIdFromName)) {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleIdFromValue)) {
             stmt.setString(1, drHoldbackRuleValue);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
