@@ -59,6 +59,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
             " VALUES (?,?,?,?)";
     private final String deleteDrHoldbackRuleQuery = "DELETE FROM " + DR_HOLDBACK_RULES_TABLE +
             " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
+    private final String getDrHoldbackRuleIdFromName = "SELECT " + DR_HOLDBACK_RULES_ID + " FROM " + DR_HOLDBACK_RULES_TABLE
+            + " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
+    private final String getDrHoldbackRuleIdFromValue = "SELECT " + DR_HOLDBACK_RULES_ID + " FROM " + DR_HOLDBACK_RULES_TABLE
+            + " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
     private final String getDrHoldbackDaysFromNameQuery = "SELECT " + DR_HOLDBACK_RULES_DAYS +" FROM "+DR_HOLDBACK_RULES_TABLE +
             " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
     private final String getDrHoldbackDaysFromValueQuery = "SELECT " + DR_HOLDBACK_RULES_DAYS +" FROM "+DR_HOLDBACK_RULES_TABLE +
@@ -322,6 +326,46 @@ public class RightsModuleStorage extends BaseModuleStorage{
             return -1;
         } catch (SQLException e) {
             log.error("SQL Exception in getDrHoldbackDaysFromName:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Get a DR holdback rule id
+     * @param drHoldbackRuleValue value of the holdback rule
+     * @return
+     * @throws SQLException
+     */
+    public long getDrHoldbackRuleIdFromValue(String drHoldbackRuleValue) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleIdFromName)) {
+            stmt.setString(1, drHoldbackRuleValue);
+            ResultSet res = stmt.executeQuery();
+            if (res.next()) {
+                return res.getLong(DR_HOLDBACK_RULES_ID);
+            }
+            return -1;
+        } catch (SQLException e) {
+            log.error("SQL Exception in getDrHoldbackRuleIdFromValue: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Get a DR holdback rule id
+     * @param drHoldbackRuleName name of the holdback rule
+     * @return
+     * @throws SQLException
+     */
+    public long getDrHoldbackRuleIdFromName(String drHoldbackRuleName) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleIdFromName)) {
+            stmt.setString(1, drHoldbackRuleName);
+            ResultSet res = stmt.executeQuery();
+            if (res.next()) {
+                return res.getLong(DR_HOLDBACK_RULES_ID);
+            }
+            return -1;
+        } catch (SQLException e) {
+            log.error("SQL Exception in getDrHoldbackIdFromName: " + e.getMessage());
             throw e;
         }
     }

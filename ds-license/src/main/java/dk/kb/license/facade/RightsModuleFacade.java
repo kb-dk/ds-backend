@@ -400,8 +400,9 @@ public class RightsModuleFacade {
     public static void updateDrHoldbackDaysFromDrHoldbackValue(String drHoldbackValue, Integer days, String user) {
         BaseModuleStorage.performStorageAction("update holdback days", RightsModuleStorage.class, storage -> {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromValue(drHoldbackValue);
+            long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromName(drHoldbackValue);
             ((RightsModuleStorage) storage).updateDrHoldbackDaysForValue(drHoldbackValue, days);
-            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackValue, "Days before: " + daysBefore, "Days after: " + days);
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackValue, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -416,8 +417,9 @@ public class RightsModuleFacade {
     public static void updateDrHoldbackDaysFromName(String name, Integer days, String user) {
         BaseModuleStorage.performStorageAction("update holdback days", RightsModuleStorage.class, storage -> {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromName(name);
+            long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromName(name);
             ((RightsModuleStorage) storage).updateDrHoldbackDaysForName(name, days);
-            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, name, "Days before: " + daysBefore, "Days after: " + days);
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, name, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -462,8 +464,10 @@ public class RightsModuleFacade {
             List<DrHoldbackRangeOutputDto> oldRanges = ((RightsModuleStorage) storage).getHoldbackRangesForHoldbackValue(drHoldbackValue);
             ((RightsModuleStorage)storage).deleteRangesForDrHoldbackValue(drHoldbackValue);
             ChangeDifferenceText changes = RightsChangelogGenerator.deleteHoldbackRangesChanges(oldRanges);
-            AuditLogEntry logEntry = new AuditLogEntry(0, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackValue, changes.getAfter(), "");
-            storage.persistAuditLog(logEntry);
+            for (DrHoldbackRangeOutputDto rangeDto: oldRanges) {
+                AuditLogEntry logEntry = new AuditLogEntry(rangeDto.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackValue, changes.getAfter(), "");
+                storage.persistAuditLog(logEntry);
+            }
             return null;
         });
     }
