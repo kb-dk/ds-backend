@@ -70,10 +70,10 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String getAllDrHoldbackRulesQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE;
     private final String getDrHoldbackRuleFromValue = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
             + " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
-    private final String updateDrHoldbackDaysForValue = "Update " + DR_HOLDBACK_RULES_TABLE
+    private final String updateDrHoldbackDaysForValue = "UPDATE " + DR_HOLDBACK_RULES_TABLE
             + " SET " + DR_HOLDBACK_RULES_DAYS + " = ?"
             + " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
-    private final String updateDrHoldbackDaysForName = "Update " + DR_HOLDBACK_RULES_TABLE
+    private final String updateDrHoldbackDaysForName = "UPDATE " + DR_HOLDBACK_RULES_TABLE
             + " SET " + DR_HOLDBACK_RULES_DAYS + " = ?"
             + " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
 
