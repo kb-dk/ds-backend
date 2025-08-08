@@ -247,10 +247,9 @@ public class RightsModuleFacade {
      *
      * @param holdbackId the ID of the holdback rule to retrieve. It must not be null or empty.
      * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified ID if found.
-     * @throws SQLException if a database access error occurs during the storage transaction.
      * @throws NotFoundServiceException if no rule is found for the specified holdback ID.
      */
-    public static DrHoldbackRuleOutputDto getDrHoldbackRuleById(String holdbackId) throws SQLException {
+    public static DrHoldbackRuleOutputDto getDrHoldbackRuleById(String holdbackId) {
         return BaseModuleStorage.performStorageAction("Get holdback rule", RightsModuleStorage.class, storage -> {
             DrHoldbackRuleOutputDto output = ((RightsModuleStorage) storage).getDrHoldbackRuleFromValue(holdbackId);
             if (output != null) {
@@ -317,7 +316,7 @@ public class RightsModuleFacade {
      * @param platform the platform where the production code is being checked (e.g. DR Archive)
      * @return true if the production code is allowed; false otherwise
      */
-    public static boolean isProductionCodeAllowed(String productionCode, String platform)  {
+    public static boolean isProductionCodeAllowed(String productionCode, String platform) {
         return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> {
             RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(productionCode, IdTypeEnumDto.OWNPRODUCTION_CODE.getValue(), platform);
             // If the object is null, then productionCode from metadata is not allowed
@@ -357,7 +356,7 @@ public class RightsModuleFacade {
      * @param drHoldbackValue drHoldbackValue of the holdback rule
      * @param user the user performing the action
      */
-    public static void deleteDrHoldbackRule(String drHoldbackValue, String user) throws SQLException {
+    public static void deleteDrHoldbackRule(String drHoldbackValue, String user) {
         BaseModuleStorage.performStorageAction("Delete holdback rule", RightsModuleStorage.class, storage -> {
             DrHoldbackRuleOutputDto drHoldbackRule = ((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackValue);
             ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleOutputDtoChanges(drHoldbackRule);
@@ -372,7 +371,7 @@ public class RightsModuleFacade {
      * get all holdback rules for DR
      * @return
      */
-    public static List<DrHoldbackRuleOutputDto> getAllDrHoldbackRules() throws SQLException {
+    public static List<DrHoldbackRuleOutputDto> getAllDrHoldbackRules() {
         return BaseModuleStorage.performStorageAction("Get holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getAllDrHoldbackRules());
     }
 
@@ -403,7 +402,7 @@ public class RightsModuleFacade {
         BaseModuleStorage.performStorageAction("update holdback days", RightsModuleStorage.class, storage -> {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromValue(drHoldbackValue);
             long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromValue(drHoldbackValue);
-            ((RightsModuleStorage) storage).updateDrHoldbackDaysForValue(drHoldbackValue, days);
+            ((RightsModuleStorage) storage).updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue, days);
             AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackValue, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
             return null;
@@ -420,7 +419,7 @@ public class RightsModuleFacade {
         BaseModuleStorage.performStorageAction("update holdback days", RightsModuleStorage.class, storage -> {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromName(name);
             long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromName(name);
-            ((RightsModuleStorage) storage).updateDrHoldbackDaysForName(name, days);
+            ((RightsModuleStorage) storage).updateDrHoldbackDaysFromName(name, days);
             AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, name, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
             return null;
