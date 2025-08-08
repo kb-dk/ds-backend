@@ -34,7 +34,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
     /*
      * Delete all records between each unittest. The clearTableRecords is only called from here.
-     * The facade class is reponsible for committing transactions. So clean up between unittests.
+     * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
     public void beforeEach() throws SQLException {

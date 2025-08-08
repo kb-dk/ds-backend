@@ -1049,7 +1049,8 @@ components:
         - LICENSE
         - GROUP_TYPE
         - HOLDBACK_DAY
-        - HOLDBACK_MAP
+        - HOLDBACK_RULE
+        - HOLDBACK_RANGE
         - ATTRIBUTE_NAME
 
     AuditEntryOutput:

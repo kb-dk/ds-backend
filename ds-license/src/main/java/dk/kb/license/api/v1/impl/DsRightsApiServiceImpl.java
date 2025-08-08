@@ -218,7 +218,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
         try {
-            RightsModuleFacade.createHoldbackRanges(drHoldbackRangeInputDto.getDrHoldbackValue(), drHoldbackRangeInputDto.getRanges(), getCurrentUserID());
+            RightsModuleFacade.createHoldbackRanges(drHoldbackRangeInputDto, getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }

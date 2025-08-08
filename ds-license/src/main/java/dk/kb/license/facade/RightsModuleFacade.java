@@ -25,7 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -336,17 +338,17 @@ public class RightsModuleFacade {
      * @param drHoldbackRuleInputDto
      * @param user the user performing the action
      */
-    public static void createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleInputDto, String user) {
-        BaseModuleStorage.performStorageAction("Create holdback rule", RightsModuleStorage.class, storage -> {
+    public static long createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleInputDto, String user) {
+        return BaseModuleStorage.performStorageAction("Create holdback rule", RightsModuleStorage.class, storage -> {
             long id = ((RightsModuleStorage)storage).createDrHoldbackRule(
                     drHoldbackRuleInputDto.getDrHoldbackValue(),
                     drHoldbackRuleInputDto.getName(),
                     drHoldbackRuleInputDto.getDays()
             );
             ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleInputDtoChanges(drHoldbackRuleInputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackRuleInputDto.getDrHoldbackValue(), "", changes.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackRuleInputDto.getDrHoldbackValue(), "", changes.getAfter());
             storage.persistAuditLog(logEntry);
-            return null;
+            return id;
         });
     }
 
@@ -360,7 +362,7 @@ public class RightsModuleFacade {
             DrHoldbackRuleOutputDto drHoldbackRule = ((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackValue);
             ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleOutputDtoChanges(drHoldbackRule);
             ((RightsModuleStorage)storage).deleteDrHoldbackRule(drHoldbackValue);
-            AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRule.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackValue, changes.getBefore(), "");
+            AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRule.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackValue, changes.getBefore(), "");
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -429,28 +431,30 @@ public class RightsModuleFacade {
      * set the form and content range combinations for a drHoldbackValue
      * This requires the drHoldbackValue to be present in the DR holdback rule table
      *
-     * @param drHoldbackValue
-     * @param drHoldbackRangesDtos
-     * @param user                 : the user performing the action
+     * @param drHoldbackRangeInputDto
+     * @param user                    : the user performing the action
      */
-    public static void createHoldbackRanges(String drHoldbackValue, List<DrHoldbackRangesDto> drHoldbackRangesDtos, String user) {
-        BaseModuleStorage.performStorageAction("Create holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> {
-            for(DrHoldbackRangesDto rangeDto: drHoldbackRangesDtos) {
-                if (((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackValue) == null) {
-                    throw new InvalidArgumentServiceException("No dr holdback_id " + drHoldbackValue);
+    public static List<Long> createHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto, String user) {
+
+        return BaseModuleStorage.performStorageAction("Create holdback ranges for " + drHoldbackRangeInputDto.getDrHoldbackValue(), RightsModuleStorage.class, storage -> {
+            List<Long> idList = new ArrayList<>();
+            for(DrHoldbackRangesDto rangeDto: drHoldbackRangeInputDto.getRanges()) {
+                if (((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackRangeInputDto.getDrHoldbackValue()) == null) {
+                    throw new InvalidArgumentServiceException("No dr holdback_id " + drHoldbackRangeInputDto.getDrHoldbackValue());
                 }
                 long objectId = ((RightsModuleStorage)storage).createDrHoldbackRange(
                         rangeDto.getContentRangeFrom(),
                         rangeDto.getContentRangeTo(),
                         rangeDto.getFormRangeFrom(),
                         rangeDto.getFormRangeTo(),
-                        drHoldbackValue
+                        drHoldbackRangeInputDto.getDrHoldbackValue()
                 );
-                ChangeDifferenceText changes = RightsChangelogGenerator.createHoldbackRangesChanges(drHoldbackRangesDtos);
-                AuditLogEntry logEntry = new AuditLogEntry(objectId, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackValue, "", changes.getAfter());
+                ChangeDifferenceText changes = RightsChangelogGenerator.createHoldbackRangesChanges(drHoldbackRangeInputDto.getRanges());
+                AuditLogEntry logEntry = new AuditLogEntry(objectId, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackRangeInputDto.getDrHoldbackValue(), "", changes.getAfter());
                 storage.persistAuditLog(logEntry);
+                idList.add(objectId);
             }
-            return null;
+            return idList;
         });
     }
 
@@ -465,7 +469,7 @@ public class RightsModuleFacade {
             ((RightsModuleStorage)storage).deleteRangesForDrHoldbackValue(drHoldbackValue);
             ChangeDifferenceText changes = RightsChangelogGenerator.deleteHoldbackRangesChanges(oldRanges); //This is weird but will be refactored completely in DRA-2085
             for (DrHoldbackRangeOutputDto rangeDto: oldRanges) {
-                AuditLogEntry logEntry = new AuditLogEntry(rangeDto.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_MAP, drHoldbackValue, changes.getAfter(), "");
+                AuditLogEntry logEntry = new AuditLogEntry(rangeDto.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, changes.getAfter(), "");
                 storage.persistAuditLog(logEntry);
             }
             return null;
