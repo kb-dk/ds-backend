@@ -409,8 +409,8 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Update the number of days for a holdback rule
-     * @param name the name of the dr holdback rule
+     * Update the number of days for a DR holdback rule
+     * @param name the name of the DR holdback rule
      * @param user the user performing the action
      * @return the number of
      **/
