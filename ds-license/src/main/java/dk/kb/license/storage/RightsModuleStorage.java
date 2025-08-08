@@ -402,7 +402,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @param days              number of days
      * @throws SQLException
      */
-    public void updateDrHoldbackDaysForValue(String drHoldbackValue, int days) throws SQLException {
+    public void updateDrHoldbackDaysFromDrHoldbackValue(String drHoldbackValue, int days) throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysForValue)) {
             stmt.setInt(1, days);
             stmt.setString(2, drHoldbackValue);
@@ -420,7 +420,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @param days number of days
      * @throws SQLException
      */
-    public void updateDrHoldbackDaysForName(String name, int days) throws SQLException {
+    public void updateDrHoldbackDaysFromName(String name, int days) throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysForName)) {
             stmt.setInt(1, days);
             stmt.setString(2, name);

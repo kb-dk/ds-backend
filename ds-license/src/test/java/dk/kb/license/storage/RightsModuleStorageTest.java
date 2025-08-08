@@ -113,12 +113,12 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
         assertEquals(name,holdbackFromStorage.getName());
 
         days  = 200;
-        storage.updateDrHoldbackDaysForValue(drHoldbackValue, days);
+        storage.updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue, days);
         assertEquals(days, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
         assertEquals(days, storage.getDrHoldbackDaysFromName(name));
 
         days  = 300;
-        storage.updateDrHoldbackDaysForName(name, days);
+        storage.updateDrHoldbackDaysFromName(name, days);
         assertEquals(days, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
         assertEquals(days, storage.getDrHoldbackDaysFromName(name));
 
