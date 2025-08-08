@@ -352,13 +352,13 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
     /**
      * Get a DR holdback rule id
-     * @param drHoldbackRuleName name of the DR holdback rule
+     * @param name the name of the DR holdback rule
      * @return
      * @throws SQLException
      */
-    public long getDrHoldbackRuleIdFromName(String drHoldbackRuleName) throws SQLException {
+    public long getDrHoldbackRuleIdFromName(String name) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleIdFromNameQuery)) {
-            stmt.setString(1, drHoldbackRuleName);
+            stmt.setString(1, name);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
                 return res.getLong(DR_HOLDBACK_RULES_ID);
