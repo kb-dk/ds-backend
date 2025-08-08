@@ -96,12 +96,11 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
         storage.createRestrictedId(idValue,idType,platform,comment);
 
-
         assertThrows(SQLException.class, () -> storage.createRestrictedId(idValue, idType, platform, comment));
     }
 
     @Test
-    public void testHoldbackRuleCRUD() throws SQLException {
+    public void testDrHoldbackRuleCRUD() throws SQLException {
         String drHoldbackValue = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
@@ -130,7 +129,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
     }
 
     @Test
-    public void testCreateHoldbackRanges() throws SQLException {
+    public void testCreateDrHoldbackRanges() throws SQLException {
         storage.createDrHoldbackRule("test1", "Test", 100);
         storage.createDrHoldbackRule("test2", "Test2", 200);
 
@@ -141,15 +140,15 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
         assertEquals("test1", storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
         assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
-        assertEquals(1, storage.getHoldbackRangesForHoldbackValue("test1").size());
-        assertEquals(2, storage.getHoldbackRangesForHoldbackValue("test2").size());
+        assertEquals(1, storage.getDrHoldbackRangesForDrHoldbackValue("test1").size());
+        assertEquals(2, storage.getDrHoldbackRangesForDrHoldbackValue("test2").size());
         assertNull(storage.getDrHoldbackValueFromContentAndForm(2500, 9999));
         assertNull(storage.getDrHoldbackValueFromContentAndForm(9999, 1200));
         assertNull(storage.getDrHoldbackValueFromContentAndForm(9999, 9999));
     }
 
     @Test
-    public void testDeleteHoldbackRanges() throws SQLException {
+    public void testDeleteDrHoldbackRanges() throws SQLException {
         storage.createDrHoldbackRule("test1", "Test", 100);
         storage.createDrHoldbackRule("test2", "Test2", 200);
 

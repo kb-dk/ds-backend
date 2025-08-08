@@ -484,7 +484,7 @@ paths:
             - any
       responses:
         '200':
-          description: list of holdback rules
+          description: list of DR holdback rules
           content:
             application/json:
               schema:
@@ -508,7 +508,7 @@ paths:
             type: string
       responses:
         '200':
-          description: retrieve a holdback rule
+          description: retrieve a DR holdback rule
           content:
             application/json:
               schema:
@@ -558,32 +558,32 @@ paths:
       tags:
         - 'DsRights'
       operationId: getDrHoldbackDays
-      description: gets the number of holdbackdays. One of the parameters id or name should be nonempty. id takes precedence over name.
+      description: get the number of DR holdback days. One of the parameters id or name should be nonempty. id takes precedence over name.
       security:
         - KBOAuth:
             - any
       parameters:
-        - name: id
+        - name: drHoldbackValue
           in: query
           required: false
-          description: id of the holdback rule
+          description: drHoldbackValue of the DR holdback rule
           schema:
             type: string
         - name: name
           in: query
           required: false
-          description: name of the holdback rule
+          description: name of the DR holdback rule
           schema:
             type: string
       responses:
         '200':
-          description: holdback days
+          description: DR holdback days
           content:
             application/json:
                 schema:
                   type: integer
         '404':
-          description: holdback not found
+          description: DR holdback day not found
     put:
       tags:
         - 'DsRights'
@@ -593,16 +593,16 @@ paths:
         - KBOAuth:
             - any
       parameters:
-        - name: id
+        - name: drHoldbackValue
           in: query
           required: false
-          description: id of the holdback rule
+          description: drHoldbackValue of the DR holdback rule
           schema:
             type: string
         - name: name
           in: query
           required: false
-          description: name of the holdback rule
+          description: name of the DR holdback rule
           schema:
             type: string
         - name: days
@@ -616,17 +616,17 @@ paths:
 
   /rights/drHoldbackRanges:
     get:
-      summary: get all holdback ranges for a holdback ID
+      summary: get all DR holdback ranges for a drHoldbackValue
       tags:
         - 'DsRights'
-      operationId: getHoldbackRanges
+      operationId: getDrHoldbackRanges
       security:
         - KBOAth:
             - any
       parameters:
-        - name: dr_holdback_id
+        - name: drHoldbackValue
           in: query
-          description: filter on holdback id
+          description: filter on drHoldbackValue
           schema:
             type: string
       responses:
@@ -639,10 +639,10 @@ paths:
                 items:
                   $ref: '#/components/schemas/DrHoldbackRangeOutput'
     post:
-      summary: set holdback ranges for a holdback id
+      summary: set DR holdback ranges for a drHoldbackValue
       tags:
         - 'DsRights'
-      operationId: createHoldbackRanges
+      operationId: createDrHoldbackRanges
       security:
         - KBOAth:
             - any
@@ -656,15 +656,15 @@ paths:
         '201':
           description: created
     delete:
-      summary: delete holdback ranges for a holdback id
+      summary: delete DR holdback ranges for a drHoldbackValue
       tags:
         - 'DsRights'
-      operationId: deleteHoldbackRanges
+      operationId: deleteDrHoldbackRanges
       security:
         - KBOAth:
             - any
       parameters:
-        - name: dr_holdback_id
+        - name: drHoldbackValue
           in: query
           required: true
           schema:
@@ -675,7 +675,7 @@ paths:
 
   /rights/getDrHoldbackValueFromContentAndForm:
     get:
-      summary: get the DR holdback value from content and form metadata.
+      summary: get the drHoldbackValue from content and form metadata.
       tags:
         - 'DsRights'
       operationId: getDrHoldbackValueFromContentAndForm

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Generates a change text when saving or updating a Rights object (restrictedID or holdbackrules)
+ * Generates a change text when saving or updating a Rights object (restrictedID or DR holdback rules)
  *
  */
 public class RightsChangelogGenerator {
@@ -31,13 +31,13 @@ public class RightsChangelogGenerator {
         return new ChangeDifferenceText(null,drHoldbackRuleOutputDto.toString());
     }
 
-    public static ChangeDifferenceText createHoldbackRangesChanges(List<DrHoldbackRangesDto> ranges) {
+    public static ChangeDifferenceText createDrHoldbackRangesChanges(List<DrHoldbackRangesDto> ranges) {
         String rangesString = ranges.stream().map(DrHoldbackRangesDto::toString)
                 .collect(Collectors.joining(", "));
         return new ChangeDifferenceText(null, "[" + rangesString + "]");
     }
 
-    public static ChangeDifferenceText deleteHoldbackRangesChanges(List<DrHoldbackRangeOutputDto> oldRanges) {
+    public static ChangeDifferenceText deleteDrHoldbackRangesChanges(List<DrHoldbackRangeOutputDto> oldRanges) {
         String rangesString = oldRanges.stream().map(DrHoldbackRangeOutputDto::toString)
                 .collect(Collectors.joining(", "));
         return new ChangeDifferenceText(null, "[" + rangesString + "]");

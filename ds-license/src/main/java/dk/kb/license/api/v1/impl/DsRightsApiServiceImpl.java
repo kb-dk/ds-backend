@@ -122,13 +122,13 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * Delete a holdback rule
-     * @param id id of the holdback rule
+     * Delete a DR holdback rule
+     * @param drHoldbackValue drHoldbackValue of the DR holdback rule
      */
     @Override
-    public void deleteDrHoldbackRule(String id) {
+    public void deleteDrHoldbackRule(String drHoldbackValue) {
         try {
-            RightsModuleFacade.deleteDrHoldbackRule(id,getCurrentUserID());
+            RightsModuleFacade.deleteDrHoldbackRule(drHoldbackValue, getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -136,13 +136,13 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
 
     /**
      * Gets a DR holdback rule
-     * @param id the id of the holdback rule
+     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule
      * @return
      */
     @Override
-    public DrHoldbackRuleOutputDto getDrHoldbackRule(String id) {
+    public DrHoldbackRuleOutputDto getDrHoldbackRule(String drHoldbackValue) {
         try {
-            return RightsModuleFacade.getDrHoldbackRuleById(id);
+            return RightsModuleFacade.getDrHoldbackRuleById(drHoldbackValue);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -162,25 +162,25 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * Retrieve the number of days for a holdback rule, either based on either the id or the name of the holdbackrule.
+     * Retrieve the number of days for a DR holdback rule, either based on either the drHoldbackValue or the name of the DR holdback rule.
      *
-     * @param id if this parameter is not empty it returns the number of holdback days for the id
-     * @param name if this parameter is not empty it returns the number of holdback days for the name
+     * @param drHoldbackValue if this parameter is not empty it returns the number of DR holdback days for the drHoldbackValue
+     * @param name if this parameter is not empty it returns the number of DR holdback days for the name
      * @return the number of
      */
     @Override
-    public Integer getDrHoldbackDays(String id, String name) {
+    public Integer getDrHoldbackDays(String drHoldbackValue, String name) {
         try {
             Integer days;
-            if (!StringUtils.isEmpty(id)) {
-                days = RightsModuleFacade.getDrHolbackDaysById(id);
+            if (!StringUtils.isEmpty(drHoldbackValue)) {
+                days = RightsModuleFacade.getDrHoldbackDaysFromValue(drHoldbackValue);
             } else if (!StringUtils.isEmpty(name)) {
-                days = RightsModuleFacade.getDrHolbackDaysByName(name);
+                days = RightsModuleFacade.getDrHoldbackDaysFromName(name);
             } else {
-                throw new InvalidArgumentServiceException("missing id or name");
+                throw new InvalidArgumentServiceException("missing drHoldbackValue or name");
             }
             if (days == null) {
-                throw new NotFoundServiceException("no holdback found for "+ id+" or name "+name);
+                throw new NotFoundServiceException("no holdback found for " + drHoldbackValue + " or name " + name);
             }
             return days;
         } catch (Exception e) {
@@ -210,28 +210,28 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * set the form and content range combinations for a dr_holdback_id
-     * This requires the holdback_id to be present in the DR holback rule table
+     * set the form and content range combinations for a drHoldbackValue
+     * This requires the drHoldbackValue to be present in the DR holdback rule table
      *
      * @param drHoldbackRangeInputDto
      */
     @Override
-    public void createHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
+    public void createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
         try {
-            RightsModuleFacade.createHoldbackRanges(drHoldbackRangeInputDto, getCurrentUserID());
+            RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto, getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     /**
-     * Deletes all form and content range combinations for a drHoldbackID
+     * Deletes all form and content range combinations for a drHoldbackValue
      * @param drHoldbackValue
      */
     @Override
-    public void deleteHoldbackRanges(String drHoldbackValue) {
+    public void deleteDrHoldbackRanges(String drHoldbackValue) {
         try {
-            RightsModuleFacade.deleteHoldbackRanges(drHoldbackValue,getCurrentUserID());
+            RightsModuleFacade.deleteRangesForDrHoldbackValue(drHoldbackValue, getCurrentUserID());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -254,9 +254,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public List<DrHoldbackRangeOutputDto> getHoldbackRanges(String drHoldbackId) {
+    public List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackValue) {
         try {
-            return RightsModuleFacade.getHoldbackRanges(drHoldbackId);
+            return RightsModuleFacade.getDrHoldbackRanges(drHoldbackValue);
         } catch (Exception e) {
             throw handleException(e);
         }

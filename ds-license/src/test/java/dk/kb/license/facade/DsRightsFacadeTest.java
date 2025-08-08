@@ -94,7 +94,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil{
 
         drHoldbackRangeInputDto.setRanges(ranges);
 
-        List<Long> drHoldBackRangesIds = RightsModuleFacade.createHoldbackRanges(drHoldbackRangeInputDto, "inputedName");
+        List<Long> drHoldBackRangesIds = RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto, "inputedName");
 
         assertEquals(2, drHoldBackRangesIds.size());
 

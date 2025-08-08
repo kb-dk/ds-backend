@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -220,20 +219,20 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Retrieves the holdback ID based on the specified content and form values.
-     * If no holdback ID is found for the given content and form, a {@link NotFoundServiceException} is thrown.
+     * Retrieves the drHoldbackValue based on the specified content and form values.
+     * If no drHoldbackValue is found for the given content and form, a {@link NotFoundServiceException} is thrown.
      *
      * @param content the content identifier, must be a valid integer.
      * @param form the form identifier, must be a valid integer.
-     * @return the holdback ID as a {@link String} if found.
-     * @throws NotFoundServiceException if no holdback ID is found for the
+     * @return the drHoldbackValue as a {@link String} if found.
+     * @throws NotFoundServiceException if no drHoldbackValue is found for the
      *                                   specified content and form.
      */
     public static String getDrHoldbackValueFromContentAndFormValues(Integer content, Integer form)  {
-        return BaseModuleStorage.performStorageAction("Get holdback ID", RightsModuleStorage.class, storage -> {
+        return BaseModuleStorage.performStorageAction("Get drHoldbackValue", RightsModuleStorage.class, storage -> {
             String id = ((RightsModuleStorage) storage).getDrHoldbackValueFromContentAndForm(content, form);
             if (id == null) {
-                log.warn("No holdback found for content: '{}' and form: '{}'. Returning an empty string", content, form);
+                log.warn("No DR holdback found for content: '{}' and form: '{}'. Returning an empty string", content, form);
                 return "";
             }
             return id;
@@ -241,21 +240,21 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Retrieves the DR holdback rule identified by the specified holdback ID.
+     * Retrieves the DR holdback rule identified by the specified drHoldbackValue.
      * This method performs a storage action to access the RightsModuleStorage
      * and fetch the DR holdback rule as an object.
      *
-     * @param holdbackId the ID of the holdback rule to retrieve. It must not be null or empty.
-     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified ID if found.
-     * @throws NotFoundServiceException if no rule is found for the specified holdback ID.
+     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule to retrieve. It must not be null or empty.
+     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified drHoldbackValue if found.
+     * @throws NotFoundServiceException if no rule is found for the specified drHoldbackValue.
      */
-    public static DrHoldbackRuleOutputDto getDrHoldbackRuleById(String holdbackId) {
-        return BaseModuleStorage.performStorageAction("Get holdback rule", RightsModuleStorage.class, storage -> {
-            DrHoldbackRuleOutputDto output = ((RightsModuleStorage) storage).getDrHoldbackRuleFromValue(holdbackId);
+    public static DrHoldbackRuleOutputDto getDrHoldbackRuleById(String drHoldbackValue) {
+        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
+            DrHoldbackRuleOutputDto output = ((RightsModuleStorage) storage).getDrHoldbackRuleFromValue(drHoldbackValue);
             if (output != null) {
                 return output;
             }
-            throw new NotFoundServiceException("holdback rule not found for id: " + holdbackId);
+            throw new NotFoundServiceException("DR holdback rule not found for drHoldbackValue: " + drHoldbackValue);
         });
     }
 
@@ -338,7 +337,7 @@ public class RightsModuleFacade {
      * @param user the user performing the action
      */
     public static long createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleInputDto, String user) {
-        return BaseModuleStorage.performStorageAction("Create holdback rule", RightsModuleStorage.class, storage -> {
+        return BaseModuleStorage.performStorageAction("Create DR holdback rule", RightsModuleStorage.class, storage -> {
             long id = ((RightsModuleStorage)storage).createDrHoldbackRule(
                     drHoldbackRuleInputDto.getDrHoldbackValue(),
                     drHoldbackRuleInputDto.getName(),
@@ -352,12 +351,12 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Delete a holdback rule
-     * @param drHoldbackValue drHoldbackValue of the holdback rule
+     * Delete a DR holdback rule
+     * @param drHoldbackValue drHoldbackValue of the DR holdback rule
      * @param user the user performing the action
      */
     public static void deleteDrHoldbackRule(String drHoldbackValue, String user) {
-        BaseModuleStorage.performStorageAction("Delete holdback rule", RightsModuleStorage.class, storage -> {
+        BaseModuleStorage.performStorageAction("Delete DR holdback rule", RightsModuleStorage.class, storage -> {
             DrHoldbackRuleOutputDto drHoldbackRule = ((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackValue);
             ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleOutputDtoChanges(drHoldbackRule);
             ((RightsModuleStorage)storage).deleteDrHoldbackRule(drHoldbackValue);
@@ -372,25 +371,25 @@ public class RightsModuleFacade {
      * @return
      */
     public static List<DrHoldbackRuleOutputDto> getAllDrHoldbackRules() {
-        return BaseModuleStorage.performStorageAction("Get holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getAllDrHoldbackRules());
+        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getAllDrHoldbackRules());
     }
 
     /**
-     * Retrieve the number of days for a holdback rule from an holbackrule id
-     * @param id the id of the dr holdback rule
+     * Retrieve the number of days for a holdback rule from a drHoldbackValue
+     * @param drHoldbackValue the drHoldbackValue of the dr holdback rule
      * @return the number of
      **/
-    public static Integer getDrHolbackDaysById(String id) {
-        return BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromValue(id));
+    public static Integer getDrHoldbackDaysFromValue(String drHoldbackValue) {
+        return BaseModuleStorage.performStorageAction("Get DR holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromValue(drHoldbackValue));
     }
 
     /**
-     * Retrieve the number of days for a holdback rule from an holbackrule id
+     * Retrieve the number of days for a holdback rule from a drHoldbackValue
      * @param name the name of the dr holdback rule
      * @return the number of
      **/
-    public static Integer getDrHolbackDaysByName(String name) {
-        return BaseModuleStorage.performStorageAction("Get holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name));
+    public static Integer getDrHoldbackDaysFromName(String name) {
+        return BaseModuleStorage.performStorageAction("Get DR holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name));
     }
 
     /**
@@ -399,7 +398,7 @@ public class RightsModuleFacade {
      * @param user the user performing the action
      **/
     public static void updateDrHoldbackDaysFromDrHoldbackValue(String drHoldbackValue, Integer days, String user) {
-        BaseModuleStorage.performStorageAction("update holdback days", RightsModuleStorage.class, storage -> {
+        BaseModuleStorage.performStorageAction("update DR holdback days", RightsModuleStorage.class, storage -> {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromValue(drHoldbackValue);
             long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromValue(drHoldbackValue);
             ((RightsModuleStorage) storage).updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue, days);
@@ -416,7 +415,7 @@ public class RightsModuleFacade {
      * @return the number of
      **/
     public static void updateDrHoldbackDaysFromName(String name, Integer days, String user) {
-        BaseModuleStorage.performStorageAction("update holdback days", RightsModuleStorage.class, storage -> {
+        BaseModuleStorage.performStorageAction("update DR holdback days", RightsModuleStorage.class, storage -> {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromName(name);
             long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromName(name);
             ((RightsModuleStorage) storage).updateDrHoldbackDaysFromName(name, days);
@@ -433,13 +432,13 @@ public class RightsModuleFacade {
      * @param drHoldbackRangeInputDto
      * @param user                    : the user performing the action
      */
-    public static List<Long> createHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto, String user) {
+    public static List<Long> createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto, String user) {
 
-        return BaseModuleStorage.performStorageAction("Create holdback ranges for " + drHoldbackRangeInputDto.getDrHoldbackValue(), RightsModuleStorage.class, storage -> {
+        return BaseModuleStorage.performStorageAction("Create DR holdback ranges for " + drHoldbackRangeInputDto.getDrHoldbackValue(), RightsModuleStorage.class, storage -> {
             List<Long> idList = new ArrayList<>();
             for(DrHoldbackRangesDto rangeDto: drHoldbackRangeInputDto.getRanges()) {
                 if (((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackRangeInputDto.getDrHoldbackValue()) == null) {
-                    throw new InvalidArgumentServiceException("No dr holdback_id " + drHoldbackRangeInputDto.getDrHoldbackValue());
+                    throw new InvalidArgumentServiceException("No drHoldbackValue: " + drHoldbackRangeInputDto.getDrHoldbackValue());
                 }
                 long objectId = ((RightsModuleStorage)storage).createDrHoldbackRange(
                         rangeDto.getContentRangeFrom(),
@@ -448,7 +447,7 @@ public class RightsModuleFacade {
                         rangeDto.getFormRangeTo(),
                         drHoldbackRangeInputDto.getDrHoldbackValue()
                 );
-                ChangeDifferenceText changes = RightsChangelogGenerator.createHoldbackRangesChanges(drHoldbackRangeInputDto.getRanges());
+                ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRangesChanges(drHoldbackRangeInputDto.getRanges());
                 AuditLogEntry logEntry = new AuditLogEntry(objectId, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackRangeInputDto.getDrHoldbackValue(), "", changes.getAfter());
                 storage.persistAuditLog(logEntry);
                 idList.add(objectId);
@@ -458,15 +457,15 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Deletes all form and content range combinations for a drHoldbackID
+     * Deletes all form and content range combinations for a drHoldbackValue
      * @param drHoldbackValue
      * @param user the user performing the action
      */
-    public static void deleteHoldbackRanges(String drHoldbackValue, String user) {
-        BaseModuleStorage.performStorageAction("Delete holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> {
-            List<DrHoldbackRangeOutputDto> oldRanges = ((RightsModuleStorage) storage).getHoldbackRangesForHoldbackValue(drHoldbackValue);
+    public static void deleteRangesForDrHoldbackValue(String drHoldbackValue, String user) {
+        BaseModuleStorage.performStorageAction("Delete DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> {
+            List<DrHoldbackRangeOutputDto> oldRanges = ((RightsModuleStorage) storage).getDrHoldbackRangesForDrHoldbackValue(drHoldbackValue);
             ((RightsModuleStorage)storage).deleteRangesForDrHoldbackValue(drHoldbackValue);
-            ChangeDifferenceText changes = RightsChangelogGenerator.deleteHoldbackRangesChanges(oldRanges); //This is weird but will be refactored completely in DRA-2085
+            ChangeDifferenceText changes = RightsChangelogGenerator.deleteDrHoldbackRangesChanges(oldRanges); //This is weird but will be refactored completely in DRA-2085
             for (DrHoldbackRangeOutputDto rangeDto: oldRanges) {
                 AuditLogEntry logEntry = new AuditLogEntry(rangeDto.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, changes.getAfter(), "");
                 storage.persistAuditLog(logEntry);
@@ -476,13 +475,13 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Deletes all form and content range combinations for drHoldbackId
+     * Deletes all form and content range combinations for drHoldbackValue
      *
      * @param drHoldbackValue
      * @return
      */
-    public static List<DrHoldbackRangeOutputDto> getHoldbackRanges(String drHoldbackValue) {
-        return BaseModuleStorage.performStorageAction("Get holdbackmappings for " + drHoldbackValue, RightsModuleStorage.class, storage-> ((RightsModuleStorage)storage).getHoldbackRangesForHoldbackValue(drHoldbackValue));
+    public static List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackValue) {
+        return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage-> ((RightsModuleStorage)storage).getDrHoldbackRangesForDrHoldbackValue(drHoldbackValue));
     }
 
     private static void validateCommentLength(String comment) {
