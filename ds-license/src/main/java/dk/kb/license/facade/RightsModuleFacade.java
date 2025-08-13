@@ -358,7 +358,7 @@ public class RightsModuleFacade {
     public static void deleteDrHoldbackRule(String drHoldbackValue, String user) {
         BaseModuleStorage.performStorageAction("Delete DR holdback rule", RightsModuleStorage.class, storage -> {
             DrHoldbackRuleOutputDto drHoldbackRule = ((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackValue);
-            ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleOutputDtoChanges(drHoldbackRule);
+            ChangeDifferenceText changes = RightsChangelogGenerator.deleteDrHoldbackRuleOutputDtoChanges(drHoldbackRule);
             ((RightsModuleStorage)storage).deleteDrHoldbackRule(drHoldbackValue);
             AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRule.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackValue, changes.getBefore(), "");
             storage.persistAuditLog(logEntry);

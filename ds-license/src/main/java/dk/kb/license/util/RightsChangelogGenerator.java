@@ -31,6 +31,10 @@ public class RightsChangelogGenerator {
         return new ChangeDifferenceText(null,drHoldbackRuleOutputDto.toString());
     }
 
+    public static ChangeDifferenceText deleteDrHoldbackRuleOutputDtoChanges(DrHoldbackRuleOutputDto drHoldbackRuleOutputDto) {
+        return new ChangeDifferenceText(drHoldbackRuleOutputDto.toString(), null);
+    }
+
     public static ChangeDifferenceText createDrHoldbackRangesChanges(List<DrHoldbackRangesDto> ranges) {
         String rangesString = ranges.stream().map(DrHoldbackRangesDto::toString)
                 .collect(Collectors.joining(", "));
