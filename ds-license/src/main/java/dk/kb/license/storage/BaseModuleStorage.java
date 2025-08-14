@@ -307,8 +307,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
         log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), auditLog.getUserName());
               
         Long id = generateUniqueID();
-        log.info("AuditLogId: " + id);
-        log.info("1");
+
         try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
           log.info("generating id: " + id);
             log.info("persisting auditLog: " + auditLog);
