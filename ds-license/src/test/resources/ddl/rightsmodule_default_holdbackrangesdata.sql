@@ -6,7 +6,7 @@ INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_ra
 INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (1755167130627, 1000, 1900, 1800, 1800, '2.02');
 INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (1755167130628, 1000, 1900, 1900, 1900, '2.02');
 INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (1755167130629, 1000, 1900, 2000, 2300, '2.02');
-INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (1755167130630,1000, 1900, 3000, 3900, '2.03');
+INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (1755167130630, 1000, 1900, 3000, 3900, '2.03');
 INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (1755167130631, 1000, 1900, 4000, 4900, '2.02');
 
 INSERT INTO DR_HOLDBACK_RANGES(id, content_range_from, content_range_to, form_range_from, form_range_to, dr_holdback_value) VALUES (1755167130632, 2000, 2900, 1000, 1000, '2.03');
