@@ -1,5 +1,5 @@
 
-DROP TABLE dr_holdback_ranges;
+DROP TABLE dr_holdback_map;
 DROP TABLE dr_holdback_rules;
 
 CREATE TABLE dr_holdback_rules (
