@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS dr_holdback_rules (
     days int
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_rules_id_in ON dr_holdback_rules(id); -- Is this needed, since we dont really use the id in searches?
-CREATE INDEX IF NOT EXISTS dr_holdback_rules_dr_holdback_value_in ON dr_holdback_rules(dr_holdback_value); -- Is this needed?
+CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_rules_id_in ON dr_holdback_rules(id);
+CREATE INDEX IF NOT EXISTS dr_holdback_rules_dr_holdback_value_in ON dr_holdback_rules(dr_holdback_value);
 CREATE INDEX IF NOT EXISTS dr_holdback_rules_name_in ON dr_holdback_rules(name);
 
 /*
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS dr_holdback_ranges (
     dr_holdback_value VARCHAR(256) references dr_holdback_rules(dr_holdback_value)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_ranges_id_in ON dr_holdback_ranges(id); -- Is this needed, since we dont really use the id in searches?
+CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_ranges_id_in ON dr_holdback_ranges(id);
 CREATE INDEX IF NOT EXISTS dr_holdback_ranges_dr_holdback_value_in ON dr_holdback_ranges(dr_holdback_value);
 CREATE INDEX IF NOT EXISTS dr_holdback_ranges_content_form_in ON dr_holdback_ranges(content_range_from, content_range_to, form_range_from, form_range_to);
 
