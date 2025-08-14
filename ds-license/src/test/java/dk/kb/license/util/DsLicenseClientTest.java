@@ -106,10 +106,6 @@ public class DsLicenseClientTest {
         input.setPresentationType(SEARCH_PRESENTATIONTYPE);                
         GetUsersFilterQueryOutputDto output = remote.getUserLicenseQuery(input);               
         assertTrue(output.getFilterQuery().length() >0); //There will always be a query
-
-
-
-
     }
 
     
