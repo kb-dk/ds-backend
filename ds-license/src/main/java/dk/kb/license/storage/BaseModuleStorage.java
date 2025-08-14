@@ -59,7 +59,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
     protected Connection connection = null; // private
     protected static BasicDataSource dataSource = null; // shared
 
-    private long lastTimestamp = 0; // Remember last timestamp and make sure each is only used once;
+    private static long lastTimestamp = 0; // Remember last timestamp and make sure each is only used once;
 
     public BaseModuleStorage() throws SQLException {
         connection = dataSource.getConnection();
@@ -307,6 +307,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
         log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), auditLog.getUserName());
               
         Long id = generateUniqueID();
+        log.info("AuditLogId: " + id);
         log.info("1");
         try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
           log.info("generating id: " + id);
