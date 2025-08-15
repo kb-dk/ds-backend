@@ -3,7 +3,6 @@ package dk.kb.license;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +16,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import dk.kb.license.model.v1.RestrictedIdInputDto;
-import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.slf4j.Logger;
