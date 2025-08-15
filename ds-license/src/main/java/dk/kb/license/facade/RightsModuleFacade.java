@@ -77,8 +77,7 @@ public class RightsModuleFacade {
         validateCommentLength(restrictedIdInputDto.getComment());
 
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
-            String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
-            restrictedIdInputDto.setIdValue(validProductionId);
+            Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
         }
 
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DS_ID) {
@@ -179,8 +178,7 @@ public class RightsModuleFacade {
                 validateCommentLength(id.getComment());
 
                 if (id.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
-                    String validProductionId = Util.validateDrProductionIdFormat(id.getIdValue());
-                    id.setIdValue(validProductionId);
+                    Util.validateDrProductionIdFormat(id.getIdValue());
                 }
 
                 long objectId = ((RightsModuleStorage) storage).createRestrictedId(
