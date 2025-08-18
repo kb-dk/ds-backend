@@ -114,7 +114,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackForeign() throws SQLException, IllegalAccessException {
+    public void testHoldbackForeign() throws SQLException {
 
         RightsCalculationInputDto foreignRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
                 PlatformEnumDto.DRARKIV,4411, 0, 3190, 5000, "5000", "Program 1", "9283748300", "ds.tv");
@@ -122,7 +122,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(foreignRecord);
 
         assertEquals("Udenlandsk Dramatik & Fiktion", output.getDr().getHoldbackName());
-        assertEquals("9999-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
+        assertEquals("3017-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate()); // 1000 years, should never be released to the public, so we chose 1000 years from now
     }
 
     @Test

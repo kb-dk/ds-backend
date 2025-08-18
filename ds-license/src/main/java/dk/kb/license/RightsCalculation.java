@@ -295,11 +295,6 @@ public class RightsCalculation {
             return "9999-01-01T00:00:00Z";
         }
 
-        if (holdbackRule.getDrHoldbackValue().equals("2.05.02")){
-            log.debug("Foreign produced fictional content cannot be shown. Setting holdback date to 9999-01-01T00:00:00Z for record with id: '{}'", recordId);
-            return "9999-01-01T00:00:00Z";
-        }
-
         int holdbackDays = holdbackRule.getDays();
 
         if (holdbackDays < ServiceConfig.getDrHoldbackLogicChangeDays()) {

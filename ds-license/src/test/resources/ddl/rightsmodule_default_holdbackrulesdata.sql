@@ -5,7 +5,7 @@ INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (175516
 INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (1755167000115, '2.04', 'Undervisning', 2190);
 INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (1755167000116, '2.05', 'Dramatik & Fiktion', 3650);
 INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (1755167000117, '2.05.01', 'Dansk Dramatik & Fiktion', 3650);
-INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (1755167000118, '2.05.02', 'Udenlandsk Dramatik & Fiktion', 99999999);
+INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (1755167000118, '2.05.02', 'Udenlandsk Dramatik & Fiktion', 365000); -- 1000 years, should never be released to the public, so we chose 1000 years from now
 INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (1755167000119, '2.06', 'Musik', 2190);
 INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (1755167000120, '2.07', 'Underholdning', 2190);
 INSERT INTO DR_HOLDBACK_RULES (id, dr_holdback_value, name, days) VALUES (1755167000121, '2.08', 'Sport', 2190);
