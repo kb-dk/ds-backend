@@ -75,7 +75,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createDrHoldbackRule_WhenUsingDrHoldbackRangeInputDto_CreateRule() throws SQLException {
+    public void createDrHoldbackRule_WhenUsingDrHoldbackRuleInputDto_CreateRule() throws SQLException {
         long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto, "inputedName");
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
 
@@ -202,7 +202,6 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
     @Test
     public void deleteDrHoldbackRule_WhenUsingDrHoldbackRuleId_DeleteRule() throws SQLException {
-
         long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto, "inputedName");
 
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
