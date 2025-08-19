@@ -287,7 +287,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     private static String getCurrentUserID() {
         Message message = JAXRSUtils.getCurrentMessage();
         AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
-        if (token != null) {
+        if (token != null && token.getName() != null) {
             return token.getName();
         }
         return "no user";
