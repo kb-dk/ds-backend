@@ -1,0 +1,30 @@
+# This file is for internal use at the Royal Danish Library
+#
+# DO NOT ADD IT TO THE GIT REPO
+#
+# The file is available through the aegis project by calling "kb init" in the current git checkout
+testfileprovider:
+  url: "http://ds-devel01.kb.dk:10001/ds-internal-tests/v1/"
+  types:
+    - tvMetadata
+
+# Used for integration test on the KB developer network
+
+present:
+  url: 'http://ds-devel01.kb.dk:10001/ds-present/v1/'
+  headers:
+    # Signals that the client should have access to everything
+    - Simulated-OAuth2-Group: internal_service
+
+licensemodule:
+  url: http://ds-devel01.kb.dk:10001/ds-license/v1
+
+# Used for integration testing ds-storage client
+integration:
+  devel:    
+    keycloak:
+      realmUrl: "https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/token"
+      clientId: "bff"
+      clientSecret: "OOfHzeXu5h8hOw2N6lB9MlK2IO6VbYjG"  
+  
+      

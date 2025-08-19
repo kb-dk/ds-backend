@@ -201,6 +201,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
 
         metadata.put("dsIdRestricted", String.valueOf(rightsOutput.getDr().getDsIdRestricted()));
+        metadata.put("titleRestricted", String.valueOf(rightsOutput.getDr().getTitleRestricted()));
     }
 
     /**
