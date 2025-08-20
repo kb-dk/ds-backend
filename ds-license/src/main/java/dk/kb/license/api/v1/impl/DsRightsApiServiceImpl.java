@@ -38,7 +38,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Creating restricted ID {}", restrictedIdInputDto );
         try {
-            RightsModuleFacade.createRestrictedId(restrictedIdInputDto,getCurrentUserID(),touchRecord);
+            RightsModuleFacade.createRestrictedId(restrictedIdInputDto, touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -48,7 +48,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void updateRestrictedIdComment(Boolean touchRecord, UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto) {
         log.debug("Updating restricted ID {}",updateRestrictedIdCommentInputDto);
         try {
-            RightsModuleFacade.updateRestrictedIdComment(updateRestrictedIdCommentInputDto, getCurrentUserID(),touchRecord);
+            RightsModuleFacade.updateRestrictedIdComment(updateRestrictedIdCommentInputDto, touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -59,7 +59,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         log.debug("Deleted restricted id: '{}'.", id);
         try {
             RecordsCountDto count = new RecordsCountDto();
-            count.setCount(RightsModuleFacade.deleteRestrictedId(id, getCurrentUserID(), touchRecord));
+            count.setCount(RightsModuleFacade.deleteRestrictedId(id, touchRecord));
             return count;
         } catch (Exception e) {
             throw handleException(e);
@@ -92,7 +92,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            RightsModuleFacade.createRestrictedIds(restrictedIds,getCurrentUserID(),touchRecord);
+            RightsModuleFacade.createRestrictedIds(restrictedIds, touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -115,7 +115,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleDto) {
         try {
-            RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleDto,getCurrentUserID());
+            RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -128,7 +128,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void deleteDrHoldbackRule(String drHoldbackValue) {
         try {
-            RightsModuleFacade.deleteDrHoldbackRule(drHoldbackValue, getCurrentUserID());
+            RightsModuleFacade.deleteDrHoldbackRule(drHoldbackValue);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -198,9 +198,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public void updateDrHoldbackDays(Integer days, String drHoldbackValue, String name) {
         try {
             if (!StringUtils.isEmpty(drHoldbackValue)) {
-                RightsModuleFacade.updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue,days,getCurrentUserID());
+                RightsModuleFacade.updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue,days);
             } else if (!StringUtils.isEmpty(name)) {
-                RightsModuleFacade.updateDrHoldbackDaysFromName(name,days,getCurrentUserID());
+                RightsModuleFacade.updateDrHoldbackDaysFromName(name,days);
             } else {
                 throw new InvalidArgumentServiceException("missing drHoldbackValue or name");
             }
@@ -218,7 +218,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
         try {
-            RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto, getCurrentUserID());
+            RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -231,7 +231,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public void deleteDrHoldbackRanges(String drHoldbackValue) {
         try {
-            RightsModuleFacade.deleteRangesForDrHoldbackValue(drHoldbackValue, getCurrentUserID());
+            RightsModuleFacade.deleteRangesForDrHoldbackValue(drHoldbackValue);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -279,18 +279,4 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
             throw handleException(e);
         }
     }
-
-    /**
-     * Gets the name of the current user from the OAuth token.
-     * @return
-     */
-    private static String getCurrentUserID() {
-        Message message = JAXRSUtils.getCurrentMessage();
-        AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
-        if (token != null && token.getName() != null) {
-            return token.getName();
-        }
-        return "no user";
-    }
-
 }

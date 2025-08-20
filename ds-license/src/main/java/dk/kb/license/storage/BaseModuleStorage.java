@@ -3,9 +3,13 @@ package dk.kb.license.storage;
 import dk.kb.license.model.v1.AuditEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
+import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.Message;
+import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -304,7 +308,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * @return databaseID for the new AuditLog entry
      */
     public long persistAuditLog(AuditLogEntry auditLog) throws SQLException {
-        log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), auditLog.getUserName());
+        log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), getCurrentUserID());
               
         Long id = generateUniqueID();
 
@@ -314,7 +318,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             stmt.setLong(1, id);     
             stmt.setLong(2, auditLog.getObjectId());
             stmt.setLong(3, System.currentTimeMillis());                         
-            stmt.setString(4,auditLog.getUserName());            
+            stmt.setString(4, getCurrentUserID());
             stmt.setString(5, auditLog.getChangeType().getValue());
             stmt.setString(6, auditLog.getChangeName().getValue());
             stmt.setString(7, auditLog.getChangeComment());               
@@ -350,5 +354,21 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
         auditEntry.setTextAfter(textAfter);
         auditEntry.setTextBefore(textBefore);
         return auditEntry;
+    }
+
+    /**
+     * Gets the name of the current user from the OAuth token.
+     * @return
+     */
+    private static String getCurrentUserID() {
+        Message message = JAXRSUtils.getCurrentMessage();
+        if (message == null) {
+            return "unknown";
+        }
+        AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
+        if (token != null && token.getName() != null) {
+            return token.getName();
+        }
+        return "unknown";
     }
 }
