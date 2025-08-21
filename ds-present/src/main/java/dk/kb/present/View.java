@@ -192,7 +192,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         updateMetadataMapWithProductionCodeDr(metadata, extractedValues.getOrigin(), rightsOutput);
         updateMetadataMapWithDrHoldback(metadata, rightsOutput);
 
-        if (!extractedValues.getProductionId().isEmpty()){
+        if (!StringUtils.isEmpty(extractedValues.getProductionId())){
             metadata.put("productionId", extractedValues.getProductionId());
             // Check if production ID is restricted from DR.
             log.debug("Performing productionID lookup for id: '{}' in DR restricted ID list.", extractedValues.getProductionId());
@@ -232,19 +232,21 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param rightsOutput the {@link RightsCalculationOutputDto} containing rights information related to the production code.
      */
     private void updateMetadataMapWithProductionCodeDr(Map<String, String> metadataMap, String productionCode, RightsCalculationOutputDto rightsOutput){
-        if (productionCode.isEmpty() && origin.equals("ds.tv")) {
-            // Logging at denug as we have lots of records without this information
-            log.debug("Nielsen/Gallup origin was empty. Own production can not be calculated.");
-        } else if (productionCode.length() != 4){
-            log.debug("Nielsen/Gallup origin did not have length 4. Production code allowance will not be calculated correctly. Origin is: '{}'", productionCode);
+        if (log.isDebugEnabled()  && origin.equals("ds.tv")) {
+            if (StringUtils.isEmpty(productionCode) || productionCode.length() != 4) {
+                log.debug("Nielsen/Gallup origin did not have length 4. Production code allowance will not be calculated correctly. Origin is: '{}'", productionCode);
+            }
         }
 
-        if (!productionCode.isEmpty()) {
+        if (!StringUtils.isEmpty(productionCode)) {
             boolean allowedProductionCode = rightsOutput.getDr().getProductionCodeAllowed();
             metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
             metadataMap.put("productionCodeValue", productionCode);
         } else if (origin.equals("ds.radio")){
             metadataMap.put("productionCodeAllowed", "true");
+        } else if (origin.equals("ds.tv")){
+            log.debug("Record {} is tv record with no production code");
+            metadataMap.put("productionCodeAllowed", "false");
         }
     }
 
