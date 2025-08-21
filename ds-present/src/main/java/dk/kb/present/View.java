@@ -15,6 +15,7 @@
 package dk.kb.present;
 
 import dk.kb.license.model.v1.PlatformEnumDto;
+import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.config.ServiceConfig;
