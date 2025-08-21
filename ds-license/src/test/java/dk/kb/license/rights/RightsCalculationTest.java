@@ -122,7 +122,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(foreignRecord);
 
         assertEquals("Udenlandsk Dramatik & Fiktion", output.getDr().getHoldbackName());
-        assertEquals("3017-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate()); // 1000 years, should never be released to the public, so we chose 1000 years from now
+        assertEquals("3017-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate()); // 1000 years, should never be released to the public
     }
 
     @Test
