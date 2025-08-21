@@ -93,6 +93,7 @@ public class BaseModuleStorageTest extends DsLicenseUnitTestUtil {
         assertEquals(textAfter, auditFromStorage.getTextAfter());
         assertTrue(auditFromStorage.getModifiedTime() > 0); //modifiedtime has been set
 
+        // Close the MockedStatic JAXRSUtils.class when the test is done, so it don't interfere with other test classes
         mocked.close();
     }
 }

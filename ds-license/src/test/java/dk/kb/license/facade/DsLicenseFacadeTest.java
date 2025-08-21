@@ -104,6 +104,7 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         assertTrue(createAuditLog.getModifiedTime()<updateAuditLog.getModifiedTime());
         assertTrue(updateAuditLog.getModifiedTime()<deleteAuditLog.getModifiedTime());
 
+        // Close the MockedStatic JAXRSUtils.class when the test is done, so it don't interfere with other test classes
         mocked.close();
     }
 }

@@ -87,6 +87,9 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         drHoldbackRangesDtoTwo.setFormRangeTo(1500);
     }
 
+    /**
+     * Close the MockedStatic JAXRSUtils.class when the tests are done, so it don't interfere with other test classes
+     */
     @AfterAll
     public static void afterClass() {
         mocked.close();
