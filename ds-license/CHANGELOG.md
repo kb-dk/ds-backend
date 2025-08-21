@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deleted ability to use API for updating platform in restricted_ids
 - Refactored HoldbackRanges to use inputDto and outputDto
 - Auditlog is now using the objectId for holdback_rule table
+- User is now being added to the AuditLog in the storage module, instead of being passed as a parameter through the flow
 
 ### Fixed
 
