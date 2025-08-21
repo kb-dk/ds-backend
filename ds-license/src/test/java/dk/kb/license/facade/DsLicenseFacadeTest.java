@@ -24,8 +24,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
 
@@ -79,7 +78,7 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, updateAuditLog.getChangeName());
         assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, deleteAuditLog.getChangeName());
 
-        assertEquals("", createAuditLog.getTextBefore());
+        assertNull(createAuditLog.getTextBefore());
         //TODO: This should be fixed together with: DRA-2085
         assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value / unit_test_value_en\n", updateAuditLog.getTextBefore());
         assertEquals("PresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", deleteAuditLog.getTextBefore());
@@ -87,7 +86,7 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
       //TODO: This should be fixed together with: DRA-2085
         assertEquals("PresentationType value DK/En:unit_test_value / unit_test_value_en\n", createAuditLog.getTextAfter());
         assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", updateAuditLog.getTextAfter()); //Tjek op på det
-        assertEquals("", deleteAuditLog.getTextAfter());
+        assertNull(deleteAuditLog.getTextAfter());
 
         assertEquals("mockedName", createAuditLog.getUserName());
         assertEquals("mockedName", updateAuditLog.getUserName());
