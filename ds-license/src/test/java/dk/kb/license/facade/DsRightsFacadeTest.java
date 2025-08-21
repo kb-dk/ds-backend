@@ -22,8 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
 public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
@@ -104,7 +103,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         AuditEntryOutputDto createDrHoldbackRuleAuditLog = auditLogEntriesForObject.get(0);
         assertEquals(ChangeTypeEnumDto.CREATE, createDrHoldbackRuleAuditLog.getChangeType());
         assertEquals(ObjectTypeEnumDto.HOLDBACK_RULE, createDrHoldbackRuleAuditLog.getChangeName());
-        assertEquals("", createDrHoldbackRuleAuditLog.getTextBefore());
+        assertNull(createDrHoldbackRuleAuditLog.getTextBefore());
         assertEquals(drHoldbackRuleInputDto.toString(), createDrHoldbackRuleAuditLog.getTextAfter());
         assertEquals(userName, createDrHoldbackRuleAuditLog.getUserName());
         assertEquals(drHoldbackRuleInputDto.getDrHoldbackValue(), createDrHoldbackRuleAuditLog.getChangeComment());
@@ -136,7 +135,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
             assertEquals(ChangeTypeEnumDto.CREATE, createDrHoldbackRangeAuditLog.getChangeType());
             assertEquals(ObjectTypeEnumDto.HOLDBACK_RANGE, createDrHoldbackRangeAuditLog.getChangeName());
-            assertEquals("", createDrHoldbackRangeAuditLog.getTextBefore());
+            assertNull(createDrHoldbackRangeAuditLog.getTextBefore());
             assertEquals(ranges.toString(), createDrHoldbackRangeAuditLog.getTextAfter());
             assertEquals(userName, createDrHoldbackRangeAuditLog.getUserName());
             assertEquals(drHoldbackRangeInputDto.getDrHoldbackValue(), createDrHoldbackRangeAuditLog.getChangeComment());
@@ -212,7 +211,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
             assertEquals(ChangeTypeEnumDto.DELETE, deleteDrHoldbackRangeAuditLog.getChangeType());
             assertEquals(ObjectTypeEnumDto.HOLDBACK_RANGE, deleteDrHoldbackRangeAuditLog.getChangeName());
             // assertEquals(ranges.toString(), deleteDrHoldbackRangeAuditLog.getTextBefore()); TODO: This should be fixed together with: DRA-2085
-            assertEquals("", deleteDrHoldbackRangeAuditLog.getTextAfter());
+            assertNull(deleteDrHoldbackRangeAuditLog.getTextAfter());
             assertEquals(userName, deleteDrHoldbackRangeAuditLog.getUserName());
             assertEquals(drHoldbackRangeInputDto.getDrHoldbackValue(), deleteDrHoldbackRangeAuditLog.getChangeComment());
             assertEquals(drHoldBackRangesId, deleteDrHoldbackRangeAuditLog.getObjectId());
@@ -235,7 +234,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         assertEquals(ChangeTypeEnumDto.DELETE, deleteDrHoldbackRuleAuditLog.getChangeType());
         assertEquals(ObjectTypeEnumDto.HOLDBACK_RULE, deleteDrHoldbackRuleAuditLog.getChangeName());
         //assertEquals(drHoldbackRuleInputDto.toString(), deleteDrHoldbackRuleAuditLog.getTextBefore()); TODO: This should be fixed together with: DRA-2085
-        assertEquals("", deleteDrHoldbackRuleAuditLog.getTextAfter());
+        assertNull(deleteDrHoldbackRuleAuditLog.getTextAfter());
         assertEquals(userName, deleteDrHoldbackRuleAuditLog.getUserName());
         assertEquals(drHoldbackRuleInputDto.getDrHoldbackValue(), deleteDrHoldbackRuleAuditLog.getChangeComment());
         assertEquals(drHoldbackRuleId, deleteDrHoldbackRuleAuditLog.getObjectId());

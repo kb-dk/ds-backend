@@ -195,7 +195,7 @@ public class LicenseModuleFacade {
         BaseModuleStorage.performStorageAction("deleteLicenseGroupType(" + groupName + ")", LicenseModuleStorage.class, storage -> {
 
             long id = ((LicenseModuleStorage) storage).deleteLicenseGroupType(groupName);
-            AuditLogEntry auditLog = new AuditLogEntry(id, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.GROUP_TYPE, groupName, groupName, "");
+            AuditLogEntry auditLog = new AuditLogEntry(id, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.GROUP_TYPE, groupName, groupName, null);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
 
             return null;        
@@ -309,7 +309,7 @@ public class LicenseModuleFacade {
     public static void deleteAttributeType(String attributeTypeName) {
         BaseModuleStorage.performStorageAction("deleteAttributeType(" + attributeTypeName + ")", LicenseModuleStorage.class, storage -> {
             long id = ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
-            AuditLogEntry auditLog = new AuditLogEntry(id, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.ATTRIBUTE_NAME, attributeTypeName, attributeTypeName, "");
+            AuditLogEntry auditLog = new AuditLogEntry(id, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.ATTRIBUTE_NAME, attributeTypeName, attributeTypeName, null);
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
             return null;        
         });
