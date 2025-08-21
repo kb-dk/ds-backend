@@ -63,7 +63,10 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
                 fixedInjections.forEach(transformer::setParameter);
             }
             transformer.setParameter("schemaorgjson", s);
-            metadata.forEach(transformer::setParameter);
+            metadata.forEach((name, value) -> {
+                if (name != null && value != null)
+                    transformer.setParameter(name, value);
+            });
 
             if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
                 semaphore.acquire();

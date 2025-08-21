@@ -104,7 +104,11 @@ public class XSLTTransformer implements DSTransformer {
                 if (fixedInjections != null) {
                     fixedInjections.forEach(transformer::setParameter);
                 }
-                metadata.forEach(transformer::setParameter);
+                metadata.forEach((name, value) ->{
+                    if (name != null && value != null) {
+                        transformer.setParameter(name, value);
+                    }
+                });
 
                 if (useSemaphore) {
                     semaphore.acquire();
