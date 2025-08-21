@@ -24,6 +24,7 @@ import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -184,7 +185,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         DsLicenseClient licenseClient = new DsLicenseClient(url);
 
         PlatformEnumDto platform = PlatformEnumDto.DRARKIV;
-        RightsCalculationOutputDto rightsOutput = licenseClient.calculateRights(extractedValues.asRightsCalculationInputDto(platform, record.getOrigin()));
+        RightsCalculationInputDto rightsInputDto = extractedValues.asRightsCalculationInputDto(platform, record.getOrigin());
+        RightsCalculationOutputDto rightsOutput = licenseClient.calculateRights(rightsInputDto);
 
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         // The following three methods are all related to holdback and ownproduction calculations.
