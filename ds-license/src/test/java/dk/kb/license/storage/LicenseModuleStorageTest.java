@@ -5,6 +5,7 @@ package dk.kb.license.storage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mockStatic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,9 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.webservice.KBAuthorizationInterceptor;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
+import org.apache.cxf.message.MessageImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.keycloak.representations.AccessToken;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1061,32 +1068,6 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
         solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids,filterField); 
 
         assertEquals("(" + filterField + ":\"testId3\")", solrIdsQuery);
-    }
-
-
-
-    @Test
-    public void testPersistAndLoadAuditLogEntry() throws SQLException, IllegalArgumentException {
-         
-         Long objectId = 123456789L;
-         String userName = "teg";
-         ChangeTypeEnumDto changeType = ChangeTypeEnumDto.UPDATE;
-         ObjectTypeEnumDto changeName = ObjectTypeEnumDto.DR_PRODUCTION_ID;
-         String changeComment = "changeComment";
-         String textBefore = "before";
-         String textAfter = "after";
-                                   
-        AuditLogEntry auditLog = new AuditLogEntry(objectId, userName, changeType, changeName, changeComment, textBefore, textAfter);
-        
-        long auditLogId = storage.persistAuditLog(auditLog);
-        AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
-        assertEquals(userName, auditFromStorage.getUserName());
-        assertEquals(changeType, auditFromStorage.getChangeType());
-        assertEquals(changeName, auditFromStorage.getChangeName());
-        assertEquals(changeComment, auditFromStorage.getChangeComment());
-        assertEquals(textBefore, auditFromStorage.getTextBefore());
-        assertEquals(textAfter, auditFromStorage.getTextAfter());
-        assertTrue(auditFromStorage.getModifiedTime() > 0); //modifiedtime has been set
     }
     
     @Test

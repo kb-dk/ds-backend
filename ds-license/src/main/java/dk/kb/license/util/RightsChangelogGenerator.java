@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Generates a change text when saving or updating a Rights object (restrictedID or holdbackrules)
+ * Generates a change text when saving or updating a Rights object (restrictedID or DR holdback rules)
  *
  */
 public class RightsChangelogGenerator {
@@ -23,20 +23,28 @@ public class RightsChangelogGenerator {
         return new ChangeDifferenceText(oldVersion.toString(),newVersion.toString());
     }
 
-    public static ChangeDifferenceText createDrHoldbackRuleChanges(DrHoldbackRuleDto drHoldbackRuleDto) {
-        return new ChangeDifferenceText(null,drHoldbackRuleDto.toString());
+    public static ChangeDifferenceText createDrHoldbackRuleInputDtoChanges(DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
+        return new ChangeDifferenceText(null,drHoldbackRuleInputDto.toString());
     }
 
-    public static ChangeDifferenceText createHoldbackRangesChanges(List<DrHoldbackRangeMappingInputDto> ranges) {
-        String rangesString = ranges.stream().map(DrHoldbackRangeMappingInputDto::toString)
-                .collect(Collectors.joining(", "));
-        return new ChangeDifferenceText(null,"["+rangesString+"]");
+    public static ChangeDifferenceText createDrHoldbackRuleOutputDtoChanges(DrHoldbackRuleOutputDto drHoldbackRuleOutputDto) {
+        return new ChangeDifferenceText(null,drHoldbackRuleOutputDto.toString());
     }
 
-    public static ChangeDifferenceText deleteHoldbackRangesChanges(List<DrHoldbackRangeMappingDto> oldRanges) {
-        String rangesString = oldRanges.stream().map(DrHoldbackRangeMappingDto::toString)
+    public static ChangeDifferenceText deleteDrHoldbackRuleOutputDtoChanges(DrHoldbackRuleOutputDto drHoldbackRuleOutputDto) {
+        return new ChangeDifferenceText(drHoldbackRuleOutputDto.toString(), null);
+    }
+
+    public static ChangeDifferenceText createDrHoldbackRangesChanges(List<DrHoldbackRangesDto> ranges) {
+        String rangesString = ranges.stream().map(DrHoldbackRangesDto::toString)
                 .collect(Collectors.joining(", "));
-        return new ChangeDifferenceText(null,"["+rangesString+"]");
+        return new ChangeDifferenceText(null, "[" + rangesString + "]");
+    }
+
+    public static ChangeDifferenceText deleteDrHoldbackRangesChanges(List<DrHoldbackRangeOutputDto> oldRanges) {
+        String rangesString = oldRanges.stream().map(DrHoldbackRangeOutputDto::toString)
+                .collect(Collectors.joining(", "));
+        return new ChangeDifferenceText(null, "[" + rangesString + "]");
     }
 
     private static String restrictedIdText(String id, String idType, String platform) {

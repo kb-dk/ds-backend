@@ -484,13 +484,13 @@ paths:
             - any
       responses:
         '200':
-          description: list of holdback rules
+          description: list of DR holdback rules
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DrHoldbackRule'
+                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
 
   /rights/drHoldbackRule:
     get:
@@ -501,18 +501,18 @@ paths:
         - KBOAuth:
             - any
       parameters:
-        - name: id
+        - name: drHoldbackValue
           in: query
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: retrieve a holdback rule
+          description: retrieve a DR holdback rule
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DrHoldbackRule'
+                $ref: '#/components/schemas/DrHoldbackRuleOutput'
         '404':
           description: not found
     delete:
@@ -523,7 +523,7 @@ paths:
         - KBOAuth:
             - any
       parameters:
-        - name: id
+        - name: drHoldbackValue
           in: query
           required: true
           schema:
@@ -542,15 +542,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DrHoldbackRule'
+              $ref: '#/components/schemas/DrHoldbackRuleInput'
             examples:
               example1:
                 value:
-                  id: test1
+                  drHoldbackValue: "2.03"
                   name: "Testing"
                   days: 100
       responses:
-        '201':
+        '204':
           description: sucessfully created
 
   /rights/drHoldbackDays:
@@ -558,51 +558,51 @@ paths:
       tags:
         - 'DsRights'
       operationId: getDrHoldbackDays
-      description: gets the number of holdbackdays. One of the parameters id or name should be nonempty. id takes precedence over name.
+      description: get the number of DR holdback days. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name.
       security:
         - KBOAuth:
             - any
       parameters:
-        - name: id
+        - name: drHoldbackValue
           in: query
           required: false
-          description: id of the holdback rule
+          description: drHoldbackValue of the DR holdback rule
           schema:
             type: string
         - name: name
           in: query
           required: false
-          description: name of the holdback rule
+          description: name of the DR holdback rule
           schema:
             type: string
       responses:
         '200':
-          description: holdback days
+          description: DR holdback days
           content:
             application/json:
                 schema:
                   type: integer
         '404':
-          description: holdback not found
+          description: DR holdback day not found
     put:
       tags:
         - 'DsRights'
       operationId: updateDrHoldbackDays
-      description: update the number of holdbackdays for a purpose. One of the parameters id or name should be nonempty. id takes precedence over name.
+      description: update the number of DR holdback days for a purpose. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name.
       security:
         - KBOAuth:
             - any
       parameters:
-        - name: id
+        - name: drHoldbackValue
           in: query
           required: false
-          description: id of the holdback rule
+          description: drHoldbackValue of the DR holdback rule
           schema:
             type: string
         - name: name
           in: query
           required: false
-          description: name of the holdback rule
+          description: name of the DR holdback rule
           schema:
             type: string
         - name: days
@@ -616,17 +616,17 @@ paths:
 
   /rights/drHoldbackRanges:
     get:
-      summary: get all holdback ranges for a holdback ID
+      summary: get all DR holdback ranges for a drHoldbackValue
       tags:
         - 'DsRights'
-      operationId: getHoldbackRanges
+      operationId: getDrHoldbackRanges
       security:
         - KBOAth:
             - any
       parameters:
-        - name: dr_holdback_id
+        - name: drHoldbackValue
           in: query
-          description: filter on holdback id
+          description: filter on drHoldbackValue
           schema:
             type: string
       responses:
@@ -637,41 +637,34 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DrHoldbackRangeMapping'
+                  $ref: '#/components/schemas/DrHoldbackRangeOutput'
     post:
-      summary: set holdback ranges for a holdback id
+      summary: set DR holdback ranges for a drHoldbackValue
       tags:
         - 'DsRights'
-      operationId: createHoldbackRanges
+      operationId: createDrHoldbackRanges
       security:
         - KBOAth:
             - any
-      parameters:
-        - name: dr_holdback_id
-          in: query
-          schema:
-            type: string
       requestBody:
+        required: true
         content:
-          'application/json':
+          application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/DrHoldbackRangeMappingInput'
-
+              $ref: '#/components/schemas/DrHoldbackRangeInput'
       responses:
         '201':
           description: created
     delete:
-      summary: delete holdback ranges for a holdback id
+      summary: delete DR holdback ranges for a drHoldbackValue
       tags:
         - 'DsRights'
-      operationId: deleteHoldbackRanges
+      operationId: deleteDrHoldbackRanges
       security:
         - KBOAth:
             - any
       parameters:
-        - name: dr_holdback_id
+        - name: drHoldbackValue
           in: query
           required: true
           schema:
@@ -680,12 +673,12 @@ paths:
         '204':
           description: deleted
 
-  /rights/getHoldbackIdFromContentAndForm:
+  /rights/getDrHoldbackValueFromContentAndForm:
     get:
-      summary: get the holdback id from content and form metadata.
+      summary: get the drHoldbackValue from content and form metadata.
       tags:
         - 'DsRights'
-      operationId: getHoldbackIdFromContentAndForm
+      operationId: getDrHoldbackValueFromContentAndForm
       security:
         - KBOAth:
             - any
@@ -728,7 +721,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RightsCalculationOutput"
-
 
 
   /monitor:
@@ -860,7 +852,6 @@ components:
            type: array
            items:
              type: string             
-
 
     ValidateAccessInput:
       type: object
@@ -1058,7 +1049,8 @@ components:
         - LICENSE
         - GROUP_TYPE
         - HOLDBACK_DAY
-        - HOLDBACK_MAP
+        - HOLDBACK_RULE
+        - HOLDBACK_RANGE
         - ATTRIBUTE_NAME
 
     AuditEntryOutput:
@@ -1130,33 +1122,30 @@ components:
         comment:
           type: string
 
-    DrHoldbackRule:
+    DrHoldbackRuleInput:
       type: object
       properties:
-        id:
+        drHoldbackValue:
           type: string
         name:
           type: string
         days:
           type: integer
 
-    DrHoldbackRangeMapping:
+    DrHoldbackRuleOutput:
       type: object
       properties:
         id:
+          type: integer
+          format: int64
+        drHoldbackValue:
           type: string
-        contentRangeFrom:
-          type: integer
-        contentRangeTo:
-          type: integer
-        formRangeFrom:
-          type: integer
-        formRangeTo:
-          type: integer
-        drHoldbackId:
+        name:
           type: string
+        days:
+          type: integer
 
-    DrHoldbackRangeMappingInput:
+    DrHoldbackRanges:
       type: object
       properties:
         contentRangeFrom:
@@ -1167,6 +1156,35 @@ components:
           type: integer
         formRangeTo:
           type: integer
+    
+    DrHoldbackRangeInput:
+      type: object
+      properties:
+        drHoldbackValue:
+          type: string
+        ranges:
+          type: array
+          items:
+            $ref: "#/components/schemas/DrHoldbackRanges"
+    
+    DrHoldbackRangeOutput:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          format: int64
+        contentRangeFrom:
+          type: integer
+        contentRangeTo:
+          type: integer
+        formRangeFrom:
+          type: integer
+        formRangeTo:
+          type: integer
+        drHoldbackValue:
+          type: string
 
     HelloReply:
       type: object

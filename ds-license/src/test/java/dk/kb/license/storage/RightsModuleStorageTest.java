@@ -1,7 +1,7 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.config.ServiceConfig;
-import dk.kb.license.model.v1.DrHoldbackRuleDto;
+import dk.kb.license.model.v1.DrHoldbackRuleOutputDto;
 import dk.kb.license.model.v1.IdTypeEnumDto;
 import dk.kb.license.model.v1.PlatformEnumDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
@@ -34,13 +34,13 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
     /*
      * Delete all records between each unittest. The clearTableRecords is only called from here.
-     * The facade class is reponsible for committing transactions. So clean up between unittests.
+     * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
         ArrayList<String> tables = new ArrayList<>();
         tables.add("RESTRICTED_IDS");
-        tables.add("DR_HOLDBACK_MAP");
+        tables.add("DR_HOLDBACK_RANGES");
         tables.add("DR_HOLDBACK_RULES");        
         storage.clearTableRecords(tables);
     }
@@ -96,73 +96,72 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil   {
 
         storage.createRestrictedId(idValue,idType,platform,comment);
 
-
         assertThrows(SQLException.class, () -> storage.createRestrictedId(idValue, idType, platform, comment));
     }
 
     @Test
-    public void testHoldbackRuleCRUD() throws SQLException {
-        String id = "2.02";
+    public void testDrHoldbackRuleCRUD() throws SQLException {
+        String drHoldbackValue = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
 
-        storage.createDrHoldbackRule(id,name,100);
-        assertEquals(days,storage.getDrHoldbackdaysFromID(id));
-        assertEquals(days,storage.getDrHoldbackDaysFromName(name));
-        DrHoldbackRuleDto holdbackFromStorage = storage.getDrHoldbackFromID(id);
+        storage.createDrHoldbackRule(drHoldbackValue, name, 100);
+        assertEquals(days, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
+        assertEquals(days, storage.getDrHoldbackDaysFromName(name));
+        DrHoldbackRuleOutputDto holdbackFromStorage = storage.getDrHoldbackRuleFromValue(drHoldbackValue);
         assertEquals(name,holdbackFromStorage.getName());
 
         days  = 200;
-        storage.updateDrHolbackdaysForId(days,id);
-        assertEquals(days,storage.getDrHoldbackdaysFromID(id));
-        assertEquals(days,storage.getDrHoldbackDaysFromName(name));
+        storage.updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue, days);
+        assertEquals(days, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
+        assertEquals(days, storage.getDrHoldbackDaysFromName(name));
 
         days  = 300;
-        storage.updateDrHolbackdaysForName(days,name);
-        assertEquals(days,storage.getDrHoldbackdaysFromID(id));
-        assertEquals(days,storage.getDrHoldbackDaysFromName(name));
+        storage.updateDrHoldbackDaysFromName(name, days);
+        assertEquals(days, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
+        assertEquals(days, storage.getDrHoldbackDaysFromName(name));
 
-        assertEquals(1,storage.getAllDrHoldbackRules().size());
-        storage.deleteDrHoldbackRule(id);
-        assertEquals(-1,storage.getDrHoldbackdaysFromID(id));
-        assertEquals(-1,storage.getDrHoldbackDaysFromName(name));
-        assertEquals(0,storage.getAllDrHoldbackRules().size());
+        assertEquals(1, storage.getAllDrHoldbackRules().size());
+        storage.deleteDrHoldbackRule(drHoldbackValue);
+        assertEquals(-1, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
+        assertEquals(-1, storage.getDrHoldbackDaysFromName(name));
+        assertEquals(0, storage.getAllDrHoldbackRules().size());
     }
 
     @Test
-    public void testHoldbackMap() throws SQLException {
-        storage.createDrHoldbackRule("test1","Test",100);
-        storage.createDrHoldbackRule("test2","Test2",200);
+    public void testCreateDrHoldbackRanges() throws SQLException {
+        storage.createDrHoldbackRule("test1", "Test", 100);
+        storage.createDrHoldbackRule("test2", "Test2", 200);
 
-        storage.createDrHoldbackMapping(1000,1000,1200,1900,"test1");
-        storage.createDrHoldbackMapping(2000,3000,2200,2900,"test2");
-        storage.createDrHoldbackMapping(2000,3000,3200,3900,"test2");
+        storage.createDrHoldbackRange(1000, 1000, 1200, 1900, "test1");
+        storage.createDrHoldbackRange(2000, 3000, 2200, 2900, "test2");
+        storage.createDrHoldbackRange(2000, 3000, 3200, 3900, "test2");
 
 
-        assertEquals("test1",storage.getHoldbackRuleId(1000,1200));
-        assertEquals("test2",storage.getHoldbackRuleId(2500,2900));
-        assertEquals(1,storage.getHoldbackRangesForHoldbackId("test1").size());
-        assertEquals(2,storage.getHoldbackRangesForHoldbackId("test2").size());
-        assertNull(storage.getHoldbackRuleId(2500,9999));
-        assertNull(storage.getHoldbackRuleId(9999,1200));
-        assertNull(storage.getHoldbackRuleId(9999,9999));
+        assertEquals("test1", storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
+        assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
+        assertEquals(1, storage.getDrHoldbackRangesForDrHoldbackValue("test1").size());
+        assertEquals(2, storage.getDrHoldbackRangesForDrHoldbackValue("test2").size());
+        assertNull(storage.getDrHoldbackValueFromContentAndForm(2500, 9999));
+        assertNull(storage.getDrHoldbackValueFromContentAndForm(9999, 1200));
+        assertNull(storage.getDrHoldbackValueFromContentAndForm(9999, 9999));
     }
 
     @Test
-    public void testDeleteHoldbackRanges() throws SQLException {
-        storage.createDrHoldbackRule("test1","Test",100);
-        storage.createDrHoldbackRule("test2","Test2",200);
+    public void testDeleteDrHoldbackRanges() throws SQLException {
+        storage.createDrHoldbackRule("test1", "Test", 100);
+        storage.createDrHoldbackRule("test2", "Test2", 200);
 
-        storage.createDrHoldbackMapping(1000,1000,1200,1900,"test1");
-        storage.createDrHoldbackMapping(2000,3000,2200,2900,"test2");
+        storage.createDrHoldbackRange(1000, 1000, 1200, 1900, "test1");
+        storage.createDrHoldbackRange(2000, 3000, 2200, 2900, "test2");
 
-        assertEquals("test1",storage.getHoldbackRuleId(1000,1200));
-        assertEquals("test2",storage.getHoldbackRuleId(2500,2900));
+        assertEquals("test1", storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
+        assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
 
-        storage.deleteMappingsForDrHolbackId("test1");
+        storage.deleteRangesForDrHoldbackValue("test1");
 
-        assertNull(storage.getHoldbackRuleId(1000,1200));
-        assertEquals("test2",storage.getHoldbackRuleId(2500,2900));
+        assertNull(storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
+        assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
     }
 
     @Test

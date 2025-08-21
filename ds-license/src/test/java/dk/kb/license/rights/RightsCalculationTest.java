@@ -31,7 +31,6 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
-        // "ddl/rightsmodule_default_holdbackdata.sql"
         H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
     }
@@ -41,14 +40,14 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         try (RightsModuleStorageForUnitTest storage = new RightsModuleStorageForUnitTest()){
             List<String> tables = new ArrayList<String>();
             tables.add("RESTRICTED_IDS");
-            tables.add("DR_HOLDBACK_MAP");
+            tables.add("DR_HOLDBACK_RANGES");
             tables.add("DR_HOLDBACK_RULES");       
                        
             storage.clearTableRecords(tables);
         } catch (Exception e) {
             throw e;
         }
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_default_holdbackdata.sql"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_default_holdbackrulesdata.sql", "ddl/rightsmodule_default_holdbackrangesdata.sql"));
     }
 
     @Test
@@ -115,7 +114,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackForeign() throws SQLException, IllegalAccessException {
+    public void testHoldbackForeign() throws SQLException {
 
         RightsCalculationInputDto foreignRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
                 PlatformEnumDto.DRARKIV,4411, 0, 3190, 5000, "5000", "Program 1", "9283748300", "ds.tv");
@@ -123,7 +122,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(foreignRecord);
 
         assertEquals("Udenlandsk Dramatik & Fiktion", output.getDr().getHoldbackName());
-        assertEquals("9999-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
+        assertEquals("3017-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate()); // 1000 years, should never be released to the public
     }
 
     @Test

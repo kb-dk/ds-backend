@@ -6,49 +6,36 @@ import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.*;
 import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
-import org.eclipse.jetty.http2.HTTP2Session;
+import org.apache.cxf.message.MessageImpl;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.mockito.Mock;
+import org.keycloak.representations.AccessToken;
 import org.mockito.MockedStatic;
 
 import org.mockito.Mockito;
-import org.mockito.exceptions.base.MockitoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
 
 public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
     protected static LicenseModuleStorage storage = null;
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
-//    HttpSession mockedSession = mock(HttpSession.class);
-//    HttpSession mockedSession = Mockito.
-//    verify(mockedSession).setAttribute("name", "mockedName"");
-//    MockitoException
-//    MockedStatic<HttpSession> mockedSession = mockStatic(HttpSession.class);
-
-//    mockedSession.when(HttpSession::getAttribute("currentUserUsername")).thenReturn("name");
-
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
 
-        ServiceConfig.initialize("conf/ds-license*.yaml");
+        ServiceConfig.initialize("conf/ds-license*.yaml", "ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
@@ -58,8 +45,13 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
     @Test
     public void testAuditLog() throws SQLException {
 
-        HttpSession mockedSession = Mockito.mock(HttpSession.class);
-        Mockito.when(mockedSession.getAttribute("oauth_user")).thenReturn("mockedName");
+        MessageImpl message = new MessageImpl();
+        AccessToken mockedToken = Mockito.mock(AccessToken.class);
+        Mockito.when(mockedToken.getName()).thenReturn("mockedName");
+        message.put(KBAuthorizationInterceptor.ACCESS_TOKEN, mockedToken);
+
+        MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);
+        mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
 
         String key = "keyAuditTest";
         String value = "unit_test_value";
@@ -67,9 +59,9 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         String valueUpdated = "unit_test_value_updated";
         String valueEnglishUpdated = "unit_test_value_en_updated";
 
-        long presentationTypeId = LicenseModuleFacade.persistLicensePresentationType(key, value, valueEnglish, mockedSession);
-        LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated,valueEnglishUpdated,mockedSession);
-        LicenseModuleFacade.deletePresentationType(key, mockedSession);
+        long presentationTypeId = LicenseModuleFacade.persistLicensePresentationType(key, value, valueEnglish);
+        LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated,valueEnglishUpdated);
+        LicenseModuleFacade.deletePresentationType(key);
 
         ArrayList<AuditEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
 
@@ -86,15 +78,15 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, updateAuditLog.getChangeName());
         assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, deleteAuditLog.getChangeName());
 
-        assertEquals("", createAuditLog.getTextBefore());
-        //TODO Jonatan, value not as expected. 
+        assertNull(createAuditLog.getTextBefore());
+        //TODO: This should be fixed together with: DRA-2085
         assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value / unit_test_value_en\n", updateAuditLog.getTextBefore());
         assertEquals("PresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", deleteAuditLog.getTextBefore());
 
-      //TODO Jonatan, value not as expected.
+      //TODO: This should be fixed together with: DRA-2085
         assertEquals("PresentationType value DK/En:unit_test_value / unit_test_value_en\n", createAuditLog.getTextAfter());
         assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", updateAuditLog.getTextAfter()); //Tjek op på det
-        assertEquals("", deleteAuditLog.getTextAfter());
+        assertNull(deleteAuditLog.getTextAfter());
 
         assertEquals("mockedName", createAuditLog.getUserName());
         assertEquals("mockedName", updateAuditLog.getUserName());
@@ -110,5 +102,8 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
 
         assertTrue(createAuditLog.getModifiedTime()<updateAuditLog.getModifiedTime());
         assertTrue(updateAuditLog.getModifiedTime()<deleteAuditLog.getModifiedTime());
+
+        // Close the MockedStatic JAXRSUtils.class when the test is done, so it don't interfere with other test classes
+        mocked.close();
     }
 }
