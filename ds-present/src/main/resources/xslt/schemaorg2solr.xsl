@@ -677,6 +677,12 @@
       </f:string>
     </xsl:if>
 
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:title_restricted') != ''">
+          <f:string key="title_restricted">
+              <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:title_restricted')"/>
+          </f:string>
+      </xsl:if>
+
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:has_kaltura_id') != ''">
       <f:string key="has_kaltura_id">
         <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:has_kaltura_id')"/>
