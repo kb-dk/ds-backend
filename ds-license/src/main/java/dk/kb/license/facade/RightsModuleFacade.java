@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
 
-    private static final String regexpDsIdPattern="([a-z0-9.]+):([a-zA-Z0-9:._-]+)";
+    private static final String regexpDsIdPattern = "([a-z0-9.]+):([a-zA-Z0-9:._-]+)";
     private static final Pattern dsIdPattern = Pattern.compile(regexpDsIdPattern);
 
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
@@ -44,14 +44,14 @@ public class RightsModuleFacade {
     /**
      * Retrieves a restrictedID output object from the database
      *
-     * @param id the id value
-     * @param idType type of ID
+     * @param id       the id value
+     * @param idType   type of ID
      * @param platform The platform
      * @return
      * @throws SQLException
      */
     public static RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) throws SQLException {
-        return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
+        return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
     }
 
     private static ObjectTypeEnumDto getObjectTypeEnumFromRestrictedIdType(IdTypeEnumDto restrictedIdType) {
@@ -76,7 +76,7 @@ public class RightsModuleFacade {
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) throws SQLException {
         validateCommentLength(restrictedIdInputDto.getComment());
 
-        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
+        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
             String validProductionId = Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
             restrictedIdInputDto.setIdValue(validProductionId);
         }
@@ -86,11 +86,7 @@ public class RightsModuleFacade {
         }
 
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
-            long id = ((RightsModuleStorage) storage).createRestrictedId(
-                    restrictedIdInputDto.getIdValue(),
-                    restrictedIdInputDto.getIdType().getValue(),
-                    restrictedIdInputDto.getPlatform().getValue(),
-                    restrictedIdInputDto.getComment());
+            long id = ((RightsModuleStorage) storage).createRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType().getValue(), restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getComment());
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
@@ -125,8 +121,7 @@ public class RightsModuleFacade {
             ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType().getValue(), idToDelete.getPlatform().toString());
             AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), idToDelete.getIdValue(), change.getBefore(), change.getAfter());
             storage.persistAuditLog(logEntry);
-            log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.",
-                    id, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
+            log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.", id, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
             return deletedCount;
         });
     }
@@ -144,17 +139,15 @@ public class RightsModuleFacade {
 
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             long id = updateRestrictedIdCommentInputDto.getId();
-            RestrictedIdOutputDto oldVersion = ((RightsModuleStorage)storage).getRestrictedIdById(id);
+            RestrictedIdOutputDto oldVersion = ((RightsModuleStorage) storage).getRestrictedIdById(id);
             if (oldVersion == null) {
-                throw new NotFoundServiceException("updated restricted Id not found " + updateRestrictedIdCommentInputDto.toString());
+                throw new NotFoundServiceException("updated restricted Id not found " + updateRestrictedIdCommentInputDto);
             }
-            ((RightsModuleStorage) storage).updateRestrictedIdComment(
-                    updateRestrictedIdCommentInputDto.getId(),
-                    updateRestrictedIdCommentInputDto.getComment());
+            ((RightsModuleStorage) storage).updateRestrictedIdComment(updateRestrictedIdCommentInputDto.getId(), updateRestrictedIdCommentInputDto.getComment());
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(oldVersion.getIdValue(), oldVersion.getIdType());
             }
-            RestrictedIdOutputDto newVersion = ((RightsModuleStorage)storage).getRestrictedIdById(id);
+            RestrictedIdOutputDto newVersion = ((RightsModuleStorage) storage).getRestrictedIdById(id);
 
             ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion, newVersion);
             AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(newVersion.getIdType()), newVersion.getIdValue(), change.getBefore(), change.getAfter());
@@ -177,17 +170,12 @@ public class RightsModuleFacade {
                 log.debug("Adding restricted id type='{}' with value='{}'", id.getIdType(), id.getIdValue());
                 validateCommentLength(id.getComment());
 
-                if (id.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID){
+                if (id.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
                     String validProductionId = Util.validateDrProductionIdFormat(id.getIdValue());
                     id.setIdValue(validProductionId);
                 }
 
-                long objectId = ((RightsModuleStorage) storage).createRestrictedId(
-                        id.getIdValue(),
-                        id.getIdType().getValue(),
-                        id.getPlatform().getValue(),
-                        id.getComment()
-                );
+                long objectId = ((RightsModuleStorage) storage).createRestrictedId(id.getIdValue(), id.getIdType().getValue(), id.getPlatform().getValue(), id.getComment());
                 if (touchDsStorageRecord) {
                     touchRelatedStorageRecords(id.getIdValue(), id.getIdType());
                 }
@@ -197,24 +185,19 @@ public class RightsModuleFacade {
             }
             return null;
         });
-        log.info("Added restricted IDs: [{}] ",
-                restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
+        log.info("Added restricted IDs: [{}] ", restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
 
     }
 
     /**
      * Get all restricted Ids
      *
-     * @param idType only get restricedIds with this idType
+     * @param idType   only get restricedIds with this idType
      * @param platform only get retstrictedIds for this platform
      * @return
      */
     public static List<RestrictedIdOutputDto> getAllRestrictedIds(IdTypeEnumDto idType, PlatformEnumDto platform) {
-        return BaseModuleStorage.performStorageAction("get restricted IDs", RightsModuleStorage.class, storage ->
-                ((RightsModuleStorage) storage).getAllRestrictedIds(
-                        idType.getValue(),
-                        platform.getValue()
-        ));
+        return BaseModuleStorage.performStorageAction("get restricted IDs", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType.getValue(), platform.getValue()));
     }
 
     /**
@@ -222,12 +205,12 @@ public class RightsModuleFacade {
      * If no drHoldbackValue is found for the given content and form, a {@link NotFoundServiceException} is thrown.
      *
      * @param content the content identifier, must be a valid integer.
-     * @param form the form identifier, must be a valid integer.
+     * @param form    the form identifier, must be a valid integer.
      * @return the drHoldbackValue as a {@link String} if found.
      * @throws NotFoundServiceException if no drHoldbackValue is found for the
-     *                                   specified content and form.
+     *                                  specified content and form.
      */
-    public static String getDrHoldbackValueFromContentAndFormValues(Integer content, Integer form)  {
+    public static String getDrHoldbackValueFromContentAndFormValues(Integer content, Integer form) {
         return BaseModuleStorage.performStorageAction("Get drHoldbackValue", RightsModuleStorage.class, storage -> {
             String id = ((RightsModuleStorage) storage).getDrHoldbackValueFromContentAndForm(content, form);
             if (id == null) {
@@ -268,7 +251,7 @@ public class RightsModuleFacade {
 
         RightsCalculationOutputDto output = new RightsCalculationOutputDto();
 
-        switch (rightsCalculationInputDto.getPlatform()){
+        switch (rightsCalculationInputDto.getPlatform()) {
             case DRARKIV:
                 RightsCalculationOutputDrDto drOutput = RightsCalculation.calculateDrRights(rightsCalculationInputDto);
                 output.setDr(drOutput);
@@ -277,8 +260,7 @@ public class RightsModuleFacade {
                 log.error("The generic format haven't been implemented yet and therefore it cannot be used");
                 throw new InternalServiceException("The generic format haven't been implemented yet");
             default:
-                throw new InternalServiceException("A valid platform enum should have been specified. Allowed values are: '" +
-                        Arrays.toString(PlatformEnumDto.values()) + "'");
+                throw new InternalServiceException("A valid platform enum should have been specified. Allowed values are: '" + Arrays.toString(PlatformEnumDto.values()) + "'");
 
         }
     }
@@ -289,8 +271,8 @@ public class RightsModuleFacade {
      * The method performs a storage action to retrieve the restriction status
      * for the ID and returns true if the ID is restricted, and false otherwise.
      *
-     * @param id the ID to check for restrictions
-     * @param idType the type of the ID. Types are: ds_id, dr_produktions_id, strict_title
+     * @param id       the ID to check for restrictions
+     * @param idType   the type of the ID. Types are: ds_id, dr_produktions_id, strict_title
      * @param platform the platform where the ID is being checked (e.g. DR Archive)
      * @return true if the ID is restricted; false otherwise
      * @throws SQLException if an error occurs during the SQL process.
@@ -305,13 +287,13 @@ public class RightsModuleFacade {
 
     /**
      * Checks if the specified production code from metadata is allowed based on the provided platform.
-     *
+     * <p>
      * This method interacts with the storage system to determine whether the given production
      * code is considered allowed. It performs a storage action to retrieve the restriction status
      * for the production code and returns true if the code is allowed, and false otherwise.
      *
      * @param productionCode the production code to check for allowance
-     * @param platform the platform where the production code is being checked (e.g. DR Archive)
+     * @param platform       the platform where the production code is being checked (e.g. DR Archive)
      * @return true if the production code is allowed; false otherwise
      */
     public static boolean isProductionCodeAllowed(String productionCode, String platform) {
@@ -319,7 +301,7 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(productionCode, IdTypeEnumDto.OWNPRODUCTION_CODE.getValue(), platform);
             // If the object is null, then productionCode from metadata is not allowed
 
-            if (idOutput == null){
+            if (idOutput == null) {
                 log.debug("The specified production code '{}' is not known in the database. Therefore it cannot be allowed.", productionCode);
                 return false;
             } else {
@@ -336,11 +318,7 @@ public class RightsModuleFacade {
      */
     public static long createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
         return BaseModuleStorage.performStorageAction("Create DR holdback rule", RightsModuleStorage.class, storage -> {
-            long id = ((RightsModuleStorage)storage).createDrHoldbackRule(
-                    drHoldbackRuleInputDto.getDrHoldbackValue(),
-                    drHoldbackRuleInputDto.getName(),
-                    drHoldbackRuleInputDto.getDays()
-            );
+            long id = ((RightsModuleStorage) storage).createDrHoldbackRule(drHoldbackRuleInputDto.getDrHoldbackValue(), drHoldbackRuleInputDto.getName(), drHoldbackRuleInputDto.getDays());
             ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleInputDtoChanges(drHoldbackRuleInputDto);
             AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackRuleInputDto.getDrHoldbackValue(), null, changes.getAfter());
             storage.persistAuditLog(logEntry);
@@ -355,9 +333,9 @@ public class RightsModuleFacade {
      */
     public static void deleteDrHoldbackRule(String drHoldbackValue) {
         BaseModuleStorage.performStorageAction("Delete DR holdback rule", RightsModuleStorage.class, storage -> {
-            DrHoldbackRuleOutputDto drHoldbackRule = ((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackValue);
+            DrHoldbackRuleOutputDto drHoldbackRule = ((RightsModuleStorage) storage).getDrHoldbackRuleFromValue(drHoldbackValue);
             ChangeDifferenceText changes = RightsChangelogGenerator.deleteDrHoldbackRuleOutputDtoChanges(drHoldbackRule);
-            ((RightsModuleStorage)storage).deleteDrHoldbackRule(drHoldbackValue);
+            ((RightsModuleStorage) storage).deleteDrHoldbackRule(drHoldbackValue);
             AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRule.getId(), ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackValue, changes.getBefore(), null);
             storage.persistAuditLog(logEntry);
             return null;
@@ -366,14 +344,16 @@ public class RightsModuleFacade {
 
     /**
      * get all holdback rules for DR
+     *
      * @return
      */
     public static List<DrHoldbackRuleOutputDto> getAllDrHoldbackRules() {
-        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage)storage).getAllDrHoldbackRules());
+        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllDrHoldbackRules());
     }
 
     /**
      * Retrieve the number of days for a holdback rule from a drHoldbackValue
+     *
      * @param drHoldbackValue the drHoldbackValue of the dr holdback rule
      * @return the number of
      **/
@@ -383,6 +363,7 @@ public class RightsModuleFacade {
 
     /**
      * Retrieve the number of days for a holdback rule from a drHoldbackValue
+     *
      * @param name the name of the dr holdback rule
      * @return the number of
      **/
@@ -397,8 +378,8 @@ public class RightsModuleFacade {
      **/
     public static void updateDrHoldbackDaysFromDrHoldbackValue(String drHoldbackValue, Integer days) {
         BaseModuleStorage.performStorageAction("update DR holdback days", RightsModuleStorage.class, storage -> {
-            Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromValue(drHoldbackValue);
-            long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromValue(drHoldbackValue);
+            Integer daysBefore = ((RightsModuleStorage) storage).getDrHoldbackDaysFromValue(drHoldbackValue);
+            long id = ((RightsModuleStorage) storage).getDrHoldbackRuleIdFromValue(drHoldbackValue);
             ((RightsModuleStorage) storage).updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue, days);
             AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackValue, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
@@ -414,8 +395,8 @@ public class RightsModuleFacade {
      **/
     public static void updateDrHoldbackDaysFromName(String name, Integer days) {
         BaseModuleStorage.performStorageAction("update DR holdback days", RightsModuleStorage.class, storage -> {
-            Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromName(name);
-            long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromName(name);
+            Integer daysBefore = ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name);
+            long id = ((RightsModuleStorage) storage).getDrHoldbackRuleIdFromName(name);
             ((RightsModuleStorage) storage).updateDrHoldbackDaysFromName(name, days);
             AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, name, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
@@ -432,17 +413,11 @@ public class RightsModuleFacade {
     public static List<Long> createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
         return BaseModuleStorage.performStorageAction("Create DR holdback ranges for " + drHoldbackRangeInputDto.getDrHoldbackValue(), RightsModuleStorage.class, storage -> {
             List<Long> idList = new ArrayList<>();
-            for(DrHoldbackRangesDto rangeDto: drHoldbackRangeInputDto.getRanges()) {
-                if (((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackRangeInputDto.getDrHoldbackValue()) == null) {
+            for (DrHoldbackRangesDto rangeDto : drHoldbackRangeInputDto.getRanges()) {
+                if (((RightsModuleStorage) storage).getDrHoldbackRuleFromValue(drHoldbackRangeInputDto.getDrHoldbackValue()) == null) {
                     throw new InvalidArgumentServiceException("No drHoldbackValue: " + drHoldbackRangeInputDto.getDrHoldbackValue());
                 }
-                long objectId = ((RightsModuleStorage)storage).createDrHoldbackRange(
-                        rangeDto.getContentRangeFrom(),
-                        rangeDto.getContentRangeTo(),
-                        rangeDto.getFormRangeFrom(),
-                        rangeDto.getFormRangeTo(),
-                        drHoldbackRangeInputDto.getDrHoldbackValue()
-                );
+                long objectId = ((RightsModuleStorage) storage).createDrHoldbackRange(rangeDto.getContentRangeFrom(), rangeDto.getContentRangeTo(), rangeDto.getFormRangeFrom(), rangeDto.getFormRangeTo(), drHoldbackRangeInputDto.getDrHoldbackValue());
                 ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRangesChanges(drHoldbackRangeInputDto.getRanges());
                 AuditLogEntry logEntry = new AuditLogEntry(objectId, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackRangeInputDto.getDrHoldbackValue(), null, changes.getAfter());
                 storage.persistAuditLog(logEntry);
@@ -460,9 +435,9 @@ public class RightsModuleFacade {
     public static void deleteRangesForDrHoldbackValue(String drHoldbackValue) {
         BaseModuleStorage.performStorageAction("Delete DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> {
             List<DrHoldbackRangeOutputDto> oldRanges = ((RightsModuleStorage) storage).getDrHoldbackRangesForDrHoldbackValue(drHoldbackValue);
-            ((RightsModuleStorage)storage).deleteRangesForDrHoldbackValue(drHoldbackValue);
+            ((RightsModuleStorage) storage).deleteRangesForDrHoldbackValue(drHoldbackValue);
             ChangeDifferenceText changes = RightsChangelogGenerator.deleteDrHoldbackRangesChanges(oldRanges); //This is weird but will be refactored completely in DRA-2085
-            for (DrHoldbackRangeOutputDto rangeDto: oldRanges) {
+            for (DrHoldbackRangeOutputDto rangeDto : oldRanges) {
                 AuditLogEntry logEntry = new AuditLogEntry(rangeDto.getId(), ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, changes.getAfter(), null);
                 storage.persistAuditLog(logEntry);
             }
@@ -477,7 +452,7 @@ public class RightsModuleFacade {
      * @return
      */
     public static List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackValue) {
-        return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage-> ((RightsModuleStorage)storage).getDrHoldbackRangesForDrHoldbackValue(drHoldbackValue));
+        return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackRangesForDrHoldbackValue(drHoldbackValue));
     }
 
     private static void validateCommentLength(String comment) {
@@ -496,12 +471,13 @@ public class RightsModuleFacade {
 
     /**
      * Based on idType, touch related storage records, so that they can be re-indexed with the new information.
-     * @param id which have been updated in the rights table
+     *
+     * @param id     which have been updated in the rights table
      * @param idType to determine how related records are updated.
      * @return amount of records touched in DS-Storage.
      */
     public static int touchRelatedStorageRecords(String id, IdTypeEnumDto idType) {
-        switch (idType){
+        switch (idType) {
             case DS_ID:
                 return touchStorageRecordById(id);
             // TODO: Implement the rest of these touches by solr queries-
@@ -518,6 +494,7 @@ public class RightsModuleFacade {
 
     /**
      * Touch a single ID directly in DS-Storage.
+     *
      * @param id to touch in DS-storage.
      * @return amount of records touched in DS-Storage.
      */
@@ -529,13 +506,14 @@ public class RightsModuleFacade {
             }
             return count.getCount();
         } catch (NotFoundServiceException e) {
-            log.info("Touching storage record not found " +id);
+            log.info("Touching storage record not found " + id);
             return 0;
         }
     }
 
     /**
      * Query solr for all records where the restricted title is present and touch the records in DS-storage.
+     *
      * @param strictTitle to query solr for.
      * @return amount of records touched in DS-Storage.
      */
@@ -546,6 +524,7 @@ public class RightsModuleFacade {
 
     /**
      * Query solr for all records where the productionCode is present and touch the records in DS-storage.
+     *
      * @param productionCode to query solr for.
      * @return amount of records touched in DS-Storage.
      */
@@ -556,6 +535,7 @@ public class RightsModuleFacade {
 
     /**
      * Query solr for all records where the drProductionId is present and touch the records in DS-storage.
+     *
      * @param drProductionId to query solr for.
      * @return amount of records touched in DS-Storage.
      */
@@ -568,7 +548,8 @@ public class RightsModuleFacade {
     /**
      * Perform a solr query as {@code solrField:"fieldValue"} and for each record in the solr response get the id for
      * each record and touch the related DS-Record in DS-Storage.
-     * @param solrField to query for the fieldValue.
+     *
+     * @param solrField  to query for the fieldValue.
      * @param fieldValue to query for.
      * @return the amount of records touched in DS-Storage.
      */
@@ -584,7 +565,7 @@ public class RightsModuleFacade {
             try {
                 SolrQuery query = getIdSolrQuery(solrField, fieldValue, pageSize);
 
-                while (true){
+                while (true) {
                     // Update start value before the query is fired against the server
                     query.setStart(start);
 
@@ -595,7 +576,7 @@ public class RightsModuleFacade {
                     // For each record in the result touch the related DS-storage record
                     for (SolrDocument doc : results) {
                         RecordsCountDto touched = touchStorageRecords(doc);
-                        if (touched != null && touched.getCount() != null){
+                        if (touched != null && touched.getCount() != null) {
                             touchedRecordsCount = touchedRecordsCount + touched.getCount();
                         }
                     }
@@ -620,9 +601,10 @@ public class RightsModuleFacade {
 
     /**
      * Create a solr query on the form {@code solrField:"fieldValue"} where the rows param is set to {@code pageSize} The query only returns the field ID from the documents.
-     * @param solrField to query.
+     *
+     * @param solrField  to query.
      * @param fieldValue used to query the field defined above.
-     * @param pageSize which determines the amount of documents returned by the query.
+     * @param pageSize   which determines the amount of documents returned by the query.
      * @return a {@link SolrQuery} that can be fired as is or further developed for paging etc.
      */
     private static SolrQuery getIdSolrQuery(String solrField, String fieldValue, int pageSize) {
@@ -635,6 +617,7 @@ public class RightsModuleFacade {
 
     /**
      * Touch a related DS-Record in the backing DS-Storage extracting the ID from a given solr document and use that ID when querying the DS-StorageClient
+     *
      * @param doc solr document to extract ID from.
      */
     private static RecordsCountDto touchStorageRecords(SolrDocument doc) {

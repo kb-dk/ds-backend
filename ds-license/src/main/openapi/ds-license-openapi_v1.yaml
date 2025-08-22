@@ -9,29 +9,25 @@ info:
   license:
     name: '${license.name}'
     url: '${license.url}'
-servers:
-  #  /api must match servlet-mapping in web.xml
+servers: #  /api must match servlet-mapping in web.xml
   - url: '${config:openapi.serverurl}'
     description: 'Version 1'
 
 paths:
-
   /checkAccessForIds:
     post:
       tags:
         - '${project.name}'
       summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. ID filter field is defined in the YAML configuration'
-      security: 
+      security:
         - KBOAuth:
-          - any       
-      operationId: checkAccessForIds  
+            - any
+      operationId: checkAccessForIds
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/CheckAccessForIdsInput'
-                
-    
       responses:
         '200':
           description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used.'
@@ -40,7 +36,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/CheckAccessForIdsOutput'
 
-
   /checkAccessForResourceIds:
     post:
       tags:
@@ -48,15 +43,13 @@ paths:
       summary: 'Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
       security:
         - KBOAuth:
-          - any
+            - any
       operationId: checkAccessForResourceIds
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/CheckAccessForIdsInput'
-
-
       responses:
         '200':
           description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. IDs that exists but with no access will be return in nonAccessId field'
@@ -65,9 +58,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/CheckAccessForIdsOutput'
 
-
-
-
   /validateAccess:
     post:
       tags:
@@ -75,14 +65,13 @@ paths:
       summary: 'Validate if user has access to all groups in input.'
       security:
         - KBOAuth:
-          - any
+            - any
       operationId: validateAccess
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/ValidateAccessInput'
-
       responses:
         '200':
           description: 'True or false'
@@ -96,16 +85,15 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get a list of all licences that validates from user attributes.'
-      security: 
+      security:
         - KBOAuth:
-          - any      
-      operationId: getUserLicenses       
+            - any
+      operationId: getUserLicenses
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/GetUsersLicensesInput'
-    
       responses:
         '200':
           description: 'Returns the names of all the licences that validates for the user.'
@@ -113,50 +101,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUsersLicensesOutput'
-             
-                                          
-                                          
+
   /getUserLicenseQuery:
     post:
       tags:
         - '${project.name}'
       summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
-      security: 
+      security:
         - KBOAuth:
-          - any      
-      operationId: getUserLicenseQuery      
+            - any
+      operationId: getUserLicenseQuery
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/GetUserQueryInput'
-                
-    
       responses:
         '200':
           description: 'The Solr filter query.'
           content:
-            application/json:    # Media type
-              schema:            # Request body contents
-                $ref: '#/components/schemas/GetUsersFilterQueryOutput'                    
-                example: '{"filterQuery": "(((subject:\"Tyskland\") OR (id:*manus!judsam!*)) -(access_blokeret:true))"}'                      
-
+            application/json: # Media type
+              schema: # Request body contents
+                $ref: '#/components/schemas/GetUsersFilterQueryOutput'
+                example: '{"filterQuery": "(((subject:\"Tyskland\") OR (id:*manus!judsam!*)) -(access_blokeret:true))"}'
 
   /getUserGroups:
     post:
       tags:
         - '${project.name}'
       summary: 'Get the groups that the user has access to'
-      security: 
+      security:
         - KBOAuth:
-          - any            
-      operationId: getUserGroups       
+            - any
+      operationId: getUserGroups
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents                                             
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/GetUserGroupsInput'
-                             
       responses:
         '200':
           description: 'Names of the groups and presentationtype that the user has access to'
@@ -164,22 +146,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsOutput'
-            
+
   /getUserGroupsAndLicenses:
     post:
       tags:
         - '${project.name}'
       summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
-      security: 
+      security:
         - KBOAuth:
-          - any      
-      operationId: getUserGroupsAndLicenses       
+            - any
+      operationId: getUserGroupsAndLicenses
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents                                             
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/GetUserGroupsAndLicensesInput'
-                             
       responses:
         '200':
           description: 'List all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
@@ -212,7 +193,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuditEntryOutput'
-
 
   /audit/auditEntriesByObjectId:
     get:
@@ -285,7 +265,6 @@ paths:
                 items:
                   type: string
 
-
   /rights/restrictedIds:
     get:
       summary: get restricted ids from idType and platform
@@ -317,7 +296,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RestrictedIdOutput'
-
     post:
       description: create multiple restricted ids
       tags:
@@ -452,7 +430,7 @@ paths:
       description: Only comment can be updated
       security:
         - KBOAuth:
-           - any
+            - any
       parameters:
         - name: touchRecord
           in: query
@@ -580,8 +558,8 @@ paths:
           description: DR holdback days
           content:
             application/json:
-                schema:
-                  type: integer
+              schema:
+                type: integer
         '404':
           description: DR holdback day not found
     put:
@@ -707,7 +685,7 @@ paths:
         - 'DsRights'
       operationId: calculateRights
       summary: "Calculate restrictions for a record based on input values"
-#     No Oauth. Only called by system calls when indexing and no oauth is used system2system in ingest(write) environment.
+      # No Oauth. Only called by system calls when indexing and no oauth is used system2system in ingest(write) environment.
       requestBody:
         required: true
         content:
@@ -722,22 +700,20 @@ paths:
               schema:
                 $ref: "#/components/schemas/RightsCalculationOutput"
 
-
   /monitor:
     post:
       tags:
         - Service
       summary: 'Still TODO, Some statistics for monitoring the application'
-      operationId: extractStatistics       
-     
+      operationId: extractStatistics
       responses:
         '200':
           description: 'TODO'
           content:
             application/json:
-              schema:           
+              schema:
                 type: string
-       
+
   /monitor/whoami:
     get:
       tags:
@@ -746,7 +722,7 @@ paths:
       operationId: probeWhoami
       security:
         - KBOAuth:
-          - public
+            - public
       responses:
         '200':
           description: 'OK'
@@ -754,7 +730,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Whoami'
-            
 
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -809,67 +784,62 @@ paths:
               schema:
                 type: string
 
-
-
 components:
   schemas:
-
     CheckAccessForIdsInput:
-      type: object
-      properties: 
-        presentationType:
-          type: string
-          example: 'Stream'
-        accessIds:     
-          type: array
-          example: ['id1','id2']
-          items:
-            type: string                
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserObjAttribute'
-          
-          
-
-    CheckAccessForIdsOutput:    
       type: object
       properties:
         presentationType:
           type: string
-        query:     
-          type: string
-          description: 'Solr query'  
-        accessIds:     
-           type: array
-           items:
-             type: string
-        nonAccessIds:     
-           type: array
-           items:
-             type: string        
-        nonExistingIds:     
-           type: array
-           items:
-             type: string             
-
-    ValidateAccessInput:
-      type: object
-      properties: 
-        presentationType:
-          type: string
           example: 'Stream'
-        groups:     
+        accessIds:
           type: array
-          example: ['group1','group2']
+          example: [ 'id1','id2' ]
           items:
-            type: string       
+            type: string
         attributes:
           type: array
           items:
             $ref: '#/components/schemas/UserObjAttribute'
 
-    ValidateAccessOutput:    
+    CheckAccessForIdsOutput:
+      type: object
+      properties:
+        presentationType:
+          type: string
+        query:
+          type: string
+          description: 'Solr query'
+        accessIds:
+          type: array
+          items:
+            type: string
+        nonAccessIds:
+          type: array
+          items:
+            type: string
+        nonExistingIds:
+          type: array
+          items:
+            type: string
+
+    ValidateAccessInput:
+      type: object
+      properties:
+        presentationType:
+          type: string
+          example: 'Stream'
+        groups:
+          type: array
+          example: [ 'group1','group2' ]
+          items:
+            type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserObjAttribute'
+
+    ValidateAccessOutput:
       type: object
       properties:
         access:
@@ -877,7 +847,7 @@ components:
 
     LicenseOverview:
       type: object
-      properties: 
+      properties:
         name:
           type: string
         description:
@@ -886,27 +856,26 @@ components:
           type: string
         validTo:
           type: string
-     
 
     UserObjAttribute:
       type: object
       properties:
-        attribute:               
+        attribute:
           type: string
           description: 'Key/Values attributes describing the user'
-          example: 'wayf.mail'  
-        values:                    
-           type: array
-           example: ['teg@kb.dk']
-           items:
-             type: string     
+          example: 'wayf.mail'
+        values:
+          type: array
+          example: [ 'teg@kb.dk' ]
+          items:
+            type: string
 
     GetUserGroupsAndLicensesInput:
       type: object
-      properties:                
-        locale:         
+      properties:
+        locale:
           type: string
-          example: 'da'        
+          example: 'da'
         attributes:
           type: array
           items:
@@ -914,7 +883,7 @@ components:
 
     GetUserGroupsAndLicensesOutput:
       type: object
-      properties:                              
+      properties:
         groups:
           type: array
           items:
@@ -924,20 +893,19 @@ components:
           items:
             $ref: '#/components/schemas/LicenseOverview'
         allPresentationTypes:
-           type: array
-           items:
-             type: string   
+          type: array
+          items:
+            type: string
         allGroups:
           type: array
           items:
-            type: string   
+            type: string
 
-       
     GetUsersLicensesInput:
       type: object
-      properties:                
+      properties:
         locale:
-          type: string        
+          type: string
         attributes:
           type: array
           items:
@@ -945,7 +913,7 @@ components:
 
     GetUsersLicensesOutput:
       type: object
-      properties:                
+      properties:
         licenses:
           type: array
           items:
@@ -953,66 +921,62 @@ components:
 
     GetUsersFilterQueryOutput:
       type: object
-      properties:                
+      properties:
         filterQuery:
-          type: string      
-          
+          type: string
 
     GetUserQueryInput:
       type: object
-      properties: 
+      properties:
         presentationType:
-          type: string             
+          type: string
         attributes:
           type: array
           items:
             $ref: '#/components/schemas/UserObjAttribute'
-                      
+
     GetUserQueryOutput:
       type: object
-      properties: 
+      properties:
         query:
-          type: string             
-        userLicenseGroups:   
+          type: string
+        userLicenseGroups:
           type: array
           items:
-            type: string 
-        userNotInDenyGroups:   
+            type: string
+        userNotInDenyGroups:
           type: array
           items:
-            type: string 
+            type: string
 
-           
     GetUserGroupsInput:
       type: object
-      properties: 
-        locale:        
+      properties:
+        locale:
           type: string
-          example: 'da'             
+          example: 'da'
         attributes:
           type: array
           items:
             $ref: '#/components/schemas/UserObjAttribute'
-           
-           
+
     GetUserGroupsOutput:
       type: object
-      properties:                    
+      properties:
         groups:
           type: array
           items:
             $ref: '#/components/schemas/UserGroup'
-            
-            
+
     UserGroup:
       type: object
-      properties:                    
+      properties:
         groupName:
-          type: string                 
-        presentationTypes:   
+          type: string
+        presentationTypes:
           type: array
           items:
-            type: string 
+            type: string
 
     # Rights module
     PlatformEnum:
@@ -1063,7 +1027,8 @@ components:
           type: integer
           format: int64
         modifiedTime:
-          type: long
+          type: integer
+          format: int64
         userName:
           type: string
         changeType:
@@ -1083,8 +1048,7 @@ components:
         - idValue
         - idType
         - platform
-
-      properties:   
+      properties:
         idValue:
           type: string
         idType:
@@ -1098,14 +1062,12 @@ components:
       type: object
       required:
         - id
-
       properties:
         id:
           type: integer
           format: int64
         comment:
           type: string
-
 
     RestrictedIdOutput:
       type: object
@@ -1271,8 +1233,7 @@ components:
     RightsCalculationOutput:
       description: "A Data Transfer Object containing the solr fields and values that have been created from the calculations based on a RightsCalculationInput object."
       type: object
-      properties:
-        # Platform nesting of calculation results. When more platforms need rights calculations output objects should be appended here.
+      properties: # Platform nesting of calculation results. When more platforms need rights calculations output objects should be appended here.
         generel:
           $ref: "#/components/schemas/RightsCalculationOutputGeneral"
         dr:
@@ -1408,28 +1369,24 @@ components:
           type: integer
           format: int32
           description: 'Number of records updated'
-          
-  securitySchemes:
 
+  securitySchemes:
     KBOAuth:
       type: oauth2
       description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
       flows:
-        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+        implicit: # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
           #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
           #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
-          authorizationUrl: https://api.example.com/oauth2/authorize 
+          authorizationUrl: https://api.example.com/oauth2/authorize
           scopes:
             generic_ds: 'Scope used for all Digitale Samlinger services'
             # Project specific roles
             read: 'read data'
             write: 'modify or delete data'
-
             # General roles at the Royal Danish Library
             devel: 'broad read access'
             admin: 'all rights'
-
             # Meta role controlling authorization behaviour
             public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
             any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
-                
