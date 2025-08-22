@@ -7,6 +7,7 @@ import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import org.apache.solr.common.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ public class RightsCalculation {
      * @return true if allowed, otherwise false
      */
     public static boolean isProductionCodeAllowed(String productionCode){
-        return RightsModuleFacade.isProductionCodeAllowed(productionCode, PlatformEnumDto.DRARKIV.getValue());
+        return !StringUtils.isEmpty(productionCode) && RightsModuleFacade.isProductionCodeAllowed(productionCode, PlatformEnumDto.DRARKIV.getValue());
     }
 
     /**
@@ -120,10 +121,10 @@ public class RightsCalculation {
     private static void setRestrictionsForRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput) {
         // Do all restrictions checks against the restricted_ids table of the RightsModule
         RestrictionsCalculationInputDto restrictionsInput = rightsCalculationInputDto.getRestrictionsInput();
-        boolean dsIdRestricted = isDsIdRestricted(restrictionsInput.getRecordId());
-        boolean drProductionIdRestricted = isDrProductionIdRestricted(restrictionsInput.getDrProductionId());
-        boolean isProductionCodeAllowed = isProductionCodeAllowed(restrictionsInput.getProductionCode());
-        boolean isTitleRestricted = isTitleRestricted(restrictionsInput.getTitle());
+        boolean dsIdRestricted = !StringUtils.isEmpty(restrictionsInput.getRecordId()) && isDsIdRestricted(restrictionsInput.getRecordId());
+        boolean drProductionIdRestricted = !StringUtils.isEmpty(restrictionsInput.getDrProductionId()) && isDrProductionIdRestricted(restrictionsInput.getDrProductionId());
+        boolean isProductionCodeAllowed = !StringUtils.isEmpty(restrictionsInput.getProductionCode()) && isProductionCodeAllowed(restrictionsInput.getProductionCode());
+        boolean isTitleRestricted = !StringUtils.isEmpty(restrictionsInput.getTitle()) && isTitleRestricted(restrictionsInput.getTitle());
 
         drOutput.setDsIdRestricted(dsIdRestricted);
         drOutput.setDrIdRestricted(drProductionIdRestricted);
