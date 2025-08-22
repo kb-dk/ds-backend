@@ -113,31 +113,31 @@ public class ElementsExtractionHandler extends DefaultHandler {
                     String key = PBCORE_EXTRACT_PATHS.get(currentPath);
                     if (ExtractedPreservicaValues.STARTTIME_KEY.equals(key) ||
                             ExtractedPreservicaValues.ENDTIME_KEY.equals(key)) {
-                        String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(capturedCharacters.toString()).format(DateTimeFormatter.ISO_INSTANT);
+                        String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(capturedCharacters.toString().trim()).format(DateTimeFormatter.ISO_INSTANT);
                         extractedPreservicaValues.setValue(key, cleanedTime);
                     } else {
-                        extractedPreservicaValues.setValue(key, capturedCharacters.toString());
+                        extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
                     }
                 }
                 if (PBCORE_TITLE_TYPE_PATH.equals(currentPath)) {
-                    pbCoreTitleType = capturedCharacters.toString();
+                    pbCoreTitleType = capturedCharacters.toString().trim();
                 }
                 if (PBCORE_TITLE_VALUE_PATH.equals(currentPath)) {
-                    pbCoreTitleValue = capturedCharacters.toString();
+                    pbCoreTitleValue = capturedCharacters.toString().trim();
                 }
             }
             if ("http://id.kb.dk/schemas/supplementary_tvmeter_metadata".equals(metadataType) && TVMETER_EXTRACT_PATHS.containsKey(currentPath)) {
                 if (!hasNielsenData) {
                     hasTvMetadata = true;
                     String key =  TVMETER_EXTRACT_PATHS.get(currentPath);
-                    extractedPreservicaValues.setValue(key, capturedCharacters.toString());
+                    extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
                 }
             }
             if ("http://id.kb.dk/schemas/supplementary_nielsen_metadata".equals(metadataType) &&  NIELSEN_EXTRACT_PATHS.containsKey(currentPath)) {
                 if (!hasTvMetadata) {
                     hasNielsenData = true;
                     String key = NIELSEN_EXTRACT_PATHS.get(currentPath);
-                    extractedPreservicaValues.setValue(key, capturedCharacters.toString());
+                    extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
                 }
             }
 
