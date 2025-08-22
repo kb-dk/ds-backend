@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kaltura.client.types.APIException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.ThumbnailsDto;
 import dk.kb.kaltura.client.DsKalturaClient;
+
+import javax.ws.rs.core.Response;
 
 public class KalturaUtil {
 
@@ -80,12 +83,12 @@ public class KalturaUtil {
             thumbnails.setThumbnails(timeSliceThumbnails);
 
             return thumbnails;
-        } catch (IOException e) {
+        } catch (IOException | APIException e) {
             throw new NotFoundServiceException(e);
         }
     }
 
-    private static synchronized DsKalturaClient getKalturaClient() throws IOException {
+    private static synchronized DsKalturaClient getKalturaClient() throws IOException, APIException {
 
         if (kalturaClientInstance != null) {
             return kalturaClientInstance;
