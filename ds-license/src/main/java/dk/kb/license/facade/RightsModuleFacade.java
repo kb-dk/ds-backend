@@ -264,7 +264,6 @@ public class RightsModuleFacade {
      * @return a {@link RightsCalculationOutputDto} containing the calculated rights.
      */
     public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException {
-        Util.validateNoNullFields(rightsCalculationInputDto);
 
         RightsCalculationOutputDto output = new RightsCalculationOutputDto();
 

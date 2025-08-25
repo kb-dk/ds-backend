@@ -7,6 +7,7 @@ import dk.kb.util.DatetimeParser;
 import dk.kb.util.MalformedIOException;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import org.apache.solr.common.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ public class RightsCalculation {
      */
     public static boolean isDsIdRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DS_ID, PlatformEnumDto.DRARKIV);
+            return !StringUtils.isEmpty(id) && RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DS_ID, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -38,7 +39,7 @@ public class RightsCalculation {
      */
     public static boolean isDrProductionIdRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
+            return !StringUtils.isEmpty(id) && RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -50,7 +51,7 @@ public class RightsCalculation {
      */
     public static boolean isTitleRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.STRICT_TITLE, PlatformEnumDto.DRARKIV);
+            return !StringUtils.isEmpty(id) && RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.STRICT_TITLE, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -62,7 +63,7 @@ public class RightsCalculation {
      * @return true if allowed, otherwise false
      */
     public static boolean isProductionCodeAllowed(String productionCode){
-        return RightsModuleFacade.isProductionCodeAllowed(productionCode, PlatformEnumDto.DRARKIV.getValue());
+        return !StringUtils.isEmpty(productionCode) && RightsModuleFacade.isProductionCodeAllowed(productionCode, PlatformEnumDto.DRARKIV.getValue());
     }
 
     /**
