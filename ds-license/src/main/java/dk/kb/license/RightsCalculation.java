@@ -26,7 +26,7 @@ public class RightsCalculation {
      */
     public static boolean isDsIdRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DS_ID, PlatformEnumDto.DRARKIV);
+            return !StringUtils.isEmpty(id) && RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DS_ID, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -39,7 +39,7 @@ public class RightsCalculation {
      */
     public static boolean isDrProductionIdRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
+            return !StringUtils.isEmpty(id) && RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -51,7 +51,7 @@ public class RightsCalculation {
      */
     public static boolean isTitleRestricted(String id){
         try {
-            return RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.STRICT_TITLE, PlatformEnumDto.DRARKIV);
+            return !StringUtils.isEmpty(id) && RightsModuleFacade.isIdRestricted(id, IdTypeEnumDto.STRICT_TITLE, PlatformEnumDto.DRARKIV);
         } catch (SQLException e) {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
@@ -121,10 +121,10 @@ public class RightsCalculation {
     private static void setRestrictionsForRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput) {
         // Do all restrictions checks against the restricted_ids table of the RightsModule
         RestrictionsCalculationInputDto restrictionsInput = rightsCalculationInputDto.getRestrictionsInput();
-        boolean dsIdRestricted = !StringUtils.isEmpty(restrictionsInput.getRecordId()) && isDsIdRestricted(restrictionsInput.getRecordId());
-        boolean drProductionIdRestricted = !StringUtils.isEmpty(restrictionsInput.getDrProductionId()) && isDrProductionIdRestricted(restrictionsInput.getDrProductionId());
-        boolean isProductionCodeAllowed = !StringUtils.isEmpty(restrictionsInput.getProductionCode()) && isProductionCodeAllowed(restrictionsInput.getProductionCode());
-        boolean isTitleRestricted = !StringUtils.isEmpty(restrictionsInput.getTitle()) && isTitleRestricted(restrictionsInput.getTitle());
+        boolean dsIdRestricted = isDsIdRestricted(restrictionsInput.getRecordId());
+        boolean drProductionIdRestricted = isDrProductionIdRestricted(restrictionsInput.getDrProductionId());
+        boolean isProductionCodeAllowed = isProductionCodeAllowed(restrictionsInput.getProductionCode());
+        boolean isTitleRestricted = isTitleRestricted(restrictionsInput.getTitle());
 
         drOutput.setDsIdRestricted(dsIdRestricted);
         drOutput.setDrIdRestricted(drProductionIdRestricted);
