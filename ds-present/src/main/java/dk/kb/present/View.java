@@ -195,7 +195,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         updateMetadataMapWithProductionCodeDr(metadata, extractedValues.getOrigin(), rightsOutput);
         updateMetadataMapWithDrHoldback(metadata, rightsOutput);
 
-        if (!StringUtils.isEmpty(extractedValues.getProductionId())){
+        if (StringUtils.isNotEmpty(extractedValues.getProductionId())){
             metadata.put("productionId", extractedValues.getProductionId());
             // Check if production ID is restricted from DR.
             log.debug("Performing productionID lookup for id: '{}' in DR restricted ID list.", extractedValues.getProductionId());
@@ -241,7 +241,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             }
         }
 
-        if (!StringUtils.isEmpty(productionCode)) {
+        if (StringUtils.isNotEmpty(productionCode)) {
             boolean allowedProductionCode = rightsOutput.getDr().getProductionCodeAllowed();
             metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
             metadataMap.put("productionCodeValue", productionCode);
