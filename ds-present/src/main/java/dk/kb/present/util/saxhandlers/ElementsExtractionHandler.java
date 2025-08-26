@@ -146,8 +146,10 @@ public class ElementsExtractionHandler extends DefaultHandler {
                 switch (pbCoreTitleType) {
                     case "titel" :
                         extractedPreservicaValues.setValue(ExtractedPreservicaValues.TITLE_KEY, pbCoreTitleValue);
-                    case "originaltitle" :
+                        break;
+                    case "originaltitel" :
                         extractedPreservicaValues.setValue(ExtractedPreservicaValues.ORIGINAL_TITLE_KEY, pbCoreTitleValue);
+                        break;
                 }
                 inPbCoreTitle = false;
             }
