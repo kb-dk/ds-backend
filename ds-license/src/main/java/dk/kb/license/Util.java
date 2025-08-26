@@ -273,11 +273,11 @@ public class Util {
     public static void validateDrProductionIdFormat(String productionId) {
 
 		if (!productionId.matches("\\d+")) {
-			throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should only contain digigts'");
+			throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should only contain digits'");
 		}
 
 		if (productionId.length() <= 7){
-			throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should be at least 8 digigts");
+			throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should be at least 8 digits");
 		}
 
     }
