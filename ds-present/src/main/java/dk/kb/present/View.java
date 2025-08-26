@@ -21,11 +21,11 @@ import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
-import dk.kb.present.util.DataCleanup;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -176,16 +176,18 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private void applyDrStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
         ExtractedPreservicaValues extractedValues;
         try {
-            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content, record.getId());
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
+            extractedValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(content, record.getId());
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            log.error("Error extracting values from Preservica content. recordId: '{}'.", record.getId(), e);
+            throw new InternalServiceException("Error extracting values from Preservica content for record:" + record.getId(), e);
         }
 
         String url = ServiceConfig.getConfig().getString("licensemodule.url");
         DsLicenseClient licenseClient = new DsLicenseClient(url);
 
         PlatformEnumDto platform = PlatformEnumDto.DRARKIV;
-        RightsCalculationOutputDto rightsOutput = licenseClient.calculateRights(extractedValues.asRightsCalculationInputDto(platform, record.getOrigin()));
+        RightsCalculationInputDto rightsInputDto = extractedValues.asRightsCalculationInputDto(platform, record.getOrigin());
+        RightsCalculationOutputDto rightsOutput = licenseClient.calculateRights(rightsInputDto);
 
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
         // The following three methods are all related to holdback and ownproduction calculations.
@@ -193,7 +195,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         updateMetadataMapWithProductionCodeDr(metadata, extractedValues.getOrigin(), rightsOutput);
         updateMetadataMapWithDrHoldback(metadata, rightsOutput);
 
-        if (!extractedValues.getProductionId().isEmpty()){
+        if (StringUtils.isNotEmpty(extractedValues.getProductionId())){
             metadata.put("productionId", extractedValues.getProductionId());
             // Check if production ID is restricted from DR.
             log.debug("Performing productionID lookup for id: '{}' in DR restricted ID list.", extractedValues.getProductionId());
@@ -201,6 +203,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
 
         metadata.put("dsIdRestricted", String.valueOf(rightsOutput.getDr().getDsIdRestricted()));
+        metadata.put("titleRestricted", String.valueOf(rightsOutput.getDr().getTitleRestricted()));
     }
 
     /**
@@ -216,9 +219,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private void applyManifestationStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
         ExtractedPreservicaValues extractedValues;
         try {
-            extractedValues = DataCleanup.extractValuesFromPreservicaContent(content, record.getId());
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
+            extractedValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(content, record.getId());
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            log.error("Error extracting values from Preservica content. recordId: '{}'.", record.getId(), e);
+            throw new InternalServiceException("Error extracting values from Preservica content for record:" + record.getId(), e);
         }
         extractStartAndEndDatesToMetadataMap(metadata, extractedValues);
     }
@@ -231,19 +235,21 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param rightsOutput the {@link RightsCalculationOutputDto} containing rights information related to the production code.
      */
     private void updateMetadataMapWithProductionCodeDr(Map<String, String> metadataMap, String productionCode, RightsCalculationOutputDto rightsOutput){
-        if (productionCode.isEmpty() && origin.equals("ds.tv")) {
-            // Logging at denug as we have lots of records without this information
-            log.debug("Nielsen/Gallup origin was empty. Own production can not be calculated.");
-        } else if (productionCode.length() != 4){
-            log.debug("Nielsen/Gallup origin did not have length 4. Production code allowance will not be calculated correctly. Origin is: '{}'", productionCode);
+        if (log.isDebugEnabled() && origin.equals("ds.tv")) {
+            if (StringUtils.isEmpty(productionCode) || productionCode.length() != 4) {
+                log.debug("Nielsen/Gallup origin did not have length 4. Production code allowance will not be calculated correctly. Origin is: '{}'", productionCode);
+            }
         }
 
-        if (!productionCode.isEmpty()) {
+        if (StringUtils.isNotEmpty(productionCode)) {
             boolean allowedProductionCode = rightsOutput.getDr().getProductionCodeAllowed();
             metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
             metadataMap.put("productionCodeValue", productionCode);
-        } else if (origin.equals("ds.radio")){
+        } else if (origin.equals("ds.radio")) {
             metadataMap.put("productionCodeAllowed", "true");
+        } else if (origin.equals("ds.tv")) {
+            log.debug("Record {} is tv record with no production code");
+            metadataMap.put("productionCodeAllowed", "false");
         }
     }
 
