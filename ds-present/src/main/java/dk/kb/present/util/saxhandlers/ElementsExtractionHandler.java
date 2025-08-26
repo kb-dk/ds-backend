@@ -8,7 +8,9 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-
+/**
+ * Extract multiple values from an XML stream to a {@link ExtractedPreservicaValues}-object.
+ **/
 public class ElementsExtractionHandler extends DefaultHandler {
     private static final String METADATA_PATH = "/XIP/Metadata";
 
@@ -101,7 +103,6 @@ public class ElementsExtractionHandler extends DefaultHandler {
         if (PBCORE_TITLE_PATH.equals(currentPath)) {
             inPbCoreTitle = true;
         }
-
     }
 
     @Override
@@ -129,11 +130,11 @@ public class ElementsExtractionHandler extends DefaultHandler {
             if ("http://id.kb.dk/schemas/supplementary_tvmeter_metadata".equals(metadataType) && TVMETER_EXTRACT_PATHS.containsKey(currentPath)) {
                 if (!hasNielsenData) {
                     hasTvMetadata = true;
-                    String key =  TVMETER_EXTRACT_PATHS.get(currentPath);
+                    String key = TVMETER_EXTRACT_PATHS.get(currentPath);
                     extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
                 }
             }
-            if ("http://id.kb.dk/schemas/supplementary_nielsen_metadata".equals(metadataType) &&  NIELSEN_EXTRACT_PATHS.containsKey(currentPath)) {
+            if ("http://id.kb.dk/schemas/supplementary_nielsen_metadata".equals(metadataType) && NIELSEN_EXTRACT_PATHS.containsKey(currentPath)) {
                 if (!hasTvMetadata) {
                     hasNielsenData = true;
                     String key = NIELSEN_EXTRACT_PATHS.get(currentPath);
@@ -172,8 +173,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
         if (inMetadata) {
             switch (metadataType) {
                 case "http://www.pbcore.org/PBCore/PBCoreNamespace.html":
-                    return
-                            PBCORE_EXTRACT_PATHS.containsKey(currentPath) ||
+                    return PBCORE_EXTRACT_PATHS.containsKey(currentPath) ||
                                     PBCORE_TITLE_TYPE_PATH.equals(currentPath) ||
                                     PBCORE_TITLE_VALUE_PATH.equals(currentPath);
                 case "http://id.kb.dk/schemas/supplementary_tvmeter_metadata":
@@ -195,5 +195,4 @@ public class ElementsExtractionHandler extends DefaultHandler {
         }
         return qName;
     }
-
 }

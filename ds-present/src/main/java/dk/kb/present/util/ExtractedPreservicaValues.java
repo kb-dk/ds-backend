@@ -102,7 +102,6 @@ public class ExtractedPreservicaValues {
         values.put(key, value);
     }
 
-
     /**
      * Converts the current object's data into a {@link RightsCalculationInputDto} instance.
      * <p>
