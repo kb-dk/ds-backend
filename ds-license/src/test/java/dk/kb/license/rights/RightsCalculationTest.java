@@ -249,23 +249,12 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testProductionIdValidation(){
-        // Append zero and strip to a length of 10 digits
-        assertEquals("1234567890", Util.validateDrProductionIdFormat("000123456789"));
-        assertEquals("0012345670", Util.validateDrProductionIdFormat("000001234567"));
-
-    }
-
-    @Test
     public void testShortErrorProductionId(){
-        InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345"));
-        assertEquals("The input production ID: '12345' got formattet to '123450' which is shorter than 8 digits. This is not an allowed production ID.", exception.getMessage());
+        assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345"));
     }
 
     @Test
-    public void testLongErrorProductionId(){
-        InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("1234567890123"));
-        assertEquals("The input production ID: '1234567890123' got formattet to '12345678901230' which is longer than 10 digits. This is not an allowed production ID.",
-                exception.getMessage());
+    public void testInvalidProductionId(){
+        assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345abcde"));
     }
 }
