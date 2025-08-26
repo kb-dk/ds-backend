@@ -63,7 +63,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private boolean hasNielsenData = false;
     private boolean hasTvMetadata = false;
 
-    private boolean inMetadata = false;
+    private boolean insideMetadata = false;
     private String metadataType;
 
     private boolean inPbCoreTitle = false;
@@ -95,8 +95,8 @@ public class ElementsExtractionHandler extends DefaultHandler {
         currentPath += "/" + elementName;
         capturedCharacters.setLength(0);
 
-        if (!inMetadata && METADATA_PATH.equals(currentPath)) {
-            inMetadata = true;
+        if (!insideMetadata && METADATA_PATH.equals(currentPath)) {
+            insideMetadata = true;
             metadataType = attributes.getValue("schemaUri");
         }
 
@@ -108,7 +108,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
 
-        if (inMetadata) {
+        if (insideMetadata) {
             if ("http://www.pbcore.org/PBCore/PBCoreNamespace.html".equals(metadataType)) {
                 if (PBCORE_EXTRACT_PATHS.containsKey(currentPath)) {
                     String key = PBCORE_EXTRACT_PATHS.get(currentPath);
@@ -153,7 +153,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
             }
 
             if (METADATA_PATH.equals(currentPath)) {
-                inMetadata = false;
+                insideMetadata = false;
                 metadataType = null;
             }
         }
@@ -170,7 +170,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     }
 
     private boolean shouldValueBeCaptured() {
-        if (inMetadata) {
+        if (insideMetadata) {
             switch (metadataType) {
                 case "http://www.pbcore.org/PBCore/PBCoreNamespace.html":
                     return PBCORE_EXTRACT_PATHS.containsKey(currentPath) ||
