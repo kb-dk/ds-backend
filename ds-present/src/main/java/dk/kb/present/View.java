@@ -178,7 +178,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         try {
             extractedValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(content, record.getId());
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            log.error("Error extracting values from Preservica content. recordId:'{}'.",record.getId(),e);
+            log.error("Error extracting values from Preservica content. recordId: '{}'.", record.getId(), e);
             throw new InternalServiceException("Error extracting values from Preservica content for record:" + record.getId(), e);
         }
 
