@@ -51,7 +51,7 @@
         <dependency>
           <groupId>dk.kb.storage</groupId>
           <artifactId>ds-storage</artifactId>
-            <version>${project.parent.version}</version>
+            <version>3.0.1-SNAPSHOT</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
@@ -66,7 +66,7 @@
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>${project.parent.version}</version>
+          <version>3.0.1-SNAPSHOT</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>
