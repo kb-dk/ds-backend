@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kaltura.client.types.APIException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class KalturaUtil {
      * @return ThumbnailsDto. Has a default thumbnail, a sprite and list of time sliced thumbnails.
      * @throws IOException If the fileId is not found or internal server error with Kaltura.
      */
-    public static ThumbnailsDto getThumbnails(String fileId,Integer numberOfSlices, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) throws ServiceException {
+    public static ThumbnailsDto getThumbnails(String fileId,Integer numberOfSlices, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) throws ServiceException, APIException {
         ThumbnailsDto thumbnails = new ThumbnailsDto();
         String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
         Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
@@ -85,7 +86,7 @@ public class KalturaUtil {
         }
     }
 
-    private static synchronized DsKalturaClient getKalturaClient() throws IOException {
+    private static synchronized DsKalturaClient getKalturaClient() throws IOException, APIException {
 
         if (kalturaClientInstance != null) {
             return kalturaClientInstance;
@@ -97,10 +98,12 @@ public class KalturaUtil {
         String userId = ServiceConfig.getConfig().getString("kaltura.userId");                               
         String token= ServiceConfig.getConfig().getString("kaltura.token");
         String tokenId= ServiceConfig.getConfig().getString("kaltura.tokenId");
+        Integer sessionDurationSeconds = ServiceConfig.getConfig().getInteger("kaltura.sessionDurationSeconds");
+        Integer sessionRefreshThreshold = ServiceConfig.getConfig().getInteger("kaltura.sessionRefreshThreshold");
 
-        long sessionKeepAliveSeconds=3600L; //1 hour
         log.info("Creating kaltura client for partnerID: '{}'.", partnerId);
-        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl,userId,partnerId,token,tokenId,adminSecret,sessionKeepAliveSeconds);
+        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl,userId,partnerId,token,tokenId,adminSecret,
+                sessionDurationSeconds, sessionRefreshThreshold);
         kalturaClientInstance=kalturaClient;
         return kalturaClient;    
     }
