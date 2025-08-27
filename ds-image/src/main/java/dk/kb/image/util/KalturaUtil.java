@@ -39,7 +39,7 @@ public class KalturaUtil {
      * @return ThumbnailsDto. Has a default thumbnail, a sprite and list of time sliced thumbnails.
      * @throws IOException If the fileId is not found or internal server error with Kaltura.
      */
-    public static ThumbnailsDto getThumbnails(String fileId,Integer numberOfSlices, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) throws ServiceException, APIException {
+    public static ThumbnailsDto getThumbnails(String fileId,Integer numberOfSlices, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) throws ServiceException {
         ThumbnailsDto thumbnails = new ThumbnailsDto();
         String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
         Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
@@ -81,7 +81,7 @@ public class KalturaUtil {
             thumbnails.setThumbnails(timeSliceThumbnails);
 
             return thumbnails;
-        } catch (IOException e) {
+        } catch (IOException | APIException e) {
             throw new NotFoundServiceException(e);
         }
     }
