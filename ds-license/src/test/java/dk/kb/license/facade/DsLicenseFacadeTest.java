@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,6 +46,9 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
     @Test
     public void testAuditLog() throws SQLException {
 
+        HttpSession mockedSession = Mockito.mock(HttpSession.class);
+        Mockito.when(mockedSession.getAttribute("oauth_user")).thenReturn("mockedName");
+
         MessageImpl message = new MessageImpl();
         AccessToken mockedToken = Mockito.mock(AccessToken.class);
         Mockito.when(mockedToken.getName()).thenReturn("mockedName");
@@ -59,9 +63,9 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         String valueUpdated = "unit_test_value_updated";
         String valueEnglishUpdated = "unit_test_value_en_updated";
 
-        long presentationTypeId = LicenseModuleFacade.persistLicensePresentationType(key, value, valueEnglish);
-        LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated,valueEnglishUpdated);
-        LicenseModuleFacade.deletePresentationType(key);
+        long presentationTypeId = LicenseModuleFacade.persistLicensePresentationType(key, value, valueEnglish, mockedSession);
+        LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated,valueEnglishUpdated, mockedSession);
+        LicenseModuleFacade.deletePresentationType(key, mockedSession);
 
         ArrayList<AuditEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
 

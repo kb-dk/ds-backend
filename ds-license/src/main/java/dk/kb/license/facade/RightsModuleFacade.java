@@ -94,7 +94,7 @@ public class RightsModuleFacade {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
             ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(restrictedIdInputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), null, change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), null, change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Created restriction {}", restrictedIdInputDto);
             return id;
@@ -122,7 +122,7 @@ public class RightsModuleFacade {
             }
 
             ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType().getValue(), idToDelete.getPlatform().toString());
-            AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), idToDelete.getIdValue(), change.getBefore(), change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), idToDelete.getIdValue(), change.getBefore(), change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.",
                     id, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
@@ -156,7 +156,7 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto newVersion = ((RightsModuleStorage)storage).getRestrictedIdById(id);
 
             ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion, newVersion);
-            AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(newVersion.getIdType()), newVersion.getIdValue(), change.getBefore(), change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(newVersion.getIdType()), newVersion.getIdValue(), change.getBefore(), change.getAfter());
             storage.persistAuditLog(logEntry);
             log.info("Updated restricted ID {}", updateRestrictedIdCommentInputDto);
             return null;
@@ -190,7 +190,7 @@ public class RightsModuleFacade {
                     touchRelatedStorageRecords(id.getIdValue(), id.getIdType());
                 }
                 ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(id);
-                AuditLogEntry logEntry = new AuditLogEntry(objectId, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(id.getIdType()), id.getIdValue(), change.getBefore(), change.getAfter());
+                AuditLogEntry logEntry = new AuditLogEntry(objectId, null, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(id.getIdType()), id.getIdValue(), change.getBefore(), change.getAfter());
                 storage.persistAuditLog(logEntry);
             }
             return null;
@@ -339,7 +339,7 @@ public class RightsModuleFacade {
                     drHoldbackRuleInputDto.getDays()
             );
             ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleInputDtoChanges(drHoldbackRuleInputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackRuleInputDto.getDrHoldbackValue(), null, changes.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackRuleInputDto.getDrHoldbackValue(), null, changes.getAfter());
             storage.persistAuditLog(logEntry);
             return id;
         });
@@ -355,7 +355,7 @@ public class RightsModuleFacade {
             DrHoldbackRuleOutputDto drHoldbackRule = ((RightsModuleStorage)storage).getDrHoldbackRuleFromValue(drHoldbackValue);
             ChangeDifferenceText changes = RightsChangelogGenerator.deleteDrHoldbackRuleOutputDtoChanges(drHoldbackRule);
             ((RightsModuleStorage)storage).deleteDrHoldbackRule(drHoldbackValue);
-            AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRule.getId(), ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackValue, changes.getBefore(), null);
+            AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRule.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackValue, changes.getBefore(), null);
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -397,7 +397,7 @@ public class RightsModuleFacade {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromValue(drHoldbackValue);
             long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromValue(drHoldbackValue);
             ((RightsModuleStorage) storage).updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue, days);
-            AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackValue, "Days before: " + daysBefore, "Days after: " + days);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackValue, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -414,7 +414,7 @@ public class RightsModuleFacade {
             Integer daysBefore = ((RightsModuleStorage)storage).getDrHoldbackDaysFromName(name);
             long id = ((RightsModuleStorage)storage).getDrHoldbackRuleIdFromName(name);
             ((RightsModuleStorage) storage).updateDrHoldbackDaysFromName(name, days);
-            AuditLogEntry logEntry = new AuditLogEntry(id, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, name, "Days before: " + daysBefore, "Days after: " + days);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, name, "Days before: " + daysBefore, "Days after: " + days);
             storage.persistAuditLog(logEntry);
             return null;
         });
@@ -441,7 +441,7 @@ public class RightsModuleFacade {
                         drHoldbackRangeInputDto.getDrHoldbackValue()
                 );
                 ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRangesChanges(drHoldbackRangeInputDto.getRanges());
-                AuditLogEntry logEntry = new AuditLogEntry(objectId, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackRangeInputDto.getDrHoldbackValue(), null, changes.getAfter());
+                AuditLogEntry logEntry = new AuditLogEntry(objectId, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackRangeInputDto.getDrHoldbackValue(), null, changes.getAfter());
                 storage.persistAuditLog(logEntry);
                 idList.add(objectId);
             }
@@ -460,7 +460,7 @@ public class RightsModuleFacade {
             ((RightsModuleStorage)storage).deleteRangesForDrHoldbackValue(drHoldbackValue);
             ChangeDifferenceText changes = RightsChangelogGenerator.deleteDrHoldbackRangesChanges(oldRanges); //This is weird but will be refactored completely in DRA-2085
             for (DrHoldbackRangeOutputDto rangeDto: oldRanges) {
-                AuditLogEntry logEntry = new AuditLogEntry(rangeDto.getId(), ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, changes.getAfter(), null);
+                AuditLogEntry logEntry = new AuditLogEntry(rangeDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, changes.getAfter(), null);
                 storage.persistAuditLog(logEntry);
             }
             return null;
