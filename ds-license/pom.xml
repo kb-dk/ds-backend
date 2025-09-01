@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.1</version>
     <packaging>war</packaging>
 <description>
     # Ds-license(Digitale Samlinger) by the Royal Danish Library.    
@@ -184,7 +184,7 @@
         <url>https://github.com/kb-dk/ds-license</url>
         <connection>scm:git:git@github.com:kb-dk/ds-license.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds-license.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>ds-license-3.0.1</tag>
     </scm>
 
 
