@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.0.1](https://github.com/kb-dk/ds-image/releases/tag/ds-image-3.0.1) - 2025-09-01
+### Changed
+- Bump version of dependent modules
+
 ## [3.0.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-3.0.0) - 2025-06-12
 ### Added
 - Kaltura thumbnail API extended to two allow seeking between startSeconds and endSeconds into the stream. Default behaviour unchanged.
