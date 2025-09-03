@@ -35,7 +35,7 @@
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
-        <solr.config.version>1.8.0</solr.config.version> <!-- Semantic versioning of solr config and schema -->
+        <solr.config.version>1.8.1</solr.config.version> <!-- Semantic versioning of solr config and schema -->
 
         <project.package>dk.kb.present</project.package>
     </properties>
