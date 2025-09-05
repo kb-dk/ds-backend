@@ -4,17 +4,18 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.AuditEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.storage.*;
+import dk.kb.license.storage.BaseModuleStorage;
+import dk.kb.license.storage.DsLicenseUnitTestUtil;
+import dk.kb.license.storage.LicenseModuleStorage;
+import dk.kb.license.storage.LicenseModuleStorageTest;
 import dk.kb.license.util.H2DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import org.keycloak.representations.AccessToken;
 import org.mockito.MockedStatic;
-
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +28,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-
-public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
+public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
     protected static LicenseModuleStorage storage = null;
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
 
@@ -60,7 +60,7 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         String valueEnglishUpdated = "unit_test_value_en_updated";
 
         long presentationTypeId = LicenseModuleFacade.persistLicensePresentationType(key, value, valueEnglish);
-        LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated,valueEnglishUpdated);
+        LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated, valueEnglishUpdated);
         LicenseModuleFacade.deletePresentationType(key);
 
         ArrayList<AuditEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
@@ -83,7 +83,7 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value / unit_test_value_en\n", updateAuditLog.getTextBefore());
         assertEquals("PresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", deleteAuditLog.getTextBefore());
 
-      //TODO: This should be fixed together with: DRA-2085
+        //TODO: This should be fixed together with: DRA-2085
         assertEquals("PresentationType value DK/En:unit_test_value / unit_test_value_en\n", createAuditLog.getTextAfter());
         assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", updateAuditLog.getTextAfter()); //Tjek op på det
         assertNull(deleteAuditLog.getTextAfter());
@@ -100,8 +100,8 @@ public class DsLicenseFacadeTest  extends DsLicenseUnitTestUtil{
         assertEquals(presentationTypeId, updateAuditLog.getObjectId());
         assertEquals(presentationTypeId, deleteAuditLog.getObjectId());
 
-        assertTrue(createAuditLog.getModifiedTime()<updateAuditLog.getModifiedTime());
-        assertTrue(updateAuditLog.getModifiedTime()<deleteAuditLog.getModifiedTime());
+        assertTrue(createAuditLog.getModifiedTime() < updateAuditLog.getModifiedTime());
+        assertTrue(updateAuditLog.getModifiedTime() < deleteAuditLog.getModifiedTime());
 
         // Close the MockedStatic JAXRSUtils.class when the test is done, so it don't interfere with other test classes
         mocked.close();
