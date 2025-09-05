@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,7 +22,19 @@ public class ServiceConfig {
 
     public static String SOLR_FILTER_ID_FIELD = null;
     public static String SOLR_FILTER_RESOURCE_ID_FIELD = null;
-    public static List<SolrServerClient> SOLR_SERVERS = null;
+    public static List<SolrServerClient> SOLR_SERVERS = Collections.emptyList();
+
+    /**
+     * Gets called when the code needs to call Solr backend servers
+     * Updates the list of Solr servers, if the YAML file has been updated since last method call
+     *
+     * @return list of Solr servers
+     */
+    public static List<SolrServerClient> getSolrServers() {
+        List<String> solr_servers = serviceConfig.getList("solr.servers");
+        SOLR_SERVERS = solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
+        return SOLR_SERVERS;
+    }
 
     /**
      * Besides parsing of YAML files using SnakeYAML, the YAML helper class provides convenience

@@ -100,6 +100,25 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
+    public void getRestrictedIdByIdValue_WhenUsingDsId_ReturnComment() throws SQLException {
+        String dsId = "ds.tv:oai:io:7cb60d39-effd-419c-9bac-881b7b7eb10c";
+        String expectedComment = "Test comment";
+
+        storage.createRestrictedId(dsId, IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), expectedComment);
+
+        String actualComment = storage.getRestrictedIdByIdValue(dsId);
+
+        assertEquals(expectedComment, actualComment);
+    }
+
+    @Test
+    public void getRestrictedIdByIdValue_WhenUsingNotExistingDsId_ReturnNull() throws SQLException {
+        String actualComment = storage.getRestrictedIdByIdValue("1");
+
+        assertNull(actualComment);
+    }
+
+    @Test
     public void testDrHoldbackRuleCRUD() throws SQLException {
         String drHoldbackValue = "2.02";
         String name = "Aktualitet & Debat";

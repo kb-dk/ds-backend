@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added API GET request /audit/auditEntriesByObjectId returning a list of all AuditLogs related to a specific object by object id.
 - Added Audit Logging to all methods changing the configurations through UI or API
 - Added and Changed  columns to the table AUDITLOG to accommodate the new API calls (**Remember to create new delta migrations for OPS**)
-- Added id column for holdback_rule table and renamed the table dr_holdback_map to dr_holdback_ranges   (*Remember: Delta migrations for OPS to be found in rightsmodule_remake_holdback_tables_db.ddl and data is also to be reapplied ie run rightsmodule_default_holdbackrulesdata.sql* and rightsmodule_default_holdbackrangesdata.sql)
+- Added id column for holdback_rule table and renamed the table dr_holdback_map to dr_holdback_ranges (*Remember: Delta migrations for OPS to be found in rightsmodule_remake_holdback_tables_db.ddl and data is also to be reapplied ie run rightsmodule_default_holdbackrulesdata.sql* and rightsmodule_default_holdbackrangesdata.sql)
+- Added API GET request `/rights/restrictedId/check/dr-arkiv/{dsId}` returning broadcasts with the same drProductionId
 
 ### Changed
 - Deleted API request to delete multiple restricted IDs

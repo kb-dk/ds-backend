@@ -168,7 +168,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
-  
+
   # Audit
   /audit/auditEntryById:
     get:
@@ -450,6 +450,48 @@ paths:
       responses:
         '201':
           description: created
+
+  /rights/restrictedId/check/dr-arkiv/{dsId}:
+    get:
+      tags:
+        - 'DsRights'
+      summary: 'Returns a DrBroadcastDto object that shows if the input dsId broadcast has a drProductionId. DrBroadcastDto has a list of BroadcastDto that is populated with broadcasts sharing the same drProductionId. Each BroadcastDto also shows if there is a restriction and restriction comment on that broadcast.'
+      operationId: matchingDrProductionIdBroadcasts
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: dsId
+          in: path
+          description: 'The unique id of a DR-arkiv broadcast'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Get broadcasts'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DrBroadcast'
+        '400':
+          description: 'An error occurred in the request. This can be a validation error for the path variable dsId'
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: 'No DR broadcasts found with dsId'
+          content:
+            application/json:
+              schema:
+                type: object
+        '503':
+          description: 'An error occurred when sending the request to Solr. The service is currently unavailable.'
+          content:
+            application/json:
+              schema:
+                type: object
 
   /rights/drHoldbackRules:
     get:
@@ -786,6 +828,45 @@ paths:
 
 components:
   schemas:
+    DrBroadcast:
+      type: object
+      description: "Object containing results with the same drProductionId"
+      properties:
+        hasDrProductionId:
+          type: boolean
+          description: "Is there a DR-arkiv production id?"
+        drProductionId:
+          type: string
+          description: "DR-arkiv production id"
+        broadcast:
+          type: array
+          items:
+            $ref: "#/components/schemas/Broadcast"
+
+    Broadcast:
+      type: object
+      properties:
+        dsId:
+          type: string
+          description: "Unique id of a broadcast."
+        title:
+          type: string
+          description: "Title for broadcast."
+        startTime:
+          type: string
+          format: date-time
+          description: "Start time of broadcast."
+        endTime:
+          type: string
+          format: date-time
+          description: "End time of broadcast."
+        restricted:
+          type: boolean
+          description: "Is the broadcast restricted?"
+        restrictedComment:
+          type: string
+          description: "Comment about why broadcast is restricted, if it is restricted"
+
     CheckAccessForIdsInput:
       type: object
       properties:

@@ -128,7 +128,7 @@ public class LicenseValidator {
         output.setPresentationType(input.getPresentationType());
         output.setQuery(query.getQuery());
 
-        List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
+        List<SolrServerClient> servers = ServiceConfig.getSolrServers();
         ArrayList<String> filteredIdsSet = filterIDs(input.getAccessIds(), query.getQuery(), solrIdField);
         output.setAccessIds(filteredIdsSet);
 
@@ -762,7 +762,7 @@ public class LicenseValidator {
      * @throws java.io.IOException                              If there are IO errors. Should not happen
      */
     private static ArrayList<String> filterIDs(List<String> ids, String filterQuery, String solrIdField) throws org.apache.solr.client.solrj.SolrServerException, java.io.IOException {
-        List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
+        List<SolrServerClient> servers = ServiceConfig.getSolrServers();
 
         Set<String> accessfilteredIdsSet = new HashSet<String>();
         if (ids.size() > 0) {

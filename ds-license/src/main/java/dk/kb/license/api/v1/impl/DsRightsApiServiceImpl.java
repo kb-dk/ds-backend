@@ -4,7 +4,6 @@ import dk.kb.license.api.v1.DsRightsApi;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.validation.InputValidator;
 import dk.kb.util.webservice.ImplBase;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
@@ -24,8 +23,6 @@ import java.util.List;
 @InInterceptors(interceptors = "dk.kb.license.webservice.KBAuthorizationInterceptor")
 public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     private final static Logger log = LoggerFactory.getLogger(DsRightsApiServiceImpl.class);
-
-    InputValidator inputValidator = new InputValidator();
 
     @Override
     public void createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
@@ -74,23 +71,16 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * Return dr productions if they have same drProductionId as the input dsId
+     * Returns a DrBroadcastDto object that shows if the input dsId broadcast has a drProductionId.
+     * DrBroadcastDto has a list of BroadcastDto that is populated with broadcasts sharing the same drProductionId.
+     * Each BroadcastDto also shows if there is a restriction and restriction comment on that broadcast.
      *
-     * @param dsId: The unique id of a DR-arkiv broadcast
-     *
-     * @return <ul>
-     *   <li>code = 200, message = "Get broadcasts", response = DrBroadcastDto.class</li>
-     *   <li>code = 400, message = "An error occurred in the request. This can be a validation error for the path variable dsId", response = String.class</li>
-     *   <li>code = 404, message = "dsId not found"</li>
-     *   <li>code = 503, message = "An error occurred when sending the request to solr. The service is currently unavailable.", response = String.class</li>
-     *   </ul>
-     * @throws InvalidArgumentServiceException
+     * @param dsId the unique id of a DR-arkiv broadcast
+     * @return DrBroadcastDto with a list of BroadcastDto
      */
     @Override
     public DrBroadcastDto matchingDrProductionIdBroadcasts(String dsId) {
-        RightsModuleFacade rightsModuleFacade = new RightsModuleFacade();
-
-        return rightsModuleFacade.matchingDrProductionIdBroadcasts(dsId);
+        return RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId);
     }
 
     @Override

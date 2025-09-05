@@ -29,7 +29,9 @@ public class RightsModuleStorage extends BaseModuleStorage {
             RESTRICTED_ID_COMMENT + ")" +
             " VALUES (?,?,?,?,?)";
     private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
-    private final String readRestrictedIdQueryById = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
+    private final String readRestrictedIdByIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
+
+    private final String readRestrictedIdByIdValueQuery = "SELECT comment FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ?";
 
     private final String updateRestrictedIdCommentQuery = "UPDATE " + RESTRICTED_ID_TABLE + " SET " +
             RESTRICTED_ID_COMMENT + " = ? " +
@@ -155,7 +157,6 @@ public class RightsModuleStorage extends BaseModuleStorage {
      * @throws SQLException
      */
     public void updateRestrictedIdComment(long id, String comment) throws SQLException {
-
         try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdCommentQuery)) {
             stmt.setString(1, comment);
             stmt.setLong(2, id);
@@ -194,7 +195,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
      * @return a {@link RestrictedIdOutputDto}
      */
     public RestrictedIdOutputDto getRestrictedIdById(Long id) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQueryById)) {
+        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdByIdQuery)) {
             stmt.setLong(1, id);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
@@ -203,6 +204,28 @@ public class RightsModuleStorage extends BaseModuleStorage {
             return null;
         } catch (SQLException e) {
             log.error("SQL Exception in readClause:" + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Get an entry from the "restricted_id" table by id_value (dsId).
+     *
+     * @param dsId to get entry for.
+     * @return a restricted_id comment
+     */
+    public String getRestrictedIdByIdValue(String dsId) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdByIdValueQuery)) {
+            stmt.setString(1, dsId);
+            ResultSet res = stmt.executeQuery();
+
+            if (res.next()) {
+                return res.getString(RESTRICTED_ID_COMMENT);
+            }
+
+            return null;
+        } catch (SQLException e) {
+            log.error("SQL Exception in getRestrictedIdByIdValue:" + e.getMessage());
             throw e;
         }
     }

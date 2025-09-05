@@ -3,6 +3,7 @@ package dk.kb.license.facade;
 import dk.kb.license.RightsCalculation;
 import dk.kb.license.Util;
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.mapper.BroadcastDtoMapper;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.AuditLogEntry;
@@ -10,6 +11,7 @@ import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.util.ChangeDifferenceText;
 import dk.kb.license.util.RightsChangelogGenerator;
+import dk.kb.license.validation.InputValidator;
 import dk.kb.storage.model.v1.RecordsCountDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -28,18 +30,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
-
-    private static final String regexpDsIdPattern = "([a-z0-9.]+):([a-zA-Z0-9:._-]+)";
-    private static final Pattern dsIdPattern = Pattern.compile(regexpDsIdPattern);
-
+    private static final SolrServerClient solrServerClient = new SolrServerClient();
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
     private static final int MAX_COMMENT_LENGTH = 16348;
+
+    /**
+     * Enables the posibility to mock the SolrServerClient
+     *
+     * @return
+     */
+    public static SolrServerClient getSolrServerClient() {
+        return solrServerClient;
+    }
 
     /**
      * Retrieves a restrictedID output object from the database
@@ -82,7 +89,12 @@ public class RightsModuleFacade {
         }
 
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DS_ID) {
-            validatedsIdFormat(restrictedIdInputDto);
+            InputValidator inputValidator = new InputValidator();
+            boolean validatedDsId = inputValidator.validateDsId(restrictedIdInputDto.getIdValue());
+
+            if (!validatedDsId) {
+                throw new InvalidArgumentServiceException("Invalid dsId");
+            }
         }
 
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
@@ -155,6 +167,84 @@ public class RightsModuleFacade {
             log.info("Updated restricted ID {}", updateRestrictedIdCommentInputDto);
             return null;
         });
+    }
+
+    /**
+     * Returns a DrBroadcastDto object that shows if the input dsId broadcast has a drProductionId.
+     * DrBroadcastDto has a list of BroadcastDto that is populated with broadcasts sharing the same drProductionId.
+     * Each BroadcastDto also shows if there is a restriction and restriction comment on that broadcast.
+     *
+     * @param dsId the unique id of a DR-arkiv broadcast
+     * @return DrBroadcastDto with a list of BroadcastDto
+     */
+    public static DrBroadcastDto matchingDrProductionIdBroadcasts(String dsId) {
+        String queryDsId = "(broadcaster:DR OR creator_affiliation_facet:DR* OR creator_affiliation:DR*) AND id:\"" + dsId + "\"";
+        String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
+
+        InputValidator inputValidator = new InputValidator();
+        boolean validatedDsId = inputValidator.validateDsId(dsId);
+
+        if (!validatedDsId) {
+            throw new InvalidArgumentServiceException("Invalid dsId");
+        }
+
+        Optional<SolrDocumentList> resultsFromDsId = getSolrServerClient().callSolr(queryDsId, fieldListDsId);
+
+        BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
+
+        if (resultsFromDsId.isPresent() && resultsFromDsId.get().getNumFound() > 0) {
+            // There is only one object in the SolrDocumentList, so we fetch that out
+            SolrDocument resultFromDsId = resultsFromDsId.get().get(0);
+
+            DrBroadcastDto drBroadcastDto = new DrBroadcastDto();
+            List<BroadcastDto> broadcastDtoList = new ArrayList<>();
+
+            if (resultFromDsId.getFieldValue("dr_production_id") == null) {
+                drBroadcastDto.setHasDrProductionId(false);
+                drBroadcastDto.setDrProductionId(null);
+
+                // There could be a restriction already on the broadcast
+                String restrictedIdComment = getRestrictedIdCommentByIdValue(resultFromDsId.getFieldValue("id").toString());
+                BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(resultFromDsId, restrictedIdComment);
+                broadcastDtoList.add(broadcastDto);
+            } else {
+                drBroadcastDto.setHasDrProductionId(true);
+                drBroadcastDto.setDrProductionId(resultFromDsId.getFieldValue("dr_production_id").toString());
+
+                String queryDrProductionId = "dr_production_id:\"" + drBroadcastDto.getDrProductionId() + "\"";
+                String fieldListDrProductionId = "id, title, startTime, endTime";
+
+                Optional<SolrDocumentList> resultsFromDrProductionId = getSolrServerClient().callSolr(queryDrProductionId, fieldListDrProductionId);
+
+                if (resultsFromDrProductionId.isPresent() && resultsFromDrProductionId.get().getNumFound() > 0) {
+                    for (SolrDocument solrDocument : resultsFromDrProductionId.get()) {
+                        // There could be a restriction already on the broadcast
+                        String restrictedIdComment = getRestrictedIdCommentByIdValue(solrDocument.getFieldValue("id").toString());
+                        BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, restrictedIdComment);
+                        broadcastDtoList.add(broadcastDto);
+                    }
+                } else {
+                    // Should never happen
+                    log.error("No DR broadcasts found with drProductionId: {}", drBroadcastDto.getDrProductionId());
+                    throw new NotFoundServiceException("No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId());
+                }
+            }
+            drBroadcastDto.setBroadcast(broadcastDtoList);
+            return drBroadcastDto;
+        }
+
+        // TODO: Maybe change to "dsId not found"?
+        throw new NotFoundServiceException("No DR broadcasts found with dsId: " + dsId);
+    }
+
+    /**
+     * Fetch comment from `restricted_id`
+     *
+     * @param dsId
+     * @return comment about why a broadcasts is restricted
+     */
+    public static String getRestrictedIdCommentByIdValue(String dsId) {
+        return BaseModuleStorage.performStorageAction("Select comment from restricted_ids", RightsModuleStorage.class, storage -> (((RightsModuleStorage) storage).getRestrictedIdByIdValue(dsId)));
     }
 
     /**
@@ -462,13 +552,6 @@ public class RightsModuleFacade {
         }
     }
 
-    private static void validatedsIdFormat(RestrictedIdInputDto restrictedIdInputDto) {
-        Matcher m = dsIdPattern.matcher(restrictedIdInputDto.getIdValue());
-        if (!m.matches()) {
-            throw new InvalidArgumentServiceException("Invalid ds_id format " + restrictedIdInputDto.getIdValue());
-        }
-    }
-
     /**
      * Based on idType, touch related storage records, so that they can be re-indexed with the new information.
      *
@@ -554,7 +637,7 @@ public class RightsModuleFacade {
      * @return the amount of records touched in DS-Storage.
      */
     private static int touchStorageRecordsByIdFromSolrQuery(String solrField, String fieldValue) {
-        List<SolrServerClient> servers = ServiceConfig.SOLR_SERVERS;
+        List<SolrServerClient> servers = ServiceConfig.getSolrServers();
         int touchedRecordsCount = 0;
 
         // Ds-license supports multiple backing solr servers. So we have to wrap it in this for-loop
