@@ -128,7 +128,6 @@ public class LicenseValidator {
         output.setPresentationType(input.getPresentationType());
         output.setQuery(query.getQuery());
 
-        List<SolrServerClient> servers = ServiceConfig.getSolrServers();
         ArrayList<String> filteredIdsSet = filterIDs(input.getAccessIds(), query.getQuery(), solrIdField);
         output.setAccessIds(filteredIdsSet);
 
