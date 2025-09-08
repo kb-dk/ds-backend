@@ -44,66 +44,63 @@ public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
 
     @Test
     public void testAuditLog() throws SQLException {
-
         MessageImpl message = new MessageImpl();
         AccessToken mockedToken = Mockito.mock(AccessToken.class);
         Mockito.when(mockedToken.getName()).thenReturn("mockedName");
         message.put(KBAuthorizationInterceptor.ACCESS_TOKEN, mockedToken);
 
-        MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);
-        mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+        try (MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class)) {
+            mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
 
-        String key = "keyAuditTest";
-        String value = "unit_test_value";
-        String valueEnglish = "unit_test_value_en";
-        String valueUpdated = "unit_test_value_updated";
-        String valueEnglishUpdated = "unit_test_value_en_updated";
+            String key = "keyAuditTest";
+            String value = "unit_test_value";
+            String valueEnglish = "unit_test_value_en";
+            String valueUpdated = "unit_test_value_updated";
+            String valueEnglishUpdated = "unit_test_value_en_updated";
 
-        long presentationTypeId = LicenseModuleFacade.persistLicensePresentationType(key, value, valueEnglish);
-        LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated, valueEnglishUpdated);
-        LicenseModuleFacade.deletePresentationType(key);
+            long presentationTypeId = LicenseModuleFacade.persistLicensePresentationType(key, value, valueEnglish);
+            LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated, valueEnglishUpdated);
+            LicenseModuleFacade.deletePresentationType(key);
 
-        ArrayList<AuditEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
+            ArrayList<AuditEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
 
-        assertEquals(3, auditLogEntriesForObject.size());
-        AuditEntryOutputDto createAuditLog = auditLogEntriesForObject.get(2);
-        AuditEntryOutputDto updateAuditLog = auditLogEntriesForObject.get(1);
-        AuditEntryOutputDto deleteAuditLog = auditLogEntriesForObject.get(0);
+            assertEquals(3, auditLogEntriesForObject.size());
+            AuditEntryOutputDto createAuditLog = auditLogEntriesForObject.get(2);
+            AuditEntryOutputDto updateAuditLog = auditLogEntriesForObject.get(1);
+            AuditEntryOutputDto deleteAuditLog = auditLogEntriesForObject.get(0);
 
-        assertEquals(ChangeTypeEnumDto.CREATE, createAuditLog.getChangeType());
-        assertEquals(ChangeTypeEnumDto.UPDATE, updateAuditLog.getChangeType());
-        assertEquals(ChangeTypeEnumDto.DELETE, deleteAuditLog.getChangeType());
+            assertEquals(ChangeTypeEnumDto.CREATE, createAuditLog.getChangeType());
+            assertEquals(ChangeTypeEnumDto.UPDATE, updateAuditLog.getChangeType());
+            assertEquals(ChangeTypeEnumDto.DELETE, deleteAuditLog.getChangeType());
 
-        assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, createAuditLog.getChangeName());
-        assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, updateAuditLog.getChangeName());
-        assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, deleteAuditLog.getChangeName());
+            assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, createAuditLog.getChangeName());
+            assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, updateAuditLog.getChangeName());
+            assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, deleteAuditLog.getChangeName());
 
-        assertNull(createAuditLog.getTextBefore());
-        //TODO: This should be fixed together with: DRA-2085
-        assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value / unit_test_value_en\n", updateAuditLog.getTextBefore());
-        assertEquals("PresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", deleteAuditLog.getTextBefore());
+            assertNull(createAuditLog.getTextBefore());
+            //TODO: This should be fixed together with: DRA-2085
+            assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value / unit_test_value_en\n", updateAuditLog.getTextBefore());
+            assertEquals("PresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", deleteAuditLog.getTextBefore());
 
-        //TODO: This should be fixed together with: DRA-2085
-        assertEquals("PresentationType value DK/En:unit_test_value / unit_test_value_en\n", createAuditLog.getTextAfter());
-        assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", updateAuditLog.getTextAfter()); //Tjek op på det
-        assertNull(deleteAuditLog.getTextAfter());
+            //TODO: This should be fixed together with: DRA-2085
+            assertEquals("PresentationType value DK/En:unit_test_value / unit_test_value_en\n", createAuditLog.getTextAfter());
+            assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", updateAuditLog.getTextAfter()); //Tjek op på det
+            assertNull(deleteAuditLog.getTextAfter());
 
-        assertEquals("mockedName", createAuditLog.getUserName());
-        assertEquals("mockedName", updateAuditLog.getUserName());
-        assertEquals("mockedName", deleteAuditLog.getUserName());
+            assertEquals("mockedName", createAuditLog.getUserName());
+            assertEquals("mockedName", updateAuditLog.getUserName());
+            assertEquals("mockedName", deleteAuditLog.getUserName());
 
-        assertEquals("keyAuditTest", createAuditLog.getChangeComment());
-        assertEquals("keyAuditTest", updateAuditLog.getChangeComment());
-        assertEquals("keyAuditTest", deleteAuditLog.getChangeComment());
+            assertEquals("keyAuditTest", createAuditLog.getChangeComment());
+            assertEquals("keyAuditTest", updateAuditLog.getChangeComment());
+            assertEquals("keyAuditTest", deleteAuditLog.getChangeComment());
 
-        assertEquals(presentationTypeId, createAuditLog.getObjectId());
-        assertEquals(presentationTypeId, updateAuditLog.getObjectId());
-        assertEquals(presentationTypeId, deleteAuditLog.getObjectId());
+            assertEquals(presentationTypeId, createAuditLog.getObjectId());
+            assertEquals(presentationTypeId, updateAuditLog.getObjectId());
+            assertEquals(presentationTypeId, deleteAuditLog.getObjectId());
 
-        assertTrue(createAuditLog.getModifiedTime() < updateAuditLog.getModifiedTime());
-        assertTrue(updateAuditLog.getModifiedTime() < deleteAuditLog.getModifiedTime());
-
-        // Close the MockedStatic JAXRSUtils.class when the test is done, so it don't interfere with other test classes
-        mocked.close();
+            assertTrue(createAuditLog.getModifiedTime() < updateAuditLog.getModifiedTime());
+            assertTrue(updateAuditLog.getModifiedTime() < deleteAuditLog.getModifiedTime());
+        }
     }
 }

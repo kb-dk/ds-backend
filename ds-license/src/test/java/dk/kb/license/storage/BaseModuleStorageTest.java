@@ -69,30 +69,28 @@ public class BaseModuleStorageTest extends DsLicenseUnitTestUtil {
         Mockito.when(mockedToken.getName()).thenReturn(userName);
         message.put(KBAuthorizationInterceptor.ACCESS_TOKEN, mockedToken);
 
-        MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);
-        mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+        try (MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class)) {
+            mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
 
-        Long objectId = 123456789L;
+            Long objectId = 123456789L;
 
-        ChangeTypeEnumDto changeType = ChangeTypeEnumDto.UPDATE;
-        ObjectTypeEnumDto changeName = ObjectTypeEnumDto.DR_PRODUCTION_ID;
-        String changeComment = "changeComment";
-        String textBefore = "before";
-        String textAfter = "after";
+            ChangeTypeEnumDto changeType = ChangeTypeEnumDto.UPDATE;
+            ObjectTypeEnumDto changeName = ObjectTypeEnumDto.DR_PRODUCTION_ID;
+            String changeComment = "changeComment";
+            String textBefore = "before";
+            String textAfter = "after";
 
-        AuditLogEntry auditLog = new AuditLogEntry(objectId, changeType, changeName, changeComment, textBefore, textAfter);
+            AuditLogEntry auditLog = new AuditLogEntry(objectId, changeType, changeName, changeComment, textBefore, textAfter);
 
-        long auditLogId = storage.persistAuditLog(auditLog);
-        AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
-        assertEquals(userName, auditFromStorage.getUserName());
-        assertEquals(changeType, auditFromStorage.getChangeType());
-        assertEquals(changeName, auditFromStorage.getChangeName());
-        assertEquals(changeComment, auditFromStorage.getChangeComment());
-        assertEquals(textBefore, auditFromStorage.getTextBefore());
-        assertEquals(textAfter, auditFromStorage.getTextAfter());
-        assertTrue(auditFromStorage.getModifiedTime() > 0); //modifiedtime has been set
-
-        // Close the MockedStatic JAXRSUtils.class when the test is done, so it don't interfere with other test classes
-        mocked.close();
+            long auditLogId = storage.persistAuditLog(auditLog);
+            AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
+            assertEquals(userName, auditFromStorage.getUserName());
+            assertEquals(changeType, auditFromStorage.getChangeType());
+            assertEquals(changeName, auditFromStorage.getChangeName());
+            assertEquals(changeComment, auditFromStorage.getChangeComment());
+            assertEquals(textBefore, auditFromStorage.getTextBefore());
+            assertEquals(textAfter, auditFromStorage.getTextAfter());
+            assertTrue(auditFromStorage.getModifiedTime() > 0); //modifiedtime has been set
+        }
     }
 }
