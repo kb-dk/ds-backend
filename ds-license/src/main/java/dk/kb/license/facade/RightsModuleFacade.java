@@ -178,15 +178,15 @@ public class RightsModuleFacade {
      * @return DrBroadcastDto with a list of BroadcastDto
      */
     public static DrBroadcastDto matchingDrProductionIdBroadcasts(String dsId) {
-        String queryDsId = "(broadcaster:DR OR creator_affiliation_facet:DR* OR creator_affiliation:DR*) AND id:\"" + dsId + "\"";
-        String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
-
-        InputValidator inputValidator = new InputValidator();
+         InputValidator inputValidator = new InputValidator();
         boolean validatedDsId = inputValidator.validateDsId(dsId);
 
         if (!validatedDsId) {
             throw new InvalidArgumentServiceException("Invalid dsId");
         }
+
+        String queryDsId = "id:\"" + dsId + "\"";
+        String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
 
         Optional<SolrDocumentList> resultsFromDsId = getSolrServerClient().callSolr(queryDsId, fieldListDsId);
 
@@ -626,7 +626,6 @@ public class RightsModuleFacade {
         String solrField = "dr_production_id";
         return touchStorageRecordsByIdFromSolrQuery(solrField, drProductionId);
     }
-
 
     /**
      * Perform a solr query as {@code solrField:"fieldValue"} and for each record in the solr response get the id for

@@ -164,7 +164,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         String startTime = "Thu Sep 29 21:55:00 CET 1966";
         String endTime = "Thu Sep 29 22:05:00 CET 1966";
 
-        String queryDsId = "(broadcaster:DR OR creator_affiliation_facet:DR* OR creator_affiliation:DR*) AND id:\"" + dsId + "\"";
+        String queryDsId = "id:\"" + dsId + "\"";
         String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
         String queryDrProductionId = "dr_production_id:\"" + drProductionId + "\"";
         String fieldListDrProductionId = "id, title, startTime, endTime";

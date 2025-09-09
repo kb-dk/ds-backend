@@ -19,11 +19,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class SolrServerClientTest {
+    // Arrange
+    final String drProductionId = "9213163000";
+    final String dsId = "ds.tv:oai:io:d5ec7b20-c1f2-491e-a2cb-f143683a40f8";
+    final String title = "P2 Radioavis";
+    final String startTime = "Thu Apr 05 08:00:00 CEST 2018";
+    final String endTime = "Thu Apr 05 08:06:00 CEST 2018";
 
-        // Arrange
-        String queryDsId = "broadcaster:DR";
-        String fieldListDsId = "dr_production_id";
+    final String queryDsId = "id:\"" + dsId + "\"";
+    final String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
 
+    @Test
+    public void createSolrQuery_WhenGivenQueryAndFieldList_ReturnSolrQuery() {
         // To be able to mock List<SolrServerClient> servers we use the getServers getter method
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
             mockedServiceConfig.when(ServiceConfig::getSolrServers).thenReturn(List.of());
@@ -44,9 +51,6 @@ public class SolrServerClientTest {
     public void callSolr_WhenListOfServersIsEmpty_ThrowInternalServiceException() {
         // Arrange
         String expectedMessage = "List of SolrServerClient is never populated so it is empty";
-        String dsId = "ds.tv:oai:io:d5ec7b20-c1f2-491e-a2cb-f143683a40f8";
-        String queryDsId = "(broadcaster:DR OR creator_affiliation_facet:DR* OR creator_affiliation:DR*) AND id:\"" + dsId + "\"";
-        String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
 
         // To be able to mock List<SolrServerClient> servers we use the getServers getter method
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
@@ -65,11 +69,6 @@ public class SolrServerClientTest {
 
     @Test
     public void callSolr_WhenResponseFromSolrIsNull_ReturnOptionalEmpty() throws SolrServerException, IOException {
-        // Arrange
-        String dsId = "ds.tv:oai:io:d5ec7b20-c1f2-491e-a2cb-f143683a40f8";
-        String queryDsId = "(broadcaster:DR OR creator_affiliation_facet:DR* OR creator_affiliation:DR*) AND id:\"" + dsId + "\"";
-        String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
-
         // Instead of calling an actual Solr service, we mock `query(SolrParams solrParams`
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
         when(mockedSolrServerClient.query(any())).thenReturn(null);
@@ -92,15 +91,6 @@ public class SolrServerClientTest {
     @Test
     public void callSolr_WhenGivenQueryAndFieldList_ReturnSolrDocumentList() throws SolrServerException, IOException {
         // Arrange
-        String drProductionId = "9213163000";
-        String dsId = "ds.tv:oai:io:d5ec7b20-c1f2-491e-a2cb-f143683a40f8";
-        String title = "P2 Radioavis";
-        String startTime = "Thu Apr 05 08:00:00 CEST 2018";
-        String endTime = "Thu Apr 05 08:06:00 CEST 2018";
-
-        String queryDsId = "(broadcaster:DR OR creator_affiliation_facet:DR* OR creator_affiliation:DR*) AND id:\"" + dsId + "\"";
-        String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
-
         SolrDocument solrDocument = new SolrDocument();
         solrDocument.put("dr_production_id", drProductionId);
         solrDocument.put("id", dsId);
