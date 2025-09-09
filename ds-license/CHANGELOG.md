@@ -6,20 +6,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+### Added
+
+### Fixed
+
+## [3.0.1](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.1) 2025-09-01
 ### Added
 - Added new /audit/ path in API 
 - Added API GET request /audit/auditEntryById returning a single AuditLog by id
 - Added API GET request /audit/auditEntriesByObjectId returning a list of all AuditLogs related to a specific object by object id.
 - Added Audit Logging to all methods changing the configurations through UI or API
 - Added and Changed  columns to the table AUDITLOG to accommodate the new API calls (**Remember to create new delta migrations for OPS**)
+- Added id column for holdback_rule table and renamed the table dr_holdback_map to dr_holdback_ranges   (*Remember: Delta migrations for OPS to be found in rightsmodule_remake_holdback_tables_db.ddl and data is also to be reapplied ie run rightsmodule_default_holdbackrulesdata.sql* and rightsmodule_default_holdbackrangesdata.sql)
 
 ### Changed
 - Deleted API request to delete multiple restricted IDs
 - Moved storage method that is only used by unit tests to a storage subclass used by unittest. The methods are very destructive such as clearing all tables.
+- OAuth enabled on all methods except  /rights/calculate (and monitor  methods). In Ingest(write) environment OAuth must be enabled for ds-license as well, since new ds-license-web calls methods that modifies configuration in the database. All calls are logged in the audit log with username from Oauth token.
+- Deleted redundant audit columns from the restricted_ids table (**Remember: Delta migrations for OPS to be found in rightsmodule_remove_redundant_audit_columns.ddl**)
+- Changed API for updating restricted_id to use id instead of unique combination of other columns
+- Deleted ability to use API for updating platform in restricted_ids
+- Refactored HoldbackRanges to use inputDto and outputDto
+- Auditlog is now using the objectId for holdback_rule table
+- User is now being added to the AuditLog in the storage module, instead of being passed as a parameter through the flow
 
 ### Fixed
-
-
 
 ## [3.0.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.0) 2025-06-12
 ### Added

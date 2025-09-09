@@ -1,14 +1,6 @@
-CREATE TABLE  RESTRICTED_IDS (
-                                              id BIGINT PRIMARY KEY,
-                                              id_value VARCHAR(256) NOT NULL,
-                                              id_type VARCHAR(32) NOT NULL,
-                                              platform VARCHAR(32),
-                                              comment VARCHAR(16384)
-);
 
-CREATE UNIQUE INDEX unique_restricted_id ON RESTRICTED_IDS (id_value,id_type,platform);
-CREATE UNIQUE INDEX RESTRICTED_IDS_ID_IN ON RESTRICTED_IDS(ID);
-CREATE INDEX RESTRICTED_IDS_ID_VALUE_PLATFORM_IN ON RESTRICTED_IDS(ID_VALUE,PLATFORM);
+DROP TABLE dr_holdback_map;
+DROP TABLE dr_holdback_rules;
 
 CREATE TABLE dr_holdback_rules (
     id BIGINT PRIMARY KEY,

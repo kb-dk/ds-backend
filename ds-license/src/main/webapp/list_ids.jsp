@@ -53,17 +53,13 @@ List<RestrictedIdOutputDto> list = impl.getAllRestrictedIds(idType,platform);
         <th>idValue</th>
         <th>idType</th>
         <th>platform</th>
-        <th>comment</th>
-        <th>modifiedBy</th>
-        <th>modifiedTimeHuman</th>        
+        <th>comment</th>              
     <% for (RestrictedIdOutputDto dto : list){ %>
        <tr>
            <td><%=dto.getIdValue()%> </td>
            <td><%=dto.getIdType()%></td>
            <td><%=dto.getPlatform()%></td>
-           <td><%=dto.getComment()%></td>
-           <td><%=dto.getModifiedBy()%></td>
-           <td><%=dto.getModifiedTimeHuman()%> </td>      
+           <td><%=dto.getComment()%></td>            
        </tr>
     <%}%>             
     </table>

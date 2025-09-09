@@ -131,7 +131,7 @@ public class ServiceConfig {
         return new YAML();
     }
 
-    public static int getHoldbackLogicChangeDays(){
+    public static int getDrHoldbackLogicChangeDays(){
         YAML drPlatform = getRightsPlatformConfig(PlatformEnumDto.DRARKIV.getValue());
 
         if (drPlatform.isEmpty()){
@@ -141,7 +141,7 @@ public class ServiceConfig {
         return drPlatform.getInteger("holdbackLogicChangeDays", 365);
     }
 
-    public static int getHoldbackYearsForRadio(){
+    public static int getDrHoldbackYearsForRadio(){
         YAML drPlatform = getRightsPlatformConfig(PlatformEnumDto.DRARKIV.getValue());
 
         if (drPlatform.isEmpty()){

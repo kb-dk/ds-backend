@@ -177,7 +177,7 @@ public class LicenseChangelogGenerator {
         String licenseContents = getLicenseContentsText(license.getLicenseContents());
         builder.append(licenseContents);
 
-        ChangeDifferenceText changes = new ChangeDifferenceText("",builder.toString());
+        ChangeDifferenceText changes = new ChangeDifferenceText(null, builder.toString());
         return changes;
     }
     
@@ -185,7 +185,7 @@ public class LicenseChangelogGenerator {
     private static ChangeDifferenceText getNewPresentationTypeChanges(PresentationType type) {   
         StringBuilder builder = new StringBuilder();
         builder.append(getDescriptionText(type));
-        ChangeDifferenceText changes = new ChangeDifferenceText("",builder.toString());
+        ChangeDifferenceText changes = new ChangeDifferenceText(null, builder.toString());
         return changes;        
     }
 
@@ -201,7 +201,7 @@ public class LicenseChangelogGenerator {
     private static ChangeDifferenceText getNewGroupTypeChanges(GroupType type) {   
         StringBuilder builder = new StringBuilder();
         builder.append(type.toPresentationtString());
-        ChangeDifferenceText changes = new ChangeDifferenceText("",builder.toString());
+        ChangeDifferenceText changes = new ChangeDifferenceText(null, builder.toString());
         return changes;        
     }
 

@@ -1,42 +1,53 @@
 CREATE TABLE IF NOT EXISTS RESTRICTED_IDS (
-                         id BIGINT PRIMARY KEY,
-                         id_value VARCHAR(256) NOT NULL,
-                         id_type VARCHAR(32) NOT NULL,
-                         platform VARCHAR(32),
-                         comment VARCHAR(16384),
-                         modified_by VARCHAR(256),
-                         modified_time BIGINT,
-                         modified_time_human VARCHAR(256)
+    id BIGINT PRIMARY KEY,
+    id_value VARCHAR(256) NOT NULL,
+    id_type VARCHAR(32) NOT NULL,
+    platform VARCHAR(32),
+    comment VARCHAR(16384)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS unique_restricted_id ON RESTRICTED_IDS (id_value,id_type,platform);
+CREATE UNIQUE INDEX IF NOT EXISTS RESTRICTED_IDS_ID_IN ON RESTRICTED_IDS(ID);
+CREATE INDEX IF NOT EXISTS RESTRICTED_IDS_ID_VALUE_PLATFORM_IN ON RESTRICTED_IDS(ID_VALUE,PLATFORM);
 
-CREATE TABLE IF NOT EXISTS DR_HOLDBACK_RULES (
-                                                 id VARCHAR(256) PRIMARY KEY,
-                                                 name VARCHAR(256),
-                                                 days int
+CREATE TABLE IF NOT EXISTS dr_holdback_rules (
+    id BIGINT PRIMARY KEY,
+    dr_holdback_value VARCHAR(256) UNIQUE,
+    name VARCHAR(256),
+    days int
 );
 
-CREATE TABLE IF NOT EXISTS DR_HOLDBACK_MAP (
-                              id            BIGINT PRIMARY KEY,
-                              content_range_from INTEGER NOT NULL,
-                              content_range_to INTEGER NOT NULL,
-                              form_range_from INTEGER NOT NULL,
-                              form_range_to INTEGER NOT NULL,
-                              dr_holdback_id   VARCHAR(32) references DR_HOLDBACK_RULES(id)
+CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_rules_id_in ON dr_holdback_rules(id);
+CREATE INDEX IF NOT EXISTS dr_holdback_rules_dr_holdback_value_in ON dr_holdback_rules(dr_holdback_value);
+CREATE INDEX IF NOT EXISTS dr_holdback_rules_name_in ON dr_holdback_rules(name);
+
+/*
+ Table to map content and/or form to holdback
+ */
+CREATE TABLE IF NOT EXISTS dr_holdback_ranges (
+    id BIGINT PRIMARY KEY,
+    content_range_from INTEGER NOT NULL,
+    content_range_to INTEGER NOT NULL,
+    form_range_from INTEGER NOT NULL,
+    form_range_to INTEGER NOT NULL,
+    dr_holdback_value VARCHAR(256) references dr_holdback_rules(dr_holdback_value)
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_ranges_id_in ON dr_holdback_ranges(id);
+CREATE INDEX IF NOT EXISTS dr_holdback_ranges_dr_holdback_value_in ON dr_holdback_ranges(dr_holdback_value);
+CREATE INDEX IF NOT EXISTS dr_holdback_ranges_content_form_in ON dr_holdback_ranges(content_range_from, content_range_to, form_range_from, form_range_to);
 
 CREATE TABLE IF NOT EXISTS AUDITLOG (
-       ID BIGINT PRIMARY KEY,
-       OBJECTID BIGINT NOT NULL,
-       MODIFIEDTIME BIGINT NOT NULL,
-       USERNAME VARCHAR(256) NOT NULL,
-       CHANGETYPE VARCHAR(256) NOT NULL,
-       CHANGENAME VARCHAR(256) NOT NULL,
-       CHANGECOMMENT VARCHAR(1024),
-       TEXTBEFORE VARCHAR(65535),
-       TEXTAFTER VARCHAR(65535) 
-);       
+    ID BIGINT PRIMARY KEY,
+    OBJECTID BIGINT NOT NULL,
+    MODIFIEDTIME BIGINT NOT NULL,
+    USERNAME VARCHAR(256) NOT NULL,
+    CHANGETYPE VARCHAR(256) NOT NULL,
+    CHANGENAME VARCHAR(256) NOT NULL,
+    CHANGECOMMENT VARCHAR(1024),
+    TEXTBEFORE VARCHAR(65535),
+    TEXTAFTER VARCHAR(65535)
+);
 
 CREATE UNIQUE INDEX IF NOT EXISTS AUDITLOG_ID_IN_IN ON AUDITLOG(ID);
 CREATE INDEX IF NOT EXISTS AUDITLOG_OBJECTID_IN ON AUDITLOG(OBJECTID);
