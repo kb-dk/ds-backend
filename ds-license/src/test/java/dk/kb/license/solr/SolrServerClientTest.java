@@ -20,12 +20,9 @@ import static org.mockito.Mockito.*;
 
 public class SolrServerClientTest {
 
-    @Test
-    public void createSolrQuery_WhenGivenQueryAndFieldListAndPageSize_ReturnSolrQuery() {
         // Arrange
         String queryDsId = "broadcaster:DR";
         String fieldListDsId = "dr_production_id";
-        int pageSize = 500;
 
         // To be able to mock List<SolrServerClient> servers we use the getServers getter method
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
@@ -34,13 +31,12 @@ public class SolrServerClientTest {
             SolrServerClient solrServerClient = new SolrServerClient();
 
             // Act
-            SolrQuery solrQuery = solrServerClient.createSolrQuery(queryDsId, fieldListDsId, pageSize);
+            SolrQuery solrQuery = solrServerClient.createSolrQuery(queryDsId, fieldListDsId);
 
             // Assert
             assertNotNull(solrQuery);
             assertEquals(queryDsId, solrQuery.getQuery());
             assertEquals(fieldListDsId, solrQuery.getFields());
-            assertEquals(pageSize, solrQuery.getRows());
         }
     }
 

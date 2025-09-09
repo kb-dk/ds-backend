@@ -2,6 +2,7 @@ package dk.kb.license.solr;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -62,14 +63,16 @@ public class SolrServerClient extends AbstractSolrJClient {
      *
      * @param query     what query we want to query in Solr.
      * @param fieldList what fields should be in the Solr response.
-     * @param pageSize  which determines the amount of documents returned by the query.
      * @return a {@link SolrQuery} that can be used in request to Solr.
      */
-    public SolrQuery createSolrQuery(String query, String fieldList, int pageSize) {
+    public SolrQuery createSolrQuery(String query, String fieldList) {
+        // determines the amount of documents returned by the query
+        int rows = 1000;
+
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery(query);
         solrQuery.setFields(fieldList);
-        solrQuery.setRows(pageSize);
+        solrQuery.setRows(rows);
         return solrQuery;
     }
 
@@ -85,44 +88,33 @@ public class SolrServerClient extends AbstractSolrJClient {
         SolrDocumentList resultSolrDocumentList = new SolrDocumentList();
 
         if (servers == null || servers.isEmpty()) {
-            log.error("List of SolrServerClient is never populated so it is empty");
-            throw new InternalServiceException("List of SolrServerClient is never populated so it is empty");
+            final String errorMessage = "List of SolrServerClient is never populated so it is empty";
+            log.error(errorMessage);
+            throw new InternalServiceException(errorMessage);
         }
 
         // Ds-license supports multiple backing Solr servers. So we have to wrap it in this for-loop
         for (SolrServerClient server : servers) {
-            int pageSize = 500;
-            int start = 0;
+            SolrQuery solrQuery = createSolrQuery(query, fieldList);
 
-            SolrQuery solrQuery = createSolrQuery(query, fieldList, pageSize);
+            try {
+                // Query Solr for a response
+                response = server.query(solrQuery);
+            } catch (SolrServerException | IOException e) {
+                log.error("callSolr an error appeared when calling Solr backend: {}", e.getMessage());
+                throw new InternalServiceException(e);
+            }
 
-            while (true) {
-                // Update start value before the query is fired against the server
-                solrQuery.setStart(start);
-
-                try {
-                    // Query Solr for a response
-                    response = server.query(solrQuery);
-                } catch (SolrServerException | IOException e) {
-                    log.error("callSolr an error appeared when calling Solr backend: {}", e.getMessage());
-                    throw new InternalServiceException(e);
+            if (response == null || response.getResults() == null) {
+                log.error("Response from Solr is null");
+                return Optional.empty();
+            } else {
+                // If the query match with more than 1000 results, we throw an exception
+                if (response.getResults().getNumFound() > 1000) {
+                    throw new InvalidArgumentServiceException("Too many results for query: " + query);
                 }
 
-                if (response == null || response.getResults() == null) {
-                    log.error("Response from Solr is null");
-                    return Optional.empty();
-                } else {
-                    resultSolrDocumentList.addAll(response.getResults());
-                    long totalResults = response.getResults().getNumFound();
-
-                    // Break the loop of no more records are available
-                    if (start + pageSize >= totalResults) {
-                        break;
-                    }
-
-                    // Increment start by pageSize
-                    start += pageSize;
-                }
+                resultSolrDocumentList.addAll(response.getResults());
             }
         }
 
