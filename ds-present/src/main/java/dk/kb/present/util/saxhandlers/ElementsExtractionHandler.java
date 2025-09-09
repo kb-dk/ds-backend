@@ -1,151 +1,83 @@
 package dk.kb.present.util.saxhandlers;
 
-import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.present.util.DataCleanup;
-import dk.kb.present.util.PathPair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import dk.kb.present.util.ExtractedPreservicaValues;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-
 /**
  * Extract multiple values from an XML stream to a {@link ExtractedPreservicaValues}-object.
- */
+ **/
 public class ElementsExtractionHandler extends DefaultHandler {
-    private static final Logger log = LoggerFactory.getLogger(ElementsExtractionHandler.class);
+    private static final String METADATA_PATH = "/XIP/Metadata";
 
-    private ExtractedPreservicaValues extractedPreservicaValues = new ExtractedPreservicaValues();
+    private static final String START_TIME_PATH = METADATA_PATH + "/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
+    private static final String END_TIME_PATH = METADATA_PATH + "/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
+
+    private static final String TVMETER_FORM_PATH = METADATA_PATH + "/Content/record/source/tvmeter/form";
+    private static final String TVMETER_CONTENT_PATH = METADATA_PATH + "/Content/record/source/tvmeter/contentsitem";
+    private static final String TVMETER_ORIGIN_PATH = METADATA_PATH + "/Content/record/source/tvmeter/origin";
+    private static final String TVMETER_ORIGIN_COUNTRY_PATH = METADATA_PATH + "/Content/record/source/tvmeter/productioncountry";
+    private static final String TVMETER_PURPOSE_PATH = METADATA_PATH + "/Content/record/source/tvmeter/intent";
+    private static final String TVMETER_PRODUCTION_ID_PATH = METADATA_PATH + "/Content/record/source/tvmeter/internalidcode";
+
+    private static final String NIELSEN_FORM_PATH = METADATA_PATH + "/Content/record/source/nielsen/form";
+    // TODO: Is this still the correct path to extract from?
+    private static final String NIELSEN_CONTENT_PATH = METADATA_PATH + "/Content/record/source/nielsen/typology";
+    private static final String NIELSEN_ORIGIN_PATH = METADATA_PATH + "/Content/record/source/nielsen/origin";
+    private static final String NIELSEN_ORIGIN_COUNTRY_PATH = METADATA_PATH + "/Content/record/source/nielsen/origincountry";
+    private static final String NIELSEN_PURPOSE_PATH = METADATA_PATH + "/Content/record/source/nielsen/purpose";
+    private static final String NIELSEN_PRODUCTION_ID_PATH = METADATA_PATH + "/Content/record/source/nielsen/internalidcode";
+
+    private static final String PBCORE_TITLE_PATH = METADATA_PATH + "/Content/PBCoreDescriptionDocument/pbcoreTitle";
+    private static final String PBCORE_TITLE_VALUE_PATH = PBCORE_TITLE_PATH + "/title";
+    private static final String PBCORE_TITLE_TYPE_PATH = PBCORE_TITLE_PATH + "/titleType";
+
+
+    private static final Map<String,String> PBCORE_EXTRACT_PATHS = Map.of(
+            START_TIME_PATH,ExtractedPreservicaValues.STARTTIME_KEY,
+            END_TIME_PATH,ExtractedPreservicaValues.ENDTIME_KEY
+    );
+
+    private static final Map<String,String> NIELSEN_EXTRACT_PATHS = Map.of(
+            NIELSEN_FORM_PATH,ExtractedPreservicaValues.FORM_KEY,
+            NIELSEN_CONTENT_PATH,ExtractedPreservicaValues.CONTENT_KEY,
+            NIELSEN_ORIGIN_PATH,ExtractedPreservicaValues.ORIGIN_KEY,
+            NIELSEN_ORIGIN_COUNTRY_PATH,ExtractedPreservicaValues.ORIGIN_COUNTRY_KEY,
+            NIELSEN_PURPOSE_PATH,ExtractedPreservicaValues.PURPOSE_KEY,
+            NIELSEN_PRODUCTION_ID_PATH,ExtractedPreservicaValues.PRODUCTION_ID_KEY
+    );
+
+    private static final Map<String,String> TVMETER_EXTRACT_PATHS = Map.of(
+            TVMETER_FORM_PATH,ExtractedPreservicaValues.FORM_KEY,
+            TVMETER_CONTENT_PATH,ExtractedPreservicaValues.CONTENT_KEY,
+            TVMETER_ORIGIN_PATH,ExtractedPreservicaValues.ORIGIN_KEY,
+            TVMETER_ORIGIN_COUNTRY_PATH,ExtractedPreservicaValues.ORIGIN_COUNTRY_KEY,
+            TVMETER_PURPOSE_PATH,ExtractedPreservicaValues.PURPOSE_KEY,
+            TVMETER_PRODUCTION_ID_PATH,ExtractedPreservicaValues.PRODUCTION_ID_KEY
+    );
+
+    private boolean hasNielsenData = false;
+    private boolean hasTvMetadata = false;
+
+    private boolean insideMetadata = false;
+    private String metadataType;
+
+    private boolean inPbCoreTitle = false;
+    private String pbCoreTitleValue;
+    private String pbCoreTitleType;
+
     private String currentPath = "";
-    private boolean captureValue = false;
-    private String captureValueKey = "";
+    private StringBuilder capturedCharacters = new StringBuilder();
 
-    private static final String START_TIME_PATH = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
-    private static final String END_TIME_PATH = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
-    private static final String TVMETER_PATH = "/XIP/Metadata/Content/record/source/tvmeter";
-    private static final String NIELSEN_PATH = "/XIP/Metadata/Content/record/source/nielsen";
-    private static boolean containsNielsen = false;
-    private static boolean containsTvMeter = false;
+    private ExtractedPreservicaValues extractedPreservicaValues;
 
-    private static String formPath = "";
-    private static String contentPath = "";
-    private static  String origincountryPath = "";
-    private static  String originPath = "";
-    private static String purposePath = "";
-    private static String productionIdPath = "";
-
-
-    public ElementsExtractionHandler(String recordId){
-        extractedPreservicaValues.values.get("recordId").setValue(recordId);
-    }
-
-    @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        String elementName = stripPrefix(qName);
-        // Update the current path
-        currentPath += "/" + elementName;
-
-        // Path for timestamps are alike in all records.
-        handleTimestampPaths();
-
-        // Check if the current path is either Tvmeter or Nielsen extracted metadata.
-        handleTvmeterAndNielsenPaths();
-
-        if (containsNielsen || containsTvMeter){
-            // Check if the current path matches any target path
-            for (Map.Entry<String, PathPair<String, String>> entry : extractedPreservicaValues.values.entrySet()) {
-                if (currentPath.equals(entry.getValue().getPath())){
-                    captureValue = true;
-                    captureValueKey = entry.getKey();
-                }
-            }
-        }
-    }
-
-    @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (currentPath.equals(START_TIME_PATH) || currentPath.equals(END_TIME_PATH)){
-            captureValue = false;
-        }
-
-        if (containsNielsen || containsTvMeter) {
-            // Check if we are at the end of the target element
-            for (Map.Entry<String, PathPair<String, String>> entry : extractedPreservicaValues.values.entrySet()) {
-                if (currentPath.equals(entry.getValue().getPath())) {
-                    captureValue = false;
-                    break;
-                }
-            }
-        }
-
-        // Update the current path to continue traversal
-        currentPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-    }
-
-    @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
-        StringBuilder currentValue = new StringBuilder();
-        // Capture characters if we are within the target element
-        if (captureValue) {
-            currentValue.append(new String(ch, start, length));
-
-            if (captureValueKey.equals(ExtractedPreservicaValues.STARTTIME_KEY) || captureValueKey.equals(ExtractedPreservicaValues.ENDTIME_KEY)){
-                String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(currentValue.toString()).format(DateTimeFormatter.ISO_INSTANT);
-                extractedPreservicaValues.values.get(captureValueKey).setValue(cleanedTime);
-            } else {
-                extractedPreservicaValues.values.get(captureValueKey).setValue(currentValue.toString().trim());
-            }
-        }
-    }
-
-    /**
-     * Update all variables extracted from either Tvmeter or Nielsen with their correct path values and sets the respective boolean to true and the other to false.
-     */
-    private void handleTvmeterAndNielsenPaths() {
-        if (currentPath.equals(TVMETER_PATH)) {
-            containsTvMeter = true;
-            containsNielsen = false;
-
-            formPath = "/XIP/Metadata/Content/record/source/tvmeter/form";
-            contentPath = "/XIP/Metadata/Content/record/source/tvmeter/contentsitem";
-            originPath = "/XIP/Metadata/Content/record/source/tvmeter/origin";
-            origincountryPath = "/XIP/Metadata/Content/record/source/tvmeter/productioncountry";
-            purposePath = "/XIP/Metadata/Content/record/source/tvmeter/intent";
-            productionIdPath = "/XIP/Metadata/Content/record/source/tvmeter/internalidcode";
-            updatePathValues();
-        }
-
-        if (currentPath.equals(NIELSEN_PATH)){
-            containsNielsen = true;
-            containsTvMeter = false;
-
-            formPath = "/XIP/Metadata/Content/record/source/nielsen/form";
-            // TODO: Is this the correct path to extract from?
-            contentPath = "/XIP/Metadata/Content/record/source/nielsen/typology";
-            originPath = "/XIP/Metadata/Content/record/source/nielsen/origin";
-            origincountryPath = "/XIP/Metadata/Content/record/source/nielsen/origincountry";
-            purposePath = "/XIP/Metadata/Content/record/source/nielsen/purpose";
-            productionIdPath = "/XIP/Metadata/Content/record/source/nielsen/internalidcode";
-            updatePathValues();
-        }
-    }
-
-    /**
-     * Extract start- and endtime from PBcore fragment in record.
-     */
-    private void handleTimestampPaths() {
-        if (currentPath.equals(START_TIME_PATH)){
-            captureValue = true;
-            captureValueKey = ExtractedPreservicaValues.STARTTIME_KEY;
-        }
-
-        if (currentPath.equals(END_TIME_PATH)){
-            captureValue = true;
-            captureValueKey = ExtractedPreservicaValues.ENDTIME_KEY;
-        }
+    public ElementsExtractionHandler(String recordId) {
+        extractedPreservicaValues = new ExtractedPreservicaValues();
+        extractedPreservicaValues.setValue(ExtractedPreservicaValues.RECORD_ID_KEY, recordId);
     }
 
     /**
@@ -155,16 +87,104 @@ public class ElementsExtractionHandler extends DefaultHandler {
         return extractedPreservicaValues;
     }
 
-    /**
-     * Update paths for values form, contentsItem and origin
-     */
-    private void updatePathValues() {
-        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.FORM_KEY, new PathPair<>(formPath, ""));
-        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.CONTENT_KEY, new PathPair<>(contentPath, ""));
-        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.ORIGIN_KEY, new PathPair<>(originPath, ""));
-        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.PURPOSE_KEY, new PathPair<>(purposePath, ""));
-        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.ORIGIN_COUNTRY_KEY, new PathPair<>(origincountryPath, ""));
-        extractedPreservicaValues.values.replace(ExtractedPreservicaValues.PRODUCTION_ID_KEY, new PathPair<>(productionIdPath, ""));
+
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        String elementName = stripPrefix(qName);
+        // Update the current path
+        currentPath += "/" + elementName;
+        capturedCharacters.setLength(0);
+
+        if (!insideMetadata && METADATA_PATH.equals(currentPath)) {
+            insideMetadata = true;
+            metadataType = attributes.getValue("schemaUri");
+        }
+
+        if (PBCORE_TITLE_PATH.equals(currentPath)) {
+            inPbCoreTitle = true;
+        }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+
+        if (insideMetadata) {
+            if ("http://www.pbcore.org/PBCore/PBCoreNamespace.html".equals(metadataType)) {
+                if (PBCORE_EXTRACT_PATHS.containsKey(currentPath)) {
+                    String key = PBCORE_EXTRACT_PATHS.get(currentPath);
+                    if (ExtractedPreservicaValues.STARTTIME_KEY.equals(key) ||
+                            ExtractedPreservicaValues.ENDTIME_KEY.equals(key)) {
+                        String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(capturedCharacters.toString().trim()).format(DateTimeFormatter.ISO_INSTANT);
+                        extractedPreservicaValues.setValue(key, cleanedTime);
+                    } else {
+                        extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
+                    }
+                }
+                if (PBCORE_TITLE_TYPE_PATH.equals(currentPath)) {
+                    pbCoreTitleType = capturedCharacters.toString().trim();
+                }
+                if (PBCORE_TITLE_VALUE_PATH.equals(currentPath)) {
+                    pbCoreTitleValue = capturedCharacters.toString().trim();
+                }
+            }
+            if ("http://id.kb.dk/schemas/supplementary_tvmeter_metadata".equals(metadataType) && TVMETER_EXTRACT_PATHS.containsKey(currentPath)) {
+                if (!hasNielsenData) {
+                    hasTvMetadata = true;
+                    String key = TVMETER_EXTRACT_PATHS.get(currentPath);
+                    extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
+                }
+            }
+            if ("http://id.kb.dk/schemas/supplementary_nielsen_metadata".equals(metadataType) && NIELSEN_EXTRACT_PATHS.containsKey(currentPath)) {
+                if (!hasTvMetadata) {
+                    hasNielsenData = true;
+                    String key = NIELSEN_EXTRACT_PATHS.get(currentPath);
+                    extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
+                }
+            }
+
+            if (PBCORE_TITLE_PATH.equals(currentPath)) {
+                switch (pbCoreTitleType) {
+                    case "titel" :
+                        extractedPreservicaValues.setValue(ExtractedPreservicaValues.TITLE_KEY, pbCoreTitleValue);
+                        break;
+                    case "originaltitel" :
+                        extractedPreservicaValues.setValue(ExtractedPreservicaValues.ORIGINAL_TITLE_KEY, pbCoreTitleValue);
+                        break;
+                }
+                inPbCoreTitle = false;
+            }
+
+            if (METADATA_PATH.equals(currentPath)) {
+                insideMetadata = false;
+                metadataType = null;
+            }
+        }
+
+        // Update the current path to continue traversal
+        currentPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+    }
+
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        if (shouldValueBeCaptured()) {
+            capturedCharacters.append(new String(ch, start, length));
+        }
+    }
+
+    private boolean shouldValueBeCaptured() {
+        if (insideMetadata) {
+            switch (metadataType) {
+                case "http://www.pbcore.org/PBCore/PBCoreNamespace.html":
+                    return PBCORE_EXTRACT_PATHS.containsKey(currentPath) ||
+                                    PBCORE_TITLE_TYPE_PATH.equals(currentPath) ||
+                                    PBCORE_TITLE_VALUE_PATH.equals(currentPath);
+                case "http://id.kb.dk/schemas/supplementary_tvmeter_metadata":
+                    return TVMETER_EXTRACT_PATHS.containsKey(currentPath);
+                case "http://id.kb.dk/schemas/supplementary_nielsen_metadata":
+                    return true;
+            }
+        }
+        return false;
     }
 
     /**

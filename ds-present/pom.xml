@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.3-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
 
@@ -35,7 +35,7 @@
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
-        <solr.config.version>1.8.0</solr.config.version> <!-- Semantic versioning of solr config and schema -->
+        <solr.config.version>1.8.1</solr.config.version> <!-- Semantic versioning of solr config and schema -->
 
         <project.package>dk.kb.present</project.package>
     </properties>
@@ -56,7 +56,7 @@
         <dependency>
           <groupId>dk.kb.storage</groupId>
           <artifactId>ds-storage</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.2-SNAPSHOT</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
@@ -71,7 +71,7 @@
       <dependency>
         <groupId>dk.kb.license</groupId>
         <artifactId>ds-license</artifactId>
-          <version>3.0.1-SNAPSHOT</version>
+          <version>3.0.2-SNAPSHOT</version>
           <type>jar</type>
           <classifier>classes</classifier>
           <exclusions>

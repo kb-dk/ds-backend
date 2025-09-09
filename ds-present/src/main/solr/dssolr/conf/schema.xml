@@ -66,9 +66,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.10: Add boolean field ds_id_restricted.
 1.7.11: Fixed use of synonyms filer (SynonymGraphFilterFactory). Require also query filter.
 1.8.0: Add fields ritzau_channel_id, nielsen_channel_id and file_path
+1.8.1: Add field for records restricted on title
 
   -->
-  <field name="_ds_1.8.0_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.1_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -788,6 +789,12 @@ When adding fields to this schema please have the following guidelines in mind:
             true and therefore the record should not be available.?>
     <?example true?>
   </field>
+
+    <field name="title_restricted" type="boolean">
+        <?description If a record has been restricted by DR, it can have been restricted by the title (Only strict matches). If that is the case, this value will be
+                true and therefore the record should not be available.?>
+        <?example true?>
+    </field>
 
   <field name="file_id" type="string">
     <?description An id, used as part of the streaming URL.?>

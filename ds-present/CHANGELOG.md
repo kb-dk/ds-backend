@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.0.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.2) 2025-09-03
+### Fixed
+- update of solr config version in pom file
+
+## [3.0.1](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.1) 2025-09-01
+### Changed
+- add title_restricted field to solr when indexing
+
 ## [3.0.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.0) 2025-06-12
 ### Added
 - Integration unittest with OAuth access token. Require kb-util v.1.6.10
