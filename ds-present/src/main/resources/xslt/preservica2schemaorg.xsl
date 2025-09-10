@@ -43,6 +43,7 @@
   <xsl:param name="productionId"/>
   <xsl:param name="productionIdRestrictedDr"/>
   <xsl:param name="dsIdRestricted"/>
+  <xsl:param name="titleRestricted"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
@@ -1131,6 +1132,12 @@
         <xsl:value-of select="$dsIdRestricted"/>
       </f:boolean>
     </xsl:if>
+
+      <xsl:if test="$titleRestricted != ''">
+          <f:boolean key="kb:title_restricted">
+              <xsl:value-of select="$titleRestricted"/>
+          </f:boolean>
+      </xsl:if>
 
     <!-- Extract subgenre if present -->
     <xsl:for-each select="$pbCore/pbcoreGenre/genre">

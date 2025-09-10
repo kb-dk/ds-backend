@@ -4,11 +4,17 @@ import dk.kb.license.model.v1.HoldbackCalculationInputDto;
 import dk.kb.license.model.v1.PlatformEnumDto;
 import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
+import dk.kb.present.util.saxhandlers.ElementsExtractionHandler;
+import org.apache.commons.io.IOUtils;
+import org.xml.sax.SAXException;
 
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +28,7 @@ import java.util.Map;
  */
 public class ExtractedPreservicaValues {
 
-    public Map<String, PathPair<String,String>> values = new HashMap<>();
+    public Map<String, String> values = new HashMap<>();
     public static final String RECORD_ID_KEY = "recordId";
     public static final String STARTTIME_KEY = "startTime";
     public static final String ENDTIME_KEY = "endTime";
@@ -32,103 +38,68 @@ public class ExtractedPreservicaValues {
     public static final String ORIGIN_COUNTRY_KEY = "originCountry";
     public static final String PURPOSE_KEY = "purpose";
     public static final String PRODUCTION_ID_KEY = "productionId";
+    public static final String TITLE_KEY = "title";
+    public static final String ORIGINAL_TITLE_KEY = "originalTitle";
 
     public ExtractedPreservicaValues(){
-        values.put(RECORD_ID_KEY, new PathPair<>("id", ""));
-        values.put(STARTTIME_KEY, new PathPair<>(startTimePath, ""));
-        values.put(ENDTIME_KEY, new PathPair<>(endTimePath, ""));
-        values.put(FORM_KEY, new PathPair<>("", ""));
-        values.put(CONTENT_KEY, new PathPair<>("", ""));
-        values.put(ORIGIN_KEY, new PathPair<>("", ""));
-        values.put(ORIGIN_COUNTRY_KEY, new PathPair<>("", ""));
-        values.put(PURPOSE_KEY, new PathPair<>("", ""));
-        values.put(PRODUCTION_ID_KEY, new PathPair<>("",""));
     }
 
-    private static final String startTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableStart";
-    private static final String endTimePath = "/XIP/Metadata/Content/PBCoreDescriptionDocument/pbcoreInstantiation/pbcoreDateAvailable/dateAvailableEnd";
+    /**
+     * Extract all needed values from a preservica record. These values are either tricky values such as dates, where we know that extra parsing is needed or values that are
+     * used in multiple parts of the processing of the record.
+     * @param content of the record. i.e. the XML data.
+     * @param recordId of the processed record. Used for logging and debugging.
+     * @return a {@link ExtractedPreservicaValues}-object containing the extracted values.
+     */
+    public static ExtractedPreservicaValues extractValuesFromPreservicaContent(String content, String recordId) throws ParserConfigurationException, SAXException, IOException {
+        try (InputStream xml = IOUtils.toInputStream(content, StandardCharsets.UTF_8)) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(false);
+            SAXParser saxParser = factory.newSAXParser();
+
+            ElementsExtractionHandler handler = new ElementsExtractionHandler(recordId);
+            saxParser.parse(xml, handler);
+
+            return handler.getDataValues();
+        }
+    }
 
     public String getStartTime() {
-        return values.get(STARTTIME_KEY).getValue();
+        return values.get(STARTTIME_KEY);
     }
-
-    public void setStartTime(String startTime) {
-        String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(startTime).format(DateTimeFormatter.ISO_INSTANT);
-        values.get(STARTTIME_KEY).setValue(cleanedTime);
-    }
-
     public String getEndTime() {
-        return values.get(ENDTIME_KEY).getValue();
+        return values.get(ENDTIME_KEY);
     }
-
-    public void setEndTime(String endTime) {
-        String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(endTime).format(DateTimeFormatter.ISO_INSTANT);
-        values.get(ENDTIME_KEY).setValue(cleanedTime);
-    }
-
     public String getFormValue() {
-        return values.get(FORM_KEY).getValue();
+        return values.get(FORM_KEY);
     }
-
-    public void setFormValue(String formValue) {
-        values.get(FORM_KEY).setValue(formValue);
-    }
-
     public String getContent() {
-        return values.get(CONTENT_KEY).getValue();
+        return values.get(CONTENT_KEY);
     }
-
-    public void setContent(String content) {
-        values.get(CONTENT_KEY).setValue(content);
-    }
-
     public String getOriginCountry(){
-        return values.get(ORIGIN_COUNTRY_KEY).getValue();
-    }
-
-    public void setOriginCountry(String origin){
-        values.get(ORIGIN_COUNTRY_KEY).setValue(origin);
+        return values.get(ORIGIN_COUNTRY_KEY);
     }
     public String getOrigin(){
-        return values.get(ORIGIN_KEY).getValue();
+        return values.get(ORIGIN_KEY);
     }
-
-    public void setOrigin(String origin){
-        values.get(ORIGIN_KEY).setValue(origin);
-    }
-
     public String getId(){
-        return values.get(RECORD_ID_KEY).getValue();
+        return values.get(RECORD_ID_KEY);
     }
-
-    public void setId(String id){
-        values.get(RECORD_ID_KEY).setValue(id);
-    }
-
     public String getPurpose(){
-        return values.get(PURPOSE_KEY).getValue();
+        return values.get(PURPOSE_KEY);
     }
-
-    public void setPurpose(String purpose){
-        values.get(PURPOSE_KEY).setValue(purpose);
-    }
-
     public String getProductionId() {
-        return values.get(PRODUCTION_ID_KEY).getValue();
+        return values.get(PRODUCTION_ID_KEY);
+    }
+    public String getTitle(){
+        return values.get(TITLE_KEY);
+    }
+    public String getOriginalTitle() {
+        return values.get(ORIGINAL_TITLE_KEY);
     }
 
-    public void setProductionId(String formValue) {
-        values.get(FORM_KEY).setValue(formValue);
-    }
-
-
-    public List<String> getPaths(){
-        List<String> paths = new ArrayList<>();
-        for (Map.Entry<String, PathPair<String, String>> entry : values.entrySet()) {
-            paths.add(entry.getValue().getPath());
-        }
-
-        return paths;
+    public void setValue(String key, String value) {
+        values.put(key, value);
     }
 
     /**
@@ -160,7 +131,7 @@ public class ExtractedPreservicaValues {
         restrictionsDto.setRecordId(getId());
         restrictionsDto.setDrProductionId(getProductionId());
         restrictionsDto.setProductionCode(getOrigin());
-        restrictionsDto.setTitle("Test title"); // TODO: Title should be sent here as well
+        restrictionsDto.setTitle(getTitle());
 
         rightsInputDto.setStartTime(getStartTime());
         rightsInputDto.setRecordId(getId());
