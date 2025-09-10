@@ -43,7 +43,9 @@ kaltura:
   userId:  xxx@kb.dk
   token: 'yyyyy'
   tokenId: 'yyyyy'
-  adminSecret: very very secret
+  adminSecret: ''
+  sessionDurationSeconds: 86400
+  sessionRefreshThreshold: 3600
 
 security:
   # The security mode. Valid values are
