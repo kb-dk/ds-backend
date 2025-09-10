@@ -48,8 +48,7 @@ public class LicenseModuleClientTest {
             fail();
         }
     }
-    
-    
+
     @Test
     public void testValidateAccess() throws Exception {        
         DsLicenseClient dsLicenseClient = getDsLicenseClient();
@@ -133,8 +132,6 @@ public class LicenseModuleClientTest {
         GetUserGroupsOutputDto output = dsLicenseClient.getUserGroups(input);        
         assertTrue(output.getGroups().size() > 1);        
     }
-
-
 
     /**
      * This is the user with minimum access(everybody=yes)  

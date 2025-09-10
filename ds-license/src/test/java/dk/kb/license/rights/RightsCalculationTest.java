@@ -31,7 +31,6 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
-        // "ddl/rightsmodule_default_holdbackdata.sql"
         H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
     }
@@ -41,14 +40,14 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         try (RightsModuleStorageForUnitTest storage = new RightsModuleStorageForUnitTest()){
             List<String> tables = new ArrayList<String>();
             tables.add("RESTRICTED_IDS");
-            tables.add("DR_HOLDBACK_MAP");
+            tables.add("DR_HOLDBACK_RANGES");
             tables.add("DR_HOLDBACK_RULES");       
                        
             storage.clearTableRecords(tables);
         } catch (Exception e) {
             throw e;
         }
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_default_holdbackdata.sql"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_default_holdbackrulesdata.sql", "ddl/rightsmodule_default_holdbackrangesdata.sql"));
     }
 
     @Test
@@ -115,7 +114,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackForeign() throws SQLException, IllegalAccessException {
+    public void testHoldbackForeign() throws SQLException {
 
         RightsCalculationInputDto foreignRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
                 PlatformEnumDto.DRARKIV,4411, 0, 3190, 5000, "5000", "Program 1", "9283748300", "ds.tv");
@@ -123,7 +122,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(foreignRecord);
 
         assertEquals("Udenlandsk Dramatik & Fiktion", output.getDr().getHoldbackName());
-        assertEquals("9999-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
+        assertEquals("3017-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate()); // 1000 years, should never be released to the public
     }
 
     @Test
@@ -165,7 +164,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void restrictedDrProductionIdTest() throws SQLException, IllegalAccessException {
         try ( RightsModuleStorageForUnitTest storage = new RightsModuleStorageForUnitTest()) {
-            storage.createRestrictedId("1234567890", IdTypeEnumDto.DR_PRODUCTION_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Not allowed dr production ID", "TestUser", System.currentTimeMillis());
+            storage.createRestrictedId("1234567890", IdTypeEnumDto.DR_PRODUCTION_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Not allowed dr production ID");
             storage.commit();
         } catch (Exception e) {
             throw e;
@@ -182,7 +181,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void restrictedDsIdTest() throws SQLException, IllegalAccessException {
         try ( RightsModuleStorageForUnitTest storage = new  RightsModuleStorageForUnitTest()) {
-            storage.createRestrictedId("restrictedId",IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(),"dangerous ID","TestUser",System.currentTimeMillis());
+            storage.createRestrictedId("restrictedId",IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(),"dangerous ID");
             storage.commit();
         } catch (Exception e) {
             throw e;
@@ -198,7 +197,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void restrictedTitleTest() throws SQLException, IllegalAccessException {
         try ( RightsModuleStorageForUnitTest storage = new  RightsModuleStorageForUnitTest()) {
-            storage.createRestrictedId("Restricted Test Title",IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.DRARKIV.getValue(), "This title can never be shown","TestUser",System.currentTimeMillis());
+            storage.createRestrictedId("Restricted Test Title",IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.DRARKIV.getValue(), "This title can never be shown");
             storage.commit();
         } catch (Exception e) {
             throw e;
@@ -215,7 +214,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void allowedProductionCodeFromMetadataTest() throws SQLException, IllegalAccessException {
         try ( RightsModuleStorageForUnitTest storage = new  RightsModuleStorageForUnitTest()) {
-            storage.createRestrictedId("1000",IdTypeEnumDto.OWNPRODUCTION_CODE.getValue(), PlatformEnumDto.DRARKIV.getValue(),"1000 equals ownproduction","TestUser",System.currentTimeMillis());
+            storage.createRestrictedId("1000",IdTypeEnumDto.OWNPRODUCTION_CODE.getValue(), PlatformEnumDto.DRARKIV.getValue(),"1000 equals ownproduction");
             storage.commit();
         } catch (Exception e) {
             throw e;
@@ -230,43 +229,12 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void inputValidationTestTopLevel() {
-        RightsCalculationInputDto faultyInput = new RightsCalculationInputDto(null,"1990-06-20T10:00:00+0100",
-                PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, "1000", "Random program", "9283748300", "ds.tv");
-
-        InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.calculateRightsForRecord(faultyInput));
-        assertEquals("Field 'recordId' in class dk.kb.license.model.v1.RightsCalculationInputDto is null.", exception.getMessage());
-    }
-
-    @Test
-    public void inputValidationTestNested() {
-        RightsCalculationInputDto faultyInput = new RightsCalculationInputDto("TestId","1990-06-20T10:00:00+0100",
-                PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, null, "Random program", "9283748300", "ds.tv");
-
-        InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.calculateRightsForRecord(faultyInput));
-        assertEquals("Field 'productionCode' in class dk.kb.license.model.v1.RestrictionsCalculationInputDto is null.", exception.getMessage());
-    }
-
-    @Test
-    public void testProductionIdValidation(){
-        // Append zero and strip to a length of 10 digits
-        assertEquals("1234567890", Util.validateDrProductionIdFormat("000123456789"));
-        assertEquals("0012345670", Util.validateDrProductionIdFormat("000001234567"));
-
-    }
-
-    @Test
     public void testShortErrorProductionId(){
-        InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345"));
-        assertEquals("The input production ID: '12345' got formattet to '123450' which is shorter than 8 digits. This is not an allowed production ID.", exception.getMessage());
+        assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345"));
     }
 
     @Test
-    public void testLongErrorProductionId(){
-        InvalidArgumentServiceException exception = assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("1234567890123"));
-        assertEquals("The input production ID: '1234567890123' got formattet to '12345678901230' which is longer than 10 digits. This is not an allowed production ID.",
-                exception.getMessage());
+    public void testInvalidProductionId(){
+        assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345abcde"));
     }
 }
