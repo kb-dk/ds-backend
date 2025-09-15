@@ -308,7 +308,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * @return databaseID for the new AuditLog entry
      */
     public long persistAuditLog(AuditLogEntry auditLog) throws SQLException {
-        log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), getCurrentUsername());
+        log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), getCurrentUsername(auditLog.getUserName()));
               
         Long id = generateUniqueID();
 
@@ -318,7 +318,7 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             stmt.setLong(1, id);     
             stmt.setLong(2, auditLog.getObjectId());
             stmt.setLong(3, System.currentTimeMillis());                         
-            stmt.setString(4, getCurrentUsername());
+            stmt.setString(4, getCurrentUsername(auditLog.getUserName()));
             stmt.setString(5, auditLog.getChangeType().getValue());
             stmt.setString(6, auditLog.getChangeName().getValue());
             stmt.setString(7, auditLog.getChangeComment());               
@@ -360,17 +360,19 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * Gets the name of the current user from the OAuth token.
      * @return
      */
-    private static String getCurrentUsername() {
-        final String UNKNOWN = "Unknown";
+    private static String getCurrentUsername(String username) {
 
         Message message = JAXRSUtils.getCurrentMessage();
         if (message == null) {
-            return UNKNOWN;
+            if (username == null) {
+                throw new IllegalArgumentException("No username or valid message provided");
+            }
+            return username;
         }
         AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
         if (token != null && token.getName() != null) {
             return token.getName();
         }
-        return UNKNOWN;
+        throw new IllegalArgumentException("Invalid or no token provided");
     }
 }

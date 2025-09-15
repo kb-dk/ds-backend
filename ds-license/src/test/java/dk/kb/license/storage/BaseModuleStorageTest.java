@@ -80,7 +80,7 @@ public class BaseModuleStorageTest extends DsLicenseUnitTestUtil {
             String textBefore = "before";
             String textAfter = "after";
 
-            AuditLogEntry auditLog = new AuditLogEntry(objectId, changeType, changeName, changeComment, textBefore, textAfter);
+            AuditLogEntry auditLog = new AuditLogEntry(objectId, "", changeType, changeName, changeComment, textBefore, textAfter);
 
             long auditLogId = storage.persistAuditLog(auditLog);
             AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);

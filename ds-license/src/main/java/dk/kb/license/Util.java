@@ -3,7 +3,6 @@ package dk.kb.license;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +16,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import dk.kb.license.model.v1.RestrictedIdInputDto;
-import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.slf4j.Logger;
@@ -270,35 +268,17 @@ public class Util {
      * two zeros, it is considered valid and is set back on the input DTO. If not, a zero
      * is appended to the production ID before updating the input DTO.
      *
-     * @param inputProductionId the {@link RestrictedIdInputDto} containing the production ID to be validated.
+     * @param productionId the {@link RestrictedIdInputDto} containing the production ID to be validated.
      */
-    public static String validateDrProductionIdFormat(String inputProductionId) {
-		String productionId = inputProductionId;
+    public static void validateDrProductionIdFormat(String productionId) {
 
-        // Some production IDs are on the correct formula already, as they are derived by hand in our system. therefore,
-        // if an ID is 10 digits long an ends with two zeros, they are already correct.
-        if (productionId.endsWith("00") && productionId.length() == 10){
-            return productionId;
-        }
-
-        // Add another zero to
-        productionId = productionId + "0";
-
-        // Remove prefix zeroes
-        while (productionId.startsWith("0") && productionId.length() > 10) {
-            productionId = productionId.substring(1);
-        }
-
-		if (productionId.length() > 10) {
-			throw new InvalidArgumentServiceException("The input production ID: '" + inputProductionId + "' got formattet to '" + productionId +
-					"' which is longer than 10 digits. This is not an allowed production ID.");
+		if (!productionId.matches("\\d+")) {
+			throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should only contain digits'");
 		}
 
 		if (productionId.length() <= 7){
-			throw new InvalidArgumentServiceException("The input production ID: '" + inputProductionId + "' got formattet to '" + productionId +
-					"' which is shorter than 8 digits. This is not an allowed production ID.");
+			throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should be at least 8 digits");
 		}
 
-        return productionId;
     }
 }
