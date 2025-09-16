@@ -21,10 +21,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. ID filter field is defined in the YAML configuration'
-      security: 
+      operationId: checkAccessForIds
+      security:
         - KBOAuth:
-          - any       
-      operationId: checkAccessForIds  
+            - public
       requestBody:
         content:
           application/json:    # Media type
@@ -46,10 +46,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
+      operationId: checkAccessForResourceIds
       security:
         - KBOAuth:
-          - any
-      operationId: checkAccessForResourceIds
+            - public
       requestBody:
         content:
           application/json:    # Media type
@@ -73,10 +73,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Validate if user has access to all groups in input.'
+      operationId: validateAccess
       security:
         - KBOAuth:
-          - any
-      operationId: validateAccess
+            - public
       requestBody:
         content:
           application/json:    # Media type
@@ -96,10 +96,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get a list of all licences that validates from user attributes.'
-      security: 
+      operationId: getUserLicenses
+      security:
         - KBOAuth:
-          - any      
-      operationId: getUserLicenses       
+            - public
       requestBody:
         content:
           application/json:    # Media type
@@ -121,10 +121,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
-      security: 
+      operationId: getUserLicenseQuery
+      security:
         - KBOAuth:
-          - any      
-      operationId: getUserLicenseQuery      
+            - public
       requestBody:
         content:
           application/json:    # Media type
@@ -147,10 +147,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get the groups that the user has access to'
-      security: 
+      operationId: getUserGroups
+      security:
         - KBOAuth:
-          - any            
-      operationId: getUserGroups       
+            - public
       requestBody:
         content:
           application/json:    # Media type
@@ -170,10 +170,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
-      security: 
+      operationId: getUserGroupsAndLicenses
+      security:
         - KBOAuth:
-          - any      
-      operationId: getUserGroupsAndLicenses       
+            - public
       requestBody:
         content:
           application/json:    # Media type
@@ -197,7 +197,8 @@ paths:
       operationId: getAuditEntryById
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: id
           in: query
@@ -222,7 +223,8 @@ paths:
       operationId: getAuditEntriesByObjectId
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: objectid
           in: query
@@ -249,7 +251,8 @@ paths:
       operationId: getPlatforms
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       responses:
         '200':
           description: A JSON array of available platforms.
@@ -268,7 +271,8 @@ paths:
       operationId: getIdTypes
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: platform
           in: query
@@ -294,7 +298,8 @@ paths:
       operationId: getAllRestrictedIds
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: idType
           in: query
@@ -325,7 +330,7 @@ paths:
       operationId: createRestrictedIds
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: touchRecord
           in: query
@@ -364,7 +369,8 @@ paths:
       operationId: getRestrictedId
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: id
           in: query
@@ -396,7 +402,7 @@ paths:
       operationId: deleteRestrictedId
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: id
           in: query
@@ -422,7 +428,7 @@ paths:
       operationId: createRestrictedId
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: touchRecord
           in: query
@@ -452,7 +458,7 @@ paths:
       description: Only comment can be updated
       security:
         - KBOAuth:
-           - any
+            - ds-license-admin
       parameters:
         - name: touchRecord
           in: query
@@ -481,7 +487,8 @@ paths:
       description: get all DR holdback rules
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       responses:
         '200':
           description: list of DR holdback rules
@@ -499,7 +506,8 @@ paths:
       operationId: getDrHoldbackRule
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -521,7 +529,7 @@ paths:
       operationId: deleteDrHoldbackRule
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -537,7 +545,7 @@ paths:
       operationId: createDrHoldbackRule
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       requestBody:
         content:
           application/json:
@@ -561,7 +569,8 @@ paths:
       description: get the number of DR holdback days. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name.
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -591,7 +600,7 @@ paths:
       description: update the number of DR holdback days for a purpose. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name.
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -622,7 +631,8 @@ paths:
       operationId: getDrHoldbackRanges
       security:
         - KBOAth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -645,7 +655,7 @@ paths:
       operationId: createDrHoldbackRanges
       security:
         - KBOAth:
-            - any
+            - ds-license-admin
       requestBody:
         required: true
         content:
@@ -662,7 +672,7 @@ paths:
       operationId: deleteDrHoldbackRanges
       security:
         - KBOAth:
-            - any
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -680,8 +690,9 @@ paths:
         - 'DsRights'
       operationId: getDrHoldbackValueFromContentAndForm
       security:
-        - KBOAth:
-            - any
+        - KBOAuth:
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: content
           in: query
@@ -706,6 +717,9 @@ paths:
       tags:
         - 'DsRights'
       operationId: calculateRights
+      security:
+        - KBOAuth:
+          - public
       summary: "Calculate restrictions for a record based on input values"
 #     No Oauth. Only called by system calls when indexing and no oauth is used system2system in ingest(write) environment.
       requestBody:
@@ -1417,8 +1431,8 @@ components:
       flows:
         implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
           #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
-          #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
-          authorizationUrl: https://api.example.com/oauth2/authorize 
+          #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}
+          authorizationUrl: https://api.example.com/oauth2/authorize
           scopes:
             generic_ds: 'Scope used for all Digitale Samlinger services'
             # Project specific roles
@@ -1432,4 +1446,4 @@ components:
             # Meta role controlling authorization behaviour
             public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
             any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
-                
+
