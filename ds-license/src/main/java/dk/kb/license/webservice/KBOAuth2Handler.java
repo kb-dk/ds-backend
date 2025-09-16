@@ -14,6 +14,7 @@
  */
 package dk.kb.license.webservice;
 
+import dk.kb.util.webservice.exception.ForbiddenServiceException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import dk.kb.license.config.ServiceConfig;
@@ -22,7 +23,6 @@ import dk.kb.util.yaml.YAML;
 import dk.kb.util.oauth2.TimeMap;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.cxf.interceptor.Fault;
 import org.json.JSONTokener;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
@@ -32,7 +32,6 @@ import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.ValidationException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -200,27 +199,27 @@ public class KBOAuth2Handler {
                         String message= "Failed verification of provided access token (reason=" + failedReason +
                                 ") and endpoint " + endpoint + " requires a valid access token to be present";
                         log.warn(message);
-                        throw new Fault(new ValidationException(message));
+                        throw new ForbiddenServiceException(message);
                     }
                     String message= "Authorization failed as there were no Authorization defined in request and endpoint " + endpoint + " requires it to be present";
                     log.warn(message);
-                    throw new Fault(new ValidationException(message));
+                    throw new ForbiddenServiceException(message);
                 }
                 if (invalidToken) {
                     String message="Failed verification of provided access token (reason=+" + failedReason+ ") and endpoint " + endpoint + "" +
                             " requires a valid access token to be present with " +
                             " one of the roles " + endpointRoles;
-               log.warn(message);
-               throw new Fault(new ValidationException(message));
+                    log.warn(message);
+                    throw new ForbiddenServiceException(message);
                 }
                 String message="Authorization failed as there were no Authorization defined in request and " +
                         "endpoint " + endpoint + " requires it to be present with one of the roles " + endpointRoles;
                 log.warn(message);
-                throw new Fault(new ValidationException(message));
+                throw new ForbiddenServiceException(message);
                                      
             default: {
                 log.error("Unknown authorization mode: " + mode);
-                throw new Fault(new InternalServiceException("Unknown authorization mode" + mode));
+                throw new InternalServiceException("Unknown authorization mode: " + mode);
             }
         }
     }
