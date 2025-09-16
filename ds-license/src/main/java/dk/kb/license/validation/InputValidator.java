@@ -42,12 +42,12 @@ public class InputValidator {
     public void validateDrProductionIdFormat(String drProductionId) {
         if (!drProductionId.matches("\\d+")) {
             log.error("The input DR production ID: '{}' should only contain digits", drProductionId);
-            throw new InvalidArgumentServiceException("The input production ID: '" + drProductionId + "' should only contain digits");
+            throw new InvalidArgumentServiceException("The input DR production ID: '" + drProductionId + "' should only contain digits");
         }
 
         if (drProductionId.length() <= 7) {
             log.error("The input DR production ID: '{}' should be at least 8 digits", drProductionId);
-            throw new InvalidArgumentServiceException("The input production ID: '" + drProductionId + "' should be at least 8 digits");
+            throw new InvalidArgumentServiceException("The input DR production ID: '" + drProductionId + "' should be at least 8 digits");
         }
     }
 }
