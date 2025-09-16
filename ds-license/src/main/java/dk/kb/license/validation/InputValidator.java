@@ -35,26 +35,19 @@ public class InputValidator {
     }
 
     /**
-     * Validates production ID in the given {@link RestrictedIdInputDto}.
+     * Validates DR production id in the given {@link RestrictedIdInputDto}.
      *
-     * @param productionId the {@link RestrictedIdInputDto} containing the production ID to be validated.
+     * @param drProductionId the {@link RestrictedIdInputDto} containing the production ID to be validated.
      */
-    public void validateDrProductionIdFormat(String productionId) {
-        // Check for null because .matches else throw a NullPointerException
-        if (productionId == null) {
-            log.error("The input production ID must not be null");
-            throw new InvalidArgumentServiceException("The input production ID must not be null");
+    public void validateDrProductionIdFormat(String drProductionId) {
+        if (!drProductionId.matches("\\d+")) {
+            log.error("The input DR production ID: '{}' should only contain digits", drProductionId);
+            throw new InvalidArgumentServiceException("The input production ID: '" + drProductionId + "' should only contain digits");
         }
 
-        if (!productionId.matches("\\d+")) {
-            log.error("The input production ID: '{}' should only contain digits", productionId);
-            throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should only contain digits");
-        }
-
-        if (productionId.length() <= 7) {
-            log.error("The input production ID must not be null");
-            log.error("The input production ID: '{}' should be at least 8 digits", productionId);
-            throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should be at least 8 digits");
+        if (drProductionId.length() <= 7) {
+            log.error("The input DR production ID: '{}' should be at least 8 digits", drProductionId);
+            throw new InvalidArgumentServiceException("The input production ID: '" + drProductionId + "' should be at least 8 digits");
         }
     }
 }

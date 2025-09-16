@@ -138,51 +138,38 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateDrProductionIdFormat_WhenGivenNull_DoThrow() {
-        // Arrange
-        String expectedMessage = "The input production ID must not be null";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrProductionIdFormat(null));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
     public void validateDrProductionIdFormat_WhenGivenEmpty_DoThrow() {
         // Arrange
-        String productionId = "";
-        String expectedMessage = "The input production ID: '' should only contain digits";
+        String drProductionId = "";
+        String expectedMessage = "The input DR production ID: '' should only contain digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrProductionIdFormat(productionId));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrProductionIdFormat(drProductionId));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
-    public void validateDrProductionIdFormat_WhenGivenToShortProductionId_DoThrow() {
+    public void validateDrProductionIdFormat_WhenGivenToShortDrProductionId_DoThrow() {
         // Arrange
-        String productionId = "12345";
-        String expectedMessage = "The input production ID: '12345' should be at least 8 digits";
+        String drProductionId = "12345";
+        String expectedMessage = "The input DR production ID: '12345' should be at least 8 digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrProductionIdFormat(productionId));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrProductionIdFormat(drProductionId));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
-    public void validateDrProductionIdFormat_WhenGivenToInvalidProductionId_DoThrow() {
+    public void validateDrProductionIdFormat_WhenGivenToInvalidDrProductionId_DoThrow() {
         // Arrange
         String productionId = "12345abcde";
-        String expectedMessage = "The input production ID: '12345abcde' should only contain digits";
+        String expectedMessage = "The input DR production ID: '12345abcde' should only contain digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
