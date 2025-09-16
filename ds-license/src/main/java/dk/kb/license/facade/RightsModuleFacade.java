@@ -1,7 +1,6 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.RightsCalculation;
-import dk.kb.license.Util;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.mapper.BroadcastDtoMapper;
 import dk.kb.license.model.v1.*;
@@ -37,7 +36,6 @@ public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
     private static final SolrServerClient solrServerClient = new SolrServerClient();
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
-    private static final int MAX_COMMENT_LENGTH = 16348;
     private static final InputValidator inputValidator = new InputValidator();
 
     /**
@@ -82,10 +80,10 @@ public class RightsModuleFacade {
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) throws SQLException {
-        validateCommentLength(restrictedIdInputDto.getComment());
+        inputValidator.validateCommentLength(restrictedIdInputDto.getComment());
 
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
-            Util.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
+            inputValidator.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
         }
 
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DS_ID) {
@@ -143,7 +141,7 @@ public class RightsModuleFacade {
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void updateRestrictedIdComment(UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto, boolean touchDsStorageRecord) throws SQLException {
-        validateCommentLength(updateRestrictedIdCommentInputDto.getComment());
+        inputValidator.validateCommentLength(updateRestrictedIdCommentInputDto.getComment());
 
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
             long id = updateRestrictedIdCommentInputDto.getId();
@@ -250,10 +248,10 @@ public class RightsModuleFacade {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
                 log.debug("Adding restricted id type='{}' with value='{}'", id.getIdType(), id.getIdValue());
-                validateCommentLength(id.getComment());
+                inputValidator.validateCommentLength(id.getComment());
 
                 if (id.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
-                    Util.validateDrProductionIdFormat(id.getIdValue());
+                    inputValidator.validateDrProductionIdFormat(id.getIdValue());
                 }
 
                 long objectId = ((RightsModuleStorage) storage).createRestrictedId(id.getIdValue(), id.getIdType().getValue(), id.getPlatform().getValue(), id.getComment());
@@ -532,13 +530,6 @@ public class RightsModuleFacade {
      */
     public static List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackValue) {
         return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackRangesForDrHoldbackValue(drHoldbackValue));
-    }
-
-    private static void validateCommentLength(String comment) {
-        if (comment != null && comment.length() > MAX_COMMENT_LENGTH) {
-            log.error("Comment was too long and cannot be added to rights module. Only {} characters are allowed.", MAX_COMMENT_LENGTH);
-            throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.");
-        }
     }
 
     /**
