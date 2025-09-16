@@ -1,8 +1,13 @@
 package dk.kb.license.validation;
 
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InputValidator {
+    private static final Logger log = LoggerFactory.getLogger(InputValidator.class);
+
     final String dsTv = "ds.tv:oai:io:";
     final String dsRadio = "ds.radio:oai:io:";
 
@@ -12,13 +17,13 @@ public class InputValidator {
      * want the validation to fail.
      *
      * @param dsId
-     * @return boolean true or false
      */
-    public boolean validateDsId(String dsId) {
-        if (StringUtils.startsWith(dsId, dsTv) || StringUtils.startsWith(dsId, dsRadio)) {
-            return true;
+    public void validateDsId(String dsId) {
+        if (!StringUtils.startsWith(dsId, dsTv) && !StringUtils.startsWith(dsId, dsRadio)) {
+            log.error("Invalid DS_ID: '{}'", dsId);
+            throw new InvalidArgumentServiceException("Invalid dsId");
         }
+    }
 
-        return false;
     }
 }

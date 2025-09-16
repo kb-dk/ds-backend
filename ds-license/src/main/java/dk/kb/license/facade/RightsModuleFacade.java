@@ -38,6 +38,7 @@ public class RightsModuleFacade {
     private static final SolrServerClient solrServerClient = new SolrServerClient();
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
     private static final int MAX_COMMENT_LENGTH = 16348;
+    private static final InputValidator inputValidator = new InputValidator();
 
     /**
      * Enables the posibility to mock the SolrServerClient
@@ -88,12 +89,8 @@ public class RightsModuleFacade {
         }
 
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DS_ID) {
-            InputValidator inputValidator = new InputValidator();
-            boolean validatedDsId = inputValidator.validateDsId(restrictedIdInputDto.getIdValue());
-
-            if (!validatedDsId) {
-                throw new InvalidArgumentServiceException("Invalid dsId");
-            }
+            // Check if dsId is valid
+            inputValidator.validateDsId(restrictedIdInputDto.getIdValue());
         }
 
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
@@ -177,12 +174,8 @@ public class RightsModuleFacade {
      * @return DrBroadcastDto with a list of BroadcastDto
      */
     public static DrBroadcastDto matchingDrProductionIdBroadcasts(String dsId) {
-         InputValidator inputValidator = new InputValidator();
-        boolean validatedDsId = inputValidator.validateDsId(dsId);
-
-        if (!validatedDsId) {
-            throw new InvalidArgumentServiceException("Invalid dsId");
-        }
+        // Check if dsId is valid
+        inputValidator.validateDsId(dsId);
 
         String queryDsId = "id:\"" + dsId + "\"";
         String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
