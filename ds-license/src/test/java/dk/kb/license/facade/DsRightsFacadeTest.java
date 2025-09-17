@@ -124,12 +124,20 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     public void matchingDrProductionIdBroadcasts_whenInvalidDsId_thenThrowInvalidArgumentServiceException(String dsId) {
         // Arrange
         String expectedMessage = "Invalid dsId: " + dsId;
+        // We need to mock the call to solr,
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
 
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId));
+        try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
+            mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
+            // Because we have mocked RightsModuleFacade, we need to tell Mockito to use the real method want to test on
+            mockedRightsModuleFacade.when(() -> RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId)).thenCallRealMethod();
 
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
+            // Act
+            Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId));
+
+            // Assert
+            assertEquals(expectedMessage, exception.getMessage());
+        }
     }
 
     @ParameterizedTest
@@ -142,12 +150,20 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     public void matchingDrProductionIdBroadcasts_whenNotFoundDsId_thenThrowNotFoundServiceException(String dsId) {
         // Arrange
         String expectedMessage = "dsId: " + dsId + " not found";
+        // We need to mock the call to solr,
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
 
-        // Act
-        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId));
+        try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
+            mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
+            // Because we have mocked RightsModuleFacade, we need to tell Mockito to use the real method want to test on
+            mockedRightsModuleFacade.when(() -> RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId)).thenCallRealMethod();
 
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
+            // Act
+            Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId));
+
+            // Assert
+            assertEquals(expectedMessage, exception.getMessage());
+        }
     }
 
     @Test
