@@ -22,15 +22,17 @@ public class InputValidator {
      */
     public void validateDsId(String dsId) {
         if (!StringUtils.startsWith(dsId, dsTv) && !StringUtils.startsWith(dsId, dsRadio)) {
-            log.error("Invalid DS_ID: '{}'", dsId);
-            throw new InvalidArgumentServiceException("Invalid dsId");
+            final String errorMessage = "Invalid dsId: " + dsId;
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
         }
     }
 
     public void validateCommentLength(String comment) {
         if (comment != null && comment.length() > MAX_COMMENT_LENGTH) {
-            log.error("Comment was too long and cannot be added to rights module. Only {} characters are allowed.", MAX_COMMENT_LENGTH);
-            throw new InvalidArgumentServiceException("Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.");
+            final String errorMessage = "Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
         }
     }
 
@@ -41,13 +43,15 @@ public class InputValidator {
      */
     public void validateDrProductionIdFormat(String drProductionId) {
         if (!drProductionId.matches("\\d+")) {
-            log.error("The input DR production ID: '{}' should only contain digits", drProductionId);
-            throw new InvalidArgumentServiceException("The input DR production ID: '" + drProductionId + "' should only contain digits");
+            final String errorMessage = "The input DR production ID: " + drProductionId + " should only contain digits";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
         }
 
         if (drProductionId.length() <= 7) {
-            log.error("The input DR production ID: '{}' should be at least 8 digits", drProductionId);
-            throw new InvalidArgumentServiceException("The input DR production ID: '" + drProductionId + "' should be at least 8 digits");
+            final String errorMessage = "The input DR production ID: " + drProductionId + " should be at least 8 digits";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
         }
     }
 }

@@ -30,7 +30,7 @@ public class SolrServerClientTest {
     final String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
 
     @Test
-    public void createSolrQuery_WhenGivenQueryAndFieldList_ReturnSolrQuery() {
+    public void createSolrQuery_whenQueryAndFieldList_thenReturnSolrQuery() {
         // To be able to mock List<SolrServerClient> servers we use the getServers getter method
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
             mockedServiceConfig.when(ServiceConfig::getSolrServers).thenReturn(List.of());
@@ -48,7 +48,7 @@ public class SolrServerClientTest {
     }
 
     @Test
-    public void callSolr_WhenListOfServersIsEmpty_ThrowInternalServiceException() {
+    public void callSolr_whenListOfServersIsEmpty_thenThrowInternalServiceException() {
         // Arrange
         String expectedMessage = "List of SolrServerClient is never populated so it is empty";
 
@@ -68,7 +68,7 @@ public class SolrServerClientTest {
     }
 
     @Test
-    public void callSolr_WhenResponseFromSolrIsNull_ReturnOptionalEmpty() throws SolrServerException, IOException {
+    public void callSolr_whenResponseFromSolrIsNull_thenReturnOptionalEmpty() throws SolrServerException, IOException {
         // Instead of calling an actual Solr service, we mock `query(SolrParams solrParams`
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
         when(mockedSolrServerClient.query(any())).thenReturn(null);
@@ -89,7 +89,7 @@ public class SolrServerClientTest {
     }
 
     @Test
-    public void callSolr_WhenGivenQueryAndFieldList_ReturnSolrDocumentList() throws SolrServerException, IOException {
+    public void callSolr_whenQueryAndFieldList_thenReturnSolrDocumentList() throws SolrServerException, IOException {
         // Arrange
         SolrDocument solrDocument = new SolrDocument();
         solrDocument.put("dr_production_id", drProductionId);

@@ -481,7 +481,7 @@ paths:
               schema:
                 type: object
         '404':
-          description: 'No DR broadcasts found with dsId'
+          description: 'dsId: {dsId} not found'
           content:
             application/json:
               schema:

@@ -31,7 +31,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
     private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String readRestrictedIdByIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
 
-    private final String readRestrictedIdByIdValueQuery = "SELECT comment FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ?";
+    private final String readRestrictedIdCommentByIdValueQuery = "SELECT comment FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ?";
 
     private final String updateRestrictedIdCommentQuery = "UPDATE " + RESTRICTED_ID_TABLE + " SET " +
             RESTRICTED_ID_COMMENT + " = ? " +
@@ -119,7 +119,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             stmt.setString(5, comment);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in persistClause:" + e.getMessage());
+            log.error("SQL Exception in createRestrictedId", e);
             throw e;
         }
         return uniqueID;
@@ -145,7 +145,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in readClause:" + e.getMessage());
+            log.error("SQL Exception in getRestrictedId", e);
             throw e;
         }
     }
@@ -162,7 +162,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             stmt.setLong(2, id);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in persist restricted ID" + e.getMessage());
+            log.error("SQL Exception in updateRestrictedIdComment" + e);
             throw e;
         }
     }
@@ -182,7 +182,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             stmt.setString(3, platform);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in delete restricted Id:" + e.getMessage());
+            log.error("SQL Exception in deleteRestrictedId", e);
             throw e;
         }
     }
@@ -203,7 +203,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in readClause:" + e.getMessage());
+            log.error("SQL Exception in getRestrictedIdById", e);
             throw e;
         }
     }
@@ -214,8 +214,8 @@ public class RightsModuleStorage extends BaseModuleStorage {
      * @param dsId to get entry for.
      * @return a restricted_id comment
      */
-    public String getRestrictedIdByIdValue(String dsId) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdByIdValueQuery)) {
+    public String getRestrictedIdCommentByIdValue(String dsId) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdCommentByIdValueQuery)) {
             stmt.setString(1, dsId);
             ResultSet res = stmt.executeQuery();
 
@@ -225,7 +225,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
 
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in getRestrictedIdByIdValue:" + e.getMessage());
+            log.error("SQL Exception in getRestrictedIdCommentByIdValue", e);
             throw e;
         }
     }
@@ -242,7 +242,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             log.info("Deleted '{}' documents by id: '{}'", result, id);
             return result;
         } catch (SQLException e) {
-            log.error("SQL Exception in delete by id: " + e.getMessage());
+            log.error("SQL Exception in deleteRestrictedIdById", e);
             throw e;
         }
     }
@@ -267,7 +267,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return output;
         } catch (SQLException e) {
-            log.error("SQL Exception in getAllRestrictedIds:" + e.getMessage());
+            log.error("SQL Exception in getAllRestrictedIds", e);
             throw e;
         }
     }
@@ -290,7 +290,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             stmt.setInt(4, days);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in createDrHoldbackRule: " + e.getMessage());
+            log.error("SQL Exception in createDrHoldbackRule", e);
             throw e;
         }
 
@@ -308,7 +308,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             stmt.setString(1, drHoldbackValue);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteDrHoldbackRule: " + e.getMessage());
+            log.error("SQL Exception in deleteDrHoldbackRule", e);
             throw e;
         }
     }
@@ -329,7 +329,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return -1;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackDaysFromValue: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackDaysFromValue", e);
             throw e;
         }
     }
@@ -350,7 +350,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return -1;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackDaysFromName:" + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackDaysFromName", e);
             throw e;
         }
     }
@@ -371,7 +371,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return -1;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRuleIdFromValue: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackRuleIdFromValue", e);
             throw e;
         }
     }
@@ -392,7 +392,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return -1;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRuleIdFromName: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackRuleIdFromName", e);
             throw e;
         }
     }
@@ -418,7 +418,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRuleFromValue: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackRuleFromValue", e);
             throw e;
         }
     }
@@ -436,7 +436,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             stmt.setString(2, drHoldbackValue);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in updateDrHoldbackDaysFromDrHoldbackValue: " + e.getMessage());
+            log.error("SQL Exception in updateDrHoldbackDaysFromDrHoldbackValue", e);
             throw e;
         }
     }
@@ -454,7 +454,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             stmt.setString(2, name);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in updateDrHoldbackDaysForName: " + e.getMessage());
+            log.error("SQL Exception in updateDrHoldbackDaysFromName", e);
             throw e;
         }
     }
@@ -479,7 +479,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return output;
         } catch (SQLException e) {
-            log.error("SQL Exception in getAllDrHoldbackRules: " + e.getMessage());
+            log.error("SQL Exception in getAllDrHoldbackRules", e);
             throw e;
         }
     }
@@ -504,7 +504,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackValueFromContentAndForm: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackValueFromContentAndForm", e);
             throw e;
         }
 
@@ -531,7 +531,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             stmt.setString(6, drHoldbackValue);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in createDrHoldbackRange: " + e.getMessage());
+            log.error("SQL Exception in createDrHoldbackRange", e);
             throw e;
         }
         return uniqueId;
@@ -561,7 +561,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             }
             return output;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRangesForDrHoldbackValue: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackRangesForDrHoldbackValue", e);
             throw e;
         }
     }
@@ -577,7 +577,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             stmt.setString(1, drHoldbackValue);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteRangesForDrHoldbackValue: " + e.getMessage());
+            log.error("SQL Exception in deleteRangesForDrHoldbackValue", e);
             throw e;
         }
     }
@@ -596,8 +596,6 @@ public class RightsModuleStorage extends BaseModuleStorage {
         output.setComment(resultSet.getString(RESTRICTED_ID_COMMENT));
         return output;
     }
-
-
 }   
 
 

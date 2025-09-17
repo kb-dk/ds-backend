@@ -22,7 +22,6 @@ public class ServiceConfig {
 
     public static String SOLR_FILTER_ID_FIELD = null;
     public static String SOLR_FILTER_RESOURCE_ID_FIELD = null;
-    public static List<SolrServerClient> SOLR_SERVERS = Collections.emptyList();
 
     /**
      * Gets called when the code needs to call Solr backend servers
@@ -32,8 +31,7 @@ public class ServiceConfig {
      */
     public static List<SolrServerClient> getSolrServers() {
         List<String> solr_servers = serviceConfig.getList("solr.servers");
-        SOLR_SERVERS = solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
-        return SOLR_SERVERS;
+        return solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
     }
 
     /**
@@ -57,8 +55,6 @@ public class ServiceConfig {
         List<String> solr_servers = serviceConfig.getList("solr.servers");
         SOLR_FILTER_ID_FIELD = serviceConfig.getString("solr.idField");
         SOLR_FILTER_RESOURCE_ID_FIELD = serviceConfig.getString("solr.resourceField");
-
-        SOLR_SERVERS = solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
 
         log.info("Loaded solr-servers: " + solr_servers);
         log.info("Loaded solr id filter field: " + SOLR_FILTER_ID_FIELD);

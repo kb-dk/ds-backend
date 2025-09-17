@@ -100,20 +100,20 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void getRestrictedIdByIdValue_WhenUsingDsId_ReturnComment() throws SQLException {
+    public void getRestrictedIdByIdValue_whenDsId_thenReturnComment() throws SQLException {
         String dsId = "ds.tv:oai:io:7cb60d39-effd-419c-9bac-881b7b7eb10c";
         String expectedComment = "Test comment";
 
         storage.createRestrictedId(dsId, IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), expectedComment);
 
-        String actualComment = storage.getRestrictedIdByIdValue(dsId);
+        String actualComment = storage.getRestrictedIdCommentByIdValue(dsId);
 
         assertEquals(expectedComment, actualComment);
     }
 
     @Test
-    public void getRestrictedIdByIdValue_WhenUsingNotExistingDsId_ReturnNull() throws SQLException {
-        String actualComment = storage.getRestrictedIdByIdValue("1");
+    public void getRestrictedIdByIdValue_whenNotFoundDsId_thenReturnNull() throws SQLException {
+        String actualComment = storage.getRestrictedIdCommentByIdValue("1");
 
         assertNull(actualComment);
     }

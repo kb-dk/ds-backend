@@ -14,10 +14,7 @@ import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.keycloak.representations.AccessToken;
@@ -124,9 +121,9 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
             "ds.tv:oai:io0bdf8656-4a96-400d-b3d8-e4695328688e",
             "\"ds.tv:oai:io:0bdf8656-4a96-400d-b3d8-e4695328688e\""
     })
-    public void matchingDrProductionIdBroadcasts_WhenGivenInvalidDsIdFromBroadcasts_ThrowInvalidArgumentServiceException(String dsId) {
+    public void matchingDrProductionIdBroadcasts_whenInvalidDsId_thenThrowInvalidArgumentServiceException(String dsId) {
         // Arrange
-        String expectedMessage = "Invalid dsId";
+        String expectedMessage = "Invalid dsId: " + dsId;
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId));
@@ -142,9 +139,9 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
             "ds.tv:oai:io:0bdf8656-4a96-400d-b3d8-e4695328688",
             "ds.tv:oai:io:0bdf8656-4a96-400d-b3d8-e4695328688e"
     })
-    public void matchingDrProductionIdBroadcasts_WhenGivenDsIdFromBroadcastButDoesNotExistInSolr_ThrowNotFoundServiceException(String dsId) {
+    public void matchingDrProductionIdBroadcasts_whenNotFoundDsId_thenThrowNotFoundServiceException(String dsId) {
         // Arrange
-        String expectedMessage = "No DR broadcasts found with dsId: " + dsId;
+        String expectedMessage = "dsId: " + dsId + " not found";
 
         // Act
         Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId));
@@ -154,7 +151,8 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_WhenGivenDsIdFromBroadcastThatExistInSolrWithDrProductionIdButTurnsOutThereIsNoMatchOnDrProductionId_ThrowNotFoundServiceException() throws ParseException {
+    @DisplayName("Given dsId from ")
+    public void matchingDrProductionIdBroadcasts_whenDsIdTWithDrProductionIdButThereIsNoMatchOnDrProductionId_thenThrowNotFoundServiceException() throws ParseException {
         // Arrange
         String drProductionId = "9213163000";
         String expectedMessage = "No DR broadcasts found with drProductionId: " + drProductionId;
@@ -208,7 +206,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_WhenGivenDsIdFromBroadcastWithNoDrProductionId_ReturnDrBroadcastDto() throws ParseException {
+    public void matchingDrProductionIdBroadcasts_whenDsIdWithNoDrProductionId_thenReturnDrBroadcastDto() throws ParseException {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
@@ -250,7 +248,6 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
             assertEquals(dsId, actualDrBroadcastDto.getBroadcast().get(0).getDsId());
             assertEquals(title, actualDrBroadcastDto.getBroadcast().get(0).getTitle());
-            assertEquals(OffsetDateTime.class, actualDrBroadcastDto.getBroadcast().get(0).getStartTime().getClass());
             assertEquals(OffsetDateTime.parse("1966-09-29T20:55Z"), actualDrBroadcastDto.getBroadcast().get(0).getStartTime());
             assertEquals(OffsetDateTime.class, actualDrBroadcastDto.getBroadcast().get(0).getEndTime().getClass());
             assertEquals(OffsetDateTime.parse("1966-09-29T21:05Z"), actualDrBroadcastDto.getBroadcast().get(0).getEndTime());
@@ -260,7 +257,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_WhenGivenDsIdFromBroadcastsWithNoDrProductionIdAndRestrictedComment_ReturnDrBroadcastDto() throws ParseException {
+    public void matchingDrProductionIdBroadcasts_whenDsIdWithNoDrProductionIdAndRestrictedComment_thenReturnDrBroadcastDto() throws ParseException {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
@@ -315,7 +312,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_WhenGivenDsIdFromBroadcastWithDrProductionId_ReturnDrBroadcastDto() throws ParseException {
+    public void matchingDrProductionIdBroadcasts_whenDsIdWithDrProductionId_thenReturnDrBroadcastDto() throws ParseException {
         // Arrange
         String drProductionId = "9213163000";
 
@@ -397,7 +394,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createDrHoldbackRule_WhenUsingDrHoldbackRuleInputDto_CreateRule() throws SQLException {
+    public void createDrHoldbackRule_whenDrHoldbackRuleInputDto_thenCreateRule() throws SQLException {
         long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
 
@@ -413,7 +410,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createDrHoldbackRanges_WhenUsingDrHoldbackRangeInputDto_CreatesRanges() throws SQLException {
+    public void createDrHoldbackRanges_whenDrHoldbackRangeInputDto_thenCreatesRanges() throws SQLException {
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
         drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
 
@@ -446,7 +443,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void updateDrHoldbackDaysFromDrHoldbackValue_WhenUsingDrHoldBackValue_UpdateDaysForRule() throws SQLException {
+    public void updateDrHoldbackDaysFromDrHoldbackValue_whenDrHoldBackValue_thenUpdateDaysForRule() throws SQLException {
         int newDrHoldbackDays = 10;
 
         long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
@@ -467,7 +464,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void updateDrHoldbackDaysFromName_WhenUsingDrHoldBackName_UpdateDaysForRule() throws SQLException {
+    public void updateDrHoldbackDaysFromName_whenDrHoldBackName_thenUpdateDaysForRule() throws SQLException {
         int newDrHoldbackDays = 10;
 
         long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
@@ -488,7 +485,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void deleteRangesForDrHoldbackValue_WhenUsingDrHoldBackValue_DeletesAllRanges() throws SQLException {
+    public void deleteRangesForDrHoldbackValue_whenDrHoldBackValue_thenDeletesAllRanges() throws SQLException {
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
         drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
 
@@ -523,7 +520,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void deleteDrHoldbackRule_WhenUsingDrHoldbackRuleId_DeleteRule() throws SQLException {
+    public void deleteDrHoldbackRule_whenDrHoldbackRuleId_thenDeleteRule() throws SQLException {
         long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
 
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);

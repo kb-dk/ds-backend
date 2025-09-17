@@ -215,16 +215,18 @@ public class RightsModuleFacade {
                     }
                 } else {
                     // Should never happen
-                    log.error("No DR broadcasts found with drProductionId: {}", drBroadcastDto.getDrProductionId());
-                    throw new NotFoundServiceException("No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId());
+                    final String errorMessage = "No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId();
+                    log.error(errorMessage);
+                    throw new NotFoundServiceException(errorMessage);
                 }
             }
             drBroadcastDto.setBroadcast(broadcastDtoList);
             return drBroadcastDto;
         }
 
-        // TODO: Maybe change to "dsId not found"?
-        throw new NotFoundServiceException("No DR broadcasts found with dsId: " + dsId);
+        final String errorMessage = "dsId: " + dsId + " not found";
+        log.error(errorMessage);
+        throw new NotFoundServiceException(errorMessage);
     }
 
     /**
@@ -234,7 +236,7 @@ public class RightsModuleFacade {
      * @return comment about why a broadcasts is restricted
      */
     public static String getRestrictedIdCommentByIdValue(String dsId) {
-        return BaseModuleStorage.performStorageAction("Select comment from restricted_ids", RightsModuleStorage.class, storage -> (((RightsModuleStorage) storage).getRestrictedIdByIdValue(dsId)));
+        return BaseModuleStorage.performStorageAction("Select comment from restricted_ids", RightsModuleStorage.class, storage -> (((RightsModuleStorage) storage).getRestrictedIdCommentByIdValue(dsId)));
     }
 
     /**

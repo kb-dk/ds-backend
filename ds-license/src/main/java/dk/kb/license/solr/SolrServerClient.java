@@ -27,6 +27,9 @@ public class SolrServerClient extends AbstractSolrJClient {
     private String serverUrl = null;
     private List<SolrServerClient> servers = Collections.emptyList();
 
+    // determines the amount of documents returned by the query
+    private final int rows = 1000;
+
     /**
      * Automatically populates the List of SolrServerClient when the class gets initialized
      */
@@ -66,9 +69,6 @@ public class SolrServerClient extends AbstractSolrJClient {
      * @return a {@link SolrQuery} that can be used in request to Solr.
      */
     public SolrQuery createSolrQuery(String query, String fieldList) {
-        // determines the amount of documents returned by the query
-        int rows = 1000;
-
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery(query);
         solrQuery.setFields(fieldList);
@@ -110,7 +110,7 @@ public class SolrServerClient extends AbstractSolrJClient {
                 return Optional.empty();
             } else {
                 // If the query match with more than 1000 results, we throw an exception
-                if (response.getResults().getNumFound() > 1000) {
+                if (response.getResults().getNumFound() > rows) {
                     throw new InvalidArgumentServiceException("Too many results for query: " + query);
                 }
 

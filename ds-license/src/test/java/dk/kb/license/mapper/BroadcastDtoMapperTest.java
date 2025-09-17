@@ -42,7 +42,7 @@ public class BroadcastDtoMapperTest {
     }
 
     @Test
-    public void mapBroadcastDto_WhenGivenSolrDocumentAndRestrictedComment_ReturnBroadCastDtoWithRestrictedTrue() {
+    public void mapBroadcastDto_whenSolrDocumentAndRestrictedIdComment_thenReturnBroadcastDtoWithRestrictedTrue() {
         // Arrange
         String restrictedComment = "Brugeren har trukket deres samtykke tilbage";
         BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
@@ -68,7 +68,7 @@ public class BroadcastDtoMapperTest {
     }
 
     @Test
-    public void mapBroadcastDto_WhenGivenSolrDocumentAndNull_ReturnBroadCastDtoWithRestrictedFalse() throws ParseException {
+    public void mapBroadcastDto_whenSolrDocumentAndNullRestrictedIdComment_thenReturnBroadcastDtoWithRestrictedFalse() throws ParseException {
         // Arrange
         BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
 

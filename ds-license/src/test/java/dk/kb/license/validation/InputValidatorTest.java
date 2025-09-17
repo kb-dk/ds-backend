@@ -16,7 +16,7 @@ public class InputValidatorTest {
             "ds.tv:oai:io:0bdf8656-4a96-400d-b3d8-e4695328688",
             "ds.tv:oai:io:0bdf8656-4a96-400d-b3d8-e4695328688e"
     })
-    public void validateDsId_WhenGivenValidDsId_DoNotThrow(String dsId) {
+    public void validateDsId_whenValidDsId_thenDoNotThrow(String dsId) {
         // Arrange
         InputValidator inputValidator = mock(InputValidator.class);
         doCallRealMethod().when(inputValidator).validateDsId(dsId);
@@ -38,9 +38,9 @@ public class InputValidatorTest {
             "ds.tv:oai:io0bdf8656-4a96-400d-b3d8-e4695328688e",
             "\"ds.tv:oai:io:0bdf8656-4a96-400d-b3d8-e4695328688e\""
     })
-    public void validateDsId_WhenGivenInvalidDsId_DoThrow(String dsId) {
+    public void validateDsId_whenInvalidDsId_thenThrowInvalidArgumentServiceException(String dsId) {
         // Arrange
-        String expectedMessage = "Invalid dsId";
+        String expectedMessage = "Invalid dsId: " + dsId;
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -51,9 +51,9 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateDsId_WhenGivenNull_DoThrow() {
+    public void validateDsId_whenNull_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "Invalid dsId";
+        String expectedMessage = "Invalid dsId: " + null;
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -64,7 +64,7 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateCommentLength_WhenGivenNull_DoNotThrow() {
+    public void validateCommentLength_whenCommentIsNull_thenDoNotThrow() {
         // Arrange
         InputValidator inputValidator = mock(InputValidator.class);
         doCallRealMethod().when(inputValidator).validateCommentLength(null);
@@ -78,7 +78,7 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateCommentLength_WhenGivenEmpty_DoNotThrow() {
+    public void validateCommentLength_whenEmpty_thenDoNotThrow() {
         // Arrange
         String comment = "";
         InputValidator inputValidator = mock(InputValidator.class);
@@ -93,7 +93,7 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateCommentLength_WhenGivenValidComment_DoNotThrow() {
+    public void validateCommentLength_whenValidComment_thenDoNotThrow() {
         // Arrange
         String comment = "Here is some text";
         InputValidator inputValidator = mock(InputValidator.class);
@@ -108,7 +108,7 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateCommentLength_WhenGivenTooLongComment_DoThrow() {
+    public void validateCommentLength_whenTooLongComment_thenThrowInvalidArgumentServiceException() {
         // Arrange
         // Use String repeat() method to create a long comment
         String longComment = "x".repeat(16349);
@@ -123,7 +123,7 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateDrProductionIdFormat_WhenGivenValidProductionId_DoNotThrow() {
+    public void validateDrProductionIdFormat_whenValidDrProductionId_thenDoNotThrow() {
         // Arrange
         String  productionId = "1234567890";
         InputValidator inputValidator = mock(InputValidator.class);
@@ -138,10 +138,10 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateDrProductionIdFormat_WhenGivenEmpty_DoThrow() {
+    public void validateDrProductionIdFormat_whenEmptyDrProductionId_thenThrowInvalidArgumentServiceException() {
         // Arrange
         String drProductionId = "";
-        String expectedMessage = "The input DR production ID: '' should only contain digits";
+        String expectedMessage = "The input DR production ID:  should only contain digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -152,10 +152,10 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateDrProductionIdFormat_WhenGivenToShortDrProductionId_DoThrow() {
+    public void validateDrProductionIdFormat_whenTooShortDrProductionId_thenThrowInvalidArgumentServiceException() {
         // Arrange
         String drProductionId = "12345";
-        String expectedMessage = "The input DR production ID: '12345' should be at least 8 digits";
+        String expectedMessage = "The input DR production ID: 12345 should be at least 8 digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -166,10 +166,10 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateDrProductionIdFormat_WhenGivenToInvalidDrProductionId_DoThrow() {
+    public void validateDrProductionIdFormat_whenInvalidDrProductionId_thenThrowInvalidArgumentServiceException() {
         // Arrange
         String productionId = "12345abcde";
-        String expectedMessage = "The input DR production ID: '12345abcde' should only contain digits";
+        String expectedMessage = "The input DR production ID: 12345abcde should only contain digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
