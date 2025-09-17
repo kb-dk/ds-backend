@@ -151,7 +151,6 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    @DisplayName("Given dsId from ")
     public void matchingDrProductionIdBroadcasts_whenDsIdTWithDrProductionIdButThereIsNoMatchOnDrProductionId_thenThrowNotFoundServiceException() throws ParseException {
         // Arrange
         String drProductionId = "9213163000";
