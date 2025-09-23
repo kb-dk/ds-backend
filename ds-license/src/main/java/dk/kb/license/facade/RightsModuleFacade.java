@@ -623,11 +623,11 @@ public class RightsModuleFacade {
 
         // Ds-license supports multiple backing solr servers. So we have to wrap it in this for-loop
         for (SolrServerClient server : servers) {
-            int pageSize = 500;
+            int rows = 500;
             int start = 0;
 
             try {
-                SolrQuery query = getIdSolrQuery(solrField, fieldValue, pageSize);
+                SolrQuery query = getIdSolrQuery(solrField, fieldValue, rows);
 
                 while (true) {
                     // Update start value before the query is fired against the server
@@ -648,12 +648,12 @@ public class RightsModuleFacade {
                     long totalResults = results.getNumFound();
 
                     // Break the loop of no more records are available
-                    if (start + pageSize >= totalResults) {
+                    if (start + rows >= totalResults) {
                         break;
                     }
 
-                    // Increment start by pageSize
-                    start += pageSize;
+                    // Increment start by rows
+                    start += rows;
                 }
             } catch (SolrServerException | IOException e) {
                 throw new InternalServiceException(e);
@@ -664,17 +664,17 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Create a solr query on the form {@code solrField:"fieldValue"} where the rows param is set to {@code pageSize} The query only returns the field ID from the documents.
+     * Create a solr query on the form {@code solrField:"fieldValue"} where the rows param is set to {@code rows} The query only returns the field ID from the documents.
      *
      * @param solrField  to query.
      * @param fieldValue used to query the field defined above.
-     * @param pageSize   which determines the amount of documents returned by the query.
+     * @param rows       which determines the amount of documents returned by the query.
      * @return a {@link SolrQuery} that can be fired as is or further developed for paging etc.
      */
-    private static SolrQuery getIdSolrQuery(String solrField, String fieldValue, int pageSize) {
+    private static SolrQuery getIdSolrQuery(String solrField, String fieldValue, int rows) {
         SolrQuery query = new SolrQuery();
         query.setQuery(solrField + ":\"" + fieldValue + "\"");
-        query.setRows(pageSize);
+        query.setRows(rows);
         query.setFields("id");
         return query;
     }
