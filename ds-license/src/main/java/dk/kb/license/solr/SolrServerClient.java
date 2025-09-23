@@ -88,7 +88,7 @@ public class SolrServerClient extends AbstractSolrJClient {
         SolrDocumentList resultSolrDocumentList = new SolrDocumentList();
 
         if (servers == null || servers.isEmpty()) {
-            final String errorMessage = "List of SolrServerClient is never populated so it is empty";
+            final String errorMessage = "List of SolrServerClient is never populated";
             log.error(errorMessage);
             throw new InternalServiceException(errorMessage);
         }
@@ -101,8 +101,9 @@ public class SolrServerClient extends AbstractSolrJClient {
                 // Query Solr for a response
                 response = server.query(solrQuery);
             } catch (SolrServerException | IOException e) {
-                log.error("callSolr an error appeared when calling Solr backend: {}", e.getMessage());
-                throw new InternalServiceException(e);
+                final String errorMessage = "callSolr an error appeared when calling Solr backend: " + e;
+                log.error(errorMessage);
+                throw new InternalServiceException(errorMessage);
             }
 
             if (response == null || response.getResults() == null) {
@@ -111,7 +112,9 @@ public class SolrServerClient extends AbstractSolrJClient {
             } else {
                 // If the query match with more than 1000 results, we throw an exception
                 if (response.getResults().getNumFound() > rows) {
-                    throw new InvalidArgumentServiceException("Too many results for query: " + query);
+                    final String errorMessage = "Too many results for query: " + query;
+                    log.error(errorMessage);
+                    throw new InvalidArgumentServiceException(errorMessage);
                 }
 
                 resultSolrDocumentList.addAll(response.getResults());

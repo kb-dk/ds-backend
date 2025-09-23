@@ -50,7 +50,7 @@ public class SolrServerClientTest {
     @Test
     public void callSolr_whenListOfServersIsEmpty_thenThrowInternalServiceException() {
         // Arrange
-        String expectedMessage = "List of SolrServerClient is never populated so it is empty";
+        String expectedMessage = "List of SolrServerClient is never populated";
 
         // To be able to mock List<SolrServerClient> servers we use the getServers getter method
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
