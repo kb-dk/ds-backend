@@ -212,18 +212,18 @@ public class RightsModuleFacade {
 
             Optional<SolrDocumentList> resultsFromDrProductionId = getSolrServerClient().callSolr(queryDrProductionId, fieldListDrProductionId);
 
-            if (resultsFromDrProductionId.isPresent() && resultsFromDrProductionId.get().getNumFound() > 0) {
-                for (SolrDocument solrDocument : resultsFromDrProductionId.get()) {
-                    // There could be a restriction already on the broadcast
-                    String dsIdRestrictedIdComment = getRestrictedIdCommentByIdValue(solrDocument.getFieldValue("id").toString());
-                    BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, dsIdRestrictedIdComment);
-                    broadcastDtoList.add(broadcastDto);
-                }
-            } else {
-                // Should never happen
+            // Should never happen
+            if (resultsFromDrProductionId.isEmpty() || resultsFromDrProductionId.get().getNumFound() == 0) {
                 final String errorMessage = "No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId();
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
+            }
+
+            for (SolrDocument solrDocument : resultsFromDrProductionId.get()) {
+                // There could be a restriction already on the broadcast
+                String dsIdRestrictedIdComment = getRestrictedIdCommentByIdValue(solrDocument.getFieldValue("id").toString());
+                BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, dsIdRestrictedIdComment);
+                broadcastDtoList.add(broadcastDto);
             }
         }
         drBroadcastDto.setBroadcast(broadcastDtoList);
