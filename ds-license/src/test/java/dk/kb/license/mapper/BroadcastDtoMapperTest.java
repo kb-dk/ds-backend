@@ -68,7 +68,7 @@ public class BroadcastDtoMapperTest {
     }
 
     @Test
-    public void mapBroadcastDto_whenSolrDocumentAndNullRestrictedIdComment_thenReturnBroadcastDtoWithRestrictedFalse() throws ParseException {
+    public void mapBroadcastDto_whenSolrDocumentAndNullRestrictedIdComment_thenReturnBroadcastDtoWithRestrictedFalse() {
         // Arrange
         BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
 

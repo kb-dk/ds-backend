@@ -3,6 +3,7 @@ package dk.kb.license.facade;
 import dk.kb.license.RightsCalculation;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.mapper.BroadcastDtoMapper;
+import dk.kb.license.mapper.DrBroadcastDtoMapper;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.AuditLogEntry;
@@ -180,63 +181,63 @@ public class RightsModuleFacade {
 
         Optional<SolrDocumentList> resultsFromDsId = getSolrServerClient().callSolr(queryDsId, fieldListDsId);
 
-        BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
-
-        if (resultsFromDsId.isPresent() && resultsFromDsId.get().getNumFound() > 0) {
-            // There is only one object in the SolrDocumentList, so we fetch that out
-            SolrDocument resultFromDsId = resultsFromDsId.get().get(0);
-
-            DrBroadcastDto drBroadcastDto = new DrBroadcastDto();
-            List<BroadcastDto> broadcastDtoList = new ArrayList<>();
-
-            if (resultFromDsId.getFieldValue("dr_production_id") == null) {
-                drBroadcastDto.setHasDrProductionId(false);
-                drBroadcastDto.setDrProductionId(null);
-
-                // There could be a restriction already on the broadcast
-                String restrictedIdComment = getRestrictedIdCommentByIdValue(resultFromDsId.getFieldValue("id").toString());
-                BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(resultFromDsId, restrictedIdComment);
-                broadcastDtoList.add(broadcastDto);
-            } else {
-                drBroadcastDto.setHasDrProductionId(true);
-                drBroadcastDto.setDrProductionId(resultFromDsId.getFieldValue("dr_production_id").toString());
-
-                String queryDrProductionId = "dr_production_id:\"" + drBroadcastDto.getDrProductionId() + "\"";
-                String fieldListDrProductionId = "id, title, startTime, endTime";
-
-                Optional<SolrDocumentList> resultsFromDrProductionId = getSolrServerClient().callSolr(queryDrProductionId, fieldListDrProductionId);
-
-                if (resultsFromDrProductionId.isPresent() && resultsFromDrProductionId.get().getNumFound() > 0) {
-                    for (SolrDocument solrDocument : resultsFromDrProductionId.get()) {
-                        // There could be a restriction already on the broadcast
-                        String restrictedIdComment = getRestrictedIdCommentByIdValue(solrDocument.getFieldValue("id").toString());
-                        BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, restrictedIdComment);
-                        broadcastDtoList.add(broadcastDto);
-                    }
-                } else {
-                    // Should never happen
-                    final String errorMessage = "No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId();
-                    log.error(errorMessage);
-                    throw new NotFoundServiceException(errorMessage);
-                }
-            }
-            drBroadcastDto.setBroadcast(broadcastDtoList);
-            return drBroadcastDto;
+        if (resultsFromDsId.isEmpty() || resultsFromDsId.get().getNumFound() == 0) {
+            final String errorMessage = "dsId: " + dsId + " not found";
+            log.error(errorMessage);
+            throw new NotFoundServiceException(errorMessage);
         }
 
-        final String errorMessage = "dsId: " + dsId + " not found";
-        log.error(errorMessage);
-        throw new NotFoundServiceException(errorMessage);
+        // There is only one object in the SolrDocumentList, so we fetch that out
+        SolrDocument resultFromDsId = resultsFromDsId.get().get(0);
+
+        DrBroadcastDto drBroadcastDto = new DrBroadcastDto();
+        List<BroadcastDto> broadcastDtoList = new ArrayList<>();
+        DrBroadcastDtoMapper drBroadcastDtoMapper = new DrBroadcastDtoMapper();
+        BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
+
+        if (resultFromDsId.getFieldValue("dr_production_id") == null) {
+            drBroadcastDto = drBroadcastDtoMapper.mapDrBroadcastDto(drBroadcastDto, null, null);
+
+            // There could be a restriction already on the broadcast
+            String dsIdRestrictedIdComment = getRestrictedIdCommentByIdValue(resultFromDsId.getFieldValue("id").toString());
+            BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(resultFromDsId, dsIdRestrictedIdComment);
+            broadcastDtoList.add(broadcastDto);
+        } else {
+            // drProductionId can be restricted
+            String drProductionIdRestrictedIdComment = getRestrictedIdCommentByIdValue(resultFromDsId.getFieldValue("dr_production_id").toString());
+            drBroadcastDto = drBroadcastDtoMapper.mapDrBroadcastDto(drBroadcastDto, resultFromDsId.getFieldValue("dr_production_id").toString(), drProductionIdRestrictedIdComment);
+
+            String queryDrProductionId = "dr_production_id:\"" + drBroadcastDto.getDrProductionId() + "\"";
+            String fieldListDrProductionId = "id, title, startTime, endTime";
+
+            Optional<SolrDocumentList> resultsFromDrProductionId = getSolrServerClient().callSolr(queryDrProductionId, fieldListDrProductionId);
+
+            if (resultsFromDrProductionId.isPresent() && resultsFromDrProductionId.get().getNumFound() > 0) {
+                for (SolrDocument solrDocument : resultsFromDrProductionId.get()) {
+                    // There could be a restriction already on the broadcast
+                    String dsIdRestrictedIdComment = getRestrictedIdCommentByIdValue(solrDocument.getFieldValue("id").toString());
+                    BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, dsIdRestrictedIdComment);
+                    broadcastDtoList.add(broadcastDto);
+                }
+            } else {
+                // Should never happen
+                final String errorMessage = "No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId();
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+        }
+        drBroadcastDto.setBroadcast(broadcastDtoList);
+        return drBroadcastDto;
     }
 
     /**
      * Fetch comment from `restricted_id`
      *
-     * @param dsId
-     * @return comment about why a broadcasts is restricted
+     * @param idValue
+     * @return comment about why a broadcast or drProductionId is restricted
      */
-    public static String getRestrictedIdCommentByIdValue(String dsId) {
-        return BaseModuleStorage.performStorageAction("Select comment from restricted_ids", RightsModuleStorage.class, storage -> (((RightsModuleStorage) storage).getRestrictedIdCommentByIdValue(dsId)));
+    public static String getRestrictedIdCommentByIdValue(String idValue) {
+        return BaseModuleStorage.performStorageAction("Select comment from restricted_ids", RightsModuleStorage.class, storage -> (((RightsModuleStorage) storage).getRestrictedIdCommentByIdValue(idValue)));
     }
 
     /**

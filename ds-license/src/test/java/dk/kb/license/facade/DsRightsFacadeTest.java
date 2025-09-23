@@ -256,7 +256,6 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
             // Assert
             assertNotNull(actualDrBroadcastDto);
             assertNull(actualDrBroadcastDto.getDrProductionId());
-            assertEquals(false, actualDrBroadcastDto.getHasDrProductionId());
 
             assertNotNull(actualDrBroadcastDto.getBroadcast());
             assertEquals(1, actualDrBroadcastDto.getBroadcast().size());
@@ -309,7 +308,6 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
             // Assert
             assertNotNull(actualDrBroadcastDto);
             assertNull(actualDrBroadcastDto.getDrProductionId());
-            assertEquals(false, actualDrBroadcastDto.getHasDrProductionId());
 
             assertNotNull(actualDrBroadcastDto.getBroadcast());
             assertEquals(1, actualDrBroadcastDto.getBroadcast().size());
@@ -382,7 +380,6 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
             // Assert
             assertNotNull(actualDrBroadcastDto);
             assertEquals(drProductionId, actualDrBroadcastDto.getDrProductionId());
-            assertEquals(true, actualDrBroadcastDto.getHasDrProductionId());
 
             assertNotNull(actualDrBroadcastDto.getBroadcast());
             assertEquals(2, actualDrBroadcastDto.getBroadcast().size());

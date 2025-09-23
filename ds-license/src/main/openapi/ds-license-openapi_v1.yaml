@@ -832,12 +832,15 @@ components:
       type: object
       description: "Object containing results with the same drProductionId"
       properties:
-        hasDrProductionId:
-          type: boolean
-          description: "Is there a DR-arkiv production id?"
         drProductionId:
           type: string
           description: "DR-arkiv production id"
+        restricted:
+          type: boolean
+          description: "Is the drProductionId restricted?"
+        restrictedComment:
+          type: string
+          description: "Comment about why drProductionId is restricted, if it is restricted"
         broadcast:
           type: array
           items:
