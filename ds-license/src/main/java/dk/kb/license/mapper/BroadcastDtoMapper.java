@@ -3,6 +3,7 @@ package dk.kb.license.mapper;
 import dk.kb.license.model.v1.BroadcastDto;
 import org.apache.solr.common.SolrDocument;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
@@ -21,13 +22,8 @@ public class BroadcastDtoMapper {
         broadcastDto.setDsId(solrDocument.getFieldValue("id").toString());
         broadcastDto.setTitle(solrDocument.getFieldValue("title").toString());
 
-        // Solr uses Date data type and UTC, so we need to parse it to OffsetDateTime.
-        Date startTimeDate = (Date) solrDocument.getFieldValue("startTime");
-        broadcastDto.setStartTime(startTimeDate.toInstant().atOffset(ZoneOffset.UTC));
-
-        // Solr uses Date data type and UTC, so we need to parse it to OffsetDateTime.
-        Date endTimeDate = (Date) solrDocument.getFieldValue("endTime");
-        broadcastDto.setEndTime(endTimeDate.toInstant().atOffset(ZoneOffset.UTC));
+        broadcastDto.setStartTime(parseDateToOffsetDateTime((Date) solrDocument.getFieldValue("startTime")));
+        broadcastDto.setEndTime(parseDateToOffsetDateTime((Date) solrDocument.getFieldValue("endTime")));
 
         if (restrictedIdComment == null) {
             broadcastDto.setRestricted(false);
@@ -38,5 +34,16 @@ public class BroadcastDtoMapper {
         }
 
         return broadcastDto;
+    }
+
+    /**
+     * Parses Solr Date data type to OffsetDateTime.
+     * Solr use UTC
+     *
+     * @param date solr date
+     * @return OffsetDateTime
+     */
+    private OffsetDateTime parseDateToOffsetDateTime(Date date) {
+        return date.toInstant().atOffset(ZoneOffset.UTC);
     }
 }
