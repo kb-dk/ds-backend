@@ -80,7 +80,11 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      */
     @Override
     public DrBroadcastDto matchingDrProductionIdBroadcasts(String dsId) {
-        return RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId);
+        try {
+            return RightsModuleFacade.matchingDrProductionIdBroadcasts(dsId);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 
     @Override

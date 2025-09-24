@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Create a Solr client.
@@ -83,7 +82,7 @@ public class SolrServerClient extends AbstractSolrJClient {
      * @param fieldList what fields should be in the Solr response.
      * @return combined response from Solr
      */
-    public Optional<SolrDocumentList> callSolr(String query, String fieldList) {
+    public SolrDocumentList callSolr(String query, String fieldList) throws SolrServerException, IOException {
         QueryResponse response = null;
         SolrDocumentList resultSolrDocumentList = new SolrDocumentList();
 
@@ -96,35 +95,22 @@ public class SolrServerClient extends AbstractSolrJClient {
         // Ds-license supports multiple backing Solr servers. So we have to wrap it in this for-loop
         for (SolrServerClient server : servers) {
             SolrQuery solrQuery = createSolrQuery(query, fieldList);
+            response = server.query(solrQuery);
 
-            try {
-                // Query Solr for a response
-                response = server.query(solrQuery);
-            } catch (SolrServerException | IOException e) {
-                final String errorMessage = "callSolr an error appeared when calling Solr backend: " + e;
+            // If the query match with more than 1000 results, we throw an exception
+            if (response.getResults().getNumFound() > rows) {
+                final String errorMessage = "Too many results for query: " + query;
                 log.error(errorMessage);
-                throw new InternalServiceException(errorMessage);
+                throw new InvalidArgumentServiceException(errorMessage);
             }
 
-            if (response == null || response.getResults() == null) {
-                log.error("Response from Solr is null");
-                return Optional.empty();
-            } else {
-                // If the query match with more than 1000 results, we throw an exception
-                if (response.getResults().getNumFound() > rows) {
-                    final String errorMessage = "Too many results for query: " + query;
-                    log.error(errorMessage);
-                    throw new InvalidArgumentServiceException(errorMessage);
-                }
-
-                resultSolrDocumentList.addAll(response.getResults());
-            }
+            resultSolrDocumentList.addAll(response.getResults());
         }
 
         // Add NumFound to the SolrDocumentList
         resultSolrDocumentList.setNumFound(response.getResults().getNumFound());
 
-        return Optional.of(resultSolrDocumentList);
+        return resultSolrDocumentList;
     }
 }
 

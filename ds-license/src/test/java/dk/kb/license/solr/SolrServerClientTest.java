@@ -12,7 +12,6 @@ import org.mockito.MockedStatic;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,10 +67,16 @@ public class SolrServerClientTest {
     }
 
     @Test
-    public void callSolr_whenResponseFromSolrIsNull_thenReturnOptionalEmpty() throws SolrServerException, IOException {
+    public void callSolr_whenSolrResponseHaveNoMatches_thenReturnEmptySolrDocumentList() throws SolrServerException, IOException {
+        SolrDocumentList solrDocumentList = new SolrDocumentList();
+        solrDocumentList.setNumFound(0);
+
+        QueryResponse mockedQueryResponse = mock(QueryResponse.class);
+        when(mockedQueryResponse.getResults()).thenReturn(solrDocumentList);
+
         // Instead of calling an actual Solr service, we mock `query(SolrParams solrParams`
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
-        when(mockedSolrServerClient.query(any())).thenReturn(null);
+        when(mockedSolrServerClient.query(any())).thenReturn(mockedQueryResponse);
 
         // To be able to mock List<SolrServerClient> servers we use the getServers getter method
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
@@ -81,7 +86,7 @@ public class SolrServerClientTest {
 
             // Act
             // Call to Solr backend is mocked, so query parameters actually don't matter
-            Optional<SolrDocumentList> actualSolrDocumentList = solrServerClient.callSolr(queryDsId, fieldListDsId);
+            SolrDocumentList actualSolrDocumentList = solrServerClient.callSolr(queryDsId, fieldListDsId);
 
             // Assert
             assertTrue(actualSolrDocumentList.isEmpty());
@@ -117,16 +122,16 @@ public class SolrServerClientTest {
 
             // Act
             // Call to Solr backend is mocked, so query parameters actually don't matter
-            Optional<SolrDocumentList> actualSolrDocumentList = solrServerClient.callSolr(queryDsId, fieldListDsId);
+            SolrDocumentList actualSolrDocumentList = solrServerClient.callSolr(queryDsId, fieldListDsId);
 
             // Assert
-            assertTrue(actualSolrDocumentList.isPresent());
-            assertEquals(solrDocumentList.getNumFound(), actualSolrDocumentList.get().getNumFound());
-            assertEquals(drProductionId, actualSolrDocumentList.get().get(0).getFieldValue("dr_production_id"));
-            assertEquals(dsId, actualSolrDocumentList.get().get(0).getFieldValue("id"));
-            assertEquals(title, actualSolrDocumentList.get().get(0).getFieldValue("title"));
-            assertEquals(startTime, actualSolrDocumentList.get().get(0).getFieldValue("startTime"));
-            assertEquals(endTime, actualSolrDocumentList.get().get(0).getFieldValue("endTime"));
+            assertFalse(actualSolrDocumentList.isEmpty());
+            assertEquals(solrDocumentList.getNumFound(), actualSolrDocumentList.getNumFound());
+            assertEquals(drProductionId, actualSolrDocumentList.get(0).getFieldValue("dr_production_id"));
+            assertEquals(dsId, actualSolrDocumentList.get(0).getFieldValue("id"));
+            assertEquals(title, actualSolrDocumentList.get(0).getFieldValue("title"));
+            assertEquals(startTime, actualSolrDocumentList.get(0).getFieldValue("startTime"));
+            assertEquals(endTime, actualSolrDocumentList.get(0).getFieldValue("endTime"));
         }
     }
 }

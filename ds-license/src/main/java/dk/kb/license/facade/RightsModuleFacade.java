@@ -30,7 +30,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RightsModuleFacade {
@@ -57,7 +56,7 @@ public class RightsModuleFacade {
      * @return
      * @throws SQLException
      */
-    public static RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) throws SQLException {
+    public static RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) {
         return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
     }
 
@@ -80,7 +79,7 @@ public class RightsModuleFacade {
      *                             This should not be null.
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) throws SQLException {
+    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) {
         inputValidator.validateCommentLength(restrictedIdInputDto.getComment());
 
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
@@ -114,7 +113,7 @@ public class RightsModuleFacade {
      * @param id                   in the database of the restricted ID to be deleted.
      * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
      */
-    public static int deleteRestrictedId(Long id, boolean touchDsStorageRecord) throws Exception {
+    public static int deleteRestrictedId(Long id, boolean touchDsStorageRecord) {
         return BaseModuleStorage.performStorageAction("delete restricted ID", RightsModuleStorage.class, storage -> {
             // Retrieve object from database
             RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdById(id);
@@ -141,7 +140,7 @@ public class RightsModuleFacade {
      * @param touchDsStorageRecord
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void updateRestrictedIdComment(UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto, boolean touchDsStorageRecord) throws SQLException {
+    public static void updateRestrictedIdComment(UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto, boolean touchDsStorageRecord) {
         inputValidator.validateCommentLength(updateRestrictedIdCommentInputDto.getComment());
 
         BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
@@ -172,23 +171,23 @@ public class RightsModuleFacade {
      * @param dsId the unique id of a DR-arkiv broadcast
      * @return DrBroadcastDto with a list of BroadcastDto
      */
-    public static DrBroadcastDto matchingDrProductionIdBroadcasts(String dsId) {
+    public static DrBroadcastDto matchingDrProductionIdBroadcasts(String dsId) throws SolrServerException, IOException {
         // Check if dsId is valid
         inputValidator.validateDsId(dsId);
 
         String queryDsId = "id:\"" + dsId + "\"";
         String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
 
-        Optional<SolrDocumentList> resultsFromDsId = getSolrServerClient().callSolr(queryDsId, fieldListDsId);
+        SolrDocumentList resultsFromDsId = getSolrServerClient().callSolr(queryDsId, fieldListDsId);
 
-        if (resultsFromDsId.isEmpty() || resultsFromDsId.get().getNumFound() == 0) {
+        if (resultsFromDsId.getNumFound() == 0) {
             final String errorMessage = "dsId: " + dsId + " not found";
             log.error(errorMessage);
             throw new NotFoundServiceException(errorMessage);
         }
 
         // There is only one object in the SolrDocumentList, so we fetch that out
-        SolrDocument resultFromDsId = resultsFromDsId.get().get(0);
+        SolrDocument resultFromDsId = resultsFromDsId.get(0);
 
         DrBroadcastDto drBroadcastDto = new DrBroadcastDto();
         List<BroadcastDto> broadcastDtoList = new ArrayList<>();
@@ -210,16 +209,16 @@ public class RightsModuleFacade {
             String queryDrProductionId = "dr_production_id:\"" + drBroadcastDto.getDrProductionId() + "\"";
             String fieldListDrProductionId = "id, title, startTime, endTime";
 
-            Optional<SolrDocumentList> resultsFromDrProductionId = getSolrServerClient().callSolr(queryDrProductionId, fieldListDrProductionId);
+            SolrDocumentList resultsFromDrProductionId = getSolrServerClient().callSolr(queryDrProductionId, fieldListDrProductionId);
 
             // Should never happen
-            if (resultsFromDrProductionId.isEmpty() || resultsFromDrProductionId.get().getNumFound() == 0) {
+            if (resultsFromDrProductionId.getNumFound() == 0) {
                 final String errorMessage = "No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId();
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
 
-            for (SolrDocument solrDocument : resultsFromDrProductionId.get()) {
+            for (SolrDocument solrDocument : resultsFromDrProductionId) {
                 // There could be a restriction already on the broadcast
                 String dsIdRestrictedIdComment = getRestrictedIdCommentByIdValue(solrDocument.getFieldValue("id").toString());
                 BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, dsIdRestrictedIdComment);
@@ -247,7 +246,7 @@ public class RightsModuleFacade {
      *                      This should not be null.
      * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
-    public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, boolean touchDsStorageRecord) throws SQLException {
+    public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, boolean touchDsStorageRecord) {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
             for (RestrictedIdInputDto id : restrictedIds) {
                 log.debug("Adding restricted id type='{}' with value='{}'", id.getIdType(), id.getIdValue());
@@ -542,7 +541,7 @@ public class RightsModuleFacade {
      * @param idType to determine how related records are updated.
      * @return amount of records touched in DS-Storage.
      */
-    public static int touchRelatedStorageRecords(String id, IdTypeEnumDto idType) {
+    public static int touchRelatedStorageRecords(String id, IdTypeEnumDto idType) throws SolrServerException, IOException {
         switch (idType) {
             case DS_ID:
                 return touchStorageRecordById(id);
@@ -583,7 +582,7 @@ public class RightsModuleFacade {
      * @param strictTitle to query solr for.
      * @return amount of records touched in DS-Storage.
      */
-    private static int touchStorageRecordsByStrictTitle(String strictTitle) {
+    private static int touchStorageRecordsByStrictTitle(String strictTitle) throws SolrServerException, IOException {
         String solrField = "title_strict";
         return touchStorageRecordsByIdFromSolrQuery(solrField, strictTitle);
     }
@@ -594,7 +593,7 @@ public class RightsModuleFacade {
      * @param productionCode to query solr for.
      * @return amount of records touched in DS-Storage.
      */
-    private static int touchStorageRecordsByProductionCode(String productionCode) {
+    private static int touchStorageRecordsByProductionCode(String productionCode) throws SolrServerException, IOException {
         String solrField = "production_code_value";
         return touchStorageRecordsByIdFromSolrQuery(solrField, productionCode);
     }
@@ -605,7 +604,7 @@ public class RightsModuleFacade {
      * @param drProductionId to query solr for.
      * @return amount of records touched in DS-Storage.
      */
-    private static int touchStorageRecordsByProductionId(String drProductionId) {
+    private static int touchStorageRecordsByProductionId(String drProductionId) throws SolrServerException, IOException {
         String solrField = "dr_production_id";
         return touchStorageRecordsByIdFromSolrQuery(solrField, drProductionId);
     }
@@ -618,7 +617,7 @@ public class RightsModuleFacade {
      * @param fieldValue to query for.
      * @return the amount of records touched in DS-Storage.
      */
-    private static int touchStorageRecordsByIdFromSolrQuery(String solrField, String fieldValue) {
+    private static int touchStorageRecordsByIdFromSolrQuery(String solrField, String fieldValue) throws SolrServerException, IOException {
         List<SolrServerClient> servers = ServiceConfig.getSolrServers();
         int touchedRecordsCount = 0;
 
@@ -627,37 +626,33 @@ public class RightsModuleFacade {
             int rows = 500;
             int start = 0;
 
-            try {
-                SolrQuery query = getIdSolrQuery(solrField, fieldValue, rows);
+            SolrQuery query = getIdSolrQuery(solrField, fieldValue, rows);
 
-                while (true) {
-                    // Update start value before the query is fired against the server
-                    query.setStart(start);
+            while (true) {
+                // Update start value before the query is fired against the server
+                query.setStart(start);
 
-                    // Query solr for a response
-                    QueryResponse response = server.query(query);
-                    SolrDocumentList results = response.getResults();
+                // Query solr for a response
+                QueryResponse response = server.query(query);
+                SolrDocumentList results = response.getResults();
 
-                    // For each record in the result touch the related DS-storage record
-                    for (SolrDocument doc : results) {
-                        RecordsCountDto touched = touchStorageRecords(doc);
-                        if (touched != null && touched.getCount() != null) {
-                            touchedRecordsCount = touchedRecordsCount + touched.getCount();
-                        }
+                // For each record in the result touch the related DS-storage record
+                for (SolrDocument doc : results) {
+                    RecordsCountDto touched = touchStorageRecords(doc);
+                    if (touched != null && touched.getCount() != null) {
+                        touchedRecordsCount = touchedRecordsCount + touched.getCount();
                     }
-
-                    long totalResults = results.getNumFound();
-
-                    // Break the loop of no more records are available
-                    if (start + rows >= totalResults) {
-                        break;
-                    }
-
-                    // Increment start by rows
-                    start += rows;
                 }
-            } catch (SolrServerException | IOException e) {
-                throw new InternalServiceException(e);
+
+                long totalResults = results.getNumFound();
+
+                // Break the loop of no more records are available
+                if (start + rows >= totalResults) {
+                    break;
+                }
+
+                // Increment start by rows
+                start += rows;
             }
         }
 

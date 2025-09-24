@@ -12,9 +12,13 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.keycloak.representations.AccessToken;
@@ -25,7 +29,10 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -147,11 +154,15 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
             "ds.tv:oai:io:0bdf8656-4a96-400d-b3d8-e4695328688",
             "ds.tv:oai:io:0bdf8656-4a96-400d-b3d8-e4695328688e"
     })
-    public void matchingDrProductionIdBroadcasts_whenNotFoundDsId_thenThrowNotFoundServiceException(String dsId) {
+    public void matchingDrProductionIdBroadcasts_whenNotFoundDsId_thenThrowNotFoundServiceException(String dsId) throws SolrServerException, IOException {
         // Arrange
         String expectedMessage = "dsId: " + dsId + " not found";
+        SolrDocumentList solrDocumentList = new SolrDocumentList();
+        solrDocumentList.setNumFound(0);
+
         // We need to mock the call to solr,
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
+        when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(solrDocumentList);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
             mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
@@ -167,7 +178,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_whenDsIdTWithDrProductionIdButThereIsNoMatchOnDrProductionId_thenThrowNotFoundServiceException() throws ParseException {
+    public void matchingDrProductionIdBroadcasts_whenDsIdTWithDrProductionIdButThereIsNoMatchOnDrProductionId_thenThrowNotFoundServiceException() throws ParseException, SolrServerException, IOException {
         // Arrange
         String drProductionId = "9213163000";
         String expectedMessage = "No DR broadcasts found with drProductionId: " + drProductionId;
@@ -204,8 +215,8 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // We need to mock the call to solr,
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
-        when(mockedSolrServerClient.callSolr(queryDsId, fieldListDsId)).thenReturn(Optional.of(solrDocumentListDsId));
-        when(mockedSolrServerClient.callSolr(queryDrProductionId, fieldListDrProductionId)).thenReturn(Optional.of(solrDocumentListDrProductionId));
+        when(mockedSolrServerClient.callSolr(queryDsId, fieldListDsId)).thenReturn(solrDocumentListDsId);
+        when(mockedSolrServerClient.callSolr(queryDrProductionId, fieldListDrProductionId)).thenReturn(solrDocumentListDrProductionId);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
             mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
@@ -221,7 +232,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_whenDsIdWithNoDrProductionId_thenReturnDrBroadcastDto() throws ParseException {
+    public void matchingDrProductionIdBroadcasts_whenDsIdWithNoDrProductionId_thenReturnDrBroadcastDto() throws ParseException, SolrServerException, IOException {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
@@ -243,7 +254,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // We need to mock the call to solr,
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
-        when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(Optional.of(solrDocumentList));
+        when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(solrDocumentList);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
             mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
@@ -271,7 +282,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_whenDsIdWithNoDrProductionIdAndRestrictedComment_thenReturnDrBroadcastDto() throws ParseException {
+    public void matchingDrProductionIdBroadcasts_whenDsIdWithNoDrProductionIdAndRestrictedComment_thenReturnDrBroadcastDto() throws ParseException, SolrServerException, IOException {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
@@ -294,7 +305,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // We need to mock the call to solr,
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
-        when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(Optional.of(solrDocumentList));
+        when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(solrDocumentList);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
             mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
@@ -325,7 +336,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_whenDsIdWithDrProductionId_thenReturnDrBroadcastDto() throws ParseException {
+    public void matchingDrProductionIdBroadcasts_whenDsIdWithDrProductionId_thenReturnDrBroadcastDto() throws ParseException, SolrServerException, IOException {
         // Arrange
         String drProductionId = "9213163000";
 
@@ -365,7 +376,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // We mock the call to
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
-        when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(Optional.of(solrDocumentList));
+        when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(solrDocumentList);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
             mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
