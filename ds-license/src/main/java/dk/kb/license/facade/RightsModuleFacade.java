@@ -54,7 +54,6 @@ public class RightsModuleFacade {
      * @param idType   type of ID
      * @param platform The platform
      * @return
-     * @throws SQLException
      */
     public static RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) {
         return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
@@ -77,7 +76,6 @@ public class RightsModuleFacade {
      *
      * @param restrictedIdInputDto the data transfer object containing the details of the restricted ID to be created.
      *                             This should not be null.
-     * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) {
         inputValidator.validateCommentLength(restrictedIdInputDto.getComment());
@@ -138,7 +136,6 @@ public class RightsModuleFacade {
      * @param updateRestrictedIdCommentInputDto the data transfer object containing the details of the restricted ID to be Updated.
      *                                          This should not be null.
      * @param touchDsStorageRecord
-     * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void updateRestrictedIdComment(UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto, boolean touchDsStorageRecord) {
         inputValidator.validateCommentLength(updateRestrictedIdCommentInputDto.getComment());
@@ -170,6 +167,8 @@ public class RightsModuleFacade {
      *
      * @param dsId the unique id of a DR-arkiv broadcast
      * @return DrBroadcastDto with a list of BroadcastDto
+     * @throws SolrServerException
+     * @throws IOException
      */
     public static DrBroadcastDto matchingDrProductionIdBroadcasts(String dsId) throws SolrServerException, IOException {
         // Check if dsId is valid
@@ -244,7 +243,6 @@ public class RightsModuleFacade {
      *
      * @param restrictedIds list containing the data transfer objects containing the details of the restricted IDs to be created.
      *                      This should not be null.
-     * @throws SQLException if there is an error while persisting the restricted ID in the database.
      */
     public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, boolean touchDsStorageRecord) {
         BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
@@ -288,8 +286,6 @@ public class RightsModuleFacade {
      * @param content the content identifier, must be a valid integer.
      * @param form    the form identifier, must be a valid integer.
      * @return the drHoldbackValue as a {@link String} if found.
-     * @throws NotFoundServiceException if no drHoldbackValue is found for the
-     *                                  specified content and form.
      */
     public static String getDrHoldbackValueFromContentAndFormValues(Integer content, Integer form) {
         return BaseModuleStorage.performStorageAction("Get drHoldbackValue", RightsModuleStorage.class, storage -> {
@@ -326,6 +322,7 @@ public class RightsModuleFacade {
      *
      * @param rightsCalculationInputDto the input DTO containing the needed information for rights calculation.
      * @return a {@link RightsCalculationOutputDto} containing the calculated rights.
+     * @throws SQLException if an error occurs during the SQL process.
      */
     public static RightsCalculationOutputDto calculateRightsForRecord(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException {
         RightsCalculationOutputDto output = new RightsCalculationOutputDto();
@@ -540,6 +537,8 @@ public class RightsModuleFacade {
      * @param id     which have been updated in the rights table
      * @param idType to determine how related records are updated.
      * @return amount of records touched in DS-Storage.
+     * @throws SolrServerException
+     * @throws IOException
      */
     public static int touchRelatedStorageRecords(String id, IdTypeEnumDto idType) throws SolrServerException, IOException {
         switch (idType) {
@@ -581,6 +580,8 @@ public class RightsModuleFacade {
      *
      * @param strictTitle to query solr for.
      * @return amount of records touched in DS-Storage.
+     * @throws SolrServerException
+     * @throws IOException
      */
     private static int touchStorageRecordsByStrictTitle(String strictTitle) throws SolrServerException, IOException {
         String solrField = "title_strict";
@@ -592,6 +593,8 @@ public class RightsModuleFacade {
      *
      * @param productionCode to query solr for.
      * @return amount of records touched in DS-Storage.
+     * @throws SolrServerException
+     * @throws IOException
      */
     private static int touchStorageRecordsByProductionCode(String productionCode) throws SolrServerException, IOException {
         String solrField = "production_code_value";
@@ -603,6 +606,8 @@ public class RightsModuleFacade {
      *
      * @param drProductionId to query solr for.
      * @return amount of records touched in DS-Storage.
+     * @throws SolrServerException
+     * @throws IOException
      */
     private static int touchStorageRecordsByProductionId(String drProductionId) throws SolrServerException, IOException {
         String solrField = "dr_production_id";
@@ -616,6 +621,8 @@ public class RightsModuleFacade {
      * @param solrField  to query for the fieldValue.
      * @param fieldValue to query for.
      * @return the amount of records touched in DS-Storage.
+     * @throws SolrServerException
+     * @throws IOException
      */
     private static int touchStorageRecordsByIdFromSolrQuery(String solrField, String fieldValue) throws SolrServerException, IOException {
         List<SolrServerClient> servers = ServiceConfig.getSolrServers();

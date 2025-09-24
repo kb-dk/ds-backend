@@ -81,6 +81,8 @@ public class SolrServerClient extends AbstractSolrJClient {
      * @param query     what query we want to query in Solr.
      * @param fieldList what fields should be in the Solr response.
      * @return combined response from Solr
+     * @throws SolrServerException
+     * @throws IOException
      */
     public SolrDocumentList callSolr(String query, String fieldList) throws SolrServerException, IOException {
         QueryResponse response = null;
