@@ -227,14 +227,4 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
         assertTrue(allowedOwnProduction.getDr().getProductionCodeAllowed());
     }
-
-    @Test
-    public void testShortErrorProductionId(){
-        assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345"));
-    }
-
-    @Test
-    public void testInvalidProductionId(){
-        assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345abcde"));
-    }
 }

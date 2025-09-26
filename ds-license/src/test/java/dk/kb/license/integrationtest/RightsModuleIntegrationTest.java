@@ -15,6 +15,7 @@ import dk.kb.util.webservice.OAuthConstants;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
     @Test
     @Tag("integration")
-    public void testQueryLookupForProductionId() {
+    public void testQueryLookupForProductionId() throws SolrServerException, IOException {
         int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("9213145700", IdTypeEnumDto.DR_PRODUCTION_ID);
 
         // Currently there are five records for this productionId in solr
@@ -84,7 +85,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
     @Test
     @Tag("integration")
-    public void testQueryLookupForId() {
+    public void testQueryLookupForId() throws SolrServerException, IOException {
         int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("ds.tv:oai:io:5a888d7d-3c0d-4375-9e67-343d88d1dbd9", IdTypeEnumDto.DS_ID);
 
         assertEquals(1, touchedRecords);
@@ -92,7 +93,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
     @Test
     @Tag("integration")
-    public void testQueryLookupForTitle() {
+    public void testQueryLookupForTitle() throws SolrServerException, IOException {
         int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("Øen", IdTypeEnumDto.STRICT_TITLE);
         log.info("touched '{}' records", touchedRecords);
 
@@ -103,7 +104,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
     @Test
     @Tag("slow")
     @Tag("integration")
-    public void testQueryLookupForProductionCode() {
+    public void testQueryLookupForProductionCode() throws SolrServerException, IOException {
         int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("3200", IdTypeEnumDto.OWNPRODUCTION_CODE);
 
         assertTrue(touchedRecords > 2500);
@@ -111,7 +112,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
     @Test
     @Tag("integration")
-    public void testTouchNonExistingRecordInStorage() throws SQLException {
+    public void testTouchNonExistingRecordInStorage() {
         assertThrows(InvalidArgumentServiceException.class,  () -> {
             RightsModuleFacade.touchRelatedStorageRecords("some-non-existing-ds-id", IdTypeEnumDto.DS_ID);
         });
@@ -119,7 +120,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
     @Test
     @Tag("integration")
-    public void testCreateAndDeleteRestrictedId() throws Exception {
+    public void testCreateAndDeleteRestrictedId() {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("ds.tv:oai:io:e027e1dc-5006-4f54-b2b7-ec451940c500");
         restrictedId.setIdType(IdTypeEnumDto.DS_ID);
@@ -134,7 +135,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
     @Test
     @Tag("integration")
-    public void testCreateGetAndDeleteRestrictedProductionIdPrefixedZeros() throws Exception {
+    public void testCreateGetAndDeleteRestrictedProductionIdPrefixedZeros() {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("00123466486");
         restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
@@ -150,7 +151,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
     @Test
     @Tag("integration")
-    public void testCreateGetAndDeleteRestrictedProductionIdCorrectFormat() throws Exception {
+    public void testCreateGetAndDeleteRestrictedProductionIdCorrectFormat() {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("1234664800");
         restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
@@ -166,7 +167,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
 
     @Test
     @Tag("integration")
-    public void testCreateGetAndDeleteRestrictedProductionId() throws Exception {
+    public void testCreateGetAndDeleteRestrictedProductionId() {
         RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
         restrictedId.setIdValue("123466489");
         restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);

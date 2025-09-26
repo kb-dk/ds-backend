@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import dk.kb.license.model.v1.RestrictedIdInputDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.slf4j.Logger;
@@ -259,26 +258,4 @@ public class Util {
 
 		return true;
 	}
-
-    /**
-     * Validates and formats the production ID in the given {@link RestrictedIdInputDto}.
-     * <p>
-     * This method removes leading zeros from the production ID and checks if the ID is
-     * already in the correct format. If the production ID is 10 digits long and ends with
-     * two zeros, it is considered valid and is set back on the input DTO. If not, a zero
-     * is appended to the production ID before updating the input DTO.
-     *
-     * @param productionId the {@link RestrictedIdInputDto} containing the production ID to be validated.
-     */
-    public static void validateDrProductionIdFormat(String productionId) {
-
-		if (!productionId.matches("\\d+")) {
-			throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should only contain digits'");
-		}
-
-		if (productionId.length() <= 7){
-			throw new InvalidArgumentServiceException("The input production ID: '" + productionId + "' should be at least 8 digits");
-		}
-
-    }
 }

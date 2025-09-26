@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Class for interacting with the part of DS-License which handles the calculation of rights, such as holdbacks and restrictions.
  */
-public class RightsModuleStorage extends BaseModuleStorage{
+public class RightsModuleStorage extends BaseModuleStorage {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleStorage.class);
 
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
@@ -25,16 +25,18 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String RESTRICTED_ID_COMMENT = "comment";
 
     private final String createRestrictedIdQuery = "INSERT INTO " + RESTRICTED_ID_TABLE +
-            " ("+RESTRICTED_ID_ID+","+ RESTRICTED_ID_IDVALUE +","+ RESTRICTED_ID_IDTYPE +","+ RESTRICTED_ID_PLATFORM +","+
-            RESTRICTED_ID_COMMENT +")" +
+            " (" + RESTRICTED_ID_ID + "," + RESTRICTED_ID_IDVALUE + "," + RESTRICTED_ID_IDTYPE + "," + RESTRICTED_ID_PLATFORM + "," +
+            RESTRICTED_ID_COMMENT + ")" +
             " VALUES (?,?,?,?,?)";
     private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
-    private final String readRestrictedIdQueryById = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
+    private final String readRestrictedIdByIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
 
-    private final String updateRestrictedIdCommentQuery = "UPDATE " + RESTRICTED_ID_TABLE +" SET "+
-            RESTRICTED_ID_COMMENT +" = ? " +
+    private final String readRestrictedIdCommentByIdValueQuery = "SELECT comment FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ?";
+
+    private final String updateRestrictedIdCommentQuery = "UPDATE " + RESTRICTED_ID_TABLE + " SET " +
+            RESTRICTED_ID_COMMENT + " = ? " +
             " WHERE " +
-            RESTRICTED_ID_ID +" = ?" ;
+            RESTRICTED_ID_ID + " = ?";
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String deleteRestrictedIdByIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
 
@@ -54,8 +56,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String DR_HOLDBACK_RANGES_FORM_TO = "form_range_to";
     private final String DR_HOLDBACK_RANGES_VALUE = "dr_holdback_value";
 
-    private final String createDrHoldbackRuleQuery = "INSERT INTO "+DR_HOLDBACK_RULES_TABLE +
-            " ("+ DR_HOLDBACK_RULES_ID + "," + DR_HOLDBACK_RULES_VALUE + "," + DR_HOLDBACK_RULES_NAME + "," + DR_HOLDBACK_RULES_DAYS +")" +
+    private final String createDrHoldbackRuleQuery = "INSERT INTO " + DR_HOLDBACK_RULES_TABLE +
+            " (" + DR_HOLDBACK_RULES_ID + "," + DR_HOLDBACK_RULES_VALUE + "," + DR_HOLDBACK_RULES_NAME + "," + DR_HOLDBACK_RULES_DAYS + ")" +
             " VALUES (?,?,?,?)";
     private final String deleteDrHoldbackRuleQuery = "DELETE FROM " + DR_HOLDBACK_RULES_TABLE +
             " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
@@ -63,9 +65,9 @@ public class RightsModuleStorage extends BaseModuleStorage{
             + " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
     private final String getDrHoldbackRuleIdFromValueQuery = "SELECT " + DR_HOLDBACK_RULES_ID + " FROM " + DR_HOLDBACK_RULES_TABLE
             + " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
-    private final String getDrHoldbackDaysFromNameQuery = "SELECT " + DR_HOLDBACK_RULES_DAYS +" FROM "+DR_HOLDBACK_RULES_TABLE +
+    private final String getDrHoldbackDaysFromNameQuery = "SELECT " + DR_HOLDBACK_RULES_DAYS + " FROM " + DR_HOLDBACK_RULES_TABLE +
             " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
-    private final String getDrHoldbackDaysFromValueQuery = "SELECT " + DR_HOLDBACK_RULES_DAYS +" FROM "+DR_HOLDBACK_RULES_TABLE +
+    private final String getDrHoldbackDaysFromValueQuery = "SELECT " + DR_HOLDBACK_RULES_DAYS + " FROM " + DR_HOLDBACK_RULES_TABLE +
             " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
     private final String getAllDrHoldbackRulesQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE;
     private final String getDrHoldbackRuleFromValueQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
@@ -78,7 +80,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             + " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
 
     private final String createDrHoldbackRangeQuery = "INSERT INTO " + DR_HOLDBACK_RANGES_TABLE +
-            "("+ DR_HOLDBACK_RANGES_ID +","+ DR_HOLDBACK_RANGES_CONTENT_FROM +","+ DR_HOLDBACK_RANGES_CONTENT_TO +","+ DR_HOLDBACK_RANGES_FORM_FROM +","+ DR_HOLDBACK_RANGES_FORM_TO +","+ DR_HOLDBACK_RANGES_VALUE +")"+
+            "(" + DR_HOLDBACK_RANGES_ID + "," + DR_HOLDBACK_RANGES_CONTENT_FROM + "," + DR_HOLDBACK_RANGES_CONTENT_TO + "," + DR_HOLDBACK_RANGES_FORM_FROM + "," + DR_HOLDBACK_RANGES_FORM_TO + "," + DR_HOLDBACK_RANGES_VALUE + ")" +
             " VALUES (?,?,?,?,?,?)";
 
     private final String getDrHoldbackValueFromContentAndFormQuery = "SELECT " + DR_HOLDBACK_RANGES_VALUE +
@@ -94,40 +96,40 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
 
     public RightsModuleStorage() throws SQLException {
-       super();
+        super();
     }
 
     /**
      * Creates an entry in the restrictedID table. Also updates the mTime for the related record in ds-storage.
      *
      * @param id_value The value of the ID
-     * @param id_type The type of the ID
+     * @param id_type  The type of the ID
      * @param platform The platform where the object is restricted (e.g DR)
-     * @param comment Just a comment
+     * @param comment  Just a comment
      * @throws SQLException
      */
     public long createRestrictedId(String id_value, String id_type, String platform, String comment) throws SQLException {
         long uniqueID = generateUniqueID();
 
-        try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)){
+        try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)) {
             stmt.setLong(1, uniqueID);
             stmt.setString(2, id_value);
             stmt.setString(3, id_type);
             stmt.setString(4, platform);
             stmt.setString(5, comment);
             stmt.execute();
-        }  catch (SQLException e) {
-            log.error("SQL Exception in persistClause:" + e.getMessage());
+        } catch (SQLException e) {
+            log.error("SQL Exception in createRestrictedId", e);
             throw e;
         }
-      return uniqueID;        
+        return uniqueID;
     }
 
     /**
      * Gets an entry from the restrinctedID table
      *
      * @param id_value value of the ID
-     * @param id_type type of ID
+     * @param id_type  type of ID
      * @param platform platform where the ID is restricted
      * @return
      * @throws SQLException
@@ -143,7 +145,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in readClause:" + e.getMessage());
+            log.error("SQL Exception in getRestrictedId", e);
             throw e;
         }
     }
@@ -155,13 +157,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public void updateRestrictedIdComment(long id, String comment) throws SQLException {
-
-        try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdCommentQuery)){
+        try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdCommentQuery)) {
             stmt.setString(1, comment);
             stmt.setLong(2, id);
             stmt.execute();
-        }  catch (SQLException e) {
-            log.error("SQL Exception in persist restricted ID" + e.getMessage());
+        } catch (SQLException e) {
+            log.error("SQL Exception in updateRestrictedIdComment" + e);
             throw e;
         }
     }
@@ -170,7 +171,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * Delete an entry from the restricted IDs table.
      *
      * @param id_value value of the ID
-     * @param id_type type of ID
+     * @param id_type  type of ID
      * @param platform platform where the ID is restricted
      * @throws SQLException
      */
@@ -181,7 +182,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             stmt.setString(3, platform);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in delete restricted Id:" + e.getMessage());
+            log.error("SQL Exception in deleteRestrictedId", e);
             throw e;
         }
     }
@@ -194,15 +195,37 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @return a {@link RestrictedIdOutputDto}
      */
     public RestrictedIdOutputDto getRestrictedIdById(Long id) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQueryById)) {
-            stmt.setLong(1,id);
+        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdByIdQuery)) {
+            stmt.setLong(1, id);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
                 return createRestrictedIdOutputDtoFromResultSet(res);
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in readClause:" + e.getMessage());
+            log.error("SQL Exception in getRestrictedIdById", e);
+            throw e;
+        }
+    }
+
+    /**
+     * Get an entry from the "restricted_id" table by id_value (dsId).
+     *
+     * @param dsId to get entry for.
+     * @return a restricted_id comment
+     */
+    public String getRestrictedIdCommentByIdValue(String dsId) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdCommentByIdValueQuery)) {
+            stmt.setString(1, dsId);
+            ResultSet res = stmt.executeQuery();
+
+            if (res.next()) {
+                return res.getString(RESTRICTED_ID_COMMENT);
+            }
+
+            return null;
+        } catch (SQLException e) {
+            log.error("SQL Exception in getRestrictedIdCommentByIdValue", e);
             throw e;
         }
     }
@@ -218,8 +241,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
             int result = statement.executeUpdate();
             log.info("Deleted '{}' documents by id: '{}'", result, id);
             return result;
-        } catch (SQLException e){
-            log.error("SQL Exception in delete by id: " + e.getMessage());
+        } catch (SQLException e) {
+            log.error("SQL Exception in deleteRestrictedIdById", e);
             throw e;
         }
     }
@@ -227,7 +250,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
     /**
      * Get all restricted Ids from the database
      *
-     * @param idType add clause on this idType
+     * @param idType   add clause on this idType
      * @param platform add clause on this platform
      * @return
      */
@@ -244,7 +267,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return output;
         } catch (SQLException e) {
-            log.error("SQL Exception in getAllRestrictedIds:" + e.getMessage());
+            log.error("SQL Exception in getAllRestrictedIds", e);
             throw e;
         }
     }
@@ -267,7 +290,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             stmt.setInt(4, days);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in createDrHoldbackRule: " + e.getMessage());
+            log.error("SQL Exception in createDrHoldbackRule", e);
             throw e;
         }
 
@@ -276,6 +299,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
 
     /**
      * Delete a holdback rule for DR content
+     *
      * @param drHoldbackValue value of the holdback rule
      * @throws SQLException
      */
@@ -284,13 +308,14 @@ public class RightsModuleStorage extends BaseModuleStorage{
             stmt.setString(1, drHoldbackValue);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteDrHoldbackRule: " + e.getMessage());
+            log.error("SQL Exception in deleteDrHoldbackRule", e);
             throw e;
         }
     }
 
     /**
      * Get the number of DR holdback days
+     *
      * @param drHoldbackValue value of the DR holdback rule
      * @return the number of DR holdback days or -1 if not DR holdback rule is found.
      * @throws SQLException
@@ -304,7 +329,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return -1;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackDaysFromValue: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackDaysFromValue", e);
             throw e;
         }
     }
@@ -318,20 +343,21 @@ public class RightsModuleStorage extends BaseModuleStorage{
      */
     public int getDrHoldbackDaysFromName(String name) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackDaysFromNameQuery)) {
-            stmt.setString(1,name);
+            stmt.setString(1, name);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
                 return res.getInt(DR_HOLDBACK_RULES_DAYS);
             }
             return -1;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackDaysFromName:" + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackDaysFromName", e);
             throw e;
         }
     }
 
     /**
      * Get a DR holdback rule id
+     *
      * @param drHoldbackRuleValue value of the DR holdback rule
      * @return
      * @throws SQLException
@@ -345,13 +371,14 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return -1;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRuleIdFromValue: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackRuleIdFromValue", e);
             throw e;
         }
     }
 
     /**
      * Get a DR holdback rule id
+     *
      * @param name the name of the DR holdback rule
      * @return
      * @throws SQLException
@@ -365,13 +392,14 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return -1;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRuleIdFromName: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackRuleIdFromName", e);
             throw e;
         }
     }
 
     /**
      * Get a DR holdback rule
+     *
      * @param drHoldbackValue value of the holdback rule
      * @return
      * @throws SQLException
@@ -390,7 +418,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRuleFromValue: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackRuleFromValue", e);
             throw e;
         }
     }
@@ -399,16 +427,16 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * update the number of holdback days of a holdback rule
      *
      * @param drHoldbackValue value of the holdback rule
-     * @param days              number of days
+     * @param days            number of days
      * @throws SQLException
      */
     public void updateDrHoldbackDaysFromDrHoldbackValue(String drHoldbackValue, int days) throws SQLException {
-        try(PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysFromDrHoldbackValueQuery)) {
+        try (PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysFromDrHoldbackValueQuery)) {
             stmt.setInt(1, days);
             stmt.setString(2, drHoldbackValue);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in updateDrHoldbackDaysFromDrHoldbackValue: " + e.getMessage());
+            log.error("SQL Exception in updateDrHoldbackDaysFromDrHoldbackValue", e);
             throw e;
         }
     }
@@ -421,23 +449,24 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public void updateDrHoldbackDaysFromName(String name, int days) throws SQLException {
-        try(PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysFromNameQuery)) {
+        try (PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackDaysFromNameQuery)) {
             stmt.setInt(1, days);
             stmt.setString(2, name);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in updateDrHoldbackDaysForName: " + e.getMessage());
+            log.error("SQL Exception in updateDrHoldbackDaysFromName", e);
             throw e;
         }
     }
 
     /**
      * list all holdback rules
+     *
      * @return a list of rules
      * @throws SQLException if fails
      */
     public List<DrHoldbackRuleOutputDto> getAllDrHoldbackRules() throws SQLException {
-        try(PreparedStatement stmt = connection.prepareStatement(getAllDrHoldbackRulesQuery)) {
+        try (PreparedStatement stmt = connection.prepareStatement(getAllDrHoldbackRulesQuery)) {
             List<DrHoldbackRuleOutputDto> output = new ArrayList<>();
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
@@ -450,7 +479,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return output;
         } catch (SQLException e) {
-            log.error("SQL Exception in getAllDrHoldbackRules: " + e.getMessage());
+            log.error("SQL Exception in getAllDrHoldbackRules", e);
             throw e;
         }
     }
@@ -459,12 +488,12 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * Get the drHoldbackValue from content and form metadata values.
      *
      * @param content the content id
-     * @param form the form id
+     * @param form    the form id
      * @return
      * @throws SQLException
      */
     public String getDrHoldbackValueFromContentAndForm(int content, int form) throws SQLException {
-        try(PreparedStatement stmt = connection.prepareStatement(getDrHoldbackValueFromContentAndFormQuery)) {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackValueFromContentAndFormQuery)) {
             stmt.setInt(1, content);
             stmt.setInt(2, content);
             stmt.setInt(3, form);
@@ -475,7 +504,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackValueFromContentAndForm: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackValueFromContentAndForm", e);
             throw e;
         }
 
@@ -493,7 +522,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
      */
     public long createDrHoldbackRange(int contentRangeFrom, int contentRangeTo, int formRangeFrom, int formRangeTo, String drHoldbackValue) throws SQLException {
         long uniqueId = generateUniqueID();
-        try(PreparedStatement stmt = connection.prepareStatement(createDrHoldbackRangeQuery)) {
+        try (PreparedStatement stmt = connection.prepareStatement(createDrHoldbackRangeQuery)) {
             stmt.setLong(1, uniqueId);
             stmt.setInt(2, contentRangeFrom);
             stmt.setInt(3, contentRangeTo);
@@ -502,7 +531,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             stmt.setString(6, drHoldbackValue);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in createDrHoldbackRange: " + e.getMessage());
+            log.error("SQL Exception in createDrHoldbackRange", e);
             throw e;
         }
         return uniqueId;
@@ -516,11 +545,11 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public List<DrHoldbackRangeOutputDto> getDrHoldbackRangesForDrHoldbackValue(String drHoldbackValue) throws SQLException {
-        try(PreparedStatement stmt = connection.prepareStatement(getRangesForDrHoldbackValueQuery)) {
+        try (PreparedStatement stmt = connection.prepareStatement(getRangesForDrHoldbackValueQuery)) {
             stmt.setString(1, drHoldbackValue);
             ResultSet result = stmt.executeQuery();
             List<DrHoldbackRangeOutputDto> output = new ArrayList<>();
-            while(result.next()) {
+            while (result.next()) {
                 DrHoldbackRangeOutputDto rangeDto = new DrHoldbackRangeOutputDto();
                 rangeDto.setId(result.getLong(DR_HOLDBACK_RANGES_ID));
                 rangeDto.setContentRangeFrom(result.getInt(DR_HOLDBACK_RANGES_CONTENT_FROM));
@@ -532,7 +561,7 @@ public class RightsModuleStorage extends BaseModuleStorage{
             }
             return output;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRangesForDrHoldbackValue: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackRangesForDrHoldbackValue", e);
             throw e;
         }
     }
@@ -544,17 +573,18 @@ public class RightsModuleStorage extends BaseModuleStorage{
      * @throws SQLException
      */
     public void deleteRangesForDrHoldbackValue(String drHoldbackValue) throws SQLException {
-        try(PreparedStatement stmt = connection.prepareStatement(deleteRangesForDrHoldbackValueQuery)) {
+        try (PreparedStatement stmt = connection.prepareStatement(deleteRangesForDrHoldbackValueQuery)) {
             stmt.setString(1, drHoldbackValue);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteRangesForDrHoldbackValue: " + e.getMessage());
+            log.error("SQL Exception in deleteRangesForDrHoldbackValue", e);
             throw e;
         }
     }
 
     /**
      * Create a {@link RestrictedIdOutputDto} from a ResultSet, which should contain all needed values for the DTO
+     *
      * @param resultSet containing values from the backing Rights database
      */
     private RestrictedIdOutputDto createRestrictedIdOutputDtoFromResultSet(ResultSet resultSet) throws SQLException {
@@ -566,8 +596,6 @@ public class RightsModuleStorage extends BaseModuleStorage{
         output.setComment(resultSet.getString(RESTRICTED_ID_COMMENT));
         return output;
     }
-
-  
 }   
 
 
