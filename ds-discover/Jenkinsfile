@@ -161,7 +161,7 @@ pipeline {
                         echo "Triggering: DS-GitHub/${env.BUILD_TO_TRIGGER}/${params.ORIGINAL_BRANCH}"
 
                         build job: "DS-GitHub/${env.BUILD_TO_TRIGGER}/${params.ORIGINAL_BRANCH}",
-                            wait: true // Wait for the pipeline to finish
+                            wait: false // Don't wait for the pipeline to finish
                     }
                 }
             }
