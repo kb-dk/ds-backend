@@ -47,7 +47,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "mvn -s ${env.MVN_SETTINGS} versions:set -DnewVersion=${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT"
+                    sh "mvn -s ${env.MVN_SETTINGS} versions:set -DnewVersion=${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT --non-recursive"
                     echo "Changing MVN version to: ${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT"
                 }
             }
@@ -55,9 +55,9 @@ pipeline {
 
         stage('Build') {
             steps {
-                withMaven(traceability: true) {
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true) {
                     // Execute Maven build
-                    sh "mvn -s ${env.MVN_SETTINGS} clean package"
+                    sh "mvn -s ${env.MVN_SETTINGS} clean package --non-recursive"
                 }
             }
         }
@@ -71,7 +71,7 @@ pipeline {
             }
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true) {
-                    sh "mvn -s ${env.MVN_SETTINGS} clean deploy -DskipTests=true"
+                    sh "mvn -s ${env.MVN_SETTINGS} clean deploy -DskipTests=true --non-recursive"
                 }
             }
         }
