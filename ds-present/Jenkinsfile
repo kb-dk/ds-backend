@@ -6,6 +6,7 @@ pipeline {
     options {
         disableConcurrentBuilds()
 		timeout(time: 25, unit: 'MINUTES')
+		buildDiscarder(logRotator(numToKeepStr: '5'))
     }
 
     environment {
@@ -106,7 +107,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                withMaven(traceability: true) {
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true) {
                     // Execute Maven build
                     sh "mvn -s ${env.MVN_SETTINGS} clean package"
                 }
@@ -140,7 +141,7 @@ pipeline {
                 }
             }
             steps {
-                withMaven(traceability: true) {
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true) {
                     sh "mvn -s ${env.MVN_SETTINGS} clean deploy -DskipTests=true"
                 }
             }
