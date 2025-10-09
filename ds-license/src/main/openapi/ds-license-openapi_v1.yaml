@@ -344,7 +344,7 @@ paths:
             examples:
               DrProductionID:
                 value:
-                  idValue: "test1"
+                  idValue: "12345678"
                   idType: DR_PRODUCTION_ID
                   platform: DRARKIV
                   comment: "Dette er en test"
