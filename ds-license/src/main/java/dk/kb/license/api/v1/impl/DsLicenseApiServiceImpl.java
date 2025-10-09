@@ -3,8 +3,7 @@ package dk.kb.license.api.v1.impl;
 import dk.kb.license.api.v1.DsLicenseApi;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.storage.License;
-import dk.kb.license.storage.PresentationType;
+import dk.kb.license.storage.*;
 import dk.kb.license.validation.LicenseValidator;
 import dk.kb.util.webservice.ImplBase;
 import org.apache.cxf.interceptor.InInterceptors;
@@ -176,5 +175,91 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
         output.setLicenses(userLicenses.getLicenses());
 
         return output;
+    }
+
+    private  AttributeDto convertAttributeToAttributeDto(Attribute attribute) {
+        AttributeDto attributeDto = new AttributeDto();
+        attributeDto.setId(attribute.getId());
+        attributeDto.setAttributeName(attribute.getAttributeName());
+
+        ArrayList<AttributeValueDto> attributeValueDtos = new ArrayList<>();
+        for ( AttributeValue value : attribute.getValues() ){
+            AttributeValueDto attributeValueDto = new AttributeValueDto();
+            attributeValueDto.setId(value.getId());
+            attributeValueDto.setValue(value.getValue());
+            attributeValueDtos.add(attributeValueDto);
+        }
+
+        attributeDto.setValues(attributeValueDtos);
+
+        return attributeDto;
+
+    }
+
+    private AttributeGroupDto convertAttributeGroupToDto(AttributeGroup attributeGroup){
+        AttributeGroupDto attributeGroupDto = new AttributeGroupDto();
+        attributeGroupDto.setId(attributeGroup.getId());
+        attributeGroupDto.setNumber(attributeGroup.getNumber());
+
+        ArrayList<AttributeDto> attributeDtos = new ArrayList<>();
+        attributeGroup.getAttributes().forEach(attribute -> attributeDtos.add(convertAttributeToAttributeDto(attribute)));
+
+        attributeGroupDto.setAttributes(attributeDtos);
+
+        return attributeGroupDto;
+
+    }
+
+    private LicenseContentDto convertLicenseContentToDto(LicenseContent licenseContent) {
+        LicenseContentDto licenseContentDto = new LicenseContentDto();
+        licenseContentDto.setId(licenseContent.getId());
+        licenseContentDto.setName(licenseContent.getName());
+
+        ArrayList<PresentationDto> presentationDtos = new ArrayList<>();
+
+        for ( Presentation presentation : licenseContent.getPresentations() ) {
+            PresentationDto presentationDto = new PresentationDto();
+            presentationDto.setId(presentation.getId());
+            presentationDto.setKey(presentation.getKey());
+
+            presentationDtos.add(presentationDto);
+
+        }
+
+        licenseContentDto.setPresentations(presentationDtos);
+
+        return licenseContentDto;
+
+    }
+
+    @Override
+    public LicenseDto getLicenseById(Long id) {
+        License license = BaseModuleStorage.performStorageAction("getLicense(" + id + ")", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getLicense(id);
+        });
+
+        LicenseDto licenseDto = new LicenseDto();
+        licenseDto.setId(license.getId());
+        licenseDto.setDescriptionDk(license.getDescription_dk());
+        licenseDto.setLicenseName(license.getLicenseName());
+        licenseDto.setDescriptionEn(license.getDescription_en());
+        licenseDto.setLicenseNameEn(license.getLicenseName_en());
+        licenseDto.setValidFrom(license.getValidFrom());
+        licenseDto.setValidTo(license.getValidTo());
+
+        ArrayList<AttributeGroup> attributeGroups = license.getAttributeGroups();
+        ArrayList<AttributeGroupDto> attributeGroupsDto = new ArrayList<>();
+
+        attributeGroups.forEach(attributeGroup -> attributeGroupsDto.add(convertAttributeGroupToDto(attributeGroup)));
+        licenseDto.setAttributeGroups(attributeGroupsDto);
+
+        ArrayList<LicenseContent> licenseContents = license.getLicenseContents();
+        ArrayList<LicenseContentDto> licenseContentDtos = new ArrayList<>();
+
+        licenseContents.forEach(licenseContent -> licenseContentDtos.add(convertLicenseContentToDto(licenseContent)));
+
+        licenseDto.setLicenseContents(licenseContentDtos);
+
+        return licenseDto;
     }
 }
