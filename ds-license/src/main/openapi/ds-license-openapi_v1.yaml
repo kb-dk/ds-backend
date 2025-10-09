@@ -169,6 +169,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
 
+  /getLicenseById:
+    get:
+      summary: return the License with the given id
+      tags:
+        - '${project.name}'
+      operationId: getLicenseById
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          description: Filter on id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Get specific License by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/License'
   # Audit
   /audit/auditEntryById:
     get:
@@ -965,7 +988,7 @@ components:
         values:
           type: array
           items:
-            $ref: '#/components/schemas/AttributeValue'
+            $ref: "#/components/schemas/AttributeValue"
 
     AttributeGroup:
       type: object
@@ -978,7 +1001,7 @@ components:
         attributes:
           type: array
           items:
-            $ref: '#/components/schemas/Attribute'
+            $ref: "#/components/schemas/Attribute"
 
     AttributeType:
       type: object
@@ -1040,11 +1063,11 @@ components:
         attributeGroups:
           type: array
           items:
-            $ref: '#/components/schemas/AttributeGroup'
+            $ref: "#/components/schemas/AttributeGroup"
         licenseContents:
           type: array
           items:
-            $ref: '#/components/schemas/LicenseContent'
+            $ref: "#/components/schemas/LicenseContent"
 
     LicenseContent:
       type: object
@@ -1057,7 +1080,7 @@ components:
         presentations:
           type: array
           items:
-            $ref: '#/components/schemas/Presentation'
+            $ref: "#/components/schemas/Presentation"
 
     PresentationType:
       type: object
@@ -1080,12 +1103,6 @@ components:
           format: int64
         key:
           type: string
-
-
-
-
-            
-
 
     GetUserGroupsAndLicensesInput:
       type: object
