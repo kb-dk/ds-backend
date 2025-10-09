@@ -386,7 +386,7 @@ paths:
 
   /rights/restrictedIds:
     get:
-      summary: "Get restricted id's from idType and platform"
+      summary: "Get restricted ids from idType and platform"
       tags:
         - "DsRights"
       operationId: getAllRestrictedIds
@@ -408,7 +408,7 @@ paths:
             $ref: "#/components/schemas/PlatformEnum"
       responses:
         "200":
-          description: "List of restricted id's"
+          description: "List of restricted ids"
           content:
             application/json:
               schema:
@@ -416,7 +416,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/RestrictedIdOutput"
     post:
-      description: "Create multiple restricted id's"
+      description: "Create multiple restricted ids"
       tags:
         - "DsRights"
       operationId: createRestrictedIds

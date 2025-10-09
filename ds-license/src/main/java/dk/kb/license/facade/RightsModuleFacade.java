@@ -306,12 +306,12 @@ public class RightsModuleFacade {
 
         processedRestrictedIdsOutputDto.setCreatedSuccessfully(createdSuccessfully);
         processedRestrictedIdsOutputDto.setFailedIds(failedIdDtoList);
-        log.info("Successfully added {} restricted id's ", createdSuccessfully);
+        log.info("Successfully added {} restricted ids ", createdSuccessfully);
         return processedRestrictedIdsOutputDto;
     }
 
     /**
-     * Get all restricted id's
+     * Get all restricted ids
      *
      * @param idType   only get restricedIds with this idType
      * @param platform only get retstrictedIds for this platform
