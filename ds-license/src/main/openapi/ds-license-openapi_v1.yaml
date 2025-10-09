@@ -264,77 +264,6 @@ paths:
                 type: array
                 items:
                   type: string
-
-  /rights/restrictedIds:
-    get:
-      summary: get restricted ids from idType and platform
-      tags:
-        - 'DsRights'
-      operationId: getAllRestrictedIds
-      security:
-        - KBOAuth:
-            - any
-      parameters:
-        - name: idType
-          in: query
-          required: true
-          description: Required filter on idType
-          schema:
-            $ref: '#/components/schemas/IdTypeEnum'
-        - name: platform
-          in: query
-          required: true
-          description: Required filter on platform
-          schema:
-            $ref: '#/components/schemas/PlatformEnum'
-      responses:
-        '200':
-          description:
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RestrictedIdOutput'
-    post:
-      description: create multiple restricted ids
-      tags:
-        - 'DsRights'
-      operationId: createRestrictedIds
-      security:
-        - KBOAuth:
-            - any
-      parameters:
-        - name: touchRecord
-          in: query
-          schema:
-            type: boolean
-            default: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/RestrictedIdInput'
-            example:
-              - idValue: "test:multi:1"
-                idType: DS_ID
-                platform: DRARKIV
-                comment: "test multi 2"
-              - idValue: "test:multi:2"
-                idType: DS_ID
-                platform: DRARKIV
-                comment: "test multi 1"
-              - idValue: "test:multi:3"
-                idType: DR_PRODUCTION_ID
-                platform: DRARKIV
-                comment: "test multi 1"
-      responses:
-        '204':
-          description: created
-  
   /rights/restrictedId:
     get:
       tags:
@@ -420,8 +349,12 @@ paths:
                   platform: DRARKIV
                   comment: 'Dette er en test'
       responses:
-        '201':
-          description: created
+        "200":
+          description: "Created restricted id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestrictedIdOutput"
     put:
       summary: Updates comment of restricted id
       tags:
@@ -447,9 +380,79 @@ paths:
                 value:
                   id: '1753788094315'
                   comment: 'Dette er en opdateret kommentar'
+  /rights/restrictedIds:
+    get:
+      summary: "Get restricted id's from idType and platform"
+      tags:
+        - "DsRights"
+      operationId: getAllRestrictedIds
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: idType
+          in: query
+          required: true
+          description: "Required filter on idType"
+          schema:
+            $ref: "#/components/schemas/IdTypeEnum"
+        - name: platform
+          in: query
+          required: true
+          description: "Required filter on platform"
+          schema:
+            $ref: "#/components/schemas/PlatformEnum"
       responses:
-        '201':
-          description: created
+        "200":
+          description: "List of restricted id's"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RestrictedIdOutput"
+    post:
+      description: "Create multiple restricted id's"
+      tags:
+        - "DsRights"
+      operationId: createRestrictedIds
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/RestrictedIdInput"
+            example:
+              - idValue: "test:multi:1"
+                idType: DS_ID
+                platform: DRARKIV
+                comment: "test multi 2"
+              - idValue: "test:multi:2"
+                idType: DS_ID
+                platform: DRARKIV
+                comment: "test multi 1"
+              - idValue: "test:multi:3"
+                idType: DR_PRODUCTION_ID
+                platform: DRARKIV
+                comment: "test multi 1"
+      responses:
+        "200":
+          description: "Status on restricted ids creation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProcessedRestrictedIdsOutput"
 
   /rights/restrictedId/check/dr-arkiv/{dsId}:
     get:
@@ -1166,6 +1169,49 @@ components:
         platform:
           $ref: "#/components/schemas/PlatformEnum"
         comment:
+          type: string
+
+    ProcessedRestrictedIdsOutput:
+      type: object
+      properties:
+        creationStatus:
+          $ref: "#/components/schemas/CreationStatus"
+        createdSuccessfully:
+          type: integer
+        failedIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/FailedId"
+
+    CreationStatus:
+      type: string
+      enum:
+        - success
+        - partial processed
+        - failed
+      x-enum-varnames:
+        - SUCCESS
+        - PARTIAL_PROCESSED
+        - FAILED
+      x-enum-descriptions:
+        - success
+        - partial processed
+        - failed
+
+    FailedId:
+      type: object
+      properties:
+        idValue:
+          type: string
+        idType:
+          $ref: "#/components/schemas/IdTypeEnum"
+        platform:
+          $ref: "#/components/schemas/PlatformEnum"
+        comment:
+          type: string
+        exception:
+          type: string
+        errorMessage:
           type: string
 
     DrHoldbackRuleInput:

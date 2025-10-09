@@ -25,10 +25,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     private final static Logger log = LoggerFactory.getLogger(DsRightsApiServiceImpl.class);
 
     @Override
-    public void createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
+    public RestrictedIdOutputDto createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Creating restricted ID {}", restrictedIdInputDto);
         try {
-            RightsModuleFacade.createRestrictedId(restrictedIdInputDto, touchRecord);
+            return RightsModuleFacade.createRestrictedId(restrictedIdInputDto, touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -97,9 +97,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
+    public ProcessedRestrictedIdsOutputDto createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            RightsModuleFacade.createRestrictedIds(restrictedIds, touchRecord);
+            return RightsModuleFacade.createRestrictedIds(restrictedIds, touchRecord);
         } catch (Exception e) {
             throw handleException(e);
         }

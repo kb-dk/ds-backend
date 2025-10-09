@@ -28,14 +28,6 @@ public class InputValidator {
         }
     }
 
-    public void validateCommentLength(String comment) {
-        if (comment != null && comment.length() > MAX_COMMENT_LENGTH) {
-            final String errorMessage = "Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed.";
-            log.error(errorMessage);
-            throw new InvalidArgumentServiceException(errorMessage);
-        }
-    }
-
     /**
      * Validates DR production id in the given {@link RestrictedIdInputDto}.
      *
@@ -50,6 +42,25 @@ public class InputValidator {
 
         if (drProductionId.length() <= 7) {
             final String errorMessage = "The input DR production ID: " + drProductionId + " should be at least 8 digits";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
+        }
+    }
+
+    /**
+     * Validates that comment is not null, empty or not blank and comment is not too long
+     *
+     * @param comment
+     */
+    public void validateComment(String comment) {
+        if (StringUtils.isBlank(comment)) {
+            final String errorMessage = "Comment cannot be empty";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
+        }
+
+        if (comment.length() > MAX_COMMENT_LENGTH) {
+            final String errorMessage = "Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }
