@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Endpoint POST `/rights/restrictedId` returns a RestrictedIdOutputDto as response instead of void.
+- Endpoint POST `/rights/restrictedIds` don't fail hard if there is an error in request body. Instead, it returns a
+  ProcessedRestrictedIdsOutputDto response that holds information about how many successfully RestrictedIdInputDto
+  objects is created and a list of FailedIdDto that holds information about failed creations of RestrictedIdInputDto objects and
+  their error message.
+- Method `validateCommentLength` has changed name to `validateComment`, and the method now also validates that comment
+  is not blank.
+
 ### Fixed
 
 ## [3.0.1](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.1) 2025-09-01
