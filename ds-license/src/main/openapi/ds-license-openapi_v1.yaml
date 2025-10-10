@@ -1183,10 +1183,10 @@ components:
           $ref: '#/components/schemas/CreationStatus'
         createdSuccessfully:
           type: integer
-        failedIds:
+        failedRestrictedIds:
           type: array
           items:
-            $ref: '#/components/schemas/FailedId'
+            $ref: '#/components/schemas/FailedRestrictedId'
 
     CreationStatus:
       type: string
@@ -1203,7 +1203,7 @@ components:
         - partial processed
         - failed
 
-    FailedId:
+    FailedRestrictedId:
       type: object
       properties:
         idValue:
