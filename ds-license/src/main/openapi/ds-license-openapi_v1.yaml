@@ -1179,16 +1179,16 @@ components:
     ProcessedRestrictedIdsOutput:
       type: object
       properties:
-        creationStatus:
-          $ref: '#/components/schemas/CreationStatus'
-        createdSuccessfully:
+        processStatus:
+          $ref: '#/components/schemas/ProcessStatus'
+        processedSuccessfully:
           type: integer
         failedRestrictedIds:
           type: array
           items:
             $ref: '#/components/schemas/FailedRestrictedId'
 
-    CreationStatus:
+    ProcessStatus:
       type: string
       enum:
         - success

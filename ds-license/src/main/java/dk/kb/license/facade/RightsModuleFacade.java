@@ -252,7 +252,7 @@ public class RightsModuleFacade {
     public static ProcessedRestrictedIdsOutputDto createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, boolean touchDsStorageRecord) {
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = new ProcessedRestrictedIdsOutputDto();
         List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
-        int createdSuccessfully = 0;
+        int processedSuccessfully = 0;
 
         for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
             log.debug("Adding restricted id type='{}' with value='{}'", restrictedIdInputDto.getIdType(), restrictedIdInputDto.getIdValue());
@@ -281,7 +281,7 @@ public class RightsModuleFacade {
                 });
 
                 // If no exception was thrown, we know that the restriction was created
-                createdSuccessfully++;
+                processedSuccessfully++;
 
             } catch (Exception exception) { // need to catch every exception that could be thrown
                 log.error("Failed to add restricted id for idValue: {}, idType: {}, platform: {}, comment: {}, exception: ", restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getComment(), exception);
@@ -294,17 +294,17 @@ public class RightsModuleFacade {
         }
 
         // Need to start with this, for not getting wrongly PARTIAL_PROCESSED
-        if (createdSuccessfully == 0 || restrictedIds.size() == failedRestrictedIdDtoList.size()) {
-            processedRestrictedIdsOutputDto.setCreationStatus(CreationStatusDto.FAILED);
+        if (processedSuccessfully == 0 || restrictedIds.size() == failedRestrictedIdDtoList.size()) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.FAILED);
         } else if (failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setCreationStatus(CreationStatusDto.SUCCESS);
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.SUCCESS);
         } else if (!failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setCreationStatus(CreationStatusDto.PARTIAL_PROCESSED);
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.PARTIAL_PROCESSED);
         }
 
-        processedRestrictedIdsOutputDto.setCreatedSuccessfully(createdSuccessfully);
+        processedRestrictedIdsOutputDto.setProcessedSuccessfully(processedSuccessfully);
         processedRestrictedIdsOutputDto.setFailedRestrictedIds(failedRestrictedIdDtoList);
-        log.info("Successfully added {} restricted ids ", createdSuccessfully);
+        log.info("Successfully added {} restricted ids ", processedSuccessfully);
         return processedRestrictedIdsOutputDto;
     }
 

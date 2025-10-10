@@ -214,7 +214,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createRestrictedIds_whenAllRestrictedIdInputDtoHasErrors_thenCreationStatusDtoIsFailedAndFailedIdsList() throws SQLException {
+    public void createRestrictedIds_whenAllRestrictedIdInputDtoHasErrors_thenProcessStatusDtoIsFailedAndFailedIdsList() throws SQLException {
         // Arrange
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
         restrictedIdInputDto.setIdValue("4b35ee6f-b7d3-4fee-8936-a067b42eb9ef");
@@ -231,8 +231,8 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
-        assertEquals(CreationStatusDto.FAILED, processedRestrictedIdsOutputDto.getCreationStatus());
-        assertEquals(0, processedRestrictedIdsOutputDto.getCreatedSuccessfully());
+        assertEquals(ProcessStatusDto.FAILED, processedRestrictedIdsOutputDto.getProcessStatus());
+        assertEquals(0, processedRestrictedIdsOutputDto.getProcessedSuccessfully());
         assertEquals(1, processedRestrictedIdsOutputDto.getFailedRestrictedIds().size());
         assertEquals(restrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(restrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
@@ -246,7 +246,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createRestrictedIds_whenInvalidDrProductionId_thenCreationStatusDtoIsFailedAndFailedIdsList() throws SQLException {
+    public void createRestrictedIds_whenInvalidDrProductionId_thenProcessStatusDtoIsFailedAndFailedIdsList() throws SQLException {
         // Arrange
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
         restrictedIdInputDto.setIdValue("1234567");
@@ -263,8 +263,8 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
-        assertEquals(CreationStatusDto.FAILED, processedRestrictedIdsOutputDto.getCreationStatus());
-        assertEquals(0, processedRestrictedIdsOutputDto.getCreatedSuccessfully());
+        assertEquals(ProcessStatusDto.FAILED, processedRestrictedIdsOutputDto.getProcessStatus());
+        assertEquals(0, processedRestrictedIdsOutputDto.getProcessedSuccessfully());
         assertEquals(1, processedRestrictedIdsOutputDto.getFailedRestrictedIds().size());
         assertEquals(restrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(restrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
@@ -278,7 +278,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createRestrictedIds_whenCommentIsNull_thenCreationStatusDtoIsFailedAndFailedIdsList() throws SQLException {
+    public void createRestrictedIds_whenCommentIsNull_thenProcessStatusDtoIsFailedAndFailedIdsList() throws SQLException {
         // Arrange
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
         restrictedIdInputDto.setIdValue("ds.tv:oai:io:4b35ee6f-b7d3-4fee-8936-a067b42eb9ef");
@@ -295,8 +295,8 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
-        assertEquals(CreationStatusDto.FAILED, processedRestrictedIdsOutputDto.getCreationStatus());
-        assertEquals(0, processedRestrictedIdsOutputDto.getCreatedSuccessfully());
+        assertEquals(ProcessStatusDto.FAILED, processedRestrictedIdsOutputDto.getProcessStatus());
+        assertEquals(0, processedRestrictedIdsOutputDto.getProcessedSuccessfully());
         assertEquals(1, processedRestrictedIdsOutputDto.getFailedRestrictedIds().size());
         assertEquals(restrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(restrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
@@ -310,7 +310,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createRestrictedIds_whenValidRestrictedIdsList_thenCreationStatusDtoIsSuccessAndEmptyFailedIdsList() throws SQLException {
+    public void createRestrictedIds_whenValidRestrictedIdsList_thenProcessStatusDtoIsSuccessAndEmptyFailedIdsList() throws SQLException {
         // Arrange
         String dsId = "ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111";
         String drProductionId = "12345678";
@@ -338,8 +338,8 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
-        assertEquals(CreationStatusDto.SUCCESS, processedRestrictedIdsOutputDto.getCreationStatus());
-        assertEquals(2, processedRestrictedIdsOutputDto.getCreatedSuccessfully());
+        assertEquals(ProcessStatusDto.SUCCESS, processedRestrictedIdsOutputDto.getProcessStatus());
+        assertEquals(2, processedRestrictedIdsOutputDto.getProcessedSuccessfully());
         assertTrue(processedRestrictedIdsOutputDto.getFailedRestrictedIds().isEmpty());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
@@ -363,7 +363,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createRestrictedIds_whenValidAndInvalidDsId_thenCreationStatusDtoIsPartialProcessedAndFailedIdsList() throws SQLException {
+    public void createRestrictedIds_whenValidAndInvalidDsId_thenProcessStatusDtoIsPartialProcessedAndFailedIdsList() throws SQLException {
         // Arrange
         String validDsId = "ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111";
         String comment = "Brugeren har trukket deres samtykke tilbage";
@@ -390,8 +390,8 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
-        assertEquals(CreationStatusDto.PARTIAL_PROCESSED, processedRestrictedIdsOutputDto.getCreationStatus());
-        assertEquals(1, processedRestrictedIdsOutputDto.getCreatedSuccessfully());
+        assertEquals(ProcessStatusDto.PARTIAL_PROCESSED, processedRestrictedIdsOutputDto.getProcessStatus());
+        assertEquals(1, processedRestrictedIdsOutputDto.getProcessedSuccessfully());
         assertEquals(1, processedRestrictedIdsOutputDto.getFailedRestrictedIds().size());
         assertEquals(invalidRestrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(invalidRestrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
@@ -412,7 +412,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createRestrictedIds_whenAlreadyExistingRestrictedId_thenCreationStatusDtoIsPartialProcessedAndFailedIdsList() throws SQLException {
+    public void createRestrictedIds_whenAlreadyExistingRestrictedId_thenProcessStatusDtoIsPartialProcessedAndFailedIdsList() throws SQLException {
         // Arrange
         String validDsId = "ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111";
         String comment = "Brugeren har trukket deres samtykke tilbage";
@@ -439,8 +439,8 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
-        assertEquals(CreationStatusDto.PARTIAL_PROCESSED, processedRestrictedIdsOutputDto.getCreationStatus());
-        assertEquals(1, processedRestrictedIdsOutputDto.getCreatedSuccessfully());
+        assertEquals(ProcessStatusDto.PARTIAL_PROCESSED, processedRestrictedIdsOutputDto.getProcessStatus());
+        assertEquals(1, processedRestrictedIdsOutputDto.getProcessedSuccessfully());
         assertEquals(1, processedRestrictedIdsOutputDto.getFailedRestrictedIds().size());
         assertEquals(duplicatedRestrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(duplicatedRestrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
