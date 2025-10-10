@@ -273,4 +273,33 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
         licenseIds.forEach(licenseId -> licenseDtos.add(getLicenseById(licenseId.getId())));
         return licenseDtos;
     }
+
+    @Override
+    public PresentationTypeDto getPresentationTypeById(Long id){
+
+        PresentationType presentationType = BaseModuleStorage.performStorageAction("getPresentationTypeById()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getPresentationTypeById(id);
+        });
+
+        PresentationTypeDto presentationTypeDto = new PresentationTypeDto();
+
+        presentationTypeDto.setId(presentationType.getId());
+        presentationTypeDto.setKey(presentationType.getKey());
+        presentationTypeDto.setValueEn(presentationType.getValue_en());
+        presentationTypeDto.setValueDk(presentationType.getValue_dk());
+
+        return presentationTypeDto;
+    }
+
+    @Override
+    public ArrayList<PresentationTypeDto> getPresentationTypes(){
+        ArrayList<PresentationType> presentationTypes = BaseModuleStorage.performStorageAction("getLicensePresentationTypes()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getLicensePresentationTypes();
+        });
+
+        ArrayList<PresentationTypeDto> presentationTypeDtos = new ArrayList<>();
+        presentationTypes.forEach(presentationType -> presentationTypeDtos.add(getPresentationTypeById(presentationType.getId())));
+
+        return presentationTypeDtos;
+    }
 }

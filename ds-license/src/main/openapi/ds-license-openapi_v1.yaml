@@ -211,6 +211,49 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/License'
+
+  /getPresentationTypeById:
+    get:
+      summary: return the PresentationType with the given id
+      tags:
+        - '${project.name}'
+      operationId: getPresentationTypeById
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          description: Filter on id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Get specific PresentationType by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationType'
+
+  /getPresentationTypes:
+    get:
+      summary: return all PresentationTypes
+      tags:
+        - '${project.name}'
+      operationId: getPresentationTypes
+      security:
+        - KBOAuth:
+            - any
+      responses:
+        '200':
+          description: Get all PresentationTypes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PresentationType'
   # Audit
   /audit/auditEntryById:
     get:
