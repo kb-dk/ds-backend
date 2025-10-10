@@ -262,4 +262,15 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
 
         return licenseDto;
     }
+
+    @Override
+    public ArrayList<LicenseDto> getLicenses(){
+        ArrayList<License> licenseIds = BaseModuleStorage.performStorageAction("getAllLicenseNames()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getAllLicenseNames();
+        });
+
+        ArrayList<LicenseDto> licenseDtos = new ArrayList<>();
+        licenseIds.forEach(licenseId -> licenseDtos.add(getLicenseById(licenseId.getId())));
+        return licenseDtos;
+    }
 }
