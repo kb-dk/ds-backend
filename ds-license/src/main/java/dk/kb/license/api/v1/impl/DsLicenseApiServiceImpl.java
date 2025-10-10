@@ -2,6 +2,8 @@ package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.DsLicenseApi;
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.facade.AuditFacade;
+import dk.kb.license.facade.LicenseModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.*;
 import dk.kb.license.validation.LicenseValidator;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ds-license by the Royal Danish Library
@@ -177,129 +180,44 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
         return output;
     }
 
-    private  AttributeDto convertAttributeToAttributeDto(Attribute attribute) {
-        AttributeDto attributeDto = new AttributeDto();
-        attributeDto.setId(attribute.getId());
-        attributeDto.setAttributeName(attribute.getAttributeName());
-
-        ArrayList<AttributeValueDto> attributeValueDtos = new ArrayList<>();
-        for ( AttributeValue value : attribute.getValues() ){
-            AttributeValueDto attributeValueDto = new AttributeValueDto();
-            attributeValueDto.setId(value.getId());
-            attributeValueDto.setValue(value.getValue());
-            attributeValueDtos.add(attributeValueDto);
-        }
-
-        attributeDto.setValues(attributeValueDtos);
-
-        return attributeDto;
-
-    }
-
-    private AttributeGroupDto convertAttributeGroupToDto(AttributeGroup attributeGroup){
-        AttributeGroupDto attributeGroupDto = new AttributeGroupDto();
-        attributeGroupDto.setId(attributeGroup.getId());
-        attributeGroupDto.setNumber(attributeGroup.getNumber());
-
-        ArrayList<AttributeDto> attributeDtos = new ArrayList<>();
-        attributeGroup.getAttributes().forEach(attribute -> attributeDtos.add(convertAttributeToAttributeDto(attribute)));
-
-        attributeGroupDto.setAttributes(attributeDtos);
-
-        return attributeGroupDto;
-
-    }
-
-    private LicenseContentDto convertLicenseContentToDto(LicenseContent licenseContent) {
-        LicenseContentDto licenseContentDto = new LicenseContentDto();
-        licenseContentDto.setId(licenseContent.getId());
-        licenseContentDto.setName(licenseContent.getName());
-
-        ArrayList<PresentationDto> presentationDtos = new ArrayList<>();
-
-        for ( Presentation presentation : licenseContent.getPresentations() ) {
-            PresentationDto presentationDto = new PresentationDto();
-            presentationDto.setId(presentation.getId());
-            presentationDto.setKey(presentation.getKey());
-
-            presentationDtos.add(presentationDto);
-
-        }
-
-        licenseContentDto.setPresentations(presentationDtos);
-
-        return licenseContentDto;
-
-    }
-
     @Override
     public LicenseDto getLicenseById(Long id) {
-        License license = BaseModuleStorage.performStorageAction("getLicense(" + id + ")", LicenseModuleStorage.class, storage -> {
-            return ((LicenseModuleStorage) storage).getLicense(id);
-        });
-
-        LicenseDto licenseDto = new LicenseDto();
-        licenseDto.setId(license.getId());
-        licenseDto.setDescriptionDk(license.getDescription_dk());
-        licenseDto.setLicenseName(license.getLicenseName());
-        licenseDto.setDescriptionEn(license.getDescription_en());
-        licenseDto.setLicenseNameEn(license.getLicenseName_en());
-        licenseDto.setValidFrom(license.getValidFrom());
-        licenseDto.setValidTo(license.getValidTo());
-
-        ArrayList<AttributeGroup> attributeGroups = license.getAttributeGroups();
-        ArrayList<AttributeGroupDto> attributeGroupsDto = new ArrayList<>();
-
-        attributeGroups.forEach(attributeGroup -> attributeGroupsDto.add(convertAttributeGroupToDto(attributeGroup)));
-        licenseDto.setAttributeGroups(attributeGroupsDto);
-
-        ArrayList<LicenseContent> licenseContents = license.getLicenseContents();
-        ArrayList<LicenseContentDto> licenseContentDtos = new ArrayList<>();
-
-        licenseContents.forEach(licenseContent -> licenseContentDtos.add(convertLicenseContentToDto(licenseContent)));
-
-        licenseDto.setLicenseContents(licenseContentDtos);
-
-        return licenseDto;
+        try {
+            LicenseDto result = LicenseModuleFacade.getLicenseById(id);
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 
     @Override
-    public ArrayList<LicenseDto> getLicenses(){
-        ArrayList<License> licenseIds = BaseModuleStorage.performStorageAction("getAllLicenseNames()", LicenseModuleStorage.class, storage -> {
-            return ((LicenseModuleStorage) storage).getAllLicenseNames();
-        });
-
-        ArrayList<LicenseDto> licenseDtos = new ArrayList<>();
-        licenseIds.forEach(licenseId -> licenseDtos.add(getLicenseById(licenseId.getId())));
-        return licenseDtos;
+    public ArrayList<LicenseDto> getLicenses() {
+        try {
+            ArrayList<LicenseDto> result = LicenseModuleFacade.getLicenses();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 
     @Override
-    public PresentationTypeDto getPresentationTypeById(Long id){
-
-        PresentationType presentationType = BaseModuleStorage.performStorageAction("getPresentationTypeById()", LicenseModuleStorage.class, storage -> {
-            return ((LicenseModuleStorage) storage).getPresentationTypeById(id);
-        });
-
-        PresentationTypeDto presentationTypeDto = new PresentationTypeDto();
-
-        presentationTypeDto.setId(presentationType.getId());
-        presentationTypeDto.setKey(presentationType.getKey());
-        presentationTypeDto.setValueEn(presentationType.getValue_en());
-        presentationTypeDto.setValueDk(presentationType.getValue_dk());
-
-        return presentationTypeDto;
+    public PresentationTypeDto getPresentationTypeById(Long id) {
+        try {
+            PresentationTypeDto result = LicenseModuleFacade.getPresentationTypeById(id);
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 
     @Override
-    public ArrayList<PresentationTypeDto> getPresentationTypes(){
-        ArrayList<PresentationType> presentationTypes = BaseModuleStorage.performStorageAction("getLicensePresentationTypes()", LicenseModuleStorage.class, storage -> {
-            return ((LicenseModuleStorage) storage).getLicensePresentationTypes();
-        });
-
-        ArrayList<PresentationTypeDto> presentationTypeDtos = new ArrayList<>();
-        presentationTypes.forEach(presentationType -> presentationTypeDtos.add(getPresentationTypeById(presentationType.getId())));
-
-        return presentationTypeDtos;
+    public ArrayList<PresentationTypeDto> getPresentationTypes() {
+        try {
+            ArrayList<PresentationTypeDto> result = LicenseModuleFacade.getPresentationTypes();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
+
 }
