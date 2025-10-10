@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
 
-import dk.kb.license.model.v1.AuditEntryOutputDto;
-import dk.kb.license.model.v1.ChangeTypeEnumDto;
-import dk.kb.license.model.v1.ObjectTypeEnumDto;
+import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -335,7 +333,7 @@ public class LicenseModuleFacade {
             return ((LicenseModuleStorage) storage).getAllLicenseNames();
         });                    
     }
-    
+
 
     
     /**
@@ -347,5 +345,127 @@ public class LicenseModuleFacade {
         return BaseModuleStorage.performStorageAction("getLicense(" + licenseId + ")", LicenseModuleStorage.class, storage -> {
             return ((LicenseModuleStorage) storage).getLicense(licenseId);
         });           
+    }
+
+    private static AttributeDto convertAttributeToAttributeDto(Attribute attribute) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        AttributeDto attributeDto = new AttributeDto();
+        attributeDto.setId(attribute.getId());
+        attributeDto.setAttributeName(attribute.getAttributeName());
+
+        ArrayList<AttributeValueDto> attributeValueDtos = new ArrayList<>();
+        for ( AttributeValue value : attribute.getValues() ){
+            AttributeValueDto attributeValueDto = new AttributeValueDto();
+            attributeValueDto.setId(value.getId());
+            attributeValueDto.setValue(value.getValue());
+            attributeValueDtos.add(attributeValueDto);
+        }
+
+        attributeDto.setValues(attributeValueDtos);
+
+        return attributeDto;
+
+    }
+
+    private static AttributeGroupDto convertAttributeGroupToDto(AttributeGroup attributeGroup){ //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        AttributeGroupDto attributeGroupDto = new AttributeGroupDto();
+        attributeGroupDto.setId(attributeGroup.getId());
+        attributeGroupDto.setNumber(attributeGroup.getNumber());
+
+        ArrayList<AttributeDto> attributeDtos = new ArrayList<>();
+        attributeGroup.getAttributes().forEach(attribute -> attributeDtos.add(convertAttributeToAttributeDto(attribute)));
+
+        attributeGroupDto.setAttributes(attributeDtos);
+
+        return attributeGroupDto;
+
+    }
+
+    private static LicenseContentDto convertLicenseContentToDto(LicenseContent licenseContent) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        LicenseContentDto licenseContentDto = new LicenseContentDto();
+        licenseContentDto.setId(licenseContent.getId());
+        licenseContentDto.setName(licenseContent.getName());
+
+        ArrayList<PresentationDto> presentationDtos = new ArrayList<>();
+
+        for ( Presentation presentation : licenseContent.getPresentations() ) {
+            PresentationDto presentationDto = new PresentationDto();
+            presentationDto.setId(presentation.getId());
+            presentationDto.setKey(presentation.getKey());
+
+            presentationDtos.add(presentationDto);
+
+        }
+
+        licenseContentDto.setPresentations(presentationDtos);
+
+        return licenseContentDto;
+
+    }
+
+    public static LicenseDto getLicenseById(Long id) {
+        License license = BaseModuleStorage.performStorageAction("getLicense(" + id + ")", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getLicense(id);
+        });
+
+        LicenseDto licenseDto = new LicenseDto();
+        licenseDto.setId(license.getId());
+        licenseDto.setDescriptionDk(license.getDescription_dk());
+        licenseDto.setLicenseName(license.getLicenseName());
+        licenseDto.setDescriptionEn(license.getDescription_en());
+        licenseDto.setLicenseNameEn(license.getLicenseName_en());
+        licenseDto.setValidFrom(license.getValidFrom());
+        licenseDto.setValidTo(license.getValidTo());
+
+        ArrayList<AttributeGroup> attributeGroups = license.getAttributeGroups();
+        ArrayList<AttributeGroupDto> attributeGroupsDto = new ArrayList<>();
+
+        attributeGroups.forEach(attributeGroup -> attributeGroupsDto.add(convertAttributeGroupToDto(attributeGroup)));
+        licenseDto.setAttributeGroups(attributeGroupsDto);
+
+        ArrayList<LicenseContent> licenseContents = license.getLicenseContents();
+        ArrayList<LicenseContentDto> licenseContentDtos = new ArrayList<>();
+
+        licenseContents.forEach(licenseContent -> licenseContentDtos.add(convertLicenseContentToDto(licenseContent)));
+
+        licenseDto.setLicenseContents(licenseContentDtos);
+
+        return licenseDto;
+    }
+
+    public static ArrayList<LicenseDto> getLicenses(){
+        ArrayList<License> licenseIds = BaseModuleStorage.performStorageAction("getAllLicenseNames()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getAllLicenseNames();
+        });
+
+        ArrayList<LicenseDto> licenseDtos = new ArrayList<>();
+        licenseIds.forEach(licenseId -> licenseDtos.add(getLicenseById(licenseId.getId())));
+        return licenseDtos;
+    }
+
+    public static PresentationTypeDto getPresentationTypeById(Long id){
+
+        PresentationType presentationType = BaseModuleStorage.performStorageAction("getPresentationTypeById()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getPresentationTypeById(id);
+        });
+
+        PresentationTypeDto presentationTypeDto = new PresentationTypeDto();
+
+        presentationTypeDto.setId(presentationType.getId());
+        presentationTypeDto.setKey(presentationType.getKey());
+        presentationTypeDto.setValueEn(presentationType.getValue_en());
+        presentationTypeDto.setValueDk(presentationType.getValue_dk());
+
+        return presentationTypeDto;
+    }
+
+    public static ArrayList<PresentationTypeDto> getPresentationTypes(){
+        ArrayList<PresentationType> presentationTypes = BaseModuleStorage.performStorageAction("getLicensePresentationTypes()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getLicensePresentationTypes();
+        });
+
+        ArrayList<PresentationTypeDto> presentationTypeDtos = new ArrayList<>();
+        presentationTypes.forEach(presentationType -> presentationTypeDtos.add(getPresentationTypeById(presentationType.getId())));
+
+        return presentationTypeDtos;
     }
 }
