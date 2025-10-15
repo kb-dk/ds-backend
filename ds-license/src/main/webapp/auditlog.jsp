@@ -6,11 +6,12 @@
      dk.kb.license.storage.AuditLogEntry,
      dk.kb.license.storage.BaseModuleStorage,
      dk.kb.license.facade.LicenseModuleFacade"%>
+<%@ page import="dk.kb.license.facade.AuditLogModuleFacade" %>
 
 <%@ include file="check_gui_enabled.jsp" %>
 
 <%
-ArrayList<AuditEntryOutputDto> logs = LicenseModuleFacade.getAllAuditLogs();
+ArrayList<AuditEntryOutputDto> logs = AuditLogModuleFacade.getAllAuditLogs();
    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 %>
   <table class="table table-condensed table-hover">

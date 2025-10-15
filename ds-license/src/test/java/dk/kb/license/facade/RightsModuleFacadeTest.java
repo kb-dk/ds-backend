@@ -4,7 +4,7 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
+import dk.kb.license.storage.UnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
 import dk.kb.license.util.H2DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
@@ -37,7 +37,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
+public class RightsModuleFacadeTest extends UnitTestUtil {
     protected static RightsModuleStorageForUnitTest storage = null;
 
     final String drHoldBackValue = "2.02";

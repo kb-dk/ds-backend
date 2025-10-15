@@ -1,6 +1,5 @@
 package dk.kb.license.rights;
 
-import dk.kb.license.Util;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.IdTypeEnumDto;
@@ -8,10 +7,9 @@ import dk.kb.license.model.v1.PlatformEnumDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
+import dk.kb.license.storage.UnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
 import dk.kb.license.util.H2DbUtil;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RightsCalculationTest extends DsLicenseUnitTestUtil {
+public class RightsCalculationTest extends UnitTestUtil {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculationTest.class);
 
     @BeforeAll

@@ -26,37 +26,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
-/*
+/**
  * Unittest class for the H2Storage.
- * All tests creates and use H2 database in the directory: target/h2
- *
+ * All tests create and use H2 database in the directory: target/h2
  * The directory will be deleted before the first test-method is called.
  * Each test-method will delete all entries in the database, but keep the database tables.
- *
- * Currently the directory is not deleted after the tests have run. This is useful as you can
+ * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class BaseModuleStorageTest extends DsLicenseUnitTestUtil {
+public class BaseModuleStorageTest extends UnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(BaseModuleStorageTest.class);
 
     protected static LicenseModuleStorageForUnitTest storage = null;
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
-
         ServiceConfig.initialize("conf/ds-license*.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/audit_log_module_create_h2_unittest.ddl"));
         storage = new LicenseModuleStorageForUnitTest();
     }
 
-    /*
+    /**
      * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module
      * The facade class is reponsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
-        ArrayList<String> tables = new ArrayList<String>();
+        List<String> tables = new ArrayList<>();
         tables.add("AUDITLOG");
         storage.clearTableRecords(tables);
     }

@@ -4,10 +4,7 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.AuditEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
-import dk.kb.license.storage.LicenseModuleStorage;
-import dk.kb.license.storage.LicenseModuleStorageTest;
+import dk.kb.license.storage.*;
 import dk.kb.license.util.H2DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
@@ -29,9 +26,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
-    protected static LicenseModuleStorage storage = null;
-    private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
+public class LicenseModuleFacadeTest extends UnitTestUtil {
+    protected static LicenseModuleStorageForUnitTest storage = null;
+    private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTest.class);
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
@@ -40,7 +37,7 @@ public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
-        storage = new LicenseModuleStorage();
+        storage = new LicenseModuleStorageForUnitTest();
     }
 
     @Test

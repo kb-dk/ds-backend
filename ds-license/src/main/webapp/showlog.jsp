@@ -5,13 +5,13 @@
      java.text.SimpleDateFormat,
      dk.kb.license.storage.*,
      dk.kb.license.Util,    
-     dk.kb.license.facade.AuditFacade"%>
+     dk.kb.license.facade.AuditLogModuleFacade"%>
 
 <%@ include file="check_gui_enabled.jsp" %>
 
     <%
         String auditId = request.getParameter("auditlogId");   
-         AuditEntryOutputDto log = AuditFacade.getAuditEntryById(Long.parseLong(auditId));
+         AuditEntryOutputDto log = AuditLogModuleFacade.getAuditEntryById(Long.parseLong(auditId));
          SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
          int i =0;
          String textBefore= log.getTextBefore(); 

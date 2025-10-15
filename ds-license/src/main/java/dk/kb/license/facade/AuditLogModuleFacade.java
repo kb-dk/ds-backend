@@ -1,13 +1,12 @@
 package dk.kb.license.facade;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dk.kb.license.model.v1.AuditEntryOutputDto;
-import dk.kb.license.storage.AuditLogEntry;
-import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.LicenseModuleStorage;
+import dk.kb.license.storage.*;
 
-public class AuditFacade {
+public class AuditLogModuleFacade {
 
     /**
      * Retrieves a {@link AuditLogEntry} by id
@@ -18,10 +17,10 @@ public class AuditFacade {
      */
     public static AuditEntryOutputDto getAuditEntryById(Long auditLogId) {
         return BaseModuleStorage.performStorageAction("getAuditEntries()", LicenseModuleStorage.class, storage -> {
-             return ((LicenseModuleStorage) storage).getAuditLogById(auditLogId);
-         });                
+             return storage.getAuditLogById(auditLogId);
+         });
      }
-    
+
     /**
      * Retrieves a list of all {@link AuditLogEntry} related to a given object.
      *
@@ -30,7 +29,17 @@ public class AuditFacade {
      */
     public static List<AuditEntryOutputDto> getAuditEntriesByObjectId(Long objectId) {
         return BaseModuleStorage.performStorageAction("getAuditLogByObjectId()", LicenseModuleStorage.class, storage -> {
-             return ((LicenseModuleStorage) storage).getAuditLogByObjectId(objectId);
-         });                
+             return storage.getAuditLogByObjectId(objectId);
+         });
      }
+
+     /**
+     * Get a list of all defined {@link GroupType}s.
+     * @return List of all GroupTypes define in this instance of LicenseModule
+     */
+    public static ArrayList<AuditEntryOutputDto> getAllAuditLogs() {
+        return BaseModuleStorage.performStorageAction("getAllAuditLogs()", LicenseModuleStorage.class, storage -> {
+            return storage.getAllAudit();
+        });
+    }
 }

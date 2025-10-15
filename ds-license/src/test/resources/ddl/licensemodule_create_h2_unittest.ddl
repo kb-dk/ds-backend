@@ -96,7 +96,3 @@ CREATE TABLE IF NOT EXISTS auditlog (
 
 CREATE UNIQUE INDEX IF NOT EXISTS auditlog_id_in ON auditlog(id);
 CREATE INDEX IF NOT EXISTS auditlog_objectid_in ON auditlog(objectid);
-
-
-
-

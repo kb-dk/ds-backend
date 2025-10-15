@@ -17,28 +17,32 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
-
+/**
+ * Unittest class for the H2Storage.
+ * All tests create and use H2 database in the directory: target/h2
+ * The directory will be deleted before the first test-method is called.
+ * Each test-method will delete all entries in the database, but keep the database tables.
+ * Currently, the directory is not deleted after the tests have run. This is useful as you can
+ * open and open the database and see what the unit-tests did.
+ */
+public class RightsModuleStorageTest extends UnitTestUtil {
     protected static RightsModuleStorageForUnitTest storage = null;
-
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
-
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-
         H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
         storage = new RightsModuleStorageForUnitTest();
     }
 
-    /*
+    /**
      * Delete all records between each unittest. The clearTableRecords is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
-        ArrayList<String> tables = new ArrayList<>();
+        List<String> tables = new ArrayList<>();
         tables.add("RESTRICTED_IDS");
         tables.add("DR_HOLDBACK_RANGES");
         tables.add("DR_HOLDBACK_RULES");
@@ -194,5 +198,4 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
         assertEquals(PlatformEnumDto.DRARKIV, result.getPlatform());
 
     }
-
 }

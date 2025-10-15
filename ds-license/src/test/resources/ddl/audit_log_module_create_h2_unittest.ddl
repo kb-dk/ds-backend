@@ -1,4 +1,4 @@
-CREATE TABLE auditlog (
+CREATE TABLE IF NOT EXISTS auditlog (
     id            BIGINT PRIMARY KEY,
     objectid      BIGINT       NOT NULL,
     modifiedtime  BIGINT       NOT NULL,
@@ -11,5 +11,5 @@ CREATE TABLE auditlog (
     textafter     VARCHAR(65535)
 );
 
-CREATE UNIQUE INDEX auditlog_id_in ON auditlog(id);
-CREATE INDEX auditlog_objectid_in ON auditlog(objectid);
+CREATE UNIQUE INDEX IF NOT EXISTS auditlog_id_in ON auditlog(id);
+CREATE INDEX IF NOT EXISTS auditlog_objectid_in ON auditlog(objectid);
