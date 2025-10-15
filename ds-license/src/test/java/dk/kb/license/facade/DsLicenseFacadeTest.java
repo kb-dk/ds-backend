@@ -73,6 +73,17 @@ public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
             AuditEntryOutputDto updateAuditLog = auditLogEntriesForObject.get(1);
             AuditEntryOutputDto deleteAuditLog = auditLogEntriesForObject.get(0);
 
+            assertEquals(presentationTypeId, createAuditLog.getObjectId());
+            assertEquals(presentationTypeId, updateAuditLog.getObjectId());
+            assertEquals(presentationTypeId, deleteAuditLog.getObjectId());
+
+            assertTrue(createAuditLog.getModifiedTime() < updateAuditLog.getModifiedTime());
+            assertTrue(updateAuditLog.getModifiedTime() < deleteAuditLog.getModifiedTime());
+
+            assertEquals("mockedName", createAuditLog.getUserName());
+            assertEquals("mockedName", updateAuditLog.getUserName());
+            assertEquals("mockedName", deleteAuditLog.getUserName());
+
             assertEquals(ChangeTypeEnumDto.CREATE, createAuditLog.getChangeType());
             assertEquals(ChangeTypeEnumDto.UPDATE, updateAuditLog.getChangeType());
             assertEquals(ChangeTypeEnumDto.DELETE, deleteAuditLog.getChangeType());
@@ -80,6 +91,14 @@ public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
             assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, createAuditLog.getChangeName());
             assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, updateAuditLog.getChangeName());
             assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, deleteAuditLog.getChangeName());
+
+            assertEquals("keyAuditTest", createAuditLog.getIdentifier());
+            assertEquals("keyAuditTest", updateAuditLog.getIdentifier());
+            assertEquals("keyAuditTest", deleteAuditLog.getIdentifier());
+
+            assertNull(createAuditLog.getChangeComment());
+            assertNull(updateAuditLog.getChangeComment());
+            assertNull(deleteAuditLog.getChangeComment());
 
             assertNull(createAuditLog.getTextBefore());
             //TODO: This should be fixed together with: DRA-2085
@@ -90,21 +109,6 @@ public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
             assertEquals("PresentationType value DK/En:unit_test_value / unit_test_value_en\n", createAuditLog.getTextAfter());
             assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", updateAuditLog.getTextAfter()); //Tjek op på det
             assertNull(deleteAuditLog.getTextAfter());
-
-            assertEquals("mockedName", createAuditLog.getUserName());
-            assertEquals("mockedName", updateAuditLog.getUserName());
-            assertEquals("mockedName", deleteAuditLog.getUserName());
-
-            assertEquals("keyAuditTest", createAuditLog.getChangeComment());
-            assertEquals("keyAuditTest", updateAuditLog.getChangeComment());
-            assertEquals("keyAuditTest", deleteAuditLog.getChangeComment());
-
-            assertEquals(presentationTypeId, createAuditLog.getObjectId());
-            assertEquals(presentationTypeId, updateAuditLog.getObjectId());
-            assertEquals(presentationTypeId, deleteAuditLog.getObjectId());
-
-            assertTrue(createAuditLog.getModifiedTime() < updateAuditLog.getModifiedTime());
-            assertTrue(updateAuditLog.getModifiedTime() < deleteAuditLog.getModifiedTime());
         }
     }
 }

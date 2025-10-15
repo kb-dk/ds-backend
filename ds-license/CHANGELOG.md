@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Moved audit log ddl from `licensemodule_create_db.ddl` to `audit_log_module_create_db.ddl`
+- Changed column `changecomment` to `identifier` and added a new column named `changecomment` in table `auditlog`
+  (**Remember: migration for OPS to be found in `audit_log_module_column_name_change.ddl`**)
+- Changed code to use `identifier` and `changecomment`
+
 ### Fixed
 
 ## [3.0.1](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.1) 2025-09-01

@@ -1119,6 +1119,8 @@ components:
           $ref: "#/components/schemas/ChangeTypeEnum"
         changeName:
           $ref: "#/components/schemas/ObjectTypeEnum"
+        identifier:
+          type: string
         changeComment:
           type: string
         textBefore:

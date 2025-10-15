@@ -76,17 +76,19 @@ public class BaseModuleStorageTest extends DsLicenseUnitTestUtil {
 
             ChangeTypeEnumDto changeType = ChangeTypeEnumDto.UPDATE;
             ObjectTypeEnumDto changeName = ObjectTypeEnumDto.DR_PRODUCTION_ID;
+            String identifier = "1234";
             String changeComment = "changeComment";
             String textBefore = "before";
             String textAfter = "after";
 
-            AuditLogEntry auditLog = new AuditLogEntry(objectId, "", changeType, changeName, changeComment, textBefore, textAfter);
+            AuditLogEntry auditLog = new AuditLogEntry(objectId, "", changeType, changeName, identifier, changeComment, textBefore, textAfter);
 
             long auditLogId = storage.persistAuditLog(auditLog);
             AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
             assertEquals(userName, auditFromStorage.getUserName());
             assertEquals(changeType, auditFromStorage.getChangeType());
             assertEquals(changeName, auditFromStorage.getChangeName());
+            assertEquals(identifier, auditFromStorage.getIdentifier());
             assertEquals(changeComment, auditFromStorage.getChangeComment());
             assertEquals(textBefore, auditFromStorage.getTextBefore());
             assertEquals(textAfter, auditFromStorage.getTextAfter());

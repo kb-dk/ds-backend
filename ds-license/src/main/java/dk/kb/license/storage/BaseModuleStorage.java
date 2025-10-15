@@ -28,34 +28,36 @@ import java.util.Date;
  */
 public abstract class BaseModuleStorage implements AutoCloseable  {
     private static final Logger log = LoggerFactory.getLogger(BaseModuleStorage.class);
-          
+
     //AUDITLOG
     private static final String AUDITLOG_TABLE = "AUDITLOG";
     private static final String AUDITLOG_ID_COLUMN = "ID";
     private static final String AUDITLOG_OBJECTID_COLUMN = "OBJECTID";
-    private static final String AUDITLOG_MODIFIEDTIME_COLUMN = "MODIFIEDTIME";     
+    private static final String AUDITLOG_MODIFIEDTIME_COLUMN = "MODIFIEDTIME";
     private static final String AUDITLOG_USERNAME_COLUMN = "USERNAME";
     private static final String AUDITLOG_CHANGETYPE_COLUMN = "CHANGETYPE";
     private static final String AUDITLOG_CHANGENAME_COLUMN = "CHANGENAME";
-    private static final String AUDITLOG_CHANGECOMMENT_COLUMN = "CHANGECOMMENT";  
+    private static final String AUDITLOG_IDENTIFIER_COLUMN = "IDENTIFIER";
+    private static final String AUDITLOG_CHANGECOMMENT_COLUMN = "CHANGECOMMENT";
     private static final String AUDITLOG_TEXTBEFORE_COLUMN = "TEXTBEFORE";
     private static final String AUDITLOG_TEXTAFTER_COLUMN = "TEXTAFTER";
 
     private final static String selectAuditLogQueryById = "SELECT * FROM " + AUDITLOG_TABLE + " WHERE " + AUDITLOG_ID_COLUMN + " = ? ";
     private final static String selectAuditLogQueryByObjectId = "SELECT * FROM " + AUDITLOG_TABLE + " WHERE " + AUDITLOG_OBJECTID_COLUMN + " = ? " + " ORDER BY " + AUDITLOG_MODIFIEDTIME_COLUMN + " DESC";
-    
+
     private final static String selectAllAuditLogQuery = "SELECT * FROM " + AUDITLOG_TABLE + " ORDER BY " + AUDITLOG_MODIFIEDTIME_COLUMN + " DESC";
     private final static String persistAuditLog = "INSERT INTO " + AUDITLOG_TABLE + " (" +
-                                                                   AUDITLOG_ID_COLUMN + ", " + 
-                                                                   AUDITLOG_OBJECTID_COLUMN + ", " +
-                                                                   AUDITLOG_MODIFIEDTIME_COLUMN + ", " +
-                                                                   AUDITLOG_USERNAME_COLUMN + ", "+
-                                                                   AUDITLOG_CHANGETYPE_COLUMN + ", " +
-                                                                   AUDITLOG_CHANGENAME_COLUMN + ", " +
-                                                                   AUDITLOG_CHANGECOMMENT_COLUMN + ", " +
-                                                                   AUDITLOG_TEXTBEFORE_COLUMN + ", " +
-                                                                   AUDITLOG_TEXTAFTER_COLUMN + ") " +
-                                                                   "VALUES (?,?,?,?,?,?,?,?,?)"; // #|?|=9
+            AUDITLOG_ID_COLUMN + ", " +
+            AUDITLOG_OBJECTID_COLUMN + ", " +
+            AUDITLOG_MODIFIEDTIME_COLUMN + ", " +
+            AUDITLOG_USERNAME_COLUMN + ", " +
+            AUDITLOG_CHANGETYPE_COLUMN + ", " +
+            AUDITLOG_CHANGENAME_COLUMN + ", " +
+            AUDITLOG_IDENTIFIER_COLUMN + ", " +
+            AUDITLOG_CHANGECOMMENT_COLUMN + ", " +
+            AUDITLOG_TEXTBEFORE_COLUMN + ", " +
+            AUDITLOG_TEXTAFTER_COLUMN + ") " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?)"; // #|?|=10
 
     // statistics shown on monitor.jsp page
     public static Date INITDATE = null;
@@ -243,17 +245,16 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
     /**
      *
      * @param id for the auditlog (not the objectid for the value changed)
-     * @return AuditLog object 
+     * @return AuditLog object
      * @throws Exception
      */
     public AuditEntryOutputDto getAuditLogById(long id) throws IllegalArgumentException, SQLException {
-
         try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQueryById);) {
             stmt.setLong(1, id);
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) { // maximum one due to unique/primary key constraint
-            return convertRsToAuditLog(rs);                                             
+                return convertRsToAuditLog(rs);
             }
             throw new IllegalArgumentException("Audit not found for id: " + id);
 
@@ -262,38 +263,37 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             throw e;
         }
     }
-    
-    /**   
-    * @param objectId The ID for the object extract audit log. 
-    * @return List of AuditLog objects. Will return empty list if objectId is not found. 
-    * @throws Exception
-    */
-   public ArrayList<AuditEntryOutputDto> getAuditLogByObjectId(long objectId) throws IllegalArgumentException, SQLException {
 
-       try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQueryByObjectId);) {
-           stmt.setLong(1, objectId);
+    /**
+     * @param objectId The ID for the object extract audit log.
+     * @return List of AuditLog objects. Will return empty list if objectId is not found.
+     * @throws Exception
+     */
+    public ArrayList<AuditEntryOutputDto> getAuditLogByObjectId(long objectId) throws IllegalArgumentException, SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQueryByObjectId);) {
+            stmt.setLong(1, objectId);
 
-           ArrayList<AuditEntryOutputDto> entries = new ArrayList<AuditEntryOutputDto>(); 
-           ResultSet rs = stmt.executeQuery();
-           while (rs.next()) { 
-             entries.add(convertRsToAuditLog(rs));                                                         
-           }             
-           return entries;
-           
-       } catch (SQLException e) {
-           log.error("SQL Exception in g getAuditLogByObjectId: " + e.getMessage());
-           throw e;
-       }
-   }
-    
+            ArrayList<AuditEntryOutputDto> entries = new ArrayList<AuditEntryOutputDto>();
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                entries.add(convertRsToAuditLog(rs));
+            }
+            return entries;
+
+        } catch (SQLException e) {
+            log.error("SQL Exception in g getAuditLogByObjectId: " + e.getMessage());
+            throw e;
+        }
+    }
+
     public ArrayList<AuditEntryOutputDto> getAllAudit() throws SQLException {
-
         ArrayList<AuditEntryOutputDto> entryList = new ArrayList<AuditEntryOutputDto>();
+
         try (PreparedStatement stmt = connection.prepareStatement(selectAllAuditLogQuery);) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) { // maximum one due to unique/primary key constraint
                 AuditEntryOutputDto auditLog = convertRsToAuditLog(rs);
-               entryList.add(auditLog);
+                entryList.add(auditLog);
             }
             return entryList;
         } catch (SQLException e) {
@@ -301,29 +301,31 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
             throw e;
         }
     }
-    
+
     /**
-     * 
-     * 
+     *
+     *
      * @return databaseID for the new AuditLog entry
      */
     public long persistAuditLog(AuditLogEntry auditLog) throws SQLException {
         log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), getCurrentUsername(auditLog.getUserName()));
-              
+
         Long id = generateUniqueID();
 
         try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
-          log.info("generating id: " + id);
+            log.info("generating id: " + id);
             log.info("persisting auditLog: " + auditLog);
-            stmt.setLong(1, id);     
+            log.info("identifier: " + auditLog.getIdentifier());
+            stmt.setLong(1, id);
             stmt.setLong(2, auditLog.getObjectId());
-            stmt.setLong(3, System.currentTimeMillis());                         
+            stmt.setLong(3, System.currentTimeMillis());
             stmt.setString(4, getCurrentUsername(auditLog.getUserName()));
             stmt.setString(5, auditLog.getChangeType().getValue());
             stmt.setString(6, auditLog.getChangeName().getValue());
-            stmt.setString(7, auditLog.getChangeComment());               
-            stmt.setString(8, auditLog.getTextBefore());
-            stmt.setString(9, auditLog.getTextAfter());
+            stmt.setString(7, auditLog.getIdentifier());
+            stmt.setString(8, auditLog.getChangeComment());
+            stmt.setString(9, auditLog.getTextBefore());
+            stmt.setString(10, auditLog.getTextAfter());
             stmt.execute();
         } catch (SQLException e) {
             log.error("SQL Exception in persistAuditLog: " + e.getMessage());
@@ -332,24 +334,26 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
         return id;
     }
 
-    private AuditEntryOutputDto convertRsToAuditLog( ResultSet rs) throws SQLException {
+    private AuditEntryOutputDto convertRsToAuditLog(ResultSet rs) throws SQLException {
         long auditLogId = rs.getLong(AUDITLOG_ID_COLUMN);
         long objectId = rs.getLong(AUDITLOG_OBJECTID_COLUMN);
         long modifiedTime = rs.getLong(AUDITLOG_MODIFIEDTIME_COLUMN);
-        String userName= rs.getString(AUDITLOG_USERNAME_COLUMN);
-        String changeType= rs.getString(AUDITLOG_CHANGETYPE_COLUMN);
-        String changeName= rs.getString(AUDITLOG_CHANGENAME_COLUMN);
-        String changeComment= rs.getString(AUDITLOG_CHANGECOMMENT_COLUMN);
-        String textBefore= rs.getString(AUDITLOG_TEXTBEFORE_COLUMN);
+        String userName = rs.getString(AUDITLOG_USERNAME_COLUMN);
+        String changeType = rs.getString(AUDITLOG_CHANGETYPE_COLUMN);
+        String changeName = rs.getString(AUDITLOG_CHANGENAME_COLUMN);
+        String identifier = rs.getString(AUDITLOG_IDENTIFIER_COLUMN);
+        String changeComment = rs.getString(AUDITLOG_CHANGECOMMENT_COLUMN);
+        String textBefore = rs.getString(AUDITLOG_TEXTBEFORE_COLUMN);
         String textAfter = rs.getString(AUDITLOG_TEXTAFTER_COLUMN);
 
-        AuditEntryOutputDto auditEntry= new AuditEntryOutputDto();
+        AuditEntryOutputDto auditEntry = new AuditEntryOutputDto();
         auditEntry.setId(auditLogId);
         auditEntry.setObjectId(objectId);
         auditEntry.setModifiedTime(modifiedTime);
         auditEntry.setUserName(userName);
         auditEntry.setChangeType(ChangeTypeEnumDto.valueOf(changeType));
         auditEntry.setChangeName(ObjectTypeEnumDto.valueOf(changeName));
+        auditEntry.setIdentifier(identifier);
         auditEntry.setChangeComment(changeComment);
         auditEntry.setTextAfter(textAfter);
         auditEntry.setTextBefore(textBefore);
@@ -358,10 +362,10 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
 
     /**
      * Gets the name of the current user from the OAuth token.
+     *
      * @return
      */
     private static String getCurrentUsername(String username) {
-
         Message message = JAXRSUtils.getCurrentMessage();
         if (message == null) {
             if (username == null) {
