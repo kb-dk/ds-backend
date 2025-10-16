@@ -7,7 +7,7 @@ import dk.kb.license.model.v1.ObjectTypeEnumDto;
  * Internal DTO used in the auditlog table when adding a new audit for an object change
  * Every time a user changes any license or configuration definitions there will be generated an entry in the auditlog table.
  * The entry will have the objectId of the modified objects so all changes on that object can be extracted.
- * The service generated AuditEntryOutputDto object is used when extracting information from the auditlog
+ * The service generated AuditLogEntryOutputDto object is used when extracting information from the auditlog
  */
 public class AuditLogEntry {
 

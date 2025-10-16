@@ -1,7 +1,7 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.config.ServiceConfig;
-import dk.kb.license.model.v1.AuditEntryOutputDto;
+import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.*;
@@ -36,7 +36,7 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
         ServiceConfig.initialize("conf/ds-license*.yaml", "ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl", "ddl/audit_log_module_create_h2_unittest.ddl"));
         storage = new LicenseModuleStorageForUnitTest();
     }
 
@@ -63,12 +63,12 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
             LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated, valueEnglishUpdated, mockedSession);
             LicenseModuleFacade.deletePresentationType(key, mockedSession);
 
-            ArrayList<AuditEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
+            ArrayList<AuditLogEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
 
             assertEquals(3, auditLogEntriesForObject.size());
-            AuditEntryOutputDto createAuditLog = auditLogEntriesForObject.get(2);
-            AuditEntryOutputDto updateAuditLog = auditLogEntriesForObject.get(1);
-            AuditEntryOutputDto deleteAuditLog = auditLogEntriesForObject.get(0);
+            AuditLogEntryOutputDto createAuditLog = auditLogEntriesForObject.get(2);
+            AuditLogEntryOutputDto updateAuditLog = auditLogEntriesForObject.get(1);
+            AuditLogEntryOutputDto deleteAuditLog = auditLogEntriesForObject.get(0);
 
             assertEquals(presentationTypeId, createAuditLog.getObjectId());
             assertEquals(presentationTypeId, updateAuditLog.getObjectId());

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
 
-import dk.kb.license.model.v1.AuditEntryOutputDto;
+import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.*;
@@ -46,7 +46,7 @@ public class LicenseModuleFacade {
             ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(null, newType);
             
             AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.PRESENTATION_TYPE, key, null, changes.getBefore(), changes.getAfter());
-            storage.persistAuditLog(auditLog);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
 
             return id;
 
@@ -84,7 +84,7 @@ public class LicenseModuleFacade {
             AuditLogEntry auditLog = new AuditLogEntry(licenseId, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), null, changes.getBefore(), changes.getAfter());
 
             ((LicenseModuleStorage) storage).deleteLicense(licenseId);
-            storage.persistAuditLog(auditLog);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
 
         });
@@ -124,7 +124,7 @@ public class LicenseModuleFacade {
         long id = ((LicenseModuleStorage) storage).persistLicenseGroupType(key, value, value_en, description, description_en, query, isRestriction);
         AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.GROUP_TYPE, key, null, changes.getBefore(), changes.getAfter());
 
-        storage.persistAuditLog(auditLog);
+        ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
         return null;
 
         });
@@ -154,7 +154,7 @@ public class LicenseModuleFacade {
             AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.GROUP_TYPE, value_dk, null, changes.getBefore(), changes.getAfter());
 
             ((LicenseModuleStorage) storage).updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, isRestriction);
-            storage.persistAuditLog(auditLog);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
 
         });
@@ -179,7 +179,7 @@ public class LicenseModuleFacade {
 
            ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(oldType, newType);
            AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.PRESENTATION_TYPE, oldType.getKey(), null, changes.getBefore(), changes.getAfter());
-           storage.persistAuditLog(auditLog);
+           ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
            return null;
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
@@ -196,7 +196,7 @@ public class LicenseModuleFacade {
 
             long id = ((LicenseModuleStorage) storage).deleteLicenseGroupType(groupName);
             AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.GROUP_TYPE, groupName, null, groupName, null);
-            storage.persistAuditLog(auditLog);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
 
             return null;
         });
@@ -217,7 +217,7 @@ public class LicenseModuleFacade {
 
            ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(oldType, null);
            AuditLogEntry auditLog = new AuditLogEntry(oldType.getId(), (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.PRESENTATION_TYPE, oldType.getKey(), null, changes.getBefore(), changes.getAfter());
-           storage.persistAuditLog(auditLog);
+           ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
@@ -249,7 +249,7 @@ public class LicenseModuleFacade {
                auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), null, changes.getBefore(), changes.getAfter());
             }
 
-            storage.persistAuditLog(auditLog);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
 
             return null;
         });
@@ -277,7 +277,7 @@ public class LicenseModuleFacade {
             long id = ((LicenseModuleStorage) storage).persistAttributeType(attributeTypeName);
 
             AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.ATTRIBUTE_NAME, attributeTypeName, null, null, attributeTypeName);
-            storage.persistAuditLog(auditLog);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
@@ -295,7 +295,7 @@ public class LicenseModuleFacade {
         BaseModuleStorage.performStorageAction("deleteAttributeType(" + attributeTypeName + ")", LicenseModuleStorage.class, storage -> {
             long id = ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
             AuditLogEntry auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.ATTRIBUTE_NAME, attributeTypeName, null, attributeTypeName, null);
-            storage.persistAuditLog(auditLog);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;        
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache              

@@ -192,7 +192,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuditEntryOutput'
+                $ref: '#/components/schemas/AuditLogEntryOutput'
 
   /audit/auditEntriesByObjectId:
     get:
@@ -218,7 +218,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AuditEntryOutput'
+                  $ref: '#/components/schemas/AuditLogEntryOutput'
 
   # Rights
   /rights/platforms:
@@ -1101,7 +1101,7 @@ components:
         - HOLDBACK_RANGE
         - ATTRIBUTE_NAME
 
-    AuditEntryOutput:
+    AuditLogEntryOutput:
       type: object
       properties:
         id:

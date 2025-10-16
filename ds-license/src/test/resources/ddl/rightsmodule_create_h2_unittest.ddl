@@ -36,19 +36,3 @@ CREATE TABLE IF NOT EXISTS dr_holdback_ranges (
 CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_ranges_id_in ON dr_holdback_ranges(id);
 CREATE INDEX IF NOT EXISTS dr_holdback_ranges_dr_holdback_value_in ON dr_holdback_ranges(dr_holdback_value);
 CREATE INDEX IF NOT EXISTS dr_holdback_ranges_content_form_in ON dr_holdback_ranges(content_range_from, content_range_to, form_range_from, form_range_to);
-
-CREATE TABLE IF NOT EXISTS auditlog (
-    id            BIGINT PRIMARY KEY,
-    objectid      BIGINT       NOT NULL,
-    modifiedtime  BIGINT       NOT NULL,
-    username      VARCHAR(256) NOT NULL,
-    changetype    VARCHAR(256) NOT NULL,
-    changename    VARCHAR(256) NOT NULL,
-    identifier    VARCHAR(1024),
-    changecomment TEXT,
-    textbefore    VARCHAR(65535),
-    textafter     VARCHAR(65535)
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS auditlog_id_in ON auditlog(id);
-CREATE INDEX IF NOT EXISTS auditlog_objectid_in ON auditlog(objectid);

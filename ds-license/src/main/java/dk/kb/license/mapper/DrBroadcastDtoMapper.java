@@ -12,7 +12,7 @@ public class DrBroadcastDtoMapper {
      * @param restrictedIdComment
      * @return DrBroadcastDto object
      */
-    public DrBroadcastDto mapDrBroadcastDto(DrBroadcastDto drBroadcastDto, String drProductionId, String restrictedIdComment) {
+    public DrBroadcastDto map(DrBroadcastDto drBroadcastDto, String drProductionId, String restrictedIdComment) {
         drBroadcastDto.setDrProductionId(drProductionId);
 
         if (restrictedIdComment == null) {

@@ -1,7 +1,7 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.config.ServiceConfig;
-import dk.kb.license.model.v1.AuditEntryOutputDto;
+import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.util.H2DbUtil;
@@ -34,22 +34,22 @@ import static org.mockito.Mockito.mockStatic;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class BaseModuleStorageTest extends UnitTestUtil {
-    private static final Logger log = LoggerFactory.getLogger(BaseModuleStorageTest.class);
+public class AuditLogModuleStorageTest extends UnitTestUtil {
+    private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageTest.class);
 
-    protected static LicenseModuleStorageForUnitTest storage = null;
+    protected static AuditLogModuleStorageForUnitTest storage = null;
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
         ServiceConfig.initialize("conf/ds-license*.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/audit_log_module_create_h2_unittest.ddl"));
-        storage = new LicenseModuleStorageForUnitTest();
+        storage = new AuditLogModuleStorageForUnitTest();
     }
 
     /**
      * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module
-     * The facade class is reponsible for committing transactions. So clean up between unittests.
+     * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
@@ -59,7 +59,8 @@ public class BaseModuleStorageTest extends UnitTestUtil {
     }
 
     @Test
-    public void testPersistAndLoadAuditLogEntry() throws SQLException, IllegalArgumentException {
+    public void persistAuditLog_whenPersistAuditLogEntry_thenReturnAuditLogEntry() throws SQLException, IllegalArgumentException {
+        // Arrange
         String userName = "mockedName";
         MessageImpl message = new MessageImpl();
         AccessToken mockedToken = Mockito.mock(AccessToken.class);
@@ -70,7 +71,6 @@ public class BaseModuleStorageTest extends UnitTestUtil {
             mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
 
             Long objectId = 123456789L;
-
             ChangeTypeEnumDto changeType = ChangeTypeEnumDto.UPDATE;
             ObjectTypeEnumDto changeName = ObjectTypeEnumDto.DR_PRODUCTION_ID;
             String identifier = "1234";
@@ -80,8 +80,15 @@ public class BaseModuleStorageTest extends UnitTestUtil {
 
             AuditLogEntry auditLog = new AuditLogEntry(objectId, "", changeType, changeName, identifier, changeComment, textBefore, textAfter);
 
+            // Act
             long auditLogId = storage.persistAuditLog(auditLog);
-            AuditEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
+
+            // Assert
+            AuditLogEntryOutputDto auditFromStorage = storage.getAuditLogById(auditLogId);
+
+            assertEquals(auditLogId, auditFromStorage.getId());
+            assertEquals(objectId, auditFromStorage.getObjectId());
+            assertTrue(auditFromStorage.getModifiedTime() > 0); //modifiedtime has been set
             assertEquals(userName, auditFromStorage.getUserName());
             assertEquals(changeType, auditFromStorage.getChangeType());
             assertEquals(changeName, auditFromStorage.getChangeName());
@@ -89,7 +96,6 @@ public class BaseModuleStorageTest extends UnitTestUtil {
             assertEquals(changeComment, auditFromStorage.getChangeComment());
             assertEquals(textBefore, auditFromStorage.getTextBefore());
             assertEquals(textAfter, auditFromStorage.getTextAfter());
-            assertTrue(auditFromStorage.getModifiedTime() > 0); //modifiedtime has been set
         }
     }
 }

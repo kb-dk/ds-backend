@@ -1,5 +1,5 @@
 ALTER TABLE auditlog
-    RENAME COLUMN changecomment to identifier;
+    RENAME COLUMN changecomment TO identifier;
 
 ALTER TABLE auditlog
-    ADD changecomment TEXT;
+    ADD changecomment TEXT NULL;

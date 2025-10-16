@@ -16,7 +16,7 @@ public class BroadcastDtoMapper {
      * @param restrictedIdComment
      * @return BroadcastDto object
      */
-    public BroadcastDto mapBroadcastDto(SolrDocument solrDocument, String restrictedIdComment) {
+    public BroadcastDto map(SolrDocument solrDocument, String restrictedIdComment) {
         BroadcastDto broadcastDto = new BroadcastDto();
 
         broadcastDto.setDsId(solrDocument.getFieldValue("id").toString());

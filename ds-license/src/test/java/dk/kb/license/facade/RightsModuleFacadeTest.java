@@ -49,14 +49,14 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     DrHoldbackRangesDto drHoldbackRangesDtoOne = new DrHoldbackRangesDto();
     DrHoldbackRangesDto drHoldbackRangesDtoTwo = new DrHoldbackRangesDto();
 
-    ArrayList<AuditEntryOutputDto> auditLogEntriesForObject;
+    ArrayList<AuditLogEntryOutputDto> auditLogEntriesForObject;
 
     static MockedStatic<JAXRSUtils> mocked;
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
         ServiceConfig.initialize("conf/ds-license*.yaml");
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl", "ddl/audit_log_module_create_h2_unittest.ddl"));
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         storage = new RightsModuleStorageForUnitTest();
@@ -422,7 +422,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
 
         assertEquals(1, auditLogEntriesForObject.size());
-        AuditEntryOutputDto createDrHoldbackRuleAuditLog = auditLogEntriesForObject.get(0);
+        AuditLogEntryOutputDto createDrHoldbackRuleAuditLog = auditLogEntriesForObject.get(0);
         assertEquals(ChangeTypeEnumDto.CREATE, createDrHoldbackRuleAuditLog.getChangeType());
         assertEquals(ObjectTypeEnumDto.HOLDBACK_RULE, createDrHoldbackRuleAuditLog.getChangeName());
         assertNull(createDrHoldbackRuleAuditLog.getTextBefore());
@@ -455,7 +455,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
             auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldBackRangesId);
             assertEquals(1, auditLogEntriesForObject.size());
 
-            AuditEntryOutputDto createDrHoldbackRangeAuditLog = auditLogEntriesForObject.get(0);
+            AuditLogEntryOutputDto createDrHoldbackRangeAuditLog = auditLogEntriesForObject.get(0);
 
             assertEquals(drHoldBackRangesId, createDrHoldbackRangeAuditLog.getObjectId());
             assertEquals(ChangeTypeEnumDto.CREATE, createDrHoldbackRangeAuditLog.getChangeType());
@@ -480,7 +480,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
         assertEquals(2, auditLogEntriesForObject.size());
 
-        AuditEntryOutputDto updateDrHoldbackRuleAuditLogFromValue = auditLogEntriesForObject.get(0);
+        AuditLogEntryOutputDto updateDrHoldbackRuleAuditLogFromValue = auditLogEntriesForObject.get(0);
 
         assertEquals(drHoldbackRuleId, updateDrHoldbackRuleAuditLogFromValue.getObjectId());
         assertEquals(userName, updateDrHoldbackRuleAuditLogFromValue.getUserName());
@@ -504,7 +504,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
         assertEquals(2, auditLogEntriesForObject.size());
 
-        AuditEntryOutputDto updateDrHoldbackRuleAuditLogFromName = auditLogEntriesForObject.get(0);
+        AuditLogEntryOutputDto updateDrHoldbackRuleAuditLogFromName = auditLogEntriesForObject.get(0);
 
         assertEquals(drHoldbackRuleId, updateDrHoldbackRuleAuditLogFromName.getObjectId());
         assertEquals(userName, updateDrHoldbackRuleAuditLogFromName.getUserName());
@@ -538,7 +538,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
             auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldBackRangesId);
             assertEquals(2, auditLogEntriesForObject.size());
 
-            AuditEntryOutputDto deleteDrHoldbackRangeAuditLog = auditLogEntriesForObject.get(0);
+            AuditLogEntryOutputDto deleteDrHoldbackRangeAuditLog = auditLogEntriesForObject.get(0);
 
             assertEquals(drHoldBackRangesId, deleteDrHoldbackRangeAuditLog.getObjectId());
             assertTrue(auditLogEntriesForObject.get(1).getModifiedTime() < deleteDrHoldbackRangeAuditLog.getModifiedTime());
@@ -562,7 +562,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
         assertEquals(2, auditLogEntriesForObject.size());
 
-        AuditEntryOutputDto deleteDrHoldbackRuleAuditLog = auditLogEntriesForObject.get(0);
+        AuditLogEntryOutputDto deleteDrHoldbackRuleAuditLog = auditLogEntriesForObject.get(0);
 
         assertEquals(drHoldbackRuleId, deleteDrHoldbackRuleAuditLog.getObjectId());
         assertEquals(userName, deleteDrHoldbackRuleAuditLog.getUserName());

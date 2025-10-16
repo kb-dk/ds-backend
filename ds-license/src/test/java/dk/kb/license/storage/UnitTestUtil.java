@@ -27,6 +27,7 @@ public abstract class UnitTestUtil {
         // No reason to delete DB data file after test, since we clear table it before each test.
         // This way you can open the DB in a DB-browser after an unittest and see the result.
         // Just run that single test and look in the DB
+        AuditLogModuleStorage.shutdown();
         LicenseModuleStorage.shutdown();
         RightsModuleStorage.shutdown();
         BaseModuleStorage.shutdown();

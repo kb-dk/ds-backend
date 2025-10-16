@@ -50,13 +50,13 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
     public static void beforeClass() throws IOException, SQLException {
         ServiceConfig.initialize("conf/ds-license*.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl", "ddl/audit_log_module_create_h2_unittest.ddl"));
         storage = new LicenseModuleStorageForUnitTest ();
     }
 
     /**
      * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module
-     * The facade class is reponsible for committing transactions. So clean up between unittests.
+     * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
     public void beforeEach() throws SQLException {        

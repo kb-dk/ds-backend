@@ -1,4 +1,4 @@
-<%@page import="dk.kb.license.model.v1.AuditEntryOutputDto"%>
+<%@page import="dk.kb.license.model.v1.AuditLogEntryOutputDto"%>
 <%@page pageEncoding="UTF-8"%>
 <%@ page import="
      java.util.*,
@@ -11,7 +11,7 @@
 
     <%
         String auditId = request.getParameter("auditlogId");   
-         AuditEntryOutputDto log = AuditLogModuleFacade.getAuditEntryById(Long.parseLong(auditId));
+         AuditLogEntryOutputDto log = AuditLogModuleFacade.getAuditEntryById(Long.parseLong(auditId));
          SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
          int i =0;
          String textBefore= log.getTextBefore(); 

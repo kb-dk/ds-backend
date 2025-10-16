@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Class for interacting with the part of DS-License which handles the calculation of rights, such as holdbacks and restrictions.
  */
-public class RightsModuleStorage extends BaseModuleStorage {
+public class RightsModuleStorage extends AuditLogModuleStorage {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleStorage.class);
 
     private final String RESTRICTED_ID_TABLE = "restricted_ids";

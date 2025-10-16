@@ -2,7 +2,7 @@ package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.*;
 
-import dk.kb.license.model.v1.AuditEntryOutputDto;
+import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 
 import java.util.List;
 
@@ -22,9 +22,9 @@ import dk.kb.license.facade.AuditLogModuleFacade;
 public class DsAuditApiServiceImpl extends ImplBase implements DsAuditApi {
 
     @Override
-    public List<AuditEntryOutputDto> getAuditEntriesByObjectId(Long objectId) {
+    public List<AuditLogEntryOutputDto> getAuditEntriesByObjectId(Long objectId) {
         try {
-            List<AuditEntryOutputDto> result = AuditLogModuleFacade.getAuditEntriesByObjectId(objectId);
+            List<AuditLogEntryOutputDto> result = AuditLogModuleFacade.getAuditEntriesByObjectId(objectId);
             return result;
         } catch (Exception e) {
             throw handleException(e);
@@ -32,9 +32,9 @@ public class DsAuditApiServiceImpl extends ImplBase implements DsAuditApi {
     }
 
     @Override
-    public AuditEntryOutputDto getAuditEntryById(Long id) {
+    public AuditLogEntryOutputDto getAuditEntryById(Long id) {
         try {
-            AuditEntryOutputDto result = AuditLogModuleFacade.getAuditEntryById(id);
+            AuditLogEntryOutputDto result = AuditLogModuleFacade.getAuditEntryById(id);
             if (result == null) {
                 throw new NotFoundServiceException("Auditlog id not found");
             }
