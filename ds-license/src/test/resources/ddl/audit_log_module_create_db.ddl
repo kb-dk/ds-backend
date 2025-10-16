@@ -13,3 +13,4 @@ CREATE TABLE auditlog (
 
 CREATE UNIQUE INDEX auditlog_id_in ON auditlog(id);
 CREATE INDEX auditlog_objectid_in ON auditlog(objectid);
+CREATE INDEX auditlog_identifier_in ON auditlog(identifier);
