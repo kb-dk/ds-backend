@@ -13,7 +13,6 @@ import java.util.List;
  * Between each unittest the all tables are cleared for data and the method is only defined in this subclass
  */
 public class LicenseModuleStorageForUnitTest extends LicenseModuleStorage {
-
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageForUnitTest.class);
 
     public LicenseModuleStorageForUnitTest() throws SQLException {
@@ -21,7 +20,6 @@ public class LicenseModuleStorageForUnitTest extends LicenseModuleStorage {
     }
 
     public void clearTableRecords(List<String> tables) throws SQLException {
-
         for (String table : tables) {
             String deleteSQL = "DELETE FROM " + table;
             try (PreparedStatement stmt = connection.prepareStatement(deleteSQL);) {

@@ -13,7 +13,6 @@ import java.util.List;
  * Between each unittest the all tables are cleared for data and the method is only defined in this subclass
  */
 public class AuditLogModuleStorageForUnitTest extends AuditLogModuleStorage {
-
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageForUnitTest.class);
 
     public AuditLogModuleStorageForUnitTest() throws SQLException {
@@ -21,7 +20,6 @@ public class AuditLogModuleStorageForUnitTest extends AuditLogModuleStorage {
     }
 
     public void clearTableRecords(List<String> tables) throws SQLException {
-
         for (String table : tables) {
             String deleteSQL = "DELETE FROM " + table;
             try (PreparedStatement stmt = connection.prepareStatement(deleteSQL);) {
