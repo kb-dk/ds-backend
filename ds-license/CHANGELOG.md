@@ -11,10 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Moved audit log ddl from `licensemodule_create_db.ddl` to `audit_log_module_create_db.ddl`
-- Changed column `changecomment` to `identifier` and added a new column named `changecomment` in table `auditlog`
+- Move audit log ddl from `licensemodule_create_db.ddl` to `audit_log_module_create_db.ddl`
+- Change column `changecomment` to `identifier` and added a new column named `changecomment` in table `auditlog`
   (**Remember: migration for OPS to be found in `audit_log_module_column_name_change.ddl`**)
-- Changed code to use `identifier` and `changecomment`
+- Update code to use `identifier` and `changecomment`
+- Move audit log from `BaseModuleStorage.class` into own `AuditLogModuleStorage.class`
+- Move method `convertRsToAuditLog(ResultSet rs)` into own `AuditLogEntryOutputDtoMapper.class`
+- Renamed mapper methods to be named `map`
 
 ### Fixed
 
