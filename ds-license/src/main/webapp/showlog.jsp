@@ -61,6 +61,10 @@
        <td>ChangeName</td>
        <td><%=log.getChangeName()%></td>      
     </tr>
+    <tr>
+       <td>Identifier</td>
+       <td><%=log.getIdentifier()%></td>
+    </tr>
           <tr>
        <td>ChangeComment</td>
        <td><%=log.getChangeComment()%></td>      

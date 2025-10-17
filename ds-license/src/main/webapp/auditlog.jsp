@@ -22,7 +22,8 @@ ArrayList<AuditLogEntryOutputDto> logs = AuditLogModuleFacade.getAllAuditLogs();
     <th>ModifiedTime</th>
     <th>UserName</th>
     <th>ChangeType</th>
-    <th>ChangeName</th>    
+    <th>ChangeName</th>
+    <th>Identifier</th>
     <th>ChangeComment</th>
    </tr>
    </thead>
@@ -38,6 +39,7 @@ for (int i = 0;i<logs.size();i++ ){
       <td><%=current.getUserName()%></td>
       <td><%=current.getChangeType()%></td>
       <td><%=current.getChangeName()%></td>
+      <td><%=current.getIdentifier()%></td>
       <td><%=current.getChangeComment()%></td>      
   </tr>
 <%}%>
