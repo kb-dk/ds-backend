@@ -199,16 +199,16 @@ public class RightsModuleFacade {
         BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
 
         if (resultFromDsId.getFieldValue("dr_production_id") == null) {
-            drBroadcastDto = drBroadcastDtoMapper.mapDrBroadcastDto(drBroadcastDto, null, null);
+            drBroadcastDto = drBroadcastDtoMapper.map(drBroadcastDto, null, null);
 
             // There could be a restriction already on the broadcast
             String dsIdRestrictedIdComment = getRestrictedIdCommentByIdValue(resultFromDsId.getFieldValue("id").toString());
-            BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(resultFromDsId, dsIdRestrictedIdComment);
+            BroadcastDto broadcastDto = broadcastDtoMapper.map(resultFromDsId, dsIdRestrictedIdComment);
             broadcastDtoList.add(broadcastDto);
         } else {
             // drProductionId can be restricted
             String drProductionIdRestrictedIdComment = getRestrictedIdCommentByIdValue(resultFromDsId.getFieldValue("dr_production_id").toString());
-            drBroadcastDto = drBroadcastDtoMapper.mapDrBroadcastDto(drBroadcastDto, resultFromDsId.getFieldValue("dr_production_id").toString(), drProductionIdRestrictedIdComment);
+            drBroadcastDto = drBroadcastDtoMapper.map(drBroadcastDto, resultFromDsId.getFieldValue("dr_production_id").toString(), drProductionIdRestrictedIdComment);
 
             String queryDrProductionId = "dr_production_id:\"" + drBroadcastDto.getDrProductionId() + "\"";
             String fieldListDrProductionId = "id, title, startTime, endTime";
@@ -225,7 +225,7 @@ public class RightsModuleFacade {
             for (SolrDocument solrDocument : resultsFromDrProductionId) {
                 // There could be a restriction already on the broadcast
                 String dsIdRestrictedIdComment = getRestrictedIdCommentByIdValue(solrDocument.getFieldValue("id").toString());
-                BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, dsIdRestrictedIdComment);
+                BroadcastDto broadcastDto = broadcastDtoMapper.map(solrDocument, dsIdRestrictedIdComment);
                 broadcastDtoList.add(broadcastDto);
             }
         }
@@ -289,7 +289,7 @@ public class RightsModuleFacade {
                 log.error("Failed to add restricted id for idValue: {}, idType: {}, platform: {}, comment: {}, exception: ", restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform(), restrictedIdInputDto.getComment(), exception);
 
                 FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
-                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.mapFailedRestrictedIdDto(restrictedIdInputDto, exception);
+                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
 
                 failedRestrictedIdDtoList.add(failedRestrictedIdDto);
             }

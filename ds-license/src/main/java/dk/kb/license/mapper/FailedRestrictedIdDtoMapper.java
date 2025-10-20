@@ -12,7 +12,7 @@ public class FailedRestrictedIdDtoMapper {
      * @param exception
      * @return FailedRestrictedIdDto
      */
-    public FailedRestrictedIdDto mapFailedRestrictedIdDto(RestrictedIdInputDto restrictedIdInputDto, Exception exception) {
+    public FailedRestrictedIdDto map(RestrictedIdInputDto restrictedIdInputDto, Exception exception) {
         FailedRestrictedIdDto failedRestrictedIdDto = new FailedRestrictedIdDto();
 
         failedRestrictedIdDto.setIdValue(restrictedIdInputDto.getIdValue());

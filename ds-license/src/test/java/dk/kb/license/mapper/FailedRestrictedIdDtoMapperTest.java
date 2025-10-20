@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class FailedRestrictedIdDtoMapperTest {
 
     @Test
-    public void mapFailedRestrictedIdDto_whenRestrictedIdHasFailed_thenPopulateFailedRestrictedIdDto() {
+    public void map_whenRestrictedIdHasFailed_thenPopulate() {
         // Arrange
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
         restrictedIdInputDto.setIdValue("12345678");
@@ -25,7 +25,7 @@ public class FailedRestrictedIdDtoMapperTest {
         FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
 
         // Act
-        FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.mapFailedRestrictedIdDto(restrictedIdInputDto, exception);
+        FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
 
         // Assert
         assertEquals(restrictedIdInputDto.getIdValue(), failedRestrictedIdDto.getIdValue());
