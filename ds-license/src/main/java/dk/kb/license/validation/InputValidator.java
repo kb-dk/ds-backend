@@ -48,6 +48,19 @@ public class InputValidator {
     }
 
     /**
+     * Validates that title is not null, empty or not blank
+     *
+     * @param title
+     */
+    public void validateTitle(String title) {
+        if (StringUtils.isBlank(title)) {
+            final String errorMessage = "Title cannot be empty";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
+        }
+    }
+
+    /**
      * Validates that comment is not null, empty or not blank and comment is not too long
      *
      * @param comment

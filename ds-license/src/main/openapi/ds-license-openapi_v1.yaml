@@ -264,6 +264,7 @@ paths:
                 type: array
                 items:
                   type: string
+
   /rights/restrictedId:
     get:
       tags:
@@ -345,8 +346,9 @@ paths:
               DrProductionID:
                 value:
                   idValue: '12345678'
-                  idType: DR_PRODUCTION_ID
-                  platform: DRARKIV
+                  idType: 'DR_PRODUCTION_ID'
+                  platform: 'DRARKIV'
+                  title: 'TV Avisen'
                   comment: 'Dette er en test'
       responses:
         '200':
@@ -438,18 +440,21 @@ paths:
               items:
                 $ref: '#/components/schemas/RestrictedIdInput'
             example:
-              - idValue: 'test:multi:1'
-                idType: DS_ID
-                platform: DRARKIV
+              - idValue: 'ds.tv:oai:io:6f9017fb-810a-4386-98cc-debd1f19b48d'
+                idType: 'DS_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'test multi 1'
+              - idValue: 'ds.radio:oai:io:f3d56005-39e6-4fc3-90a5-830efded34a0'
+                idType: 'DS_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
                 comment: 'test multi 2'
-              - idValue: 'test:multi:2'
-                idType: DS_ID
-                platform: DRARKIV
-                comment: 'test multi 1'
-              - idValue: 'test:multi:3'
-                idType: DR_PRODUCTION_ID
-                platform: DRARKIV
-                comment: 'test multi 1'
+              - idValue: '12345678'
+                idType: 'DR_PRODUCTION_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'test multi 3'
       responses:
         '200':
           description: 'Status on restricted ids creation'
@@ -1139,6 +1144,7 @@ components:
         - idValue
         - idType
         - platform
+        - title
         - comment
       properties:
         idValue:
@@ -1147,6 +1153,8 @@ components:
           $ref: '#/components/schemas/IdTypeEnum'
         platform:
           $ref: '#/components/schemas/PlatformEnum'
+        title:
+          type: string
         comment:
           type: string
 
@@ -1173,6 +1181,8 @@ components:
           $ref: '#/components/schemas/IdTypeEnum'
         platform:
           $ref: '#/components/schemas/PlatformEnum'
+        title:
+          type: string
         comment:
           type: string
 
@@ -1212,6 +1222,8 @@ components:
           $ref: '#/components/schemas/IdTypeEnum'
         platform:
           $ref: '#/components/schemas/PlatformEnum'
+        title:
+          type: string
         comment:
           type: string
         exception:

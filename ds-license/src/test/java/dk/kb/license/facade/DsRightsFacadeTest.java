@@ -122,18 +122,22 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     @Test
     public void createRestrictedId_whenInvalidDsId_thenThrowInvalidArgumentServiceException() throws SQLException {
         // Arrange
+        String invalidDsId = "4b35ee6f-b7d3-4fee-8936-a067b42eb9ef";
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
-        restrictedIdInputDto.setIdValue("4b35ee6f-b7d3-4fee-8936-a067b42eb9ef");
+        restrictedIdInputDto.setIdValue(invalidDsId);
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle("Test title");
         restrictedIdInputDto.setComment("Brugeren har trukket deres samtykke tilbage");
+
+        String expectedMessage = "Invalid dsId: " + invalidDsId;
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(restrictedIdInputDto, false));
         auditEntryOutputDtoList = storage.getAllAudit();
 
         // Assert
-        assertEquals("Invalid dsId: 4b35ee6f-b7d3-4fee-8936-a067b42eb9ef", exception.getMessage());
+        assertEquals(expectedMessage, exception.getMessage());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(0, auditEntryOutputDtoList.size());
@@ -142,38 +146,68 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     @Test
     public void createRestrictedId_whenInvalidDrProductionId_thenThrowInvalidArgumentServiceException() throws SQLException {
         // Arrange
+        String invalidDrProductionId = "1234567";
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
-        restrictedIdInputDto.setIdValue("1234567");
+        restrictedIdInputDto.setIdValue(invalidDrProductionId);
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle("Test title");
         restrictedIdInputDto.setComment("Brugeren har trukket deres samtykke tilbage");
+
+        String expectedMessage = "The input DR production ID: " + invalidDrProductionId + " should be at least 8 digits";
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(restrictedIdInputDto, false));
         auditEntryOutputDtoList = storage.getAllAudit();
 
         // Assert
-        assertEquals("The input DR production ID: 1234567 should be at least 8 digits", exception.getMessage());
+        assertEquals(expectedMessage, exception.getMessage());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(0, auditEntryOutputDtoList.size());
     }
 
     @Test
-    public void createRestrictedId_whenInvalidComment_thenThrowInvalidArgumentServiceException() throws SQLException {
+    public void createRestrictedId_whenNullTitle_thenThrowInvalidArgumentServiceException() throws SQLException {
         // Arrange
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
         restrictedIdInputDto.setIdValue("12345678");
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
-        restrictedIdInputDto.setComment(null);
+        restrictedIdInputDto.setTitle(null);
+        restrictedIdInputDto.setComment("Brugeren har trukket deres samtykke tilbage");
+
+        String expectedMessage = "Title cannot be empty";
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(restrictedIdInputDto, false));
         auditEntryOutputDtoList = storage.getAllAudit();
 
         // Assert
-        assertEquals("Comment cannot be empty", exception.getMessage());
+        assertEquals(expectedMessage, exception.getMessage());
+
+        // Only valid RestrictedIdInputDto objects is in the audit log
+        assertEquals(0, auditEntryOutputDtoList.size());
+    }
+
+    @Test
+    public void createRestrictedId_whenNullComment_thenThrowInvalidArgumentServiceException() throws SQLException {
+        // Arrange
+        RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
+        restrictedIdInputDto.setIdValue("12345678");
+        restrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
+        restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle("Test title");
+        restrictedIdInputDto.setComment(null);
+
+        String expectedMessage = "Comment cannot be empty";
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(restrictedIdInputDto, false));
+        auditEntryOutputDtoList = storage.getAllAudit();
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(0, auditEntryOutputDtoList.size());
@@ -183,12 +217,14 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     public void createRestrictedId_whenValidRestrictedIdInputDto_thenReturnRestrictedIdOutputDto() throws SQLException {
         // Arrange
         String drProductionId = "12345678";
+        String title = "Test title";
         String comment = "Brugeren har trukket deres samtykke tilbage";
 
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
         restrictedIdInputDto.setIdValue(drProductionId);
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle(title);
         restrictedIdInputDto.setComment(comment);
 
         // Act
@@ -201,6 +237,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         assertEquals(drProductionId, restrictedIdOutputDto.getIdValue());
         assertEquals(IdTypeEnumDto.DR_PRODUCTION_ID, restrictedIdOutputDto.getIdType());
         assertEquals(PlatformEnumDto.DRARKIV, restrictedIdOutputDto.getPlatform());
+        assertEquals(title, restrictedIdOutputDto.getTitle());
         assertEquals(comment, restrictedIdOutputDto.getComment());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
@@ -220,6 +257,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         restrictedIdInputDto.setIdValue("4b35ee6f-b7d3-4fee-8936-a067b42eb9ef");
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle("Test title");
         restrictedIdInputDto.setComment("Brugeren har trukket deres samtykke tilbage");
 
         List<RestrictedIdInputDto> restrictedIds = new ArrayList<>();
@@ -237,6 +275,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         assertEquals(restrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(restrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
         assertEquals(restrictedIdInputDto.getPlatform(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getPlatform());
+        assertEquals(restrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(restrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
         assertEquals("InvalidArgumentServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
         assertEquals("Invalid dsId: 4b35ee6f-b7d3-4fee-8936-a067b42eb9ef", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
@@ -252,6 +291,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         restrictedIdInputDto.setIdValue("1234567");
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle("Test title");
         restrictedIdInputDto.setComment("Brugeren har trukket deres samtykke tilbage");
 
         List<RestrictedIdInputDto> restrictedIds = new ArrayList<>();
@@ -269,6 +309,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         assertEquals(restrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(restrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
         assertEquals(restrictedIdInputDto.getPlatform(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getPlatform());
+        assertEquals(restrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(restrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
         assertEquals("InvalidArgumentServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
         assertEquals("The input DR production ID: 1234567 should be at least 8 digits", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
@@ -278,12 +319,47 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createRestrictedIds_whenCommentIsNull_thenProcessStatusDtoIsFailedAndFailedIdsList() throws SQLException {
+    public void createRestrictedIds_whenNullTitle_thenProcessStatusDtoIsFailedAndFailedIdsList() throws SQLException {
         // Arrange
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
         restrictedIdInputDto.setIdValue("ds.tv:oai:io:4b35ee6f-b7d3-4fee-8936-a067b42eb9ef");
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle(null);
+        restrictedIdInputDto.setComment("Brugeren har trukket deres samtykke tilbage");
+
+        List<RestrictedIdInputDto> restrictedIds = new ArrayList<>();
+        restrictedIds.add(restrictedIdInputDto);
+
+        // Act
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createRestrictedIds(restrictedIds, false);
+        auditEntryOutputDtoList = storage.getAllAudit();
+
+        // Assert
+        assertNotNull(processedRestrictedIdsOutputDto);
+        assertEquals(ProcessStatusDto.FAILED, processedRestrictedIdsOutputDto.getProcessStatus());
+        assertEquals(0, processedRestrictedIdsOutputDto.getProcessedSuccessfully());
+        assertEquals(1, processedRestrictedIdsOutputDto.getFailedRestrictedIds().size());
+        assertEquals(restrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
+        assertEquals(restrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
+        assertEquals(restrictedIdInputDto.getPlatform(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getPlatform());
+        assertEquals(restrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
+        assertEquals(restrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
+        assertEquals("InvalidArgumentServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
+        assertEquals("Title cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
+
+        // Only valid RestrictedIdInputDto objects is in the audit log
+        assertEquals(0, auditEntryOutputDtoList.size());
+    }
+
+    @Test
+    public void createRestrictedIds_whenNullComment_thenProcessStatusDtoIsFailedAndFailedIdsList() throws SQLException {
+        // Arrange
+        RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
+        restrictedIdInputDto.setIdValue("ds.tv:oai:io:4b35ee6f-b7d3-4fee-8936-a067b42eb9ef");
+        restrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
+        restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle("Test title");
         restrictedIdInputDto.setComment(null);
 
         List<RestrictedIdInputDto> restrictedIds = new ArrayList<>();
@@ -301,6 +377,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         assertEquals(restrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(restrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
         assertEquals(restrictedIdInputDto.getPlatform(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getPlatform());
+        assertEquals(restrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(restrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
         assertEquals("InvalidArgumentServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
         assertEquals("Comment cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
@@ -314,18 +391,21 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         // Arrange
         String dsId = "ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111";
         String drProductionId = "12345678";
+        String title = "Test title";
         String comment = "Brugeren har trukket deres samtykke tilbage";
 
         RestrictedIdInputDto dsIdRestrictedIdInputDto = new RestrictedIdInputDto();
         dsIdRestrictedIdInputDto.setIdValue(dsId);
         dsIdRestrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
         dsIdRestrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        dsIdRestrictedIdInputDto.setTitle(title);
         dsIdRestrictedIdInputDto.setComment(comment);
 
         RestrictedIdInputDto drProductionIdRestrictedIdInputDto = new RestrictedIdInputDto();
         drProductionIdRestrictedIdInputDto.setIdValue(drProductionId);
         drProductionIdRestrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         drProductionIdRestrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        drProductionIdRestrictedIdInputDto.setTitle(title);
         drProductionIdRestrictedIdInputDto.setComment(comment);
 
         List<RestrictedIdInputDto> restrictedIds = new ArrayList<>();
@@ -366,18 +446,21 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     public void createRestrictedIds_whenValidAndInvalidDsId_thenProcessStatusDtoIsPartialProcessedAndFailedIdsList() throws SQLException {
         // Arrange
         String validDsId = "ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111";
+        String title = "Test title";
         String comment = "Brugeren har trukket deres samtykke tilbage";
 
         RestrictedIdInputDto validRestrictedIdInputDto = new RestrictedIdInputDto();
         validRestrictedIdInputDto.setIdValue(validDsId);
         validRestrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
         validRestrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        validRestrictedIdInputDto.setTitle(title);
         validRestrictedIdInputDto.setComment(comment);
 
         RestrictedIdInputDto invalidRestrictedIdInputDto = new RestrictedIdInputDto();
         invalidRestrictedIdInputDto.setIdValue("4b35ee6f-b7d3-4fee-8936-a067b42eb9ef");
         invalidRestrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
         invalidRestrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        invalidRestrictedIdInputDto.setTitle(title);
         invalidRestrictedIdInputDto.setComment(comment);
 
         List<RestrictedIdInputDto> restrictedIds = new ArrayList<>();
@@ -396,6 +479,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         assertEquals(invalidRestrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(invalidRestrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
         assertEquals(invalidRestrictedIdInputDto.getPlatform(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getPlatform());
+        assertEquals(invalidRestrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(invalidRestrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
         assertEquals("InvalidArgumentServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
         assertEquals("Invalid dsId: 4b35ee6f-b7d3-4fee-8936-a067b42eb9ef", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
@@ -415,18 +499,21 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     public void createRestrictedIds_whenAlreadyExistingRestrictedId_thenProcessStatusDtoIsPartialProcessedAndFailedIdsList() throws SQLException {
         // Arrange
         String validDsId = "ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111";
+        String title = "Test title";
         String comment = "Brugeren har trukket deres samtykke tilbage";
 
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
         restrictedIdInputDto.setIdValue(validDsId);
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle(title);
         restrictedIdInputDto.setComment(comment);
 
         RestrictedIdInputDto duplicatedRestrictedIdInputDto = new RestrictedIdInputDto();
         duplicatedRestrictedIdInputDto.setIdValue(validDsId);
         duplicatedRestrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
         duplicatedRestrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        duplicatedRestrictedIdInputDto.setTitle(title);
         duplicatedRestrictedIdInputDto.setComment(comment);
 
         List<RestrictedIdInputDto> restrictedIds = new ArrayList<>();
@@ -445,6 +532,7 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
         assertEquals(duplicatedRestrictedIdInputDto.getIdValue(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdValue());
         assertEquals(duplicatedRestrictedIdInputDto.getIdType(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getIdType());
         assertEquals(duplicatedRestrictedIdInputDto.getPlatform(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getPlatform());
+        assertEquals(duplicatedRestrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(duplicatedRestrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
         assertEquals("InternalServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
         assertTrue(processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage().startsWith("dk.kb.util.webservice.exception.InternalServiceException: org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException: Unique index or primary key violation"));

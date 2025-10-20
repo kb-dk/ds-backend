@@ -86,10 +86,11 @@ public class RightsModuleFacade {
             inputValidator.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
         }
 
+        inputValidator.validateTitle(restrictedIdInputDto.getTitle());
         inputValidator.validateComment(restrictedIdInputDto.getComment());
 
         BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
-            long id = ((RightsModuleStorage) storage).createRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType().getValue(), restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getComment());
+            long id = ((RightsModuleStorage) storage).createRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType().getValue(), restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getTitle(), restrictedIdInputDto.getComment());
 
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
@@ -265,10 +266,11 @@ public class RightsModuleFacade {
                     inputValidator.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
                 }
 
+                inputValidator.validateTitle(restrictedIdInputDto.getTitle());
                 inputValidator.validateComment(restrictedIdInputDto.getComment());
 
                 BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
-                    long objectId = ((RightsModuleStorage) storage).createRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType().getValue(), restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getComment());
+                    long objectId = ((RightsModuleStorage) storage).createRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType().getValue(), restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getTitle(), restrictedIdInputDto.getComment());
 
                     if (touchDsStorageRecord) {
                         touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());

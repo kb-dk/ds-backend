@@ -18,6 +18,7 @@ public class FailedRestrictedIdDtoMapper {
         failedRestrictedIdDto.setIdValue(restrictedIdInputDto.getIdValue());
         failedRestrictedIdDto.setIdType(restrictedIdInputDto.getIdType());
         failedRestrictedIdDto.setPlatform(restrictedIdInputDto.getPlatform());
+        failedRestrictedIdDto.setTitle(restrictedIdInputDto.getTitle());
         failedRestrictedIdDto.setComment(restrictedIdInputDto.getComment());
         failedRestrictedIdDto.setException(exception.getClass().getSimpleName());
         failedRestrictedIdDto.setErrorMessage(exception.getMessage());

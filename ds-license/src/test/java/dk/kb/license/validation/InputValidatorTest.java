@@ -64,77 +64,6 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateComment_whenNullComment_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        String expectedMessage = "Comment cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(null));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
-    public void validateComment_whenEmptyComment_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        String comment = "";
-        String expectedMessage = "Comment cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(comment));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
-    public void validateComment_whenBlankComment_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        String comment = "  ";
-        String expectedMessage = "Comment cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(comment));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
-    public void validateComment_whenValidComment_thenDoNotThrow() {
-        // Arrange
-        String comment = "Here is some text";
-        InputValidator inputValidator = mock(InputValidator.class);
-        doCallRealMethod().when(inputValidator).validateComment(comment);
-
-        // Act and assert
-        // validateComment() has return type void, so we can only check that it did not throw exception
-        assertDoesNotThrow(() -> inputValidator.validateComment(comment));
-
-        // and it only was called once
-        verify(inputValidator, times(1)).validateComment(comment);
-    }
-
-    @Test
-    public void validateComment_whenTooLongComment_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        // Use String repeat() method to create a long comment
-        String longComment = "x".repeat(16349);
-        String expectedMessage = "Comment was too long and cannot be added to rights module. Only 16348 characters are allowed";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(longComment));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
     public void validateDrProductionIdFormat_whenValidDrProductionId_thenDoNotThrow() {
         // Arrange
         String productionId = "1234567890";
@@ -186,6 +115,133 @@ public class InputValidatorTest {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrProductionIdFormat(productionId));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateTitle_whenValidTitle_thenDoNotThrow() {
+        // Arrange
+        String title = "Test title";
+        InputValidator inputValidator = mock(InputValidator.class);
+        doCallRealMethod().when(inputValidator).validateTitle(title);
+
+        // Act and assert
+        // validateComment() has return type void, so we can only check that it did not throw exception
+        assertDoesNotThrow(() -> inputValidator.validateTitle(title));
+
+        // and it only was called once
+        verify(inputValidator, times(1)).validateTitle(title);
+    }
+
+    @Test
+    public void validateComment_whenNullTitle_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String expectedMessage = "Title cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateTitle(null));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateTitle_whenEmptyTitle_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String title = "";
+        String expectedMessage = "Title cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateTitle(title));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateTitle_whenBlankTitle_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String comment = "  ";
+        String expectedMessage = "Title cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateTitle(comment));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateComment_whenValidComment_thenDoNotThrow() {
+        // Arrange
+        String comment = "Here is some text";
+        InputValidator inputValidator = mock(InputValidator.class);
+        doCallRealMethod().when(inputValidator).validateComment(comment);
+
+        // Act and assert
+        // validateComment() has return type void, so we can only check that it did not throw exception
+        assertDoesNotThrow(() -> inputValidator.validateComment(comment));
+
+        // and it only was called once
+        verify(inputValidator, times(1)).validateComment(comment);
+    }
+
+    @Test
+    public void validateComment_whenNullComment_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String expectedMessage = "Comment cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(null));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateComment_whenEmptyComment_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String comment = "";
+        String expectedMessage = "Comment cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(comment));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateComment_whenBlankComment_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String comment = "  ";
+        String expectedMessage = "Comment cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(comment));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateComment_whenTooLongComment_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        // Use String repeat() method to create a long comment
+        String longComment = "x".repeat(16349);
+        String expectedMessage = "Comment was too long and cannot be added to rights module. Only 16348 characters are allowed";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(longComment));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());

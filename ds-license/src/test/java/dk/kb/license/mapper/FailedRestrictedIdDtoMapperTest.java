@@ -17,6 +17,7 @@ public class FailedRestrictedIdDtoMapperTest {
         restrictedIdInputDto.setIdValue("12345678");
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle("TV Avisen");
         restrictedIdInputDto.setComment("Brugeren har trukket deres samtykke tilbage");
 
         Exception exception = new Exception("Test exception");
@@ -30,6 +31,7 @@ public class FailedRestrictedIdDtoMapperTest {
         assertEquals(restrictedIdInputDto.getIdValue(), failedRestrictedIdDto.getIdValue());
         assertEquals(restrictedIdInputDto.getIdType(), failedRestrictedIdDto.getIdType());
         assertEquals(restrictedIdInputDto.getPlatform(), failedRestrictedIdDto.getPlatform());
+        assertEquals(restrictedIdInputDto.getTitle(), failedRestrictedIdDto.getTitle());
         assertEquals(restrictedIdInputDto.getComment(), failedRestrictedIdDto.getComment());
         assertEquals(exception.getClass().getSimpleName(), failedRestrictedIdDto.getException());
         assertEquals(exception.getMessage(), failedRestrictedIdDto.getErrorMessage());
