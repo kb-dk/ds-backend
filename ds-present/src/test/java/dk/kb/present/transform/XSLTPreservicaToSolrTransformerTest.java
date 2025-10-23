@@ -315,6 +315,14 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void missingKanalnavn() throws IOException {
+        String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_MISSING_KANALNAVN);
+        assertTrue(solrString.contains("\"creator_affiliation\""));
+        assertTrue(solrString.contains("\"broadcaster\""));
+        assertTrue(solrString.contains("\"creator_affiliation_facet\""));
+    }
+
+    @Test
     void testStartTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"startTime\":\"1987-05-04T14:45:00Z\"");
     }
