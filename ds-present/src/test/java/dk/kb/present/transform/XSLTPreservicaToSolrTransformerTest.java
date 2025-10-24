@@ -317,9 +317,18 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     @Test
     void missingKanalnavn() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_MISSING_KANALNAVN);
+        Map<String, String > platformMap = Map.of("platform", "DRARKIV");
         assertTrue(solrString.contains("\"creator_affiliation\""));
         assertTrue(solrString.contains("\"broadcaster\""));
         assertTrue(solrString.contains("\"creator_affiliation_facet\""));
+    }
+
+    @Test
+    void platformField() throws IOException {
+        Map<String, String > platformMap = Map.of("platform", "DRARKIV");
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, platformMap);
+        System.out.println(solrDocument);
+        assertTrue(solrDocument.contains("\"platform\":\"DRARKIV\""));
     }
 
     @Test
