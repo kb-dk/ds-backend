@@ -64,7 +64,6 @@ public class TestUtil {
 		metadata.put("mTime", "1701261949625000");
 		metadata.put("startTime", "1987-05-04T14:45:00Z");
 		metadata.put("endTime", "1987-05-04T16:45:00Z");
-		System.out.println("access fields:"+metadata);
 		return transformer.apply(xml, metadata);
 	}
 
