@@ -288,9 +288,8 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.2.8.jre7</version>
+                <version>42.7.8</version>
             </dependency>
-
 
             <!--For the standard unit test-->
             <dependency>
