@@ -44,6 +44,7 @@
   <xsl:param name="productionIdRestrictedDr"/>
   <xsl:param name="dsIdRestricted"/>
   <xsl:param name="titleRestricted"/>
+  <xsl:param name="platform"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
@@ -88,7 +89,6 @@
         <xsl:otherwise>MediaObject</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-
 
     <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
          This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
@@ -1044,6 +1044,12 @@
     <xsl:param name="pbCore"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
+
+    <xsl:if test="$platform != ''">
+      <f:string key="kb:platform">
+        <xsl:value-of select="$platform"/>
+      </f:string>
+    </xsl:if>
 
     <!-- Boolean value which determins if the record has a stream available at Kaltura.-->
     <f:boolean key="kb:has_kaltura_id">
