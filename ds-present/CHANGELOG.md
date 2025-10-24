@@ -8,12 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
+- Solr field for platform
 ### Changed
+- Solr version bumped to v. 1.8.2
 
 ### Removed
 
 ### Fixed
+- Fixed error when kanalnavn is missing in preservica
 
 ## [3.0.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.2) 2025-09-03
 
