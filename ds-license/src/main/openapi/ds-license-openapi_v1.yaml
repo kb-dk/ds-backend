@@ -254,6 +254,69 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PresentationType'
+
+  /AttributeTypes:
+    get:
+      summary: return all Attributetypes
+      tags:
+        - '${project.name}'
+      operationId: getAttributeTypesDto
+      security:
+        - KBOAuth:
+            - any
+      responses:
+        '200':
+          description: Get all Attributetypes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttributeType'
+
+  /GroupType:
+    get:
+      summary: return the Grouptype with the given id
+      tags:
+        - '${project.name}'
+      operationId: getGroupTypeById
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          description: Filter on id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Get specific GroupType by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupType'
+                          
+  /GroupTypes:
+    get:
+      summary: return all Group types
+      tags:
+        - '${project.name}'
+      operationId: getGroupTypes
+      security:
+        - KBOAuth:
+            - any
+      responses:
+        '200':
+          description: return all Group types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupType'
+
   # Audit
   /audit/auditEntryById:
     get:

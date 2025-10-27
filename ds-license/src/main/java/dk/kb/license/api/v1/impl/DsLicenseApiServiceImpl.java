@@ -220,4 +220,34 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
         }
     }
 
+    @Override
+    public ArrayList<AttributeTypeDto> getAttributeTypesDto() {
+        try {
+            ArrayList<AttributeTypeDto> result = LicenseModuleFacade.getAttributeTypesDto();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public GroupTypeDto getGroupTypeById(Long id) {
+        try {
+            GroupTypeDto result = LicenseModuleFacade.getGroupTypeById(id);
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<GroupTypeDto> getGroupTypes() {
+        try {
+            ArrayList<GroupTypeDto> result = LicenseModuleFacade.getGroupTypes();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
 }

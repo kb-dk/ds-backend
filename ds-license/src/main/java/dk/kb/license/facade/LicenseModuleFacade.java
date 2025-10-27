@@ -276,6 +276,17 @@ public class LicenseModuleFacade {
             return ((LicenseModuleStorage) storage).getLicenseGroupTypes();
         });                               
     }
+
+    /**
+     * Get a {@link GroupType} by id.
+     * @return GroupType with the given id
+     */
+    public static GroupType getLicenseGroupType(long id) {
+        return BaseModuleStorage.performStorageAction("getGroupTypeById(" + id +")", LicenseModuleStorage.class, storage -> {
+           GroupType groupType = ((LicenseModuleStorage) storage).getGroupTypeById(id);
+            return groupType;
+        });
+    }
     
     /**
      * Persist a new attribute name that can be used by licenses to identify users.
@@ -347,6 +358,13 @@ public class LicenseModuleFacade {
         });           
     }
 
+    private  static AttributeTypeDto convertAttributTypeToDto(AttributeType attributeType) {
+        AttributeTypeDto attributeTypeDto = new AttributeTypeDto();
+        attributeTypeDto.setId(attributeType.getId());
+        attributeTypeDto.setValue(attributeType.getValue());
+        return attributeTypeDto;
+    }
+
     private static AttributeDto convertAttributeToAttributeDto(Attribute attribute) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
         AttributeDto attributeDto = new AttributeDto();
         attributeDto.setId(attribute.getId());
@@ -400,6 +418,21 @@ public class LicenseModuleFacade {
 
         return licenseContentDto;
 
+    }
+
+    private  static GroupTypeDto convertGroupTypeToDto(GroupType groupType) {
+        GroupTypeDto groupTypeDto = new GroupTypeDto();
+
+        groupTypeDto.setId(groupType.getId());
+        groupTypeDto.setDescriptionDk(groupType.getDescription_dk());
+        groupTypeDto.setDescriptionEn(groupType.getDescription_en());
+        groupTypeDto.setKey(groupType.getKey());
+        groupTypeDto.setValueDk(groupType.getValue_dk());
+        groupTypeDto.setValueEn(groupType.getValue_en());
+        groupTypeDto.setQuery(groupType.getQuery());
+        groupTypeDto.setRestriction(groupType.isRestrictionGroup());
+
+        return  groupTypeDto;
     }
 
     public static LicenseDto getLicenseById(Long id) {
@@ -467,5 +500,28 @@ public class LicenseModuleFacade {
         presentationTypes.forEach(presentationType -> presentationTypeDtos.add(getPresentationTypeById(presentationType.getId())));
 
         return presentationTypeDtos;
+    }
+
+    public static ArrayList<AttributeTypeDto> getAttributeTypesDto() {
+
+        ArrayList<AttributeType> attributeTypes = getAttributeTypes();
+
+        ArrayList<AttributeTypeDto> attributeTypeDto = new ArrayList();
+
+        attributeTypes.forEach(attributeType -> attributeTypeDto.add(convertAttributTypeToDto(attributeType)));
+
+        return attributeTypeDto;
+    }
+
+    public static GroupTypeDto getGroupTypeById(Long id){
+        GroupTypeDto groupTypeDto = convertGroupTypeToDto(getLicenseGroupType(id));
+        return groupTypeDto;
+    }
+
+    public static ArrayList<GroupTypeDto> getGroupTypes(){
+        ArrayList<GroupTypeDto> GroupTypesDto = new ArrayList<>();
+        ArrayList<GroupType> GroupTypes = getLicenseGroupTypes();
+        GroupTypes.forEach(groupType -> GroupTypesDto.add(convertGroupTypeToDto(groupType)));
+        return GroupTypesDto;
     }
 }
