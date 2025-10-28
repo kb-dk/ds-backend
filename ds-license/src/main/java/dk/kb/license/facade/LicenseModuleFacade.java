@@ -1,6 +1,7 @@
 package dk.kb.license.facade;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -232,19 +233,19 @@ public class LicenseModuleFacade {
         
         BaseModuleStorage.performStorageAction("persistLicense(description_dk=" + license.getDescription_dk() + ")", LicenseModuleStorage.class, storage -> {
             AuditLogEntry auditLog = null;
-
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute
             //audit log
             if (license.getId() == 0 ) {
                 long id = ((LicenseModuleStorage) storage).persistLicense(license);
                 ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null, license);
-                auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), changes.getBefore(), changes.getAfter());
+                auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), changes.getBefore(), changes.getAfter());
 
             }
             else {
                License oldLicense = ((LicenseModuleStorage) storage).getLicense(license.getId());
                ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(oldLicense, license);
                long id = ((LicenseModuleStorage) storage).persistLicense(license);
-               auditLog = new AuditLogEntry(id, (String) session.getAttribute("oauth_user"), ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), changes.getBefore(), changes.getAfter());
+               auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), changes.getBefore(), changes.getAfter());
             }
             
             ((LicenseModuleStorage) storage).persistAuditLog(auditLog);
@@ -358,11 +359,17 @@ public class LicenseModuleFacade {
         });           
     }
 
-    private  static AttributeTypeDto convertAttributTypeToDto(AttributeType attributeType) {
+    private  static AttributeTypeDto convertAttributeTypeToDto(AttributeType attributeType) {
         AttributeTypeDto attributeTypeDto = new AttributeTypeDto();
         attributeTypeDto.setId(attributeType.getId());
         attributeTypeDto.setValue(attributeType.getValue());
         return attributeTypeDto;
+    }
+
+    private  static AttributeType convertDtoToAttributeType(AttributeTypeDto attributeTypeDto) {
+        AttributeType attributeType = new AttributeType(attributeTypeDto.getValue());
+        attributeType.setId(attributeTypeDto.getId());
+        return attributeType;
     }
 
     private static AttributeDto convertAttributeToAttributeDto(Attribute attribute) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
@@ -384,6 +391,24 @@ public class LicenseModuleFacade {
 
     }
 
+    private static Attribute convertAttributeDtoToAttribute(AttributeDto attributeDto) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        Attribute attribute = new Attribute();
+        attribute.setId(attributeDto.getId());
+        attribute.setAttributeName(attributeDto.getAttributeName());
+
+        ArrayList<AttributeValue> attributeValues = new ArrayList<>();
+        for ( AttributeValueDto value : attributeDto.getValues() ){
+            AttributeValue attributeValue = new AttributeValue(value.getValue());
+            attributeValue.setId(value.getId());
+            attributeValues.add(attributeValue);
+        }
+
+        attribute.setValues(attributeValues);
+
+        return attribute;
+
+    }
+
     private static AttributeGroupDto convertAttributeGroupToDto(AttributeGroup attributeGroup){ //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
         AttributeGroupDto attributeGroupDto = new AttributeGroupDto();
         attributeGroupDto.setId(attributeGroup.getId());
@@ -395,6 +420,19 @@ public class LicenseModuleFacade {
         attributeGroupDto.setAttributes(attributeDtos);
 
         return attributeGroupDto;
+
+    }
+
+    private static AttributeGroup convertDtoToAttributeGroup(AttributeGroupDto attributeGroupDto){ //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        AttributeGroup attributeGroup = new AttributeGroup(attributeGroupDto.getNumber());
+        attributeGroup.setId(attributeGroupDto.getId());
+
+        ArrayList<Attribute> attributes = new ArrayList<>();
+        attributeGroupDto.getAttributes().forEach(attribute -> attributes.add(convertAttributeDtoToAttribute(attribute)));
+
+        attributeGroup.setAttributes(attributes);
+
+        return attributeGroup;
 
     }
 
@@ -420,7 +458,29 @@ public class LicenseModuleFacade {
 
     }
 
-    private  static GroupTypeDto convertGroupTypeToDto(GroupType groupType) {
+    private static LicenseContent convertDtoToLicenseContent(LicenseContentDto licenseContentDto) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        LicenseContent licenseContent = new LicenseContent();
+        licenseContent.setId(licenseContentDto.getId());
+        licenseContent.setName(licenseContentDto.getName());
+
+        ArrayList<Presentation> presentations = new ArrayList<>();
+
+        for ( PresentationDto presentationDto : licenseContentDto.getPresentations() ) {
+            Presentation presentation = new Presentation();
+            presentation.setId(presentationDto.getId());
+            presentation.setKey(presentationDto.getKey());
+
+            presentations.add(presentation);
+
+        }
+
+        licenseContent.setPresentations(presentations);
+
+        return licenseContent;
+
+    }
+
+    private static GroupTypeDto convertGroupTypeToDto(GroupType groupType) {
         GroupTypeDto groupTypeDto = new GroupTypeDto();
 
         groupTypeDto.setId(groupType.getId());
@@ -435,11 +495,7 @@ public class LicenseModuleFacade {
         return  groupTypeDto;
     }
 
-    public static LicenseDto getLicenseById(Long id) {
-        License license = BaseModuleStorage.performStorageAction("getLicense(" + id + ")", LicenseModuleStorage.class, storage -> {
-            return ((LicenseModuleStorage) storage).getLicense(id);
-        });
-
+    private static LicenseDto convertLicenseToLicenseDto(License license) {
         LicenseDto licenseDto = new LicenseDto();
         licenseDto.setId(license.getId());
         licenseDto.setDescriptionDk(license.getDescription_dk());
@@ -465,7 +521,41 @@ public class LicenseModuleFacade {
         return licenseDto;
     }
 
-    public static ArrayList<LicenseDto> getLicenses(){
+    private static License convertLicenseDtoToLicense(LicenseDto licenseDto) {
+        License license = new License();
+        license.setId(licenseDto.getId());
+        license.setDescription_dk(licenseDto.getDescriptionDk());
+        license.setLicenseName(licenseDto.getLicenseName());
+        license.setDescription_en(licenseDto.getDescriptionEn());
+        license.setLicenseName_en(licenseDto.getLicenseNameEn());
+        license.setValidFrom(licenseDto.getValidFrom());
+        license.setValidTo(licenseDto.getValidTo());
+
+        List<AttributeGroupDto> attributeGroupDtos = licenseDto.getAttributeGroups();
+        ArrayList<AttributeGroup> attributeGroups = new ArrayList<>();
+
+        attributeGroupDtos.forEach(attributeGroupDto -> attributeGroups.add(convertDtoToAttributeGroup(attributeGroupDto)));
+        license.setAttributeGroups(attributeGroups);
+
+        ArrayList<LicenseContentDto> licenseContentDtos = (ArrayList<LicenseContentDto>) licenseDto.getLicenseContents();
+        ArrayList<LicenseContent> licenseContents = new ArrayList<>();
+
+        licenseContentDtos.forEach(licenseContentDto -> licenseContents.add(convertDtoToLicenseContent(licenseContentDto)));
+
+        license.setLicenseContents(licenseContents);
+
+        return license;
+    }
+
+    public static LicenseDto getLicenseById(Long id) {
+        return convertLicenseToLicenseDto(getLicense(id));
+    }
+
+    public static void persistLicenseDto(LicenseDto licenseDto) {
+        persistLicense(convertLicenseDtoToLicense(licenseDto), null);
+    }
+
+    public static ArrayList<LicenseDto> getLicenses() {
         ArrayList<License> licenseIds = BaseModuleStorage.performStorageAction("getAllLicenseNames()", LicenseModuleStorage.class, storage -> {
             return ((LicenseModuleStorage) storage).getAllLicenseNames();
         });
@@ -508,7 +598,7 @@ public class LicenseModuleFacade {
 
         ArrayList<AttributeTypeDto> attributeTypeDto = new ArrayList();
 
-        attributeTypes.forEach(attributeType -> attributeTypeDto.add(convertAttributTypeToDto(attributeType)));
+        attributeTypes.forEach(attributeType -> attributeTypeDto.add(convertAttributeTypeToDto(attributeType)));
 
         return attributeTypeDto;
     }

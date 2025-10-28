@@ -250,4 +250,14 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
         }
     }
 
+    @Override
+    public void persistLicenseDto(LicenseDto licenseDto) {
+        try {
+            LicenseModuleFacade.persistLicenseDto(licenseDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
 }

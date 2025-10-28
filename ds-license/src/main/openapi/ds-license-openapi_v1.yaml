@@ -169,7 +169,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
 
-  /getLicenseById:
+  /License:
     get:
       summary: return the License with the given id
       tags:
@@ -192,8 +192,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/License'
+    post:
+      summary: Update or create license
+      tags:
+        - '${project.name}'
+      operationId: persistLicenseDto
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/License'
+      responses:
+        '201':
+          description: created
 
-  /getLicenses:
+  /Licenses:
     get:
       summary: return all Licenses
       tags:
