@@ -37,10 +37,12 @@ public class RightsModuleStorage extends BaseModuleStorage {
 
     private final String readRestrictedIdCommentByIdValueQuery = "SELECT comment FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ?";
 
-    private final String updateRestrictedIdCommentQuery = "UPDATE " + RESTRICTED_ID_TABLE + " SET " +
+    private final String updateRestrictedIdQuery = "UPDATE " + RESTRICTED_ID_TABLE + " SET " +
+            RESTRICTED_ID_TITLE + " = ? " + ", " +
             RESTRICTED_ID_COMMENT + " = ? " +
-            " WHERE " +
+            "WHERE " +
             RESTRICTED_ID_ID + " = ?";
+
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String deleteRestrictedIdByIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
 
@@ -107,20 +109,22 @@ public class RightsModuleStorage extends BaseModuleStorage {
     /**
      * Creates an entry in the restricted_ids table. Also updates the mTime for the related record in ds-storage.
      *
-     * @param id_value The value of the ID
-     * @param id_type  The type of the ID
+     * @param idValue  The value of the id
+     * @param idType   The type of the id
      * @param platform The platform where the object is restricted (e.g DR)
      * @param title    Title on broadcast
      * @param comment  Just a comment
      * @throws SQLException
      */
-    public long createRestrictedId(String id_value, String id_type, String platform, String title, String comment) throws SQLException {
+    public long createRestrictedId(String idValue, String idType, String platform, String title, String comment) throws SQLException {
         long uniqueID = generateUniqueID();
+
+        log.info("generating unique restricted id: " + uniqueID);
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)) {
             stmt.setLong(1, uniqueID);
-            stmt.setString(2, id_value);
-            stmt.setString(3, id_type);
+            stmt.setString(2, idValue);
+            stmt.setString(3, idType);
             stmt.setString(4, platform);
             stmt.setString(5, title);
             stmt.setString(6, comment);
@@ -135,21 +139,23 @@ public class RightsModuleStorage extends BaseModuleStorage {
     /**
      * Gets an entry from the restricted_ids table.
      *
-     * @param id_value value of the ID
-     * @param id_type  type of ID
-     * @param platform platform where the ID is restricted
+     * @param idValue  value of the id
+     * @param idType   type of id
+     * @param platform platform where the id is restricted
      * @return
      * @throws SQLException
      */
-    public RestrictedIdOutputDto getRestrictedId(String id_value, String id_type, String platform) throws SQLException {
+    public RestrictedIdOutputDto getRestrictedId(String idValue, String idType, String platform) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(readRestrictedIdQuery)) {
-            stmt.setString(1, id_value);
-            stmt.setString(2, id_type);
+            stmt.setString(1, idValue);
+            stmt.setString(2, idType);
             stmt.setString(3, platform);
             ResultSet res = stmt.executeQuery();
+
             while (res.next()) {
                 return restrictedIdOutputDtoMapper.map(res);
             }
+            
             return null;
         } catch (SQLException e) {
             log.error("SQL Exception in getRestrictedId", e);
@@ -158,18 +164,21 @@ public class RightsModuleStorage extends BaseModuleStorage {
     }
 
     /**
-     * Updates an entry in the restricted_ids table. Also updates the mTime of the related record in ds-storage.
+     * Updates title and comment on an entry in the restricted_ids table.
      *
-     * @param comment Just a comment
+     * @param id      The unique restricted id
+     * @param title   Title to update
+     * @param comment Comment to update
      * @throws SQLException
      */
-    public void updateRestrictedIdComment(long id, String comment) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdCommentQuery)) {
-            stmt.setString(1, comment);
-            stmt.setLong(2, id);
+    public void updateRestrictedId(Long id, String title, String comment) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(updateRestrictedIdQuery)) {
+            stmt.setString(1, title);
+            stmt.setString(2, comment);
+            stmt.setLong(3, id);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in updateRestrictedIdComment" + e);
+            log.error("SQL Exception in updateRestrictedId", e);
             throw e;
         }
     }
@@ -177,15 +186,15 @@ public class RightsModuleStorage extends BaseModuleStorage {
     /**
      * Delete an entry from the restricted_ids table.
      *
-     * @param id_value value of the ID
-     * @param id_type  type of ID
-     * @param platform platform where the ID is restricted
+     * @param idValue  value of the id
+     * @param idType   type of id
+     * @param platform platform where the id is restricted
      * @throws SQLException
      */
-    public void deleteRestrictedId(String id_value, String id_type, String platform) throws SQLException {
+    public void deleteRestrictedId(String idValue, String idType, String platform) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(deleteRestrictedIdQuery)) {
-            stmt.setString(1, id_value);
-            stmt.setString(2, id_type);
+            stmt.setString(1, idValue);
+            stmt.setString(2, idType);
             stmt.setString(3, platform);
             stmt.execute();
         } catch (SQLException e) {
@@ -215,7 +224,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
     }
 
     /**
-     * Get an entry from the restricted_id table by id_value (dsId).
+     * Get an entry from the restricted_ids table by id_value (dsId).
      *
      * @param dsId to get entry for.
      * @return a restricted_id comment

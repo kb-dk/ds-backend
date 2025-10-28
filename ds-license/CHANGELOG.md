@@ -14,10 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Endpoint POST `/rights/restrictedId` returns a RestrictedIdOutputDto as response instead of void.
 - Endpoint POST `/rights/restrictedIds` don't fail hard if there is an error in request body. Instead, it returns a
   ProcessedRestrictedIdsOutputDto response that holds information about how many successfully RestrictedIdInputDto
-  objects is created and a list of FailedIdDto that holds information about failed creations of RestrictedIdInputDto objects and
-  their error message.
+  objects is created and a list of FailedIdDto that holds information about failed creations of RestrictedIdInputDto
+  objects and their error message.
 - Method `validateCommentLength` has changed name to `validateComment`, and the method now also validates that comment
   is not blank.
+- Add column `title` in table `restricted_ids` (**Remember: alter table for OPS can be found
+  in `src/test/resources/ddl/rightsmodule_add_title_column.ddl`**).
+- Move title from column `comment` into column `title` and cleanup column `comment` (**Remember: migration for OPS can
+  be found in `src/test/resources/ddl/rightsmodule_cleanup_title_and_comment_column.ddl`**).
+- Changed PUT `/rights/restrictedId` -> PUT `/rights/restrictedId/{id}` and the following things:
+  * takes a RestrictedIdInputDto request body instead of a UpdateRestrictedIdCommentInputDto.
+  * it can update `title` and `comment` on a restricted id.
+  * returns a RestrictedIdOutputDto as response instead of void.
 
 ### Fixed
 

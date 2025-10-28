@@ -357,16 +357,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RestrictedIdOutput'
+
+  /rights/restrictedId/{id}:
     put:
-      summary: 'Updates comment of restricted id'
+      summary: 'Updates title and/or comment of restricted id. The requester should always send the information in all fields.'
       tags:
         - 'DsRights'
-      operationId: updateRestrictedIdComment
-      description: 'Only comment can be updated'
+      operationId: updateRestrictedId
+      description: 'Only title and/or comment can be updated'
       security:
         - KBOAuth:
             - any
       parameters:
+        - name: id
+          in: path
+          description: 'The unique id of a restricted id'
+          required: true
+          schema:
+            type: integer
+            format: int64
         - name: touchRecord
           in: query
           schema:
@@ -376,15 +385,36 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateRestrictedIdCommentInput'
+              $ref: '#/components/schemas/RestrictedIdInput'
             examples:
+              DsId:
+                value:
+                  idValue: 'ds.tv:oai:io:6f9017fb-810a-4386-98cc-debd1f19b48d'
+                  idType: 'DS_ID'
+                  platform: 'DRARKIV'
+                  title: 'TV Avisen'
+                  comment: 'Opdateret kommentar'
               DrProductionID:
                 value:
-                  id: '1753788094315'
-                  comment: 'Dette er en opdateret kommentar'
+                  idValue: '12345678'
+                  idType: 'DR_PRODUCTION_ID'
+                  platform: 'DRARKIV'
+                  title: 'TV Avisen'
+                  comment: 'Opdateret kommentar'
+              StrictTitle:
+                value:
+                  idValue: 'Helt sort'
+                  idType: 'STRICT_TITLE'
+                  platform: 'DRARKIV'
+                  title: 'Helt sort'
+                  comment: 'Opdateret kommentar'
       responses:
-        '201':
-          description: created
+        '200':
+          description: 'Updated restricted id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedIdOutput'
 
   /rights/restrictedIds:
     get:
@@ -1155,17 +1185,6 @@ components:
           $ref: '#/components/schemas/PlatformEnum'
         title:
           type: string
-        comment:
-          type: string
-
-    UpdateRestrictedIdCommentInput:
-      type: object
-      required:
-        - id
-      properties:
-        id:
-          type: integer
-          format: int64
         comment:
           type: string
 
