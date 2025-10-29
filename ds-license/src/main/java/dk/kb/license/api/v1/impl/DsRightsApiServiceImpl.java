@@ -28,7 +28,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public RestrictedIdOutputDto createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Creating restricted ID {}", restrictedIdInputDto);
         try {
-            return RightsModuleFacade.createRestrictedId(restrictedIdInputDto, touchRecord);
+            return RightsModuleFacade.createRestrictedId(touchRecord, restrictedIdInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -97,9 +97,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public ProcessedRestrictedIdsOutputDto createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
+    public ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            return RightsModuleFacade.createRestrictedIds(restrictedIds, touchRecord);
+            return RightsModuleFacade.createOrUpdateRestrictedIds(touchRecord, restrictedIds);
         } catch (Exception e) {
             throw handleException(e);
         }

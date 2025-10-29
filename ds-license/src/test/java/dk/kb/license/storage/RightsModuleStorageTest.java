@@ -142,7 +142,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void getRestrictedIdByIdValue_whenDsId_thenReturnComment() throws SQLException {
+    public void getRestrictedIdCommentByIdValue_whenDsId_thenReturnComment() throws SQLException {
         // Arrange
         String dsId = "ds.tv:oai:io:7cb60d39-effd-419c-9bac-881b7b7eb10c";
         String title = "Damages";
@@ -158,7 +158,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void getRestrictedIdByIdValue_whenNotFoundDsId_thenReturnNull() throws SQLException {
+    public void getRestrictedIdCommentByIdValue_whenNotFoundDsId_thenReturnNull() throws SQLException {
         // Act
         String actualComment = storage.getRestrictedIdCommentByIdValue("1");
 

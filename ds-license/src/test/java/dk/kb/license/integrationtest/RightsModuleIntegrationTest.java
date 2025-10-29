@@ -128,7 +128,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setTitle("Test title");
         restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
 
-        RightsModuleFacade.createRestrictedId(restrictedId, false);
+        RightsModuleFacade.createRestrictedId(false, restrictedId);
         RestrictedIdOutputDto outputObject = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), restrictedId.getIdType(), restrictedId.getPlatform());
 
         int deleted = RightsModuleFacade.deleteRestrictedId(outputObject.getId().longValue(), false);
@@ -145,7 +145,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setTitle("Test title");
         restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
 
-        RightsModuleFacade.createRestrictedId(restrictedId, false);
+        RightsModuleFacade.createRestrictedId(false, restrictedId);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664860", outputRight.getIdValue());
@@ -163,7 +163,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setTitle("Test title");
         restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
 
-        RightsModuleFacade.createRestrictedId(restrictedId, false);
+        RightsModuleFacade.createRestrictedId(false, restrictedId);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664800", outputRight.getIdValue());
@@ -181,7 +181,7 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setTitle("Test title");
         restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
 
-        RightsModuleFacade.createRestrictedId(restrictedId, false);
+        RightsModuleFacade.createRestrictedId(false, restrictedId);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664890", outputRight.getIdValue());

@@ -272,7 +272,8 @@ paths:
       operationId: getRestrictedId
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: id
           in: query
@@ -367,7 +368,7 @@ paths:
       description: 'Only title and/or comment can be updated'
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: id
           in: path
@@ -424,7 +425,8 @@ paths:
       operationId: getAllRestrictedIds
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: idType
           in: query
@@ -448,13 +450,13 @@ paths:
                 items:
                   $ref: '#/components/schemas/RestrictedIdOutput'
     post:
-      description: 'Create multiple restricted ids'
+      description: 'Create multiple restricted ids or updates if they already exists'
       tags:
         - 'DsRights'
-      operationId: createRestrictedIds
+      operationId: createOrUpdateRestrictedIds
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: touchRecord
           in: query
@@ -487,7 +489,7 @@ paths:
                 comment: 'test multi 3'
       responses:
         '200':
-          description: 'Status on restricted ids creation'
+          description: 'Status on restricted ids creation or updates'
           content:
             application/json:
               schema:
@@ -634,7 +636,7 @@ paths:
         - name: name
           in: query
           required: false
-          description: 'name of the DR holdback rule'
+          description: 'Name of the DR holdback rule'
           schema:
             type: string
       responses:
@@ -664,7 +666,7 @@ paths:
         - name: name
           in: query
           required: false
-          description: 'name of the DR holdback rule'
+          description: 'Name of the DR holdback rule'
           schema:
             type: string
         - name: days

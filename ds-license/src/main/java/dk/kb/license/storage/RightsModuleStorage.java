@@ -18,42 +18,34 @@ import java.util.List;
  */
 public class RightsModuleStorage extends BaseModuleStorage {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleStorage.class);
-
+    private final static RestrictedIdOutputDtoMapper restrictedIdOutputDtoMapper = new RestrictedIdOutputDtoMapper();
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
-
     private final String RESTRICTED_ID_ID = "id";
     private final String RESTRICTED_ID_IDVALUE = "id_value";
     private final String RESTRICTED_ID_IDTYPE = "id_type";
     private final String RESTRICTED_ID_PLATFORM = "platform";
     private final String RESTRICTED_ID_TITLE = "title";
     private final String RESTRICTED_ID_COMMENT = "comment";
-
     private final String createRestrictedIdQuery = "INSERT INTO " + RESTRICTED_ID_TABLE +
             " (" + RESTRICTED_ID_ID + "," + RESTRICTED_ID_IDVALUE + "," + RESTRICTED_ID_IDTYPE + "," + RESTRICTED_ID_PLATFORM + "," +
             RESTRICTED_ID_TITLE + "," + RESTRICTED_ID_COMMENT + ")" +
             " VALUES (?,?,?,?,?,?)";
     private final String readRestrictedIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String readRestrictedIdByIdQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
-
     private final String readRestrictedIdCommentByIdValueQuery = "SELECT comment FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ?";
-
     private final String updateRestrictedIdQuery = "UPDATE " + RESTRICTED_ID_TABLE + " SET " +
             RESTRICTED_ID_TITLE + " = ? " + ", " +
             RESTRICTED_ID_COMMENT + " = ? " +
             "WHERE " +
             RESTRICTED_ID_ID + " = ?";
-
     private final String deleteRestrictedIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDVALUE + " = ? AND " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ? ";
     private final String deleteRestrictedIdByIdQuery = "DELETE FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_ID + " = ?";
-
     private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ?";
-
     private final String DR_HOLDBACK_RULES_TABLE = "DR_HOLDBACK_RULES";
     private final String DR_HOLDBACK_RULES_ID = "id";
     private final String DR_HOLDBACK_RULES_VALUE = "dr_holdback_value";
     private final String DR_HOLDBACK_RULES_NAME = "name";
     private final String DR_HOLDBACK_RULES_DAYS = "days";
-
     private final String DR_HOLDBACK_RANGES_TABLE = "DR_HOLDBACK_RANGES";
     private final String DR_HOLDBACK_RANGES_ID = "id";
     private final String DR_HOLDBACK_RANGES_CONTENT_FROM = "content_range_from";
@@ -61,7 +53,6 @@ public class RightsModuleStorage extends BaseModuleStorage {
     private final String DR_HOLDBACK_RANGES_FORM_FROM = "form_range_from";
     private final String DR_HOLDBACK_RANGES_FORM_TO = "form_range_to";
     private final String DR_HOLDBACK_RANGES_VALUE = "dr_holdback_value";
-
     private final String createDrHoldbackRuleQuery = "INSERT INTO " + DR_HOLDBACK_RULES_TABLE +
             " (" + DR_HOLDBACK_RULES_ID + "," + DR_HOLDBACK_RULES_VALUE + "," + DR_HOLDBACK_RULES_NAME + "," + DR_HOLDBACK_RULES_DAYS + ")" +
             " VALUES (?,?,?,?)";
@@ -84,23 +75,17 @@ public class RightsModuleStorage extends BaseModuleStorage {
     private final String updateDrHoldbackDaysFromNameQuery = "UPDATE " + DR_HOLDBACK_RULES_TABLE
             + " SET " + DR_HOLDBACK_RULES_DAYS + " = ?"
             + " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
-
     private final String createDrHoldbackRangeQuery = "INSERT INTO " + DR_HOLDBACK_RANGES_TABLE +
             "(" + DR_HOLDBACK_RANGES_ID + "," + DR_HOLDBACK_RANGES_CONTENT_FROM + "," + DR_HOLDBACK_RANGES_CONTENT_TO + "," + DR_HOLDBACK_RANGES_FORM_FROM + "," + DR_HOLDBACK_RANGES_FORM_TO + "," + DR_HOLDBACK_RANGES_VALUE + ")" +
             " VALUES (?,?,?,?,?,?)";
-
     private final String getDrHoldbackValueFromContentAndFormQuery = "SELECT " + DR_HOLDBACK_RANGES_VALUE +
             " FROM " + DR_HOLDBACK_RANGES_TABLE + " WHERE "
             + DR_HOLDBACK_RANGES_CONTENT_FROM + " <= ? AND "
             + DR_HOLDBACK_RANGES_CONTENT_TO + " >= ?  AND "
             + DR_HOLDBACK_RANGES_FORM_FROM + " <= ? AND "
             + DR_HOLDBACK_RANGES_FORM_TO + " >= ? ";
-
-
     private final String getRangesForDrHoldbackValueQuery = "SELECT * FROM " + DR_HOLDBACK_RANGES_TABLE + " WHERE " + DR_HOLDBACK_RANGES_VALUE + " = ?";
     private final String deleteRangesForDrHoldbackValueQuery = "DELETE FROM " + DR_HOLDBACK_RANGES_TABLE + " WHERE " + DR_HOLDBACK_RANGES_VALUE + " = ?";
-
-    private final static RestrictedIdOutputDtoMapper restrictedIdOutputDtoMapper = new RestrictedIdOutputDtoMapper();
 
     public RightsModuleStorage() throws SQLException {
         super();
@@ -117,12 +102,12 @@ public class RightsModuleStorage extends BaseModuleStorage {
      * @throws SQLException
      */
     public long createRestrictedId(String idValue, String idType, String platform, String title, String comment) throws SQLException {
-        long uniqueID = generateUniqueID();
+        long id = generateUniqueID();
 
-        log.info("generating unique restricted id: " + uniqueID);
+        log.info("generating unique restricted id: " + id);
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)) {
-            stmt.setLong(1, uniqueID);
+            stmt.setLong(1, id);
             stmt.setString(2, idValue);
             stmt.setString(3, idType);
             stmt.setString(4, platform);
@@ -133,7 +118,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             log.error("SQL Exception in createRestrictedId", e);
             throw e;
         }
-        return uniqueID;
+        return id;
     }
 
     /**
@@ -155,7 +140,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
             while (res.next()) {
                 return restrictedIdOutputDtoMapper.map(res);
             }
-            
+
             return null;
         } catch (SQLException e) {
             log.error("SQL Exception in getRestrictedId", e);

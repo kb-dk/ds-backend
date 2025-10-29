@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
  */
 public class RightsChangelogGenerator {
 
-    public static ChangeDifferenceText createRestrictedIdChanges(RestrictedIdInputDto restrictedIdInputDto) {
-        return new ChangeDifferenceText(null,restrictedIdInputDto.toString());
+    public static ChangeDifferenceText createRestrictedIdChanges(RestrictedIdOutputDto restrictedIdOutputDto) {
+        return new ChangeDifferenceText(null, restrictedIdOutputDto.toString());
     }
 
     public static ChangeDifferenceText deleteRestrictedIdChanges(String id, String idType, String platform) {
