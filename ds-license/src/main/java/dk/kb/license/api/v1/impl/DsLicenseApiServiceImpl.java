@@ -221,6 +221,26 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
     }
 
     @Override
+    public void persistPresentationType(PresentationTypeDto presentationTypeDto) {
+        try {
+            LicenseModuleFacade.persistPresentationType(presentationTypeDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void persistGroupType(GroupTypeDto groupTypeDto) {
+        try {
+            LicenseModuleFacade.persistGroupType(groupTypeDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
     public ArrayList<AttributeTypeDto> getAttributeTypesDto() {
         try {
             ArrayList<AttributeTypeDto> result = LicenseModuleFacade.getAttributeTypesDto();
@@ -259,5 +279,56 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
             throw handleException(e);
         }
     }
+
+    @Override
+    public void persistAttributeTypeDto(AttributeTypeDto attributeTypeDto) {
+        try {
+            LicenseModuleFacade.persistAttributeTypeDto(attributeTypeDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void deleteLicense(Long id) {
+        try {
+            LicenseModuleFacade.deleteLicense(id, null);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void deletePresentationType(String key) {
+        try {
+            LicenseModuleFacade.deletePresentationType(key, null);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void deleteGroupType(String key) {
+        try {
+            LicenseModuleFacade.deleteLicenseGroupType(key, null);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void deleteAttributeType(String key) {
+        try {
+            LicenseModuleFacade.deleteAttributeType(key, null);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
 
 }

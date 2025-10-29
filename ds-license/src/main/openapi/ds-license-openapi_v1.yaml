@@ -208,6 +208,23 @@ paths:
       responses:
         '201':
           description: created
+    delete:
+      tags:
+        - '${project.name}'
+      operationId: deleteLicense
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: id
+          in: query
+          description: Filter on id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: succesfully deleted
 
   /Licenses:
     get:
@@ -228,7 +245,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/License'
 
-  /getPresentationTypeById:
+  /PresentationType:
     get:
       summary: return the PresentationType with the given id
       tags:
@@ -251,8 +268,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PresentationType'
+    post:
+      summary: Update a PresentationType or Creates a new PresentationType (id == 0)
+      tags:
+        - '${project.name}'
+      operationId: persistPresentationType
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresentationType'
+      responses:
+        '204':
+          description: created
+    delete:
+      summary: Delete PresentationType with the given key
+      tags:
+        - '${project.name}'
+      operationId: deletePresentationType
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: key
+          in: query
+          schema:
+            type: string
+      responses:
+        '204':
+          description: succesfully deleted
 
-  /getPresentationTypes:
+  /PresentationTypes:
     get:
       summary: return all PresentationTypes
       tags:
@@ -290,6 +339,40 @@ paths:
                 items:
                   $ref: '#/components/schemas/AttributeType'
 
+  /AttributeType:
+    post:
+      summary: Creates a new AttributeType (id is not used)
+      tags:
+        - '${project.name}'
+      operationId: persistAttributeTypeDto
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttributeType'
+      responses:
+        '204':
+          description: created
+    delete:
+      summary: Delete AttributeType with the given key
+      tags:
+        - '${project.name}'
+      operationId: deleteAttributeType
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: key
+          in: query
+          schema:
+            type: string
+      responses:
+        '204':
+          description: succesfully deleted
+
   /GroupType:
     get:
       summary: return the Grouptype with the given id
@@ -313,6 +396,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupType'
+    post:
+      summary: Update a GroupType or Creates a new GroupType (id == 0)
+      tags:
+        - '${project.name}'
+      operationId: persistGroupType
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupType'
+      responses:
+        '204':
+          description: created
+    delete:
+      summary: Delete GroupType with the given key
+      tags:
+        - '${project.name}'
+      operationId: deleteGroupType
+      security:
+        - KBOAuth:
+            - any
+      parameters:
+        - name: key
+          in: query
+          schema:
+            type: string
+      responses:
+        '204':
+          description: succesfully deleted
+
                           
   /GroupTypes:
     get:

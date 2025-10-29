@@ -361,7 +361,6 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * @return
      */
     private static String getCurrentUsername(String username) {
-        if (username == "Admin") { return "Admin"; }
         Message message = JAXRSUtils.getCurrentMessage();
         if (message == null) {
             if (username == null) {
