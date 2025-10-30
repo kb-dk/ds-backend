@@ -17,7 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update code to use `identifier` and `changecomment`
 - Move audit log from `BaseModuleStorage.class` into own `AuditLogModuleStorage.class`
 - Move method `convertRsToAuditLog(ResultSet rs)` into own `AuditLogEntryOutputDtoMapper.class`
-- Renamed mapper methods to be named `map`
 
 ### Fixed
 
