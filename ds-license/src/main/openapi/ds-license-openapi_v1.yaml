@@ -368,32 +368,6 @@ paths:
                 $ref: '#/components/schemas/RestrictedIdOutput'
         '404':
           description: restricted id not found
-    delete:
-      tags:
-        - 'DsRights'
-      operationId: deleteRestrictedId
-      security:
-        - KBOAuth:
-            - any
-      parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: touchRecord
-          in: query
-          schema:
-            type: boolean
-            default: true
-      responses:
-        '200':
-          description: deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordsCount'
     post:
       tags:
         - 'DsRights'
@@ -415,13 +389,17 @@ paths:
             examples:
               DrProductionID:
                 value:
-                  idValue: 'test1'
-                  idType: DR_PRODUCTION_ID
-                  platform: DRARKIV
+                  idValue: '12345678'
+                  idType: 'DR_PRODUCTION_ID'
+                  platform: 'DRARKIV'
                   comment: 'Dette er en test'
       responses:
-        '201':
-          description: created
+        '200':
+          description: 'Created restricted id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedIdOutput'
     put:
       summary: Updates comment of restricted id
       tags:
@@ -450,6 +428,41 @@ paths:
       responses:
         '201':
           description: created
+
+  /rights/restrictedId/delete/{id}:
+    post:
+      summary: 'Delete restricted id by id'
+      tags:
+        - 'DsRights'
+      operationId: deleteRestrictedId
+      security:
+        - KBOAth:
+            - ds-license-admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteObject'
+      responses:
+        '200':
+          description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
   /rights/restrictedId/check/dr-arkiv/{dsId}:
     get:
@@ -535,22 +548,6 @@ paths:
                 $ref: '#/components/schemas/DrHoldbackRuleOutput'
         '404':
           description: not found
-    delete:
-      tags:
-        - 'DsRights'
-      operationId: deleteDrHoldbackRule
-      security:
-        - KBOAuth:
-            - any
-      parameters:
-        - name: drHoldbackValue
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: succesfully deleted
     post:
       tags:
         - 'DsRights'
@@ -570,8 +567,41 @@ paths:
                   name: "Testing"
                   days: 100
       responses:
-        '204':
-          description: sucessfully created
+        '200':
+          description: 'Created DR holdback rule'
+          content:
+            'application/json':
+              schema:
+                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
+
+  /rights/drHoldbackRule/delete/{drHoldbackValue}:
+    post:
+      summary: 'Delete DR holdback rule by drHoldbackValue'
+      tags:
+        - 'DsRights'
+      operationId: deleteDrHoldbackRule
+      security:
+        - KBOAth:
+            - ds-license-admin
+      parameters:
+        - name: drHoldbackValue
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteObject'
+      responses:
+        '200':
+          description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
   /rights/drHoldbackDays:
     get:
@@ -673,25 +703,43 @@ paths:
             schema:
               $ref: '#/components/schemas/DrHoldbackRangeInput'
       responses:
-        '201':
-          description: created
-    delete:
-      summary: delete DR holdback ranges for a drHoldbackValue
+        '200':
+          description: 'Created DR holdback ranges'
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrHoldbackRangeOutput'
+
+  /rights/drHoldbackRanges/delete/{drHoldbackValue}:
+    post:
+      summary: 'Delete DR holdback ranges by drHoldbackValue'
       tags:
         - 'DsRights'
       operationId: deleteDrHoldbackRanges
       security:
         - KBOAth:
-            - any
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
-          in: query
+          in: path
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteObject'
       responses:
-        '204':
-          description: deleted
+        '200':
+          description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
   /rights/getDrHoldbackValueFromContentAndForm:
     get:
@@ -1193,7 +1241,7 @@ components:
         days:
           type: integer
 
-    DrHoldbackRanges:
+    DrHoldbackRange:
       type: object
       properties:
         contentRangeFrom:
@@ -1213,7 +1261,7 @@ components:
         ranges:
           type: array
           items:
-            $ref: "#/components/schemas/DrHoldbackRanges"
+            $ref: "#/components/schemas/DrHoldbackRange"
     
     DrHoldbackRangeOutput:
       type: object
@@ -1233,6 +1281,15 @@ components:
           type: integer
         drHoldbackValue:
           type: string
+
+    DeleteObject:
+      type: object
+      required:
+        - id
+      properties:
+        changeComment:
+          type: string
+          description: 'Why are we deleting this object?'
 
     HelloReply:
       type: object

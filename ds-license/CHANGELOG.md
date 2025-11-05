@@ -17,6 +17,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update code to use `identifier` and `changecomment`
 - Move audit log from `BaseModuleStorage.class` into own `AuditLogModuleStorage.class`
 - Move method `convertRsToAuditLog(ResultSet rs)` into own `AuditLogEntryOutputDtoMapper.class`
+- Change endpoints `DELETE` into `POST` with path variables and a request body `DeleteObject` that
+  has a `changeComment` field. The endpoints return a response body `RecordsCount` that tells how many rows was
+  deleted instead of void:
+    * `/rights/restrictedId` -> `/rights/restrictedId/delete/{id}`
+    * `/rights/drHoldbackRule` -> `/rights/drHoldbackRule/delete/{drHoldbackValue}`
+    * `/rights/drHoldbackRanges` -> `/rights/drHoldbackRanges/delete/{drHoldbackValue}`
+- Endpoint `POST /rights/drHoldbackRule` returns a DrHoldbackRuleOutputDto as response instead of void.
+- Endpoint `POST /rights/drHoldbackRanges` returns a list of DrHoldbackRangeOutputDto as response instead of void.
 
 ### Fixed
 

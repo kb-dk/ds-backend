@@ -14,6 +14,32 @@ public class InputValidator {
     private static final int MAX_COMMENT_LENGTH = 16348;
 
     /**
+     * Validates id is at least 11 digits
+     *
+     * @param id to be validated
+     */
+    public void validateId(Long id) {
+        if (id.toString().length() <= 10) {
+            final String errorMessage = "id: " + id + " should be at least 11 digits";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
+        }
+    }
+
+    /**
+     * Validates drHoldbackValue is not null, empty or blank
+     *
+     * @param drHoldbackValue to be validated
+     */
+    public void validateDrHoldbackValue(String drHoldbackValue) {
+        if (StringUtils.isBlank(drHoldbackValue)) {
+            final String errorMessage = "drHoldbackValue cannot be empty";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
+        }
+    }
+
+    /**
      * Check if dsId starts with "ds.tv:oai:io:" or "ds.radio:oai:io:"
      * It does not check UUID part of the dsId because we don't control it, and it could change later, and then we don't
      * want the validation to fail.
@@ -50,6 +76,19 @@ public class InputValidator {
 
         if (drProductionId.length() <= 7) {
             final String errorMessage = "The input DR production ID: " + drProductionId + " should be at least 8 digits";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
+        }
+    }
+
+    /**
+     * Validates changeComment is not null, empty or blank
+     *
+     * @param changeComment to be validated
+     */
+    public void validateChangeComment(String changeComment) {
+        if (StringUtils.isBlank(changeComment)) {
+            final String errorMessage = "changeComment cannot be empty";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }

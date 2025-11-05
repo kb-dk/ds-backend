@@ -69,7 +69,7 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
             " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
     private final String getDrHoldbackDaysFromValueQuery = "SELECT " + DR_HOLDBACK_RULES_DAYS + " FROM " + DR_HOLDBACK_RULES_TABLE +
             " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
-    private final String getAllDrHoldbackRulesQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE;
+    private final String getDrHoldbackRulesQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE;
     private final String getDrHoldbackRuleFromValueQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
             + " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
     private final String updateDrHoldbackDaysFromDrHoldbackValueQuery = "UPDATE " + DR_HOLDBACK_RULES_TABLE
@@ -239,7 +239,7 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
         try (PreparedStatement statement = connection.prepareStatement(deleteRestrictedIdByIdQuery)) {
             statement.setLong(1, id);
             int result = statement.executeUpdate();
-            log.info("Deleted '{}' documents by id: '{}'", result, id);
+            log.info("Deleted: {} documents by id: {}", result, id);
             return result;
         } catch (SQLException e) {
             log.error("SQL Exception in deleteRestrictedIdById", e);
@@ -303,10 +303,12 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
      * @param drHoldbackValue value of the holdback rule
      * @throws SQLException
      */
-    public void deleteDrHoldbackRule(String drHoldbackValue) throws SQLException {
+    public int deleteDrHoldbackRule(String drHoldbackValue) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(deleteDrHoldbackRuleQuery)) {
             stmt.setString(1, drHoldbackValue);
-            stmt.execute();
+            int result = stmt.executeUpdate();
+            log.info("Deleted: {} documents by drHoldbackValue: {}", result, drHoldbackValue);
+            return result;
         } catch (SQLException e) {
             log.error("SQL Exception in deleteDrHoldbackRule", e);
             throw e;
@@ -465,8 +467,8 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
      * @return a list of rules
      * @throws SQLException if fails
      */
-    public List<DrHoldbackRuleOutputDto> getAllDrHoldbackRules() throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(getAllDrHoldbackRulesQuery)) {
+    public List<DrHoldbackRuleOutputDto> getDrHoldbackRules() throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRulesQuery)) {
             List<DrHoldbackRuleOutputDto> output = new ArrayList<>();
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
@@ -544,7 +546,7 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
      * @return
      * @throws SQLException
      */
-    public List<DrHoldbackRangeOutputDto> getDrHoldbackRangesForDrHoldbackValue(String drHoldbackValue) throws SQLException {
+    public List<DrHoldbackRangeOutputDto> getDrHoldbackRangesByDrHoldbackValue(String drHoldbackValue) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(getRangesForDrHoldbackValueQuery)) {
             stmt.setString(1, drHoldbackValue);
             ResultSet result = stmt.executeQuery();
@@ -572,10 +574,12 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
      * @param drHoldbackValue
      * @throws SQLException
      */
-    public void deleteRangesForDrHoldbackValue(String drHoldbackValue) throws SQLException {
+    public int deleteRangesByDrHoldbackValue(String drHoldbackValue) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(deleteRangesForDrHoldbackValueQuery)) {
             stmt.setString(1, drHoldbackValue);
-            stmt.execute();
+            int result = stmt.executeUpdate();
+            log.info("Deleted: {} documents by drHoldbackValue: {}", result, drHoldbackValue);
+            return result;
         } catch (SQLException e) {
             log.error("SQL Exception in deleteRangesForDrHoldbackValue", e);
             throw e;

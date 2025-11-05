@@ -25,10 +25,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     private final static Logger log = LoggerFactory.getLogger(DsRightsApiServiceImpl.class);
 
     @Override
-    public void createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
-        log.debug("Creating restricted ID {}", restrictedIdInputDto);
+    public RestrictedIdOutputDto createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
+        log.debug("Creating restricted id: {}", restrictedIdInputDto);
         try {
-            RightsModuleFacade.createRestrictedId(restrictedIdInputDto, touchRecord);
+            return RightsModuleFacade.createRestrictedId(touchRecord, restrictedIdInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -36,7 +36,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
 
     @Override
     public void updateRestrictedIdComment(Boolean touchRecord, UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto) {
-        log.debug("Updating restricted ID {}", updateRestrictedIdCommentInputDto);
+        log.debug("Updating restricted id: {}", updateRestrictedIdCommentInputDto);
         try {
             RightsModuleFacade.updateRestrictedIdComment(updateRestrictedIdCommentInputDto, touchRecord);
         } catch (Exception e) {
@@ -45,26 +45,20 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public RecordsCountDto deleteRestrictedId(Long id, Boolean touchRecord) {
-        log.debug("Deleted restricted id: '{}'.", id);
+    public RecordsCountDto deleteRestrictedId(Long id, DeleteObjectDto deleteObjectDto, Boolean touchRecord) {
+        log.debug("Deleting restricted id: {}", id);
         try {
-            RecordsCountDto count = new RecordsCountDto();
-            count.setCount(RightsModuleFacade.deleteRestrictedId(id, touchRecord));
-            return count;
+            return RightsModuleFacade.deleteRestrictedId(id, touchRecord, deleteObjectDto);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     @Override
-    public RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) {
+    public RestrictedIdOutputDto getRestrictedId(String idValue, IdTypeEnumDto idType, PlatformEnumDto platform) {
+        log.debug("Get restricted id idValue: {}, idType: {}, platform: {}", idValue, idType, platform);
         try {
-            log.debug("Get restricted ID id:{} idType:{} platform:{}", id, idType, platform);
-            RestrictedIdOutputDto result = RightsModuleFacade.getRestrictedId(id, idType, platform);
-            if (result == null) {
-                throw new NotFoundServiceException("restricted id not found");
-            }
-            return result;
+            return RightsModuleFacade.getRestrictedId(idValue, idType, platform);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -115,14 +109,14 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * create a DR holdback rule.
+     * Create a DR holdback rule.
      *
      * @param drHoldbackRuleDto
      */
     @Override
-    public void createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleDto) {
+    public DrHoldbackRuleOutputDto createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleDto) {
         try {
-            RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleDto);
+            return RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -134,9 +128,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * @param drHoldbackValue drHoldbackValue of the DR holdback rule
      */
     @Override
-    public void deleteDrHoldbackRule(String drHoldbackValue) {
+    public RecordsCountDto deleteDrHoldbackRule(String drHoldbackValue, DeleteObjectDto deleteObjectDto) {
+        log.debug("Deleting DR holdback rule: {}", drHoldbackValue);
         try {
-            RightsModuleFacade.deleteDrHoldbackRule(drHoldbackValue);
+            return RightsModuleFacade.deleteDrHoldbackRule(drHoldbackValue, deleteObjectDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -165,7 +160,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public List<DrHoldbackRuleOutputDto> getDrHoldbackRules() {
         try {
-            return RightsModuleFacade.getAllDrHoldbackRules();
+            return RightsModuleFacade.getDrHoldbackRules();
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -227,9 +222,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * @param drHoldbackRangeInputDto
      */
     @Override
-    public void createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
+    public List<DrHoldbackRangeOutputDto> createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
         try {
-            RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
+            return RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -241,9 +236,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * @param drHoldbackValue
      */
     @Override
-    public void deleteDrHoldbackRanges(String drHoldbackValue) {
+    public RecordsCountDto deleteDrHoldbackRanges(String drHoldbackValue, DeleteObjectDto deleteObjectDto) {
+        log.debug("Deleting DR holdback ranges: {}", drHoldbackValue);
         try {
-            RightsModuleFacade.deleteRangesForDrHoldbackValue(drHoldbackValue);
+            return RightsModuleFacade.deleteDrHoldbackRanges(drHoldbackValue, deleteObjectDto);
         } catch (Exception e) {
             throw handleException(e);
         }

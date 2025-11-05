@@ -4,10 +4,11 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.UnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
+import dk.kb.license.storage.UnitTestUtil;
 import dk.kb.license.util.H2DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
@@ -46,10 +47,10 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     final String userName = "mockedName";
 
     DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
-    DrHoldbackRangesDto drHoldbackRangesDtoOne = new DrHoldbackRangesDto();
-    DrHoldbackRangesDto drHoldbackRangesDtoTwo = new DrHoldbackRangesDto();
+    DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
+    DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
 
-    ArrayList<AuditLogEntryOutputDto> auditLogEntriesForObject;
+    List<AuditLogEntryOutputDto> auditLogEntriesForObject;
 
     static MockedStatic<JAXRSUtils> mocked;
 
@@ -87,15 +88,15 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
         drHoldbackRuleInputDto.setName(drHoldBackName);
 
-        drHoldbackRangesDtoOne.setContentRangeFrom(1000);
-        drHoldbackRangesDtoOne.setContentRangeTo(1900);
-        drHoldbackRangesDtoOne.setFormRangeFrom(1000);
-        drHoldbackRangesDtoOne.setFormRangeTo(1000);
+        drHoldbackRangeDtoOne.setContentRangeFrom(1000);
+        drHoldbackRangeDtoOne.setContentRangeTo(1900);
+        drHoldbackRangeDtoOne.setFormRangeFrom(1000);
+        drHoldbackRangeDtoOne.setFormRangeTo(1000);
 
-        drHoldbackRangesDtoTwo.setContentRangeFrom(1000);
-        drHoldbackRangesDtoTwo.setContentRangeTo(1900);
-        drHoldbackRangesDtoTwo.setFormRangeFrom(1200);
-        drHoldbackRangesDtoTwo.setFormRangeTo(1500);
+        drHoldbackRangeDtoTwo.setContentRangeFrom(1000);
+        drHoldbackRangeDtoTwo.setContentRangeTo(1900);
+        drHoldbackRangeDtoTwo.setFormRangeFrom(1200);
+        drHoldbackRangeDtoTwo.setFormRangeTo(1500);
     }
 
     /**
@@ -117,6 +118,67 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         // The format date Solr client from dependency returns
         final String parseDateFormat = "EEEE MMM dd HH:mm:ss z yyyy";
         return new SimpleDateFormat(parseDateFormat, Locale.ROOT).parse(dateString);
+    }
+
+    @Test
+    public void deleteRestrictedId_whenInvalidId_thenThrowNotFoundServiceException() {
+        // Arrange
+        Long invalidId = 12345678910L;
+        String changeComment = "Udsendelse må vises efter nye aftaler";
+        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
+        deleteObjectDto.setChangeComment(changeComment);
+
+        // Act
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteRestrictedId(invalidId, false, deleteObjectDto));
+
+        // Assert
+        assertTrue(exception.getMessage().contains("restricted id: " + invalidId + " not found"));
+    }
+
+    @Test
+    public void deleteRestrictedId_whenValidId_thenDeleteRestrictedId() throws SQLException {
+        // Arrange
+        String drProductionId = "12345678";
+        String comment = "Brugeren har trukket deres samtykke tilbage";
+        String changeComment = "Udsendelse må vises efter nye aftaler";
+
+        RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
+        restrictedIdInputDto.setIdValue(drProductionId);
+        restrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
+        restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setComment(comment);
+
+        RestrictedIdOutputDto restrictedIdOutputDto = RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto);
+
+        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
+        deleteObjectDto.setChangeComment(changeComment);
+
+        // Act
+        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteRestrictedId(restrictedIdOutputDto.getId(), false, deleteObjectDto);
+
+        // Make sure that the restricted id is deleted
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform()));
+
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(restrictedIdOutputDto.getId());
+
+        // Assert
+        assertTrue(exception.getMessage().contains("restricted id idValue: " + restrictedIdInputDto.getIdValue() + ", idType: " + restrictedIdInputDto.getIdType() + ", platform: " + restrictedIdInputDto.getPlatform() + " not found"));
+
+        assertEquals(1, recordsCountDto.getCount());
+
+        assertEquals(2, auditLogEntriesForObject.size());
+        AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertNotNull(auditLogEntryOutputDto.getId());
+        assertEquals(restrictedIdOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L);
+        assertEquals(userName, auditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.DELETE, auditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, auditLogEntryOutputDto.getChangeName());
+        assertEquals(drProductionId, auditLogEntryOutputDto.getIdentifier());
+        assertEquals(changeComment, auditLogEntryOutputDto.getChangeComment());
+        assertEquals(restrictedIdOutputDto.toString(), auditLogEntryOutputDto.getTextBefore());
+        assertNull(auditLogEntryOutputDto.getTextAfter());
     }
 
     @ParameterizedTest
@@ -178,7 +240,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_whenDsIdTWithDrProductionIdButThereIsNoMatchOnDrProductionId_thenThrowNotFoundServiceException() throws ParseException, SolrServerException, IOException {
+    public void matchingDrProductionIdBroadcasts_whenValidDsIdTWithDrProductionIdButThereIsNoMatchOnDrProductionId_thenThrowNotFoundServiceException() throws ParseException, SolrServerException, IOException {
         // Arrange
         String drProductionId = "9213163000";
         String expectedMessage = "No DR broadcasts found with drProductionId: " + drProductionId;
@@ -232,7 +294,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_whenDsIdWithNoDrProductionId_thenReturnDrBroadcastDto() throws ParseException, SolrServerException, IOException {
+    public void matchingDrProductionIdBroadcasts_whenValidDsIdWithNoDrProductionId_thenReturnDrBroadcastDto() throws ParseException, SolrServerException, IOException {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
@@ -282,7 +344,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_whenDsIdWithNoDrProductionIdAndRestrictedComment_thenReturnDrBroadcastDto() throws ParseException, SolrServerException, IOException {
+    public void matchingDrProductionIdBroadcasts_whenValidDsIdWithNoDrProductionIdAndRestrictedComment_thenReturnDrBroadcastDto() throws ParseException, SolrServerException, IOException {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
@@ -336,7 +398,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     }
 
     @Test
-    public void matchingDrProductionIdBroadcasts_whenDsIdWithDrProductionId_thenReturnDrBroadcastDto() throws ParseException, SolrServerException, IOException {
+    public void matchingDrProductionIdBroadcasts_whenValidDsIdWithDrProductionId_thenReturnDrBroadcastDto() throws ParseException, SolrServerException, IOException {
         // Arrange
         String drProductionId = "9213163000";
 
@@ -417,160 +479,269 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     }
 
     @Test
-    public void createDrHoldbackRule_whenDrHoldbackRuleInputDto_thenCreateRule() throws SQLException {
-        long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
+    public void createDrHoldbackRule_whenValidDrHoldbackRuleInputDto_thenCreateRule() throws SQLException {
+        // Act
+        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        RightsModuleFacade.getDrHoldbackRuleById(drHoldBackValue);
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
+
+        // Assert
+        assertTrue(drHoldbackRuleOutputDto.getId() > 0L);
+        assertEquals(drHoldBackValue, drHoldbackRuleOutputDto.getDrHoldbackValue());
+        assertEquals(drHoldBackName, drHoldbackRuleOutputDto.getName());
+        assertEquals(drHoldbackDays, drHoldbackRuleOutputDto.getDays());
 
         assertEquals(1, auditLogEntriesForObject.size());
-        AuditLogEntryOutputDto createDrHoldbackRuleAuditLog = auditLogEntriesForObject.get(0);
-        assertEquals(ChangeTypeEnumDto.CREATE, createDrHoldbackRuleAuditLog.getChangeType());
-        assertEquals(ObjectTypeEnumDto.HOLDBACK_RULE, createDrHoldbackRuleAuditLog.getChangeName());
-        assertNull(createDrHoldbackRuleAuditLog.getTextBefore());
-        assertEquals(drHoldbackRuleInputDto.toString(), createDrHoldbackRuleAuditLog.getTextAfter());
-        assertEquals(userName, createDrHoldbackRuleAuditLog.getUserName());
-        assertEquals(drHoldbackRuleInputDto.getDrHoldbackValue(), createDrHoldbackRuleAuditLog.getIdentifier());
-        assertNull(createDrHoldbackRuleAuditLog.getChangeComment());
-        assertEquals(drHoldbackRuleId, createDrHoldbackRuleAuditLog.getObjectId());
+        AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertTrue(auditLogEntryOutputDto.getId() > 0L);
+        assertEquals(drHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, auditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.CREATE, auditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.HOLDBACK_RULE, auditLogEntryOutputDto.getChangeName());
+        assertEquals(drHoldBackValue, auditLogEntryOutputDto.getIdentifier());
+        assertNull(auditLogEntryOutputDto.getChangeComment());
+        assertNull(auditLogEntryOutputDto.getTextBefore());
+        assertEquals(drHoldbackRuleOutputDto.toString(), auditLogEntryOutputDto.getTextAfter());
+    }
+
+    @Test
+    public void updateDrHoldbackDaysFromDrHoldbackValue_whenValidDrHoldBackValue_thenUpdateDaysForRule() throws SQLException {
+        // Arrange
+        int newDrHoldbackDays = 10;
+
+        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+
+        // Act
+        RightsModuleFacade.updateDrHoldbackDaysFromDrHoldbackValue(drHoldBackValue, newDrHoldbackDays);
+        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.getDrHoldbackRuleById(drHoldBackValue);
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
+
+        // Assert
+        assertTrue(drHoldbackRuleOutputDto.getId() > 0L);
+        assertEquals(drHoldBackValue, drHoldbackRuleOutputDto.getDrHoldbackValue());
+        assertEquals(drHoldBackName, drHoldbackRuleOutputDto.getName());
+        assertEquals(newDrHoldbackDays, drHoldbackRuleOutputDto.getDays());
+
+        assertEquals(2, auditLogEntriesForObject.size());
+        AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertTrue(auditLogEntryOutputDto.getId() > 0L);
+        assertEquals(drHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, auditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.UPDATE, auditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.HOLDBACK_DAY, auditLogEntryOutputDto.getChangeName());
+        assertEquals(drHoldBackValue, auditLogEntryOutputDto.getIdentifier());
+        assertNull(auditLogEntryOutputDto.getChangeComment());
+        assertEquals("Days before: " + drHoldbackDays, auditLogEntryOutputDto.getTextBefore());
+        assertEquals("Days after: " + newDrHoldbackDays, auditLogEntryOutputDto.getTextAfter());
+    }
+
+    @Test
+    public void updateDrHoldbackDaysFromName_whenValidDrHoldBackName_thenUpdateDaysForRule() throws SQLException {
+        // Arrange
+        int newDrHoldbackDays = 10;
+
+        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+
+        // Act
+        RightsModuleFacade.updateDrHoldbackDaysFromName(drHoldBackName, newDrHoldbackDays);
+        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.getDrHoldbackRuleById(drHoldBackValue);
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
+
+        // Assert
+        assertTrue(drHoldbackRuleOutputDto.getId() > 0L);
+        assertEquals(drHoldBackValue, drHoldbackRuleOutputDto.getDrHoldbackValue());
+        assertEquals(drHoldBackName, drHoldbackRuleOutputDto.getName());
+        assertEquals(newDrHoldbackDays, drHoldbackRuleOutputDto.getDays());
+
+        assertEquals(2, auditLogEntriesForObject.size());
+        AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertTrue(auditLogEntryOutputDto.getId() > 0L);
+        assertEquals(drHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, auditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.UPDATE, auditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.HOLDBACK_DAY, auditLogEntryOutputDto.getChangeName());
+        assertEquals(drHoldBackName, auditLogEntryOutputDto.getIdentifier());
+        assertNull(auditLogEntryOutputDto.getChangeComment());
+        assertEquals("Days before: " + drHoldbackDays, auditLogEntryOutputDto.getTextBefore());
+        assertEquals("Days after: " + newDrHoldbackDays, auditLogEntryOutputDto.getTextAfter());
+    }
+
+    @Test
+    public void deleteDrHoldbackRule_whenValidDrHoldbackValue_thenDeleteRule() throws SQLException {
+        // Arrange
+        String changeComment = "DR holdback rule skal ikke længere bruges";
+        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
+        deleteObjectDto.setChangeComment(changeComment);
+
+        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+
+        // Act
+        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRule(drHoldBackValue, deleteObjectDto);
+
+        // Make sure that the DR holdback rule is deleted
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRuleById(drHoldBackValue));
+
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
+
+        // Assert
+        assertTrue(exception.getMessage().contains("DR holdback rule not found for drHoldbackValue: " + drHoldBackValue));
+
+        assertEquals(1, recordsCountDto.getCount());
+
+        assertEquals(2, auditLogEntriesForObject.size());
+        AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertTrue(auditLogEntryOutputDto.getId() > 0L);
+        assertEquals(drHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, auditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.DELETE, auditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.HOLDBACK_RULE, auditLogEntryOutputDto.getChangeName());
+        assertEquals(drHoldBackValue, auditLogEntryOutputDto.getIdentifier());
+        assertEquals(changeComment, auditLogEntryOutputDto.getChangeComment());
+        assertEquals(drHoldbackRuleOutputDto.toString(), auditLogEntryOutputDto.getTextBefore());
+        assertNull(auditLogEntryOutputDto.getTextAfter());
+    }
+
+    @Test
+    public void createDrHoldbackRanges_whenInvalidDrHoldBackValue_thenThrowNotFoundServiceException() {
+        // Arrange
+        String invalidDrHoldbackValue = "invalid";
+        DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
+        drHoldbackRangeInputDto.setDrHoldbackValue(invalidDrHoldbackValue);
+
+        List<DrHoldbackRangeDto> ranges = List.of(drHoldbackRangeDtoOne, drHoldbackRangeDtoTwo);
+
+        drHoldbackRangeInputDto.setRanges(ranges);
+
+        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+
+        // Act
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto));
+
+        // Assert
+        assertTrue(exception.getMessage().contains("DR holdback rule not found for drHoldbackValue: " + invalidDrHoldbackValue));
     }
 
     @Test
     public void createDrHoldbackRanges_whenDrHoldbackRangeInputDto_thenCreatesRanges() throws SQLException {
+        // Arrange
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
         drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
 
-        List<DrHoldbackRangesDto> ranges = List.of(drHoldbackRangesDtoOne, drHoldbackRangesDtoTwo);
+        List<DrHoldbackRangeDto> ranges = List.of(drHoldbackRangeDtoOne, drHoldbackRangeDtoTwo);
 
         drHoldbackRangeInputDto.setRanges(ranges);
 
-        long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
 
-        List<Long> drHoldBackRangesIds = RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
+        // Act
+        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
 
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
+        // Assert
+        assertEquals(drHoldbackRangeInputDto.getRanges().size(), drHoldbackRangeOutputDtoList.size());
 
-        assertEquals(2, drHoldBackRangesIds.size());
+        for (int i = 0; i < drHoldbackRangeOutputDtoList.size(); i++) {
+            assertEquals(drHoldbackRangeInputDto.getDrHoldbackValue(), drHoldbackRangeOutputDtoList.get(i).getDrHoldbackValue());
+            assertEquals(drHoldbackRangeInputDto.getRanges().get(i).getContentRangeFrom(), drHoldbackRangeOutputDtoList.get(i).getContentRangeFrom());
+            assertEquals(drHoldbackRangeInputDto.getRanges().get(i).getContentRangeTo(), drHoldbackRangeOutputDtoList.get(i).getContentRangeTo());
+            assertEquals(drHoldbackRangeInputDto.getRanges().get(i).getFormRangeFrom(), drHoldbackRangeOutputDtoList.get(i).getFormRangeFrom());
+            assertEquals(drHoldbackRangeInputDto.getRanges().get(i).getFormRangeTo(), drHoldbackRangeOutputDtoList.get(i).getFormRangeTo());
 
-        for (Long drHoldBackRangesId : drHoldBackRangesIds) {
+            auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRangeOutputDtoList.get(i).getId());
+            AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
 
-            auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldBackRangesId);
-            assertEquals(1, auditLogEntriesForObject.size());
-
-            AuditLogEntryOutputDto createDrHoldbackRangeAuditLog = auditLogEntriesForObject.get(0);
-
-            assertEquals(drHoldBackRangesId, createDrHoldbackRangeAuditLog.getObjectId());
-            assertEquals(ChangeTypeEnumDto.CREATE, createDrHoldbackRangeAuditLog.getChangeType());
-            assertEquals(ObjectTypeEnumDto.HOLDBACK_RANGE, createDrHoldbackRangeAuditLog.getChangeName());
-            assertEquals(userName, createDrHoldbackRangeAuditLog.getUserName());
-            assertEquals(drHoldbackRangeInputDto.getDrHoldbackValue(), createDrHoldbackRangeAuditLog.getIdentifier());
-            assertNull(createDrHoldbackRangeAuditLog.getChangeComment());
-            assertNull(createDrHoldbackRangeAuditLog.getTextBefore());
-            assertEquals(ranges.toString(), createDrHoldbackRangeAuditLog.getTextAfter());
+            assertTrue(auditLogEntryOutputDto.getId() > 0L);
+            assertEquals(drHoldbackRangeOutputDtoList.get(i).getId(), auditLogEntryOutputDto.getObjectId());
+            assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+            assertEquals(userName, auditLogEntryOutputDto.getUserName());
+            assertEquals(ChangeTypeEnumDto.CREATE, auditLogEntryOutputDto.getChangeType());
+            assertEquals(ObjectTypeEnumDto.HOLDBACK_RANGE, auditLogEntryOutputDto.getChangeName());
+            assertEquals(drHoldBackValue, auditLogEntryOutputDto.getIdentifier());
+            assertNull(auditLogEntryOutputDto.getChangeComment());
+            assertNull(auditLogEntryOutputDto.getTextBefore());
+            assertEquals(ranges.get(i).toString(), auditLogEntryOutputDto.getTextAfter());
         }
     }
 
     @Test
-    public void updateDrHoldbackDaysFromDrHoldbackValue_whenDrHoldBackValue_thenUpdateDaysForRule() throws SQLException {
-        int newDrHoldbackDays = 10;
-
-        long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
-
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
-
-        RightsModuleFacade.updateDrHoldbackDaysFromDrHoldbackValue(drHoldBackValue, newDrHoldbackDays);
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
-        assertEquals(2, auditLogEntriesForObject.size());
-
-        AuditLogEntryOutputDto updateDrHoldbackRuleAuditLogFromValue = auditLogEntriesForObject.get(0);
-
-        assertEquals(drHoldbackRuleId, updateDrHoldbackRuleAuditLogFromValue.getObjectId());
-        assertEquals(userName, updateDrHoldbackRuleAuditLogFromValue.getUserName());
-        assertEquals(ChangeTypeEnumDto.UPDATE, updateDrHoldbackRuleAuditLogFromValue.getChangeType());
-        assertEquals(ObjectTypeEnumDto.HOLDBACK_DAY, updateDrHoldbackRuleAuditLogFromValue.getChangeName());
-        assertEquals(drHoldbackRuleInputDto.getDrHoldbackValue(), updateDrHoldbackRuleAuditLogFromValue.getIdentifier());
-        assertNull(updateDrHoldbackRuleAuditLogFromValue.getChangeComment());
-        assertEquals("Days before: " + drHoldbackDays, updateDrHoldbackRuleAuditLogFromValue.getTextBefore());
-        assertEquals("Days after: " + newDrHoldbackDays, updateDrHoldbackRuleAuditLogFromValue.getTextAfter());
-    }
-
-    @Test
-    public void updateDrHoldbackDaysFromName_whenDrHoldBackName_thenUpdateDaysForRule() throws SQLException {
-        int newDrHoldbackDays = 10;
-
-        long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
-
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
-
-        RightsModuleFacade.updateDrHoldbackDaysFromName(drHoldBackName, newDrHoldbackDays);
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
-        assertEquals(2, auditLogEntriesForObject.size());
-
-        AuditLogEntryOutputDto updateDrHoldbackRuleAuditLogFromName = auditLogEntriesForObject.get(0);
-
-        assertEquals(drHoldbackRuleId, updateDrHoldbackRuleAuditLogFromName.getObjectId());
-        assertEquals(userName, updateDrHoldbackRuleAuditLogFromName.getUserName());
-        assertEquals(ChangeTypeEnumDto.UPDATE, updateDrHoldbackRuleAuditLogFromName.getChangeType());
-        assertEquals(ObjectTypeEnumDto.HOLDBACK_DAY, updateDrHoldbackRuleAuditLogFromName.getChangeName());
-        assertEquals(drHoldbackRuleInputDto.getName(), updateDrHoldbackRuleAuditLogFromName.getIdentifier());
-        assertNull(updateDrHoldbackRuleAuditLogFromName.getChangeComment());
-        assertEquals("Days before: " + drHoldbackDays, updateDrHoldbackRuleAuditLogFromName.getTextBefore());
-        assertEquals("Days after: " + newDrHoldbackDays, updateDrHoldbackRuleAuditLogFromName.getTextAfter());
-    }
-
-    @Test
-    public void deleteRangesForDrHoldbackValue_whenDrHoldBackValue_thenDeletesAllRanges() throws SQLException {
+    public void deleteRangesForDrHoldbackValue_whenInvalidDrHoldBackValue_thenThrowNotFoundServiceException() throws SQLException {
+        // Arrange
+        String invalidDrHoldbackValue = "invalid";
+        String changeComment = "DR holdback ranges skal ikke længere bruges";
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
         drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
+        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
+        deleteObjectDto.setChangeComment(changeComment);
 
-        List<DrHoldbackRangesDto> ranges = List.of(drHoldbackRangesDtoOne, drHoldbackRangesDtoTwo);
+        List<DrHoldbackRangeDto> ranges = List.of(drHoldbackRangeDtoOne, drHoldbackRangeDtoTwo);
 
         drHoldbackRangeInputDto.setRanges(ranges);
 
-        long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
 
-        List<Long> drHoldBackRangesIds = RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
+        RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
 
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
+        // Act
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteDrHoldbackRanges(invalidDrHoldbackValue, deleteObjectDto));
 
-        RightsModuleFacade.deleteRangesForDrHoldbackValue(drHoldBackValue);
+        // Assert
+        assertTrue(exception.getMessage().contains("DR holdback ranges not found for drHoldbackValue: " + invalidDrHoldbackValue));
+    }
 
-        for (Long drHoldBackRangesId : drHoldBackRangesIds) {
+    @Test
+    public void deleteRangesForDrHoldbackValue_whenValidDrHoldBackValue_thenDeletesAllRanges() throws SQLException {
+        // Arrange
+        String changeComment = "DR holdback ranges skal ikke længere bruges";
+        DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
+        drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
+        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
+        deleteObjectDto.setChangeComment(changeComment);
 
-            auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldBackRangesId);
+        List<DrHoldbackRangeDto> ranges = List.of(drHoldbackRangeDtoOne, drHoldbackRangeDtoTwo);
+
+        drHoldbackRangeInputDto.setRanges(ranges);
+
+        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+
+        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
+
+        // Act
+        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRanges(drHoldBackValue, deleteObjectDto);
+
+        // Make sure that all DR holdback ranges is deleted
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRanges(drHoldBackValue));
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
+
+        // Assert
+        assertTrue(exception.getMessage().contains("DR holdback ranges not found for drHoldbackValue: " + drHoldBackValue));
+
+        assertEquals(2, recordsCountDto.getCount());
+
+        assertEquals(1, auditLogEntriesForObject.size());
+
+        for (DrHoldbackRangeOutputDto drHoldbackRangeOutputDto : drHoldbackRangeOutputDtoList) {
+            auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRangeOutputDto.getId());
             assertEquals(2, auditLogEntriesForObject.size());
 
-            AuditLogEntryOutputDto deleteDrHoldbackRangeAuditLog = auditLogEntriesForObject.get(0);
+            AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
 
-            assertEquals(drHoldBackRangesId, deleteDrHoldbackRangeAuditLog.getObjectId());
-            assertTrue(auditLogEntriesForObject.get(1).getModifiedTime() < deleteDrHoldbackRangeAuditLog.getModifiedTime());
-            assertEquals(userName, deleteDrHoldbackRangeAuditLog.getUserName());
-            assertEquals(ChangeTypeEnumDto.DELETE, deleteDrHoldbackRangeAuditLog.getChangeType());
-            assertEquals(ObjectTypeEnumDto.HOLDBACK_RANGE, deleteDrHoldbackRangeAuditLog.getChangeName());
-            assertEquals(drHoldbackRangeInputDto.getDrHoldbackValue(), deleteDrHoldbackRangeAuditLog.getIdentifier());
-            assertNull(deleteDrHoldbackRangeAuditLog.getChangeComment());
-            // assertEquals(ranges.toString(), deleteDrHoldbackRangeAuditLog.getTextBefore()); TODO: This should be fixed together with: DRA-2085
-            assertNull(deleteDrHoldbackRangeAuditLog.getTextAfter());
+            assertTrue(auditLogEntryOutputDto.getId() > 0L);
+            assertEquals(drHoldbackRangeOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+            assertTrue(auditLogEntriesForObject.get(1).getModifiedTime() < auditLogEntryOutputDto.getModifiedTime());
+            assertEquals(userName, auditLogEntryOutputDto.getUserName());
+            assertEquals(ChangeTypeEnumDto.DELETE, auditLogEntryOutputDto.getChangeType());
+            assertEquals(ObjectTypeEnumDto.HOLDBACK_RANGE, auditLogEntryOutputDto.getChangeName());
+            assertEquals(drHoldbackRangeInputDto.getDrHoldbackValue(), auditLogEntryOutputDto.getIdentifier());
+            assertEquals(changeComment, auditLogEntryOutputDto.getChangeComment());
+            assertEquals(drHoldbackRangeOutputDto.toString(), auditLogEntryOutputDto.getTextBefore());
+            assertNull(auditLogEntryOutputDto.getTextAfter());
         }
-    }
-
-    @Test
-    public void deleteDrHoldbackRule_whenDrHoldbackRuleId_thenDeleteRule() throws SQLException {
-        long drHoldbackRuleId = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
-
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
-
-        RightsModuleFacade.deleteDrHoldbackRule(drHoldBackValue);
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleId);
-        assertEquals(2, auditLogEntriesForObject.size());
-
-        AuditLogEntryOutputDto deleteDrHoldbackRuleAuditLog = auditLogEntriesForObject.get(0);
-
-        assertEquals(drHoldbackRuleId, deleteDrHoldbackRuleAuditLog.getObjectId());
-        assertEquals(userName, deleteDrHoldbackRuleAuditLog.getUserName());
-        assertEquals(ChangeTypeEnumDto.DELETE, deleteDrHoldbackRuleAuditLog.getChangeType());
-        assertEquals(ObjectTypeEnumDto.HOLDBACK_RULE, deleteDrHoldbackRuleAuditLog.getChangeName());
-        assertEquals(drHoldbackRuleInputDto.getDrHoldbackValue(), deleteDrHoldbackRuleAuditLog.getIdentifier());
-        assertNull(deleteDrHoldbackRuleAuditLog.getChangeComment());
-        //assertEquals(drHoldbackRuleInputDto.toString(), deleteDrHoldbackRuleAuditLog.getTextBefore()); TODO: This should be fixed together with: DRA-2085
-        assertNull(deleteDrHoldbackRuleAuditLog.getTextAfter());
     }
 }

@@ -104,7 +104,7 @@ public class RightsModuleStorageTest extends UnitTestUtil {
     }
 
     @Test
-    public void getRestrictedIdByIdValue_whenDsId_thenReturnComment() throws SQLException {
+    public void getRestrictedIdByIdValue_whenValidDsId_thenReturnComment() throws SQLException {
         String dsId = "ds.tv:oai:io:7cb60d39-effd-419c-9bac-881b7b7eb10c";
         String expectedComment = "Test comment";
 
@@ -144,11 +144,27 @@ public class RightsModuleStorageTest extends UnitTestUtil {
         assertEquals(days, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
         assertEquals(days, storage.getDrHoldbackDaysFromName(name));
 
-        assertEquals(1, storage.getAllDrHoldbackRules().size());
+        assertEquals(1, storage.getDrHoldbackRules().size());
         storage.deleteDrHoldbackRule(drHoldbackValue);
         assertEquals(-1, storage.getDrHoldbackDaysFromValue(drHoldbackValue));
         assertEquals(-1, storage.getDrHoldbackDaysFromName(name));
-        assertEquals(0, storage.getAllDrHoldbackRules().size());
+        assertEquals(0, storage.getDrHoldbackRules().size());
+    }
+
+    @Test
+    public void test() throws SQLException {
+        String drHoldbackValue = "2.02";
+        String name = "Aktualitet & Debat";
+        int days = 100;
+
+        storage.createDrHoldbackRule(drHoldbackValue, name, days);
+
+        storage.createDrHoldbackRange(1000, 1000, 1200, 1900, drHoldbackValue);
+
+        storage.deleteDrHoldbackRule(drHoldbackValue);
+
+        assertEquals(drHoldbackValue, storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
+        assertEquals(1, storage.getDrHoldbackRangesByDrHoldbackValue(drHoldbackValue).size());
     }
 
     @Test
@@ -163,8 +179,8 @@ public class RightsModuleStorageTest extends UnitTestUtil {
 
         assertEquals("test1", storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
         assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
-        assertEquals(1, storage.getDrHoldbackRangesForDrHoldbackValue("test1").size());
-        assertEquals(2, storage.getDrHoldbackRangesForDrHoldbackValue("test2").size());
+        assertEquals(1, storage.getDrHoldbackRangesByDrHoldbackValue("test1").size());
+        assertEquals(2, storage.getDrHoldbackRangesByDrHoldbackValue("test2").size());
         assertNull(storage.getDrHoldbackValueFromContentAndForm(2500, 9999));
         assertNull(storage.getDrHoldbackValueFromContentAndForm(9999, 1200));
         assertNull(storage.getDrHoldbackValueFromContentAndForm(9999, 9999));
@@ -181,7 +197,7 @@ public class RightsModuleStorageTest extends UnitTestUtil {
         assertEquals("test1", storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
         assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
 
-        storage.deleteRangesForDrHoldbackValue("test1");
+        storage.deleteRangesByDrHoldbackValue("test1");
 
         assertNull(storage.getDrHoldbackValueFromContentAndForm(1000, 1200));
         assertEquals("test2", storage.getDrHoldbackValueFromContentAndForm(2500, 2900));
