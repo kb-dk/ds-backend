@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS restricted_ids (
     id_type  VARCHAR(32)    NOT NULL,
     platform VARCHAR(32)    NOT NULL,
     title    VARCHAR(4096)  NULL,
-    comment  VARCHAR(16384) NULL
+    comment  VARCHAR(16384) NOT NULL
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS unique_restricted_id ON restricted_ids (id_value, id_type, platform);

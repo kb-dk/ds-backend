@@ -159,7 +159,7 @@ WITH kb_comment AS (
 )
 UPDATE restricted_ids
 SET
-	comment = NULLIF(btrim_comment.new_comment, '')
+	comment = btrim_comment.new_comment
 FROM
 	btrim_comment
 WHERE

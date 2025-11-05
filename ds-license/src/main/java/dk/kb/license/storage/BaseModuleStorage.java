@@ -308,13 +308,13 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
      * @return databaseID for the new AuditLog entry
      */
     public long persistAuditLog(AuditLogEntry auditLog) throws SQLException {
-        log.info("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), getCurrentUsername(auditLog.getUserName()));
+        log.debug("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), getCurrentUsername(auditLog.getUserName()));
               
         Long id = generateUniqueID();
 
         try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
-          log.info("generating id: " + id);
-            log.info("persisting auditLog: " + auditLog);
+          log.debug("generating id: " + id);
+            log.debug("persisting auditLog: " + auditLog);
             stmt.setLong(1, id);     
             stmt.setLong(2, auditLog.getObjectId());
             stmt.setLong(3, System.currentTimeMillis());                         
