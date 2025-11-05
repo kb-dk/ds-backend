@@ -125,11 +125,11 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         // Arrange
         Long invalidId = 12345678910L;
         String changeComment = "Udsendelse må vises efter nye aftaler";
-        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
-        deleteObjectDto.setChangeComment(changeComment);
+        DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
+        deleteReasonDto.setChangeComment(changeComment);
 
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteRestrictedId(invalidId, false, deleteObjectDto));
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteRestrictedId(invalidId, false, deleteReasonDto));
 
         // Assert
         assertTrue(exception.getMessage().contains("restricted id: " + invalidId + " not found"));
@@ -150,11 +150,11 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
 
         RestrictedIdOutputDto restrictedIdOutputDto = RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto);
 
-        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
-        deleteObjectDto.setChangeComment(changeComment);
+        DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
+        deleteReasonDto.setChangeComment(changeComment);
 
         // Act
-        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteRestrictedId(restrictedIdOutputDto.getId(), false, deleteObjectDto);
+        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteRestrictedId(restrictedIdOutputDto.getId(), false, deleteReasonDto);
 
         // Make sure that the restricted id is deleted
         Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform()));
@@ -576,13 +576,13 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     public void deleteDrHoldbackRule_whenValidDrHoldbackValue_thenDeleteRule() throws SQLException {
         // Arrange
         String changeComment = "DR holdback rule skal ikke længere bruges";
-        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
-        deleteObjectDto.setChangeComment(changeComment);
+        DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
+        deleteReasonDto.setChangeComment(changeComment);
 
         DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
 
         // Act
-        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRule(drHoldBackValue, deleteObjectDto);
+        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRule(drHoldBackValue, deleteReasonDto);
 
         // Make sure that the DR holdback rule is deleted
         Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRuleById(drHoldBackValue));
@@ -677,8 +677,8 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         String changeComment = "DR holdback ranges skal ikke længere bruges";
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
         drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
-        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
-        deleteObjectDto.setChangeComment(changeComment);
+        DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
+        deleteReasonDto.setChangeComment(changeComment);
 
         List<DrHoldbackRangeDto> ranges = List.of(drHoldbackRangeDtoOne, drHoldbackRangeDtoTwo);
 
@@ -689,7 +689,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
 
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteDrHoldbackRanges(invalidDrHoldbackValue, deleteObjectDto));
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteDrHoldbackRanges(invalidDrHoldbackValue, deleteReasonDto));
 
         // Assert
         assertTrue(exception.getMessage().contains("DR holdback ranges not found for drHoldbackValue: " + invalidDrHoldbackValue));
@@ -701,8 +701,8 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         String changeComment = "DR holdback ranges skal ikke længere bruges";
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
         drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
-        DeleteObjectDto deleteObjectDto = new DeleteObjectDto();
-        deleteObjectDto.setChangeComment(changeComment);
+        DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
+        deleteReasonDto.setChangeComment(changeComment);
 
         List<DrHoldbackRangeDto> ranges = List.of(drHoldbackRangeDtoOne, drHoldbackRangeDtoTwo);
 
@@ -713,7 +713,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
 
         // Act
-        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRanges(drHoldBackValue, deleteObjectDto);
+        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRanges(drHoldBackValue, deleteReasonDto);
 
         // Make sure that all DR holdback ranges is deleted
         Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRanges(drHoldBackValue));

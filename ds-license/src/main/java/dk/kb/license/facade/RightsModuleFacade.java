@@ -125,11 +125,11 @@ public class RightsModuleFacade {
      *
      * @param id                   id on the restricted id to be deleted.
      * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
-     * @param deleteObjectDto      comment about why object gets deleted
+     * @param deleteReasonDto      comment about why object gets deleted
      */
-    public static RecordsCountDto deleteRestrictedId(Long id, boolean touchDsStorageRecord, DeleteObjectDto deleteObjectDto) {
+    public static RecordsCountDto deleteRestrictedId(Long id, boolean touchDsStorageRecord, DeleteReasonDto deleteReasonDto) {
         inputValidator.validateId(id);
-        inputValidator.validateChangeComment(deleteObjectDto.getChangeComment());
+        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
 
         return BaseModuleStorage.performStorageAction("Delete restricted id", RightsModuleStorage.class, storage -> {
             // Retrieve object from database
@@ -151,7 +151,7 @@ public class RightsModuleFacade {
             }
 
             ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(deleteRestrictedIdOutputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(deleteRestrictedIdOutputDto.getIdType()), deleteRestrictedIdOutputDto.getIdValue(), deleteObjectDto.getChangeComment(), change.getBefore(), change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(deleteRestrictedIdOutputDto.getIdType()), deleteRestrictedIdOutputDto.getIdValue(), deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
             ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
 
             log.info("Deleted restriction id: {} ", deleteRestrictedIdOutputDto);
@@ -435,11 +435,11 @@ public class RightsModuleFacade {
      * Delete a DR holdback rule
      *
      * @param drHoldbackValue drHoldbackValue of the DR holdback rule
-     * @param deleteObjectDto comment about why object gets deleted
+     * @param deleteReasonDto comment about why object gets deleted
      */
-    public static RecordsCountDto deleteDrHoldbackRule(String drHoldbackValue, DeleteObjectDto deleteObjectDto) {
+    public static RecordsCountDto deleteDrHoldbackRule(String drHoldbackValue, DeleteReasonDto deleteReasonDto) {
         inputValidator.validateDrHoldbackValue(drHoldbackValue);
-        inputValidator.validateChangeComment(deleteObjectDto.getChangeComment());
+        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
 
         // Check if the drHoldbackValue has a correspondent rule
         DrHoldbackRuleOutputDto deleteDrHoldbackRuleOutputDto = getDrHoldbackRuleById(drHoldbackValue);
@@ -451,7 +451,7 @@ public class RightsModuleFacade {
             recordsCountDto.setCount(deletedCount);
 
             ChangeDifferenceText change = RightsChangelogGenerator.deleteDrHoldbackRuleChanges(deleteDrHoldbackRuleOutputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(deleteDrHoldbackRuleOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackValue, deleteObjectDto.getChangeComment(), change.getBefore(), change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(deleteDrHoldbackRuleOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackValue, deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
             ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
 
             log.info("Deleted DR holdback rule: {} ", deleteDrHoldbackRuleOutputDto);
@@ -589,11 +589,11 @@ public class RightsModuleFacade {
      * Deletes all form and content range combinations for a drHoldbackValue
      *
      * @param drHoldbackValue drHoldbackValue of DR holdback ranges
-     * @param deleteObjectDto comment about why object gets deleted
+     * @param deleteReasonDto comment about why object gets deleted
      */
-    public static RecordsCountDto deleteDrHoldbackRanges(String drHoldbackValue, DeleteObjectDto deleteObjectDto) {
+    public static RecordsCountDto deleteDrHoldbackRanges(String drHoldbackValue, DeleteReasonDto deleteReasonDto) {
         inputValidator.validateDrHoldbackValue(drHoldbackValue);
-        inputValidator.validateChangeComment(deleteObjectDto.getChangeComment());
+        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
 
         // Check if the drHoldbackValue has correspondent DR holdback ranges
         List<DrHoldbackRangeOutputDto> oldRanges = getDrHoldbackRanges(drHoldbackValue);
@@ -606,7 +606,7 @@ public class RightsModuleFacade {
 
             for (DrHoldbackRangeOutputDto drHoldbackRangeOutputDto : oldRanges) {
                 ChangeDifferenceText change = RightsChangelogGenerator.deleteDrHoldbackRangeChanges(drHoldbackRangeOutputDto);
-                AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRangeOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, deleteObjectDto.getChangeComment(), change.getBefore(), change.getAfter());
+                AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRangeOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
                 ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
 
                 log.info("Deleted DR holdback range: {}", drHoldbackRangeOutputDto);

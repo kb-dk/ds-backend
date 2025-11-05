@@ -455,7 +455,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeleteObject'
+              $ref: '#/components/schemas/DeleteReason'
       responses:
         '200':
           description: 'Deleted'
@@ -594,7 +594,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeleteObject'
+              $ref: '#/components/schemas/DeleteReason'
       responses:
         '200':
           description: 'Deleted'
@@ -732,7 +732,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeleteObject'
+              $ref: '#/components/schemas/DeleteReason'
       responses:
         '200':
           description: 'Deleted'
@@ -1282,10 +1282,10 @@ components:
         drHoldbackValue:
           type: string
 
-    DeleteObject:
+    DeleteReason:
       type: object
       required:
-        - id
+        - changeComment
       properties:
         changeComment:
           type: string

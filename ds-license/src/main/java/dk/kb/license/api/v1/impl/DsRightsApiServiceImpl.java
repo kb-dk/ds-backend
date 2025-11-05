@@ -45,10 +45,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public RecordsCountDto deleteRestrictedId(Long id, DeleteObjectDto deleteObjectDto, Boolean touchRecord) {
+    public RecordsCountDto deleteRestrictedId(Long id, DeleteReasonDto deleteReasonDto, Boolean touchRecord) {
         log.debug("Deleting restricted id: {}", id);
         try {
-            return RightsModuleFacade.deleteRestrictedId(id, touchRecord, deleteObjectDto);
+            return RightsModuleFacade.deleteRestrictedId(id, touchRecord, deleteReasonDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -128,10 +128,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * @param drHoldbackValue drHoldbackValue of the DR holdback rule
      */
     @Override
-    public RecordsCountDto deleteDrHoldbackRule(String drHoldbackValue, DeleteObjectDto deleteObjectDto) {
+    public RecordsCountDto deleteDrHoldbackRule(String drHoldbackValue, DeleteReasonDto deleteReasonDto) {
         log.debug("Deleting DR holdback rule: {}", drHoldbackValue);
         try {
-            return RightsModuleFacade.deleteDrHoldbackRule(drHoldbackValue, deleteObjectDto);
+            return RightsModuleFacade.deleteDrHoldbackRule(drHoldbackValue, deleteReasonDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -236,10 +236,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
      * @param drHoldbackValue
      */
     @Override
-    public RecordsCountDto deleteDrHoldbackRanges(String drHoldbackValue, DeleteObjectDto deleteObjectDto) {
+    public RecordsCountDto deleteDrHoldbackRanges(String drHoldbackValue, DeleteReasonDto deleteReasonDto) {
         log.debug("Deleting DR holdback ranges: {}", drHoldbackValue);
         try {
-            return RightsModuleFacade.deleteDrHoldbackRanges(drHoldbackValue, deleteObjectDto);
+            return RightsModuleFacade.deleteDrHoldbackRanges(drHoldbackValue, deleteReasonDto);
         } catch (Exception e) {
             throw handleException(e);
         }
