@@ -2,7 +2,7 @@ CREATE TABLE restricted_ids (
     id       BIGINT PRIMARY KEY,
     id_value VARCHAR(256)   NOT NULL,
     id_type  VARCHAR(32)    NOT NULL,
-    platform VARCHAR(32)    NULL,
+    platform VARCHAR(32)    NOT NULL,
     title    VARCHAR(4096)  NULL,
     comment  VARCHAR(16384) NULL
 );

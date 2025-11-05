@@ -9,9 +9,6 @@ import org.slf4j.LoggerFactory;
 
 public class InputValidator {
     private static final Logger log = LoggerFactory.getLogger(InputValidator.class);
-    private static final int MAX_ID_VALUE_LENGTH = 256;
-    private static final int MAX_TITLE_LENGTH = 4096;
-    private static final int MAX_COMMENT_LENGTH = 16384;
     final String dsTv = "ds.tv:oai:io:";
     final String dsRadio = "ds.radio:oai:io:";
 
@@ -33,8 +30,6 @@ public class InputValidator {
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.OWNPRODUCTION_CODE) {
             validateOwnProductionCode(restrictedIdInputDto.getIdValue());
         }
-
-        validateIdValueLength(restrictedIdInputDto.getIdValue());
 
         // OWNPRODUCTION_CODE don't have title
         if (restrictedIdInputDto.getIdType() != IdTypeEnumDto.OWNPRODUCTION_CODE) {
@@ -135,19 +130,6 @@ public class InputValidator {
     }
 
     /**
-     * Validates that idValue it not too long in the given {@link RestrictedIdInputDto}.
-     *
-     * @param idValue to be validated
-     */
-    public void validateIdValueLength(String idValue) {
-        if (idValue.length() > MAX_ID_VALUE_LENGTH) {
-            final String errorMessage = "idValue was too long and cannot be added to rights module. Only " + MAX_ID_VALUE_LENGTH + " characters are allowed";
-            log.error(errorMessage);
-            throw new InvalidArgumentServiceException(errorMessage);
-        }
-    }
-
-    /**
      * Validates that title is not null, empty or blank and not too long in the given {@link RestrictedIdInputDto}.
      *
      * @param title to be validated
@@ -155,12 +137,6 @@ public class InputValidator {
     public void validateTitle(String title) {
         if (StringUtils.isBlank(title)) {
             final String errorMessage = "Title cannot be empty";
-            log.error(errorMessage);
-            throw new InvalidArgumentServiceException(errorMessage);
-        }
-
-        if (title.length() > MAX_TITLE_LENGTH) {
-            final String errorMessage = "Title was too long and cannot be added to rights module. Only " + MAX_TITLE_LENGTH + " characters are allowed";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }
@@ -174,12 +150,6 @@ public class InputValidator {
     public void validateComment(String comment) {
         if (StringUtils.isBlank(comment)) {
             final String errorMessage = "Comment cannot be empty";
-            log.error(errorMessage);
-            throw new InvalidArgumentServiceException(errorMessage);
-        }
-
-        if (comment.length() > MAX_COMMENT_LENGTH) {
-            final String errorMessage = "Comment was too long and cannot be added to rights module. Only " + MAX_COMMENT_LENGTH + " characters are allowed";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }

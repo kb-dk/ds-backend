@@ -288,21 +288,6 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateIdValueLength_whenTooLongIdValue_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        // Use String repeat() method to create a long comment
-        String longComment = "x".repeat(257);
-        String expectedMessage = "idValue was too long and cannot be added to rights module. Only 256 characters are allowed";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateIdValueLength(longComment));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
     public void validateTitle_whenValidTitle_thenDoNotThrow() {
         // Arrange
         String title = "Test title";
@@ -348,21 +333,6 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateTitle_whenTooLongTitle_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        // Use String repeat() method to create a long comment
-        String longTitle = "x".repeat(4097);
-        String expectedMessage = "Title was too long and cannot be added to rights module. Only 4096 characters are allowed";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateTitle(longTitle));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
     public void validateComment_whenValidComment_thenDoNotThrow() {
         // Arrange
         String comment = "Here is some text";
@@ -402,21 +372,6 @@ public class InputValidatorTest {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(comment));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
-    public void validateComment_whenTooLongComment_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        // Use String repeat() method to create a long comment
-        String longComment = "x".repeat(16385);
-        String expectedMessage = "Comment was too long and cannot be added to rights module. Only 16384 characters are allowed";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(longComment));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());

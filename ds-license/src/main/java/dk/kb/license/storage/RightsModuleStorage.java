@@ -104,7 +104,7 @@ public class RightsModuleStorage extends BaseModuleStorage {
     public long createRestrictedId(String idValue, String idType, String platform, String title, String comment) throws SQLException {
         long id = generateUniqueID();
 
-        log.info("generating unique restricted id: " + id);
+        log.debug("generating unique restricted id: " + id);
 
         try (PreparedStatement stmt = connection.prepareStatement(createRestrictedIdQuery)) {
             stmt.setLong(1, id);

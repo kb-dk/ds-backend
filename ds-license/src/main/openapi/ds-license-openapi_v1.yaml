@@ -472,12 +472,12 @@ paths:
               items:
                 $ref: '#/components/schemas/RestrictedIdInput'
             example:
-              - idValue: 'ds.tv:oai:io:6f9017fb-810a-4386-98cc-debd1f19b48d'
+              - idValue: 'ds.tv:oai:io:111017fb-810a-4386-98cc-debd1f19b48d'
                 idType: 'DS_ID'
                 platform: 'DRARKIV'
                 title: 'TV Avisen'
                 comment: 'test multi 1'
-              - idValue: 'ds.radio:oai:io:f3d56005-39e6-4fc3-90a5-830efded34a0'
+              - idValue: 'ds.radio:oai:io:11156005-39e6-4fc3-90a5-830efded34a0'
                 idType: 'DS_ID'
                 platform: 'DRARKIV'
                 title: 'TV Avisen'
