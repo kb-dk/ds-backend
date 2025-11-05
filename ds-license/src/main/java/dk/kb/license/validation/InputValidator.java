@@ -21,13 +21,13 @@ public class InputValidator {
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DS_ID) {
             validateDsId(restrictedIdInputDto.getIdValue());
         }
-        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
+        else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
             validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
         }
-        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.STRICT_TITLE) {
+        else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.STRICT_TITLE) {
             validateStrictTitle(restrictedIdInputDto.getIdValue());
         }
-        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.OWNPRODUCTION_CODE) {
+        else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.OWNPRODUCTION_CODE) {
             validateOwnProductionCode(restrictedIdInputDto.getIdValue());
         }
 
