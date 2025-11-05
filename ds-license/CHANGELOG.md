@@ -23,8 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   objects is created and a list of FailedIdDto that holds information about failed creations of RestrictedIdInputDto
   objects and their error message. If a restricted id already exists it gets updated instead of returning a unique index
   violation error.
-- Method `validateCommentLength` has changed name to `validateComment`, and the method now also validates that comment
-  is not blank.
+- Method `validateCommentLength` has changed name to `validateComment`, and the method now instead validates that 
+  comment is not blank.
 - Changed PUT `/rights/restrictedId` -> PUT `/rights/restrictedId/{id}` and the following things:
     * takes a RestrictedIdInputDto request body instead of a UpdateRestrictedIdCommentInputDto.
     * it can update `title` and `comment` on a restricted id.
