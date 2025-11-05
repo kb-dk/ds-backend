@@ -495,19 +495,29 @@ public class DsRightsFacadeTest extends DsLicenseUnitTestUtil {
     @Test
     public void updateRestrictedId_whenNullComment_thenThrowInvalidArgumentServiceException() throws SQLException {
         // Arrange
-        RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
-        restrictedIdInputDto.setIdValue("12345678");
-        restrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
-        restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
-        restrictedIdInputDto.setTitle("Test title");
-        restrictedIdInputDto.setComment(null);
+        String drProductId = "12345678";
+        String title = "Test title";
+
+        RestrictedIdInputDto createRestrictedIdInputDto = new RestrictedIdInputDto();
+        createRestrictedIdInputDto.setIdValue(drProductId);
+        createRestrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
+        createRestrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        createRestrictedIdInputDto.setTitle(title);
+        createRestrictedIdInputDto.setComment("Brugeren har trukket deres samtykke tilbage");
 
         String expectedMessage = "Comment cannot be empty";
 
-        long id = storage.createRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType().name(), restrictedIdInputDto.getPlatform().name(), restrictedIdInputDto.getTitle(), restrictedIdInputDto.getComment());
+        long id = storage.createRestrictedId(createRestrictedIdInputDto.getIdValue(), createRestrictedIdInputDto.getIdType().name(), createRestrictedIdInputDto.getPlatform().name(), createRestrictedIdInputDto.getTitle(), createRestrictedIdInputDto.getComment());
+
+        RestrictedIdInputDto updateRestrictedIdInputDto = new RestrictedIdInputDto();
+        updateRestrictedIdInputDto.setIdValue(drProductId);
+        updateRestrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
+        updateRestrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        updateRestrictedIdInputDto.setTitle(title);
+        updateRestrictedIdInputDto.setComment(null);
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.updateRestrictedId(id, false, restrictedIdInputDto));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.updateRestrictedId(id, false, updateRestrictedIdInputDto));
         auditLogEntriesForObject = storage.getAllAudit();
 
         // Assert
