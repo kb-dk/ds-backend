@@ -82,11 +82,13 @@ class ViewTest {
 
 
         String jsonld = jsonldView.apply(recordDto);
+
         assertTrue(jsonld.contains("\"name\":\"Før Bjørnen Er Skudt\""));
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"2023-01-01T00:00:00Z\""));
         assertTrue(jsonld.contains("\"@type\":\"PropertyValue\"," +
                                     "\"PropertyID\":\"KalturaID\"," +
                                     "\"value\":\"randomKalturaId\""));
+        assertTrue(jsonld.contains("\"kb:platform\":\"DRARKIV\""));
     }
     
     @Test

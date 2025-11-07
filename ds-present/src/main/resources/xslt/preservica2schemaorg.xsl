@@ -44,6 +44,7 @@
   <xsl:param name="productionIdRestrictedDr"/>
   <xsl:param name="dsIdRestricted"/>
   <xsl:param name="titleRestricted"/>
+  <xsl:param name="platform"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
@@ -88,7 +89,6 @@
         <xsl:otherwise>MediaObject</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-
 
     <!-- Saves all extensions in a variable used to check if one or more conditions are met in any of them.
          This is done to create one nested object in the JSON with values from multiple PBC extensions. -->
@@ -454,15 +454,15 @@
     </xsl:choose>
 
     <!-- Publisher extraction. Some metadata has two pbcorePublisher/publisher/publisherRole.
-         We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
-    <xsl:variable name="publisherSpecific">
+      We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
+    <xsl:variable name="publisherSpecificIfExists">
       <xsl:for-each select="./pbcorePublisher">
         <xsl:if test="./publisherRole ='kanalnavn'">
           <xsl:value-of select="./publisher"/>
         </xsl:if>
       </xsl:for-each>
     </xsl:variable>
-    <xsl:variable name="publisherGeneral">
+    <xsl:variable name="publisherGeneralIfExists">
       <xsl:for-each select="./pbcorePublisher">
         <xsl:choose>
           <xsl:when test="./publisherRole ='channel_name'">
@@ -471,6 +471,28 @@
           <xsl:otherwise></xsl:otherwise>
         </xsl:choose>
       </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:variable name="publisherSpecific">
+      <xsl:choose>
+        <xsl:when test="string($publisherSpecificIfExists)">
+          <xsl:value-of select="$publisherSpecificIfExists"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$publisherGeneralIfExists"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="publisherGeneral">
+      <xsl:choose>
+        <xsl:when test="string($publisherGeneralIfExists)">
+          <xsl:value-of select="$publisherGeneralIfExists"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$publisherSpecific"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:variable>
 
     <xsl:if test="./pbcorePublisher">
@@ -1022,6 +1044,12 @@
     <xsl:param name="pbCore"/>
     <xsl:param name="pbcExtensions"/>
     <xsl:param name="type"/>
+
+    <xsl:if test="$platform != ''">
+      <f:string key="kb:platform">
+        <xsl:value-of select="$platform"/>
+      </f:string>
+    </xsl:if>
 
     <!-- Boolean value which determins if the record has a stream available at Kaltura.-->
     <f:boolean key="kb:has_kaltura_id">

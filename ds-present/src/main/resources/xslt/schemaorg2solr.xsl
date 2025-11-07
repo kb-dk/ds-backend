@@ -384,6 +384,11 @@
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:holdback_content_value')"/>
         </f:string>
       </xsl:if>
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:platform') != ''">
+        <f:string key="platform">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:platform')"/>
+        </f:string>
+      </xsl:if>
 
 
       <!-- If statement creating all fields related to the schema.org value startTime -->
