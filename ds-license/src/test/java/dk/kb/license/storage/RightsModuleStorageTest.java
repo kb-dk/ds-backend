@@ -44,7 +44,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void createRestrictedId_whenCreatingRestrictedId_thenReturnRestrictedIdOutputDto() throws SQLException {
+    public void createRestrictedId_whenCreatingRestrictedId_thenReturnId() throws SQLException {
         // Arrange
         String idValue = "test1234";
         IdTypeEnumDto idTypeEnumDto = IdTypeEnumDto.DR_PRODUCTION_ID;
@@ -86,7 +86,7 @@ public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void updateRestrictedId_whenUpdatingTitleAndComment_thenReturnRestrictedIdOutputDtoWithUpdatedTitleAndComment() throws SQLException {
+    public void updateRestrictedId_whenUpdatingTitleAndCommentWithValidId_thenTitleAndCommentIsUpdated() throws SQLException {
         // Arrange
         String idValue = "test1234";
         IdTypeEnumDto idTypeEnumDto = IdTypeEnumDto.DR_PRODUCTION_ID;
