@@ -1,6 +1,7 @@
 package dk.kb.license.validation;
 
 import dk.kb.license.model.v1.RestrictedIdInputDto;
+import dk.kb.license.model.v1.DrHoldbackRuleInputDto;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -76,6 +77,19 @@ public class InputValidator {
 
         if (drProductionId.length() <= 7) {
             final String errorMessage = "The input DR production ID: " + drProductionId + " should be at least 8 digits";
+            log.error(errorMessage);
+            throw new InvalidArgumentServiceException(errorMessage);
+        }
+    }
+
+    /**
+     * Validates days in the given {@link DrHoldbackRuleInputDto}.
+     *
+     * @param days the {@link DrHoldbackRuleInputDto} containing the days to be validated.
+     */
+    public void validateDays(Integer days) {
+        if (days == null) {
+            final String errorMessage = "days cannot be null";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }

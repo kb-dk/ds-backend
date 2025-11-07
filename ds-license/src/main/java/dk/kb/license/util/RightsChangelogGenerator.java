@@ -26,12 +26,12 @@ public class RightsChangelogGenerator {
         return new ChangeDifferenceText(null, drHoldbackRuleOutputDto.toString());
     }
 
-    public static ChangeDifferenceText deleteDrHoldbackRuleChanges(DrHoldbackRuleOutputDto drHoldbackRuleOutputDto) {
-        return new ChangeDifferenceText(drHoldbackRuleOutputDto.toString(), null);
+    public static ChangeDifferenceText updateDrHoldbackRuleChanges(DrHoldbackRuleOutputDto oldVersion, DrHoldbackRuleOutputDto newVersion) {
+        return new ChangeDifferenceText(oldVersion.toString(), newVersion.toString());
     }
 
-    public static ChangeDifferenceText updateDrHoldbackRuleDayChanges(Integer daysBefore, Integer daysAfter) {
-        return new ChangeDifferenceText("Days before: " + daysBefore, "Days after: " + daysAfter);
+    public static ChangeDifferenceText deleteDrHoldbackRuleChanges(DrHoldbackRuleOutputDto drHoldbackRuleOutputDto) {
+        return new ChangeDifferenceText(drHoldbackRuleOutputDto.toString(), null);
     }
 
     public static ChangeDifferenceText createDrHoldbackRangeChanges(DrHoldbackRangeDto drHoldbackRangeDto) {

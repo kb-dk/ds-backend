@@ -5,9 +5,6 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.util.webservice.ImplBase;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-import dk.kb.util.webservice.exception.NotFoundServiceException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,6 +106,21 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
+     * Gets a DR holdback rule
+     *
+     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule
+     * @return
+     */
+    @Override
+    public DrHoldbackRuleOutputDto getDrHoldbackRuleByDrHoldbackValue(String drHoldbackValue) {
+        try {
+            return RightsModuleFacade.getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    /**
      * Create a DR holdback rule.
      *
      * @param drHoldbackRuleDto
@@ -122,31 +134,31 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
-    /**
-     * Delete a DR holdback rule
-     *
-     * @param drHoldbackValue drHoldbackValue of the DR holdback rule
+        /**
+     * @param id
+     * @param drHoldbackRuleInputDto
+     * @return
      */
     @Override
-    public RecordsCountDto deleteDrHoldbackRule(String drHoldbackValue, DeleteReasonDto deleteReasonDto) {
-        log.debug("Deleting DR holdback rule: {}", drHoldbackValue);
+    public DrHoldbackRuleOutputDto updateDrHoldbackRule(Long id, DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
+        log.debug("Updating DR holdback rule: {}, restrictedIdInputDto: {}", id, drHoldbackRuleInputDto);
         try {
-            return RightsModuleFacade.deleteDrHoldbackRule(drHoldbackValue, deleteReasonDto);
+            return RightsModuleFacade.updateDrHoldbackRule(id, drHoldbackRuleInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     /**
-     * Gets a DR holdback rule
+     * Delete a DR holdback rule
      *
-     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule
-     * @return
+     * @param id id of the DR holdback rule
      */
     @Override
-    public DrHoldbackRuleOutputDto getDrHoldbackRule(String drHoldbackValue) {
+    public RecordsCountDto deleteDrHoldbackRule(Long id, DeleteReasonDto deleteReasonDto) {
+        log.debug("Deleting DR holdback rule: {}", id);
         try {
-            return RightsModuleFacade.getDrHoldbackRuleById(drHoldbackValue);
+            return RightsModuleFacade.deleteDrHoldbackRule(id, deleteReasonDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -161,55 +173,6 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public List<DrHoldbackRuleOutputDto> getDrHoldbackRules() {
         try {
             return RightsModuleFacade.getDrHoldbackRules();
-        } catch (Exception e) {
-            throw handleException(e);
-        }
-    }
-
-    /**
-     * Retrieve the number of days for a DR holdback rule, either based on either the drHoldbackValue or the name of the DR holdback rule.
-     *
-     * @param drHoldbackValue if this parameter is not empty it returns the number of DR holdback days for the drHoldbackValue
-     * @param name            if this parameter is not empty it returns the number of DR holdback days for the name
-     * @return the number of
-     */
-    @Override
-    public Integer getDrHoldbackDays(String drHoldbackValue, String name) {
-        try {
-            Integer days;
-            if (!StringUtils.isEmpty(drHoldbackValue)) {
-                days = RightsModuleFacade.getDrHoldbackDaysFromValue(drHoldbackValue);
-            } else if (!StringUtils.isEmpty(name)) {
-                days = RightsModuleFacade.getDrHoldbackDaysFromName(name);
-            } else {
-                throw new InvalidArgumentServiceException("missing drHoldbackValue or name");
-            }
-            if (days == null) {
-                throw new NotFoundServiceException("no holdback found for " + drHoldbackValue + " or name " + name);
-            }
-            return days;
-        } catch (Exception e) {
-            throw handleException(e);
-        }
-    }
-
-    /**
-     * Update the number of holdback days for a holdback rule based on either its drHoldbackValue or name
-     *
-     * @param days
-     * @param drHoldbackValue
-     * @param name
-     */
-    @Override
-    public void updateDrHoldbackDays(Integer days, String drHoldbackValue, String name) {
-        try {
-            if (!StringUtils.isEmpty(drHoldbackValue)) {
-                RightsModuleFacade.updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue, days);
-            } else if (!StringUtils.isEmpty(name)) {
-                RightsModuleFacade.updateDrHoldbackDaysFromName(name, days);
-            } else {
-                throw new InvalidArgumentServiceException("missing drHoldbackValue or name");
-            }
         } catch (Exception e) {
             throw handleException(e);
         }

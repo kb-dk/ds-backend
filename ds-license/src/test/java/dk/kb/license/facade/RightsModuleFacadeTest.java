@@ -482,7 +482,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     public void createDrHoldbackRule_whenValidDrHoldbackRuleInputDto_thenCreateRule() throws SQLException {
         // Act
         DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
-        RightsModuleFacade.getDrHoldbackRuleById(drHoldBackValue);
+        RightsModuleFacade.getDrHoldbackRuleByDrHoldbackValue(drHoldBackValue);
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
 
         // Assert
@@ -507,69 +507,41 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     }
 
     @Test
-    public void updateDrHoldbackDaysFromDrHoldbackValue_whenValidDrHoldBackValue_thenUpdateDaysForRule() throws SQLException {
+    public void updateDrHoldbackRule_whenValidDrHoldBackValue_thenUpdateRuleForRule() throws SQLException {
         // Arrange
-        int newDrHoldbackDays = 10;
+        String changeComment = "DR holdback rule skal ikke længere bruges";
+        DrHoldbackRuleInputDto updateDrHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
 
-        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        updateDrHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
+        updateDrHoldbackRuleInputDto.setName(drHoldBackName);
+        updateDrHoldbackRuleInputDto.setDays(10);
+        updateDrHoldbackRuleInputDto.setChangeComment(changeComment);
+
+        DrHoldbackRuleOutputDto createdDrHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
 
         // Act
-        RightsModuleFacade.updateDrHoldbackDaysFromDrHoldbackValue(drHoldBackValue, newDrHoldbackDays);
-        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.getDrHoldbackRuleById(drHoldBackValue);
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
+        DrHoldbackRuleOutputDto updatedDrHoldbackRuleOutputDto = RightsModuleFacade.updateDrHoldbackRule(createdDrHoldbackRuleOutputDto.getId(), updateDrHoldbackRuleInputDto);
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(updatedDrHoldbackRuleOutputDto.getId());
 
         // Assert
-        assertTrue(drHoldbackRuleOutputDto.getId() > 0L);
-        assertEquals(drHoldBackValue, drHoldbackRuleOutputDto.getDrHoldbackValue());
-        assertEquals(drHoldBackName, drHoldbackRuleOutputDto.getName());
-        assertEquals(newDrHoldbackDays, drHoldbackRuleOutputDto.getDays());
+        assertTrue(updatedDrHoldbackRuleOutputDto.getId() > 0L);
+        assertEquals(updateDrHoldbackRuleInputDto.getDrHoldbackValue(), updatedDrHoldbackRuleOutputDto.getDrHoldbackValue());
+        assertEquals(updateDrHoldbackRuleInputDto.getName(), updatedDrHoldbackRuleOutputDto.getName());
+        assertEquals(updateDrHoldbackRuleInputDto.getDays(), updatedDrHoldbackRuleOutputDto.getDays());
 
         assertEquals(2, auditLogEntriesForObject.size());
         AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
 
         assertTrue(auditLogEntryOutputDto.getId() > 0L);
-        assertEquals(drHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertEquals(updatedDrHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
         assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
         assertEquals(userName, auditLogEntryOutputDto.getUserName());
         assertEquals(ChangeTypeEnumDto.UPDATE, auditLogEntryOutputDto.getChangeType());
         assertEquals(ObjectTypeEnumDto.HOLDBACK_DAY, auditLogEntryOutputDto.getChangeName());
         assertEquals(drHoldBackValue, auditLogEntryOutputDto.getIdentifier());
-        assertNull(auditLogEntryOutputDto.getChangeComment());
-        assertEquals("Days before: " + drHoldbackDays, auditLogEntryOutputDto.getTextBefore());
-        assertEquals("Days after: " + newDrHoldbackDays, auditLogEntryOutputDto.getTextAfter());
-    }
-
-    @Test
-    public void updateDrHoldbackDaysFromName_whenValidDrHoldBackName_thenUpdateDaysForRule() throws SQLException {
-        // Arrange
-        int newDrHoldbackDays = 10;
-
-        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
-
-        // Act
-        RightsModuleFacade.updateDrHoldbackDaysFromName(drHoldBackName, newDrHoldbackDays);
-        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.getDrHoldbackRuleById(drHoldBackValue);
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
-
-        // Assert
-        assertTrue(drHoldbackRuleOutputDto.getId() > 0L);
-        assertEquals(drHoldBackValue, drHoldbackRuleOutputDto.getDrHoldbackValue());
-        assertEquals(drHoldBackName, drHoldbackRuleOutputDto.getName());
-        assertEquals(newDrHoldbackDays, drHoldbackRuleOutputDto.getDays());
-
-        assertEquals(2, auditLogEntriesForObject.size());
-        AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
-
-        assertTrue(auditLogEntryOutputDto.getId() > 0L);
-        assertEquals(drHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
-        assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
-        assertEquals(userName, auditLogEntryOutputDto.getUserName());
-        assertEquals(ChangeTypeEnumDto.UPDATE, auditLogEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.HOLDBACK_DAY, auditLogEntryOutputDto.getChangeName());
-        assertEquals(drHoldBackName, auditLogEntryOutputDto.getIdentifier());
-        assertNull(auditLogEntryOutputDto.getChangeComment());
-        assertEquals("Days before: " + drHoldbackDays, auditLogEntryOutputDto.getTextBefore());
-        assertEquals("Days after: " + newDrHoldbackDays, auditLogEntryOutputDto.getTextAfter());
+        assertEquals(changeComment, auditLogEntryOutputDto.getChangeComment());
+        assertEquals(createdDrHoldbackRuleOutputDto.toString(), auditLogEntryOutputDto.getTextBefore());
+        assertEquals(updatedDrHoldbackRuleOutputDto.toString(), auditLogEntryOutputDto.getTextAfter());
     }
 
     @Test
@@ -582,10 +554,10 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
 
         // Act
-        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRule(drHoldBackValue, deleteReasonDto);
+        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRule(drHoldbackRuleOutputDto.getId(), deleteReasonDto);
 
         // Make sure that the DR holdback rule is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRuleById(drHoldBackValue));
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRuleByDrHoldbackValue(drHoldBackValue));
 
         auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
 

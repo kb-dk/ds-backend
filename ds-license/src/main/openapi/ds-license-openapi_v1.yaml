@@ -506,30 +506,11 @@ paths:
               schema:
                 type: object
 
-  /rights/drHoldbackRules:
-    get:
-      tags:
-        - 'DsRights'
-      operationId: getDrHoldbackRules
-      description: get all DR holdback rules
-      security:
-        - KBOAuth:
-            - any
-      responses:
-        '200':
-          description: list of DR holdback rules
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
-
   /rights/drHoldbackRule:
     get:
       tags:
         - 'DsRights'
-      operationId: getDrHoldbackRule
+      operationId: getDrHoldbackRuleByDrHoldbackValue
       security:
         - KBOAuth:
             - any
@@ -556,6 +537,7 @@ paths:
         - KBOAuth:
             - any
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -566,6 +548,7 @@ paths:
                   drHoldbackValue: "2.03"
                   name: "Testing"
                   days: 100
+                  changeName: null
       responses:
         '200':
           description: 'Created DR holdback rule'
@@ -574,7 +557,46 @@ paths:
               schema:
                   $ref: '#/components/schemas/DrHoldbackRuleOutput'
 
-  /rights/drHoldbackRule/delete/{drHoldbackValue}:
+  /rights/drHoldbackRule/{id}:
+    put:
+      summary: 'Updates days of a DR holdback rule. The requester should always send the information in all fields'
+      tags:
+        - 'DsRights'
+      operationId: updateDrHoldbackRule
+      description: 'Only days can be updated'
+      security:
+        - KBOAuth:
+            - ds-license-admin
+      parameters:
+        - name: id
+          in: path
+          description: 'The unique id of a DR holdback rule'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DrHoldbackRuleInput'
+            examples:
+              drHoldbackRule:
+                value:
+                  drHoldbackValue: '2.03'
+                  name: 'Testing'
+                  days: 100
+                  changeComment: 'Omstændighederne har ændret sig'
+      responses:
+        '200':
+          description: 'Updated DR holdback rule'
+          content:
+            'application/json':
+              schema:
+                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
+
+  /rights/drHoldbackRule/delete/{id}:
     post:
       summary: 'Delete DR holdback rule by drHoldbackValue'
       tags:
@@ -584,11 +606,13 @@ paths:
         - KBOAth:
             - ds-license-admin
       parameters:
-        - name: drHoldbackValue
+        - name: id
           in: path
+          description: 'The unique id of a DR holdback rule'
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -603,66 +627,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/RecordsCount'
 
-  /rights/drHoldbackDays:
+  /rights/drHoldbackRules:
     get:
       tags:
         - 'DsRights'
-      operationId: getDrHoldbackDays
-      description: get the number of DR holdback days. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name.
+      operationId: getDrHoldbackRules
+      description: get all DR holdback rules
       security:
         - KBOAuth:
             - any
-      parameters:
-        - name: drHoldbackValue
-          in: query
-          required: false
-          description: drHoldbackValue of the DR holdback rule
-          schema:
-            type: string
-        - name: name
-          in: query
-          required: false
-          description: name of the DR holdback rule
-          schema:
-            type: string
       responses:
         '200':
-          description: DR holdback days
+          description: list of DR holdback rules
           content:
             application/json:
               schema:
-                type: integer
-        '404':
-          description: DR holdback day not found
-    put:
-      tags:
-        - 'DsRights'
-      operationId: updateDrHoldbackDays
-      description: update the number of DR holdback days for a purpose. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name.
-      security:
-        - KBOAuth:
-            - any
-      parameters:
-        - name: drHoldbackValue
-          in: query
-          required: false
-          description: drHoldbackValue of the DR holdback rule
-          schema:
-            type: string
-        - name: name
-          in: query
-          required: false
-          description: name of the DR holdback rule
-          schema:
-            type: string
-        - name: days
-          in: query
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Updated
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
 
   /rights/drHoldbackRanges:
     get:
@@ -1220,6 +1202,10 @@ components:
 
     DrHoldbackRuleInput:
       type: object
+      required:
+        - drHoldbackValue
+        - name
+        - days
       properties:
         drHoldbackValue:
           type: string
@@ -1227,9 +1213,16 @@ components:
           type: string
         days:
           type: integer
+        changeComment:
+          type: string
 
     DrHoldbackRuleOutput:
       type: object
+      required:
+        - id
+        - drHoldbackValue
+        - name
+        - days
       properties:
         id:
           type: integer

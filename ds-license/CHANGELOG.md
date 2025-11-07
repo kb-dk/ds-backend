@@ -21,10 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   has a `changeComment` field. The endpoints return a response body `RecordsCount` that tells how many rows was
   deleted instead of void:
     * `/rights/restrictedId` -> `/rights/restrictedId/delete/{id}`
-    * `/rights/drHoldbackRule` -> `/rights/drHoldbackRule/delete/{drHoldbackValue}`
+    * `/rights/drHoldbackRule` -> `/rights/drHoldbackRule/delete/{id}`
     * `/rights/drHoldbackRanges` -> `/rights/drHoldbackRanges/delete/{drHoldbackValue}`
 - Endpoint `POST /rights/drHoldbackRule` returns a DrHoldbackRuleOutputDto as response instead of void.
 - Endpoint `POST /rights/drHoldbackRanges` returns a list of DrHoldbackRangeOutputDto as response instead of void.
+- Endpoint `GET /rights/drHoldbackDays` is removed, instead use `GET /rights/drHoldbackRule`.
+- Endpoint `PUT /rights/drHoldbackDays` is removed, instead there is added a `PUT /rights/drHoldbackRule` that updates
+  day in the dr_holdback_rule table.
 
 ### Fixed
 
