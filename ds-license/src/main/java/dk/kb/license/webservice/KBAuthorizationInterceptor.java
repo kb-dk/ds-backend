@@ -120,15 +120,8 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         Set<String> endpointRoles = getEndpointRoles(message);
         message.put(ENDPOINT_ROLES, endpoint);
         if (endpointRoles.isEmpty()) {
-            if ("getResource".equals(endpoint)) { //TODO what is the getResource endpoint?
-                // What is this? Is it needed?
-                log.debug("No roles defined for endpoint '{}'. This is expected as it is a meta endpoint",
-                          endpoint);
-                return;
-            } else {
-                log.warn("No roles defined for endpoint '{}', even though it is annotated as requiring authentication",
-                         endpoint);
-            }
+            log.warn("No roles defined for endpoint '{}', even though it is annotated as requiring authentication",
+                     endpoint);
         }
 
         String accessTokenString = getAccessTokenString(message);
