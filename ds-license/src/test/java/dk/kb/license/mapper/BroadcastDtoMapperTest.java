@@ -42,13 +42,13 @@ public class BroadcastDtoMapperTest {
     }
 
     @Test
-    public void mapBroadcastDto_whenSolrDocumentAndRestrictedIdComment_thenReturnBroadcastDtoWithRestrictedTrue() {
+    public void map_whenSolrDocumentAndRestrictedIdComment_thenReturnWithRestrictedTrue() {
         // Arrange
         String restrictedComment = "Brugeren har trukket deres samtykke tilbage";
         BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
 
         // Act
-        BroadcastDto actualBroadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, restrictedComment);
+        BroadcastDto actualBroadcastDto = broadcastDtoMapper.map(solrDocument, restrictedComment);
 
         // Assert
         assertEquals(dsId, actualBroadcastDto.getDsId());
@@ -68,12 +68,12 @@ public class BroadcastDtoMapperTest {
     }
 
     @Test
-    public void mapBroadcastDto_whenSolrDocumentAndNullRestrictedIdComment_thenReturnBroadcastDtoWithRestrictedFalse() {
+    public void map_whenSolrDocumentAndNullRestrictedIdComment_thenReturnWithRestrictedFalse() {
         // Arrange
         BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
 
         // Act
-        BroadcastDto actualBroadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, null);
+        BroadcastDto actualBroadcastDto = broadcastDtoMapper.map(solrDocument, null);
 
         // Assert
         assertEquals(dsId, actualBroadcastDto.getDsId());
