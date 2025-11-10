@@ -284,12 +284,12 @@ paths:
           in: query
           required: true
           schema:
-            $ref: "#/components/schemas/IdTypeEnum"
+            $ref: '#/components/schemas/IdTypeEnum'
         - name: platform
           in: query
           required: true
           schema:
-            $ref: "#/components/schemas/PlatformEnum"
+            $ref: '#/components/schemas/PlatformEnum'
       responses:
         '200':
           description: 'Get a restricted id'
@@ -604,8 +604,8 @@ paths:
             examples:
               example1:
                 value:
-                  drHoldbackValue: "2.03"
-                  name: "Testing"
+                  drHoldbackValue: '2.03'
+                  name: 'Testing'
                   days: 100
                   changeName: null
       responses:

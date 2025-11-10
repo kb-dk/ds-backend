@@ -59,8 +59,22 @@ public class RightsModuleFacade {
         return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> {
             RestrictedIdOutputDto restrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedId(idValue, idType.getValue(), platform.getValue());
 
+            return restrictedIdOutputDto;
+        });
+    }
+
+    /**
+     * Retrieves a restricted id output object from the database
+     *
+     * @param id id on the restricted id to be selected.
+     * @return RestrictedIdOutputDto
+     */
+    public static RestrictedIdOutputDto getRestrictedIdById(Long id) {
+        return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> {
+            RestrictedIdOutputDto restrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
+
             if (restrictedIdOutputDto == null) {
-                final String errorMessage = "restricted id idValue: " + idValue + ", idType: " + idType + ", platform: " + platform + " not found";
+                final String errorMessage = "id: " + id + " not found";
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
@@ -111,6 +125,37 @@ public class RightsModuleFacade {
     }
 
     /**
+     * Update a restricted id using the provided {@link RestrictedIdOutputDto}.
+     *
+     * @param id
+     * @param touchDsStorageRecord
+     * @param restrictedIdInputDto the data transfer object containing the details of the restricted id to be updated.
+     *                             This should not be null.
+     */
+    public static RestrictedIdOutputDto updateRestrictedId(Long id, Boolean touchDsStorageRecord, RestrictedIdInputDto restrictedIdInputDto) {
+        inputValidator.validateId(id);
+        inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
+
+        // Retrieve object from database
+        RestrictedIdOutputDto oldRestrictedIdOutputDto = getRestrictedIdById(id);
+
+        return BaseModuleStorage.performStorageAction("Update restricted id (klausulering)", RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage) storage).updateRestrictedId(id, restrictedIdInputDto.getTitle(), restrictedIdInputDto.getComment());
+
+            if (touchDsStorageRecord) {
+                touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
+            }
+            RestrictedIdOutputDto updatedRestrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
+
+            ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldRestrictedIdOutputDto, updatedRestrictedIdOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(updatedRestrictedIdOutputDto.getIdType()), updatedRestrictedIdOutputDto.getIdValue(), null, change.getBefore(), change.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
+            log.info("Updated restricted id: {}", updatedRestrictedIdOutputDto);
+            return updatedRestrictedIdOutputDto;
+        });
+    }
+
+    /**
      * This method performs the deletion of a restricted id by its internal id in the restricted_ids table
      * and logs the deletion in the audit log. If specified, it also touches related storage records
      *
@@ -122,16 +167,10 @@ public class RightsModuleFacade {
         inputValidator.validateId(id);
         inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
 
+        // Retrieve object from database
+        RestrictedIdOutputDto deleteRestrictedIdOutputDto = getRestrictedIdById(id);
+
         return BaseModuleStorage.performStorageAction("Delete restricted id", RightsModuleStorage.class, storage -> {
-            // Retrieve object from database
-            RestrictedIdOutputDto deleteRestrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
-
-            if (deleteRestrictedIdOutputDto == null) {
-                final String errorMessage = "restricted id: " + id + " not found";
-                log.error(errorMessage);
-                throw new NotFoundServiceException(errorMessage);
-            }
-
             // Delete entry from database
             RecordsCountDto recordsCountDto = new RecordsCountDto();
             int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdById(id);
@@ -152,39 +191,68 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Update a restricted id using the provided {@link UpdateRestrictedIdCommentInputDto}.
+     * Creates or updates a restricted id for each of the entries in the list using the provided input data transfer object (DTO).
      *
-     * @param id
-     * @param touchDsStorageRecord
-     * @param restrictedIdInputDto the data transfer object containing the details of the restricted id to be updated.
-     *                             This should not be null.
+     * @param restrictedIds list containing the data transfer objects containing the details of the restricted ids to be created.
+     *                      This should not be null.
+     * @return ProcessedRestrictedIdsOutputDto
      */
-    public static RestrictedIdOutputDto updateRestrictedId(Long id, Boolean touchDsStorageRecord, RestrictedIdInputDto restrictedIdInputDto) {
-        inputValidator.validateId(id);
-        inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
+    public static ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = new ProcessedRestrictedIdsOutputDto();
+        List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
+        int processedSuccessfully = 0;
+        FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
 
-        RestrictedIdOutputDto oldRestrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+        for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
+            log.debug("Adding restricted id idValue: {}, idType: {}, platform: {}",  restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
 
-        if (oldRestrictedIdOutputDto == null) {
-            final String errorMessage = "id: " + id + " not found";
-            log.error(errorMessage);
-            throw new NotFoundServiceException(errorMessage);
+            try {
+                inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
+                // Is there already a restrictions on idValue?
+                RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+
+                if (restrictedIdOutputDto == null) {
+                    createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
+                } else {
+                    // the restriction already existed, so updating it instead
+                    updateRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, restrictedIdInputDto);
+                }
+
+                // If no exception was thrown, we know that the restriction was created
+                processedSuccessfully++;
+
+            } catch (Exception exception) { // need to catch every exception that could be thrown
+                log.error("Failed to add restricted id restrictedIdInputDto: {}, exception: ", restrictedIdInputDto, exception);
+                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
+
+                failedRestrictedIdDtoList.add(failedRestrictedIdDto);
+            }
         }
 
-        return BaseModuleStorage.performStorageAction("Update restricted id (klausulering)", RightsModuleStorage.class, storage -> {
-            ((RightsModuleStorage) storage).updateRestrictedId(id, restrictedIdInputDto.getTitle(), restrictedIdInputDto.getComment());
+        // Need to start with this, for not getting wrongly PARTIAL_PROCESSED
+        if (processedSuccessfully == 0) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.FAILED);
+        } else if (failedRestrictedIdDtoList.isEmpty()) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.SUCCESS);
+        } else if (!failedRestrictedIdDtoList.isEmpty()) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.PARTIAL_PROCESSED);
+        }
 
-            if (touchDsStorageRecord) {
-                touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
-            }
-            RestrictedIdOutputDto updatedRestrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
+        processedRestrictedIdsOutputDto.setProcessedSuccessfully(processedSuccessfully);
+        processedRestrictedIdsOutputDto.setFailedRestrictedIds(failedRestrictedIdDtoList);
+        log.info("Successfully added: {}. Failed to add: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
+        return processedRestrictedIdsOutputDto;
+    }
 
-            ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldRestrictedIdOutputDto, updatedRestrictedIdOutputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(updatedRestrictedIdOutputDto.getIdType()), updatedRestrictedIdOutputDto.getIdValue(), null, change.getBefore(), change.getAfter());
-            ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
-            log.info("Updated restricted id: {}", updatedRestrictedIdOutputDto);
-            return updatedRestrictedIdOutputDto;
-        });
+    /**
+     * Get all restricted ids
+     *
+     * @param idType   only get restricedIds with this idType
+     * @param platform only get retstrictedIds for this platform
+     * @return
+     */
+    public static List<RestrictedIdOutputDto> getAllRestrictedIds(IdTypeEnumDto idType, PlatformEnumDto platform) {
+        return BaseModuleStorage.performStorageAction("get restricted ids", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType.getValue(), platform.getValue()));
     }
 
     /**
@@ -263,70 +331,6 @@ public class RightsModuleFacade {
      */
     public static String getRestrictedIdCommentByIdValue(String idValue) {
         return BaseModuleStorage.performStorageAction("Select comment from restricted_ids", RightsModuleStorage.class, storage -> (((RightsModuleStorage) storage).getRestrictedIdCommentByIdValue(idValue)));
-    }
-
-    /**
-     * Creates or updates a restricted id for each of the entries in the list using the provided input data transfer object (DTO).
-     *
-     * @param restrictedIds list containing the data transfer objects containing the details of the restricted ids to be created.
-     *                      This should not be null.
-     * @return ProcessedRestrictedIdsOutputDto
-     */
-    public static ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
-        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = new ProcessedRestrictedIdsOutputDto();
-        List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
-        int processedSuccessfully = 0;
-        FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
-
-        for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
-            log.debug("Adding restricted id idValue: {}, idType: {}, platform: {}",  restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
-
-            try {
-                // Is there already a restrictions on idValue?
-                RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
-
-                if (restrictedIdOutputDto == null) {
-                    createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
-                } else {
-                    // the restriction already existed, so updating it instead
-                    updateRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, restrictedIdInputDto);
-                }
-
-                // If no exception was thrown, we know that the restriction was created
-                processedSuccessfully++;
-
-            } catch (Exception exception) { // need to catch every exception that could be thrown
-                log.error("Failed to add restricted id restrictedIdInputDto: {}, exception: ", restrictedIdInputDto, exception);
-                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
-
-                failedRestrictedIdDtoList.add(failedRestrictedIdDto);
-            }
-        }
-
-        // Need to start with this, for not getting wrongly PARTIAL_PROCESSED
-        if (processedSuccessfully == 0) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.FAILED);
-        } else if (failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.SUCCESS);
-        } else if (!failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.PARTIAL_PROCESSED);
-        }
-
-        processedRestrictedIdsOutputDto.setProcessedSuccessfully(processedSuccessfully);
-        processedRestrictedIdsOutputDto.setFailedRestrictedIds(failedRestrictedIdDtoList);
-        log.info("Successfully added: {}. Failed to add: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
-        return processedRestrictedIdsOutputDto;
-    }
-
-    /**
-     * Get all restricted ids
-     *
-     * @param idType   only get restricedIds with this idType
-     * @param platform only get retstrictedIds for this platform
-     * @return
-     */
-    public static List<RestrictedIdOutputDto> getAllRestrictedIds(IdTypeEnumDto idType, PlatformEnumDto platform) {
-        return BaseModuleStorage.performStorageAction("get restricted ids", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType.getValue(), platform.getValue()));
     }
 
     /**

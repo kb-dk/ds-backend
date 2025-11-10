@@ -311,13 +311,18 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         assertEquals(comment, restrictedIdOutputDto.getComment());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
-        AuditEntryOutputDto drProductionIdAuditEntryOutputDto = auditLogEntriesForObject.get(0);
-        assertEquals(ChangeTypeEnumDto.CREATE, drProductionIdAuditEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, drProductionIdAuditEntryOutputDto.getChangeName());
-        assertNull(drProductionIdAuditEntryOutputDto.getTextBefore());
-        assertEquals(restrictedIdOutputDto.toString(), drProductionIdAuditEntryOutputDto.getTextAfter());
-        assertEquals(userName, drProductionIdAuditEntryOutputDto.getUserName());
-        assertEquals(drProductionId, drProductionIdAuditEntryOutputDto.getChangeComment());
+        AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertTrue(auditLogEntryOutputDto.getId() > 0L);
+        assertEquals(restrictedIdOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, auditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.CREATE, auditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, auditLogEntryOutputDto.getChangeName());
+        assertEquals(drProductionId, auditLogEntryOutputDto.getIdentifier());
+        assertNull(auditLogEntryOutputDto.getChangeComment());
+        assertNull(auditLogEntryOutputDto.getTextBefore());
+        assertEquals(restrictedIdOutputDto.toString(), auditLogEntryOutputDto.getTextAfter());
     }
 
     @Test
@@ -547,11 +552,11 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         String expectedMessage = "id: " + notExistingId + " not found";
 
         // Act
-        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.updateRestrictedId(notExistingId, false, updateRestrictedIdInputDto));
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.updateRestrictedId(notExistingId, false, updateRestrictedIdInputDto));
         auditLogEntriesForObject = storage.getAllAudit();
 
         // Assert
-        assertEquals(expectedMessage, exception.getMessage());
+        assertTrue(exception.getMessage().contains(expectedMessage));
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(0, auditLogEntriesForObject.size());
@@ -583,37 +588,47 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         updateRestrictedIdInputDto.setComment(updatedComment);
 
         // Act
-        RestrictedIdOutputDto restrictedIdOutputDto = RightsModuleFacade.updateRestrictedId(createdRestrictedIdOutputDto.getId(), false, updateRestrictedIdInputDto);
+        RestrictedIdOutputDto updatedRestrictedIdOutputDto = RightsModuleFacade.updateRestrictedId(createdRestrictedIdOutputDto.getId(), false, updateRestrictedIdInputDto);
         auditLogEntriesForObject = storage.getAllAudit();
 
         // Assert
-        assertNotNull(restrictedIdOutputDto);
-        assertNotNull(restrictedIdOutputDto.getId());
-        assertEquals(createdRestrictedIdOutputDto.getId(), restrictedIdOutputDto.getId());
-        assertEquals(drProductionId, restrictedIdOutputDto.getIdValue());
-        assertEquals(IdTypeEnumDto.DR_PRODUCTION_ID, restrictedIdOutputDto.getIdType());
-        assertEquals(PlatformEnumDto.DRARKIV, restrictedIdOutputDto.getPlatform());
-        assertEquals(updatedTitle, restrictedIdOutputDto.getTitle());
-        assertEquals(updatedComment, restrictedIdOutputDto.getComment());
+        assertNotNull(updatedRestrictedIdOutputDto);
+        assertNotNull(updatedRestrictedIdOutputDto.getId());
+        assertEquals(createdRestrictedIdOutputDto.getId(), updatedRestrictedIdOutputDto.getId());
+        assertEquals(drProductionId, updatedRestrictedIdOutputDto.getIdValue());
+        assertEquals(IdTypeEnumDto.DR_PRODUCTION_ID, updatedRestrictedIdOutputDto.getIdType());
+        assertEquals(PlatformEnumDto.DRARKIV, updatedRestrictedIdOutputDto.getPlatform());
+        assertEquals(updatedTitle, updatedRestrictedIdOutputDto.getTitle());
+        assertEquals(updatedComment, updatedRestrictedIdOutputDto.getComment());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(2, auditLogEntriesForObject.size());
 
-        AuditEntryOutputDto createdAuditEntryOutputDto = auditLogEntriesForObject.get(1);
-        assertEquals(ChangeTypeEnumDto.CREATE, createdAuditEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, createdAuditEntryOutputDto.getChangeName());
-        assertNull(createdAuditEntryOutputDto.getTextBefore());
-        assertNotNull(createdAuditEntryOutputDto.getTextAfter());
-        assertEquals(userName, createdAuditEntryOutputDto.getUserName());
-        assertEquals(drProductionId, createdAuditEntryOutputDto.getChangeComment());
+        AuditLogEntryOutputDto createdAuditLogEntryOutputDto = auditLogEntriesForObject.get(1);
 
-        AuditEntryOutputDto drProductionIdAuditEntryOutputDto = auditLogEntriesForObject.get(0);
-        assertEquals(ChangeTypeEnumDto.UPDATE, drProductionIdAuditEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, drProductionIdAuditEntryOutputDto.getChangeName());
-        assertNotNull(drProductionIdAuditEntryOutputDto.getTextBefore());
-        assertEquals(restrictedIdOutputDto.toString(), drProductionIdAuditEntryOutputDto.getTextAfter());
-        assertEquals(userName, drProductionIdAuditEntryOutputDto.getUserName());
-        assertEquals(drProductionId, drProductionIdAuditEntryOutputDto.getChangeComment());
+        assertTrue(createdAuditLogEntryOutputDto.getId() > 0L);
+        assertEquals(createdRestrictedIdOutputDto.getId(), createdAuditLogEntryOutputDto.getObjectId());
+        assertTrue(createdAuditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, createdAuditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.CREATE, createdAuditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, createdAuditLogEntryOutputDto.getChangeName());
+        assertEquals(drProductionId, createdAuditLogEntryOutputDto.getIdentifier());
+        assertNull(createdAuditLogEntryOutputDto.getChangeComment());
+        assertNull(createdAuditLogEntryOutputDto.getTextBefore());
+        assertEquals(createdRestrictedIdOutputDto.toString(), createdAuditLogEntryOutputDto.getTextAfter());
+
+        AuditLogEntryOutputDto updatedAuditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertTrue(updatedAuditLogEntryOutputDto.getId() > 0L);
+        assertEquals(updatedRestrictedIdOutputDto.getId(), updatedAuditLogEntryOutputDto.getObjectId());
+        assertTrue(updatedAuditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, updatedAuditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.UPDATE, updatedAuditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, updatedAuditLogEntryOutputDto.getChangeName());
+        assertEquals(drProductionId, updatedAuditLogEntryOutputDto.getIdentifier());
+        assertNull(updatedAuditLogEntryOutputDto.getChangeComment());
+        assertEquals(createdAuditLogEntryOutputDto.getTextAfter(), updatedAuditLogEntryOutputDto.getTextBefore());
+        assertEquals(updatedRestrictedIdOutputDto.toString(), updatedAuditLogEntryOutputDto.getTextAfter());
     }
 
     @Test
@@ -894,21 +909,31 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(restrictedIds.size(), auditLogEntriesForObject.size());
 
-        AuditEntryOutputDto drProductionIdAuditEntryOutputDto = auditLogEntriesForObject.get(0);
-        assertEquals(ChangeTypeEnumDto.CREATE, drProductionIdAuditEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, drProductionIdAuditEntryOutputDto.getChangeName());
-        assertNull(drProductionIdAuditEntryOutputDto.getTextBefore());
-        assertNotNull(drProductionIdAuditEntryOutputDto.getTextAfter());
-        assertEquals(userName, drProductionIdAuditEntryOutputDto.getUserName());
-        assertEquals(drProductionId, drProductionIdAuditEntryOutputDto.getChangeComment());
+        AuditLogEntryOutputDto dsIdAuditLogEntryOutputDto = auditLogEntriesForObject.get(1);
 
-        AuditEntryOutputDto dsIdAuditEntryOutputDto = auditLogEntriesForObject.get(1);
-        assertEquals(ChangeTypeEnumDto.CREATE, dsIdAuditEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.DS_ID, dsIdAuditEntryOutputDto.getChangeName());
-        assertNull(dsIdAuditEntryOutputDto.getTextBefore());
-        assertNotNull(dsIdAuditEntryOutputDto.getTextAfter());
-        assertEquals(userName, dsIdAuditEntryOutputDto.getUserName());
-        assertEquals(dsId, dsIdAuditEntryOutputDto.getChangeComment());
+        assertTrue(dsIdAuditLogEntryOutputDto.getId() > 0L);
+        assertTrue(dsIdAuditLogEntryOutputDto.getObjectId() > 0L);
+        assertTrue(dsIdAuditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, dsIdAuditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.CREATE, dsIdAuditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.DS_ID, dsIdAuditLogEntryOutputDto.getChangeName());
+        assertEquals(dsId, dsIdAuditLogEntryOutputDto.getIdentifier());
+        assertNull(dsIdAuditLogEntryOutputDto.getChangeComment());
+        assertNull(dsIdAuditLogEntryOutputDto.getTextBefore());
+        assertNotNull(dsIdAuditLogEntryOutputDto.getTextAfter());
+
+        AuditLogEntryOutputDto drProductionIdAuditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertTrue(drProductionIdAuditLogEntryOutputDto.getId() > 0L);
+        assertTrue(drProductionIdAuditLogEntryOutputDto.getObjectId() > 0L);
+        assertTrue(drProductionIdAuditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, drProductionIdAuditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.CREATE, drProductionIdAuditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, drProductionIdAuditLogEntryOutputDto.getChangeName());
+        assertEquals(drProductionId, drProductionIdAuditLogEntryOutputDto.getIdentifier());
+        assertNull(drProductionIdAuditLogEntryOutputDto.getChangeComment());
+        assertNull(drProductionIdAuditLogEntryOutputDto.getTextBefore());
+        assertNotNull(drProductionIdAuditLogEntryOutputDto.getTextAfter());
     }
 
     @Test
@@ -955,13 +980,18 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(1, auditLogEntriesForObject.size());
-        AuditEntryOutputDto auditEntryOutputDto = auditLogEntriesForObject.get(0);
-        assertEquals(ChangeTypeEnumDto.CREATE, auditEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.DS_ID, auditEntryOutputDto.getChangeName());
-        assertNull(auditEntryOutputDto.getTextBefore());
-        assertNotNull(auditEntryOutputDto.getTextAfter());
-        assertEquals(userName, auditEntryOutputDto.getUserName());
-        assertEquals(validDsId, auditEntryOutputDto.getChangeComment());
+        AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertTrue(auditLogEntryOutputDto.getId() > 0L);
+        assertTrue(auditLogEntryOutputDto.getObjectId() > 0L);
+        assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, auditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.CREATE, auditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.DS_ID, auditLogEntryOutputDto.getChangeName());
+        assertEquals(validDsId, auditLogEntryOutputDto.getIdentifier());
+        assertNull(auditLogEntryOutputDto.getChangeComment());
+        assertNull(auditLogEntryOutputDto.getTextBefore());
+        assertNotNull(auditLogEntryOutputDto.getTextAfter());
     }
 
     @Test
@@ -1001,21 +1031,32 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(2, auditLogEntriesForObject.size());
-        AuditEntryOutputDto createdAuditEntryOutputDto = auditLogEntriesForObject.get(1);
-        assertEquals(ChangeTypeEnumDto.CREATE, createdAuditEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.DS_ID, createdAuditEntryOutputDto.getChangeName());
-        assertNull(createdAuditEntryOutputDto.getTextBefore());
-        assertNotNull(createdAuditEntryOutputDto.getTextAfter());
-        assertEquals(userName, createdAuditEntryOutputDto.getUserName());
-        assertEquals(validDsId, createdAuditEntryOutputDto.getChangeComment());
 
-        AuditEntryOutputDto updatedAuditEntryOutputDto = auditLogEntriesForObject.get(0);
-        assertEquals(ChangeTypeEnumDto.UPDATE, updatedAuditEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.DS_ID, updatedAuditEntryOutputDto.getChangeName());
-        assertEquals(createdAuditEntryOutputDto.getTextAfter(), updatedAuditEntryOutputDto.getTextBefore());
-        assertNotNull(updatedAuditEntryOutputDto.getTextAfter());
-        assertEquals(userName, updatedAuditEntryOutputDto.getUserName());
-        assertEquals(validDsId, updatedAuditEntryOutputDto.getChangeComment());
+        AuditLogEntryOutputDto createdAuditLogEntryOutputDto = auditLogEntriesForObject.get(1);
+
+        assertTrue(createdAuditLogEntryOutputDto.getId() > 0L);
+        assertTrue(createdAuditLogEntryOutputDto.getObjectId() > 0L);
+        assertTrue(createdAuditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, createdAuditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.CREATE, createdAuditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.DS_ID, createdAuditLogEntryOutputDto.getChangeName());
+        assertEquals(validDsId, createdAuditLogEntryOutputDto.getIdentifier());
+        assertNull(createdAuditLogEntryOutputDto.getChangeComment());
+        assertNull(createdAuditLogEntryOutputDto.getTextBefore());
+        assertNotNull(createdAuditLogEntryOutputDto.getTextAfter());
+
+        AuditLogEntryOutputDto updatedAuditLogEntryOutputDto = auditLogEntriesForObject.get(0);
+
+        assertTrue(updatedAuditLogEntryOutputDto.getId() > 0L);
+        assertTrue(updatedAuditLogEntryOutputDto.getObjectId() > 0L);
+        assertTrue(updatedAuditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
+        assertEquals(userName, updatedAuditLogEntryOutputDto.getUserName());
+        assertEquals(ChangeTypeEnumDto.UPDATE, updatedAuditLogEntryOutputDto.getChangeType());
+        assertEquals(ObjectTypeEnumDto.DS_ID, updatedAuditLogEntryOutputDto.getChangeName());
+        assertEquals(validDsId, updatedAuditLogEntryOutputDto.getIdentifier());
+        assertNull(updatedAuditLogEntryOutputDto.getChangeComment());
+        assertEquals(createdAuditLogEntryOutputDto.getTextAfter(), updatedAuditLogEntryOutputDto.getTextBefore());
+        assertNotNull(updatedAuditLogEntryOutputDto.getTextAfter());
     }
 
     @Test
@@ -1030,13 +1071,14 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteRestrictedId(invalidId, false, deleteReasonDto));
 
         // Assert
-        assertTrue(exception.getMessage().contains("restricted id: " + invalidId + " not found"));
+        assertTrue(exception.getMessage().contains("id: " + invalidId + " not found"));
     }
 
     @Test
     public void deleteRestrictedId_whenValidId_thenDeleteRestrictedId() throws SQLException {
         // Arrange
         String drProductionId = "12345678";
+        String title = "Test title";
         String comment = "Brugeren har trukket deres samtykke tilbage";
         String changeComment = "Udsendelse må vises efter nye aftaler";
 
@@ -1044,6 +1086,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         restrictedIdInputDto.setIdValue(drProductionId);
         restrictedIdInputDto.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedIdInputDto.setTitle(title);
         restrictedIdInputDto.setComment(comment);
 
         RestrictedIdOutputDto restrictedIdOutputDto = RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto);
@@ -1055,19 +1098,19 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         RecordsCountDto recordsCountDto = RightsModuleFacade.deleteRestrictedId(restrictedIdOutputDto.getId(), false, deleteReasonDto);
 
         // Make sure that the restricted id is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform()));
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getRestrictedIdById(restrictedIdOutputDto.getId()));
 
         auditLogEntriesForObject = storage.getAuditLogByObjectId(restrictedIdOutputDto.getId());
 
         // Assert
-        assertTrue(exception.getMessage().contains("restricted id idValue: " + restrictedIdInputDto.getIdValue() + ", idType: " + restrictedIdInputDto.getIdType() + ", platform: " + restrictedIdInputDto.getPlatform() + " not found"));
+        assertTrue(exception.getMessage().contains("id: " + restrictedIdOutputDto.getId() + " not found"));
 
         assertEquals(1, recordsCountDto.getCount());
 
         assertEquals(2, auditLogEntriesForObject.size());
         AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
 
-        assertNotNull(auditLogEntryOutputDto.getId());
+        assertTrue(auditLogEntryOutputDto.getId() > 0L);
         assertEquals(restrictedIdOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
         assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L);
         assertEquals(userName, auditLogEntryOutputDto.getUserName());

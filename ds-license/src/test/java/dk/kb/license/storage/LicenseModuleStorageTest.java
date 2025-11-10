@@ -31,15 +31,12 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 /**
  * Unittest class for the H2Storage.
  * All tests create and use H2 database in the directory: target/h2
- * <p>
  * The directory will be deleted before the first test-method is called.
  * Each test-method will delete all entries in the database, but keep the database tables.
- * <p>
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
 public class LicenseModuleStorageTest extends UnitTestUtil {
-
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
 
     private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";

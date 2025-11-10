@@ -15,7 +15,15 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
+/**
+ * Unittest class for the H2Storage.
+ * All tests create and use H2 database in the directory: target/h2
+ * The directory will be deleted before the first test-method is called.
+ * Each test-method will delete all entries in the database, but keep the database tables.
+ * Currently, the directory is not deleted after the tests have run. This is useful as you can
+ * open and open the database and see what the unit-tests did.
+ */
+public class RightsModuleStorageTest extends UnitTestUtil {
     protected static RightsModuleStorageForUnitTest storage = null;
 
     @BeforeAll

@@ -5,6 +5,7 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.util.webservice.ImplBase;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,14 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     public RestrictedIdOutputDto getRestrictedId(String idValue, IdTypeEnumDto idType, PlatformEnumDto platform) {
         log.debug("Get restricted id idValue: {}, idType: {}, platform: {}", idValue, idType, platform);
         try {
-            return RightsModuleFacade.getRestrictedId(idValue, idType, platform);
+            RestrictedIdOutputDto restrictedIdOutputDto = RightsModuleFacade.getRestrictedId(idValue, idType, platform);
+
+            if (restrictedIdOutputDto == null) {
+                final String errorMessage = "restricted id idValue: " + idValue + ", idType: " + idType + ", platform: " + platform + " not found";
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+            return restrictedIdOutputDto;
         } catch (Exception e) {
             throw handleException(e);
         }
