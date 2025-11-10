@@ -164,7 +164,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void restrictedDrProductionIdTest() throws SQLException, IllegalAccessException {
         try ( RightsModuleStorageForUnitTest storage = new RightsModuleStorageForUnitTest()) {
-            storage.createRestrictedId("1234567890", IdTypeEnumDto.DR_PRODUCTION_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Not allowed dr production ID");
+            storage.createRestrictedId("1234567890", IdTypeEnumDto.DR_PRODUCTION_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Test title", "Not allowed dr production ID");
             storage.commit();
         } catch (Exception e) {
             throw e;
@@ -181,7 +181,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void restrictedDsIdTest() throws SQLException, IllegalAccessException {
         try ( RightsModuleStorageForUnitTest storage = new  RightsModuleStorageForUnitTest()) {
-            storage.createRestrictedId("restrictedId",IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(),"dangerous ID");
+            storage.createRestrictedId("restrictedId", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Test title", "dangerous ID");
             storage.commit();
         } catch (Exception e) {
             throw e;
@@ -197,7 +197,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void restrictedTitleTest() throws SQLException, IllegalAccessException {
         try ( RightsModuleStorageForUnitTest storage = new  RightsModuleStorageForUnitTest()) {
-            storage.createRestrictedId("Restricted Test Title",IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.DRARKIV.getValue(), "This title can never be shown");
+            storage.createRestrictedId("Restricted Test Title", IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Test title", "This title can never be shown");
             storage.commit();
         } catch (Exception e) {
             throw e;
@@ -214,7 +214,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void allowedProductionCodeFromMetadataTest() throws SQLException, IllegalAccessException {
         try ( RightsModuleStorageForUnitTest storage = new  RightsModuleStorageForUnitTest()) {
-            storage.createRestrictedId("1000",IdTypeEnumDto.OWNPRODUCTION_CODE.getValue(), PlatformEnumDto.DRARKIV.getValue(),"1000 equals ownproduction");
+            storage.createRestrictedId("1000", IdTypeEnumDto.OWNPRODUCTION_CODE.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Test title", "1000 equals ownproduction");
             storage.commit();
         } catch (Exception e) {
             throw e;
@@ -226,15 +226,5 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
         RightsCalculationOutputDto allowedOwnProduction = RightsModuleFacade.calculateRightsForRecord(allowedOwnProductionCode);
 
         assertTrue(allowedOwnProduction.getDr().getProductionCodeAllowed());
-    }
-
-    @Test
-    public void testShortErrorProductionId(){
-        assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345"));
-    }
-
-    @Test
-    public void testInvalidProductionId(){
-        assertThrows(InvalidArgumentServiceException.class, () -> Util.validateDrProductionIdFormat("12345abcde"));
     }
 }

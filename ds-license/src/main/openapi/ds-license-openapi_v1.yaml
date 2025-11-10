@@ -9,80 +9,69 @@ info:
   license:
     name: '${license.name}'
     url: '${license.url}'
-servers:
-  #  /api must match servlet-mapping in web.xml
+servers: #  /api must match servlet-mapping in web.xml
   - url: '${config:openapi.serverurl}'
     description: 'Version 1'
 
 paths:
-
   /checkAccessForIds:
     post:
       tags:
         - '${project.name}'
-      summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. ID filter field is defined in the YAML configuration'
-      operationId: checkAccessForIds
+      summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. Id filter field is defined in the YAML configuration'
       security:
         - KBOAuth:
             - public
+      operationId: checkAccessForIds
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/CheckAccessForIdsInput'
-                
-    
       responses:
         '200':
-          description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used.'
+          description: 'Returns the ids that has not been filtered by the query. Also return the Solr filter query that was used'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAccessForIdsOutput'
-
 
   /checkAccessForResourceIds:
     post:
       tags:
         - '${project.name}'
-      summary: 'Takes an array of resource Ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
-      operationId: checkAccessForResourceIds
+      summary: 'Takes an array of resource ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
       security:
         - KBOAuth:
             - public
+      operationId: checkAccessForResourceIds
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/CheckAccessForIdsInput'
-
-
       responses:
         '200':
-          description: 'Returns the IDs that has not been filtered by the query. Also return the Solr filter query that was used. IDs that exists but with no access will be return in nonAccessId field'
+          description: 'Returns the ids that has not been filtered by the query. Also return the Solr filter query that was used. Ids that exists but with no access will be return in nonAccessId field'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckAccessForIdsOutput'
 
-
-
-
   /validateAccess:
     post:
       tags:
         - '${project.name}'
-      summary: 'Validate if user has access to all groups in input.'
-      operationId: validateAccess
+      summary: 'Validate if user has access to all groups in input'
       security:
         - KBOAuth:
             - public
+      operationId: validateAccess
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/ValidateAccessInput'
-
       responses:
         '200':
           description: 'True or false'
@@ -95,68 +84,61 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'Get a list of all licences that validates from user attributes.'
-      operationId: getUserLicenses
+      summary: 'Get a list of all licences that validates from user attributes'
       security:
         - KBOAuth:
             - public
+      operationId: getUserLicenses
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/GetUsersLicensesInput'
-    
       responses:
         '200':
-          description: 'Returns the names of all the licences that validates for the user.'
+          description: 'Returns the names of all the licences that validates for the user'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUsersLicensesOutput'
-             
-                                          
-                                          
+
   /getUserLicenseQuery:
     post:
       tags:
         - '${project.name}'
       summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
-      operationId: getUserLicenseQuery
       security:
         - KBOAuth:
             - public
+      operationId: getUserLicenseQuery
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/GetUserQueryInput'
-                
-    
       responses:
         '200':
-          description: 'The Solr filter query.'
+          description: 'The Solr filter query'
           content:
-            application/json:    # Media type
-              schema:            # Request body contents
-                $ref: '#/components/schemas/GetUsersFilterQueryOutput'                    
-                example: '{"filterQuery": "(((subject:\"Tyskland\") OR (id:*manus!judsam!*)) -(access_blokeret:true))"}'                      
-
+            application/json: # Media type
+              schema: # Request body contents
+                $ref: '#/components/schemas/GetUsersFilterQueryOutput'
+                example: '{"filterQuery": "(((subject:\"Tyskland\") OR (id:*manus!judsam!*)) -(access_blokeret:true))"}'
 
   /getUserGroups:
     post:
       tags:
         - '${project.name}'
       summary: 'Get the groups that the user has access to'
-      operationId: getUserGroups
       security:
         - KBOAuth:
             - public
+      operationId: getUserGroups
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents                                             
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/GetUserGroupsInput'
-                             
       responses:
         '200':
           description: 'Names of the groups and presentationtype that the user has access to'
@@ -164,22 +146,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsOutput'
-            
+
   /getUserGroupsAndLicenses:
     post:
       tags:
         - '${project.name}'
       summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
-      operationId: getUserGroupsAndLicenses
       security:
         - KBOAuth:
             - public
+      operationId: getUserGroupsAndLicenses
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents                                             
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/GetUserGroupsAndLicensesInput'
-                             
       responses:
         '200':
           description: 'List all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
@@ -187,11 +168,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
-  
+
   # Audit
   /audit/auditEntryById:
     get:
-      summary: return the AuditLogEntry with the given id
+      summary: 'Return the AuditLogEntry with the given id'
       tags:
         - 'DsAudit'
       operationId: getAuditEntryById
@@ -202,22 +183,21 @@ paths:
       parameters:
         - name: id
           in: query
-          description: Filter on id
+          description: 'Filter on id'
           schema:
             type: integer
             format: int64
       responses:
         '200':
-          description: Get specific Audit log by id
+          description: 'Get specific audit log by id'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuditEntryOutput'
 
-
   /audit/auditEntriesByObjectId:
     get:
-      summary: Return a list of AuditLogEntry related to an object by object id
+      summary: 'Return a list of AuditLogEntry related to an object by object id'
       tags:
         - 'DsAudit'
       operationId: getAuditEntriesByObjectId
@@ -228,13 +208,13 @@ paths:
       parameters:
         - name: objectid
           in: query
-          description: Filter on objectid
+          description: 'Filter on objectid'
           schema:
             type: integer
             format: int64
       responses:
         '200':
-          description: return all auditlogs related to objectid
+          description: 'Return all audit logs related to objectid'
           content:
             application/json:
               schema:
@@ -245,7 +225,7 @@ paths:
   # Rights
   /rights/platforms:
     get:
-      summary: Get all available platforms
+      summary: 'Get all available platforms'
       tags:
         - 'DsRights'
       operationId: getPlatforms
@@ -255,7 +235,7 @@ paths:
             - ds-license-admin
       responses:
         '200':
-          description: A JSON array of available platforms.
+          description: 'A JSON array of available platforms'
           content:
             application/json:
               schema:
@@ -265,7 +245,7 @@ paths:
 
   /rights/idTypes:
     get:
-      summary: Get all allowed ID Types in the rights component.
+      summary: 'Get all allowed id types in the rights component'
       tags:
         - 'DsRights'
       operationId: getIdTypes
@@ -276,12 +256,12 @@ paths:
       parameters:
         - name: platform
           in: query
-          description: "The platform to extract ID Types for"
+          description: 'The platform to extract id types for'
           schema:
             $ref: '#/components/schemas/PlatformEnum'
       responses:
         '200':
-          description: A JSON array of allowed ID types
+          description: 'A JSON array of allowed id types'
           content:
             application/json:
               schema:
@@ -289,79 +269,6 @@ paths:
                 items:
                   type: string
 
-
-  /rights/restrictedIds:
-    get:
-      summary: get restricted ids from idType and platform
-      tags:
-        - 'DsRights'
-      operationId: getAllRestrictedIds
-      security:
-        - KBOAuth:
-            - ds-license-readonly
-            - ds-license-admin
-      parameters:
-        - name: idType
-          in: query
-          required: true
-          description: Required filter on idType
-          schema:
-            $ref: '#/components/schemas/IdTypeEnum'
-        - name: platform
-          in: query
-          required: true
-          description: Required filter on platform
-          schema:
-            $ref: '#/components/schemas/PlatformEnum'
-      responses:
-        '200':
-          description:
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RestrictedIdOutput'
-
-    post:
-      description: create multiple restricted ids
-      tags:
-        - 'DsRights'
-      operationId: createRestrictedIds
-      security:
-        - KBOAuth:
-            - ds-license-admin
-      parameters:
-        - name: touchRecord
-          in: query
-          schema:
-            type: boolean
-            default: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/RestrictedIdInput'
-            example:
-              - idValue: "test:multi:1"
-                idType: DS_ID
-                platform: DRARKIV
-                comment: "test multi 2"
-              - idValue: "test:multi:2"
-                idType: DS_ID
-                platform: DRARKIV
-                comment: "test multi 1"
-              - idValue: "test:multi:3"
-                idType: DR_PRODUCTION_ID
-                platform: DRARKIV
-                comment: "test multi 1"
-      responses:
-        '204':
-          description: created
-  
   /rights/restrictedId:
     get:
       tags:
@@ -381,21 +288,21 @@ paths:
           in: query
           required: true
           schema:
-            $ref: "#/components/schemas/IdTypeEnum"
+            $ref: '#/components/schemas/IdTypeEnum'
         - name: platform
           in: query
           required: true
           schema:
-            $ref: "#/components/schemas/PlatformEnum"
+            $ref: '#/components/schemas/PlatformEnum'
       responses:
         '200':
-          description: Get a restricted ID details
+          description: 'Get a restricted id'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RestrictedIdOutput'
         '404':
-          description: restricted id not found
+          description: 'Restricted id not found'
     delete:
       tags:
         - 'DsRights'
@@ -443,19 +350,114 @@ paths:
             examples:
               DrProductionID:
                 value:
-                  idValue: 'test1'
-                  idType: DR_PRODUCTION_ID
-                  platform: DRARKIV
+                  idValue: '12345678'
+                  idType: 'DR_PRODUCTION_ID'
+                  platform: 'DRARKIV'
+                  title: 'TV Avisen'
                   comment: 'Dette er en test'
       responses:
-        '201':
-          description: created
+        '200':
+          description: 'Created restricted id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedIdOutput'
+
+  /rights/restrictedId/{id}:
     put:
-      summary: Updates comment of restricted id
+      summary: 'Updates title and/or comment of restricted id. The requester should always send the information in all fields.'
       tags:
         - 'DsRights'
-      operationId: updateRestrictedIdComment
-      description: Only comment can be updated
+      operationId: updateRestrictedId
+      description: 'Only title and/or comment can be updated'
+      security:
+        - KBOAuth:
+            - ds-license-admin
+      parameters:
+        - name: id
+          in: path
+          description: 'The unique id of a restricted id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestrictedIdInput'
+            examples:
+              DsId:
+                value:
+                  idValue: 'ds.tv:oai:io:6f9017fb-810a-4386-98cc-debd1f19b48d'
+                  idType: 'DS_ID'
+                  platform: 'DRARKIV'
+                  title: 'TV Avisen'
+                  comment: 'Opdateret kommentar'
+              DrProductionID:
+                value:
+                  idValue: '12345678'
+                  idType: 'DR_PRODUCTION_ID'
+                  platform: 'DRARKIV'
+                  title: 'TV Avisen'
+                  comment: 'Opdateret kommentar'
+              StrictTitle:
+                value:
+                  idValue: 'Helt sort'
+                  idType: 'STRICT_TITLE'
+                  platform: 'DRARKIV'
+                  title: 'Helt sort'
+                  comment: 'Opdateret kommentar'
+      responses:
+        '200':
+          description: 'Updated restricted id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedIdOutput'
+
+  /rights/restrictedIds:
+    get:
+      summary: 'Get restricted ids from idType and platform'
+      tags:
+        - 'DsRights'
+      operationId: getAllRestrictedIds
+      security:
+        - KBOAuth:
+            - ds-license-readonly
+            - ds-license-admin
+      parameters:
+        - name: idType
+          in: query
+          required: true
+          description: 'Required filter on idType'
+          schema:
+            $ref: '#/components/schemas/IdTypeEnum'
+        - name: platform
+          in: query
+          required: true
+          description: 'Required filter on platform'
+          schema:
+            $ref: '#/components/schemas/PlatformEnum'
+      responses:
+        '200':
+          description: 'List of restricted ids'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestrictedIdOutput'
+    post:
+      description: 'Create multiple restricted ids or updates if they already exists'
+      tags:
+        - 'DsRights'
+      operationId: createOrUpdateRestrictedIds
       security:
         - KBOAuth:
             - ds-license-admin
@@ -466,32 +468,93 @@ paths:
             type: boolean
             default: true
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateRestrictedIdCommentInput'
-            examples:
-              DrProductionID:
-                value:
-                  id: '1753788094315'
-                  comment: 'Dette er en opdateret kommentar'
+              type: array
+              items:
+                $ref: '#/components/schemas/RestrictedIdInput'
+            example:
+              - idValue: 'ds.tv:oai:io:111017fb-810a-4386-98cc-debd1f19b48d'
+                idType: 'DS_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'test multi 1'
+              - idValue: 'ds.radio:oai:io:11156005-39e6-4fc3-90a5-830efded34a0'
+                idType: 'DS_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'test multi 2'
+              - idValue: '12345678'
+                idType: 'DR_PRODUCTION_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'test multi 3'
       responses:
-        '201':
-          description: created
+        '200':
+          description: 'Status on restricted ids creation or updates'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessedRestrictedIdsOutput'
+
+  /rights/restrictedId/check/dr-arkiv/{dsId}:
+    get:
+      tags:
+        - 'DsRights'
+      summary: 'Returns a DrBroadcastDto object that shows if the input dsId broadcast has a drProductionId. DrBroadcastDto has a list of BroadcastDto that is populated with broadcasts sharing the same drProductionId. Each BroadcastDto also shows if there is a restriction and restriction comment on that broadcast'
+      operationId: matchingDrProductionIdBroadcasts
+      security:
+        - KBOAuth:
+            - ds-license-readonly
+            - ds-license-admin
+      parameters:
+        - name: dsId
+          in: path
+          description: 'The unique id of a DR-arkiv broadcast'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Get broadcasts'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DrBroadcast'
+        '400':
+          description: 'An error occurred in the request. This can be a validation error for the path variable dsId'
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: 'dsId: {dsId} not found'
+          content:
+            application/json:
+              schema:
+                type: object
+        '503':
+          description: 'An error occurred when sending the request to Solr. The service is currently unavailable'
+          content:
+            application/json:
+              schema:
+                type: object
 
   /rights/drHoldbackRules:
     get:
       tags:
         - 'DsRights'
       operationId: getDrHoldbackRules
-      description: get all DR holdback rules
+      description: 'Get all DR holdback rules'
       security:
         - KBOAuth:
             - ds-license-readonly
             - ds-license-admin
       responses:
         '200':
-          description: list of DR holdback rules
+          description: 'List of DR holdback rules'
           content:
             application/json:
               schema:
@@ -516,13 +579,13 @@ paths:
             type: string
       responses:
         '200':
-          description: retrieve a DR holdback rule
+          description: 'Retrieve a DR holdback rule'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DrHoldbackRuleOutput'
         '404':
-          description: not found
+          description: 'Not found'
     delete:
       tags:
         - 'DsRights'
@@ -538,7 +601,7 @@ paths:
             type: string
       responses:
         '204':
-          description: succesfully deleted
+          description: 'Successfully deleted'
     post:
       tags:
         - 'DsRights'
@@ -554,19 +617,19 @@ paths:
             examples:
               example1:
                 value:
-                  drHoldbackValue: "2.03"
-                  name: "Testing"
+                  drHoldbackValue: '2.03'
+                  name: 'Testing'
                   days: 100
       responses:
         '204':
-          description: sucessfully created
+          description: 'Successfully deleted'
 
   /rights/drHoldbackDays:
     get:
       tags:
         - 'DsRights'
       operationId: getDrHoldbackDays
-      description: get the number of DR holdback days. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name.
+      description: 'Get the number of DR holdback days. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name'
       security:
         - KBOAuth:
             - ds-license-readonly
@@ -575,29 +638,29 @@ paths:
         - name: drHoldbackValue
           in: query
           required: false
-          description: drHoldbackValue of the DR holdback rule
+          description: 'drHoldbackValue of the DR holdback rule'
           schema:
             type: string
         - name: name
           in: query
           required: false
-          description: name of the DR holdback rule
+          description: 'Name of the DR holdback rule'
           schema:
             type: string
       responses:
         '200':
-          description: DR holdback days
+          description: 'DR holdback days'
           content:
             application/json:
-                schema:
-                  type: integer
+              schema:
+                type: integer
         '404':
-          description: DR holdback day not found
+          description: 'DR holdback day not found'
     put:
       tags:
         - 'DsRights'
       operationId: updateDrHoldbackDays
-      description: update the number of DR holdback days for a purpose. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name.
+      description: 'Update the number of DR holdback days for a purpose. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name'
       security:
         - KBOAuth:
             - ds-license-admin
@@ -605,13 +668,13 @@ paths:
         - name: drHoldbackValue
           in: query
           required: false
-          description: drHoldbackValue of the DR holdback rule
+          description: 'drHoldbackValue of the DR holdback rule'
           schema:
             type: string
         - name: name
           in: query
           required: false
-          description: name of the DR holdback rule
+          description: 'Name of the DR holdback rule'
           schema:
             type: string
         - name: days
@@ -625,7 +688,7 @@ paths:
 
   /rights/drHoldbackRanges:
     get:
-      summary: get all DR holdback ranges for a drHoldbackValue
+      summary: 'Get all DR holdback ranges for a drHoldbackValue'
       tags:
         - 'DsRights'
       operationId: getDrHoldbackRanges
@@ -636,7 +699,7 @@ paths:
       parameters:
         - name: drHoldbackValue
           in: query
-          description: filter on drHoldbackValue
+          description: 'Filter on drHoldbackValue'
           schema:
             type: string
       responses:
@@ -649,7 +712,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/DrHoldbackRangeOutput'
     post:
-      summary: set DR holdback ranges for a drHoldbackValue
+      summary: 'Set DR holdback ranges for a drHoldbackValue'
       tags:
         - 'DsRights'
       operationId: createDrHoldbackRanges
@@ -666,7 +729,7 @@ paths:
         '201':
           description: created
     delete:
-      summary: delete DR holdback ranges for a drHoldbackValue
+      summary: 'Delete DR holdback ranges for a drHoldbackValue'
       tags:
         - 'DsRights'
       operationId: deleteDrHoldbackRanges
@@ -681,16 +744,16 @@ paths:
             type: string
       responses:
         '204':
-          description: deleted
+          description: 'Deleted'
 
   /rights/getDrHoldbackValueFromContentAndForm:
     get:
-      summary: get the drHoldbackValue from content and form metadata.
+      summary: 'Get the drHoldbackValue from content and form metadata'
       tags:
         - 'DsRights'
       operationId: getDrHoldbackValueFromContentAndForm
       security:
-        - KBOAuth:
+        - KBOAth:
             - ds-license-readonly
             - ds-license-admin
       parameters:
@@ -711,47 +774,42 @@ paths:
             'application/json':
               schema:
                 type: string
-  
+
   /rights/calculate:
     post:
       tags:
         - 'DsRights'
       operationId: calculateRights
-      security:
-        - KBOAuth:
-          - public
-      summary: "Calculate restrictions for a record based on input values"
-#     No Oauth. Only called by system calls when indexing and no oauth is used system2system in ingest(write) environment.
+      summary: 'Calculate restrictions for a record based on input values'
+      # No Oauth. Only called by system calls when indexing and no oauth is used system2system in ingest(write) environment.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RightsCalculationInput"
+              $ref: '#/components/schemas/RightsCalculationInput'
       responses:
         '200':
-          description: "Solr compliant fields and values"
+          description: 'Solr compliant fields and values'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RightsCalculationOutput"
-
+                $ref: '#/components/schemas/RightsCalculationOutput'
 
   /monitor:
     post:
       tags:
         - Service
       summary: 'Still TODO, Some statistics for monitoring the application'
-      operationId: extractStatistics       
-     
+      operationId: extractStatistics
       responses:
         '200':
           description: 'TODO'
           content:
             application/json:
-              schema:           
+              schema:
                 type: string
-       
+
   /monitor/whoami:
     get:
       tags:
@@ -760,7 +818,7 @@ paths:
       operationId: probeWhoami
       security:
         - KBOAuth:
-          - public
+            - public
       responses:
         '200':
           description: 'OK'
@@ -768,7 +826,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Whoami'
-            
 
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -782,7 +839,7 @@ paths:
     get:
       tags:
         - Service
-      summary: 'Ping the server to check if the server is reachable.'
+      summary: 'Ping the server to check if the server is reachable'
       operationId: ping
       x-useGenericResponse: false # If enabled the method will return Response
       x-streamingOutput: false # If enabled the method will return StreamingOutput.
@@ -823,67 +880,104 @@ paths:
               schema:
                 type: string
 
-
-
 components:
   schemas:
+    DrBroadcast:
+      type: object
+      description: 'Object containing results with the same drProductionId'
+      properties:
+        drProductionId:
+          type: string
+          description: 'DR-arkiv production id'
+        restricted:
+          type: boolean
+          description: 'Is the drProductionId restricted?'
+        restrictedComment:
+          type: string
+          description: 'Comment about why drProductionId is restricted, if it is restricted'
+        broadcast:
+          type: array
+          items:
+            $ref: '#/components/schemas/Broadcast'
+
+    Broadcast:
+      type: object
+      properties:
+        dsId:
+          type: string
+          description: 'Unique id of a broadcast'
+        title:
+          type: string
+          description: 'Title for broadcast'
+        startTime:
+          type: string
+          format: date-time
+          description: 'Start time of broadcast'
+        endTime:
+          type: string
+          format: date-time
+          description: 'End time of broadcast'
+        restricted:
+          type: boolean
+          description: 'Is the broadcast restricted?'
+        restrictedComment:
+          type: string
+          description: 'Comment about why broadcast is restricted, if it is restricted'
 
     CheckAccessForIdsInput:
-      type: object
-      properties: 
-        presentationType:
-          type: string
-          example: 'Stream'
-        accessIds:     
-          type: array
-          example: ['id1','id2']
-          items:
-            type: string                
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserObjAttribute'
-          
-          
-
-    CheckAccessForIdsOutput:    
       type: object
       properties:
         presentationType:
           type: string
-        query:     
-          type: string
-          description: 'Solr query'  
-        accessIds:     
-           type: array
-           items:
-             type: string
-        nonAccessIds:     
-           type: array
-           items:
-             type: string        
-        nonExistingIds:     
-           type: array
-           items:
-             type: string             
-
-    ValidateAccessInput:
-      type: object
-      properties: 
-        presentationType:
-          type: string
           example: 'Stream'
-        groups:     
+        accessIds:
           type: array
-          example: ['group1','group2']
+          example: [ 'id1','id2' ]
           items:
-            type: string       
+            type: string
         attributes:
           type: array
           items:
             $ref: '#/components/schemas/UserObjAttribute'
 
-    ValidateAccessOutput:    
+    CheckAccessForIdsOutput:
+      type: object
+      properties:
+        presentationType:
+          type: string
+        query:
+          type: string
+          description: 'Solr query'
+        accessIds:
+          type: array
+          items:
+            type: string
+        nonAccessIds:
+          type: array
+          items:
+            type: string
+        nonExistingIds:
+          type: array
+          items:
+            type: string
+
+    ValidateAccessInput:
+      type: object
+      properties:
+        presentationType:
+          type: string
+          example: 'Stream'
+        groups:
+          type: array
+          example: [ 'group1','group2' ]
+          items:
+            type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserObjAttribute'
+
+    ValidateAccessOutput:
       type: object
       properties:
         access:
@@ -891,7 +985,7 @@ components:
 
     LicenseOverview:
       type: object
-      properties: 
+      properties:
         name:
           type: string
         description:
@@ -900,27 +994,26 @@ components:
           type: string
         validTo:
           type: string
-     
 
     UserObjAttribute:
       type: object
       properties:
-        attribute:               
+        attribute:
           type: string
           description: 'Key/Values attributes describing the user'
-          example: 'wayf.mail'  
-        values:                    
-           type: array
-           example: ['teg@kb.dk']
-           items:
-             type: string     
+          example: 'wayf.mail'
+        values:
+          type: array
+          example: [ 'teg@kb.dk' ]
+          items:
+            type: string
 
     GetUserGroupsAndLicensesInput:
       type: object
-      properties:                
-        locale:         
+      properties:
+        locale:
           type: string
-          example: 'da'        
+          example: 'da'
         attributes:
           type: array
           items:
@@ -928,7 +1021,7 @@ components:
 
     GetUserGroupsAndLicensesOutput:
       type: object
-      properties:                              
+      properties:
         groups:
           type: array
           items:
@@ -938,20 +1031,19 @@ components:
           items:
             $ref: '#/components/schemas/LicenseOverview'
         allPresentationTypes:
-           type: array
-           items:
-             type: string   
+          type: array
+          items:
+            type: string
         allGroups:
           type: array
           items:
-            type: string   
+            type: string
 
-       
     GetUsersLicensesInput:
       type: object
-      properties:                
+      properties:
         locale:
-          type: string        
+          type: string
         attributes:
           type: array
           items:
@@ -959,7 +1051,7 @@ components:
 
     GetUsersLicensesOutput:
       type: object
-      properties:                
+      properties:
         licenses:
           type: array
           items:
@@ -967,66 +1059,62 @@ components:
 
     GetUsersFilterQueryOutput:
       type: object
-      properties:                
+      properties:
         filterQuery:
-          type: string      
-          
+          type: string
 
     GetUserQueryInput:
       type: object
-      properties: 
+      properties:
         presentationType:
-          type: string             
+          type: string
         attributes:
           type: array
           items:
             $ref: '#/components/schemas/UserObjAttribute'
-                      
+
     GetUserQueryOutput:
       type: object
-      properties: 
+      properties:
         query:
-          type: string             
-        userLicenseGroups:   
+          type: string
+        userLicenseGroups:
           type: array
           items:
-            type: string 
-        userNotInDenyGroups:   
+            type: string
+        userNotInDenyGroups:
           type: array
           items:
-            type: string 
+            type: string
 
-           
     GetUserGroupsInput:
       type: object
-      properties: 
-        locale:        
+      properties:
+        locale:
           type: string
-          example: 'da'             
+          example: 'da'
         attributes:
           type: array
           items:
             $ref: '#/components/schemas/UserObjAttribute'
-           
-           
+
     GetUserGroupsOutput:
       type: object
-      properties:                    
+      properties:
         groups:
           type: array
           items:
             $ref: '#/components/schemas/UserGroup'
-            
-            
+
     UserGroup:
       type: object
-      properties:                    
+      properties:
         groupName:
-          type: string                 
-        presentationTypes:   
+          type: string
+        presentationTypes:
           type: array
           items:
-            type: string 
+            type: string
 
     # Rights module
     PlatformEnum:
@@ -1077,13 +1165,14 @@ components:
           type: integer
           format: int64
         modifiedTime:
-          type: long
+          type: integer
+          format: int64
         userName:
           type: string
         changeType:
-          $ref: "#/components/schemas/ChangeTypeEnum"
+          $ref: '#/components/schemas/ChangeTypeEnum'
         changeName:
-          $ref: "#/components/schemas/ObjectTypeEnum"
+          $ref: '#/components/schemas/ObjectTypeEnum'
         changeComment:
           type: string
         textBefore:
@@ -1097,29 +1186,19 @@ components:
         - idValue
         - idType
         - platform
-
-      properties:   
+        - title
+        - comment
+      properties:
         idValue:
           type: string
         idType:
-          $ref: "#/components/schemas/IdTypeEnum"
+          $ref: '#/components/schemas/IdTypeEnum'
         platform:
-          $ref: "#/components/schemas/PlatformEnum"
+          $ref: '#/components/schemas/PlatformEnum'
+        title:
+          type: string
         comment:
           type: string
-
-    UpdateRestrictedIdCommentInput:
-      type: object
-      required:
-        - id
-
-      properties:
-        id:
-          type: integer
-          format: int64
-        comment:
-          type: string
-
 
     RestrictedIdOutput:
       type: object
@@ -1130,10 +1209,57 @@ components:
         idValue:
           type: string
         idType:
-          $ref: "#/components/schemas/IdTypeEnum"
+          $ref: '#/components/schemas/IdTypeEnum'
         platform:
-          $ref: "#/components/schemas/PlatformEnum"
+          $ref: '#/components/schemas/PlatformEnum'
+        title:
+          type: string
         comment:
+          type: string
+
+    ProcessedRestrictedIdsOutput:
+      type: object
+      properties:
+        processStatus:
+          $ref: '#/components/schemas/ProcessStatus'
+        processedSuccessfully:
+          type: integer
+        failedRestrictedIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailedRestrictedId'
+
+    ProcessStatus:
+      type: string
+      enum:
+        - success
+        - partial processed
+        - failed
+      x-enum-varnames:
+        - SUCCESS
+        - PARTIAL_PROCESSED
+        - FAILED
+      x-enum-descriptions:
+        - success
+        - partial processed
+        - failed
+
+    FailedRestrictedId:
+      type: object
+      properties:
+        idValue:
+          type: string
+        idType:
+          $ref: '#/components/schemas/IdTypeEnum'
+        platform:
+          $ref: '#/components/schemas/PlatformEnum'
+        title:
+          type: string
+        comment:
+          type: string
+        exception:
+          type: string
+        errorMessage:
           type: string
 
     DrHoldbackRuleInput:
@@ -1179,7 +1305,7 @@ components:
         ranges:
           type: array
           items:
-            $ref: "#/components/schemas/DrHoldbackRanges"
+            $ref: '#/components/schemas/DrHoldbackRanges'
     
     DrHoldbackRangeOutput:
       type: object
@@ -1210,23 +1336,23 @@ components:
           description: 'Greeting from the API'
 
     RightsCalculationInput:
-      description: "An overall Data Transfer Object which should be used to carry all values needed for calculating rights for a record between services."
+      description: 'An overall Data Transfer Object which should be used to carry all values needed for calculating rights for a record between services'
       type: object
       x-isRightsCalculationObject: true
       properties:
         recordId:
           type: string
-          description: "ID of the record, which this metadata comes from."
+          description: 'Id of the record, which this metadata comes from'
         platform:
-          $ref: "#/components/schemas/PlatformEnum"
-          description: "The platform that rights are calculated for."
+          $ref: '#/components/schemas/PlatformEnum'
+          description: 'The platform that rights are calculated for'
         startTime:
           type: string
-          description: "Start time of the record this object relates to."
+          description: 'Start time of the record this object relates to'
         holdbackInput:
-          $ref: "#/components/schemas/HoldbackCalculationInput"
+          $ref: '#/components/schemas/HoldbackCalculationInput'
         restrictionsInput:
-          $ref: "#/components/schemas/RestrictionsCalculationInput"
+          $ref: '#/components/schemas/RestrictionsCalculationInput'
       required:
         - recordId
         - platform
@@ -1235,24 +1361,24 @@ components:
         - restrictionsInput
 
     HoldbackCalculationInput:
-      description: "A holdback specific Data Transfer Object which should be used to carry all values needed for calculating holdback for a record between services."
+      description: 'A holdback specific Data Transfer Object which should be used to carry all values needed for calculating holdback for a record between services'
       type: object
       properties:
         hensigt:
           type: integer
-          description: "A metadata value used for holdback calculation."
+          description: 'A metadata value used for holdback calculation'
         form:
           type: integer
-          description: "A metadata value used for holdback calculation."
+          description: 'A metadata value used for holdback calculation'
         indhold:
           type: integer
-          description: "A metadata value used for holdback calculation."
+          description: 'A metadata value used for holdback calculation'
         productionCountry:
           type: integer
-          description: "A metadata value used for holdback calculation."
+          description: 'A metadata value used for holdback calculation'
         origin:
           type: string
-          description: "Origin in the DS ecosystem. Used to determine how holdback should be calculated."
+          description: 'Origin in the DS ecosystem. Used to determine how holdback should be calculated'
       required:
         - hensigt
         - form
@@ -1261,21 +1387,21 @@ components:
         - origin
 
     RestrictionsCalculationInput:
-      description: "A restrictions specific Data Transfer Object which should be used to carry all values needed for looking up if a record is restricted between services."
+      description: 'A restrictions specific Data Transfer Object which should be used to carry all values needed for looking up if a record is restricted between services'
       type: object
       properties:
         recordId:
           type: string
-          description: "ID of the record, which this metadata comes from."
+          description: 'Id of the record, which this metadata comes from'
         productionCode:
           type: string
-          description: "a metadata value used for holdback and own production calculation."
+          description: 'A metadata value used for holdback and own production calculation'
         drProductionId:
           type: string
-          description: "an internal ID from DR which could be restricted."
+          description: 'An internal id from DR which could be restricted'
         title:
           type: string
-          description: "title of the record in hand. There is a chance that it is restricted."
+          description: 'Title of the record in hand. There is a chance that it is restricted'
       required:
         - recordId
         - productionCode
@@ -1283,46 +1409,45 @@ components:
         - title
 
     RightsCalculationOutput:
-      description: "A Data Transfer Object containing the solr fields and values that have been created from the calculations based on a RightsCalculationInput object."
+      description: 'A Data Transfer Object containing the solr fields and values that have been created from the calculations based on a RightsCalculationInput object'
       type: object
-      properties:
-        # Platform nesting of calculation results. When more platforms need rights calculations output objects should be appended here.
+      properties: # Platform nesting of calculation results. When more platforms need rights calculations output objects should be appended here.
         generel:
-          $ref: "#/components/schemas/RightsCalculationOutputGeneral"
+          $ref: '#/components/schemas/RightsCalculationOutputGeneral'
         dr:
-          $ref: "#/components/schemas/RightsCalculationOutputDr"
+          $ref: '#/components/schemas/RightsCalculationOutputDr'
 
     RightsCalculationOutputGeneral:
       type: object
-      description: "Object containing results from all rights calculations that are applicable in general for the record"
+      description: 'Object containing results from all rights calculations that are applicable in general for the record'
       properties:
         dsIdRestricted:
           type: boolean
-          description: "A boolean representing if our DS ID for the record has been restricted."
+          description: 'A boolean representing if our dsId for the record has been restricted'
 
     RightsCalculationOutputDr:
       type: object
-      description: "Object containing results from all rights calculations that are applicable for the DR Archive for the record"
+      description: 'Object containing results from all rights calculations that are applicable for the DR Archive for the record'
       properties:
         dsIdRestricted:
           type: boolean
-          description: "A boolean representing if our DS ID for the record has been restricted."
+          description: 'A boolean representing if our dsId for the record has been restricted'
         holdbackName:
           type: string
-          description: "The name of the holdback category for the record."
+          description: 'The name of the holdback category for the record'
         holdbackExpiredDate:
           type: string
-          description: "The date, when the record is out of holdback. This gets calculated by adding X amount of days to the start time of the recording, where X is defined 
-          based on holdbackName."
+          description: 'The date, when the record is out of holdback. This gets calculated by adding X amount of days to the start time of the recording, where X is defined 
+          based on holdbackName'
         productionCodeAllowed:
           type: boolean
-          description: "A value used to specify if the record in hand is 'ownproduction' and can be shown in the archive."
+          description: 'A value used to specify if the record in hand is "ownproduction" and can be shown in the archive'
         drIdRestricted:
           type: boolean
-          description: "A boolean representing if DRs internal production ID for the record has been restricted."
+          description: 'A boolean representing if DRs internal production id for the record has been restricted'
         titleRestricted:
           type: boolean
-          description: "Some titles are not allowed to be watched, if this boolean is true, then the record cannot be shown,"
+          description: 'Some titles are not allowed to be watched, if this boolean is true, then the record cannot be shown'
 
     Whoami:
       type: object
@@ -1402,18 +1527,18 @@ components:
           example: 'ok'
         gitCommitChecksum:
           type: string
-          description: 'The checksum of the deployed commit.'
+          description: 'The checksum of the deployed commit'
           example: 'ca82a6dff817ec66f44342007202690a93763949'
         gitBranch:
           type: string
-          description: 'The current deployed branch.'
+          description: 'The current deployed branch'
           example: master
         gitClosestTag:
           type: string
-          description: 'The closest tag of the deployed branch.'
+          description: 'The closest tag of the deployed branch'
         gitCommitTime:
           type: string
-          description: 'The time for the latest commit of the deplyed branch.'
+          description: 'The time for the latest commit of the deployed branch'
 
     RecordsCount:
       type: object
@@ -1422,28 +1547,24 @@ components:
           type: integer
           format: int32
           description: 'Number of records updated'
-          
-  securitySchemes:
 
+  securitySchemes:
     KBOAuth:
       type: oauth2
       description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
       flows:
-        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+        implicit: # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
           #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
-          #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}
+          #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
           authorizationUrl: https://api.example.com/oauth2/authorize
           scopes:
             generic_ds: 'Scope used for all Digitale Samlinger services'
             # Project specific roles
             read: 'read data'
             write: 'modify or delete data'
-
             # General roles at the Royal Danish Library
             devel: 'broad read access'
             admin: 'all rights'
-
             # Meta role controlling authorization behaviour
             public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
             any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
-
