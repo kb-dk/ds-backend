@@ -15,15 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unittest class for the H2Storage.
- * All tests create and use H2 database in the directory: target/h2
- * The directory will be deleted before the first test-method is called.
- * Each test-method will delete all entries in the database, but keep the database tables.
- * Currently, the directory is not deleted after the tests have run. This is useful as you can
- * open and open the database and see what the unit-tests did.
- */
-public class RightsModuleStorageTest extends UnitTestUtil {
+public class RightsModuleStorageTest extends DsLicenseUnitTestUtil {
     protected static RightsModuleStorageForUnitTest storage = null;
 
     @BeforeAll
@@ -48,76 +40,154 @@ public class RightsModuleStorageTest extends UnitTestUtil {
     }
 
     @Test
-    public void testRestrictedIdCRUD() throws SQLException {
+    public void createRestrictedId_whenCreatingRestrictedId_thenReturnId() throws SQLException {
+        // Arrange
         String idValue = "test1234";
-        String idType = IdTypeEnumDto.DR_PRODUCTION_ID.getValue();
-        String platform = PlatformEnumDto.DRARKIV.getValue();
+        IdTypeEnumDto idTypeEnumDto = IdTypeEnumDto.DR_PRODUCTION_ID;
+        PlatformEnumDto platformEnumDto = PlatformEnumDto.DRARKIV;
+        String title = "Test title";
         String comment = "a comment";
 
-        long id = storage.createRestrictedId(idValue, idType, platform, comment);
-        RestrictedIdOutputDto retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
-        assertNotNull(retreivedFromStorage);
-        assertEquals(idValue, retreivedFromStorage.getIdValue());
-        assertEquals(idType, retreivedFromStorage.getIdType().getValue());
-        assertEquals(platform, retreivedFromStorage.getPlatform().getValue());
-        assertEquals(comment, retreivedFromStorage.getComment());
+        // Act
+        long id = storage.createRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name(), title, comment);
+        RestrictedIdOutputDto restrictedIdOutputDto = storage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
 
-        String new_comment = "another comment";
-
-        storage.updateRestrictedIdComment(id, new_comment);
-        retreivedFromStorage = storage.getRestrictedId(idValue, idType, platform);
-        assertNotNull(retreivedFromStorage);
-        assertEquals(idValue, retreivedFromStorage.getIdValue());
-        assertEquals(idType, retreivedFromStorage.getIdType().getValue());
-        assertEquals(platform, retreivedFromStorage.getPlatform().getValue());
-        assertEquals(new_comment, retreivedFromStorage.getComment());
-
-        storage.deleteRestrictedId(idValue, idType, platform);
-        assertNull(storage.getRestrictedId(idValue, idType, platform));
+        // Assert
+        assertNotNull(restrictedIdOutputDto);
+        assertEquals(id, restrictedIdOutputDto.getId());
+        assertEquals(idValue, restrictedIdOutputDto.getIdValue());
+        assertEquals(idTypeEnumDto, restrictedIdOutputDto.getIdType());
+        assertEquals(platformEnumDto, restrictedIdOutputDto.getPlatform());
+        assertEquals(title, restrictedIdOutputDto.getTitle());
+        assertEquals(comment, restrictedIdOutputDto.getComment());
     }
 
     @Test
-    public void testRestrictedIdSearch() throws SQLException {
-        storage.createRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "");
-        storage.createRestrictedId("test2", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.GENERIC.getValue(), "");
-        storage.createRestrictedId("test3", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "");
-        storage.createRestrictedId("test4", IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.DRARKIV.getValue(), "");
-        storage.createRestrictedId("test5", IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.GENERIC.getValue(), "");
-
-        assertEquals(2, storage.getAllRestrictedIds(IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue()).size());
-    }
-
-    @Test
-    public void testUniqueRestrictedID() throws SQLException {
-        String idValue = "test12345";
-        String idType = "dr_produktions_id";
+    public void createRestrictedId_whenRestrictedIdAlreadyExists_thenThrowSQLException() throws SQLException {
+        // Arrange
+        String idValue = "12345678";
+        String idType = "dr_production_id ";
         String platform = "dr";
+        String title = "Test title";
         String comment = "a comment";
-        String modified_by = "user1";
-        long modified_time = 1739439979L;
+        String expectedMessage = "Unique index or primary key violation";
 
-        storage.createRestrictedId(idValue, idType, platform, comment);
+        storage.createRestrictedId(idValue, idType, platform, title, comment);
 
-        assertThrows(SQLException.class, () -> storage.createRestrictedId(idValue, idType, platform, comment));
+        // Act
+        Exception exception = assertThrows(SQLException.class, () -> storage.createRestrictedId(idValue, idType, platform, title, comment));
+
+        // Assert
+        assertTrue(exception.getMessage().startsWith(expectedMessage));
     }
 
     @Test
-    public void getRestrictedIdByIdValue_whenValidDsId_thenReturnComment() throws SQLException {
+    public void updateRestrictedId_whenUpdatingTitleAndCommentWithValidId_thenTitleAndCommentIsUpdated() throws SQLException {
+        // Arrange
+        String idValue = "test1234";
+        IdTypeEnumDto idTypeEnumDto = IdTypeEnumDto.DR_PRODUCTION_ID;
+        PlatformEnumDto platformEnumDto = PlatformEnumDto.DRARKIV;
+        String title = "Test title";
+        String comment = "a comment";
+
+        long id = storage.createRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name(), title, comment);
+
+        String newTitle = "new title";
+        String newComment = "another comment";
+
+        // Act
+        storage.updateRestrictedId(id, newTitle, newComment);
+        RestrictedIdOutputDto restrictedIdOutputDto = storage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
+
+        // Assert
+        assertNotNull(restrictedIdOutputDto);
+        assertEquals(id, restrictedIdOutputDto.getId());
+        assertEquals(idValue, restrictedIdOutputDto.getIdValue());
+        assertEquals(idTypeEnumDto, restrictedIdOutputDto.getIdType());
+        assertEquals(platformEnumDto, restrictedIdOutputDto.getPlatform());
+        assertEquals(newTitle, restrictedIdOutputDto.getTitle());
+        assertEquals(newComment, restrictedIdOutputDto.getComment());
+    }
+
+    @Test
+    public void deleteRestrictedId_whenDeletingRestrictedId_thenRestrictedIdIsDeleted() throws SQLException {
+        // Arrange
+        String idValue = "test1234";
+        IdTypeEnumDto idTypeEnumDto = IdTypeEnumDto.DR_PRODUCTION_ID;
+        PlatformEnumDto platformEnumDto = PlatformEnumDto.DRARKIV;
+        String title = "Test title";
+        String comment = "a comment";
+
+        long id = storage.createRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name(), title, comment);
+        RestrictedIdOutputDto restrictedIdOutputDto = storage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
+
+        assertNotNull(restrictedIdOutputDto);
+        assertEquals(id, restrictedIdOutputDto.getId());
+        assertEquals(idValue, restrictedIdOutputDto.getIdValue());
+        assertEquals(idTypeEnumDto, restrictedIdOutputDto.getIdType());
+        assertEquals(platformEnumDto, restrictedIdOutputDto.getPlatform());
+        assertEquals(title, restrictedIdOutputDto.getTitle());
+        assertEquals(comment, restrictedIdOutputDto.getComment());
+
+        // Act
+        storage.deleteRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
+        RestrictedIdOutputDto deletedRestrictedIdOutputDto = storage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
+
+        // Assert
+        assertNull(deletedRestrictedIdOutputDto);
+    }
+
+    @Test
+    public void getRestrictedIdCommentByIdValue_whenValidDsId_thenReturnComment() throws SQLException {
+        // Arrange
         String dsId = "ds.tv:oai:io:7cb60d39-effd-419c-9bac-881b7b7eb10c";
+        String title = "Damages";
         String expectedComment = "Test comment";
 
-        storage.createRestrictedId(dsId, IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), expectedComment);
+        storage.createRestrictedId(dsId, IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), title, expectedComment);
 
+        // Act
         String actualComment = storage.getRestrictedIdCommentByIdValue(dsId);
 
+        // Assert
         assertEquals(expectedComment, actualComment);
     }
 
     @Test
-    public void getRestrictedIdByIdValue_whenNotFoundDsId_thenReturnNull() throws SQLException {
+    public void getRestrictedIdCommentByIdValue_whenNotFoundDsId_thenReturnNull() throws SQLException {
+        // Act
         String actualComment = storage.getRestrictedIdCommentByIdValue("1");
 
+        // Assert
         assertNull(actualComment);
+    }
+
+    @Test
+    public void getAllRestrictedIds_whenSearchingForIdTypeDsIdAndPlatformDrArkiv_thenReturnOnlyMatchingRestrictedIds() throws SQLException {
+        // Act
+        storage.createRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Title1", "Comment1");
+        storage.createRestrictedId("test2", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Title2", "Comment2");
+        storage.createRestrictedId("test3", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.GENERIC.getValue(), "Title3", "Comment3");
+        storage.createRestrictedId("test4", IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Title4", "Comment4");
+        storage.createRestrictedId("test5", IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.GENERIC.getValue(), "Title5", "Comment5");
+
+        // Act
+        List<RestrictedIdOutputDto> restrictedIdOutputDtoList = storage.getAllRestrictedIds(IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue());
+
+        // Assert
+        assertEquals(2, restrictedIdOutputDtoList.size());
+
+        assertEquals("test1", restrictedIdOutputDtoList.get(0).getIdValue());
+        assertEquals(IdTypeEnumDto.DS_ID, restrictedIdOutputDtoList.get(0).getIdType());
+        assertEquals(PlatformEnumDto.DRARKIV, restrictedIdOutputDtoList.get(0).getPlatform());
+        assertEquals("Title1", restrictedIdOutputDtoList.get(0).getTitle());
+        assertEquals("Comment1", restrictedIdOutputDtoList.get(0).getComment());
+
+        assertEquals("test2", restrictedIdOutputDtoList.get(1).getIdValue());
+        assertEquals(IdTypeEnumDto.DS_ID, restrictedIdOutputDtoList.get(1).getIdType());
+        assertEquals(PlatformEnumDto.DRARKIV, restrictedIdOutputDtoList.get(1).getPlatform());
+        assertEquals("Title2", restrictedIdOutputDtoList.get(1).getTitle());
+        assertEquals("Comment2", restrictedIdOutputDtoList.get(1).getComment());
     }
 
     @Test
@@ -322,11 +392,12 @@ public class RightsModuleStorageTest extends UnitTestUtil {
     }
 
     @Test
-    public void testPerformStorageAction() throws SQLException {
+    public void performStorageAction_whenCreatingRestrictedId_thenRestrictedIdIsInsertedInTheTable() {
         RestrictedIdOutputDto result = BaseModuleStorage.performStorageAction("Testing", RightsModuleStorage.class, storage -> {
-            ((RightsModuleStorage) storage).createRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "comment");
+            ((RightsModuleStorage) storage).createRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "test title", "comment");
             return ((RightsModuleStorage) storage).getRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue());
         });
+
         assertEquals("test1", result.getIdValue());
         assertEquals(IdTypeEnumDto.DS_ID, result.getIdType());
         assertEquals(PlatformEnumDto.DRARKIV, result.getPlatform());

@@ -32,10 +32,10 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public void updateRestrictedIdComment(Boolean touchRecord, UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto) {
-        log.debug("Updating restricted id: {}", updateRestrictedIdCommentInputDto);
+    public RestrictedIdOutputDto updateRestrictedId(Long id, Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
+        log.debug("Updating restricted id: {}, restrictedIdInputDto: {}", id, restrictedIdInputDto);
         try {
-            RightsModuleFacade.updateRestrictedIdComment(updateRestrictedIdCommentInputDto, touchRecord);
+            return RightsModuleFacade.updateRestrictedId(id, touchRecord, restrictedIdInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -88,9 +88,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
+    public ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            RightsModuleFacade.createRestrictedIds(restrictedIds, touchRecord);
+            return RightsModuleFacade.createOrUpdateRestrictedIds(touchRecord, restrictedIds);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -134,7 +134,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         }
     }
 
-        /**
+    /**
+     * Update the number of days for a DR holdback rule
+     *
      * @param id
      * @param drHoldbackRuleInputDto
      * @return
@@ -165,7 +167,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * get all holdback rules for DR
+     * Get all holdback rules for DR
      *
      * @return
      */
