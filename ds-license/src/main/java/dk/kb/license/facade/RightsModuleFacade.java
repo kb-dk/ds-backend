@@ -4,6 +4,7 @@ import dk.kb.license.RightsCalculation;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.mapper.BroadcastDtoMapper;
 import dk.kb.license.mapper.DrBroadcastDtoMapper;
+import dk.kb.license.mapper.FailedRestrictedIdDtoMapper;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.AuditLogEntry;
@@ -30,7 +31,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
@@ -51,12 +51,12 @@ public class RightsModuleFacade {
      * Retrieves a restrictedID output object from the database
      *
      * @param id       the id value
-     * @param idType   type of ID
+     * @param idType   type of id
      * @param platform The platform
-     * @return
+     * @return RestrictedIdOutputDto
      */
     public static RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) {
-        return BaseModuleStorage.performStorageAction("Get restricted ID", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
+        return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
     }
 
     private static ObjectTypeEnumDto getObjectTypeEnumFromRestrictedIdType(IdTypeEnumDto restrictedIdType) {
@@ -72,33 +72,30 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Creates a restricted ID using the provided input data transfer object (DTO).
+     * Creates a restricted id using the provided input data transfer object (DTO).
      *
-     * @param restrictedIdInputDto the data transfer object containing the details of the restricted ID to be created.
+     * @param restrictedIdInputDto the data transfer object containing the details of the restricted id to be created.
      *                             This should not be null.
+     * @return RestrictedIdOutputDto
      */
-    public static void createRestrictedId(RestrictedIdInputDto restrictedIdInputDto, boolean touchDsStorageRecord) {
-        inputValidator.validateCommentLength(restrictedIdInputDto.getComment());
+    public static RestrictedIdOutputDto createRestrictedId(boolean touchDsStorageRecord, RestrictedIdInputDto restrictedIdInputDto) {
+        inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
 
-        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
-            inputValidator.validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
-        }
+        return BaseModuleStorage.performStorageAction("Persist restricted id (klausulering)", RightsModuleStorage.class, storage -> {
+            long id = ((RightsModuleStorage) storage).createRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType().getValue(), restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getTitle(), restrictedIdInputDto.getComment());
 
-        if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DS_ID) {
-            // Check if dsId is valid
-            inputValidator.validateDsId(restrictedIdInputDto.getIdValue());
-        }
-
-        BaseModuleStorage.performStorageAction("Persist restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
-            long id = ((RightsModuleStorage) storage).createRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType().getValue(), restrictedIdInputDto.getPlatform().getValue(), restrictedIdInputDto.getComment());
             if (touchDsStorageRecord) {
                 touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
-            ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(restrictedIdInputDto);
+
+            RestrictedIdOutputDto createdRestrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
+
+            ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(createdRestrictedIdOutputDto);
             AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), null, change.getAfter());
             storage.persistAuditLog(logEntry);
-            log.info("Created restriction {}", restrictedIdInputDto);
-            return id;
+            log.info("Created restriction id: {}, restrictedIdOutputDto: {}", id, createdRestrictedIdOutputDto);
+
+            return createdRestrictedIdOutputDto;
         });
     }
 
@@ -112,7 +109,9 @@ public class RightsModuleFacade {
      * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
      */
     public static int deleteRestrictedId(Long id, boolean touchDsStorageRecord) {
-        return BaseModuleStorage.performStorageAction("delete restricted ID", RightsModuleStorage.class, storage -> {
+        inputValidator.validateId(id);
+
+        return BaseModuleStorage.performStorageAction("delete restricted id", RightsModuleStorage.class, storage -> {
             // Retrieve object from database
             RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdById(id);
 
@@ -131,32 +130,38 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Update a restricted ID using the provided input data transfer object (DTO).
+     * Update a restricted id using the provided input data transfer object (DTO).
      *
-     * @param updateRestrictedIdCommentInputDto the data transfer object containing the details of the restricted ID to be Updated.
-     *                                          This should not be null.
+     * @param id
      * @param touchDsStorageRecord
+     * @param restrictedIdInputDto the data transfer object containing the details of the restricted id to be updated.
+     *                             This should not be null.
      */
-    public static void updateRestrictedIdComment(UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto, boolean touchDsStorageRecord) {
-        inputValidator.validateCommentLength(updateRestrictedIdCommentInputDto.getComment());
+    public static RestrictedIdOutputDto updateRestrictedId(Long id, Boolean touchDsStorageRecord, RestrictedIdInputDto restrictedIdInputDto) {
+        inputValidator.validateId(id);
+        inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
 
-        BaseModuleStorage.performStorageAction("Update restricted ID (klausulering)", RightsModuleStorage.class, storage -> {
-            long id = updateRestrictedIdCommentInputDto.getId();
-            RestrictedIdOutputDto oldVersion = ((RightsModuleStorage) storage).getRestrictedIdById(id);
-            if (oldVersion == null) {
-                throw new NotFoundServiceException("updated restricted Id not found " + updateRestrictedIdCommentInputDto);
-            }
-            ((RightsModuleStorage) storage).updateRestrictedIdComment(updateRestrictedIdCommentInputDto.getId(), updateRestrictedIdCommentInputDto.getComment());
+        RestrictedIdOutputDto oldRestrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+
+        if (oldRestrictedIdOutputDto == null) {
+            final String errorMessage = "id: " + id + " not found";
+            log.error(errorMessage);
+            throw new NotFoundServiceException(errorMessage);
+        }
+
+        return BaseModuleStorage.performStorageAction("Update restricted id (klausulering)", RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage) storage).updateRestrictedId(id, restrictedIdInputDto.getTitle(), restrictedIdInputDto.getComment());
+
             if (touchDsStorageRecord) {
-                touchRelatedStorageRecords(oldVersion.getIdValue(), oldVersion.getIdType());
+                touchRelatedStorageRecords(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType());
             }
-            RestrictedIdOutputDto newVersion = ((RightsModuleStorage) storage).getRestrictedIdById(id);
+            RestrictedIdOutputDto updatedRestrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
 
-            ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldVersion, newVersion);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(newVersion.getIdType()), newVersion.getIdValue(), change.getBefore(), change.getAfter());
+            ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldRestrictedIdOutputDto, updatedRestrictedIdOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(updatedRestrictedIdOutputDto.getIdType()), updatedRestrictedIdOutputDto.getIdValue(), change.getBefore(), change.getAfter());
             storage.persistAuditLog(logEntry);
-            log.info("Updated restricted ID {}", updateRestrictedIdCommentInputDto);
-            return null;
+            log.info("Updated restricted id: {}, updatedRestrictedIdOutputDto: {}", id, updatedRestrictedIdOutputDto);
+            return updatedRestrictedIdOutputDto;
         });
     }
 
@@ -194,16 +199,16 @@ public class RightsModuleFacade {
         BroadcastDtoMapper broadcastDtoMapper = new BroadcastDtoMapper();
 
         if (resultFromDsId.getFieldValue("dr_production_id") == null) {
-            drBroadcastDto = drBroadcastDtoMapper.mapDrBroadcastDto(drBroadcastDto, null, null);
+            drBroadcastDto = drBroadcastDtoMapper.map(drBroadcastDto, null, null);
 
             // There could be a restriction already on the broadcast
             String dsIdRestrictedIdComment = getRestrictedIdCommentByIdValue(resultFromDsId.getFieldValue("id").toString());
-            BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(resultFromDsId, dsIdRestrictedIdComment);
+            BroadcastDto broadcastDto = broadcastDtoMapper.map(resultFromDsId, dsIdRestrictedIdComment);
             broadcastDtoList.add(broadcastDto);
         } else {
             // drProductionId can be restricted
             String drProductionIdRestrictedIdComment = getRestrictedIdCommentByIdValue(resultFromDsId.getFieldValue("dr_production_id").toString());
-            drBroadcastDto = drBroadcastDtoMapper.mapDrBroadcastDto(drBroadcastDto, resultFromDsId.getFieldValue("dr_production_id").toString(), drProductionIdRestrictedIdComment);
+            drBroadcastDto = drBroadcastDtoMapper.map(drBroadcastDto, resultFromDsId.getFieldValue("dr_production_id").toString(), drProductionIdRestrictedIdComment);
 
             String queryDrProductionId = "dr_production_id:\"" + drBroadcastDto.getDrProductionId() + "\"";
             String fieldListDrProductionId = "id, title, startTime, endTime";
@@ -220,7 +225,7 @@ public class RightsModuleFacade {
             for (SolrDocument solrDocument : resultsFromDrProductionId) {
                 // There could be a restriction already on the broadcast
                 String dsIdRestrictedIdComment = getRestrictedIdCommentByIdValue(solrDocument.getFieldValue("id").toString());
-                BroadcastDto broadcastDto = broadcastDtoMapper.mapBroadcastDto(solrDocument, dsIdRestrictedIdComment);
+                BroadcastDto broadcastDto = broadcastDtoMapper.map(solrDocument, dsIdRestrictedIdComment);
                 broadcastDtoList.add(broadcastDto);
             }
         }
@@ -229,7 +234,7 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Fetch comment from `restricted_id`
+     * Fetch comment from restricted_ids
      *
      * @param idValue
      * @return comment about why a broadcast or drProductionId is restricted
@@ -239,44 +244,67 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Creates a restricted ID for each of the entries in the list using the provided input data transfer object (DTO).
+     * Creates or updates a restricted id for each of the entries in the list using the provided input data transfer object (DTO).
      *
-     * @param restrictedIds list containing the data transfer objects containing the details of the restricted IDs to be created.
+     * @param restrictedIds list containing the data transfer objects containing the details of the restricted ids to be created.
      *                      This should not be null.
+     * @return ProcessedRestrictedIdsOutputDto
      */
-    public static void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, boolean touchDsStorageRecord) {
-        BaseModuleStorage.performStorageAction("create restricted ID", RightsModuleStorage.class, storage -> {
-            for (RestrictedIdInputDto id : restrictedIds) {
-                log.debug("Adding restricted id type='{}' with value='{}'", id.getIdType(), id.getIdValue());
-                inputValidator.validateCommentLength(id.getComment());
+    public static ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = new ProcessedRestrictedIdsOutputDto();
+        List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
+        int processedSuccessfully = 0;
+        FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
 
-                if (id.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
-                    inputValidator.validateDrProductionIdFormat(id.getIdValue());
+        for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
+            log.debug("Adding restricted id idValue: {}, idType: {}, platform: {}",  restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+
+            try {
+                // Is there already a restrictions on idValue?
+                RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+
+                if (restrictedIdOutputDto == null) {
+                    createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
+                } else {
+                    // the restriction already existed, so updating it instead
+                    updateRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, restrictedIdInputDto);
                 }
 
-                long objectId = ((RightsModuleStorage) storage).createRestrictedId(id.getIdValue(), id.getIdType().getValue(), id.getPlatform().getValue(), id.getComment());
-                if (touchDsStorageRecord) {
-                    touchRelatedStorageRecords(id.getIdValue(), id.getIdType());
-                }
-                ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(id);
-                AuditLogEntry logEntry = new AuditLogEntry(objectId, null, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(id.getIdType()), id.getIdValue(), change.getBefore(), change.getAfter());
-                storage.persistAuditLog(logEntry);
+                // If no exception was thrown, we know that the restriction was created
+                processedSuccessfully++;
+
+            } catch (Exception exception) { // need to catch every exception that could be thrown
+                log.error("Failed to add restricted id restrictedIdInputDto: {}, exception: ", restrictedIdInputDto, exception);
+                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
+
+                failedRestrictedIdDtoList.add(failedRestrictedIdDto);
             }
-            return null;
-        });
-        log.info("Added restricted IDs: [{}] ", restrictedIds.stream().map(RestrictedIdInputDto::toString).collect(Collectors.joining(", ")));
+        }
 
+        // Need to start with this, for not getting wrongly PARTIAL_PROCESSED
+        if (processedSuccessfully == 0) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.FAILED);
+        } else if (failedRestrictedIdDtoList.isEmpty()) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.SUCCESS);
+        } else if (!failedRestrictedIdDtoList.isEmpty()) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.PARTIAL_PROCESSED);
+        }
+
+        processedRestrictedIdsOutputDto.setProcessedSuccessfully(processedSuccessfully);
+        processedRestrictedIdsOutputDto.setFailedRestrictedIds(failedRestrictedIdDtoList);
+        log.info("Successfully added: {}. Failed to add: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
+        return processedRestrictedIdsOutputDto;
     }
 
     /**
-     * Get all restricted Ids
+     * Get all restricted ids
      *
      * @param idType   only get restricedIds with this idType
      * @param platform only get retstrictedIds for this platform
      * @return
      */
     public static List<RestrictedIdOutputDto> getAllRestrictedIds(IdTypeEnumDto idType, PlatformEnumDto platform) {
-        return BaseModuleStorage.performStorageAction("get restricted IDs", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType.getValue(), platform.getValue()));
+        return BaseModuleStorage.performStorageAction("get restricted ids", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType.getValue(), platform.getValue()));
     }
 
     /**
@@ -343,20 +371,20 @@ public class RightsModuleFacade {
 
 
     /**
-     * Checks if the specified ID is restricted based on the provided ID type and platform.
+     * Checks if the specified idValue is restricted based on the provided idType and platform.
      * The method performs a storage action to retrieve the restriction status
-     * for the ID and returns true if the ID is restricted, and false otherwise.
+     * for the idValue and returns true if the idValue is restricted, and false otherwise.
      *
-     * @param id       the ID to check for restrictions
-     * @param idType   the type of the ID. Types are: ds_id, dr_produktions_id, strict_title
-     * @param platform the platform where the ID is being checked (e.g. DR Archive)
-     * @return true if the ID is restricted; false otherwise
+     * @param idValue  the idValue to check for restrictions
+     * @param idType   the type of the id. Types are: ds_id, dr_produktions_id, strict_title
+     * @param platform the platform where the id is being checked (e.g. DRARKIV)
+     * @return true if the id is restricted; false otherwise
      * @throws SQLException if an error occurs during the SQL process.
      */
-    public static boolean isIdRestricted(String id, IdTypeEnumDto idType, PlatformEnumDto platform) throws SQLException {
-        return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> {
-            RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(id, idType.getValue(), platform.getValue());
-            // If the object is null, then id is not restricted
+    public static boolean isIdRestricted(String idValue, IdTypeEnumDto idType, PlatformEnumDto platform) throws SQLException {
+        return BaseModuleStorage.performStorageAction("Get restricted idValue", RightsModuleStorage.class, storage -> {
+            RestrictedIdOutputDto idOutput = ((RightsModuleStorage) storage).getRestrictedId(idValue, idType.getValue(), platform.getValue());
+            // If the object is null, then idValue is not restricted
             return idOutput != null;
         });
     }
@@ -369,7 +397,7 @@ public class RightsModuleFacade {
      * for the production code and returns true if the code is allowed, and false otherwise.
      *
      * @param productionCode the production code to check for allowance
-     * @param platform       the platform where the production code is being checked (e.g. DR Archive)
+     * @param platform       the platform where the production code is being checked (e.g. DRARKIV)
      * @return true if the production code is allowed; false otherwise
      */
     public static boolean isProductionCodeAllowed(String productionCode, String platform) {

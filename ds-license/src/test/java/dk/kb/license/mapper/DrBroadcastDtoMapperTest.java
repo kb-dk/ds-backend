@@ -11,13 +11,13 @@ public class DrBroadcastDtoMapperTest {
     final String drProductionId = "9213163000";
 
     @Test
-    public void mapDrBroadcastDto_whenDrProductionIdIsNull_thenReturnDrBroadcastDtoWithRestrictedFalse() {
+    public void map_whenDrProductionIdIsNull_thenReturnWithRestrictedFalse() {
         // Arrange
         DrBroadcastDtoMapper DrBroadcastDtoMapper = new DrBroadcastDtoMapper();
         DrBroadcastDto drBroadcastDto = new DrBroadcastDto();
 
         // Act
-        DrBroadcastDto actualDrBroadcastDto = DrBroadcastDtoMapper.mapDrBroadcastDto(drBroadcastDto, null, null);
+        DrBroadcastDto actualDrBroadcastDto = DrBroadcastDtoMapper.map(drBroadcastDto, null, null);
 
         // Assert
         assertEquals(drBroadcastDto, actualDrBroadcastDto);
@@ -27,13 +27,13 @@ public class DrBroadcastDtoMapperTest {
     }
 
     @Test
-    public void mapDrBroadcastDto_whenRestrictedIdCommentIsNull_thenReturnDrBroadcastDtoWithRestrictedFalse() {
+    public void map_whenRestrictedIdCommentIsNull_thenReturnWithRestrictedFalse() {
         // Arrange
         DrBroadcastDtoMapper DrBroadcastDtoMapper = new DrBroadcastDtoMapper();
         DrBroadcastDto drBroadcastDto = new DrBroadcastDto();
 
         // Act
-        DrBroadcastDto actualDrBroadcastDto = DrBroadcastDtoMapper.mapDrBroadcastDto(drBroadcastDto, drProductionId, null);
+        DrBroadcastDto actualDrBroadcastDto = DrBroadcastDtoMapper.map(drBroadcastDto, drProductionId, null);
 
         // Assert
         assertEquals(drBroadcastDto, actualDrBroadcastDto);
@@ -43,14 +43,14 @@ public class DrBroadcastDtoMapperTest {
     }
 
     @Test
-    public void mapDrBroadcastDto_whenRestrictedIdCommentIsNotNull_thenReturnDrBroadcastDtoWithRestrictedTrue() {
+    public void map_whenRestrictedIdCommentIsNotNull_thenReturnWithRestrictedTrue() {
         // Arrange
         String restrictedComment = "Brugeren har trukket deres samtykke tilbage";
         DrBroadcastDtoMapper DrBroadcastDtoMapper = new DrBroadcastDtoMapper();
         DrBroadcastDto drBroadcastDto = new DrBroadcastDto();
 
         // Act
-        DrBroadcastDto actualDrBroadcastDto = DrBroadcastDtoMapper.mapDrBroadcastDto(drBroadcastDto, drProductionId, restrictedComment);
+        DrBroadcastDto actualDrBroadcastDto = DrBroadcastDtoMapper.map(drBroadcastDto, drProductionId, restrictedComment);
 
         // Assert
         assertEquals(drBroadcastDto, actualDrBroadcastDto);

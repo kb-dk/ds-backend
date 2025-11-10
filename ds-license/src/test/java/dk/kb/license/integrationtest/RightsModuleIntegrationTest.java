@@ -125,8 +125,10 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdValue("ds.tv:oai:io:e027e1dc-5006-4f54-b2b7-ec451940c500");
         restrictedId.setIdType(IdTypeEnumDto.DS_ID);
         restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
-        RightsModuleFacade.createRestrictedId(restrictedId, false);
+        restrictedId.setTitle("Test title");
+        restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
 
+        RightsModuleFacade.createRestrictedId(false, restrictedId);
         RestrictedIdOutputDto outputObject = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), restrictedId.getIdType(), restrictedId.getPlatform());
 
         int deleted = RightsModuleFacade.deleteRestrictedId(outputObject.getId().longValue(), false);
@@ -140,8 +142,10 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdValue("00123466486");
         restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedId.setTitle("Test title");
+        restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
 
-        RightsModuleFacade.createRestrictedId(restrictedId, false);
+        RightsModuleFacade.createRestrictedId(false, restrictedId);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664860", outputRight.getIdValue());
@@ -156,8 +160,10 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdValue("1234664800");
         restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedId.setTitle("Test title");
+        restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
 
-        RightsModuleFacade.createRestrictedId(restrictedId, false);
+        RightsModuleFacade.createRestrictedId(false, restrictedId);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664800", outputRight.getIdValue());
@@ -172,8 +178,10 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         restrictedId.setIdValue("123466489");
         restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
         restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
+        restrictedId.setTitle("Test title");
+        restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
 
-        RightsModuleFacade.createRestrictedId(restrictedId, false);
+        RightsModuleFacade.createRestrictedId(false, restrictedId);
         RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
 
         assertEquals("1234664890", outputRight.getIdValue());

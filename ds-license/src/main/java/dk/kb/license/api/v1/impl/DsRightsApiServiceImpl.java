@@ -25,20 +25,20 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     private final static Logger log = LoggerFactory.getLogger(DsRightsApiServiceImpl.class);
 
     @Override
-    public void createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
+    public RestrictedIdOutputDto createRestrictedId(Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
         log.debug("Creating restricted ID {}", restrictedIdInputDto);
         try {
-            RightsModuleFacade.createRestrictedId(restrictedIdInputDto, touchRecord);
+            return RightsModuleFacade.createRestrictedId(touchRecord, restrictedIdInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     @Override
-    public void updateRestrictedIdComment(Boolean touchRecord, UpdateRestrictedIdCommentInputDto updateRestrictedIdCommentInputDto) {
-        log.debug("Updating restricted ID {}", updateRestrictedIdCommentInputDto);
+    public RestrictedIdOutputDto updateRestrictedId(Long id, Boolean touchRecord, RestrictedIdInputDto restrictedIdInputDto) {
+        log.debug("Updating restricted id: {}, restrictedIdInputDto: {}", id, restrictedIdInputDto);
         try {
-            RightsModuleFacade.updateRestrictedIdComment(updateRestrictedIdCommentInputDto, touchRecord);
+            return RightsModuleFacade.updateRestrictedId(id, touchRecord, restrictedIdInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -97,9 +97,9 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
-    public void createRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
+    public ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
         try {
-            RightsModuleFacade.createRestrictedIds(restrictedIds, touchRecord);
+            return RightsModuleFacade.createOrUpdateRestrictedIds(touchRecord, restrictedIds);
         } catch (Exception e) {
             throw handleException(e);
         }
