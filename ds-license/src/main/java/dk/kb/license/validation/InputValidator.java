@@ -87,7 +87,7 @@ public class InputValidator {
         }
     }
 
-/**
+    /**
      * Validates drProductionId is not null, empty or blank and only contains digits and is at least 8 digits in the given {@link RestrictedIdInputDto}.
      *
      * @param drProductionId to be validated
