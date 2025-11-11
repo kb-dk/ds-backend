@@ -21,7 +21,7 @@ paths:
       summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. Id filter field is defined in the YAML configuration'
       security:
         - KBOAuth:
-            - any
+            - public
       operationId: checkAccessForIds
       requestBody:
         content:
@@ -43,7 +43,7 @@ paths:
       summary: 'Takes an array of resource ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
       security:
         - KBOAuth:
-            - any
+            - public
       operationId: checkAccessForResourceIds
       requestBody:
         content:
@@ -65,7 +65,7 @@ paths:
       summary: 'Validate if user has access to all groups in input'
       security:
         - KBOAuth:
-            - any
+            - public
       operationId: validateAccess
       requestBody:
         content:
@@ -87,7 +87,7 @@ paths:
       summary: 'Get a list of all licences that validates from user attributes'
       security:
         - KBOAuth:
-            - any
+            - public
       operationId: getUserLicenses
       requestBody:
         content:
@@ -109,7 +109,7 @@ paths:
       summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
       security:
         - KBOAuth:
-            - any
+            - public
       operationId: getUserLicenseQuery
       requestBody:
         content:
@@ -132,7 +132,7 @@ paths:
       summary: 'Get the groups that the user has access to'
       security:
         - KBOAuth:
-            - any
+            - public
       operationId: getUserGroups
       requestBody:
         content:
@@ -154,7 +154,7 @@ paths:
       summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
       security:
         - KBOAuth:
-            - any
+            - public
       operationId: getUserGroupsAndLicenses
       requestBody:
         content:
@@ -178,7 +178,8 @@ paths:
       operationId: getAuditEntryById
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: id
           in: query
@@ -202,7 +203,8 @@ paths:
       operationId: getAuditEntriesByObjectId
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: objectid
           in: query
@@ -229,7 +231,8 @@ paths:
       operationId: getPlatforms
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       responses:
         '200':
           description: 'A JSON array of available platforms'
@@ -248,7 +251,8 @@ paths:
       operationId: getIdTypes
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: platform
           in: query
@@ -305,7 +309,7 @@ paths:
       operationId: createRestrictedId
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: touchRecord
           in: query
@@ -512,7 +516,8 @@ paths:
       operationId: matchingDrProductionIdBroadcasts
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: dsId
           in: path
@@ -554,7 +559,8 @@ paths:
       description: 'Get all DR holdback rules'
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       responses:
         '200':
           description: 'List of DR holdback rules'
@@ -572,7 +578,8 @@ paths:
       operationId: getDrHoldbackRuleByDrHoldbackValue
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -594,7 +601,7 @@ paths:
       operationId: createDrHoldbackRule
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       requestBody:
         required: true
         content:
@@ -612,7 +619,7 @@ paths:
         '200':
           description: 'Created DR holdback rule'
           content:
-            'application/json':
+            application/json:
               schema:
                   $ref: '#/components/schemas/DrHoldbackRuleOutput'
 
@@ -651,7 +658,7 @@ paths:
         '200':
           description: 'Updated DR holdback rule'
           content:
-            'application/json':
+            application/json:
               schema:
                 $ref: '#/components/schemas/DrHoldbackRuleOutput'
 
@@ -694,7 +701,8 @@ paths:
       operationId: getDrHoldbackRanges
       security:
         - KBOAth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -705,7 +713,7 @@ paths:
         '200':
           description: OK
           content:
-            'application/json':
+            application/json:
               schema:
                 type: array
                 items:
@@ -717,7 +725,7 @@ paths:
       operationId: createDrHoldbackRanges
       security:
         - KBOAth:
-            - any
+            - ds-license-admin
       requestBody:
         required: true
         content:
@@ -728,7 +736,7 @@ paths:
         '200':
           description: 'Created DR holdback ranges'
           content:
-            'application/json':
+            application/json:
               schema:
                 type: array
                 items:
@@ -771,7 +779,8 @@ paths:
       operationId: getDrHoldbackValueFromContentAndForm
       security:
         - KBOAth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: content
           in: query
@@ -787,7 +796,7 @@ paths:
         '200':
           description: ok
           content:
-            'application/json':
+            application/json:
               schema:
                 type: string
 
@@ -1340,6 +1349,11 @@ components:
       type: object
       required:
         - id
+        - contentRangeFrom
+        - contentRangeTo
+        - formRangeFrom
+        - formRangeTo
+        - drHoldbackValue
       properties:
         id:
           type: integer
