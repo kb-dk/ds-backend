@@ -14,10 +14,10 @@
  */
 package dk.kb.license.webservice;
         
+import dk.kb.util.webservice.exception.ForbiddenServiceException;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import io.swagger.annotations.AuthorizationScope;
 import org.apache.cxf.helpers.CastUtils;
-import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -106,7 +106,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
      * 
      */
     @Override
-    public void handleMessage(Message message) throws Fault {
+    public void handleMessage(Message message) {
 
         //message.getExchange().get(OperationResourceInfo.class);
         final String endpoint = getEndpointName(message);
@@ -120,14 +120,8 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         Set<String> endpointRoles = getEndpointRoles(message);
         message.put(ENDPOINT_ROLES, endpoint);
         if (endpointRoles.isEmpty()) {
-            if ("getResource".equals(endpoint)) { //TODO what is the getResource endpoint?
-                log.debug("No roles defined for endpoint '{}'. This is expected as it is a meta endpoint",
-                          endpoint);
-                return;
-            } else {
-                log.warn("No roles defined for endpoint '{}', even though it is annotated as requiring authentication",
-                         endpoint);
-            }
+            log.warn("No roles defined for endpoint '{}', even though it is annotated as requiring authentication",
+                     endpoint);
         }
 
         String accessTokenString = getAccessTokenString(message);
@@ -249,18 +243,18 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         String authorizationString = headers.get(AUTHORIZATION).get(0);
         
         if (authorizationString == null || authorizationString.isBlank()) {
-            throw new VerificationException("No authorization header in message");
+            throw new ForbiddenServiceException("No authorization header in message");
         }
 
         String[] parts = authorizationString.split(" ");
         if (!"Bearer".equals(parts[0])) {
-            throw new VerificationException(
+            throw new ForbiddenServiceException(
                     "Expected the authorization header to start with 'Bearer ' " +
                     "but it started with '" + parts[0] + " '");
         }
         if (parts.length != 2) {
             log.warn("Received Authorization string without a two white spaces: '{}'", authorizationString);
-            throw new VerificationException("Unsupported authorization String (not two white spaces)");
+            throw new ForbiddenServiceException("Unsupported authorization String (not two white spaces)");
         }
 
         return handler.validateAuthorization(parts[1]);
