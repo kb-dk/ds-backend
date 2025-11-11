@@ -9,6 +9,13 @@ import java.sql.SQLException;
 
 public class AuditLogEntryOutputDtoMapper {
 
+    /**
+     * Create a {@link AuditLogEntryOutputDto} from a ResultSet
+     *
+     * @param rs containing values from auditlog table
+     * @return AuditLogEntryOutputDto populated with data
+     * @throws SQLException
+     */
     public AuditLogEntryOutputDto map(ResultSet rs) throws SQLException {
         AuditLogEntryOutputDto auditEntry = new AuditLogEntryOutputDto();
 
