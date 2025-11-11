@@ -335,11 +335,11 @@ paths:
 
   /rights/restrictedId/{id}:
     put:
-      summary: 'Updates title and/or comment of restricted id. The requester should always send the information in all fields'
+      summary: 'Only title and/or comment can be updated'
       tags:
         - 'DsRights'
       operationId: updateRestrictedId
-      description: 'Only title and/or comment can be updated'
+      description: 'Updates title and/or comment of restricted id. The requester should always send the information in all fields'
       security:
         - KBOAuth:
             - ds-license-admin
@@ -618,11 +618,11 @@ paths:
 
   /rights/drHoldbackRule/{id}:
     put:
-      summary: 'Updates days of a DR holdback rule. The requester should always send the information in all fields'
+      summary: 'Only days can be updated'
       tags:
         - 'DsRights'
       operationId: updateDrHoldbackRule
-      description: 'Only days can be updated'
+      description: 'Updates days of a DR holdback rule. The requester should always send the information in all fields'
       security:
         - KBOAuth:
             - ds-license-admin
