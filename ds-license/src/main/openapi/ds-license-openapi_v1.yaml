@@ -701,7 +701,7 @@ paths:
     get:
       tags:
         - 'DsRights'
-      summary: 'Get all DR holdback ranges for a drHoldbackValue'
+      summary: 'Get all DR holdback ranges by drHoldbackValue'
       operationId: getDrHoldbackRanges
       security:
         - KBOAth:
@@ -725,7 +725,7 @@ paths:
     post:
       tags:
         - 'DsRights'
-      summary: 'Creates DR holdback ranges for a drHoldbackValue'
+      summary: 'Creates DR holdback ranges by drHoldbackValue'
       operationId: createDrHoldbackRanges
       security:
         - KBOAth:
