@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `src/test/resources/ddl/rightsmodule_add_title_column_and_change_platform_and_comment_to_not_null.ddl`**).
 - Move title from column `comment` into column `title` and cleanup column `comment` (**Remember: migration for OPS can
   be found in `src/test/resources/ddl/rightsmodule_cleanup_title_and_comment_column.ddl`**).
+- Move audit log ddl from `licensemodule_create_db.ddl` to `audit_log_module_create_db.ddl`
+- Change column `changecomment` to `identifier` and added a new column named `changecomment` in table `auditlog`
+  (**Remember: migration for OPS to be found in `audit_log_module_column_name_change.ddl`**)
+- Updated code to use `identifier` and `changecomment`
 
 ### Changed
 
@@ -29,28 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     * takes a RestrictedIdInputDto request body instead of a UpdateRestrictedIdCommentInputDto.
     * it can update `title` and `comment` on a restricted id.
     * returns a RestrictedIdOutputDto as response instead of void.
-- Move audit log ddl from `licensemodule_create_db.ddl` to `audit_log_module_create_db.ddl`
-- Change column `changecomment` to `identifier` and added a new column named `changecomment` in table `auditlog`
-  (**Remember: migration for OPS to be found in `audit_log_module_column_name_change.ddl`**)
-- Update code to use `identifier` and `changecomment`
-- Move audit log from `BaseModuleStorage.class` into own `AuditLogModuleStorage.class`
-- Move method `convertRsToAuditLog(ResultSet rs)` into own `AuditLogEntryOutputDtoMapper.class`
-- Change endpoints `DELETE` into `POST` with path variables and a request body `DeleteObject` that
-  has a `changeComment` field. The endpoints return a response body `RecordsCount` that tells how many rows was
-  deleted instead of void:
-    * `/rights/restrictedId` -> `/rights/restrictedId/delete/{id}`
-    * `/rights/drHoldbackRule` -> `/rights/drHoldbackRule/delete/{id}`
-    * `/rights/drHoldbackRanges` -> `/rights/drHoldbackRanges/delete/{drHoldbackValue}`
-- Endpoint `POST /rights/drHoldbackRule` returns a DrHoldbackRuleOutputDto as response instead of void.
-- Endpoint `POST /rights/drHoldbackRanges` returns a list of DrHoldbackRangeOutputDto as response instead of void.
-- Endpoint `GET /rights/drHoldbackDays` is removed, instead use `GET /rights/drHoldbackRule`.
-- Endpoint `PUT /rights/drHoldbackDays` is removed, instead there is added a `PUT /rights/drHoldbackRule` that updates
-  day in the dr_holdback_rule table.
-
-- Move audit log ddl from `licensemodule_create_db.ddl` to `audit_log_module_create_db.ddl`
-- Change column `changecomment` to `identifier` and added a new column named `changecomment` in table `auditlog`
-  (**Remember: migration for OPS to be found in `audit_log_module_column_name_change.ddl`**)
-- Update code to use `identifier` and `changecomment`
 - Move audit log from `BaseModuleStorage.class` into own `AuditLogModuleStorage.class`
 - Move method `convertRsToAuditLog(ResultSet rs)` into own `AuditLogEntryOutputDtoMapper.class`
 - Change endpoints `DELETE` into `POST` with path variables and a request body `DeleteObject` that
