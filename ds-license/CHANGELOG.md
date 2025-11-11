@@ -21,15 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Endpoint POST `/rights/restrictedId` returns a RestrictedIdOutputDto as response instead of void.
-- Endpoint POST `/rights/restrictedIds` don't fail hard if there is an error in request body. Instead, it returns a
+- Endpoint `POST /rights/restrictedId` returns a RestrictedIdOutputDto as response instead of void.
+- Endpoint `POST /rights/restrictedIds` don't fail hard if there is an error in request body. Instead, it returns a
   ProcessedRestrictedIdsOutputDto response that holds information about how many successfully RestrictedIdInputDto
   objects is created and a list of FailedIdDto that holds information about failed creations of RestrictedIdInputDto
   objects and their error message. If a restricted id already exists it gets updated instead of returning a unique index
   violation error.
 - Method `validateCommentLength` has changed name to `validateComment`, and the method now instead validates that 
   comment is not blank.
-- Changed PUT `/rights/restrictedId` -> PUT `/rights/restrictedId/{id}` and the following things:
+- Changed `PUT /rights/restrictedId` -> `PUT /rights/restrictedId/{id}` and the following things:
     * takes a RestrictedIdInputDto request body instead of a UpdateRestrictedIdCommentInputDto.
     * it can update `title` and `comment` on a restricted id.
     * returns a RestrictedIdOutputDto as response instead of void.
@@ -38,9 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change endpoints `DELETE` into `POST` with path variables and a request body `DeleteObject` that
   has a `changeComment` field. The endpoints return a response body `RecordsCount` that tells how many rows was
   deleted instead of void:
-    * `/rights/restrictedId` -> `/rights/restrictedId/delete/{id}`
-    * `/rights/drHoldbackRule` -> `/rights/drHoldbackRule/delete/{id}`
-    * `/rights/drHoldbackRanges` -> `/rights/drHoldbackRanges/delete/{drHoldbackValue}`
+    * `DELETE /rights/restrictedId` -> `POST /rights/restrictedId/delete/{id}`
+    * `DELETE /rights/drHoldbackRule` -> `POST /rights/drHoldbackRule/delete/{id}`
+    * `DELETE /rights/drHoldbackRanges` -> `POST /rights/drHoldbackRanges/delete/{drHoldbackValue}`
 - Endpoint `POST /rights/drHoldbackRule` returns a DrHoldbackRuleOutputDto as response instead of void.
 - Endpoint `POST /rights/drHoldbackRanges` returns a list of DrHoldbackRangeOutputDto as response instead of void.
 - Endpoint `GET /rights/drHoldbackDays` is removed, instead use `GET /rights/drHoldbackRule`.

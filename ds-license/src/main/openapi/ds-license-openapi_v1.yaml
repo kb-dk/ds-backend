@@ -19,10 +19,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. Id filter field is defined in the YAML configuration'
+      operationId: checkAccessForIds
       security:
         - KBOAuth:
             - public
-      operationId: checkAccessForIds
       requestBody:
         content:
           application/json: # Media type
@@ -41,10 +41,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of resource ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
+      operationId: checkAccessForResourceIds
       security:
         - KBOAuth:
             - public
-      operationId: checkAccessForResourceIds
       requestBody:
         content:
           application/json: # Media type
@@ -63,10 +63,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Validate if user has access to all groups in input'
+      operationId: validateAccess
       security:
         - KBOAuth:
             - public
-      operationId: validateAccess
       requestBody:
         content:
           application/json: # Media type
@@ -85,10 +85,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get a list of all licences that validates from user attributes'
+      operationId: getUserLicenses
       security:
         - KBOAuth:
             - public
-      operationId: getUserLicenses
       requestBody:
         content:
           application/json: # Media type
@@ -107,10 +107,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
+      operationId: getUserLicenseQuery
       security:
         - KBOAuth:
             - public
-      operationId: getUserLicenseQuery
       requestBody:
         content:
           application/json: # Media type
@@ -130,10 +130,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get the groups that the user has access to'
+      operationId: getUserGroups
       security:
         - KBOAuth:
             - public
-      operationId: getUserGroups
       requestBody:
         content:
           application/json: # Media type
@@ -152,10 +152,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
+      operationId: getUserGroupsAndLicenses
       security:
         - KBOAuth:
             - public
-      operationId: getUserGroupsAndLicenses
       requestBody:
         content:
           application/json: # Media type
@@ -172,9 +172,9 @@ paths:
   # Audit
   /audit/auditEntryById:
     get:
-      summary: 'Return the AuditLogEntry with the given id'
       tags:
         - 'DsAudit'
+      summary: 'Return the AuditLogEntry with the given id'
       operationId: getAuditEntryById
       security:
         - KBOAuth:
@@ -197,9 +197,9 @@ paths:
 
   /audit/auditEntriesByObjectId:
     get:
-      summary: 'Return a list of AuditLogEntry related to an object by object id'
       tags:
         - 'DsAudit'
+      summary: 'Return a list of AuditLogEntry related to an object by object id'
       operationId: getAuditEntriesByObjectId
       security:
         - KBOAuth:
@@ -225,9 +225,9 @@ paths:
   # Rights
   /rights/platforms:
     get:
-      summary: 'Get all available platforms'
       tags:
         - 'DsRights'
+      summary: 'Get all available platforms'
       operationId: getPlatforms
       security:
         - KBOAuth:
@@ -245,9 +245,9 @@ paths:
 
   /rights/idTypes:
     get:
-      summary: 'Get all allowed id types in the rights component'
       tags:
         - 'DsRights'
+      summary: 'Get all allowed id types in the rights component'
       operationId: getIdTypes
       security:
         - KBOAuth:
@@ -306,6 +306,7 @@ paths:
     post:
       tags:
         - 'DsRights'
+      summary: 'Create a restricted id'
       operationId: createRestrictedId
       security:
         - KBOAuth:
@@ -339,11 +340,11 @@ paths:
 
   /rights/restrictedId/{id}:
     put:
-      summary: 'Only title and/or comment can be updated'
       tags:
         - 'DsRights'
-      operationId: updateRestrictedId
+      summary: 'Only title and/or comment can be updated'
       description: 'Updates title and/or comment of restricted id. The requester should always send the information in all fields'
+      operationId: updateRestrictedId
       security:
         - KBOAuth:
             - ds-license-admin
@@ -397,9 +398,9 @@ paths:
 
   /rights/restrictedId/delete/{id}:
     post:
-      summary: 'Delete restricted id by id'
       tags:
         - 'DsRights'
+      summary: 'Delete restricted id by id'
       operationId: deleteRestrictedId
       security:
         - KBOAth:
@@ -432,9 +433,9 @@ paths:
 
   /rights/restrictedIds:
     get:
-      summary: 'Get restricted ids from idType and platform'
       tags:
         - 'DsRights'
+      summary: 'Get restricted ids from idType and platform'
       operationId: getAllRestrictedIds
       security:
         - KBOAuth:
@@ -463,9 +464,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/RestrictedIdOutput'
     post:
-      description: 'Create multiple restricted ids or updates if they already exists'
       tags:
         - 'DsRights'
+      summary: 'Create multiple restricted ids or updates if they already exists'
       operationId: createOrUpdateRestrictedIds
       security:
         - KBOAuth:
@@ -512,7 +513,7 @@ paths:
     get:
       tags:
         - 'DsRights'
-      summary: 'Returns a DrBroadcastDto object that shows if the input dsId broadcast has a drProductionId. DrBroadcastDto has a list of BroadcastDto that is populated with broadcasts sharing the same drProductionId. Each BroadcastDto also shows if there is a restriction and restriction comment on that broadcast'
+      description: 'Returns a DrBroadcastDto object that shows if the input dsId broadcast has a drProductionId. DrBroadcastDto has a list of BroadcastDto that is populated with broadcasts sharing the same drProductionId. Each BroadcastDto also shows if there is a restriction and restriction comment on that broadcast'
       operationId: matchingDrProductionIdBroadcasts
       security:
         - KBOAuth:
@@ -555,8 +556,8 @@ paths:
     get:
       tags:
         - 'DsRights'
+      summary: 'Get all DR holdback rules'
       operationId: getDrHoldbackRules
-      description: 'Get all DR holdback rules'
       security:
         - KBOAuth:
             - ds-license-readonly
@@ -575,6 +576,7 @@ paths:
     get:
       tags:
         - 'DsRights'
+      summary: 'Get a DR holdback rule by drHoldbackValue'
       operationId: getDrHoldbackRuleByDrHoldbackValue
       security:
         - KBOAuth:
@@ -598,6 +600,7 @@ paths:
     post:
       tags:
         - 'DsRights'
+      summary: 'Creates a DR holdback rule'
       operationId: createDrHoldbackRule
       security:
         - KBOAuth:
@@ -625,11 +628,11 @@ paths:
 
   /rights/drHoldbackRule/{id}:
     put:
-      summary: 'Only days can be updated'
       tags:
         - 'DsRights'
-      operationId: updateDrHoldbackRule
+      summary: 'Only days can be updated'
       description: 'Updates days of a DR holdback rule. The requester should always send the information in all fields'
+      operationId: updateDrHoldbackRule
       security:
         - KBOAuth:
             - ds-license-admin
@@ -664,9 +667,9 @@ paths:
 
   /rights/drHoldbackRule/delete/{id}:
     post:
-      summary: 'Delete DR holdback rule by drHoldbackValue'
       tags:
         - 'DsRights'
+      summary: 'Delete DR holdback rule by drHoldbackValue'
       operationId: deleteDrHoldbackRule
       security:
         - KBOAth:
@@ -695,9 +698,9 @@ paths:
 
   /rights/drHoldbackRanges:
     get:
-      summary: 'Get all DR holdback ranges for a drHoldbackValue'
       tags:
         - 'DsRights'
+      summary: 'Get all DR holdback ranges for a drHoldbackValue'
       operationId: getDrHoldbackRanges
       security:
         - KBOAth:
@@ -719,9 +722,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/DrHoldbackRangeOutput'
     post:
-      summary: 'Set DR holdback ranges for a drHoldbackValue'
       tags:
         - 'DsRights'
+      summary: 'Creates DR holdback ranges for a drHoldbackValue'
       operationId: createDrHoldbackRanges
       security:
         - KBOAth:
@@ -744,9 +747,9 @@ paths:
 
   /rights/drHoldbackRanges/delete/{drHoldbackValue}:
     post:
-      summary: 'Delete DR holdback ranges by drHoldbackValue'
       tags:
         - 'DsRights'
+      summary: 'Delete DR holdback ranges by drHoldbackValue'
       operationId: deleteDrHoldbackRanges
       security:
         - KBOAth:
@@ -773,9 +776,9 @@ paths:
 
   /rights/getDrHoldbackValueFromContentAndForm:
     get:
-      summary: 'Get the drHoldbackValue from content and form metadata'
       tags:
         - 'DsRights'
+      summary: 'Get the drHoldbackValue from content and form metadata'
       operationId: getDrHoldbackValueFromContentAndForm
       security:
         - KBOAth:
@@ -804,8 +807,11 @@ paths:
     post:
       tags:
         - 'DsRights'
-      operationId: calculateRights
       summary: 'Calculate restrictions for a record based on input values'
+      operationId: calculateRights
+      security:
+        - KBOAuth:
+            - public
       # No Oauth. Only called by system calls when indexing and no oauth is used system2system in ingest(write) environment.
       requestBody:
         required: true
@@ -927,6 +933,12 @@ components:
 
     Broadcast:
       type: object
+      required:
+        - dsId
+        - title
+        - startTime
+        - endTime
+        - restricted
       properties:
         dsId:
           type: string
@@ -1182,6 +1194,13 @@ components:
 
     AuditLogEntryOutput:
       type: object
+      required:
+        - id
+        - objectId
+        - modifiedTime
+        - userName
+        - changeType
+        - changeName
       properties:
         id:
           type: integer
@@ -1229,6 +1248,11 @@ components:
 
     RestrictedIdOutput:
       type: object
+      required:
+        - id
+        - idValue
+        - idType
+        - platform
       properties:
         id:
           type: integer
@@ -1246,6 +1270,8 @@ components:
 
     ProcessedRestrictedIdsOutput:
       type: object
+      required:
+        - processStatus
       properties:
         processStatus:
           $ref: '#/components/schemas/ProcessStatus'
@@ -1273,6 +1299,12 @@ components:
 
     FailedRestrictedId:
       type: object
+      required:
+        - idValue
+        - idType
+        - platform
+        - exception
+        - errorMessage
       properties:
         idValue:
           type: string
@@ -1325,6 +1357,11 @@ components:
 
     DrHoldbackRange:
       type: object
+      required:
+        - contentRangeFrom
+        - contentRangeTo
+        - formRangeFrom
+        - formRangeTo
       properties:
         contentRangeFrom:
           type: integer
@@ -1337,6 +1374,9 @@ components:
     
     DrHoldbackRangeInput:
       type: object
+      required:
+        - drHoldbackValue
+        - ranges
       properties:
         drHoldbackValue:
           type: string
