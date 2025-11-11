@@ -1,5 +1,7 @@
 package dk.kb.license.storage;
 
+import dk.kb.license.mapper.DrHoldbackRangeOutputDtoMapper;
+import dk.kb.license.mapper.DrHoldbackRuleOutputDtoMapper;
 import dk.kb.license.mapper.RestrictedIdOutputDtoMapper;
 import dk.kb.license.model.v1.DrHoldbackRangeOutputDto;
 import dk.kb.license.model.v1.DrHoldbackRuleOutputDto;
@@ -20,6 +22,8 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleStorage.class);
 
     private final static RestrictedIdOutputDtoMapper restrictedIdOutputDtoMapper = new RestrictedIdOutputDtoMapper();
+    private final static DrHoldbackRuleOutputDtoMapper drHoldbackRuleOutputDtoMapper = new DrHoldbackRuleOutputDtoMapper();
+    private final static DrHoldbackRangeOutputDtoMapper drHoldbackRangeOutputDtoMapper = new DrHoldbackRangeOutputDtoMapper();
 
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
 
@@ -347,12 +351,7 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
             stmt.setLong(1, id);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
-                DrHoldbackRuleOutputDto output = new DrHoldbackRuleOutputDto();
-                output.setId(res.getLong(DR_HOLDBACK_RULES_ID));
-                output.setDrHoldbackValue(res.getString(DR_HOLDBACK_RULES_VALUE));
-                output.setName(res.getString(DR_HOLDBACK_RULES_NAME));
-                output.setDays(res.getInt(DR_HOLDBACK_RULES_DAYS));
-                return output;
+                return drHoldbackRuleOutputDtoMapper.map(res);
             }
             return null;
         } catch (SQLException e) {
@@ -373,12 +372,7 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
             stmt.setString(1, drHoldbackValue);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
-                DrHoldbackRuleOutputDto output = new DrHoldbackRuleOutputDto();
-                output.setId(res.getLong(DR_HOLDBACK_RULES_ID));
-                output.setDrHoldbackValue(res.getString(DR_HOLDBACK_RULES_VALUE));
-                output.setName(res.getString(DR_HOLDBACK_RULES_NAME));
-                output.setDays(res.getInt(DR_HOLDBACK_RULES_DAYS));
-                return output;
+                return drHoldbackRuleOutputDtoMapper.map(res);
             }
             return null;
         } catch (SQLException e) {
@@ -398,11 +392,7 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
             List<DrHoldbackRuleOutputDto> output = new ArrayList<>();
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
-                DrHoldbackRuleOutputDto rule = new DrHoldbackRuleOutputDto();
-                rule.setId(res.getLong(DR_HOLDBACK_RULES_ID));
-                rule.setDrHoldbackValue(res.getString(DR_HOLDBACK_RULES_VALUE));
-                rule.setName(res.getString(DR_HOLDBACK_RULES_NAME));
-                rule.setDays(res.getInt(DR_HOLDBACK_RULES_DAYS));
+                DrHoldbackRuleOutputDto rule = drHoldbackRuleOutputDtoMapper.map(res);
                 output.add(rule);
             }
             return output;
@@ -470,13 +460,7 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
             ResultSet result = stmt.executeQuery();
             List<DrHoldbackRangeOutputDto> output = new ArrayList<>();
             while (result.next()) {
-                DrHoldbackRangeOutputDto rangeDto = new DrHoldbackRangeOutputDto();
-                rangeDto.setId(result.getLong(DR_HOLDBACK_RANGES_ID));
-                rangeDto.setContentRangeFrom(result.getInt(DR_HOLDBACK_RANGES_CONTENT_FROM));
-                rangeDto.setContentRangeTo(result.getInt(DR_HOLDBACK_RANGES_CONTENT_TO));
-                rangeDto.setFormRangeFrom(result.getInt(DR_HOLDBACK_RANGES_FORM_FROM));
-                rangeDto.setFormRangeTo(result.getInt(DR_HOLDBACK_RANGES_FORM_TO));
-                rangeDto.setDrHoldbackValue(result.getString(DR_HOLDBACK_RANGES_VALUE));
+                DrHoldbackRangeOutputDto rangeDto = drHoldbackRangeOutputDtoMapper.map(result);
                 output.add(rangeDto);
             }
             return output;
