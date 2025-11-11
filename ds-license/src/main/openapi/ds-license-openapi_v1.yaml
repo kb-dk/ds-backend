@@ -273,13 +273,14 @@ paths:
     get:
       tags:
         - 'DsRights'
+      summary: 'Get a restricted id by idValue, idType, and platform'
       operationId: getRestrictedId
       security:
         - KBOAuth:
             - ds-license-readonly
             - ds-license-admin
       parameters:
-        - name: id
+        - name: idValue
           in: query
           required: true
           schema:

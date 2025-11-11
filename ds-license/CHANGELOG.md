@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Endpoint `GET /rights/drHoldbackDays` is removed, instead use `GET /rights/drHoldbackRule`.
 - Endpoint `PUT /rights/drHoldbackDays` is removed, instead there is added a `PUT /rights/drHoldbackRule` that updates
   day in the dr_holdback_rule table.
+- Endpoint `GET /rights/restrictedId` parameter `id` has changed name to `idValue`.
 
 ### Fixed
 
