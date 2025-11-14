@@ -41,13 +41,8 @@ import static org.mockito.Mockito.*;
 public class RightsModuleFacadeTest extends UnitTestUtil {
     protected static RightsModuleStorageForUnitTest storage = null;
     static MockedStatic<JAXRSUtils> mocked;
-    final String drHoldBackValue = "2.02";
-    final String drHoldBackName = "Aktualitet og Debat";
-    final int drHoldbackDays = 2190;
+
     final String userName = "mockedName";
-    DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
-    DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
-    DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
 
     List<AuditLogEntryOutputDto> auditLogEntriesForObject;
 
@@ -88,20 +83,6 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         tables.add("DR_HOLDBACK_RULES");
         tables.add("AUDITLOG");
         storage.clearTableRecords(tables);
-
-        drHoldbackRuleInputDto.setDays(drHoldbackDays);
-        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
-        drHoldbackRuleInputDto.setName(drHoldBackName);
-
-        drHoldbackRangeDtoOne.setContentRangeFrom(1000);
-        drHoldbackRangeDtoOne.setContentRangeTo(1900);
-        drHoldbackRangeDtoOne.setFormRangeFrom(1000);
-        drHoldbackRangeDtoOne.setFormRangeTo(1000);
-
-        drHoldbackRangeDtoTwo.setContentRangeFrom(1000);
-        drHoldbackRangeDtoTwo.setContentRangeTo(1900);
-        drHoldbackRangeDtoTwo.setFormRangeFrom(1200);
-        drHoldbackRangeDtoTwo.setFormRangeTo(1500);
     }
 
     /**
@@ -1500,6 +1481,16 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
 
     @Test
     public void createDrHoldbackRule_whenValidDrHoldbackRuleInputDto_thenCreateRule() throws SQLException {
+        // Arrange
+        String drHoldBackValue = "2.02";
+        String drHoldBackName = "Aktualitet og Debat";
+        int drHoldbackDays = 2190;
+
+        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
+        drHoldbackRuleInputDto.setDays(drHoldbackDays);
+        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRuleInputDto.setName(drHoldBackName);
+
         // Act
         DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
         RightsModuleFacade.getDrHoldbackRuleByDrHoldbackValue(drHoldBackValue);
@@ -1529,6 +1520,15 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     @Test
     public void updateDrHoldbackRule_whenValidDrHoldBackValue_thenUpdateRuleForRule() throws SQLException {
         // Arrange
+        String drHoldBackValue = "2.02";
+        String drHoldBackName = "Aktualitet og Debat";
+        int drHoldbackDays = 2190;
+
+        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
+        drHoldbackRuleInputDto.setDays(drHoldbackDays);
+        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRuleInputDto.setName(drHoldBackName);
+
         String changeComment = "DR holdback rule skal ikke længere bruges";
         DrHoldbackRuleInputDto updateDrHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
 
@@ -1567,6 +1567,15 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     @Test
     public void deleteDrHoldbackRule_whenValidDrHoldbackValue_thenDeleteRule() throws SQLException {
         // Arrange
+        String drHoldBackValue = "2.02";
+        String drHoldBackName = "Aktualitet og Debat";
+        int drHoldbackDays = 2190;
+
+        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
+        drHoldbackRuleInputDto.setDays(drHoldbackDays);
+        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRuleInputDto.setName(drHoldBackName);
+
         String changeComment = "DR holdback rule skal ikke længere bruges";
         DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
         deleteReasonDto.setChangeComment(changeComment);
@@ -1604,10 +1613,31 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     @Test
     public void createDrHoldbackRanges_whenInvalidDrHoldBackValue_thenThrowNotFoundServiceException() {
         // Arrange
+        String drHoldBackValue = "2.02";
+        String drHoldBackName = "Aktualitet og Debat";
+        int drHoldbackDays = 2190;
+
+        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
+        drHoldbackRuleInputDto.setDays(drHoldbackDays);
+        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRuleInputDto.setName(drHoldBackName);
+
+        DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
+        DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
+
+        drHoldbackRangeDtoOne.setContentRangeFrom(1000);
+        drHoldbackRangeDtoOne.setContentRangeTo(1900);
+        drHoldbackRangeDtoOne.setFormRangeFrom(1000);
+        drHoldbackRangeDtoOne.setFormRangeTo(1000);
+
+        drHoldbackRangeDtoTwo.setContentRangeFrom(1000);
+        drHoldbackRangeDtoTwo.setContentRangeTo(1900);
+        drHoldbackRangeDtoTwo.setFormRangeFrom(1200);
+        drHoldbackRangeDtoTwo.setFormRangeTo(1500);
+
         String invalidDrHoldbackValue = "invalid";
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
         drHoldbackRangeInputDto.setDrHoldbackValue(invalidDrHoldbackValue);
-
         List<DrHoldbackRangeDto> ranges = List.of(drHoldbackRangeDtoOne, drHoldbackRangeDtoTwo);
 
         drHoldbackRangeInputDto.setRanges(ranges);
@@ -1624,6 +1654,28 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     @Test
     public void createDrHoldbackRanges_whenDrHoldbackRangeInputDto_thenCreatesRanges() throws SQLException {
         // Arrange
+        String drHoldBackValue = "2.02";
+        String drHoldBackName = "Aktualitet og Debat";
+        int drHoldbackDays = 2190;
+
+        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
+        drHoldbackRuleInputDto.setDays(drHoldbackDays);
+        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRuleInputDto.setName(drHoldBackName);
+
+        DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
+        DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
+
+        drHoldbackRangeDtoOne.setContentRangeFrom(1000);
+        drHoldbackRangeDtoOne.setContentRangeTo(1900);
+        drHoldbackRangeDtoOne.setFormRangeFrom(1000);
+        drHoldbackRangeDtoOne.setFormRangeTo(1000);
+
+        drHoldbackRangeDtoTwo.setContentRangeFrom(1000);
+        drHoldbackRangeDtoTwo.setContentRangeTo(1900);
+        drHoldbackRangeDtoTwo.setFormRangeFrom(1200);
+        drHoldbackRangeDtoTwo.setFormRangeTo(1500);
+
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
         drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
 
@@ -1665,6 +1717,28 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     @Test
     public void deleteRangesForDrHoldbackValue_whenInvalidDrHoldBackValue_thenThrowNotFoundServiceException() throws SQLException {
         // Arrange
+        String drHoldBackValue = "2.02";
+        String drHoldBackName = "Aktualitet og Debat";
+        int drHoldbackDays = 2190;
+
+        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
+        drHoldbackRuleInputDto.setDays(drHoldbackDays);
+        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRuleInputDto.setName(drHoldBackName);
+
+        DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
+        DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
+
+        drHoldbackRangeDtoOne.setContentRangeFrom(1000);
+        drHoldbackRangeDtoOne.setContentRangeTo(1900);
+        drHoldbackRangeDtoOne.setFormRangeFrom(1000);
+        drHoldbackRangeDtoOne.setFormRangeTo(1000);
+
+        drHoldbackRangeDtoTwo.setContentRangeFrom(1000);
+        drHoldbackRangeDtoTwo.setContentRangeTo(1900);
+        drHoldbackRangeDtoTwo.setFormRangeFrom(1200);
+        drHoldbackRangeDtoTwo.setFormRangeTo(1500);
+
         String invalidDrHoldbackValue = "invalid";
         String changeComment = "DR holdback ranges skal ikke længere bruges";
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
@@ -1690,6 +1764,28 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     @Test
     public void deleteRangesForDrHoldbackValue_whenValidDrHoldBackValue_thenDeletesAllRanges() throws SQLException {
         // Arrange
+        String drHoldBackValue = "2.02";
+        String drHoldBackName = "Aktualitet og Debat";
+        int drHoldbackDays = 2190;
+
+        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
+        drHoldbackRuleInputDto.setDays(drHoldbackDays);
+        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRuleInputDto.setName(drHoldBackName);
+
+        DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
+        DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
+
+        drHoldbackRangeDtoOne.setContentRangeFrom(1000);
+        drHoldbackRangeDtoOne.setContentRangeTo(1900);
+        drHoldbackRangeDtoOne.setFormRangeFrom(1000);
+        drHoldbackRangeDtoOne.setFormRangeTo(1000);
+
+        drHoldbackRangeDtoTwo.setContentRangeFrom(1000);
+        drHoldbackRangeDtoTwo.setContentRangeTo(1900);
+        drHoldbackRangeDtoTwo.setFormRangeFrom(1200);
+        drHoldbackRangeDtoTwo.setFormRangeTo(1500);
+
         String changeComment = "DR holdback ranges skal ikke længere bruges";
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
         drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
