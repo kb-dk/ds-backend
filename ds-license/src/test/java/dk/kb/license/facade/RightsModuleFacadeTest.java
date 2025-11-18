@@ -643,7 +643,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         assertEquals(ChangeTypeEnumDto.UPDATE, updatedAuditLogEntryOutputDto.getChangeType());
         assertEquals(ObjectTypeEnumDto.DR_PRODUCTION_ID, updatedAuditLogEntryOutputDto.getChangeName());
         assertEquals(drProductionId, updatedAuditLogEntryOutputDto.getIdentifier());
-        assertNull(updatedAuditLogEntryOutputDto.getChangeComment());
+        assertEquals(updatedComment, updatedAuditLogEntryOutputDto.getChangeComment());
         assertEquals(createdAuditLogEntryOutputDto.getTextAfter(), updatedAuditLogEntryOutputDto.getTextBefore());
         assertEquals(updatedRestrictedIdOutputDto.toString(), updatedAuditLogEntryOutputDto.getTextAfter());
     }
@@ -1017,6 +1017,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         String validDsId = "ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111";
         String title = "Test title";
         String comment = "Brugeren har trukket deres samtykke tilbage";
+        String updatedComment = "Updated comment";
 
         RestrictedIdInputDto restrictedIdInputDto = new RestrictedIdInputDto();
         restrictedIdInputDto.setIdValue(validDsId);
@@ -1030,7 +1031,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         duplicatedRestrictedIdInputDto.setIdType(IdTypeEnumDto.DS_ID);
         duplicatedRestrictedIdInputDto.setPlatform(PlatformEnumDto.DRARKIV);
         duplicatedRestrictedIdInputDto.setTitle(title);
-        duplicatedRestrictedIdInputDto.setComment("Opdateret kommentar");
+        duplicatedRestrictedIdInputDto.setComment(updatedComment);
 
         List<RestrictedIdInputDto> restrictedIds = new ArrayList<>();
         restrictedIds.add(restrictedIdInputDto);
@@ -1071,7 +1072,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         assertEquals(ChangeTypeEnumDto.UPDATE, updatedAuditLogEntryOutputDto.getChangeType());
         assertEquals(ObjectTypeEnumDto.DS_ID, updatedAuditLogEntryOutputDto.getChangeName());
         assertEquals(validDsId, updatedAuditLogEntryOutputDto.getIdentifier());
-        assertNull(updatedAuditLogEntryOutputDto.getChangeComment());
+        assertEquals(updatedComment, updatedAuditLogEntryOutputDto.getChangeComment());
         assertEquals(createdAuditLogEntryOutputDto.getTextAfter(), updatedAuditLogEntryOutputDto.getTextBefore());
         assertNotNull(updatedAuditLogEntryOutputDto.getTextAfter());
     }
