@@ -148,7 +148,7 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto updatedRestrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
 
             ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldRestrictedIdOutputDto, updatedRestrictedIdOutputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(updatedRestrictedIdOutputDto.getIdType()), updatedRestrictedIdOutputDto.getIdValue(), null, change.getBefore(), change.getAfter());
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getComment(), change.getBefore(), change.getAfter());
             ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
             log.info("Updated restricted id: {}", updatedRestrictedIdOutputDto);
             return updatedRestrictedIdOutputDto;
