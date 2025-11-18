@@ -5,7 +5,7 @@ CREATE TABLE auditlog (
     username      VARCHAR(256)   NOT NULL,
     changetype    VARCHAR(256)   NOT NULL,
     changename    VARCHAR(256)   NOT NULL,
-    identifier    VARCHAR(1024)  NULL,
+    identifier    VARCHAR(1024)  NOT NULL,
     changecomment TEXT           NULL,
     textbefore    VARCHAR(65535) NULL,
     textafter     VARCHAR(65535) NULL
