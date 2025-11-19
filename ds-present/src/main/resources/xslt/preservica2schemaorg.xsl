@@ -1227,7 +1227,7 @@
 
 
     <!-- Extracts access metadata to the internal kb map -->
-    <xsl:for-each select="/XIP/Metadata/Content/access:access">
+    <xsl:for-each select="/XIP/Metadata/Content/access">
       <xsl:if test="position() = 1">
         <xsl:call-template name="access-template"/>
       </xsl:if>
