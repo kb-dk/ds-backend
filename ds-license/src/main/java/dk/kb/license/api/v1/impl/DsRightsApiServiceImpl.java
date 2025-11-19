@@ -105,6 +105,15 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     @Override
+    public ProcessedRestrictedIdsOutputDto deleteRestrictedIds(List<RestrictedIdInputDto> restrictedIds, Boolean touchRecord) {
+        try {
+            return RightsModuleFacade.deleteRestrictedIds(touchRecord, restrictedIds);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
     public RightsCalculationOutputDto calculateRights(RightsCalculationInputDto rightsCalculationInputDto) {
         try {
             return RightsModuleFacade.calculateRightsForRecord(rightsCalculationInputDto);

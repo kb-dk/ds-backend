@@ -245,6 +245,65 @@ public class RightsModuleFacade {
     }
 
     /**
+     * Deletes a restricted id for each of the entries in the list of {@link RestrictedIdInputDto}.
+     *
+     * @param restrictedIds list containing the data transfer objects containing the details of the restricted ids to be deleted.
+     *                      This should not be null.
+     * @return ProcessedRestrictedIdsOutputDto
+     */
+    public static ProcessedRestrictedIdsOutputDto deleteRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = new ProcessedRestrictedIdsOutputDto();
+        List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
+        int processedSuccessfully = 0;
+        FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
+
+        for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
+            try {
+                inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
+
+                // To be able to reuse deleteRestrictedId method, we need the unique id of the restricted id
+                RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+
+                if (restrictedIdOutputDto == null) {
+                    final String errorMessage = "restricted id idValue: " + restrictedIdInputDto.getIdValue() + ", idType: " + restrictedIdInputDto.getIdType() + ", platform: " + restrictedIdInputDto.getPlatform() + " not found";
+                    log.error(errorMessage);
+                    throw new NotFoundServiceException(errorMessage);
+                }
+
+                // To be able to reuse deleteRestrictedId method, we create the DeleteReasonDto object
+                DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
+                deleteReasonDto.setChangeComment(restrictedIdInputDto.getComment());
+
+                RecordsCountDto recordsCountDto = deleteRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, deleteReasonDto);
+
+                if (recordsCountDto.getCount() > 0) {
+                    // If no exception was thrown and count is more than 0, we know that the restriction was deleted
+                    processedSuccessfully++;
+                }
+            } catch (Exception exception) { // need to catch every exception that could be thrown
+                log.error("Failed to delete restricted id restrictedIdInputDto: {}, exception: ", restrictedIdInputDto, exception);
+                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
+
+                failedRestrictedIdDtoList.add(failedRestrictedIdDto);
+            }
+        }
+
+        // Need to start with this, for not getting wrongly PARTIAL_PROCESSED
+        if (processedSuccessfully == 0) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.FAILED);
+        } else if (failedRestrictedIdDtoList.isEmpty()) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.SUCCESS);
+        } else if (!failedRestrictedIdDtoList.isEmpty()) {
+            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.PARTIAL_PROCESSED);
+        }
+
+        processedRestrictedIdsOutputDto.setProcessedSuccessfully(processedSuccessfully);
+        processedRestrictedIdsOutputDto.setFailedRestrictedIds(failedRestrictedIdDtoList);
+        log.info("Successfully deleted: {}. Failed to delete: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
+        return processedRestrictedIdsOutputDto;
+    }
+
+    /**
      * Get all restricted ids
      *
      * @param idType   only get restricedIds with this idType
