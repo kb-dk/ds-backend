@@ -10,7 +10,7 @@
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xmlns:pbc="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
                xmlns:padding="http://kuana.kb.dk/types/padding/0/1/#"
-               xmlns:access="http://doms.statsbiblioteket.dk/types/access/0/1/#"
+               xmlns:access="http://id.kb.dk/schemas/radiotv_access/access"
                xmlns:pidhandle="http://kuana.kb.dk/types/pidhandle/0/1/#"
                xmlns:program_structure="http://doms.statsbiblioteket.dk/types/program_structure/0/1/#"
                xmlns:err="http://www.w3.org/2005/xqt-errors"
