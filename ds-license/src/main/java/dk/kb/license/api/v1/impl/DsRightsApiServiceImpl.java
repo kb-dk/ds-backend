@@ -58,11 +58,6 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
         try {
             RestrictedIdOutputDto restrictedIdOutputDto = RightsModuleFacade.getRestrictedId(idValue, idType, platform);
 
-            if (restrictedIdOutputDto == null) {
-                final String errorMessage = "restricted id idValue: " + idValue + ", idType: " + idType + ", platform: " + platform + " not found";
-                log.error(errorMessage);
-                throw new NotFoundServiceException(errorMessage);
-            }
             return restrictedIdOutputDto;
         } catch (Exception e) {
             throw handleException(e);

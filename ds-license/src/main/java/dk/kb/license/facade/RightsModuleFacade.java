@@ -59,6 +59,12 @@ public class RightsModuleFacade {
         return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> {
             RestrictedIdOutputDto restrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedId(idValue, idType.getValue(), platform.getValue());
 
+            if (restrictedIdOutputDto == null) {
+                final String errorMessage = "restricted id idValue: " + idValue + ", idType: " + idType + ", platform: " + platform + " not found";
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+
             return restrictedIdOutputDto;
         });
     }
@@ -96,7 +102,7 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Creates a restricted id using the provided {@link RestrictedIdOutputDto}.
+     * Creates a restricted id using the provided {@link RestrictedIdInputDto}.
      *
      * @param restrictedIdInputDto the data transfer object containing the details of the restricted id to be created.
      *                             This should not be null.
@@ -125,7 +131,7 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Update a restricted id using the provided {@link RestrictedIdOutputDto}.
+     * Update a restricted id using the provided {@link RestrictedIdInputDto}.
      *
      * @param id
      * @param touchDsStorageRecord
@@ -191,7 +197,7 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Creates or updates a restricted id for each of the entries in the list using the provided input data transfer object (DTO).
+     * Creates or updates a restricted id for each of the entries in the list of {@link RestrictedIdInputDto}.
      *
      * @param restrictedIds list containing the data transfer objects containing the details of the restricted ids to be created.
      *                      This should not be null.
@@ -208,14 +214,19 @@ public class RightsModuleFacade {
 
             try {
                 inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
-                // Is there already a restrictions on idValue?
-                RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
 
-                if (restrictedIdOutputDto == null) {
-                    createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
-                } else {
-                    // the restriction already existed, so updating it instead
+                // Is there already a restrictions on idValue, idType, and platform?
+                try {
+                    RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
                     updateRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, restrictedIdInputDto);
+                } catch (InternalServiceException exception) {
+                    // If the root exception is NotFoundServiceException, then create the restricted id
+                    if (exception.getCause().getCause() instanceof NotFoundServiceException) {
+                        createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
+                    }
+                    else {
+                        throw exception;
+                    }
                 }
 
                 // If no exception was thrown, we know that the restriction was created
