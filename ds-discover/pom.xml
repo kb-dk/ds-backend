@@ -10,7 +10,7 @@
     <name>ds-discover</name> <!-- Human readable name, uppercase and spaces welcome -->
     <groupId>dk.kb.discover</groupId>
     <artifactId>ds-discover</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.2</version>
 
     <packaging>war</packaging>
     <description>ds-discover by the Royal Danish Library</description>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>dk.kb.present</groupId>
             <artifactId>ds-present</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.2</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
