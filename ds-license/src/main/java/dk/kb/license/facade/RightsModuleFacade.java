@@ -275,11 +275,6 @@ public class RightsModuleFacade {
                 // To be able to reuse deleteRestrictedId method, we need the unique id of the restricted id
                 RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
 
-                if (restrictedIdOutputDto == null) {
-                    final String errorMessage = "restricted id idValue: " + restrictedIdInputDto.getIdValue() + ", idType: " + restrictedIdInputDto.getIdType() + ", platform: " + restrictedIdInputDto.getPlatform() + " not found";
-                    log.error(errorMessage);
-                    throw new NotFoundServiceException(errorMessage);
-                }
 
                 // To be able to reuse deleteRestrictedId method, we create the DeleteReasonDto object
                 DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
