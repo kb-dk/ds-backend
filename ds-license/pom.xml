@@ -9,7 +9,7 @@
 
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.2</version>
     <packaging>war</packaging>
 <description>
     # Ds-license(Digitale Samlinger) by the Royal Danish Library.    
@@ -219,7 +219,7 @@
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.2</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
