@@ -10,7 +10,7 @@
     <name>ds-image</name> <!-- Human readable name, uppercase and spaces welcome -->
     <groupId>dk.kb.image</groupId>
     <artifactId>ds-image</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.2</version>
     
     <packaging>war</packaging>
     <description>ds-image by the Royal Danish Library</description>
