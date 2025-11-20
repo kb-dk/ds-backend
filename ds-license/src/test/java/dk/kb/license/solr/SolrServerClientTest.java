@@ -89,7 +89,7 @@ public class SolrServerClientTest {
             SolrDocumentList actualSolrDocumentList = solrServerClient.callSolr(queryDsId, fieldListDsId);
 
             // Assert
-            assertTrue(actualSolrDocumentList.isEmpty());
+            assertEquals(0, actualSolrDocumentList.size());
         }
     }
 
@@ -125,7 +125,7 @@ public class SolrServerClientTest {
             SolrDocumentList actualSolrDocumentList = solrServerClient.callSolr(queryDsId, fieldListDsId);
 
             // Assert
-            assertFalse(actualSolrDocumentList.isEmpty());
+            assertEquals(1, actualSolrDocumentList.size());
             assertEquals(solrDocumentList.getNumFound(), actualSolrDocumentList.getNumFound());
             assertEquals(drProductionId, actualSolrDocumentList.get(0).getFieldValue("dr_production_id"));
             assertEquals(dsId, actualSolrDocumentList.get(0).getFieldValue("id"));

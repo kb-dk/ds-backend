@@ -396,7 +396,7 @@ public class RightsModuleStorageTest extends UnitTestUtil {
 
         // Assert
         assertEquals(1, deleteRangesByDrHoldbackValue);
-        assertTrue(deletedDrHoldbackRangeOutputDtoList.isEmpty());
+        assertEquals(0, deletedDrHoldbackRangeOutputDtoList.size());
     }
 
     @Test
