@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.0.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.3) 2025-11-20
+### Fixed
+- Update so we can handle new naming of access tag in Preservica
+
 ## [3.0.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.2) 2025-09-03
 ### Fixed
 - update of solr config version in pom file
