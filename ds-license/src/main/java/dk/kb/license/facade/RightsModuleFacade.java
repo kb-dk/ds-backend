@@ -5,6 +5,7 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.mapper.BroadcastDtoMapper;
 import dk.kb.license.mapper.DrBroadcastDtoMapper;
 import dk.kb.license.mapper.FailedRestrictedIdDtoMapper;
+import dk.kb.license.mapper.ProcessedRestrictedIdsOutputDtoMapper;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.AuditLogEntry;
@@ -204,10 +205,10 @@ public class RightsModuleFacade {
      * @return ProcessedRestrictedIdsOutputDto
      */
     public static ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
-        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = new ProcessedRestrictedIdsOutputDto();
         List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
         int processedSuccessfully = 0;
         FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
+        ProcessedRestrictedIdsOutputDtoMapper processedRestrictedIdsOutputDtoMapper = new ProcessedRestrictedIdsOutputDtoMapper();
 
         for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
             log.debug("Adding restricted id idValue: {}, idType: {}, platform: {}",  restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
@@ -240,17 +241,8 @@ public class RightsModuleFacade {
             }
         }
 
-        // Need to start with this, for not getting wrongly PARTIAL_PROCESSED
-        if (processedSuccessfully == 0) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.FAILED);
-        } else if (failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.SUCCESS);
-        } else if (!failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.PARTIAL_PROCESSED);
-        }
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = processedRestrictedIdsOutputDtoMapper.map(processedSuccessfully, failedRestrictedIdDtoList);
 
-        processedRestrictedIdsOutputDto.setProcessedSuccessfully(processedSuccessfully);
-        processedRestrictedIdsOutputDto.setFailedRestrictedIds(failedRestrictedIdDtoList);
         log.info("Successfully added: {}. Failed to add: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
         return processedRestrictedIdsOutputDto;
     }
@@ -263,10 +255,10 @@ public class RightsModuleFacade {
      * @return ProcessedRestrictedIdsOutputDto
      */
     public static ProcessedRestrictedIdsOutputDto deleteRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
-        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = new ProcessedRestrictedIdsOutputDto();
         List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
         int processedSuccessfully = 0;
         FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
+        ProcessedRestrictedIdsOutputDtoMapper processedRestrictedIdsOutputDtoMapper = new ProcessedRestrictedIdsOutputDtoMapper();
 
         for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
             try {
@@ -293,17 +285,8 @@ public class RightsModuleFacade {
             }
         }
 
-        // Need to start with this, for not getting wrongly PARTIAL_PROCESSED
-        if (processedSuccessfully == 0) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.FAILED);
-        } else if (failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.SUCCESS);
-        } else if (!failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.PARTIAL_PROCESSED);
-        }
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = processedRestrictedIdsOutputDtoMapper.map(processedSuccessfully, failedRestrictedIdDtoList);
 
-        processedRestrictedIdsOutputDto.setProcessedSuccessfully(processedSuccessfully);
-        processedRestrictedIdsOutputDto.setFailedRestrictedIds(failedRestrictedIdDtoList);
         log.info("Successfully deleted: {}. Failed to delete: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
         return processedRestrictedIdsOutputDto;
     }
