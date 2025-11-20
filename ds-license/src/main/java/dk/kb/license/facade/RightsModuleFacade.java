@@ -190,7 +190,7 @@ public class RightsModuleFacade {
             AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(deleteRestrictedIdOutputDto.getIdType()), deleteRestrictedIdOutputDto.getIdValue(), deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
             ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
 
-            log.info("Deleted restriction id: {} ", deleteRestrictedIdOutputDto);
+            log.info("Deleted restriction id: {}", deleteRestrictedIdOutputDto);
 
             return recordsCountDto;
         });
@@ -233,7 +233,7 @@ public class RightsModuleFacade {
                 processedSuccessfully++;
 
             } catch (Exception exception) { // need to catch every exception that could be thrown
-                log.error("Failed to add restricted id restrictedIdInputDto: {}, exception: ", restrictedIdInputDto, exception);
+                log.error("Failed to add restricted id: {}, exception: ", restrictedIdInputDto, exception);
                 FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
 
                 failedRestrictedIdDtoList.add(failedRestrictedIdDto);
@@ -272,22 +272,21 @@ public class RightsModuleFacade {
             try {
                 inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
 
-                // To be able to reuse deleteRestrictedId method, we need the unique id of the restricted id
+                // Reusing deleteRestrictedId method, we need the unique id of the restricted id
                 RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
 
-
-                // To be able to reuse deleteRestrictedId method, we create the DeleteReasonDto object
+                // Reusing deleteRestrictedId method, we create the DeleteReasonDto object
                 DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
                 deleteReasonDto.setChangeComment(restrictedIdInputDto.getComment());
 
                 RecordsCountDto recordsCountDto = deleteRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, deleteReasonDto);
 
+                // If no exception was thrown and count is more than 0, we know that the restriction was deleted
                 if (recordsCountDto.getCount() > 0) {
-                    // If no exception was thrown and count is more than 0, we know that the restriction was deleted
                     processedSuccessfully++;
                 }
             } catch (Exception exception) { // need to catch every exception that could be thrown
-                log.error("Failed to delete restricted id restrictedIdInputDto: {}, exception: ", restrictedIdInputDto, exception);
+                log.error("Failed to delete restricted id: {}, exception: ", restrictedIdInputDto, exception);
                 FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
 
                 failedRestrictedIdDtoList.add(failedRestrictedIdDto);
