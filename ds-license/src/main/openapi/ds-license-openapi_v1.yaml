@@ -514,7 +514,7 @@ paths:
     post:
       tags:
         - 'DsRights'
-      summary: 'Deletes multiple restricted id by id'
+      summary: 'Deletes multiple restricted id by RestrictedIdInputDto'
       operationId: deleteRestrictedIds
       security:
         - KBOAth:
