@@ -57,7 +57,7 @@ solr:
     # Whether SolrShield is enabled.
     # If false, SolrShield evaluation is still performed but the response is only logged.
     # IS only set to false because of: https://kb-dk.atlassian.net/browse/DRA-1788
-    enabled: false
+    enabled: true
 
     # Current max weight is very likely to be too low for practical use.
     # More experimenting with SolrShield is needed in order to determine a proper max weight
@@ -125,4 +125,5 @@ security:
     # This typically used for calls between services, where there is a need for elevated access.
     secret: '01234567-89ab-cdef-0123-456789abcdef'
    
-
+present:
+  url: http://localhost:9073/ds-present/v1

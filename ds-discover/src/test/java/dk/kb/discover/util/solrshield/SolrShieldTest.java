@@ -1,7 +1,6 @@
 package dk.kb.discover.util.solrshield;
 
 import dk.kb.discover.config.ServiceConfig;
-import dk.kb.util.Resolver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -34,11 +33,11 @@ class SolrShieldTest {
     @BeforeAll
     static void setup() throws IOException {   
       ServiceConfig.getInstance().initialize("solrshield-test1.yaml");
+      SolrShield.ensureConfig();
     }
 
     @Test
     void testDeepCopySearch() {
-        SolrShield.ensureConfig();
         SearchComponent search = SolrShield.profile.search;
         assertSearchParamSame(search, "origo");
         assertFalse(search.isCopy, "Origo Search should initially not be a copy");
@@ -64,7 +63,6 @@ class SolrShieldTest {
 
     @Test
     void testDeepCopySearchApply() {
-        SolrShield.ensureConfig();
         SearchComponent search = SolrShield.profile.search;
         assertFalse(search.isCopy, "Origo Search should initially not be a copy");
 

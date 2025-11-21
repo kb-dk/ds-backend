@@ -15,6 +15,7 @@ import javax.servlet.ServletContextListener;
 
 import dk.kb.discover.SolrManager;
 import dk.kb.discover.config.ServiceConfig;
+import dk.kb.discover.util.solrshield.SolrShield;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
 import dk.kb.util.Resolver;
@@ -72,8 +73,12 @@ public class ContextListener implements ServletContextListener {
             //TODO this should not refer to something in template. Should we perhaps use reflection here?
             ServiceConfig.getInstance().initialize(configFile);                   
             SolrManager.getInstance().setConfig(ServiceConfig.getInstance().getYAML());// also inititalize SolrManager yaml
-            //Need to initialise SolrShield also. See: https://kb-dk.atlassian.net/browse/DRA-1788
-            
+            SolrShield.ensureConfig();
+
+
+            // uncomment this line if we want solr shield config to be reloaded on config changes.
+            //ServiceConfig.getInstance().registerObserver(yaml -> SolrShield.ensureConfig());
+
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {
