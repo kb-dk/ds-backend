@@ -204,7 +204,7 @@ public class RightsCalculation {
         // Check for ID being 2.05 and correct it to either 2.05.01 or 2.05.02
         drHoldbackValue = validateDrHoldbackBasedOnProductionCountry(drHoldbackValue, holdbackInput.getProductionCountry());
 
-        return RightsModuleFacade.getDrHoldbackRuleById(drHoldbackValue);
+        return RightsModuleFacade.getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
     }
 
 

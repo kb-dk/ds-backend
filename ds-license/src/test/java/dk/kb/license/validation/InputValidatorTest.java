@@ -110,6 +110,51 @@ public class InputValidatorTest {
     }
 
     @Test
+    public void validateDrHoldbackValue_whenValidDrHoldbackValue_thenDoNotThrow() {
+        // Arrange
+        String drHoldbackValue = "2.04";
+        InputValidator inputValidator = mock(InputValidator.class);
+        doCallRealMethod().when(inputValidator).validateDrHoldbackValue(drHoldbackValue);
+
+        // Act and assert
+        // validateDrProductionIdFormat() has return type void, so we can only check that it did not throw exception
+        assertDoesNotThrow(() -> inputValidator.validateDrHoldbackValue(drHoldbackValue));
+
+        // and it only was called once
+        verify(inputValidator, times(1)).validateDrHoldbackValue(drHoldbackValue);
+    }
+
+    @Test
+    public void validateDrHoldbackValue_whenNullDrHoldbackValue_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String expectedMessage = "drHoldbackValue cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrHoldbackValue(null));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "",
+            " "
+    })
+    public void validateDrHoldbackValue_whenEmptyOrBlankDrHoldbackValue_thenThrowInvalidArgumentServiceException(String drHoldbackValue) {
+        // Arrange
+        String expectedMessage = "drHoldbackValue cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrHoldbackValue(drHoldbackValue));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
     public void validateDrProductionIdFormat_whenValidDrProductionId_thenDoNotThrow() {
         // Arrange
         String productionId = "12345678";
@@ -372,6 +417,51 @@ public class InputValidatorTest {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(comment));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateChangeComment_whenValidChangeComment_thenDoNotThrow() {
+        // Arrange
+        String changeComment = "DR holdback ranges skal ikke længere bruges";
+        InputValidator inputValidator = mock(InputValidator.class);
+        doCallRealMethod().when(inputValidator).validateChangeComment(changeComment);
+
+        // Act and assert
+        // validateDrProductionIdFormat() has return type void, so we can only check that it did not throw exception
+        assertDoesNotThrow(() -> inputValidator.validateChangeComment(changeComment));
+
+        // and it only was called once
+        verify(inputValidator, times(1)).validateChangeComment(changeComment);
+    }
+
+    @Test
+    public void validateChangeComment_whenNullChangeComment_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String expectedMessage = "changeComment cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateChangeComment(null));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "",
+            " "
+    })
+    public void validateChangeComment_whenEmptyOrBlankChangeComment_thenThrowInvalidArgumentServiceException(String changeComment) {
+        // Arrange
+        String expectedMessage = "changeComment cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateChangeComment(changeComment));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());

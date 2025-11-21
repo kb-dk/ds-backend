@@ -8,14 +8,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * This class is a small extension of the LicenseModuleStorage with a few methods used for unittest
+ * This class is a small extension of the AuditLogModuleStorage with a few methods used for unittest
  * that we do not want in the production code.
  * Between each unittest the all tables are cleared for data and the method is only defined in this subclass
  */
-public class RightsModuleStorageForUnitTest extends RightsModuleStorage {
-    private static final Logger log = LoggerFactory.getLogger(RightsModuleStorageForUnitTest.class);
+public class AuditLogModuleStorageForUnitTest extends AuditLogModuleStorage {
+    private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageForUnitTest.class);
 
-    public RightsModuleStorageForUnitTest() throws SQLException {
+    public AuditLogModuleStorageForUnitTest() throws SQLException {
         super();
     }
 
@@ -28,12 +28,5 @@ public class RightsModuleStorageForUnitTest extends RightsModuleStorage {
         }
         connection.commit();
         log.info("Tables cleared for unittest");
-    }
-
-    public void clearRestrictedIds() throws SQLException {
-        String deleteSQL = "DELETE FROM RESTRICTED_IDS";
-        try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
-            stmt.execute();
-        }
     }
 }
