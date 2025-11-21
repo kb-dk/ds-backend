@@ -17,7 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ds-present
@@ -184,4 +186,12 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
         }
     }
 
+    @Override
+    public String transformsolrschemaPost(String format, String rawSchema) {
+        try {
+            return PresentFacade.transformSolrSchema(rawSchema, format);
+        } catch (IOException e) {
+            throw handleException(e);
+        }
+    }
 }
