@@ -151,7 +151,7 @@ public class InputValidator {
      */
     public void validateTitle(String title) {
         if (StringUtils.isBlank(title)) {
-            final String errorMessage = "Title cannot be empty";
+            final String errorMessage = "title cannot be empty";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }
@@ -164,7 +164,7 @@ public class InputValidator {
      */
     public void validateComment(String comment) {
         if (StringUtils.isBlank(comment)) {
-            final String errorMessage = "Comment cannot be empty";
+            final String errorMessage = "comment cannot be empty";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }

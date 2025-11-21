@@ -228,7 +228,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         restrictedIdInputDto.setTitle(null);
         restrictedIdInputDto.setComment("Brugeren har trukket deres samtykke tilbage");
 
-        String expectedMessage = "Title cannot be empty";
+        String expectedMessage = "title cannot be empty";
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto));
@@ -251,7 +251,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         restrictedIdInputDto.setTitle("Test title");
         restrictedIdInputDto.setComment(null);
 
-        String expectedMessage = "Comment cannot be empty";
+        String expectedMessage = "comment cannot be empty";
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto));
@@ -491,7 +491,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         restrictedIdInputDto.setTitle(title);
         restrictedIdInputDto.setComment(comment);
 
-        String expectedMessage = "Title cannot be empty";
+        String expectedMessage = "title cannot be empty";
 
         RestrictedIdOutputDto restrictedIdOutputDto = RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto);
 
@@ -528,7 +528,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         restrictedIdInputDto.setTitle(title);
         restrictedIdInputDto.setComment(comment);
 
-        String expectedMessage = "Comment cannot be empty";
+        String expectedMessage = "comment cannot be empty";
 
         RestrictedIdOutputDto restrictedIdOutputDto = RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto);
 
@@ -910,7 +910,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         assertEquals(restrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(restrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
         assertEquals("InvalidArgumentServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
-        assertEquals("Title cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
+        assertEquals("title cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(0, auditLogEntriesForObject.size());
@@ -944,7 +944,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         assertEquals(restrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(restrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
         assertEquals("InvalidArgumentServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
-        assertEquals("Comment cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
+        assertEquals("comment cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(0, auditLogEntriesForObject.size());
@@ -1339,7 +1339,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         assertEquals(restrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(restrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
         assertEquals("InvalidArgumentServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
-        assertEquals("Title cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
+        assertEquals("title cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(0, auditLogEntriesForObject.size());
@@ -1373,7 +1373,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         assertEquals(restrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(restrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
         assertEquals("InvalidArgumentServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
-        assertEquals("Comment cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
+        assertEquals("comment cannot be empty", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(0, auditLogEntriesForObject.size());

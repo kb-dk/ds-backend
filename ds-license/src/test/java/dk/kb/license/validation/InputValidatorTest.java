@@ -350,7 +350,7 @@ public class InputValidatorTest {
     @Test
     public void validateTitle_whenNullTitle_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "Title cannot be empty";
+        String expectedMessage = "title cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -367,7 +367,7 @@ public class InputValidatorTest {
     })
     public void validateTitle_whenEmptyOrBlankTitle_thenThrowInvalidArgumentServiceException(String title) {
         // Arrange
-        String expectedMessage = "Title cannot be empty";
+        String expectedMessage = "title cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -395,7 +395,7 @@ public class InputValidatorTest {
     @Test
     public void validateComment_whenNullComment_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "Comment cannot be empty";
+        String expectedMessage = "comment cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -412,7 +412,7 @@ public class InputValidatorTest {
     })
     public void validateComment_whenEmptyOrBlankComment_thenThrowInvalidArgumentServiceException(String comment) {
         // Arrange
-        String expectedMessage = "Comment cannot be empty";
+        String expectedMessage = "comment cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
