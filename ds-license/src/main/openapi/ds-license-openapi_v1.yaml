@@ -504,7 +504,54 @@ paths:
                 comment: 'test multi 3'
       responses:
         '200':
-          description: 'Status on restricted ids creation or updates'
+          description: 'Status on creation or updating restricted ids'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessedRestrictedIdsOutput'
+
+  /rights/restrictedIds/delete:
+    post:
+      tags:
+        - 'DsRights'
+      summary: 'Deletes multiple restricted id by RestrictedIdInputDto'
+      operationId: deleteRestrictedIds
+      security:
+        - KBOAth:
+            - ds-license-admin
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RestrictedIdInput'
+            example:
+              - idValue: 'ds.tv:oai:io:111017fb-810a-4386-98cc-debd1f19b48d'
+                idType: 'DS_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'Slettes fordi de er blevet frigivet fra licensaftalen'
+              - idValue: 'ds.radio:oai:io:11156005-39e6-4fc3-90a5-830efded34a0'
+                idType: 'DS_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'Slettes fordi de er blevet frigivet fra licensaftalen'
+              - idValue: '12345678'
+                idType: 'DR_PRODUCTION_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'Slettes fordi de er blevet frigivet fra licensaftalen'
+      responses:
+        '200':
+          description: 'Status on deleting restricted ids'
           content:
             application/json:
               schema:

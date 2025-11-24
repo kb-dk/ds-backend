@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change column `changecomment` to `identifier` and added a new column named `changecomment` in table `auditlog`
   (**Remember: migration for OPS to be found in `audit_log_module_column_name_change.ddl`**)
 - Updated code to use `identifier` and `changecomment`
+- Endpoint `POST /rights/restrictedIds/delete` with request body of a list of RestrictedIdInputDto. It deletes
+  restricted ids if they exit, and returns a ProcessedRestrictedIdsOutputDto response body that holds information
+  about how many successfully restricted ids has been deleted and a list of FailedIdDto that holds information about
+  failed deleting of restricted ids and their error message.
+- Deletion of objects are saved/reflected in the audit log.
 
 ### Changed
 
@@ -27,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   objects is created and a list of FailedIdDto that holds information about failed creations of RestrictedIdInputDto
   objects and their error message. If a restricted id already exists it gets updated instead of returning a unique index
   violation error.
-- Method `validateCommentLength` has changed name to `validateComment`, and the method now instead validates that 
+- Method `validateCommentLength` has changed name to `validateComment`, and the method now instead validates that
   comment is not blank.
 - Changed `PUT /rights/restrictedId` -> `PUT /rights/restrictedId/{id}` and the following things:
     * takes a RestrictedIdInputDto request body instead of a UpdateRestrictedIdCommentInputDto.

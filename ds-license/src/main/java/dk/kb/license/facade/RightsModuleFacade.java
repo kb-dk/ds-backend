@@ -5,6 +5,7 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.mapper.BroadcastDtoMapper;
 import dk.kb.license.mapper.DrBroadcastDtoMapper;
 import dk.kb.license.mapper.FailedRestrictedIdDtoMapper;
+import dk.kb.license.mapper.ProcessedRestrictedIdsOutputDtoMapper;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.AuditLogEntry;
@@ -60,7 +61,7 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto restrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedId(idValue, idType.getValue(), platform.getValue());
 
             if (restrictedIdOutputDto == null) {
-                final String errorMessage = "restricted id idValue: " + idValue + ", idType: " + idType + ", platform: " + platform + " not found";
+                final String errorMessage = "restricted id 'idValue': " + idValue + ", 'idType': " + idType + ", 'platform': " + platform + " not found";
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
@@ -80,7 +81,7 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto restrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
 
             if (restrictedIdOutputDto == null) {
-                final String errorMessage = "id: " + id + " not found";
+                final String errorMessage = "'id': " + id + " not found";
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
@@ -190,7 +191,7 @@ public class RightsModuleFacade {
             AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(deleteRestrictedIdOutputDto.getIdType()), deleteRestrictedIdOutputDto.getIdValue(), deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
             ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
 
-            log.info("Deleted restriction id: {} ", deleteRestrictedIdOutputDto);
+            log.info("Deleted restriction id: {}", deleteRestrictedIdOutputDto);
 
             return recordsCountDto;
         });
@@ -204,10 +205,10 @@ public class RightsModuleFacade {
      * @return ProcessedRestrictedIdsOutputDto
      */
     public static ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
-        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = new ProcessedRestrictedIdsOutputDto();
         List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
         int processedSuccessfully = 0;
         FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
+        ProcessedRestrictedIdsOutputDtoMapper processedRestrictedIdsOutputDtoMapper = new ProcessedRestrictedIdsOutputDtoMapper();
 
         for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
             log.debug("Adding restricted id idValue: {}, idType: {}, platform: {}",  restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
@@ -233,25 +234,60 @@ public class RightsModuleFacade {
                 processedSuccessfully++;
 
             } catch (Exception exception) { // need to catch every exception that could be thrown
-                log.error("Failed to add restricted id restrictedIdInputDto: {}, exception: ", restrictedIdInputDto, exception);
+                log.error("Failed to add restricted id: {}, exception: ", restrictedIdInputDto, exception);
                 FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
 
                 failedRestrictedIdDtoList.add(failedRestrictedIdDto);
             }
         }
 
-        // Need to start with this, for not getting wrongly PARTIAL_PROCESSED
-        if (processedSuccessfully == 0) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.FAILED);
-        } else if (failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.SUCCESS);
-        } else if (!failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.PARTIAL_PROCESSED);
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = processedRestrictedIdsOutputDtoMapper.map(processedSuccessfully, failedRestrictedIdDtoList);
+
+        log.info("Successfully added: {}. Failed to add: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
+        return processedRestrictedIdsOutputDto;
+    }
+
+    /**
+     * Deletes a restricted id for each of the entries in the list of {@link RestrictedIdInputDto}.
+     *
+     * @param restrictedIds list containing the data transfer objects containing the details of the restricted ids to be deleted.
+     *                      This should not be null.
+     * @return ProcessedRestrictedIdsOutputDto
+     */
+    public static ProcessedRestrictedIdsOutputDto deleteRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
+        List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
+        int processedSuccessfully = 0;
+        FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
+        ProcessedRestrictedIdsOutputDtoMapper processedRestrictedIdsOutputDtoMapper = new ProcessedRestrictedIdsOutputDtoMapper();
+
+        for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
+            try {
+                inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
+
+                // Reusing deleteRestrictedId method, we need the unique id of the restricted id
+                RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+
+                // Reusing deleteRestrictedId method, we create the DeleteReasonDto object
+                DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
+                deleteReasonDto.setChangeComment(restrictedIdInputDto.getComment());
+
+                RecordsCountDto recordsCountDto = deleteRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, deleteReasonDto);
+
+                // If no exception was thrown and count is more than 0, we know that the restriction was deleted
+                if (recordsCountDto.getCount() > 0) {
+                    processedSuccessfully++;
+                }
+            } catch (Exception exception) { // need to catch every exception that could be thrown
+                log.error("Failed to delete restricted id: {}, exception: ", restrictedIdInputDto, exception);
+                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
+
+                failedRestrictedIdDtoList.add(failedRestrictedIdDto);
+            }
         }
 
-        processedRestrictedIdsOutputDto.setProcessedSuccessfully(processedSuccessfully);
-        processedRestrictedIdsOutputDto.setFailedRestrictedIds(failedRestrictedIdDtoList);
-        log.info("Successfully added: {}. Failed to add: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = processedRestrictedIdsOutputDtoMapper.map(processedSuccessfully, failedRestrictedIdDtoList);
+
+        log.info("Successfully deleted: {}. Failed to delete: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
         return processedRestrictedIdsOutputDto;
     }
 
@@ -286,7 +322,7 @@ public class RightsModuleFacade {
         SolrDocumentList resultsFromDsId = getSolrServerClient().callSolr(queryDsId, fieldListDsId);
 
         if (resultsFromDsId.getNumFound() == 0) {
-            final String errorMessage = "dsId: " + dsId + " not found";
+            final String errorMessage = "'dsId': " + dsId + " not found";
             log.error(errorMessage);
             throw new NotFoundServiceException(errorMessage);
         }
@@ -318,7 +354,7 @@ public class RightsModuleFacade {
 
             // Should never happen
             if (resultsFromDrProductionId.getNumFound() == 0) {
-                final String errorMessage = "No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId();
+                final String errorMessage = "No DR broadcasts found with 'drProductionId': " + drBroadcastDto.getDrProductionId();
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
