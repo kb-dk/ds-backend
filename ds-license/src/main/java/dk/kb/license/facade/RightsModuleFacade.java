@@ -61,7 +61,7 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto restrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedId(idValue, idType.getValue(), platform.getValue());
 
             if (restrictedIdOutputDto == null) {
-                final String errorMessage = "restricted id idValue: " + idValue + ", idType: " + idType + ", platform: " + platform + " not found";
+                final String errorMessage = "restricted id 'idValue': " + idValue + ", 'idType': " + idType + ", 'platform': " + platform + " not found";
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
@@ -81,7 +81,7 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto restrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
 
             if (restrictedIdOutputDto == null) {
-                final String errorMessage = "id: " + id + " not found";
+                final String errorMessage = "'id': " + id + " not found";
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
@@ -322,7 +322,7 @@ public class RightsModuleFacade {
         SolrDocumentList resultsFromDsId = getSolrServerClient().callSolr(queryDsId, fieldListDsId);
 
         if (resultsFromDsId.getNumFound() == 0) {
-            final String errorMessage = "dsId: " + dsId + " not found";
+            final String errorMessage = "'dsId': " + dsId + " not found";
             log.error(errorMessage);
             throw new NotFoundServiceException(errorMessage);
         }
@@ -354,7 +354,7 @@ public class RightsModuleFacade {
 
             // Should never happen
             if (resultsFromDrProductionId.getNumFound() == 0) {
-                final String errorMessage = "No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId();
+                final String errorMessage = "No DR broadcasts found with 'drProductionId': " + drBroadcastDto.getDrProductionId();
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
