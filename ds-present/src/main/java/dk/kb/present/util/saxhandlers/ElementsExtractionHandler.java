@@ -36,6 +36,13 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static final String PBCORE_TITLE_VALUE_PATH = PBCORE_TITLE_PATH + "/title";
     private static final String PBCORE_TITLE_TYPE_PATH = PBCORE_TITLE_PATH + "/titleType";
 
+    private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PRODUCTION_ID_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/produktionsnummer";
+    private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PRODUCTION_CODE_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/egenproduktion_kode";
+    private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_HOLDBACK_CATEGORY_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/holdback_kategori";
+    private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PURPOSE_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/intent_purpose";
+    private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_FORM_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/form";
+    private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_CONTENT_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/contentsitem_typology";
+    private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_ORIGIN_COUNTRY_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/productioncountry_origincountry";
 
     private static final Map<String,String> PBCORE_EXTRACT_PATHS = Map.of(
             START_TIME_PATH,ExtractedPreservicaValues.STARTTIME_KEY,
@@ -60,8 +67,19 @@ public class ElementsExtractionHandler extends DefaultHandler {
             TVMETER_PRODUCTION_ID_PATH,ExtractedPreservicaValues.PRODUCTION_ID_KEY
     );
 
+    private static final Map<String, String> DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_EXTRACT_PATHS = Map.of(
+            DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_FORM_PATH, ExtractedPreservicaValues.FORM_KEY,
+            DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_CONTENT_PATH, ExtractedPreservicaValues.CONTENT_KEY,
+            DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PRODUCTION_CODE_PATH, ExtractedPreservicaValues.ORIGIN_KEY,
+            DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_ORIGIN_COUNTRY_PATH, ExtractedPreservicaValues.ORIGIN_COUNTRY_KEY,
+            DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PURPOSE_PATH, ExtractedPreservicaValues.PURPOSE_KEY,
+            DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PRODUCTION_ID_PATH, ExtractedPreservicaValues.PRODUCTION_ID_KEY,
+            DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_HOLDBACK_CATEGORY_PATH, ExtractedPreservicaValues.HOLDBACK_CATEGORY_KEY
+    );
+
     private boolean hasNielsenData = false;
     private boolean hasTvMetadata = false;
+    private boolean hasDrArchiveSupplementaryRightsMetadata = false;
 
     private boolean insideMetadata = false;
     private String metadataType;
@@ -127,15 +145,20 @@ public class ElementsExtractionHandler extends DefaultHandler {
                     pbCoreTitleValue = capturedCharacters.toString().trim();
                 }
             }
+            if ("http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata".equals(metadataType) && DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_EXTRACT_PATHS.containsKey(currentPath)) {
+                hasDrArchiveSupplementaryRightsMetadata = true;
+                String key = DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_EXTRACT_PATHS.get(currentPath);
+                extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
+            }
             if ("http://id.kb.dk/schemas/supplementary_tvmeter_metadata".equals(metadataType) && TVMETER_EXTRACT_PATHS.containsKey(currentPath)) {
-                if (!hasNielsenData) {
+                if (!hasDrArchiveSupplementaryRightsMetadata && !hasNielsenData) {
                     hasTvMetadata = true;
                     String key = TVMETER_EXTRACT_PATHS.get(currentPath);
                     extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
                 }
             }
             if ("http://id.kb.dk/schemas/supplementary_nielsen_metadata".equals(metadataType) && NIELSEN_EXTRACT_PATHS.containsKey(currentPath)) {
-                if (!hasTvMetadata) {
+                if (!hasDrArchiveSupplementaryRightsMetadata && !hasTvMetadata) {
                     hasNielsenData = true;
                     String key = NIELSEN_EXTRACT_PATHS.get(currentPath);
                     extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
@@ -181,6 +204,8 @@ public class ElementsExtractionHandler extends DefaultHandler {
                 case "http://id.kb.dk/schemas/supplementary_tvmeter_metadata":
                     return TVMETER_EXTRACT_PATHS.containsKey(currentPath);
                 case "http://id.kb.dk/schemas/supplementary_nielsen_metadata":
+                    return true;
+                case "http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata":
                     return true;
             }
         }

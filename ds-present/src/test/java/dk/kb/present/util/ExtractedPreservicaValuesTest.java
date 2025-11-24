@@ -11,6 +11,54 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ExtractedPreservicaValuesTest {
 
+    // TODO: make test where productionid is null
+
+    @Test
+    void extractValuesFromPreservicaContent_whenDrRadioWithDrArchiveSupplementaryRightsMetadata_thenExtractedPreservicaValuesIsPopulated() throws IOException, ParserConfigurationException, SAXException {
+        // Arrange
+        String recordId = "83191087-69b3-4f46-ab64-f230d971def2";
+        String xml = Resolver.resolveUTF8String("internal_test_files/preservica7/dr_archive_supplementary_rights_metadata/dsradio/" + recordId + ".xml");
+
+        // Act
+        ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, recordId);
+
+        // Assert
+        assertEquals(recordId, extractedPreservicaValues.getId());
+        assertEquals("På genhør", extractedPreservicaValues.getTitle());
+        assertEquals("", extractedPreservicaValues.getOriginalTitle());
+        assertEquals("1990-01-22T10:55:00Z", extractedPreservicaValues.getStartTime());
+        assertEquals("1990-01-22T11:00:00Z", extractedPreservicaValues.getEndTime());
+        assertEquals("", extractedPreservicaValues.getFormValue());
+        assertEquals("", extractedPreservicaValues.getContent());
+        assertEquals("", extractedPreservicaValues.getPurpose());
+        assertEquals("11109009013", extractedPreservicaValues.getProductionId());
+        assertEquals("", extractedPreservicaValues.getOrigin());
+        assertEquals("", extractedPreservicaValues.getOriginCountry());
+    }
+
+    @Test
+    void extractValuesFromPreservicaContent_whenDrTvWithDrArchiveSupplementaryRightsMetadata_thenExtractedPreservicaValuesIsPopulated() throws IOException, ParserConfigurationException, SAXException {
+        // Arrange
+        String recordId = "710b6163-59f0-403b-a18f-ae25c2fa6600";
+        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/dstv/tidDrArchiveSupplementaryRightsMetadata.xml");
+
+        // Act
+        ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, recordId);
+
+        // Assert
+        assertEquals(recordId, extractedPreservicaValues.getId());
+        assertEquals("Kender du typen? - med bumser og Bond", extractedPreservicaValues.getTitle());
+        assertEquals("Kender du typen? - 2018", extractedPreservicaValues.getOriginalTitle());
+        assertEquals("2018-04-03T00:15:07Z", extractedPreservicaValues.getStartTime());
+        assertEquals("2018-04-03T00:58:01Z", extractedPreservicaValues.getEndTime());
+        assertEquals("1800", extractedPreservicaValues.getFormValue());
+        assertEquals("2790", extractedPreservicaValues.getContent());
+        assertEquals("1000", extractedPreservicaValues.getPurpose());
+        assertEquals("11109009013", extractedPreservicaValues.getProductionId());
+        assertEquals("1000", extractedPreservicaValues.getOrigin());
+        assertEquals("1000", extractedPreservicaValues.getOriginCountry());
+    }
+
     @Test
     void extractValuesFromPreservicaContentWithTVMeterContent() throws IOException, ParserConfigurationException, SAXException {
         String xml = Resolver.resolveUTF8String("internal_test_files/preservica7/cb1930d6-4ae0-41c7-a4c8-0a4bc235175a.xml");

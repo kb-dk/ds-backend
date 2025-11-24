@@ -40,6 +40,7 @@ public class ExtractedPreservicaValues {
     public static final String PRODUCTION_ID_KEY = "productionId";
     public static final String TITLE_KEY = "title";
     public static final String ORIGINAL_TITLE_KEY = "originalTitle";
+    public static final String HOLDBACK_CATEGORY_KEY = "holdbackCategory";
 
     public ExtractedPreservicaValues(){
     }
@@ -96,6 +97,9 @@ public class ExtractedPreservicaValues {
     }
     public String getOriginalTitle() {
         return values.get(ORIGINAL_TITLE_KEY);
+    }
+    public String getHoldbackCategory() {
+        return values.get(HOLDBACK_CATEGORY_KEY);
     }
 
     public void setValue(String key, String value) {
