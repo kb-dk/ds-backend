@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   restricted ids if they exit, and returns a ProcessedRestrictedIdsOutputDto response body that holds information
   about how many successfully restricted ids has been deleted and a list of FailedIdDto that holds information about
   failed deleting of restricted ids and their error message.
+- Deletion of objects are saved/reflected in the audit log.
 
 ### Changed
 
