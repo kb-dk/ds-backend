@@ -1233,18 +1233,15 @@ components:
         indhold:
           type: integer
           description: "A metadata value used for holdback calculation."
+        holdbackCategory:
+          type: string
+          description: 'If there already is calculated the holdback category'
         productionCountry:
           type: integer
           description: "A metadata value used for holdback calculation."
         origin:
           type: string
           description: "Origin in the DS ecosystem. Used to determine how holdback should be calculated."
-      required:
-        - hensigt
-        - form
-        - indhold
-        - productionCountry
-        - origin
 
     RestrictionsCalculationInput:
       description: "A restrictions specific Data Transfer Object which should be used to carry all values needed for looking up if a record is restricted between services."
