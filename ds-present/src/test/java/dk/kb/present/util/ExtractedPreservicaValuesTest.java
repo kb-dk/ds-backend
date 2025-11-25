@@ -34,6 +34,7 @@ class ExtractedPreservicaValuesTest {
         assertEquals("11109009013", extractedPreservicaValues.getProductionId());
         assertEquals("", extractedPreservicaValues.getOrigin());
         assertEquals("", extractedPreservicaValues.getOriginCountry());
+        assertEquals("", extractedPreservicaValues.getHoldbackCategory());
     }
 
     @Test
@@ -57,6 +58,7 @@ class ExtractedPreservicaValuesTest {
         assertEquals("11109009013", extractedPreservicaValues.getProductionId());
         assertEquals("1000", extractedPreservicaValues.getOrigin());
         assertEquals("1000", extractedPreservicaValues.getOriginCountry());
+        assertEquals("2.03", extractedPreservicaValues.getHoldbackCategory());
     }
 
     @Test
@@ -74,6 +76,7 @@ class ExtractedPreservicaValuesTest {
         assertEquals("5912040600", extractedPreservicaValues.getProductionId());
         assertEquals("1000", extractedPreservicaValues.getOrigin());
         assertEquals("1000", extractedPreservicaValues.getOriginCountry());
+        assertNull(extractedPreservicaValues.getHoldbackCategory());
     }
 
     @Test
@@ -91,6 +94,7 @@ class ExtractedPreservicaValuesTest {
         assertEquals("0221126300", extractedPreservicaValues.getProductionId());
         assertEquals("4000", extractedPreservicaValues.getOrigin());
         assertEquals("2211", extractedPreservicaValues.getOriginCountry());
+        assertNull(extractedPreservicaValues.getHoldbackCategory());
     }
 
 }
