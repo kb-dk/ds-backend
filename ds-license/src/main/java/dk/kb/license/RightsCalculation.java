@@ -76,10 +76,28 @@ public class RightsCalculation {
     public static RightsCalculationOutputDrDto calculateDrRights(RightsCalculationInputDto rightsCalculationInputDto) throws SQLException {
         RightsCalculationOutputDrDto drOutput = new RightsCalculationOutputDrDto();
 
+        String drHoldbackValue;
+
+        if (org.apache.commons.lang3.StringUtils.isBlank(rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory())) {
+            if (rightsCalculationInputDto.getHoldbackInput().getForm() == null || rightsCalculationInputDto.getHoldbackInput().getIndhold() == null) {
+                throw new IllegalArgumentException("Either 'holdbackCategory' or 'form' and 'indhold' must not be null");
+            }
+            // Get form value
+            int form = rightsCalculationInputDto.getHoldbackInput().getForm();
+            // get contentsitem/indhold value
+            int content = rightsCalculationInputDto.getHoldbackInput().getIndhold();
+            drHoldbackValue = RightsModuleFacade.getDrHoldbackValueFromContentAndFormValues(content, form);
+        } else {
+            drHoldbackValue = rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory();
+        }
+
         setRestrictionsForRecordDrArchive(rightsCalculationInputDto, drOutput);
         switch (rightsCalculationInputDto.getHoldbackInput().getOrigin()) {
             case "ds.tv":
-                setDrHoldbackForTvRecordDrArchive(rightsCalculationInputDto, drOutput);
+                if (rightsCalculationInputDto.getHoldbackInput().getHensigt() == null || rightsCalculationInputDto.getHoldbackInput().getForm() == null) {
+
+                }
+                setDrHoldbackForTvRecordDrArchive(rightsCalculationInputDto, drOutput, drHoldbackValue);
                 return drOutput;
             case "ds.radio":
                 setHoldbackForRadioRecordDrArchive(rightsCalculationInputDto, drOutput);
@@ -144,12 +162,12 @@ public class RightsCalculation {
      *                                   will be set. This should not be null.
      * @throws SQLException if there is an error while accessing the database or performing the necessary calculations.
      */
-    private static void setDrHoldbackForTvRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput) throws SQLException {
+    private static void setDrHoldbackForTvRecordDrArchive(RightsCalculationInputDto rightsCalculationInputDto, RightsCalculationOutputDrDto drOutput, String drHoldbackValue) throws SQLException {
         HoldbackCalculationInputDto holdbackInput = rightsCalculationInputDto.getHoldbackInput();
         String recordId = rightsCalculationInputDto.getRecordId();
         String startDate = rightsCalculationInputDto.getStartTime();
 
-        DrHoldbackRuleOutputDto holdbackRule = getDrHoldbackRule(holdbackInput);
+        DrHoldbackRuleOutputDto holdbackRule = getDrHoldbackRule(holdbackInput, drHoldbackValue);
 
         String holdbackName = getDrHoldbackName(holdbackInput, holdbackRule);
         String holdbackExpiredDate = getDrHoldbackExpiredDate(holdbackRule, recordId, startDate);
@@ -190,17 +208,7 @@ public class RightsCalculation {
      * @return the holdback rule data transfer object ({@link DrHoldbackRuleOutputDto}) corresponding to the calculated drHoldbackValue.
      *         Returns an empty holdback rule if the drHoldbackValue is not found.
      */
-    private static DrHoldbackRuleOutputDto getDrHoldbackRule(HoldbackCalculationInputDto holdbackInput) {
-        // Get form value
-        int form = holdbackInput.getForm();
-        // get contentsitem/indhold value
-        int content = holdbackInput.getIndhold();
-        String drHoldbackValue = RightsModuleFacade.getDrHoldbackValueFromContentAndFormValues(content, form);
-
-        if (drHoldbackValue.isEmpty()){
-            // An empty rule should end with a holdback date of 9999-01-01 as we cant calculate holdback for these records.
-            return new DrHoldbackRuleOutputDto();
-        }
+    private static DrHoldbackRuleOutputDto getDrHoldbackRule(HoldbackCalculationInputDto holdbackInput, String drHoldbackValue) {
         // Check for ID being 2.05 and correct it to either 2.05.01 or 2.05.02
         drHoldbackValue = validateDrHoldbackBasedOnProductionCountry(drHoldbackValue, holdbackInput.getProductionCountry());
 
