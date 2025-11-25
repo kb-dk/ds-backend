@@ -41,7 +41,7 @@ class ExtractedPreservicaValuesTest {
     void extractValuesFromPreservicaContent_whenDrTvWithNielsenAndDrArchiveSupplementaryRightsMetadata_thenExtractedPreservicaValuesIsPopulated() throws IOException, ParserConfigurationException, SAXException {
         // Arrange
         String recordId = "710b6163-59f0-403b-a18f-ae25c2fa6600";
-        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/dstv/tidNielsenDrArchiveSupplementaryRightsMetadata.xml");
+        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/dr_archive_supplementary_rights_metadata/dstv/tidNielsen.xml");
 
         // Act
         ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, recordId);
@@ -58,14 +58,14 @@ class ExtractedPreservicaValuesTest {
         assertEquals("00000000000", extractedPreservicaValues.getProductionId());
         assertEquals("0000", extractedPreservicaValues.getOrigin());
         assertEquals("0000", extractedPreservicaValues.getOriginCountry());
-        assertEquals("0.00", extractedPreservicaValues.getHoldbackCategory());
+        assertEquals("Underholdning", extractedPreservicaValues.getHoldbackCategory());
     }
 
     @Test
     void extractValuesFromPreservicaContent_whenDrTvWithTvmeterAndDrArchiveSupplementaryRightsMetadata_thenExtractedPreservicaValuesIsPopulated() throws IOException, ParserConfigurationException, SAXException {
         // Arrange
         String recordId = "710b6163-59f0-403b-a18f-ae25c2fa6600";
-        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/dstv/tidTvmeterDrArchiveSupplementaryRightsMetadata.xml");
+        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/dr_archive_supplementary_rights_metadata/dstv/tidTvmeter.xml");
 
         // Act
         ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, recordId);
@@ -82,7 +82,7 @@ class ExtractedPreservicaValuesTest {
         assertEquals("00000000000", extractedPreservicaValues.getProductionId());
         assertEquals("0000", extractedPreservicaValues.getOrigin());
         assertEquals("0000", extractedPreservicaValues.getOriginCountry());
-        assertEquals("0.00", extractedPreservicaValues.getHoldbackCategory());
+        assertEquals("Underholdning", extractedPreservicaValues.getHoldbackCategory());
     }
 
     @Test
