@@ -38,10 +38,34 @@ class ExtractedPreservicaValuesTest {
     }
 
     @Test
-    void extractValuesFromPreservicaContent_whenDrTvWithDrArchiveSupplementaryRightsMetadata_thenExtractedPreservicaValuesIsPopulated() throws IOException, ParserConfigurationException, SAXException {
+    void extractValuesFromPreservicaContent_whenDrTvWithNielsenAndDrArchiveSupplementaryRightsMetadata_thenExtractedPreservicaValuesIsPopulated() throws IOException, ParserConfigurationException, SAXException {
         // Arrange
         String recordId = "710b6163-59f0-403b-a18f-ae25c2fa6600";
-        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/dstv/tidDrArchiveSupplementaryRightsMetadata.xml");
+        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/dstv/tidNielsenDrArchiveSupplementaryRightsMetadata.xml");
+
+        // Act
+        ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, recordId);
+
+        // Assert
+        assertEquals(recordId, extractedPreservicaValues.getId());
+        assertEquals("Søren Ryge: At være god til at løbe", extractedPreservicaValues.getTitle());
+        assertEquals("Søren Ryge: At være god til at løbe", extractedPreservicaValues.getOriginalTitle());
+        assertEquals("2022-02-28T05:30:07Z", extractedPreservicaValues.getStartTime());
+        assertEquals("2022-02-28T05:58:01Z", extractedPreservicaValues.getEndTime());
+        assertEquals("0000", extractedPreservicaValues.getFormValue());
+        assertEquals("0000", extractedPreservicaValues.getContent());
+        assertEquals("0000", extractedPreservicaValues.getPurpose());
+        assertEquals("00000000000", extractedPreservicaValues.getProductionId());
+        assertEquals("0000", extractedPreservicaValues.getOrigin());
+        assertEquals("0000", extractedPreservicaValues.getOriginCountry());
+        assertEquals("0.00", extractedPreservicaValues.getHoldbackCategory());
+    }
+
+    @Test
+    void extractValuesFromPreservicaContent_whenDrTvWithTvmeterAndDrArchiveSupplementaryRightsMetadata_thenExtractedPreservicaValuesIsPopulated() throws IOException, ParserConfigurationException, SAXException {
+        // Arrange
+        String recordId = "710b6163-59f0-403b-a18f-ae25c2fa6600";
+        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/dstv/tidTvmeterDrArchiveSupplementaryRightsMetadata.xml");
 
         // Act
         ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, recordId);
@@ -52,13 +76,13 @@ class ExtractedPreservicaValuesTest {
         assertEquals("Kender du typen? - 2018", extractedPreservicaValues.getOriginalTitle());
         assertEquals("2018-04-03T00:15:07Z", extractedPreservicaValues.getStartTime());
         assertEquals("2018-04-03T00:58:01Z", extractedPreservicaValues.getEndTime());
-        assertEquals("1800", extractedPreservicaValues.getFormValue());
-        assertEquals("2790", extractedPreservicaValues.getContent());
-        assertEquals("1000", extractedPreservicaValues.getPurpose());
-        assertEquals("11109009013", extractedPreservicaValues.getProductionId());
-        assertEquals("1000", extractedPreservicaValues.getOrigin());
-        assertEquals("1000", extractedPreservicaValues.getOriginCountry());
-        assertEquals("2.03", extractedPreservicaValues.getHoldbackCategory());
+        assertEquals("0000", extractedPreservicaValues.getFormValue());
+        assertEquals("0000", extractedPreservicaValues.getContent());
+        assertEquals("0000", extractedPreservicaValues.getPurpose());
+        assertEquals("00000000000", extractedPreservicaValues.getProductionId());
+        assertEquals("0000", extractedPreservicaValues.getOrigin());
+        assertEquals("0000", extractedPreservicaValues.getOriginCountry());
+        assertEquals("0.00", extractedPreservicaValues.getHoldbackCategory());
     }
 
     @Test
