@@ -2,6 +2,7 @@ package dk.kb.present.util.saxhandlers;
 
 import dk.kb.present.util.DataCleanup;
 import dk.kb.present.util.ExtractedPreservicaValues;
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -146,9 +147,12 @@ public class ElementsExtractionHandler extends DefaultHandler {
                 }
             }
             if ("http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata".equals(metadataType) && DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_EXTRACT_PATHS.containsKey(currentPath)) {
-                hasDrArchiveSupplementaryRightsMetadata = true;
-                String key = DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_EXTRACT_PATHS.get(currentPath);
-                extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
+                // We only want to map dr_archive_supplementary_rights_metadata fragment if it has values
+                if (!StringUtils.isBlank(capturedCharacters.toString().trim())) {
+                    hasDrArchiveSupplementaryRightsMetadata = true;
+                    String key = DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_EXTRACT_PATHS.get(currentPath);
+                    extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
+                }
             }
             if ("http://id.kb.dk/schemas/supplementary_tvmeter_metadata".equals(metadataType) && TVMETER_EXTRACT_PATHS.containsKey(currentPath)) {
                 if (!hasDrArchiveSupplementaryRightsMetadata && !hasNielsenData) {
