@@ -68,6 +68,8 @@ public class RightsModuleStorage extends BaseModuleStorage{
     private final String getDrHoldbackDaysFromValueQuery = "SELECT " + DR_HOLDBACK_RULES_DAYS +" FROM "+DR_HOLDBACK_RULES_TABLE +
             " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
     private final String getAllDrHoldbackRulesQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE;
+    private final String getDrHoldbackRuleByNameQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
+            + " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
     private final String getDrHoldbackRuleFromValueQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
             + " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
     private final String updateDrHoldbackDaysFromDrHoldbackValueQuery = "UPDATE " + DR_HOLDBACK_RULES_TABLE
@@ -366,6 +368,31 @@ public class RightsModuleStorage extends BaseModuleStorage{
             return -1;
         } catch (SQLException e) {
             log.error("SQL Exception in getDrHoldbackRuleIdFromName: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Get a DR holdback rule
+     * @param name name of holdback rule
+     * @return
+     * @throws SQLException
+     */
+    public DrHoldbackRuleOutputDto getDrHoldbackRuleByName(String name) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleByNameQuery)) {
+            stmt.setString(1, name);
+            ResultSet res = stmt.executeQuery();
+            if (res.next()) {
+                DrHoldbackRuleOutputDto output = new DrHoldbackRuleOutputDto();
+                output.setId(res.getLong(DR_HOLDBACK_RULES_ID));
+                output.setDrHoldbackValue(res.getString(DR_HOLDBACK_RULES_VALUE));
+                output.setName(res.getString(DR_HOLDBACK_RULES_NAME));
+                output.setDays(res.getInt(DR_HOLDBACK_RULES_DAYS));
+                return output;
+            }
+            return null;
+        } catch (SQLException e) {
+            log.error("SQL Exception in getDrHoldbackRuleFromName: " + e.getMessage());
             throw e;
         }
     }
