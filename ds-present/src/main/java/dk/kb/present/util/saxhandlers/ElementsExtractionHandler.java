@@ -38,7 +38,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static final String PBCORE_TITLE_TYPE_PATH = PBCORE_TITLE_PATH + "/titleType";
 
     private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PRODUCTION_ID_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/produktionsnummer";
-    private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PRODUCTION_CODE_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/egenproduktion_kode";
+    private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_ORIGIN_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/egenproduktion_kode";
     private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_HOLDBACK_CATEGORY_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/holdback_kategori";
     private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PURPOSE_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/intent_purpose";
     private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_FORM_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/form";
@@ -71,7 +71,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static final Map<String, String> DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_EXTRACT_PATHS = Map.of(
             DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_FORM_PATH, ExtractedPreservicaValues.FORM_KEY,
             DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_CONTENT_PATH, ExtractedPreservicaValues.CONTENT_KEY,
-            DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PRODUCTION_CODE_PATH, ExtractedPreservicaValues.ORIGIN_KEY,
+            DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_ORIGIN_PATH, ExtractedPreservicaValues.ORIGIN_KEY,
             DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_ORIGIN_COUNTRY_PATH, ExtractedPreservicaValues.ORIGIN_COUNTRY_KEY,
             DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PURPOSE_PATH, ExtractedPreservicaValues.PURPOSE_KEY,
             DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_PRODUCTION_ID_PATH, ExtractedPreservicaValues.PRODUCTION_ID_KEY,
