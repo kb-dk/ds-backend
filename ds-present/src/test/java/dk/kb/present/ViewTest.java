@@ -119,12 +119,12 @@ class ViewTest {
         String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
-                                    .origin("ds.tv").kalturaId("someRandomKalturaId");
+                                    .origin("ds.radio").kalturaId("someRandomKalturaId");
 
         String solrdoc = solrView.apply(recordDto);
 
         assertTrue(solrdoc.contains("\"title\":\"Før Bjørnen Er Skudt\""));
-        assertTrue(solrdoc.contains("\"holdback_expired_date\":\"9999-01-01T00:00:00Z\""));
+        assertTrue(solrdoc.contains("\"holdback_expired_date\":\"2023-01-01T00:00:00Z\""));
         assertTrue(solrdoc.contains("\"kaltura_id\":\"someRandomKalturaId\""));
     }
 
@@ -138,7 +138,7 @@ class ViewTest {
         String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
         // Test with Kaltura ID = null
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.radio");
         String solrdoc = solrView.apply(recordDto);
         assertFalse(solrdoc.contains("\"kaltura_id\":"));
 
