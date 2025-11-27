@@ -53,7 +53,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void testHoldbackEducationEdgeCase() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto alwaysEducationRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
-                PlatformEnumDto.DRARKIV,4411, 6000, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+                PlatformEnumDto.DRARKIV,4411, 6000, 3190, null, 1000, "1000", "Program 1", "9283748300", "ds.tv");
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(alwaysEducationRecord);
 
@@ -63,7 +63,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void testHoldbackTrailersEdgeCase() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto alwaysEducationRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
-                PlatformEnumDto.DRARKIV,7000, 1000, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+                PlatformEnumDto.DRARKIV,7000, 1000, 3190, null, 1000, "1000", "Program 1", "9283748300", "ds.tv");
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(alwaysEducationRecord);
 
@@ -74,7 +74,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void badHoldbackRecordTest() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto badHoldbackValues = new RightsCalculationInputDto("badValues", "2016-01-06T18:08:17+0100", PlatformEnumDto.DRARKIV, 1800
-                , 0, 3100, 2211, "1000", "Record with bad holdback values", "9283748300", "ds.tv");
+                , 0, 3100, null, 2211, "1000", "Record with bad holdback values", "9283748300", "ds.tv");
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(badHoldbackValues);
 
@@ -85,7 +85,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     public void testHoldbackDate() throws SQLException, IllegalAccessException {
 
         RightsCalculationInputDto tenYearHoldbackRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
-                PlatformEnumDto.DRARKIV,4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+                PlatformEnumDto.DRARKIV,4411, 0, 3190, null, 1000, "1000", "Program 1", "9283748300", "ds.tv");
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(tenYearHoldbackRecord);
 
@@ -95,7 +95,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void testHoldbackDateNews() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto newsRecord = new RightsCalculationInputDto("testRecord1", "2016-01-01T10:34:42+0100",
-                PlatformEnumDto.DRARKIV,1100, 0, 1200, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+                PlatformEnumDto.DRARKIV,1100, 0, 1200, null, 1000, "1000", "Program 1", "9283748300", "ds.tv");
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(newsRecord);
 
@@ -103,21 +103,40 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testHoldbackName() throws SQLException, IllegalAccessException {
-
+    public void calculateRightsForRecord_whenDsTvDrArchiveSupplementaryRightsMetadata_thenOutputIsPopulated() throws SQLException {
         RightsCalculationInputDto tenYearHoldbackRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
-                PlatformEnumDto.DRARKIV,4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+                PlatformEnumDto.DRARKIV, null, 1000, null, "Dansk Dramatik & Fiktion", 1000, "1000", "Program 1", "9283748300", "ds.tv");
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(tenYearHoldbackRecord);
 
+        assertEquals(false, output.getDr().getDsIdRestricted());
         assertEquals("Dansk Dramatik & Fiktion", output.getDr().getHoldbackName());
+        assertEquals("2027-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
+        assertEquals(false, output.getDr().getProductionCodeAllowed());
+        assertEquals(false, output.getDr().getDrIdRestricted());
+        assertEquals(false, output.getDr().getTitleRestricted());
+    }
+
+    @Test
+    public void testHoldbackName() throws SQLException {
+        RightsCalculationInputDto tenYearHoldbackRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
+                PlatformEnumDto.DRARKIV, 4411, 0, 3190, null, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+
+        RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(tenYearHoldbackRecord);
+
+        assertEquals(false, output.getDr().getDsIdRestricted());
+        assertEquals("Dansk Dramatik & Fiktion", output.getDr().getHoldbackName());
+        assertEquals("2027-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
+        assertEquals(false, output.getDr().getProductionCodeAllowed());
+        assertEquals(false, output.getDr().getDrIdRestricted());
+        assertEquals(false, output.getDr().getTitleRestricted());
     }
 
     @Test
     public void testHoldbackForeign() throws SQLException {
 
         RightsCalculationInputDto foreignRecord = new RightsCalculationInputDto("testRecord1", "2016-01-20T10:34:42+0100",
-                PlatformEnumDto.DRARKIV,4411, 0, 3190, 5000, "5000", "Program 1", "9283748300", "ds.tv");
+                PlatformEnumDto.DRARKIV,4411, 0, 3190, null, 5000, "5000", "Program 1", "9283748300", "ds.tv");
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(foreignRecord);
 
@@ -128,7 +147,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void holdbackJanuaryEdgeTest() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto yearlyHoldback1 = new RightsCalculationInputDto("yearlyHoldback1","1999-01-01T10:30:00+0100", PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv" );
+                4411, 0, 3190, null, 1000, "1000", "Program 1", "9283748300", "ds.tv" );
         RightsCalculationOutputDto output1 = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback1);
         // 1st of January test
         assertEquals("2010-01-01T00:00:00Z", output1.getDr().getHoldbackExpiredDate());
@@ -137,7 +156,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void holdbackDecemberEdgeTest() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto yearlyHoldback2 = new RightsCalculationInputDto("yearlyHoldback1", "2010-12-31T10:00:00+0100", PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+                4411, 0, 3190, null, 1000, "1000", "Program 1", "9283748300", "ds.tv");
         RightsCalculationOutputDto output2 = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback2);
         // 31st of December test
         assertEquals("2021-01-01T00:00:00Z", output2.getDr().getHoldbackExpiredDate());
@@ -146,20 +165,39 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     @Test
     public void holdbackYearlyRandomDateTest() throws SQLException, IllegalAccessException {
         RightsCalculationInputDto yearlyHoldback3 = new RightsCalculationInputDto("yearlyHoldback1","1990-06-20T10:00:00+0100", PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+                4411, 0, 3190, null, 1000, "1000", "Program 1", "9283748300", "ds.tv");
         RightsCalculationOutputDto output3 = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback3);
         // Random date in June test
         assertEquals("2001-01-01T00:00:00Z", output3.getDr().getHoldbackExpiredDate());
     }
 
     @Test
-    public void holdbackRadioTest() throws SQLException, IllegalAccessException {
+    public void calculateRightsForRecord_whenDsRadioDrArchiveSupplementaryRightsMetadata_thenOutputIsPopulated() throws SQLException {
         RightsCalculationInputDto yearlyHoldback3 = new RightsCalculationInputDto("radioHoldback","1990-06-20T10:00:00+0100", PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.radio");
-        RightsCalculationOutputDto radioHoldback = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback3);
-        assertEquals("1994-01-01T00:00:00Z", radioHoldback.getDr().getHoldbackExpiredDate());
+                null, null, null, null, null, null, "Program 1", "9283748300", "ds.radio");
+        RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback3);
+
+        assertEquals(false, output.getDr().getDsIdRestricted());
+        assertEquals("Radio", output.getDr().getHoldbackName());
+        assertEquals("1994-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
+        assertEquals(false, output.getDr().getProductionCodeAllowed());
+        assertEquals(false, output.getDr().getDrIdRestricted());
+        assertEquals(false, output.getDr().getTitleRestricted());
     }
 
+    @Test
+    public void holdbackRadioTest() throws SQLException {
+        RightsCalculationInputDto yearlyHoldback3 = new RightsCalculationInputDto("radioHoldback","1990-06-20T10:00:00+0100", PlatformEnumDto.DRARKIV,
+                4411, 0, 3190, null, 1000, "1000", "Program 1", "9283748300", "ds.radio");
+        RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback3);
+        
+        assertEquals(false, output.getDr().getDsIdRestricted());
+        assertEquals("Radio", output.getDr().getHoldbackName());
+        assertEquals("1994-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
+        assertEquals(false, output.getDr().getProductionCodeAllowed());
+        assertEquals(false, output.getDr().getDrIdRestricted());
+        assertEquals(false, output.getDr().getTitleRestricted());
+    }
 
     @Test
     public void restrictedDrProductionIdTest() throws SQLException, IllegalAccessException {
@@ -172,7 +210,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
         RightsCalculationInputDto drProductionIdRestrictedEntry = new RightsCalculationInputDto("Restricted DR Production ID","1990-06-20T10:00:00+0100",
                 PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, "1000", "Program 1", "1234567890", "ds.tv");
+                4411, 0, 3190, null, 1000, "1000", "Program 1", "1234567890", "ds.tv");
         RightsCalculationOutputDto restrictedDrProductionID = RightsModuleFacade.calculateRightsForRecord(drProductionIdRestrictedEntry);
 
         assertTrue(restrictedDrProductionID.getDr().getDrIdRestricted());
@@ -189,7 +227,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
         RightsCalculationInputDto restrictedDsId = new RightsCalculationInputDto("restrictedId","1990-06-20T10:00:00+0100",
                 PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, "1000", "Program 1", "9283748300", "ds.tv");
+                4411, 0, 3190, null, 1000, "1000", "Program 1", "9283748300", "ds.tv");
         RightsCalculationOutputDto restrictedDsID = RightsModuleFacade.calculateRightsForRecord(restrictedDsId);
 
         assertTrue(restrictedDsID.getDr().getDsIdRestricted());
@@ -205,7 +243,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
         RightsCalculationInputDto restrictedTitleRecord = new RightsCalculationInputDto("restrictedId","1990-06-20T10:00:00+0100",
                 PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, "1000", "Restricted Test Title", "9283748300", "ds.tv");
+                4411, 0, 3190, null, 1000, "1000", "Restricted Test Title", "9283748300", "ds.tv");
         RightsCalculationOutputDto restrictedTitleOutput = RightsModuleFacade.calculateRightsForRecord(restrictedTitleRecord);
 
         assertTrue(restrictedTitleOutput.getDr().getTitleRestricted());
@@ -222,7 +260,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
         RightsCalculationInputDto allowedOwnProductionCode = new RightsCalculationInputDto("restrictedId","1990-06-20T10:00:00+0100",
                 PlatformEnumDto.DRARKIV,
-                4411, 0, 3190, 1000, "1000", "Random program", "9283748300", "ds.tv");
+                4411, 0, 3190, null, 1000, "1000", "Random program", "9283748300", "ds.tv");
         RightsCalculationOutputDto allowedOwnProduction = RightsModuleFacade.calculateRightsForRecord(allowedOwnProductionCode);
 
         assertTrue(allowedOwnProduction.getDr().getProductionCodeAllowed());
