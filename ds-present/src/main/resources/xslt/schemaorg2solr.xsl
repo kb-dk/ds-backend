@@ -853,6 +853,9 @@
     </xsl:if>
 
     <!-- The following three fields should always be available in the schema.org document for radio and tv records, so no need to encapsulate in if-statements. -->
+    <f:string key="contains_dr_archive_supplementary_rights_metadata">
+      <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:contains_dr_archive_supplementary_rights_metadata')"/>
+    </f:string>
     <f:string key="contains_tvmeter">
       <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:contains_tvmeter')"/>
     </f:string>

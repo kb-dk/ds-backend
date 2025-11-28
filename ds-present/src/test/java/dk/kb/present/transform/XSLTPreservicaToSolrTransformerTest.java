@@ -553,23 +553,43 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    public void testFragmentBooleansTvmeter() throws IOException {
-        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG , TestFiles.PVICA_DOMS_MIG_172c987b);
+    public void testFragmentBooleansDsTvDrArchiveSupplementaryRightsMetadata() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA7_HOMEMADE_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_TV_TID_TV_METER);
+        log.info(transformedJSON);
+        assertTrue(transformedJSON.contains("\"origin\":\"ds.test\""));
+        assertTrue(transformedJSON.contains("\"contains_dr_archive_supplementary_rights_metadata\":\"true\""));
         assertTrue(transformedJSON.contains("\"contains_tvmeter\":\"true\""));
-        assertTrue(transformedJSON.contains("\"contains_nielsen\":\"false\","));
+        assertTrue(transformedJSON.contains("\"contains_nielsen\":\"false\""));
+        assertTrue(transformedJSON.contains("\"contains_ritzau\":\"true\""));
+    }
+
+    @Test
+    public void testFragmentBooleansDsRadioDrArchiveSupplementaryRightsMetadata() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA7_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_RADIO_83191087);
+        assertTrue(transformedJSON.contains("\"origin\":\"ds.test\""));
+        assertTrue(transformedJSON.contains("\"contains_dr_archive_supplementary_rights_metadata\":\"true\""));
+        assertTrue(transformedJSON.contains("\"contains_tvmeter\":\"false\""));
+        assertTrue(transformedJSON.contains("\"contains_nielsen\":\"false\""));
+        assertTrue(transformedJSON.contains("\"contains_ritzau\":\"false\""));
+    }
+
+    @Test
+    public void testFragmentBooleansTvmeter() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_172c987b);
+        assertTrue(transformedJSON.contains("\"contains_dr_archive_supplementary_rights_metadata\":\"false\""));
+        assertTrue(transformedJSON.contains("\"contains_tvmeter\":\"true\""));
+        assertTrue(transformedJSON.contains("\"contains_nielsen\":\"false\""));
         assertTrue(transformedJSON.contains("\"contains_ritzau\":\"false\""));
     }
 
     @Test
     public void testFragmentBooleansNielsen() throws IOException {
-        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG , TestFiles.PVICA_RECORD_0e89456b);
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_0e89456b);
+        assertTrue(transformedJSON.contains("\"contains_dr_archive_supplementary_rights_metadata\":\"false\""));
         assertTrue(transformedJSON.contains("\"contains_tvmeter\":\"false\""));
-        assertTrue(transformedJSON.contains("\"contains_nielsen\":\"true\","));
+        assertTrue(transformedJSON.contains("\"contains_nielsen\":\"true\""));
         assertTrue(transformedJSON.contains("\"contains_ritzau\":\"true\""));
     }
-
-
-
 
     //@Test
     void testErrorFromFirstSchemaTransformation() throws IOException {
