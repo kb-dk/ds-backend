@@ -96,44 +96,6 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#parcela
   {{/gson}}
   {{/parcelableModel}}
 
-
-    {{#vendorExtensions.x-isRightsCalculationObject}}
-        /**
-        * Create an empty {@link RightsCalculationInputDto}
-        */
-        public {{classname}}(){
-        }
-
-
-        /**
-        * Create a {@link RightsCalculationInputDto} from all needed values
-        */
-    public {{classname}}(String recordId, String startTime, PlatformEnumDto platform,
-                            int form, int hensigt, int indhold, int productionCountry, String productionCode,
-                            String title, String drProductionId, String origin) {
-        HoldbackCalculationInputDto holdbackDto = new HoldbackCalculationInputDto();
-        RestrictionsCalculationInputDto restrictionsDto = new RestrictionsCalculationInputDto();
-
-        this.recordId = recordId;
-        this.startTime = startTime;
-        this.platform = platform;
-
-        holdbackDto.setForm(form);
-        holdbackDto.setHensigt(hensigt);
-        holdbackDto.setIndhold(indhold);
-        holdbackDto.setProductionCountry(productionCountry);
-        holdbackDto.setOrigin(origin);
-
-        restrictionsDto.setRecordId(recordId);
-        restrictionsDto.setTitle(title);
-        restrictionsDto.setProductionCode(productionCode);
-        restrictionsDto.setDrProductionId(drProductionId);
-
-        this.setHoldbackInput(holdbackDto);
-        this.setRestrictionsInput(restrictionsDto);
-    }
-    {{/vendorExtensions.x-isRightsCalculationObject}}
-
 {{#vars}}
 
   {{^isReadOnly}}

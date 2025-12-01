@@ -149,12 +149,26 @@ public class RightsCalculation {
         String recordId = rightsCalculationInputDto.getRecordId();
         String startDate = rightsCalculationInputDto.getStartTime();
 
-        DrHoldbackRuleOutputDto holdbackRule = getDrHoldbackRule(holdbackInput);
+        DrHoldbackRuleOutputDto holdbackRule;
 
-        String holdbackName = getDrHoldbackName(holdbackInput, holdbackRule);
+        if (org.apache.commons.lang3.StringUtils.isBlank(rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory())) {
+            if (rightsCalculationInputDto.getHoldbackInput().getHensigt() == null ||
+                    rightsCalculationInputDto.getHoldbackInput().getForm() == null ||
+                    rightsCalculationInputDto.getHoldbackInput().getIndhold() == null ||
+                    rightsCalculationInputDto.getHoldbackInput().getProductionCountry() == null) {
+                throw new IllegalArgumentException("Either 'holdbackCategory' or 'hensigt' and 'form' and 'indhold' and 'productionCountry' must not be null");
+            }
+
+            holdbackRule = getDrHoldbackRule(holdbackInput);
+            String holdbackName = getDrHoldbackName(holdbackInput, holdbackRule);
+            drOutput.setHoldbackName(holdbackName);
+        } else {
+            holdbackRule = RightsModuleFacade.getDrHoldbackRuleByName(rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory());
+            drOutput.setHoldbackName(holdbackRule.getName());
+        }
+
         String holdbackExpiredDate = getDrHoldbackExpiredDate(holdbackRule, recordId, startDate);
 
-        drOutput.setHoldbackName(holdbackName);
         drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
     }
 

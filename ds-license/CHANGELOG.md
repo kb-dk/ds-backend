@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [3.0.3](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.3) 2025-12-01
+### Added
+- Support for supplying holdback category when calculating rights (`POST /rights/calculate`)
+
 ## [3.0.1](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.1) 2025-09-01
 ### Added
 - Added new /audit/ path in API 
