@@ -150,25 +150,29 @@ public class RightsCalculation {
         String startDate = rightsCalculationInputDto.getStartTime();
 
         DrHoldbackRuleOutputDto holdbackRule;
+        String holdbackExpiredDate;
 
         if (org.apache.commons.lang3.StringUtils.isBlank(rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory())) {
             if (rightsCalculationInputDto.getHoldbackInput().getHensigt() == null ||
                     rightsCalculationInputDto.getHoldbackInput().getForm() == null ||
                     rightsCalculationInputDto.getHoldbackInput().getIndhold() == null ||
                     rightsCalculationInputDto.getHoldbackInput().getProductionCountry() == null) {
-                throw new IllegalArgumentException("Either 'holdbackCategory' or 'hensigt' and 'form' and 'indhold' and 'productionCountry' must not be null");
-            }
 
-            holdbackRule = getDrHoldbackRule(holdbackInput);
-            String holdbackName = getDrHoldbackName(holdbackInput, holdbackRule);
-            drOutput.setHoldbackName(holdbackName);
+                holdbackRule = new DrHoldbackRuleOutputDto();
+                drOutput.setHoldbackName(null);
+                log.debug("'holdbackCategory', 'hensigt', 'form', 'indhold', and 'productionCountry' was null by recordId: {}", rightsCalculationInputDto.getRecordId());
+            } else {
+                holdbackRule = getDrHoldbackRule(holdbackInput);
+                String holdbackName = getDrHoldbackName(holdbackInput, holdbackRule);
+                drOutput.setHoldbackName(holdbackName);
+
+            }
         } else {
             holdbackRule = RightsModuleFacade.getDrHoldbackRuleByName(rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory());
             drOutput.setHoldbackName(holdbackRule.getName());
         }
 
-        String holdbackExpiredDate = getDrHoldbackExpiredDate(holdbackRule, recordId, startDate);
-
+        holdbackExpiredDate = getDrHoldbackExpiredDate(holdbackRule, recordId, startDate);
         drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
     }
 
@@ -252,9 +256,10 @@ public class RightsCalculation {
             log.debug("Nielsen/TVMeter intent is: '6000', therefore the holdback name is set as 'Undervisning'.");
             return "Undervisning";
         }
-        // IF form = 7000 return an empty string, which later translate to a holdback date of year 9999 as records with form = 7000 are trailers and should be filtered out.
+        // If form = 7000 return null, which later translate to a holdback date of year 9999 as records with form = 7000 are trailers and should be filtered out.
         if (holdbackInput.getForm() == 7000){
-            return "";
+            log.debug("Nielsen/TVMeter form is: '7000', therefore the holdback name is set as empty.");
+            return null;
         }
 
         return holdbackRule.getName();
