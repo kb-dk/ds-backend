@@ -57,7 +57,7 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.6: Search optimization
        Remove unused placeholder field: 'condition_of_access'.
 1.7.7: Add DR specific field on restricted production IDs.
-       Add fields contains_tvmeter, contains_nielsen & contains_ritzau for better debugging of metadata fragments
+       Add fields contains_dr_archive_supplementary_rights_metadata, contains_tvmeter, contains_nielsen & contains_ritzau for better debugging of metadata fragments
        Add copyField which copies description to freetext.
        Add field has_kaltura_id which should be used for filtering records.
 1.7.8: Rename own_production to production_code_allowed.
@@ -67,9 +67,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.7.11: Fixed use of synonyms filer (SynonymGraphFilterFactory). Require also query filter.
 1.8.0: Add fields ritzau_channel_id, nielsen_channel_id and file_path
 1.8.1: Add field for records restricted on title
+1.8.3: Add field contains_dr_archive_supplementary_rights_metadata
 
   -->
-  <field name="_ds_1.8.1_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.3_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -989,23 +990,30 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     ?>
   </field>
 
+  <field name="contains_dr_archive_supplementary_rights_metadata" type="boolean">
+    <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
+            through a proprietary service, which delivers dr_archive_supplementary_rights_metadata, tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            record has been enriched with dr_archive_supplementary_rights_metadata data from this service.?>
+    <?example true?>
+  </field>
+
   <field name="contains_tvmeter" type="boolean">
     <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
-            through a proprietary service, which delivers tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            through a proprietary service, which delivers dr_archive_supplementary_rights_metadata, tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
             record has been enriched with tvmeter data from this service.?>
     <?example true?>
   </field>
 
   <field name="contains_nielsen" type="boolean">
     <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
-            through a proprietary service, which delivers tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            through a proprietary service, which delivers dr_archive_supplementary_rights_metadata, tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
             record has been enriched with nielsen data from this service.?>
     <?example true?>
   </field>
 
   <field name="contains_ritzau" type="boolean">
     <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
-            through a proprietary service, which delivers tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            through a proprietary service, which delivers dr_archive_supplementary_rights_metadata, tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
             record has been enriched with ritzau data from this service.?>
     <?example true?>
   </field>

@@ -119,12 +119,12 @@ class ViewTest {
         String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
-                                    .origin("ds.tv").kalturaId("someRandomKalturaId");
+                                    .origin("ds.radio").kalturaId("someRandomKalturaId");
 
         String solrdoc = solrView.apply(recordDto);
 
         assertTrue(solrdoc.contains("\"title\":\"Før Bjørnen Er Skudt\""));
-        assertTrue(solrdoc.contains("\"holdback_expired_date\":\"9999-01-01T00:00:00Z\""));
+        assertTrue(solrdoc.contains("\"holdback_expired_date\":\"2023-01-01T00:00:00Z\""));
         assertTrue(solrdoc.contains("\"kaltura_id\":\"someRandomKalturaId\""));
     }
 
@@ -138,7 +138,7 @@ class ViewTest {
         String pvica = Resolver.resolveUTF8String("internal_test_files/preservica7/df3dc9cf-43f6-4a8a-8909-de8b0fb7bd00.xml");
 
         // Test with Kaltura ID = null
-        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.radio");
         String solrdoc = solrView.apply(recordDto);
         assertFalse(solrdoc.contains("\"kaltura_id\":"));
 
@@ -241,6 +241,46 @@ class ViewTest {
 
         String solrDoc = solrView.apply(recordDto);
         assertTrue(solrDoc.contains("\"production_code_allowed\":\"true\""));
+        log.info(solrDoc);
+        assertTrue(solrDoc.contains("\"origin\":\"ds.radio\""));
+    }
+
+    @Test
+    @Tag("integration")
+    void apply_whenDsTvDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws Exception {
+        View jsonldView = getPreservicaTvJsonView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA7_HOMEMADE_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_TV_TID_TV_METER);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+        String jsonld = jsonldView.apply(recordDto);
+        log.info(jsonld);
+        assertTrue(jsonld.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.tv\""));
+        assertTrue(jsonld.contains("\"PropertyID\":\"ProductionID\",\"value\":\"00000000000\""));
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2025-01-01T00:00:00Z\""));
+        assertTrue(jsonld.contains("\"kb:contains_dr_archive_supplementary_rights_metadata\":true"));
+        assertTrue(jsonld.contains("\"kb:contains_tvmeter\":true"));
+        assertTrue(jsonld.contains("\"kb:contains_nielsen\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_ritzau\":true"));
+    }
+
+    @Test
+    @Tag("integration")
+    void apply_whenDsRadioDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws Exception {
+        View jsonldView = getPreservicaRadioJsonView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA7_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_RADIO_83191087);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("83191087-69b3-4f46-ab64-f230d971def2").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.radio").kalturaId("randomKalturaId");
+
+        String jsonld = jsonldView.apply(recordDto);
+        log.info(jsonld);
+        assertTrue(jsonld.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.radio\""));
+        assertTrue(jsonld.contains("\"PropertyID\":\"ProductionID\",\"value\":\"11109009013\""));
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"1994-01-01T00:00:00Z\""));
+        assertTrue(jsonld.contains("\"kb:contains_dr_archive_supplementary_rights_metadata\":true"));
+        assertTrue(jsonld.contains("\"kb:contains_tvmeter\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_nielsen\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_ritzau\":false"));
     }
 
     @Test
@@ -251,11 +291,18 @@ class ViewTest {
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
 
-
         String jsonld = jsonldView.apply(recordDto);
-        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2029-01-01T00:00:00Z\"," +
-                "\"kb:holdback_name\":\"Underholdning\""));
+        log.info(jsonld);
+        assertTrue(jsonld.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.tv\""));
+        assertTrue(jsonld.contains("\"PropertyID\":\"ProductionID\",\"value\":\"2920002400\""));
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2029-01-01T00:00:00Z\""));
+        assertTrue(jsonld.contains("\"kb:holdback_name\":\"Underholdning\""));
+        assertTrue(jsonld.contains("\"kb:contains_dr_archive_supplementary_rights_metadata\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_tvmeter\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_nielsen\":true"));
+        assertTrue(jsonld.contains("\"kb:contains_ritzau\":true"));
     }
+
     @Test
     @Tag("integration")
     void holdbackNameEducationTvMeterTest() throws Exception {
@@ -264,10 +311,18 @@ class ViewTest {
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
 
-
         String jsonld = jsonldView.apply(recordDto);
+        log.info(jsonld);
+        assertTrue(jsonld.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.tv\""));
+        assertTrue(jsonld.contains("\"PropertyID\":\"ProductionID\",\"value\":\"2511272400\""));
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2018-01-01T00:00:00Z\""));
         assertTrue(jsonld.contains("\"kb:holdback_name\":\"Undervisning\""));
+        assertTrue(jsonld.contains("\"kb:contains_dr_archive_supplementary_rights_metadata\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_tvmeter\":true"));
+        assertTrue(jsonld.contains("\"kb:contains_nielsen\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_ritzau\":true"));
     }
+
     @Test
     @Tag("integration")
     void holdbackNameEducationNielsenTest() throws Exception {
@@ -276,9 +331,16 @@ class ViewTest {
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
 
-
         String jsonld = jsonldView.apply(recordDto);
+        log.info(jsonld);
+        assertTrue(jsonld.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.tv\""));
+        assertTrue(jsonld.contains("\"PropertyID\":\"ProductionID\",\"value\":\"2514010100\""));
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"2029-01-01T00:00:00Z\""));
         assertTrue(jsonld.contains("\"kb:holdback_name\":\"Undervisning\""));
+        assertTrue(jsonld.contains("\"kb:contains_dr_archive_supplementary_rights_metadata\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_tvmeter\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_nielsen\":true"));
+        assertTrue(jsonld.contains("\"kb:contains_ritzau\":true"));
     }
 
     @Test

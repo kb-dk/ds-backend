@@ -1252,6 +1252,18 @@
       </xsl:if>
     </xsl:if>
 
+    <!-- Create a field with a boolean value representing if the record has the extra dr_archive_supplementary_rights_metadata fragment -->
+    <f:boolean key="kb:contains_dr_archive_supplementary_rights_metadata">
+      <xsl:choose>
+        <xsl:when test="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata']">
+          <xsl:value-of select="f:true()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="false()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </f:boolean>
+
     <!-- Create a field with a boolean value representing if the record has the extra tvmeter fragment -->
     <f:boolean key="kb:contains_tvmeter">
       <xsl:choose>
