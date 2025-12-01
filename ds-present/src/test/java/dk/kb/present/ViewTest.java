@@ -285,6 +285,24 @@ class ViewTest {
 
     @Test
     @Tag("integration")
+    void apply_whenNoFragmentsToCalculateRights_thenHoldbackDateIsYear9999() throws Exception {
+        View jsonldView = getPreservicaTvJsonView();
+        String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_NO_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_OR_NIELSEN_OR_TVMETER_RECORD_f0461362);
+        DsRecordDto recordDto = new DsRecordDto().data(pvica).id("f0461362-304c-4e31-9192-527f5b8b9a85").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
+                .origin("ds.tv").kalturaId("randomKalturaId");
+
+        String jsonld = jsonldView.apply(recordDto);
+        log.info(jsonld);
+        assertTrue(jsonld.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.tv\""));
+        assertTrue(jsonld.contains("\"kb:holdback_date\":\"9999-01-01T00:00:00Z\""));
+        assertTrue(jsonld.contains("\"kb:contains_dr_archive_supplementary_rights_metadata\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_tvmeter\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_nielsen\":false"));
+        assertTrue(jsonld.contains("\"kb:contains_ritzau\":false"));
+    }
+
+    @Test
+    @Tag("integration")
     void holdbackNameTestNielsen() throws Exception {
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_0e89456b);
