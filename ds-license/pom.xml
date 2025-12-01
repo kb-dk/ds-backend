@@ -10,7 +10,7 @@
 
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.3</version>
     <packaging>war</packaging>
     <description>
     # Ds-license(Digitale Samlinger) by the Royal Danish Library.

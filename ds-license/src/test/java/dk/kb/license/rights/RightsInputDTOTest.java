@@ -1,6 +1,8 @@
 package dk.kb.license.rights;
 
+import dk.kb.license.model.v1.HoldbackCalculationInputDto;
 import dk.kb.license.model.v1.PlatformEnumDto;
+import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import org.junit.jupiter.api.Test;
 
@@ -22,9 +24,31 @@ public class RightsInputDTOTest {
     }
 
     private RightsCalculationInputDto getTestDto() {
-        return new RightsCalculationInputDto("testRecord", "2015-12-17T23:41:29Z", PlatformEnumDto.DRARKIV,
-                1000, 1200, 1000, 1000, "2000", "Der var engang en test", "123456", "ds.tv");
+        RightsCalculationInputDto rightsCalculationInputDto = new RightsCalculationInputDto();
 
+        rightsCalculationInputDto.setRecordId("testRecord");
+        rightsCalculationInputDto.setPlatform(PlatformEnumDto.DRARKIV);
+        rightsCalculationInputDto.setStartTime("2015-12-17T23:41:29Z");
+
+        HoldbackCalculationInputDto holdbackCalculationInputDto = new HoldbackCalculationInputDto();
+        holdbackCalculationInputDto.setHensigt(1000);
+        holdbackCalculationInputDto.setForm(1200);
+        holdbackCalculationInputDto.setIndhold(1000);
+        holdbackCalculationInputDto.setHoldbackCategory(null);
+        holdbackCalculationInputDto.setProductionCountry(1000);
+        holdbackCalculationInputDto.setOrigin("ds.tv");
+
+        rightsCalculationInputDto.setHoldbackInput(holdbackCalculationInputDto);
+
+        RestrictionsCalculationInputDto restrictionsCalculationInputDto = new RestrictionsCalculationInputDto();
+        restrictionsCalculationInputDto.setRecordId("testRecord");
+        restrictionsCalculationInputDto.setProductionCode("2000");
+        restrictionsCalculationInputDto.setDrProductionId("12345678");
+        restrictionsCalculationInputDto.setTitle("Der var engang en test");
+
+        rightsCalculationInputDto.setRestrictionsInput(restrictionsCalculationInputDto);
+
+        return rightsCalculationInputDto;
     }
 
 }

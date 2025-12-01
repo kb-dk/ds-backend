@@ -74,6 +74,8 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
             + " WHERE " + DR_HOLDBACK_RULES_ID + " = ?";
     private final String deleteDrHoldbackRuleQuery = "DELETE FROM " + DR_HOLDBACK_RULES_TABLE +
             " WHERE " + DR_HOLDBACK_RULES_ID + " = ?";
+    private final String getDrHoldbackRuleByNameQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
+            + " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
     private final String getDrHoldbackRuleByIdQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
             + " WHERE " + DR_HOLDBACK_RULES_ID + " = ?";
     private final String getDrHoldbackRuleByDrHoldbackValueQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
@@ -356,6 +358,31 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
             return null;
         } catch (SQLException e) {
             log.error("SQL Exception in getDrHoldbackRuleById", e);
+            throw e;
+        }
+    }
+
+    /**
+     * Get a DR holdback rule
+     * @param name name of holdback rule
+     * @return
+     * @throws SQLException
+     */
+    public DrHoldbackRuleOutputDto getDrHoldbackRuleByName(String name) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleByNameQuery)) {
+            stmt.setString(1, name);
+            ResultSet res = stmt.executeQuery();
+            if (res.next()) {
+                DrHoldbackRuleOutputDto output = new DrHoldbackRuleOutputDto();
+                output.setId(res.getLong(DR_HOLDBACK_RULES_ID));
+                output.setDrHoldbackValue(res.getString(DR_HOLDBACK_RULES_VALUE));
+                output.setName(res.getString(DR_HOLDBACK_RULES_NAME));
+                output.setDays(res.getInt(DR_HOLDBACK_RULES_DAYS));
+                return output;
+            }
+            return null;
+        } catch (SQLException e) {
+            log.error("SQL Exception in getDrHoldbackRuleFromName: " + e.getMessage());
             throw e;
         }
     }
