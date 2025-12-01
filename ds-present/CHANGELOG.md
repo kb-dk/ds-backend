@@ -9,13 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Solr field for platform
+
 ### Changed
-- Solr version bumped to v. 1.8.2
+- Solr version bumped to v. 1.8.4
 
 ### Removed
 
 ### Fixed
 - Fixed error when kanalnavn is missing in preservica
+
+## [3.0.4](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.4) 2025-12-01
+### Added
+- Solr field for contains_dr_archive_supplementary_rights_metadata
+- Added support for dr_archive_supplementary_rights_metadata fragment in Preservica files 
+
+### Changed
+- Solr version bumped to v. 1.8.3
 
 ## [3.0.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.3) 2025-11-20
 ### Fixed

@@ -68,9 +68,11 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.0: Add fields ritzau_channel_id, nielsen_channel_id and file_path
 1.8.1: Add field for records restricted on title
 1.8.2: Add field for platform
+1.8.3: Add field contains_dr_archive_supplementary_rights_metadata
+1.8.4: Merge release_v2 into master
 
   -->
-  <field name="_ds_1.8.2_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.4_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -515,12 +517,6 @@ When adding fields to this schema please have the following guidelines in mind:
   <!-- ============================================================= -->
   <!-- ====== Fields that only apply to tv and radio metadata  ===== -->
   <!-- ============================================================= -->
-
-  <field name="platform" type="string" required="false">
-    <?description The platform the resource is from?>
-    <?example     DRARKIV?>
-    <?example     GENERIC?>
-  </field>
 
   <field name="original_title" type="string">
     <?description The original title of the resource.?>

@@ -6,6 +6,7 @@ import dk.kb.license.model.v1.RestrictionsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.present.util.saxhandlers.ElementsExtractionHandler;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -40,6 +41,7 @@ public class ExtractedPreservicaValues {
     public static final String PRODUCTION_ID_KEY = "productionId";
     public static final String TITLE_KEY = "title";
     public static final String ORIGINAL_TITLE_KEY = "originalTitle";
+    public static final String HOLDBACK_CATEGORY_KEY = "holdbackCategory";
 
     public ExtractedPreservicaValues(){
     }
@@ -97,6 +99,9 @@ public class ExtractedPreservicaValues {
     public String getOriginalTitle() {
         return values.get(ORIGINAL_TITLE_KEY);
     }
+    public String getHoldbackCategory() {
+        return values.get(HOLDBACK_CATEGORY_KEY);
+    }
 
     public void setValue(String key, String value) {
         values.put(key, value);
@@ -120,11 +125,15 @@ public class ExtractedPreservicaValues {
         HoldbackCalculationInputDto holdbackInputDto = new HoldbackCalculationInputDto();
         RestrictionsCalculationInputDto restrictionsDto = new RestrictionsCalculationInputDto();
 
-
-        holdbackInputDto.setIndhold(parseIntWithDefaultZero(getContent()));
-        holdbackInputDto.setForm(parseIntWithDefaultZero(getFormValue()));
-        holdbackInputDto.setProductionCountry(parseIntWithDefaultZero(getOriginCountry()));
-        holdbackInputDto.setHensigt(parseIntWithDefaultZero(getPurpose()));
+        // If holdbackCategory is not null in dr_archive_supplementary_rights_metadata we only need to populate holdbackCategory
+        if (!StringUtils.isBlank(getHoldbackCategory())) {
+            holdbackInputDto.setHoldbackCategory(getHoldbackCategory());
+        } else {
+            holdbackInputDto.setHensigt(convertStringToInteger(getPurpose()));
+            holdbackInputDto.setForm(convertStringToInteger(getFormValue()));
+            holdbackInputDto.setIndhold(convertStringToInteger(getContent()));
+            holdbackInputDto.setProductionCountry(convertStringToInteger(getOriginCountry()));
+        }
 
         holdbackInputDto.setOrigin(dsOrigin);
 
@@ -141,9 +150,9 @@ public class ExtractedPreservicaValues {
         return rightsInputDto;
     }
 
-    private int parseIntWithDefaultZero(String value) {
-        if (value == null || value.isEmpty()) {
-            return 0;
+    private Integer convertStringToInteger(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
         }
 
         return Integer.parseInt(value);

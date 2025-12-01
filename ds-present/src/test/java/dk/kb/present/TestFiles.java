@@ -105,4 +105,10 @@ public class TestFiles {
     public static final String CUMULUS_RECORD_0c02aa10 = "xml/copyright_extraction/0c02aa10-b657-11e6-aedf-00505688346e.xml";
     public static final String CUMULUS_RECORD_226d41a0 = "xml/copyright_extraction/226d41a0-5a83-11e6-8b8d-0016357f605f.xml";
 
+    // dr_archive_supplementary_rights_metadata
+    public static final String PVICA7_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_RADIO_83191087 = "internal_test_files/preservica7/dr_archive_supplementary_rights_metadata/dsradio/83191087-69b3-4f46-ab64-f230d971def2.xml";
+    public static final String PVICA7_HOMEMADE_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_TV_TID_TV_METER = "internal_test_files/homemade/dr_archive_supplementary_rights_metadata/dstv/tidTvmeter.xml";
+
+    // no_dr_archive_supplementary_rights_metadata_or_nielsen_or_tvmeter
+    public static final String PVICA_NO_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_OR_NIELSEN_OR_TVMETER_RECORD_f0461362 = "internal_test_files/preservica7/no_dr_archive_supplementary_rights_metadata_or_nielsen_or_tvmeter/f0461362-304c-4e31-9192-527f5b8b9a85.xml";
 }
