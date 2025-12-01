@@ -88,6 +88,18 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     }
 
     @Test
+    public void calculateRightsForRecord_whenNullValues_thenHoldbackExpiredDateIsYear9999() throws SQLException {
+        RightsCalculationInputDto alwaysEducationRecord = map("testRecord1", PlatformEnumDto.DRARKIV,
+                "2016-01-20T10:34:42+0100", null, null, null, null,
+                null, "ds.tv", null, "9283748300", "Program 1");
+
+        RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(alwaysEducationRecord);
+
+        assertNull(output.getDr().getHoldbackName());
+        assertEquals("9999-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
+    }
+
+    @Test
     public void testHoldbackTrailersEdgeCase() throws SQLException {
         RightsCalculationInputDto alwaysEducationRecord = map("testRecord1", PlatformEnumDto.DRARKIV,
                 "2016-01-20T10:34:42+0100", 1000, 7000, 3190, null,
@@ -95,7 +107,7 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(alwaysEducationRecord);
 
-        assertEquals("", output.getDr().getHoldbackName());
+        assertNull(output.getDr().getHoldbackName());
         assertEquals("9999-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
     }
 
