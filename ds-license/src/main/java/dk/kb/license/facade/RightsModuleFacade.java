@@ -494,6 +494,25 @@ public class RightsModuleFacade {
     }
 
     /**
+     * Retrieves the DR holdback rule identified by the specified name.
+     * This method performs a storage action to access the RightsModuleStorage
+     * and fetch the DR holdback rule as an object.
+     *
+     * @param name the name of the DR holdback rule to retrieve. It must not be null or empty.
+     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified name if found.
+     * @throws NotFoundServiceException if no rule is found for the specified name.
+     */
+    public static DrHoldbackRuleOutputDto getDrHoldbackRuleByName(String name) {
+        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
+            DrHoldbackRuleOutputDto output = ((RightsModuleStorage) storage).getDrHoldbackRuleByName(name);
+            if (output != null) {
+                return output;
+            }
+            throw new NotFoundServiceException("DR holdback rule not found for name: " + name);
+        });
+    }
+
+    /**
      * Retrieves the DR holdback rule identified by the specified id.
      * This method performs a storage action to access the RightsModuleStorage
      * and fetch the DR holdback rule as an object.
