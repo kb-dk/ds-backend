@@ -518,6 +518,12 @@ When adding fields to this schema please have the following guidelines in mind:
   <!-- ====== Fields that only apply to tv and radio metadata  ===== -->
   <!-- ============================================================= -->
 
+  <field name="platform" type="string" required="false">
+    <?description The platform the resource is from?>
+    <?example     DRARKIV?>
+    <?example     GENERIC?>
+  </field>
+
   <field name="original_title" type="string">
     <?description The original title of the resource.?>
     <?example     TV-Avisen?>
@@ -992,23 +998,30 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     ?>
   </field>
 
+  <field name="contains_dr_archive_supplementary_rights_metadata" type="boolean">
+    <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
+            through a proprietary service, which delivers dr_archive_supplementary_rights_metadata, tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            record has been enriched with dr_archive_supplementary_rights_metadata data from this service.?>
+    <?example true?>
+  </field>
+
   <field name="contains_tvmeter" type="boolean">
     <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
-            through a proprietary service, which delivers tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            through a proprietary service, which delivers dr_archive_supplementary_rights_metadata, tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
             record has been enriched with tvmeter data from this service.?>
     <?example true?>
   </field>
 
   <field name="contains_nielsen" type="boolean">
     <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
-            through a proprietary service, which delivers tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            through a proprietary service, which delivers dr_archive_supplementary_rights_metadata, tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
             record has been enriched with nielsen data from this service.?>
     <?example true?>
   </field>
 
   <field name="contains_ritzau" type="boolean">
     <?description As the PBCore documents harvested from Preservica are missing vital metadata to handle DR requirements and restrictions the records in DS-Storage gets enriched
-            through a proprietary service, which delivers tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
+            through a proprietary service, which delivers dr_archive_supplementary_rights_metadata, tvmeter, nielsen and ritzau fragments if they exist. This boolean is either true or false based of whether or not the
             record has been enriched with ritzau data from this service.?>
     <?example true?>
   </field>
