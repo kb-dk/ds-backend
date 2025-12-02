@@ -10,19 +10,21 @@ import java.sql.SQLException;
 public class RestrictedIdOutputDtoMapper {
 
     /**
-     * Create a {@link RestrictedIdOutputDto} from a ResultSet, which should contain all needed values for the DTO
+     * Create a {@link RestrictedIdOutputDto} from a ResultSet
      *
-     * @param resultSet containing values from the backing Rights database
+     * @param rs containing values from restricted_ids table
+     * @return RestrictedIdOutputDto populated with data
+     * @throws SQLException
      */
-    public RestrictedIdOutputDto map(ResultSet resultSet) throws SQLException {
+    public RestrictedIdOutputDto map(ResultSet rs) throws SQLException {
         RestrictedIdOutputDto output = new RestrictedIdOutputDto();
 
-        output.setId(resultSet.getLong("id"));
-        output.setIdValue(resultSet.getString("id_value"));
-        output.setIdType(IdTypeEnumDto.fromValue(resultSet.getString("id_type")));
-        output.setPlatform(PlatformEnumDto.fromValue(resultSet.getString("platform")));
-        output.setTitle(resultSet.getString("title"));
-        output.setComment(resultSet.getString("comment"));
+        output.setId(rs.getLong("id"));
+        output.setIdValue(rs.getString("id_value"));
+        output.setIdType(IdTypeEnumDto.fromValue(rs.getString("id_type")));
+        output.setPlatform(PlatformEnumDto.fromValue(rs.getString("platform")));
+        output.setTitle(rs.getString("title"));
+        output.setComment(rs.getString("comment"));
 
         return output;
     }

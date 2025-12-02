@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
  * The DB consist of the following tables:
  * <p>
  * 3 tables for configuration: PRESENTATIONTYPES: configured presentationtypes.
@@ -20,10 +19,8 @@ import org.slf4j.LoggerFactory;
  * ATTRIBUTEGROUP (parent=LICENSE) ATTRIBUTE (parent = ATTRIBUTEGROUP) VALUE
  * (parent = ATTRIBUTE) LICENSECONTENT (parent = LICENSE) PRESENTATION (parent =
  * LICENSECONTENT)
- * 
  */
-public class LicenseModuleStorage extends BaseModuleStorage  {
-
+public class LicenseModuleStorage extends AuditLogModuleStorage {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorage.class);
 
     // Table and column names

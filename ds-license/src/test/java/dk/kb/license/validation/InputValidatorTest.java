@@ -29,7 +29,7 @@ public class InputValidatorTest {
     public void validateId_whenTooShortId_thenThrowInvalidArgumentServiceException() {
         // Arrange
         Long id = 1234567890L;
-        String expectedMessage = "id: 1234567890 should be at least 11 digits";
+        String expectedMessage = "'id': " + id + " should be at least 11 digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -69,7 +69,7 @@ public class InputValidatorTest {
     })
     public void validateDsId_whenInvalidDsId_thenThrowInvalidArgumentServiceException(String dsId) {
         // Arrange
-        String expectedMessage = "Invalid dsId: " + dsId;
+        String expectedMessage = "Invalid 'dsId': " + dsId;
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -82,7 +82,7 @@ public class InputValidatorTest {
     @Test
     public void validateDsId_whenNullDsId_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "dsId cannot be empty";
+        String expectedMessage = "'dsId' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -99,11 +99,56 @@ public class InputValidatorTest {
     })
     public void validateDsId_whenEmptyOrBlankDsId_thenThrowInvalidArgumentServiceException(String dsId) {
         // Arrange
-        String expectedMessage = "dsId cannot be empty";
+        String expectedMessage = "'dsId' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDsId(dsId));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateDrHoldbackValue_whenValidDrHoldbackValue_thenDoNotThrow() {
+        // Arrange
+        String drHoldbackValue = "2.04";
+        InputValidator inputValidator = mock(InputValidator.class);
+        doCallRealMethod().when(inputValidator).validateDrHoldbackValue(drHoldbackValue);
+
+        // Act and assert
+        // validateDrProductionIdFormat() has return type void, so we can only check that it did not throw exception
+        assertDoesNotThrow(() -> inputValidator.validateDrHoldbackValue(drHoldbackValue));
+
+        // and it only was called once
+        verify(inputValidator, times(1)).validateDrHoldbackValue(drHoldbackValue);
+    }
+
+    @Test
+    public void validateDrHoldbackValue_whenNullDrHoldbackValue_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String expectedMessage = "'drHoldbackValue' cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrHoldbackValue(null));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "",
+            " "
+    })
+    public void validateDrHoldbackValue_whenEmptyOrBlankDrHoldbackValue_thenThrowInvalidArgumentServiceException(String drHoldbackValue) {
+        // Arrange
+        String expectedMessage = "'drHoldbackValue' cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrHoldbackValue(drHoldbackValue));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -128,7 +173,7 @@ public class InputValidatorTest {
     public void validateDrProductionIdFormat_whenNullDrProductionId_thenThrowInvalidArgumentServiceException() {
         // Arrange
         String drProductionId = null;
-        String expectedMessage = "drProductionId cannot be empty";
+        String expectedMessage = "'drProductionId' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -145,7 +190,7 @@ public class InputValidatorTest {
     })
     public void validateDrProductionIdFormat_whenEmptyOrBlankDrProductionId_thenThrowInvalidArgumentServiceException(String drProductionId) {
         // Arrange
-        String expectedMessage = "drProductionId cannot be empty";
+        String expectedMessage = "'drProductionId' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -159,7 +204,7 @@ public class InputValidatorTest {
     public void validateDrProductionIdFormat_whenTooShortDrProductionId_thenThrowInvalidArgumentServiceException() {
         // Arrange
         String drProductionId = "1234567";
-        String expectedMessage = "drProductionId: 1234567 should be at least 8 digits";
+        String expectedMessage = "'drProductionId': " + drProductionId + " should be at least 8 digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -172,12 +217,12 @@ public class InputValidatorTest {
     @Test
     public void validateDrProductionIdFormat_whenInvalidDrProductionId_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String productionId = "12345abcde";
-        String expectedMessage = "drProductionId: 12345abcde should only contain digits";
+        String drProductionId = "12345abcde";
+        String expectedMessage = "'drProductionId': " + drProductionId + " should only contain digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrProductionIdFormat(productionId));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrProductionIdFormat(drProductionId));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -201,7 +246,7 @@ public class InputValidatorTest {
     @Test
     public void validateStrictTitle_whenNullStrictTitle_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "strictTitle cannot be empty";
+        String expectedMessage = "'strictTitle' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -218,7 +263,7 @@ public class InputValidatorTest {
     })
     public void validateStrictTitle_whenEmptyOrBlankStrictTitle_thenThrowInvalidArgumentServiceException(String strictTitle) {
         // Arrange
-        String expectedMessage = "strictTitle cannot be empty";
+        String expectedMessage = "'strictTitle' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -246,7 +291,7 @@ public class InputValidatorTest {
     @Test
     public void validateOwnProductionCode_whenNullOwnProductionCode_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "ownProductionCode cannot be empty";
+        String expectedMessage = "'ownProductionCode' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -263,7 +308,7 @@ public class InputValidatorTest {
     })
     public void validateOwnProductionCode_whenEmptyOrBlankOwnProductionCode_thenThrowInvalidArgumentServiceException(String ownProductionCode) {
         // Arrange
-        String expectedMessage = "ownProductionCode cannot be empty";
+        String expectedMessage = "'ownProductionCode' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -276,12 +321,12 @@ public class InputValidatorTest {
     @Test
     public void validateOwnProductionCode_whenInvalidOwnProductionCode_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String productionId = "12ab";
-        String expectedMessage = "ownProductionCode: 12ab should only contain digits";
+        String invalidOwnProductionCode = "12ab";
+        String expectedMessage = "'ownProductionCode': " + invalidOwnProductionCode + " should only contain digits";
         InputValidator inputValidator = new InputValidator();
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateOwnProductionCode(productionId));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateOwnProductionCode(invalidOwnProductionCode));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -305,7 +350,7 @@ public class InputValidatorTest {
     @Test
     public void validateTitle_whenNullTitle_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "Title cannot be empty";
+        String expectedMessage = "'title' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -322,7 +367,7 @@ public class InputValidatorTest {
     })
     public void validateTitle_whenEmptyOrBlankTitle_thenThrowInvalidArgumentServiceException(String title) {
         // Arrange
-        String expectedMessage = "Title cannot be empty";
+        String expectedMessage = "'title' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -350,7 +395,7 @@ public class InputValidatorTest {
     @Test
     public void validateComment_whenNullComment_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "Comment cannot be empty";
+        String expectedMessage = "'comment' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
@@ -367,11 +412,56 @@ public class InputValidatorTest {
     })
     public void validateComment_whenEmptyOrBlankComment_thenThrowInvalidArgumentServiceException(String comment) {
         // Arrange
-        String expectedMessage = "Comment cannot be empty";
+        String expectedMessage = "'comment' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(comment));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void validateChangeComment_whenValidChangeComment_thenDoNotThrow() {
+        // Arrange
+        String changeComment = "DR holdback ranges skal ikke længere bruges";
+        InputValidator inputValidator = mock(InputValidator.class);
+        doCallRealMethod().when(inputValidator).validateChangeComment(changeComment);
+
+        // Act and assert
+        // validateDrProductionIdFormat() has return type void, so we can only check that it did not throw exception
+        assertDoesNotThrow(() -> inputValidator.validateChangeComment(changeComment));
+
+        // and it only was called once
+        verify(inputValidator, times(1)).validateChangeComment(changeComment);
+    }
+
+    @Test
+    public void validateChangeComment_whenNullChangeComment_thenThrowInvalidArgumentServiceException() {
+        // Arrange
+        String expectedMessage = "'changeComment' cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateChangeComment(null));
+
+        // Assert
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "",
+            " "
+    })
+    public void validateChangeComment_whenEmptyOrBlankChangeComment_thenThrowInvalidArgumentServiceException(String changeComment) {
+        // Arrange
+        String expectedMessage = "'changeComment' cannot be empty";
+        InputValidator inputValidator = new InputValidator();
+
+        // Act
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateChangeComment(changeComment));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());

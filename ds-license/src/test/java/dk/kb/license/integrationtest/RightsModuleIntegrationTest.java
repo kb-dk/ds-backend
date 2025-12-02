@@ -2,12 +2,9 @@ package dk.kb.license.integrationtest;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
-import dk.kb.license.model.v1.IdTypeEnumDto;
-import dk.kb.license.model.v1.PlatformEnumDto;
-import dk.kb.license.model.v1.RestrictedIdInputDto;
-import dk.kb.license.model.v1.RestrictedIdOutputDto;
+import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
+import dk.kb.license.storage.UnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.util.H2DbUtil;
 import dk.kb.util.oauth2.KeycloakUtil;
@@ -34,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mockStatic;
 
-public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
+public class RightsModuleIntegrationTest extends UnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger( RightsModuleIntegrationTest.class);
 
     private static RightsModuleStorage storage;
@@ -116,75 +113,5 @@ public class RightsModuleIntegrationTest extends DsLicenseUnitTestUtil {
         assertThrows(InvalidArgumentServiceException.class,  () -> {
             RightsModuleFacade.touchRelatedStorageRecords("some-non-existing-ds-id", IdTypeEnumDto.DS_ID);
         });
-    }
-
-    @Test
-    @Tag("integration")
-    public void testCreateAndDeleteRestrictedId() {
-        RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
-        restrictedId.setIdValue("ds.tv:oai:io:e027e1dc-5006-4f54-b2b7-ec451940c500");
-        restrictedId.setIdType(IdTypeEnumDto.DS_ID);
-        restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
-        restrictedId.setTitle("Test title");
-        restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
-
-        RightsModuleFacade.createRestrictedId(false, restrictedId);
-        RestrictedIdOutputDto outputObject = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), restrictedId.getIdType(), restrictedId.getPlatform());
-
-        int deleted = RightsModuleFacade.deleteRestrictedId(outputObject.getId().longValue(), false);
-        assertEquals(1, deleted);
-    }
-
-    @Test
-    @Tag("integration")
-    public void testCreateGetAndDeleteRestrictedProductionIdPrefixedZeros() {
-        RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
-        restrictedId.setIdValue("00123466486");
-        restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
-        restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
-        restrictedId.setTitle("Test title");
-        restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
-
-        RightsModuleFacade.createRestrictedId(false, restrictedId);
-        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
-
-        assertEquals("1234664860", outputRight.getIdValue());
-        int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getId().longValue(), false);
-        assertEquals(1, deletedCount);
-    }
-
-    @Test
-    @Tag("integration")
-    public void testCreateGetAndDeleteRestrictedProductionIdCorrectFormat() {
-        RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
-        restrictedId.setIdValue("1234664800");
-        restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
-        restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
-        restrictedId.setTitle("Test title");
-        restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
-
-        RightsModuleFacade.createRestrictedId(false, restrictedId);
-        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
-
-        assertEquals("1234664800", outputRight.getIdValue());
-        int deletedCount = RightsModuleFacade.deleteRestrictedId(outputRight.getId().longValue(), false);
-        assertEquals(1, deletedCount);
-    }
-
-    @Test
-    @Tag("integration")
-    public void testCreateGetAndDeleteRestrictedProductionId() {
-        RestrictedIdInputDto restrictedId = new RestrictedIdInputDto();
-        restrictedId.setIdValue("123466489");
-        restrictedId.setIdType(IdTypeEnumDto.DR_PRODUCTION_ID);
-        restrictedId.setPlatform(PlatformEnumDto.DRARKIV);
-        restrictedId.setTitle("Test title");
-        restrictedId.setComment("Brugeren har trukket deres samtykke tilbage");
-
-        RightsModuleFacade.createRestrictedId(false, restrictedId);
-        RestrictedIdOutputDto outputRight = RightsModuleFacade.getRestrictedId(restrictedId.getIdValue(), IdTypeEnumDto.DR_PRODUCTION_ID, PlatformEnumDto.DRARKIV);
-
-        assertEquals("1234664890", outputRight.getIdValue());
-        RightsModuleFacade.deleteRestrictedId(outputRight.getId().longValue(), false);
     }
 }

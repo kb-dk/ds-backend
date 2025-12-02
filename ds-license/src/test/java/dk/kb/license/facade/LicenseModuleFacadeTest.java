@@ -1,13 +1,10 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.config.ServiceConfig;
-import dk.kb.license.model.v1.AuditEntryOutputDto;
+import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
-import dk.kb.license.storage.LicenseModuleStorage;
-import dk.kb.license.storage.LicenseModuleStorageTest;
+import dk.kb.license.storage.*;
 import dk.kb.license.util.H2DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
@@ -29,9 +26,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
-    protected static LicenseModuleStorage storage = null;
-    private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
+public class LicenseModuleFacadeTest extends UnitTestUtil {
+    protected static LicenseModuleStorageForUnitTest storage = null;
+    private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTest.class);
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
@@ -39,8 +36,8 @@ public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
         ServiceConfig.initialize("conf/ds-license*.yaml", "ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl"));
-        storage = new LicenseModuleStorage();
+        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl", "ddl/audit_log_module_create_h2_unittest.ddl"));
+        storage = new LicenseModuleStorageForUnitTest();
     }
 
     @Test
@@ -66,12 +63,23 @@ public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
             LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated, valueEnglishUpdated, mockedSession);
             LicenseModuleFacade.deletePresentationType(key, mockedSession);
 
-            ArrayList<AuditEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
+            ArrayList<AuditLogEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
 
             assertEquals(3, auditLogEntriesForObject.size());
-            AuditEntryOutputDto createAuditLog = auditLogEntriesForObject.get(2);
-            AuditEntryOutputDto updateAuditLog = auditLogEntriesForObject.get(1);
-            AuditEntryOutputDto deleteAuditLog = auditLogEntriesForObject.get(0);
+            AuditLogEntryOutputDto createAuditLog = auditLogEntriesForObject.get(2);
+            AuditLogEntryOutputDto updateAuditLog = auditLogEntriesForObject.get(1);
+            AuditLogEntryOutputDto deleteAuditLog = auditLogEntriesForObject.get(0);
+
+            assertEquals(presentationTypeId, createAuditLog.getObjectId());
+            assertEquals(presentationTypeId, updateAuditLog.getObjectId());
+            assertEquals(presentationTypeId, deleteAuditLog.getObjectId());
+
+            assertTrue(createAuditLog.getModifiedTime() < updateAuditLog.getModifiedTime());
+            assertTrue(updateAuditLog.getModifiedTime() < deleteAuditLog.getModifiedTime());
+
+            assertEquals("mockedName", createAuditLog.getUserName());
+            assertEquals("mockedName", updateAuditLog.getUserName());
+            assertEquals("mockedName", deleteAuditLog.getUserName());
 
             assertEquals(ChangeTypeEnumDto.CREATE, createAuditLog.getChangeType());
             assertEquals(ChangeTypeEnumDto.UPDATE, updateAuditLog.getChangeType());
@@ -80,6 +88,14 @@ public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
             assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, createAuditLog.getChangeName());
             assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, updateAuditLog.getChangeName());
             assertEquals(ObjectTypeEnumDto.PRESENTATION_TYPE, deleteAuditLog.getChangeName());
+
+            assertEquals("keyAuditTest", createAuditLog.getIdentifier());
+            assertEquals("keyAuditTest", updateAuditLog.getIdentifier());
+            assertEquals("keyAuditTest", deleteAuditLog.getIdentifier());
+
+            assertNull(createAuditLog.getChangeComment());
+            assertNull(updateAuditLog.getChangeComment());
+            assertNull(deleteAuditLog.getChangeComment());
 
             assertNull(createAuditLog.getTextBefore());
             //TODO: This should be fixed together with: DRA-2085
@@ -90,21 +106,6 @@ public class DsLicenseFacadeTest extends DsLicenseUnitTestUtil {
             assertEquals("PresentationType value DK/En:unit_test_value / unit_test_value_en\n", createAuditLog.getTextAfter());
             assertEquals("keyAuditTestPresentationType value DK/En:unit_test_value_updated / unit_test_value_en_updated\n", updateAuditLog.getTextAfter()); //Tjek op på det
             assertNull(deleteAuditLog.getTextAfter());
-
-            assertEquals("mockedName", createAuditLog.getUserName());
-            assertEquals("mockedName", updateAuditLog.getUserName());
-            assertEquals("mockedName", deleteAuditLog.getUserName());
-
-            assertEquals("keyAuditTest", createAuditLog.getChangeComment());
-            assertEquals("keyAuditTest", updateAuditLog.getChangeComment());
-            assertEquals("keyAuditTest", deleteAuditLog.getChangeComment());
-
-            assertEquals(presentationTypeId, createAuditLog.getObjectId());
-            assertEquals(presentationTypeId, updateAuditLog.getObjectId());
-            assertEquals(presentationTypeId, deleteAuditLog.getObjectId());
-
-            assertTrue(createAuditLog.getModifiedTime() < updateAuditLog.getModifiedTime());
-            assertTrue(updateAuditLog.getModifiedTime() < deleteAuditLog.getModifiedTime());
         }
     }
 }

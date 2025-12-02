@@ -1,54 +1,16 @@
 package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.*;
-import java.util.ArrayList;
 
-import dk.kb.license.facade.RightsModuleFacade;
-import dk.kb.license.model.v1.AuditEntryOutputDto;
-import dk.kb.license.model.v1.ChangeTypeEnumDto;
-import java.util.List;
-import java.util.Map;
-import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.model.v1.RestrictedIdOutputDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
-import java.util.Map;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.io.File;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import dk.kb.util.webservice.ImplBase;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Providers;
-import javax.ws.rs.core.MediaType;
-import org.apache.cxf.jaxrs.model.wadl.Description;
-import org.apache.cxf.jaxrs.model.wadl.DocTarget;
-import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.apache.cxf.jaxrs.ext.multipart.*;
 import org.apache.cxf.interceptor.InInterceptors;
 
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
-import dk.kb.license.facade.AuditFacade;
-
-import io.swagger.annotations.Api;
+import dk.kb.license.facade.AuditLogModuleFacade;
 
 /**
  * ds-license
@@ -60,9 +22,9 @@ import io.swagger.annotations.Api;
 public class DsAuditApiServiceImpl extends ImplBase implements DsAuditApi {
 
     @Override
-    public List<AuditEntryOutputDto> getAuditEntriesByObjectId(Long objectId) {
+    public List<AuditLogEntryOutputDto> getAuditEntriesByObjectId(Long objectId) {
         try {
-            List<AuditEntryOutputDto> result = AuditFacade.getAuditEntriesByObjectId(objectId);           
+            List<AuditLogEntryOutputDto> result = AuditLogModuleFacade.getAuditEntriesByObjectId(objectId);
             return result;
         } catch (Exception e) {
             throw handleException(e);
@@ -70,9 +32,9 @@ public class DsAuditApiServiceImpl extends ImplBase implements DsAuditApi {
     }
 
     @Override
-    public AuditEntryOutputDto getAuditEntryById(Long id) {
+    public AuditLogEntryOutputDto getAuditEntryById(Long id) {
         try {
-            AuditEntryOutputDto result = AuditFacade.getAuditEntryById(id);
+            AuditLogEntryOutputDto result = AuditLogModuleFacade.getAuditEntryById(id);
             if (result == null) {
                 throw new NotFoundServiceException("Auditlog id not found");
             }

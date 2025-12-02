@@ -19,10 +19,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. Id filter field is defined in the YAML configuration'
+      operationId: checkAccessForIds
       security:
         - KBOAuth:
-            - any
-      operationId: checkAccessForIds
+            - public
       requestBody:
         content:
           application/json: # Media type
@@ -41,10 +41,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Takes an array of resource ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
+      operationId: checkAccessForResourceIds
       security:
         - KBOAuth:
-            - any
-      operationId: checkAccessForResourceIds
+            - public
       requestBody:
         content:
           application/json: # Media type
@@ -63,10 +63,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Validate if user has access to all groups in input'
+      operationId: validateAccess
       security:
         - KBOAuth:
-            - any
-      operationId: validateAccess
+            - public
       requestBody:
         content:
           application/json: # Media type
@@ -85,10 +85,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get a list of all licences that validates from user attributes'
+      operationId: getUserLicenses
       security:
         - KBOAuth:
-            - any
-      operationId: getUserLicenses
+            - public
       requestBody:
         content:
           application/json: # Media type
@@ -107,10 +107,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
+      operationId: getUserLicenseQuery
       security:
         - KBOAuth:
-            - any
-      operationId: getUserLicenseQuery
+            - public
       requestBody:
         content:
           application/json: # Media type
@@ -130,10 +130,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get the groups that the user has access to'
+      operationId: getUserGroups
       security:
         - KBOAuth:
-            - any
-      operationId: getUserGroups
+            - public
       requestBody:
         content:
           application/json: # Media type
@@ -152,10 +152,10 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
+      operationId: getUserGroupsAndLicenses
       security:
         - KBOAuth:
-            - any
-      operationId: getUserGroupsAndLicenses
+            - public
       requestBody:
         content:
           application/json: # Media type
@@ -452,13 +452,14 @@ paths:
   # Audit
   /audit/auditEntryById:
     get:
-      summary: 'Return the AuditLogEntry with the given id'
       tags:
         - 'DsAudit'
+      summary: 'Return the AuditLogEntry with the given id'
       operationId: getAuditEntryById
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: id
           in: query
@@ -472,17 +473,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuditEntryOutput'
+                $ref: '#/components/schemas/AuditLogEntryOutput'
 
   /audit/auditEntriesByObjectId:
     get:
-      summary: 'Return a list of AuditLogEntry related to an object by object id'
       tags:
         - 'DsAudit'
+      summary: 'Return a list of AuditLogEntry related to an object by object id'
       operationId: getAuditEntriesByObjectId
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: objectid
           in: query
@@ -498,18 +500,19 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AuditEntryOutput'
+                  $ref: '#/components/schemas/AuditLogEntryOutput'
 
   # Rights
   /rights/platforms:
     get:
-      summary: 'Get all available platforms'
       tags:
         - 'DsRights'
+      summary: 'Get all available platforms'
       operationId: getPlatforms
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       responses:
         '200':
           description: 'A JSON array of available platforms'
@@ -522,13 +525,14 @@ paths:
 
   /rights/idTypes:
     get:
-      summary: 'Get all allowed id types in the rights component'
       tags:
         - 'DsRights'
+      summary: 'Get all allowed id types in the rights component'
       operationId: getIdTypes
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: platform
           in: query
@@ -549,13 +553,14 @@ paths:
     get:
       tags:
         - 'DsRights'
+      summary: 'Get a restricted id by idValue, idType, and platform'
       operationId: getRestrictedId
       security:
         - KBOAuth:
             - ds-license-readonly
             - ds-license-admin
       parameters:
-        - name: id
+        - name: idValue
           in: query
           required: true
           schema:
@@ -579,39 +584,14 @@ paths:
                 $ref: '#/components/schemas/RestrictedIdOutput'
         '404':
           description: 'Restricted id not found'
-    delete:
-      tags:
-        - 'DsRights'
-      operationId: deleteRestrictedId
-      security:
-        - KBOAuth:
-            - any
-      parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: touchRecord
-          in: query
-          schema:
-            type: boolean
-            default: true
-      responses:
-        '200':
-          description: deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordsCount'
     post:
       tags:
         - 'DsRights'
+      summary: 'Create a restricted id'
       operationId: createRestrictedId
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: touchRecord
           in: query
@@ -641,11 +621,11 @@ paths:
 
   /rights/restrictedId/{id}:
     put:
-      summary: 'Updates title and/or comment of restricted id. The requester should always send the information in all fields.'
       tags:
         - 'DsRights'
+      summary: 'Only title and/or comment can be updated'
+      description: 'Updates title and/or comment of restricted id. The requester should always send the information in all fields'
       operationId: updateRestrictedId
-      description: 'Only title and/or comment can be updated'
       security:
         - KBOAuth:
             - ds-license-admin
@@ -697,11 +677,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/RestrictedIdOutput'
 
-  /rights/restrictedIds:
-    get:
-      summary: 'Get restricted ids from idType and platform'
+  /rights/restrictedId/delete/{id}:
+    post:
       tags:
         - 'DsRights'
+      summary: 'Delete restricted id by id'
+      operationId: deleteRestrictedId
+      security:
+        - KBOAth:
+            - ds-license-admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteReason'
+      responses:
+        '200':
+          description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
+
+  /rights/restrictedIds:
+    get:
+      tags:
+        - 'DsRights'
+      summary: 'Get restricted ids from idType and platform'
       operationId: getAllRestrictedIds
       security:
         - KBOAuth:
@@ -730,9 +745,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/RestrictedIdOutput'
     post:
-      description: 'Create multiple restricted ids or updates if they already exists'
       tags:
         - 'DsRights'
+      summary: 'Create multiple restricted ids or updates if they already exists'
       operationId: createOrUpdateRestrictedIds
       security:
         - KBOAuth:
@@ -769,7 +784,54 @@ paths:
                 comment: 'test multi 3'
       responses:
         '200':
-          description: 'Status on restricted ids creation or updates'
+          description: 'Status on creation or updating restricted ids'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessedRestrictedIdsOutput'
+
+  /rights/restrictedIds/delete:
+    post:
+      tags:
+        - 'DsRights'
+      summary: 'Deletes multiple restricted id by RestrictedIdInputDto'
+      operationId: deleteRestrictedIds
+      security:
+        - KBOAth:
+            - ds-license-admin
+      parameters:
+        - name: touchRecord
+          in: query
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RestrictedIdInput'
+            example:
+              - idValue: 'ds.tv:oai:io:111017fb-810a-4386-98cc-debd1f19b48d'
+                idType: 'DS_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'Slettes fordi de er blevet frigivet fra licensaftalen'
+              - idValue: 'ds.radio:oai:io:11156005-39e6-4fc3-90a5-830efded34a0'
+                idType: 'DS_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'Slettes fordi de er blevet frigivet fra licensaftalen'
+              - idValue: '12345678'
+                idType: 'DR_PRODUCTION_ID'
+                platform: 'DRARKIV'
+                title: 'TV Avisen'
+                comment: 'Slettes fordi de er blevet frigivet fra licensaftalen'
+      responses:
+        '200':
+          description: 'Status on deleting restricted ids'
           content:
             application/json:
               schema:
@@ -779,11 +841,12 @@ paths:
     get:
       tags:
         - 'DsRights'
-      summary: 'Returns a DrBroadcastDto object that shows if the input dsId broadcast has a drProductionId. DrBroadcastDto has a list of BroadcastDto that is populated with broadcasts sharing the same drProductionId. Each BroadcastDto also shows if there is a restriction and restriction comment on that broadcast'
+      description: 'Returns a DrBroadcastDto object that shows if the input dsId broadcast has a drProductionId. DrBroadcastDto has a list of BroadcastDto that is populated with broadcasts sharing the same drProductionId. Each BroadcastDto also shows if there is a restriction and restriction comment on that broadcast'
       operationId: matchingDrProductionIdBroadcasts
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: dsId
           in: path
@@ -817,33 +880,16 @@ paths:
               schema:
                 type: object
 
-  /rights/drHoldbackRules:
-    get:
-      tags:
-        - 'DsRights'
-      operationId: getDrHoldbackRules
-      description: 'Get all DR holdback rules'
-      security:
-        - KBOAuth:
-            - any
-      responses:
-        '200':
-          description: 'List of DR holdback rules'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
-
   /rights/drHoldbackRule:
     get:
       tags:
         - 'DsRights'
-      operationId: getDrHoldbackRule
+      summary: 'Get a DR holdback rule by drHoldbackValue'
+      operationId: getDrHoldbackRuleByDrHoldbackValue
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -859,30 +905,16 @@ paths:
                 $ref: '#/components/schemas/DrHoldbackRuleOutput'
         '404':
           description: 'Not found'
-    delete:
-      tags:
-        - 'DsRights'
-      operationId: deleteDrHoldbackRule
-      security:
-        - KBOAuth:
-            - any
-      parameters:
-        - name: drHoldbackValue
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: 'Successfully deleted'
     post:
       tags:
         - 'DsRights'
+      summary: 'Creates a DR holdback rule'
       operationId: createDrHoldbackRule
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -893,80 +925,115 @@ paths:
                   drHoldbackValue: '2.03'
                   name: 'Testing'
                   days: 100
-      responses:
-        '204':
-          description: 'Successfully deleted'
-
-  /rights/drHoldbackDays:
-    get:
-      tags:
-        - 'DsRights'
-      operationId: getDrHoldbackDays
-      description: 'Get the number of DR holdback days. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name'
-      security:
-        - KBOAuth:
-            - any
-      parameters:
-        - name: drHoldbackValue
-          in: query
-          required: false
-          description: 'drHoldbackValue of the DR holdback rule'
-          schema:
-            type: string
-        - name: name
-          in: query
-          required: false
-          description: 'Name of the DR holdback rule'
-          schema:
-            type: string
+                  changeName: null
       responses:
         '200':
-          description: 'DR holdback days'
+          description: 'Created DR holdback rule'
           content:
             application/json:
               schema:
-                type: integer
-        '404':
-          description: 'DR holdback day not found'
+                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
+
+  /rights/drHoldbackRule/{id}:
     put:
       tags:
         - 'DsRights'
-      operationId: updateDrHoldbackDays
-      description: 'Update the number of DR holdback days for a purpose. One of the parameters drHoldbackValue or name should be nonempty. drHoldbackValue takes precedence over name'
+      summary: 'Only days can be updated'
+      description: 'Updates days of a DR holdback rule. The requester should always send the information in all fields'
+      operationId: updateDrHoldbackRule
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
-        - name: drHoldbackValue
-          in: query
-          required: false
-          description: 'drHoldbackValue of the DR holdback rule'
-          schema:
-            type: string
-        - name: name
-          in: query
-          required: false
-          description: 'Name of the DR holdback rule'
-          schema:
-            type: string
-        - name: days
-          in: query
+        - name: id
+          in: path
+          description: 'The unique id of a DR holdback rule'
           required: true
           schema:
             type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DrHoldbackRuleInput'
+            examples:
+              drHoldbackRule:
+                value:
+                  drHoldbackValue: '2.03'
+                  name: 'Testing'
+                  days: 100
+                  changeComment: 'Omstændighederne har ændret sig'
       responses:
-        '204':
-          description: Updated
+        '200':
+          description: 'Updated DR holdback rule'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DrHoldbackRuleOutput'
+
+  /rights/drHoldbackRule/delete/{id}:
+    post:
+      tags:
+        - 'DsRights'
+      summary: 'Delete DR holdback rule by drHoldbackValue'
+      operationId: deleteDrHoldbackRule
+      security:
+        - KBOAth:
+            - ds-license-admin
+      parameters:
+        - name: id
+          in: path
+          description: 'The unique id of a DR holdback rule'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteReason'
+      responses:
+        '200':
+          description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
+
+  /rights/drHoldbackRules:
+    get:
+      tags:
+        - 'DsRights'
+      summary: 'Get all DR holdback rules'
+      operationId: getDrHoldbackRules
+      security:
+        - KBOAuth:
+            - ds-license-readonly
+            - ds-license-admin
+      responses:
+        '200':
+          description: 'List of DR holdback rules'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
 
   /rights/drHoldbackRanges:
     get:
-      summary: 'Get all DR holdback ranges for a drHoldbackValue'
       tags:
         - 'DsRights'
+      summary: 'Get all DR holdback ranges by drHoldbackValue'
       operationId: getDrHoldbackRanges
       security:
         - KBOAth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
           in: query
@@ -977,19 +1044,19 @@ paths:
         '200':
           description: OK
           content:
-            'application/json':
+            application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/DrHoldbackRangeOutput'
     post:
-      summary: 'Set DR holdback ranges for a drHoldbackValue'
       tags:
         - 'DsRights'
+      summary: 'Creates DR holdback ranges by drHoldbackValue'
       operationId: createDrHoldbackRanges
       security:
         - KBOAth:
-            - any
+            - ds-license-admin
       requestBody:
         required: true
         content:
@@ -997,35 +1064,54 @@ paths:
             schema:
               $ref: '#/components/schemas/DrHoldbackRangeInput'
       responses:
-        '201':
-          description: created
-    delete:
-      summary: 'Delete DR holdback ranges for a drHoldbackValue'
+        '200':
+          description: 'Created DR holdback ranges'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrHoldbackRangeOutput'
+
+  /rights/drHoldbackRanges/delete/{drHoldbackValue}:
+    post:
       tags:
         - 'DsRights'
+      summary: 'Delete DR holdback ranges by drHoldbackValue'
       operationId: deleteDrHoldbackRanges
       security:
         - KBOAth:
-            - any
+            - ds-license-admin
       parameters:
         - name: drHoldbackValue
-          in: query
+          in: path
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteReason'
       responses:
-        '204':
+        '200':
           description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
   /rights/getDrHoldbackValueFromContentAndForm:
     get:
-      summary: 'Get the drHoldbackValue from content and form metadata'
       tags:
         - 'DsRights'
+      summary: 'Get the drHoldbackValue from content and form metadata'
       operationId: getDrHoldbackValueFromContentAndForm
       security:
         - KBOAth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: content
           in: query
@@ -1041,7 +1127,7 @@ paths:
         '200':
           description: ok
           content:
-            'application/json':
+            application/json:
               schema:
                 type: string
 
@@ -1049,8 +1135,11 @@ paths:
     post:
       tags:
         - 'DsRights'
-      operationId: calculateRights
       summary: 'Calculate restrictions for a record based on input values'
+      operationId: calculateRights
+      security:
+        - KBOAuth:
+            - public
       # No Oauth. Only called by system calls when indexing and no oauth is used system2system in ingest(write) environment.
       requestBody:
         required: true
@@ -1172,6 +1261,12 @@ components:
 
     Broadcast:
       type: object
+      required:
+        - dsId
+        - title
+        - startTime
+        - endTime
+        - restricted
       properties:
         dsId:
           type: string
@@ -1552,8 +1647,15 @@ components:
         - HOLDBACK_RANGE
         - ATTRIBUTE_NAME
 
-    AuditEntryOutput:
+    AuditLogEntryOutput:
       type: object
+      required:
+        - id
+        - objectId
+        - modifiedTime
+        - userName
+        - changeType
+        - changeName
       properties:
         id:
           type: integer
@@ -1570,6 +1672,8 @@ components:
           $ref: '#/components/schemas/ChangeTypeEnum'
         changeName:
           $ref: '#/components/schemas/ObjectTypeEnum'
+        identifier:
+          type: string
         changeComment:
           type: string
         textBefore:
@@ -1599,6 +1703,11 @@ components:
 
     RestrictedIdOutput:
       type: object
+      required:
+        - id
+        - idValue
+        - idType
+        - platform
       properties:
         id:
           type: integer
@@ -1616,6 +1725,8 @@ components:
 
     ProcessedRestrictedIdsOutput:
       type: object
+      required:
+        - processStatus
       properties:
         processStatus:
           $ref: '#/components/schemas/ProcessStatus'
@@ -1643,6 +1754,12 @@ components:
 
     FailedRestrictedId:
       type: object
+      required:
+        - idValue
+        - idType
+        - platform
+        - exception
+        - errorMessage
       properties:
         idValue:
           type: string
@@ -1661,6 +1778,10 @@ components:
 
     DrHoldbackRuleInput:
       type: object
+      required:
+        - drHoldbackValue
+        - name
+        - days
       properties:
         drHoldbackValue:
           type: string
@@ -1668,9 +1789,16 @@ components:
           type: string
         days:
           type: integer
+        changeComment:
+          type: string
 
     DrHoldbackRuleOutput:
       type: object
+      required:
+        - id
+        - drHoldbackValue
+        - name
+        - days
       properties:
         id:
           type: integer
@@ -1682,8 +1810,13 @@ components:
         days:
           type: integer
 
-    DrHoldbackRanges:
+    DrHoldbackRange:
       type: object
+      required:
+        - contentRangeFrom
+        - contentRangeTo
+        - formRangeFrom
+        - formRangeTo
       properties:
         contentRangeFrom:
           type: integer
@@ -1696,18 +1829,26 @@ components:
     
     DrHoldbackRangeInput:
       type: object
+      required:
+        - drHoldbackValue
+        - ranges
       properties:
         drHoldbackValue:
           type: string
         ranges:
           type: array
           items:
-            $ref: '#/components/schemas/DrHoldbackRanges'
-    
+            $ref: '#/components/schemas/DrHoldbackRange'
+
     DrHoldbackRangeOutput:
       type: object
       required:
         - id
+        - contentRangeFrom
+        - contentRangeTo
+        - formRangeFrom
+        - formRangeTo
+        - drHoldbackValue
       properties:
         id:
           type: integer
@@ -1722,6 +1863,15 @@ components:
           type: integer
         drHoldbackValue:
           type: string
+
+    DeleteReason:
+      type: object
+      required:
+        - changeComment
+      properties:
+        changeComment:
+          type: string
+          description: 'Why are we deleting this object?'
 
     HelloReply:
       type: object
@@ -1770,18 +1920,15 @@ components:
         indhold:
           type: integer
           description: 'A metadata value used for holdback calculation'
+        holdbackCategory:
+          type: string
+          description: 'If there already is calculated the holdback category'
         productionCountry:
           type: integer
           description: 'A metadata value used for holdback calculation'
         origin:
           type: string
           description: 'Origin in the DS ecosystem. Used to determine how holdback should be calculated'
-      required:
-        - hensigt
-        - form
-        - indhold
-        - productionCountry
-        - origin
 
     RestrictionsCalculationInput:
       description: 'A restrictions specific Data Transfer Object which should be used to carry all values needed for looking up if a record is restricted between services'

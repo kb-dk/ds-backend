@@ -5,15 +5,16 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.mapper.BroadcastDtoMapper;
 import dk.kb.license.mapper.DrBroadcastDtoMapper;
 import dk.kb.license.mapper.FailedRestrictedIdDtoMapper;
+import dk.kb.license.mapper.ProcessedRestrictedIdsOutputDtoMapper;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.AuditLogEntry;
+import dk.kb.license.storage.AuditLogModuleStorage;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.util.ChangeDifferenceText;
 import dk.kb.license.util.RightsChangelogGenerator;
 import dk.kb.license.validation.InputValidator;
-import dk.kb.storage.model.v1.RecordsCountDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -48,15 +49,45 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Retrieves a restrictedID output object from the database
+     * Retrieves a restricted id output object from the database
      *
-     * @param id       the id value
+     * @param idValue  the id value
      * @param idType   type of id
      * @param platform The platform
      * @return RestrictedIdOutputDto
      */
-    public static RestrictedIdOutputDto getRestrictedId(String id, IdTypeEnumDto idType, PlatformEnumDto platform) {
-        return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getRestrictedId(id, idType.getValue(), platform.getValue()));
+    public static RestrictedIdOutputDto getRestrictedId(String idValue, IdTypeEnumDto idType, PlatformEnumDto platform) {
+        return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> {
+            RestrictedIdOutputDto restrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedId(idValue, idType.getValue(), platform.getValue());
+
+            if (restrictedIdOutputDto == null) {
+                final String errorMessage = "restricted id 'idValue': " + idValue + ", 'idType': " + idType + ", 'platform': " + platform + " not found";
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+
+            return restrictedIdOutputDto;
+        });
+    }
+
+    /**
+     * Retrieves a restricted id output object from the database
+     *
+     * @param id id on the restricted id to be selected.
+     * @return RestrictedIdOutputDto
+     */
+    public static RestrictedIdOutputDto getRestrictedIdById(Long id) {
+        return BaseModuleStorage.performStorageAction("Get restricted id", RightsModuleStorage.class, storage -> {
+            RestrictedIdOutputDto restrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
+
+            if (restrictedIdOutputDto == null) {
+                final String errorMessage = "'id': " + id + " not found";
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+
+            return restrictedIdOutputDto;
+        });
     }
 
     private static ObjectTypeEnumDto getObjectTypeEnumFromRestrictedIdType(IdTypeEnumDto restrictedIdType) {
@@ -72,7 +103,7 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Creates a restricted id using the provided input data transfer object (DTO).
+     * Creates a restricted id using the provided {@link RestrictedIdInputDto}.
      *
      * @param restrictedIdInputDto the data transfer object containing the details of the restricted id to be created.
      *                             This should not be null.
@@ -91,46 +122,17 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto createdRestrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
 
             ChangeDifferenceText change = RightsChangelogGenerator.createRestrictedIdChanges(createdRestrictedIdOutputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), null, change.getAfter());
-            storage.persistAuditLog(logEntry);
-            log.info("Created restriction id: {}, restrictedIdOutputDto: {}", id, createdRestrictedIdOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.CREATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), null, change.getBefore(), change.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
+
+            log.info("Created restriction id: {}", createdRestrictedIdOutputDto);
 
             return createdRestrictedIdOutputDto;
         });
     }
 
     /**
-     * Delete a restricted ID from the Rights database and optionally updates related records in DsStorage.
-     * <p/>
-     * This method performs the deletion of a restricted ID by its internal ID in the database
-     * and logs the deletion in the audit log. If specified, it also touches related storage records
-     *
-     * @param id                   in the database of the restricted ID to be deleted.
-     * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
-     */
-    public static int deleteRestrictedId(Long id, boolean touchDsStorageRecord) {
-        inputValidator.validateId(id);
-
-        return BaseModuleStorage.performStorageAction("delete restricted id", RightsModuleStorage.class, storage -> {
-            // Retrieve object from database
-            RestrictedIdOutputDto idToDelete = ((RightsModuleStorage) storage).getRestrictedIdById(id);
-
-            // Delete entry from database
-            int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdById(id);
-            if (touchDsStorageRecord) {
-                touchRelatedStorageRecords(idToDelete.getIdValue(), idToDelete.getIdType());
-            }
-
-            ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(idToDelete.getIdValue(), idToDelete.getIdType().getValue(), idToDelete.getPlatform().toString());
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(idToDelete.getIdType()), idToDelete.getIdValue(), change.getBefore(), change.getAfter());
-            storage.persistAuditLog(logEntry);
-            log.info("Deleted restriction for internal ID: '{}' with idValue: '{}' with idType: '{}' on platform: '{}'.", id, idToDelete.getIdValue(), idToDelete.getIdType(), idToDelete.getPlatform());
-            return deletedCount;
-        });
-    }
-
-    /**
-     * Update a restricted id using the provided input data transfer object (DTO).
+     * Update a restricted id using the provided {@link RestrictedIdInputDto}.
      *
      * @param id
      * @param touchDsStorageRecord
@@ -141,13 +143,8 @@ public class RightsModuleFacade {
         inputValidator.validateId(id);
         inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
 
-        RestrictedIdOutputDto oldRestrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
-
-        if (oldRestrictedIdOutputDto == null) {
-            final String errorMessage = "id: " + id + " not found";
-            log.error(errorMessage);
-            throw new NotFoundServiceException(errorMessage);
-        }
+        // Retrieve object from database
+        RestrictedIdOutputDto oldRestrictedIdOutputDto = getRestrictedIdById(id);
 
         return BaseModuleStorage.performStorageAction("Update restricted id (klausulering)", RightsModuleStorage.class, storage -> {
             ((RightsModuleStorage) storage).updateRestrictedId(id, restrictedIdInputDto.getTitle(), restrictedIdInputDto.getComment());
@@ -158,11 +155,151 @@ public class RightsModuleFacade {
             RestrictedIdOutputDto updatedRestrictedIdOutputDto = ((RightsModuleStorage) storage).getRestrictedIdById(id);
 
             ChangeDifferenceText change = RightsChangelogGenerator.updateRestrictedIdChanges(oldRestrictedIdOutputDto, updatedRestrictedIdOutputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(updatedRestrictedIdOutputDto.getIdType()), updatedRestrictedIdOutputDto.getIdValue(), change.getBefore(), change.getAfter());
-            storage.persistAuditLog(logEntry);
-            log.info("Updated restricted id: {}, updatedRestrictedIdOutputDto: {}", id, updatedRestrictedIdOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, getObjectTypeEnumFromRestrictedIdType(restrictedIdInputDto.getIdType()), restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getComment(), change.getBefore(), change.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
+            log.info("Updated restricted id: {}", updatedRestrictedIdOutputDto);
             return updatedRestrictedIdOutputDto;
         });
+    }
+
+    /**
+     * This method performs the deletion of a restricted id by its internal id in the restricted_ids table
+     * and logs the deletion in the audit log. If specified, it also touches related storage records
+     *
+     * @param id                   id on the restricted id to be deleted.
+     * @param touchDsStorageRecord a boolean indicating whether to update related storage records.
+     * @param deleteReasonDto      comment about why object gets deleted
+     */
+    public static RecordsCountDto deleteRestrictedId(Long id, boolean touchDsStorageRecord, DeleteReasonDto deleteReasonDto) {
+        inputValidator.validateId(id);
+        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+
+        // Retrieve object from database
+        RestrictedIdOutputDto deleteRestrictedIdOutputDto = getRestrictedIdById(id);
+
+        return BaseModuleStorage.performStorageAction("Delete restricted id", RightsModuleStorage.class, storage -> {
+            // Delete entry from database
+            RecordsCountDto recordsCountDto = new RecordsCountDto();
+            int deletedCount = ((RightsModuleStorage) storage).deleteRestrictedIdById(id);
+            recordsCountDto.setCount(deletedCount);
+
+            if (touchDsStorageRecord) {
+                touchRelatedStorageRecords(deleteRestrictedIdOutputDto.getIdValue(), deleteRestrictedIdOutputDto.getIdType());
+            }
+
+            ChangeDifferenceText change = RightsChangelogGenerator.deleteRestrictedIdChanges(deleteRestrictedIdOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.DELETE, getObjectTypeEnumFromRestrictedIdType(deleteRestrictedIdOutputDto.getIdType()), deleteRestrictedIdOutputDto.getIdValue(), deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
+
+            log.info("Deleted restriction id: {}", deleteRestrictedIdOutputDto);
+
+            return recordsCountDto;
+        });
+    }
+
+    /**
+     * Creates or updates a restricted id for each of the entries in the list of {@link RestrictedIdInputDto}.
+     *
+     * @param restrictedIds list containing the data transfer objects containing the details of the restricted ids to be created.
+     *                      This should not be null.
+     * @return ProcessedRestrictedIdsOutputDto
+     */
+    public static ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
+        List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
+        int processedSuccessfully = 0;
+        FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
+        ProcessedRestrictedIdsOutputDtoMapper processedRestrictedIdsOutputDtoMapper = new ProcessedRestrictedIdsOutputDtoMapper();
+
+        for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
+            log.debug("Adding restricted id idValue: {}, idType: {}, platform: {}",  restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+
+            try {
+                inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
+
+                // Is there already a restrictions on idValue, idType, and platform?
+                try {
+                    RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+                    updateRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, restrictedIdInputDto);
+                } catch (InternalServiceException exception) {
+                    // If the root exception is NotFoundServiceException, then create the restricted id
+                    if (exception.getCause().getCause() instanceof NotFoundServiceException) {
+                        createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
+                    }
+                    else {
+                        throw exception;
+                    }
+                }
+
+                // If no exception was thrown, we know that the restriction was created
+                processedSuccessfully++;
+
+            } catch (Exception exception) { // need to catch every exception that could be thrown
+                log.error("Failed to add restricted id: {}, exception: ", restrictedIdInputDto, exception);
+                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
+
+                failedRestrictedIdDtoList.add(failedRestrictedIdDto);
+            }
+        }
+
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = processedRestrictedIdsOutputDtoMapper.map(processedSuccessfully, failedRestrictedIdDtoList);
+
+        log.info("Successfully added: {}. Failed to add: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
+        return processedRestrictedIdsOutputDto;
+    }
+
+    /**
+     * Deletes a restricted id for each of the entries in the list of {@link RestrictedIdInputDto}.
+     *
+     * @param restrictedIds list containing the data transfer objects containing the details of the restricted ids to be deleted.
+     *                      This should not be null.
+     * @return ProcessedRestrictedIdsOutputDto
+     */
+    public static ProcessedRestrictedIdsOutputDto deleteRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
+        List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
+        int processedSuccessfully = 0;
+        FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
+        ProcessedRestrictedIdsOutputDtoMapper processedRestrictedIdsOutputDtoMapper = new ProcessedRestrictedIdsOutputDtoMapper();
+
+        for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
+            try {
+                inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
+
+                // Reusing deleteRestrictedId method, we need the unique id of the restricted id
+                RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+
+                // Reusing deleteRestrictedId method, we create the DeleteReasonDto object
+                DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
+                deleteReasonDto.setChangeComment(restrictedIdInputDto.getComment());
+
+                RecordsCountDto recordsCountDto = deleteRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, deleteReasonDto);
+
+                // If no exception was thrown and count is more than 0, we know that the restriction was deleted
+                if (recordsCountDto.getCount() > 0) {
+                    processedSuccessfully++;
+                }
+            } catch (Exception exception) { // need to catch every exception that could be thrown
+                log.error("Failed to delete restricted id: {}, exception: ", restrictedIdInputDto, exception);
+                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
+
+                failedRestrictedIdDtoList.add(failedRestrictedIdDto);
+            }
+        }
+
+        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = processedRestrictedIdsOutputDtoMapper.map(processedSuccessfully, failedRestrictedIdDtoList);
+
+        log.info("Successfully deleted: {}. Failed to delete: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
+        return processedRestrictedIdsOutputDto;
+    }
+
+    /**
+     * Get all restricted ids
+     *
+     * @param idType   only get restricedIds with this idType
+     * @param platform only get retstrictedIds for this platform
+     * @return
+     */
+    public static List<RestrictedIdOutputDto> getAllRestrictedIds(IdTypeEnumDto idType, PlatformEnumDto platform) {
+        return BaseModuleStorage.performStorageAction("get restricted ids", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType.getValue(), platform.getValue()));
     }
 
     /**
@@ -185,7 +322,7 @@ public class RightsModuleFacade {
         SolrDocumentList resultsFromDsId = getSolrServerClient().callSolr(queryDsId, fieldListDsId);
 
         if (resultsFromDsId.getNumFound() == 0) {
-            final String errorMessage = "dsId: " + dsId + " not found";
+            final String errorMessage = "'dsId': " + dsId + " not found";
             log.error(errorMessage);
             throw new NotFoundServiceException(errorMessage);
         }
@@ -217,7 +354,7 @@ public class RightsModuleFacade {
 
             // Should never happen
             if (resultsFromDrProductionId.getNumFound() == 0) {
-                final String errorMessage = "No DR broadcasts found with drProductionId: " + drBroadcastDto.getDrProductionId();
+                final String errorMessage = "No DR broadcasts found with 'drProductionId': " + drBroadcastDto.getDrProductionId();
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
@@ -244,70 +381,6 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Creates or updates a restricted id for each of the entries in the list using the provided input data transfer object (DTO).
-     *
-     * @param restrictedIds list containing the data transfer objects containing the details of the restricted ids to be created.
-     *                      This should not be null.
-     * @return ProcessedRestrictedIdsOutputDto
-     */
-    public static ProcessedRestrictedIdsOutputDto createOrUpdateRestrictedIds(boolean touchDsStorageRecord, List<RestrictedIdInputDto> restrictedIds) {
-        ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = new ProcessedRestrictedIdsOutputDto();
-        List<FailedRestrictedIdDto> failedRestrictedIdDtoList = new ArrayList<>();
-        int processedSuccessfully = 0;
-        FailedRestrictedIdDtoMapper failedRestrictedIdDtoMapper = new FailedRestrictedIdDtoMapper();
-
-        for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
-            log.debug("Adding restricted id idValue: {}, idType: {}, platform: {}",  restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
-
-            try {
-                // Is there already a restrictions on idValue?
-                RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
-
-                if (restrictedIdOutputDto == null) {
-                    createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
-                } else {
-                    // the restriction already existed, so updating it instead
-                    updateRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, restrictedIdInputDto);
-                }
-
-                // If no exception was thrown, we know that the restriction was created
-                processedSuccessfully++;
-
-            } catch (Exception exception) { // need to catch every exception that could be thrown
-                log.error("Failed to add restricted id restrictedIdInputDto: {}, exception: ", restrictedIdInputDto, exception);
-                FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
-
-                failedRestrictedIdDtoList.add(failedRestrictedIdDto);
-            }
-        }
-
-        // Need to start with this, for not getting wrongly PARTIAL_PROCESSED
-        if (processedSuccessfully == 0) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.FAILED);
-        } else if (failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.SUCCESS);
-        } else if (!failedRestrictedIdDtoList.isEmpty()) {
-            processedRestrictedIdsOutputDto.setProcessStatus(ProcessStatusDto.PARTIAL_PROCESSED);
-        }
-
-        processedRestrictedIdsOutputDto.setProcessedSuccessfully(processedSuccessfully);
-        processedRestrictedIdsOutputDto.setFailedRestrictedIds(failedRestrictedIdDtoList);
-        log.info("Successfully added: {}. Failed to add: {}", processedSuccessfully, failedRestrictedIdDtoList.size());
-        return processedRestrictedIdsOutputDto;
-    }
-
-    /**
-     * Get all restricted ids
-     *
-     * @param idType   only get restricedIds with this idType
-     * @param platform only get retstrictedIds for this platform
-     * @return
-     */
-    public static List<RestrictedIdOutputDto> getAllRestrictedIds(IdTypeEnumDto idType, PlatformEnumDto platform) {
-        return BaseModuleStorage.performStorageAction("get restricted ids", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllRestrictedIds(idType.getValue(), platform.getValue()));
-    }
-
-    /**
      * Retrieves the drHoldbackValue based on the specified content and form values.
      * If no drHoldbackValue is found for the given content and form, a {@link NotFoundServiceException} is thrown.
      *
@@ -317,31 +390,12 @@ public class RightsModuleFacade {
      */
     public static String getDrHoldbackValueFromContentAndFormValues(Integer content, Integer form) {
         return BaseModuleStorage.performStorageAction("Get drHoldbackValue", RightsModuleStorage.class, storage -> {
-            String id = ((RightsModuleStorage) storage).getDrHoldbackValueFromContentAndForm(content, form);
+            String id = ((RightsModuleStorage) storage).getDrHoldbackValueByContentAndForm(content, form);
             if (id == null) {
                 log.warn("No DR holdback found for content: '{}' and form: '{}'. Returning an empty string", content, form);
                 return "";
             }
             return id;
-        });
-    }
-
-    /**
-     * Retrieves the DR holdback rule identified by the specified drHoldbackValue.
-     * This method performs a storage action to access the RightsModuleStorage
-     * and fetch the DR holdback rule as an object.
-     *
-     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule to retrieve. It must not be null or empty.
-     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified drHoldbackValue if found.
-     * @throws NotFoundServiceException if no rule is found for the specified drHoldbackValue.
-     */
-    public static DrHoldbackRuleOutputDto getDrHoldbackRuleById(String drHoldbackValue) {
-        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
-            DrHoldbackRuleOutputDto output = ((RightsModuleStorage) storage).getDrHoldbackRuleFromValue(drHoldbackValue);
-            if (output != null) {
-                return output;
-            }
-            throw new NotFoundServiceException("DR holdback rule not found for drHoldbackValue: " + drHoldbackValue);
         });
     }
 
@@ -368,7 +422,6 @@ public class RightsModuleFacade {
 
         }
     }
-
 
     /**
      * Checks if the specified idValue is restricted based on the provided idType and platform.
@@ -416,147 +469,243 @@ public class RightsModuleFacade {
     }
 
     /**
-     * create a DR holdback rule.
+     * Retrieves the DR holdback rule identified by the specified drHoldbackValue.
+     * This method performs a storage action to access the RightsModuleStorage
+     * and fetch the DR holdback rule as an object.
      *
-     * @param drHoldbackRuleInputDto
+     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule to retrieve. It must not be null or empty.
+     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified drHoldbackValue if found.
+     * @throws NotFoundServiceException if no rule is found for the specified drHoldbackValue.
      */
-    public static long createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
-        return BaseModuleStorage.performStorageAction("Create DR holdback rule", RightsModuleStorage.class, storage -> {
-            long id = ((RightsModuleStorage) storage).createDrHoldbackRule(drHoldbackRuleInputDto.getDrHoldbackValue(), drHoldbackRuleInputDto.getName(), drHoldbackRuleInputDto.getDays());
-            ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRuleInputDtoChanges(drHoldbackRuleInputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackRuleInputDto.getDrHoldbackValue(), null, changes.getAfter());
-            storage.persistAuditLog(logEntry);
-            return id;
+    public static DrHoldbackRuleOutputDto getDrHoldbackRuleByDrHoldbackValue(String drHoldbackValue) {
+        inputValidator.validateDrHoldbackValue(drHoldbackValue);
+
+        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
+            DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = ((RightsModuleStorage) storage).getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
+
+            if (drHoldbackRuleOutputDto == null) {
+                final String errorMessage = "DR holdback rule not found for drHoldbackValue: " + drHoldbackValue;
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+
+            return drHoldbackRuleOutputDto;
         });
     }
 
     /**
-     * Delete a DR holdback rule
+     * Retrieves the DR holdback rule identified by the specified name.
+     * This method performs a storage action to access the RightsModuleStorage
+     * and fetch the DR holdback rule as an object.
      *
-     * @param drHoldbackValue drHoldbackValue of the DR holdback rule
+     * @param name the name of the DR holdback rule to retrieve. It must not be null or empty.
+     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified name if found.
+     * @throws NotFoundServiceException if no rule is found for the specified name.
      */
-    public static void deleteDrHoldbackRule(String drHoldbackValue) {
-        BaseModuleStorage.performStorageAction("Delete DR holdback rule", RightsModuleStorage.class, storage -> {
-            DrHoldbackRuleOutputDto drHoldbackRule = ((RightsModuleStorage) storage).getDrHoldbackRuleFromValue(drHoldbackValue);
-            ChangeDifferenceText changes = RightsChangelogGenerator.deleteDrHoldbackRuleOutputDtoChanges(drHoldbackRule);
-            ((RightsModuleStorage) storage).deleteDrHoldbackRule(drHoldbackValue);
-            AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRule.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackValue, changes.getBefore(), null);
-            storage.persistAuditLog(logEntry);
-            return null;
+    public static DrHoldbackRuleOutputDto getDrHoldbackRuleByName(String name) {
+        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
+            DrHoldbackRuleOutputDto output = ((RightsModuleStorage) storage).getDrHoldbackRuleByName(name);
+            if (output != null) {
+                return output;
+            }
+            throw new NotFoundServiceException("DR holdback rule not found for name: " + name);
         });
     }
 
     /**
-     * get all holdback rules for DR
+     * Retrieves the DR holdback rule identified by the specified id.
+     * This method performs a storage action to access the RightsModuleStorage
+     * and fetch the DR holdback rule as an object.
+     *
+     * @param id the id of the DR holdback rule to retrieve. It must not be null or empty.
+     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified id if found.
+     * @throws NotFoundServiceException if no rule is found for the specified id.
+     */
+    public static DrHoldbackRuleOutputDto getDrHoldbackRuleById(Long id) {
+        inputValidator.validateId(id);
+
+        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
+            DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = ((RightsModuleStorage) storage).getDrHoldbackRuleById(id);
+
+            if (drHoldbackRuleOutputDto == null) {
+                final String errorMessage = "DR holdback rule not found for id: " + id;
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+
+            return drHoldbackRuleOutputDto;
+        });
+    }
+
+    /**
+     * Get all DR holdback rules
      *
      * @return
      */
-    public static List<DrHoldbackRuleOutputDto> getAllDrHoldbackRules() {
-        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getAllDrHoldbackRules());
+    public static List<DrHoldbackRuleOutputDto> getDrHoldbackRules() {
+        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackRules());
     }
 
     /**
-     * Retrieve the number of days for a holdback rule from a drHoldbackValue
+     * Creates a DR holdback rule using the provided {@link DrHoldbackRuleInputDto}.
      *
-     * @param drHoldbackValue the drHoldbackValue of the dr holdback rule
-     * @return the number of
-     **/
-    public static Integer getDrHoldbackDaysFromValue(String drHoldbackValue) {
-        return BaseModuleStorage.performStorageAction("Get DR holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromValue(drHoldbackValue));
-    }
+     * @param drHoldbackRuleInputDto
+     */
+    public static DrHoldbackRuleOutputDto createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
+        inputValidator.validateDrHoldbackValue(drHoldbackRuleInputDto.getDrHoldbackValue());
 
-    /**
-     * Retrieve the number of days for a holdback rule from a drHoldbackValue
-     *
-     * @param name the name of the dr holdback rule
-     * @return the number of
-     **/
-    public static Integer getDrHoldbackDaysFromName(String name) {
-        return BaseModuleStorage.performStorageAction("Get DR holdback days", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name));
-    }
+        return BaseModuleStorage.performStorageAction("Create DR holdback rule", RightsModuleStorage.class, storage -> {
+            long id = ((RightsModuleStorage) storage).createDrHoldbackRule(drHoldbackRuleInputDto.getDrHoldbackValue(), drHoldbackRuleInputDto.getName(), drHoldbackRuleInputDto.getDays());
 
-    /**
-     * Update the number of days for a holdback rule
-     *
-     * @param drHoldbackValue the drHoldbackValue of the dr holdback rule
-     **/
-    public static void updateDrHoldbackDaysFromDrHoldbackValue(String drHoldbackValue, Integer days) {
-        BaseModuleStorage.performStorageAction("update DR holdback days", RightsModuleStorage.class, storage -> {
-            Integer daysBefore = ((RightsModuleStorage) storage).getDrHoldbackDaysFromValue(drHoldbackValue);
-            long id = ((RightsModuleStorage) storage).getDrHoldbackRuleIdFromValue(drHoldbackValue);
-            ((RightsModuleStorage) storage).updateDrHoldbackDaysFromDrHoldbackValue(drHoldbackValue, days);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackValue, "Days before: " + daysBefore, "Days after: " + days);
-            storage.persistAuditLog(logEntry);
-            return null;
+            DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = ((RightsModuleStorage) storage).getDrHoldbackRuleByDrHoldbackValue(drHoldbackRuleInputDto.getDrHoldbackValue());
+
+            ChangeDifferenceText change = RightsChangelogGenerator.createDrHoldbackRuleChanges(drHoldbackRuleOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackRuleInputDto.getDrHoldbackValue(), null, change.getBefore(), change.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
+
+            log.info("Created DR holdback rule: {}", drHoldbackRuleOutputDto);
+
+            return drHoldbackRuleOutputDto;
         });
     }
 
     /**
      * Update the number of days for a DR holdback rule
      *
-     * @param name the name of the DR holdback rule
-     * @return the number of
+     * @param id the id of the dr holdback rule
      **/
-    public static void updateDrHoldbackDaysFromName(String name, Integer days) {
-        BaseModuleStorage.performStorageAction("update DR holdback days", RightsModuleStorage.class, storage -> {
-            Integer daysBefore = ((RightsModuleStorage) storage).getDrHoldbackDaysFromName(name);
-            long id = ((RightsModuleStorage) storage).getDrHoldbackRuleIdFromName(name);
-            ((RightsModuleStorage) storage).updateDrHoldbackDaysFromName(name, days);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, name, "Days before: " + daysBefore, "Days after: " + days);
-            storage.persistAuditLog(logEntry);
-            return null;
+    public static DrHoldbackRuleOutputDto updateDrHoldbackRule(Long id, DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
+        inputValidator.validateId(id);
+        inputValidator.validateDays(drHoldbackRuleInputDto.getDays());
+
+        // Check if the id has a correspondent rule
+        DrHoldbackRuleOutputDto oldDrHoldbackRuleOutputDto = getDrHoldbackRuleById(id);
+
+        return BaseModuleStorage.performStorageAction("update DR holdback rule", RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage) storage).updateDrHoldbackRule(id, drHoldbackRuleInputDto.getDays());
+
+            DrHoldbackRuleOutputDto updatedDrHoldbackRuleOutputDto = ((RightsModuleStorage) storage).getDrHoldbackRuleById(id);
+
+            ChangeDifferenceText change = RightsChangelogGenerator.updateDrHoldbackRuleChanges(oldDrHoldbackRuleOutputDto, updatedDrHoldbackRuleOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackRuleInputDto.getDrHoldbackValue(), drHoldbackRuleInputDto.getChangeComment(), change.getBefore(), change.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
+            log.info("Updated DR holdback rule: {}, updatedDrHoldbackRuleOutputDto: {}", id, updatedDrHoldbackRuleOutputDto);
+            return updatedDrHoldbackRuleOutputDto;
         });
     }
 
     /**
-     * set the form and content range combinations for a drHoldbackValue
+     * Delete a DR holdback rule
+     *
+     * @param id id of the DR holdback rule
+     * @param deleteReasonDto comment about why object gets deleted
+     */
+    public static RecordsCountDto deleteDrHoldbackRule(Long id, DeleteReasonDto deleteReasonDto) {
+        inputValidator.validateId(id);
+        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+
+        // Check if the id has a correspondent rule
+        DrHoldbackRuleOutputDto deleteDrHoldbackRuleOutputDto = getDrHoldbackRuleById(id);
+
+        return BaseModuleStorage.performStorageAction("Delete DR holdback rule", RightsModuleStorage.class, storage -> {
+            // Delete entry from database
+            RecordsCountDto recordsCountDto = new RecordsCountDto();
+            int deletedCount = ((RightsModuleStorage) storage).deleteDrHoldbackRule(id);
+            recordsCountDto.setCount(deletedCount);
+
+            ChangeDifferenceText change = RightsChangelogGenerator.deleteDrHoldbackRuleChanges(deleteDrHoldbackRuleOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(deleteDrHoldbackRuleOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, deleteDrHoldbackRuleOutputDto.getDrHoldbackValue(), deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
+
+            log.info("Deleted DR holdback rule: {} ", deleteDrHoldbackRuleOutputDto);
+
+            return recordsCountDto;
+        });
+    }
+
+    /**
+     * Retrieves DR holdback ranges identified by the input drHoldbackValue.
+     * This method performs a storage action to access the RightsModuleStorage
+     * and fetch the DR holdback ranges as object in a list.
+     *
+     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule to retrieve. It must not be null or empty.
+     * @return list of {@link DrHoldbackRangeOutputDto} corresponding to the specified drHoldbackValue if found.
+     * @throws NotFoundServiceException if no rule is found for the specified drHoldbackValue.
+     */
+    public static List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackValue) {
+        inputValidator.validateDrHoldbackValue(drHoldbackValue);
+
+        return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> {
+            List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = ((RightsModuleStorage) storage).getDrHoldbackRangesByDrHoldbackValue(drHoldbackValue);
+
+            if (drHoldbackRangeOutputDtoList.isEmpty()) {
+                final String errorMessage = "DR holdback ranges not found for drHoldbackValue: " + drHoldbackValue;
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+
+            return drHoldbackRangeOutputDtoList;
+        });
+    }
+
+    /**
+     * Creates DR holdback range from form and content range combinations for a drHoldbackValue using the provided
+     * {@link DrHoldbackRangeInputDto}.
      * This requires the drHoldbackValue to be present in the DR holdback rule table
      *
      * @param drHoldbackRangeInputDto
      */
-    public static List<Long> createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
-        return BaseModuleStorage.performStorageAction("Create DR holdback ranges for " + drHoldbackRangeInputDto.getDrHoldbackValue(), RightsModuleStorage.class, storage -> {
-            List<Long> idList = new ArrayList<>();
-            for (DrHoldbackRangesDto rangeDto : drHoldbackRangeInputDto.getRanges()) {
-                if (((RightsModuleStorage) storage).getDrHoldbackRuleFromValue(drHoldbackRangeInputDto.getDrHoldbackValue()) == null) {
-                    throw new InvalidArgumentServiceException("No drHoldbackValue: " + drHoldbackRangeInputDto.getDrHoldbackValue());
-                }
-                long objectId = ((RightsModuleStorage) storage).createDrHoldbackRange(rangeDto.getContentRangeFrom(), rangeDto.getContentRangeTo(), rangeDto.getFormRangeFrom(), rangeDto.getFormRangeTo(), drHoldbackRangeInputDto.getDrHoldbackValue());
-                ChangeDifferenceText changes = RightsChangelogGenerator.createDrHoldbackRangesChanges(drHoldbackRangeInputDto.getRanges());
-                AuditLogEntry logEntry = new AuditLogEntry(objectId, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackRangeInputDto.getDrHoldbackValue(), null, changes.getAfter());
-                storage.persistAuditLog(logEntry);
-                idList.add(objectId);
+    public static List<DrHoldbackRangeOutputDto> createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
+        inputValidator.validateDrHoldbackValue(drHoldbackRangeInputDto.getDrHoldbackValue());
+
+        // Check if the drHoldbackValue has correspondent DR holdback rule
+        getDrHoldbackRuleByDrHoldbackValue(drHoldbackRangeInputDto.getDrHoldbackValue());
+
+        BaseModuleStorage.performStorageAction("Create DR holdback ranges for drHoldbackValue: " + drHoldbackRangeInputDto.getDrHoldbackValue(), RightsModuleStorage.class, storage -> {
+            for (DrHoldbackRangeDto drHoldbackRangeDto : drHoldbackRangeInputDto.getRanges()) {
+                long objectId = ((RightsModuleStorage) storage).createDrHoldbackRange(drHoldbackRangeDto.getContentRangeFrom(), drHoldbackRangeDto.getContentRangeTo(), drHoldbackRangeDto.getFormRangeFrom(), drHoldbackRangeDto.getFormRangeTo(), drHoldbackRangeInputDto.getDrHoldbackValue());
+
+                ChangeDifferenceText change = RightsChangelogGenerator.createDrHoldbackRangeChanges(drHoldbackRangeDto);
+                AuditLogEntry logEntry = new AuditLogEntry(objectId, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackRangeInputDto.getDrHoldbackValue(), null, change.getBefore(), change.getAfter());
+                ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
+
+                log.info("Created DR holdback range: {}", drHoldbackRangeDto);
             }
-            return idList;
+            return null;
         });
+
+        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = getDrHoldbackRanges(drHoldbackRangeInputDto.getDrHoldbackValue());
+        return drHoldbackRangeOutputDtoList;
     }
 
     /**
      * Deletes all form and content range combinations for a drHoldbackValue
      *
-     * @param drHoldbackValue
+     * @param drHoldbackValue drHoldbackValue of DR holdback ranges
+     * @param deleteReasonDto comment about why object gets deleted
      */
-    public static void deleteRangesForDrHoldbackValue(String drHoldbackValue) {
-        BaseModuleStorage.performStorageAction("Delete DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> {
-            List<DrHoldbackRangeOutputDto> oldRanges = ((RightsModuleStorage) storage).getDrHoldbackRangesForDrHoldbackValue(drHoldbackValue);
-            ((RightsModuleStorage) storage).deleteRangesForDrHoldbackValue(drHoldbackValue);
-            ChangeDifferenceText changes = RightsChangelogGenerator.deleteDrHoldbackRangesChanges(oldRanges); //This is weird but will be refactored completely in DRA-2085
-            for (DrHoldbackRangeOutputDto rangeDto : oldRanges) {
-                AuditLogEntry logEntry = new AuditLogEntry(rangeDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, changes.getAfter(), null);
-                storage.persistAuditLog(logEntry);
-            }
-            return null;
-        });
-    }
+    public static RecordsCountDto deleteDrHoldbackRanges(String drHoldbackValue, DeleteReasonDto deleteReasonDto) {
+        inputValidator.validateDrHoldbackValue(drHoldbackValue);
+        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
 
-    /**
-     * Deletes all form and content range combinations for drHoldbackValue
-     *
-     * @param drHoldbackValue
-     * @return
-     */
-    public static List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackValue) {
-        return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackRangesForDrHoldbackValue(drHoldbackValue));
+        // Check if the drHoldbackValue has correspondent DR holdback ranges
+        List<DrHoldbackRangeOutputDto> oldRanges = getDrHoldbackRanges(drHoldbackValue);
+
+        return BaseModuleStorage.performStorageAction("Delete DR holdback ranges", RightsModuleStorage.class, storage -> {
+            // Delete entry from database
+            RecordsCountDto recordsCountDto = new RecordsCountDto();
+            int deletedCount = ((RightsModuleStorage) storage).deleteRangesByDrHoldbackValue(drHoldbackValue);
+            recordsCountDto.setCount(deletedCount);
+
+            for (DrHoldbackRangeOutputDto drHoldbackRangeOutputDto : oldRanges) {
+                ChangeDifferenceText change = RightsChangelogGenerator.deleteDrHoldbackRangeChanges(drHoldbackRangeOutputDto);
+                AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRangeOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
+                ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
+
+                log.info("Deleted DR holdback range: {}", drHoldbackRangeOutputDto);
+            }
+            return recordsCountDto;
+        });
     }
 
     /**
@@ -592,7 +741,7 @@ public class RightsModuleFacade {
      */
     private static int touchStorageRecordById(String id) {
         try {
-            RecordsCountDto count = storageClient.touchRecord(id);
+            dk.kb.storage.model.v1.RecordsCountDto count = storageClient.touchRecord(id);
             if (count == null || count.getCount() == null) {
                 return 0;
             }
@@ -673,7 +822,7 @@ public class RightsModuleFacade {
 
                 // For each record in the result touch the related DS-storage record
                 for (SolrDocument doc : results) {
-                    RecordsCountDto touched = touchStorageRecords(doc);
+                    dk.kb.storage.model.v1.RecordsCountDto touched = touchStorageRecords(doc);
                     if (touched != null && touched.getCount() != null) {
                         touchedRecordsCount = touchedRecordsCount + touched.getCount();
                     }
@@ -715,7 +864,7 @@ public class RightsModuleFacade {
      *
      * @param doc solr document to extract ID from.
      */
-    private static RecordsCountDto touchStorageRecords(SolrDocument doc) {
+    private static dk.kb.storage.model.v1.RecordsCountDto touchStorageRecords(SolrDocument doc) {
         // For each document in the result, touch its ds-storage record.
         String id = (String) doc.getFieldValue("id");
         log.debug("Touching DS-storage record with id: '{}'", id);

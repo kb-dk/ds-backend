@@ -1,61 +1,23 @@
 package dk.kb.license.storage;
 
-import dk.kb.license.model.v1.AuditEntryOutputDto;
-import dk.kb.license.model.v1.ChangeTypeEnumDto;
-import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.cxf.jaxrs.utils.JAXRSUtils;
-import org.apache.cxf.message.Message;
-import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * The BaseModuleStorage, which sets up the connection to the database which is then used by  {@link LicenseModuleStorage} and {@link RightsModuleStorage}.
- * This class only sets up the connection, while the other two are responsible for implementing the interactions with the database.
+ * The BaseModuleStorage, which sets up the connection to the database which is then used by {@link AuditLogModuleStorage}, {@link LicenseModuleStorage}, and {@link RightsModuleStorage}.
+ * This class only sets up the connection, while the other three are responsible for implementing the interactions with the database.
  */
-public abstract class BaseModuleStorage implements AutoCloseable  {
+public abstract class BaseModuleStorage implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(BaseModuleStorage.class);
-          
-    //AUDITLOG
-    private static final String AUDITLOG_TABLE = "AUDITLOG";
-    private static final String AUDITLOG_ID_COLUMN = "ID";
-    private static final String AUDITLOG_OBJECTID_COLUMN = "OBJECTID";
-    private static final String AUDITLOG_MODIFIEDTIME_COLUMN = "MODIFIEDTIME";     
-    private static final String AUDITLOG_USERNAME_COLUMN = "USERNAME";
-    private static final String AUDITLOG_CHANGETYPE_COLUMN = "CHANGETYPE";
-    private static final String AUDITLOG_CHANGENAME_COLUMN = "CHANGENAME";
-    private static final String AUDITLOG_CHANGECOMMENT_COLUMN = "CHANGECOMMENT";  
-    private static final String AUDITLOG_TEXTBEFORE_COLUMN = "TEXTBEFORE";
-    private static final String AUDITLOG_TEXTAFTER_COLUMN = "TEXTAFTER";
-
-    private final static String selectAuditLogQueryById = "SELECT * FROM " + AUDITLOG_TABLE + " WHERE " + AUDITLOG_ID_COLUMN + " = ? ";
-    private final static String selectAuditLogQueryByObjectId = "SELECT * FROM " + AUDITLOG_TABLE + " WHERE " + AUDITLOG_OBJECTID_COLUMN + " = ? " + " ORDER BY " + AUDITLOG_MODIFIEDTIME_COLUMN + " DESC";
-    
-    private final static String selectAllAuditLogQuery = "SELECT * FROM " + AUDITLOG_TABLE + " ORDER BY " + AUDITLOG_MODIFIEDTIME_COLUMN + " DESC";
-    private final static String persistAuditLog = "INSERT INTO " + AUDITLOG_TABLE + " (" +
-                                                                   AUDITLOG_ID_COLUMN + ", " + 
-                                                                   AUDITLOG_OBJECTID_COLUMN + ", " +
-                                                                   AUDITLOG_MODIFIEDTIME_COLUMN + ", " +
-                                                                   AUDITLOG_USERNAME_COLUMN + ", "+
-                                                                   AUDITLOG_CHANGETYPE_COLUMN + ", " +
-                                                                   AUDITLOG_CHANGENAME_COLUMN + ", " +
-                                                                   AUDITLOG_CHANGECOMMENT_COLUMN + ", " +
-                                                                   AUDITLOG_TEXTBEFORE_COLUMN + ", " +
-                                                                   AUDITLOG_TEXTAFTER_COLUMN + ") " +
-                                                                   "VALUES (?,?,?,?,?,?,?,?,?)"; // #|?|=9
 
     // statistics shown on monitor.jsp page
     public static Date INITDATE = null;
@@ -238,141 +200,5 @@ public abstract class BaseModuleStorage implements AutoCloseable  {
          * @throws Exception if something went wrong.
          */
         T process(BaseModuleStorage storage) throws Exception;
-    }
-
-    /**
-     *
-     * @param id for the auditlog (not the objectid for the value changed)
-     * @return AuditLog object 
-     * @throws Exception
-     */
-    public AuditEntryOutputDto getAuditLogById(long id) throws IllegalArgumentException, SQLException {
-
-        try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQueryById);) {
-            stmt.setLong(1, id);
-
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) { // maximum one due to unique/primary key constraint
-            return convertRsToAuditLog(rs);                                             
-            }
-            throw new IllegalArgumentException("Audit not found for id: " + id);
-
-        } catch (SQLException e) {
-            log.error("SQL Exception in getAuditLog: " + e.getMessage());
-            throw e;
-        }
-    }
-    
-    /**   
-    * @param objectId The ID for the object extract audit log. 
-    * @return List of AuditLog objects. Will return empty list if objectId is not found. 
-    * @throws Exception
-    */
-   public ArrayList<AuditEntryOutputDto> getAuditLogByObjectId(long objectId) throws IllegalArgumentException, SQLException {
-
-       try (PreparedStatement stmt = connection.prepareStatement(selectAuditLogQueryByObjectId);) {
-           stmt.setLong(1, objectId);
-
-           ArrayList<AuditEntryOutputDto> entries = new ArrayList<AuditEntryOutputDto>(); 
-           ResultSet rs = stmt.executeQuery();
-           while (rs.next()) { 
-             entries.add(convertRsToAuditLog(rs));                                                         
-           }             
-           return entries;
-           
-       } catch (SQLException e) {
-           log.error("SQL Exception in g getAuditLogByObjectId: " + e.getMessage());
-           throw e;
-       }
-   }
-    
-    public ArrayList<AuditEntryOutputDto> getAllAudit() throws SQLException {
-
-        ArrayList<AuditEntryOutputDto> entryList = new ArrayList<AuditEntryOutputDto>();
-        try (PreparedStatement stmt = connection.prepareStatement(selectAllAuditLogQuery);) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) { // maximum one due to unique/primary key constraint
-                AuditEntryOutputDto auditLog = convertRsToAuditLog(rs);
-               entryList.add(auditLog);
-            }
-            return entryList;
-        } catch (SQLException e) {
-            log.error("SQL Exception in getAllAudit: " + e.getMessage());
-            throw e;
-        }
-    }
-    
-    /**
-     * 
-     * 
-     * @return databaseID for the new AuditLog entry
-     */
-    public long persistAuditLog(AuditLogEntry auditLog) throws SQLException {
-        log.debug("Persisting persistAuditLog changetype='{}' and changeName='{}' for user='{}'", auditLog.getChangeType(), auditLog.getChangeName(), getCurrentUsername(auditLog.getUserName()));
-              
-        Long id = generateUniqueID();
-
-        try (PreparedStatement stmt = connection.prepareStatement(persistAuditLog);) {
-          log.debug("generating id: " + id);
-            log.debug("persisting auditLog: " + auditLog);
-            stmt.setLong(1, id);     
-            stmt.setLong(2, auditLog.getObjectId());
-            stmt.setLong(3, System.currentTimeMillis());                         
-            stmt.setString(4, getCurrentUsername(auditLog.getUserName()));
-            stmt.setString(5, auditLog.getChangeType().getValue());
-            stmt.setString(6, auditLog.getChangeName().getValue());
-            stmt.setString(7, auditLog.getChangeComment());               
-            stmt.setString(8, auditLog.getTextBefore());
-            stmt.setString(9, auditLog.getTextAfter());
-            stmt.execute();
-        } catch (SQLException e) {
-            log.error("SQL Exception in persistAuditLog: " + e.getMessage());
-            throw e;
-        }
-        return id;
-    }
-
-    private AuditEntryOutputDto convertRsToAuditLog( ResultSet rs) throws SQLException {
-        long auditLogId = rs.getLong(AUDITLOG_ID_COLUMN);
-        long objectId = rs.getLong(AUDITLOG_OBJECTID_COLUMN);
-        long modifiedTime = rs.getLong(AUDITLOG_MODIFIEDTIME_COLUMN);
-        String userName= rs.getString(AUDITLOG_USERNAME_COLUMN);
-        String changeType= rs.getString(AUDITLOG_CHANGETYPE_COLUMN);
-        String changeName= rs.getString(AUDITLOG_CHANGENAME_COLUMN);
-        String changeComment= rs.getString(AUDITLOG_CHANGECOMMENT_COLUMN);
-        String textBefore= rs.getString(AUDITLOG_TEXTBEFORE_COLUMN);
-        String textAfter = rs.getString(AUDITLOG_TEXTAFTER_COLUMN);
-
-        AuditEntryOutputDto auditEntry= new AuditEntryOutputDto();
-        auditEntry.setId(auditLogId);
-        auditEntry.setObjectId(objectId);
-        auditEntry.setModifiedTime(modifiedTime);
-        auditEntry.setUserName(userName);
-        auditEntry.setChangeType(ChangeTypeEnumDto.valueOf(changeType));
-        auditEntry.setChangeName(ObjectTypeEnumDto.valueOf(changeName));
-        auditEntry.setChangeComment(changeComment);
-        auditEntry.setTextAfter(textAfter);
-        auditEntry.setTextBefore(textBefore);
-        return auditEntry;
-    }
-
-    /**
-     * Gets the name of the current user from the OAuth token.
-     * @return
-     */
-    private static String getCurrentUsername(String username) {
-        Message message = JAXRSUtils.getCurrentMessage();
-        if (message == null) {
-            if (username == null) {
-                throw new IllegalArgumentException("No username or valid message provided");
-            }
-            return username;
-        }
-        AccessToken token = (AccessToken) message.get(KBAuthorizationInterceptor.ACCESS_TOKEN);
-        if (token != null && token.getName() != null) {
-            return token.getName();
-        }
-
-        throw new IllegalArgumentException("Invalid or no token provided");
     }
 }
