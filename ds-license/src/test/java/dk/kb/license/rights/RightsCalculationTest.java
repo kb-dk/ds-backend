@@ -87,12 +87,15 @@ public class RightsCalculationTest extends UnitTestUtil {
 
     @Test
     public void calculateRightsForRecord_whenNullValues_thenHoldbackExpiredDateIsYear9999() throws SQLException {
+        // Arrange
         RightsCalculationInputDto alwaysEducationRecord = map("testRecord1", PlatformEnumDto.DRARKIV,
                 "2016-01-20T10:34:42+0100", null, null, null, null,
                 null, "ds.tv", null, "9283748300", "Program 1");
 
+        // Act
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(alwaysEducationRecord);
 
+        // Assert
         assertNull(output.getDr().getHoldbackName());
         assertEquals("9999-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
     }
@@ -146,13 +149,16 @@ public class RightsCalculationTest extends UnitTestUtil {
 
     @Test
     public void calculateRightsForRecord_whenDsTvDrArchiveSupplementaryRightsMetadata_thenOutputIsPopulated() throws SQLException {
+        // Arrange
         RightsCalculationInputDto tenYearHoldbackRecord = map("testRecord1", PlatformEnumDto.DRARKIV,
                 "2016-01-20T10:34:42+0100", null, 1000, null,
                 "Dansk Dramatik & Fiktion", 1000, "ds.tv", "1000",
                 "9283748300", "Program 1");
 
+        // Act
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(tenYearHoldbackRecord);
 
+        // Assert
         assertEquals(false, output.getDr().getDsIdRestricted());
         assertEquals("Dansk Dramatik & Fiktion", output.getDr().getHoldbackName());
         assertEquals("2027-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
@@ -225,13 +231,16 @@ public class RightsCalculationTest extends UnitTestUtil {
     }
 
     @Test
-    public void calculateRightsForRecord_whenDsRadioDrArchiveSupplementaryRightsMetadata_thenOutputIsPopulated() throws SQLException {
+    public void calculateRightsForRecord_whenDsRadioWithProductionId_thenHoldbackExpiredDateIsYear1994() throws SQLException {
+        // Arrange
         RightsCalculationInputDto yearlyHoldback3 = map("radioHoldback", PlatformEnumDto.DRARKIV,
                 "1990-06-20T10:00:00+0100", null, null, null, null,
                 null, "ds.radio", null, "9283748300", "Program 1");
 
+        // Act
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback3);
 
+        // Assert
         assertEquals(false, output.getDr().getDsIdRestricted());
         assertEquals("Radio", output.getDr().getHoldbackName());
         assertEquals("1994-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
@@ -241,13 +250,16 @@ public class RightsCalculationTest extends UnitTestUtil {
     }
 
     @Test
-    public void holdbackRadioTest() throws SQLException {
+    public void calculateRightsForRecord_whenDsRadioWithProductionIdAndOtherValues_thenHoldbackExpiredDateIsYear1994() throws SQLException {
+        // Arrange
         RightsCalculationInputDto yearlyHoldback3 = map("radioHoldback", PlatformEnumDto.DRARKIV,
                 "1990-06-20T10:00:00+0100", 1000, 4411, 3190, null,
                 1000, "ds.radio", "1000", "9283748300", "Program 1");
 
+        // Act
         RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(yearlyHoldback3);
 
+        // Assert
         assertEquals(false, output.getDr().getDsIdRestricted());
         assertEquals("Radio", output.getDr().getHoldbackName());
         assertEquals("1994-01-01T00:00:00Z", output.getDr().getHoldbackExpiredDate());
