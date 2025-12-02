@@ -2,15 +2,14 @@ package dk.kb.license.rights;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
-import dk.kb.license.model.v1.IdTypeEnumDto;
-import dk.kb.license.model.v1.PlatformEnumDto;
-import dk.kb.license.model.v1.RightsCalculationInputDto;
-import dk.kb.license.model.v1.RightsCalculationOutputDto;
+import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.UnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
+import dk.kb.license.storage.UnitTestUtil;
 import dk.kb.license.util.H2DbUtil;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
