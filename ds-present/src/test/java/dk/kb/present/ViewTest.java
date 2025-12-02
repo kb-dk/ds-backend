@@ -250,13 +250,17 @@ class ViewTest {
     @Test
     @Tag("integration")
     void apply_whenDsTvDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws Exception {
+        // Arrange
         View jsonldView = getPreservicaTvJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA7_HOMEMADE_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_TV_TID_TV_METER);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
 
+        // Act
         String jsonld = jsonldView.apply(recordDto);
         log.info(jsonld);
+
+        // Assert
         assertTrue(jsonld.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.tv\""));
         assertTrue(jsonld.contains("\"PropertyID\":\"ProductionID\",\"value\":\"00000000000\""));
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"2025-01-01T00:00:00Z\""));
@@ -269,13 +273,17 @@ class ViewTest {
     @Test
     @Tag("integration")
     void apply_whenDsRadioDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws Exception {
+        // Arrange
         View jsonldView = getPreservicaRadioJsonView();
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA7_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_RADIO_83191087);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("83191087-69b3-4f46-ab64-f230d971def2").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.radio").kalturaId("randomKalturaId");
 
+        // Act
         String jsonld = jsonldView.apply(recordDto);
         log.info(jsonld);
+
+        // Assert
         assertTrue(jsonld.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.radio\""));
         assertTrue(jsonld.contains("\"PropertyID\":\"ProductionID\",\"value\":\"11109009013\""));
         assertTrue(jsonld.contains("\"kb:holdback_date\":\"1994-01-01T00:00:00Z\""));

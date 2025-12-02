@@ -588,10 +588,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
     }
 
-        @Test
-    public void testFragmentBooleansDsTvDrArchiveSupplementaryRightsMetadata() throws IOException {
+    @Test
+    public void getTransformedWithAccessFieldsAdded_whenContainsDsTvDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws IOException {
+        // Act
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA7_HOMEMADE_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_TV_TID_TV_METER);
         log.info(transformedJSON);
+
+        //Assert
         assertTrue(transformedJSON.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.test\""));
         assertTrue(transformedJSON.contains("\"kb:contains_dr_archive_supplementary_rights_metadata\":true"));
         assertTrue(transformedJSON.contains("\"kb:contains_tvmeter\":true"));
@@ -600,8 +603,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
-    public void testFragmentBooleansDsRadioDrArchiveSupplementaryRightsMetadata() throws IOException {
+    public void getTransformedWithAccessFieldsAdded_whenContainsDsRadioDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws IOException {
+        // Act
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA7_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_RADIO_83191087);
+        log.info(transformedJSON);
+
+        // Assert
         assertTrue(transformedJSON.contains("\"PropertyID\":\"Origin\",\"value\":\"ds.test\""));
         assertTrue(transformedJSON.contains("\"kb:contains_dr_archive_supplementary_rights_metadata\":true"));
         assertTrue(transformedJSON.contains("\"kb:contains_tvmeter\":false"));

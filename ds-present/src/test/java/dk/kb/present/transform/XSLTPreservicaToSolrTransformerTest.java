@@ -570,9 +570,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    public void testFragmentBooleansDsTvDrArchiveSupplementaryRightsMetadata() throws IOException {
+    public void getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File_whenContainsDsTvDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws IOException {
+        // Act
         String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA7_HOMEMADE_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_TV_TID_TV_METER);
         log.info(transformedJSON);
+
+        // Assert
         assertTrue(transformedJSON.contains("\"origin\":\"ds.test\""));
         assertTrue(transformedJSON.contains("\"contains_dr_archive_supplementary_rights_metadata\":\"true\""));
         assertTrue(transformedJSON.contains("\"contains_tvmeter\":\"true\""));
@@ -581,8 +584,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    public void testFragmentBooleansDsRadioDrArchiveSupplementaryRightsMetadata() throws IOException {
+    public void getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File_whenContainsDsRadioDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws IOException {
+        // Act
         String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA7_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_DS_RADIO_83191087);
+        log.info(transformedJSON);
+
+        // Assert
         assertTrue(transformedJSON.contains("\"origin\":\"ds.test\""));
         assertTrue(transformedJSON.contains("\"contains_dr_archive_supplementary_rights_metadata\":\"true\""));
         assertTrue(transformedJSON.contains("\"contains_tvmeter\":\"false\""));
