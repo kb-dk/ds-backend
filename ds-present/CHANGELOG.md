@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Minor change for synonyms for tv-avisen,tva etc. Will no longer find results with tv only. Require full reindex, but can wait for more important causes.
 
 ### Removed
 

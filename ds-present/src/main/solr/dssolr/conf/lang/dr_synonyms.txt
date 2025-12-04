@@ -10,8 +10,10 @@ linie => linje
 fælleskab => fællesskab
 diciplin => disciplin
 
+
+
 # No longer several words allowed since this breaks spellcheck.
-tv, avisen, tva, tvavis => tvavisen
+tva,avis, avisen, tvavis, tvavisen => tv avisen
 frank, kastanjegården, kastanjegård => bondeknolden
 pengene => sorte
 faktor => factor
@@ -22,3 +24,4 @@ true, crime  => lyssky
 genstart => dato
 bamsekylling => bamse
 afskedsbrev, third, ruths  =>  kultureliten
+
