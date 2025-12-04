@@ -1099,7 +1099,11 @@
         <xsl:value-of select="/XIP/Metadata/Content/radiotvTranscodingStatus/specificRadioTvTranscodingStatus/accessFilePath"/>
       </xsl:variable>
 
-      <xsl:variable name="fileIdWithExtension">
+      <xsl:variable name="fileExtension">
+          <xsl:value-of select="/XIP/Metadata/Content/radiotvTranscodingStatus/specificRadioTvTranscodingStatus/fileExtension"/>
+      </xsl:variable>
+
+        <xsl:variable name="fileIdWithExtension">
         <xsl:value-of select="tokenize($filePath, '/')[last()]"/>
       </xsl:variable>
 
@@ -1119,6 +1123,12 @@
       <f:string key="kb:file_path">
         <xsl:value-of select="$filePath"/>
       </f:string>
+
+      <xsl:if test="$fileExtension">
+        <f:string key="kb:file_extension">
+          <xsl:value-of select="$fileExtension"/>
+        </f:string>
+      </xsl:if>
     </xsl:if>
 
     <xsl:if test="$productionIdRestrictedDr != ''">
