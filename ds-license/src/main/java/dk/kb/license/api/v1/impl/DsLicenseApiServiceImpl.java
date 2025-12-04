@@ -2,7 +2,6 @@ package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.DsLicenseApi;
 import dk.kb.license.config.ServiceConfig;
-import dk.kb.license.facade.AuditFacade;
 import dk.kb.license.facade.LicenseModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.*;
@@ -291,44 +290,41 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
     }
 
     @Override
-    public void deleteLicense(Long id) {
+    public RecordsCountDto deleteLicense(Long id, DeleteReasonDto deleteReasonDto) {
         try {
-            LicenseModuleFacade.deleteLicense(id, null);
-            return;
+            return LicenseModuleFacade.deleteLicense(id, null);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     @Override
-    public void deletePresentationType(String key) {
+    public RecordsCountDto deletePresentationType(String key, DeleteReasonDto deleteReasonDto) {
         try {
             LicenseModuleFacade.deletePresentationType(key, null);
-            return;
+            return new RecordsCountDto();
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     @Override
-    public void deleteGroupType(String key) {
+    public RecordsCountDto deleteGroupType(String key, DeleteReasonDto deleteReasonDto) {
         try {
             LicenseModuleFacade.deleteLicenseGroupType(key, null);
-            return;
+            return new RecordsCountDto();
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     @Override
-    public void deleteAttributeType(String key) {
+    public RecordsCountDto deleteAttributeType(String key, DeleteReasonDto deleteReasonDto) {
         try {
             LicenseModuleFacade.deleteAttributeType(key, null);
-            return;
+            return new RecordsCountDto();
         } catch (Exception e) {
             throw handleException(e);
         }
     }
-
-
 }

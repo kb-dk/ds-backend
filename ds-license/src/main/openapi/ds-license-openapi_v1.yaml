@@ -169,75 +169,93 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetUserGroupsAndLicensesOutput'
 
-  /License:
+  /license:
     get:
-      summary: return the License with the given id
       tags:
         - '${project.name}'
+      summary: 'Return the license with the given id'
       operationId: getLicenseById
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: id
           in: query
-          description: Filter on id
+          description: 'Filter on id'
+          required: true
           schema:
             type: integer
             format: int64
       responses:
         '200':
-          description: Get specific License by id
+          description: 'Get specific license by id'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/License'
     post:
-      summary: Update or create license
       tags:
         - '${project.name}'
+      summary: 'Update or if id==0 create license'
       operationId: persistLicenseDto
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/License'
-      responses:
+      responses: #TODO - return created/modified object
         '201':
-          description: created
-    delete:
+          description: 'Created'
+
+  /license/delete/{id}:
+    post:
       tags:
         - '${project.name}'
+      summary: 'Delete license by id'
       operationId: deleteLicense
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: id
-          in: query
-          description: Filter on id
+          in: path
+          description: 'id of licence to delete'
+          required: true
           schema:
             type: integer
             format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteReason'
       responses:
-        '204':
-          description: succesfully deleted
+        '200':
+          description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
-  /Licenses:
+  /licenses:
     get:
-      summary: return all Licenses
       tags:
         - '${project.name}'
+      summary: 'Return all licenses'
       operationId: getLicenses
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       responses:
         '200':
-          description: Get all licenses
+          description: 'Get all licenses'
           content:
             application/json:
               schema:
@@ -245,74 +263,91 @@ paths:
                 items:
                   $ref: '#/components/schemas/License'
 
-  /PresentationType:
+  /presentationType:
     get:
-      summary: return the PresentationType with the given id
       tags:
         - '${project.name}'
+      summary: 'Return the presentation type with the given id'
       operationId: getPresentationTypeById
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: id
           in: query
-          description: Filter on id
+          description: 'Filter on id'
           schema:
             type: integer
             format: int64
       responses:
         '200':
-          description: Get specific PresentationType by id
+          description: 'Get specific presentation type by id'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PresentationType'
     post:
-      summary: Update a PresentationType or Creates a new PresentationType (id == 0)
       tags:
         - '${project.name}'
+      summary: 'Update a presentation type or if id==0 creates a new presentation type'
       operationId: persistPresentationType
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/PresentationType'
       responses:
-        '204':
-          description: created
-    delete:
-      summary: Delete PresentationType with the given key
+        '201':
+          description: 'Created' #TODO - return created/modified object
+
+  /presentationType/delete/{key}:
+    post:
       tags:
         - '${project.name}'
+      summary: 'Delete presentation type with the given key'
       operationId: deletePresentationType
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: key
-          in: query
+          in: path
+          description: 'key on presentation type to delete'
+          required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteReason'
       responses:
-        '204':
-          description: succesfully deleted
+        '200':
+          description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
-  /PresentationTypes:
+  /presentationTypes:
     get:
-      summary: return all PresentationTypes
       tags:
         - '${project.name}'
+      summary: 'Return all presentation types'
       operationId: getPresentationTypes
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       responses:
         '200':
-          description: Get all PresentationTypes
+          description: 'Get all presentation types'
           content:
             application/json:
               schema:
@@ -320,35 +355,18 @@ paths:
                 items:
                   $ref: '#/components/schemas/PresentationType'
 
-  /AttributeTypes:
-    get:
-      summary: return all Attributetypes
-      tags:
-        - '${project.name}'
-      operationId: getAttributeTypesDto
-      security:
-        - KBOAuth:
-            - any
-      responses:
-        '200':
-          description: Get all Attributetypes
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AttributeType'
-
-  /AttributeType:
+  /attributeType:
     post:
-      summary: Creates a new AttributeType (id is not used)
       tags:
         - '${project.name}'
+      summary: 'Creates a new AttributeType (id is not used)'
       operationId: persistAttributeTypeDto
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -356,92 +374,143 @@ paths:
       responses:
         '204':
           description: created
-    delete:
-      summary: Delete AttributeType with the given key
+
+  /attributeType/delete/{key}:
+    post:
       tags:
         - '${project.name}'
+      summary: 'Delete attribute type with the given key'
       operationId: deleteAttributeType
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: key
-          in: query
+          in: path
+          description: 'key of attribute type to be deleted'
+          required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteReason'
       responses:
-        '204':
-          description: succesfully deleted
-
-  /GroupType:
+        '200':
+          description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
+  
+  /attributeTypes:
     get:
-      summary: return the Grouptype with the given id
       tags:
         - '${project.name}'
+      summary: 'Return all attribute types'
+      operationId: getAttributeTypesDto
+      security:
+        - KBOAuth:
+            - ds-license-readonly
+            - ds-license-admin
+      responses:
+        '200':
+          description: 'Get all attribute types'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttributeType'
+                  
+  /groupType:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Return the group type with the given id'
       operationId: getGroupTypeById
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       parameters:
         - name: id
           in: query
-          description: Filter on id
+          description: 'Filter on id'
+          required: true
           schema:
             type: integer
             format: int64
       responses:
         '200':
-          description: Get specific GroupType by id
+          description: 'Get specific group type by id'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupType'
     post:
-      summary: Update a GroupType or Creates a new GroupType (id == 0)
       tags:
         - '${project.name}'
+      summary: 'Update a group type or if id == 0 creates a new group type'
       operationId: persistGroupType
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/GroupType'
       responses:
-        '204':
-          description: created
-    delete:
-      summary: Delete GroupType with the given key
+        '201':
+          description: 'Created' #TODO - return created/modified object
+
+  /groupType/delete/{key}:
+    post:
       tags:
         - '${project.name}'
+      summary: 'Delete group type with the given key'
       operationId: deleteGroupType
       security:
         - KBOAuth:
-            - any
+            - ds-license-admin
       parameters:
         - name: key
-          in: query
+          in: path
+          description: 'key of group type to be deleted'
+          required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteReason'
       responses:
-        '204':
-          description: succesfully deleted
+        '200':
+          description: 'Deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
 
-                          
-  /GroupTypes:
+  /groupTypes:
     get:
-      summary: return all Group types
       tags:
         - '${project.name}'
+      summary: 'Return all group types'
       operationId: getGroupTypes
       security:
         - KBOAuth:
-            - any
+            - ds-license-readonly
+            - ds-license-admin
       responses:
         '200':
-          description: return all Group types
+          description: 'Return all group types'
           content:
             application/json:
               schema:

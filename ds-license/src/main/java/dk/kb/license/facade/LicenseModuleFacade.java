@@ -1,15 +1,17 @@
 package dk.kb.license.facade;
 
-import dk.kb.license.model.v1.ChangeTypeEnumDto;
-import dk.kb.license.model.v1.ObjectTypeEnumDto;
+import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.*;
 import dk.kb.license.util.ChangeDifferenceText;
 import dk.kb.license.util.LicenseChangelogGenerator;
+import dk.kb.license.validation.InputValidator;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The LicenseModuleFacade exposes all methods that can be called on a LicenceModule. This includes both persistence logic and business logic resolving licence access.
@@ -20,6 +22,7 @@ import java.util.ArrayList;
  */
 public class LicenseModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacade.class);
+    private static final InputValidator inputValidator = new InputValidator();
 
     /**
      * Create a new {@link PresentationType} which can then be added to licences. A new created PresentationType will
@@ -68,22 +71,31 @@ public class LicenseModuleFacade {
      * Delete a license completely.
      * Instead of deleting a license it is also an option to disable it by changing the valid-to attribute.
      *
-     * @param licenseId The unique id for the license. Instead of deleting a license, you can also change valid to/from for the license to disable it instead.
+     * @param id The unique id for the license. Instead of deleting a license, you can also change valid to/from for the license to disable it instead.
      */
-    public static void deleteLicense(long licenseId, HttpSession session) {
-        BaseModuleStorage.performStorageAction("deleteLicense(" + licenseId + ")", LicenseModuleStorage.class, storage -> {
+    public static RecordsCountDto deleteLicense(Long id, HttpSession session) {
+        inputValidator.validateId(id);
+        //inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+        // Retrieve object from database
+        License license = getLicense(id);
+
+        BaseModuleStorage.performStorageAction("deleteLicense(" + id + ")", LicenseModuleStorage.class, storage -> {
             String user = (session != null) ? (String) session.getAttribute("oauth_user") : null;
-            License license = ((LicenseModuleStorage) storage).getLicense(licenseId);
+            // Delete entry from database
+            RecordsCountDto recordsCountDto = new RecordsCountDto();
+            ((LicenseModuleStorage) storage).deleteLicense(id);
+
             ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(license, null);
 
-            AuditLogEntry auditLog = new AuditLogEntry(licenseId, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), null, changes.getBefore(), changes.getAfter());
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), null, changes.getBefore(), changes.getAfter());
 
-            ((LicenseModuleStorage) storage).deleteLicense(licenseId);
+
             ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
 
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
+        return null;
     }
 
     /**
@@ -334,12 +346,20 @@ public class LicenseModuleFacade {
     /**
      * Get a specific license.
      *
-     * @param licenseId The unique id of the license.
+     * @param id The unique id of the license.
      * @return License The unique license with this id.
      */
-    public static License getLicense(long licenseId) {
-        return BaseModuleStorage.performStorageAction("getLicense(" + licenseId + ")", LicenseModuleStorage.class, storage -> {
-            return ((LicenseModuleStorage) storage).getLicense(licenseId);
+    public static License getLicense(Long id) {
+        return BaseModuleStorage.performStorageAction("getLicense(" + id + ")", LicenseModuleStorage.class, storage -> {
+            License license = ((LicenseModuleStorage) storage).getLicense(id);
+
+            if (license == null) {
+                final String errorMessage = "'id': " + id + " not found";
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+
+            return license;
         });
     }
 
