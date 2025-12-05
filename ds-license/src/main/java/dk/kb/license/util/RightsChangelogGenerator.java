@@ -2,11 +2,11 @@ package dk.kb.license.util;
 
 import dk.kb.license.model.v1.DrHoldbackRangeDto;
 import dk.kb.license.model.v1.DrHoldbackRangeOutputDto;
-import dk.kb.license.model.v1.DrHoldbackRuleOutputDto;
+import dk.kb.license.model.v1.DrHoldbackCategoryOutputDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 
 /**
- * Generates a change text when saving or updating a Rights object (restrictedID or DR holdback rules)
+ * Generates a change text when saving or updating a Rights object (restrictedID or DR holdback categories)
  */
 public class RightsChangelogGenerator {
 
@@ -22,16 +22,16 @@ public class RightsChangelogGenerator {
         return new ChangeDifferenceText(oldVersion.toString(), newVersion.toString());
     }
 
-    public static ChangeDifferenceText createDrHoldbackRuleChanges(DrHoldbackRuleOutputDto drHoldbackRuleOutputDto) {
-        return new ChangeDifferenceText(null, drHoldbackRuleOutputDto.toString());
+    public static ChangeDifferenceText createDrHoldbackCategoryChanges(DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto) {
+        return new ChangeDifferenceText(null, drHoldbackCategoryOutputDto.toString());
     }
 
-    public static ChangeDifferenceText updateDrHoldbackRuleChanges(DrHoldbackRuleOutputDto oldVersion, DrHoldbackRuleOutputDto newVersion) {
+    public static ChangeDifferenceText updateDrHoldbackCategoryChanges(DrHoldbackCategoryOutputDto oldVersion, DrHoldbackCategoryOutputDto newVersion) {
         return new ChangeDifferenceText(oldVersion.toString(), newVersion.toString());
     }
 
-    public static ChangeDifferenceText deleteDrHoldbackRuleChanges(DrHoldbackRuleOutputDto drHoldbackRuleOutputDto) {
-        return new ChangeDifferenceText(drHoldbackRuleOutputDto.toString(), null);
+    public static ChangeDifferenceText deleteDrHoldbackCategoryChanges(DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto) {
+        return new ChangeDifferenceText(drHoldbackCategoryOutputDto.toString(), null);
     }
 
     public static ChangeDifferenceText createDrHoldbackRangeChanges(DrHoldbackRangeDto drHoldbackRangeDto) {

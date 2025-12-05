@@ -36,13 +36,13 @@ public class RightsCalculationTest extends UnitTestUtil {
             List<String> tables = new ArrayList<String>();
             tables.add("RESTRICTED_IDS");
             tables.add("DR_HOLDBACK_RANGES");
-            tables.add("DR_HOLDBACK_RULES");
+            tables.add("DR_HOLDBACK_CATEGORIES");
 
             storage.clearTableRecords(tables);
         } catch (Exception e) {
             throw e;
         }
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_default_holdbackrulesdata.sql", "ddl/rightsmodule_default_holdbackrangesdata.sql"));
+        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_default_dr_holdback_categories_data.sql", "ddl/rightsmodule_default_dr_holdback_ranges_data.sql"));
     }
 
     public RightsCalculationInputDto map(String recordId, PlatformEnumDto platform, String startTime,

@@ -135,7 +135,7 @@ public class RightsCalculation {
     /**
      * Sets the DR holdback information for a TV record in the DR archive.
      *
-     * <p>This method retrieves the DR holdback rule based on the provided input DTO, calculates the holdback
+     * <p>This method retrieves the DR holdback category based on the provided input DTO, calculates the holdback
      * name and expiration date, and updates the output DTO accordingly.</p>
      *
      * @param rightsCalculationInputDto the input data transfer object containing the rights calculation details,
@@ -149,7 +149,7 @@ public class RightsCalculation {
         String recordId = rightsCalculationInputDto.getRecordId();
         String startDate = rightsCalculationInputDto.getStartTime();
 
-        DrHoldbackRuleOutputDto holdbackRule;
+        DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto;
         String holdbackExpiredDate;
 
         if (org.apache.commons.lang3.StringUtils.isBlank(rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory())) {
@@ -158,21 +158,21 @@ public class RightsCalculation {
                     rightsCalculationInputDto.getHoldbackInput().getIndhold() == null ||
                     rightsCalculationInputDto.getHoldbackInput().getProductionCountry() == null) {
 
-                holdbackRule = new DrHoldbackRuleOutputDto();
+                drHoldbackCategoryOutputDto = new DrHoldbackCategoryOutputDto();
                 drOutput.setHoldbackName(null);
                 log.debug("'holdbackCategory', 'hensigt', 'form', 'indhold', and 'productionCountry' was null by recordId: {}", rightsCalculationInputDto.getRecordId());
             } else {
-                holdbackRule = getDrHoldbackRule(holdbackInput);
-                String holdbackName = getDrHoldbackName(holdbackInput, holdbackRule);
+                drHoldbackCategoryOutputDto = getDrHoldbackCategory(holdbackInput);
+                String holdbackName = getDrHoldbackName(holdbackInput, drHoldbackCategoryOutputDto);
                 drOutput.setHoldbackName(holdbackName);
 
             }
         } else {
-            holdbackRule = RightsModuleFacade.getDrHoldbackRuleByName(rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory());
-            drOutput.setHoldbackName(holdbackRule.getName());
+            drHoldbackCategoryOutputDto = RightsModuleFacade.getDrHoldbackCategoryByName(rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory());
+            drOutput.setHoldbackName(drHoldbackCategoryOutputDto.getName());
         }
 
-        holdbackExpiredDate = getDrHoldbackExpiredDate(holdbackRule, recordId, startDate);
+        holdbackExpiredDate = getDrHoldbackExpiredDate(drHoldbackCategoryOutputDto, recordId, startDate);
         drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
     }
 
@@ -196,39 +196,39 @@ public class RightsCalculation {
 
 
     /**
-     * Retrieves a DR holdback rule based on the provided holdback calculation input DTO.
+     * Retrieves a DR holdback category based on the provided holdback calculation input DTO.
      *
-     * <p>This method extracts the form and content values from the input DTO, retrieves the corresponding drHoldbackValue,
-     * and checks for specific conditions related to that drHoldbackValue. If the drHoldbackValue is empty, it returns an empty
-     * {@link DrHoldbackRuleOutputDto} with a DR holdback date of "9999-01-01". If the drHoldbackValue is "2.05", it validates the drHoldbackValue
-     * based on the production country before retrieving the appropriate DR holdback rule.</p>
+     * <p>This method extracts the form and content values from the input DTO, retrieves the corresponding key,
+     * and checks for specific conditions related to that key. If the key is empty, it returns an empty
+     * {@link DrHoldbackCategoryOutputDto} with a DR holdback date of "9999-01-01". If the key is "2.05", it validates the key
+     * based on the production country before retrieving the appropriate DR holdback category.</p>
      *
      * @param holdbackInput the input data transfer object containing the DR holdback calculation details, including
      *                      form, content, and production country. This should not be null.
-     * @return the holdback rule data transfer object ({@link DrHoldbackRuleOutputDto}) corresponding to the calculated drHoldbackValue.
-     *         Returns an empty holdback rule if the drHoldbackValue is not found.
+     * @return the holdback category data transfer object ({@link DrHoldbackCategoryOutputDto}) corresponding to the calculated key.
+     *         Returns an empty holdback category if the key is not found.
      */
-    private static DrHoldbackRuleOutputDto getDrHoldbackRule(HoldbackCalculationInputDto holdbackInput) {
+    private static DrHoldbackCategoryOutputDto getDrHoldbackCategory(HoldbackCalculationInputDto holdbackInput) {
         // Get form value
         int form = holdbackInput.getForm();
         // get contentsitem/indhold value
         int content = holdbackInput.getIndhold();
-        String drHoldbackValue = RightsModuleFacade.getDrHoldbackValueFromContentAndFormValues(content, form);
+        String key = RightsModuleFacade.getDrHoldbackCategoryKeyByContentAndFormValues(content, form);
 
-        if (drHoldbackValue.isEmpty()){
-            // An empty rule should end with a holdback date of 9999-01-01 as we cant calculate holdback for these records.
-            return new DrHoldbackRuleOutputDto();
+        if (key.isEmpty()){
+            // An empty category should end with a holdback date of 9999-01-01 as we cant calculate holdback for these records.
+            return new DrHoldbackCategoryOutputDto();
         }
         // Check for ID being 2.05 and correct it to either 2.05.01 or 2.05.02
-        drHoldbackValue = validateDrHoldbackBasedOnProductionCountry(drHoldbackValue, holdbackInput.getProductionCountry());
+        key = validateDrHoldbackBasedOnProductionCountry(key, holdbackInput.getProductionCountry());
 
-        return RightsModuleFacade.getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
+        return RightsModuleFacade.getDrHoldbackCategoryByKey(key);
     }
 
 
     /**
      * Retrieves the holdback name based on the provided holdback calculation input
-     * and holdback rule. This method applies specific logic based on the values
+     * and holdback category. This method applies specific logic based on the values
      * in the input DTO to determine the appropriate holdback name.
      *
      * <p>The method handles the following cases:</p>
@@ -239,18 +239,18 @@ public class RightsCalculation {
      *       which is later interpreted as a holdback date of year `9999`. This is
      *       because records with a form of `7000` are trailers and should be filtered away.</li>
      *   <li>For any other cases, the method returns the name from the provided
-     *       {@link DrHoldbackRuleOutputDto} object.</li>
+     *       {@link DrHoldbackCategoryOutputDto} object.</li>
      * </ul>
      *
      * @param holdbackInput the input DTO containing holdback calculation data.
      *                      Must not be null.
-     * @param holdbackRule the holdback rule DTO containing the holdback name.
+     * @param drHoldbackCategoryOutputDto the holdback category DTO containing the holdback name.
      *                     Must not be null.
      * @return the determined holdback name as a String.
      * @throws NullPointerException if either {@code holdbackInput} or
-     *                              {@code holdbackRule} is null.
+     *                              {@code drHoldbackCategoryOutputDto} is null.
      */
-    private static String getDrHoldbackName(HoldbackCalculationInputDto holdbackInput, DrHoldbackRuleOutputDto holdbackRule) {
+    private static String getDrHoldbackName(HoldbackCalculationInputDto holdbackInput, DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto) {
         // If purpose is 6000, then the purpose name is "Undervisning" no matter what.
         if (holdbackInput.getHensigt() == 6000){
             log.debug("Nielsen/TVMeter intent is: '6000', therefore the holdback name is set as 'Undervisning'.");
@@ -262,60 +262,60 @@ public class RightsCalculation {
             return null;
         }
 
-        return holdbackRule.getName();
+        return drHoldbackCategoryOutputDto.getName();
     }
 
     /**
-     * Validates the drHoldbackValue based on the specified production country.
-     * This method includes special handling for a specific drHoldbackValue
+     * Validates the key based on the specified production country.
+     * This method includes special handling for a specific key
      * ("2.05"), where the production country is used to determine the
-     * resulting drHoldbackValue.
+     * resulting key.
      *
-     * <p>If the drHoldbackValue is "2.05" and the production country is "1000",
-     * the method appends ".01" to the drHoldbackValue which means that it is produced in Denmark.
-     * For any other production country, it appends ".02" to the drHoldbackValue which means anywhere not Denmark.
-     * For all other drHoldbackValues, the method returns the drHoldbackValue unchanged.</p>
+     * <p>If the key is "2.05" and the production country is "1000",
+     * the method appends ".01" to the key which means that it is produced in Denmark.
+     * For any other production country, it appends ".02" to the key which means anywhere not Denmark.
+     * For all other keys, the method returns the key unchanged.</p>
      *
-     * @param drHoldbackValue the drHoldbackValue to validate, should not be null.
+     * @param key the key to validate, should not be null.
      * @param productionCountry the production country identifier as an
      *                          int, should not be null.
-     * @return the validated drHoldbackValue as a String.
+     * @return the validated key as a String.
      *
-     * @throws NullPointerException if either {@code drHoldbackValue} or
+     * @throws NullPointerException if either {@code key} or
      *                              {@code productionCountry} is null.
      */
-    private static String validateDrHoldbackBasedOnProductionCountry(String drHoldbackValue, int productionCountry) {
+    private static String validateDrHoldbackBasedOnProductionCountry(String key, int productionCountry) {
         // Handling of special case for purposeID 2.05, where country of production is needed to create the correct value.
-        if (drHoldbackValue.equals("2.05")) {
-            return productionCountry == 1000 ? drHoldbackValue + ".01" : drHoldbackValue + ".02";
+        if (key.equals("2.05")) {
+            return productionCountry == 1000 ? key + ".01" : key + ".02";
         } else {
-            return drHoldbackValue;
+            return key;
         }
     }
 
     /**
-     * Calculates the holdback expiration date based on the specified holdback rule and start date.
+     * Calculates the holdback expiration date based on the specified holdback category and start date.
      *
-     * <p>If the holdback rule's name is empty, the method logs a debug message and returns a default expiration
+     * <p>If the holdback category's name is empty, the method logs a debug message and returns a default expiration
      * date of "9999-01-01T00:00:00Z". If the holdback days are less than a configured threshold (default = 365), it calculates
      * the expiration date by adding the holdback days directly to the start date. If the holdback days are
      * equal to or greater than the threshold, it calculates the expiration date on a yearly basis form the following 1st of January by converting
      * the holdback days to years and adjusting the start date accordingly.</p>
      *
-     * @param holdbackRule The holdback rule containing the number of holdback days and its name.
-     * @param recordId identifier of record associated with this holdback rule.
+     * @param drHoldbackCategoryOutputDto The holdback category containing the number of holdback days and its name.
+     * @param recordId identifier of record associated with this holdback category.
      * @param startDate The start date which the holdbackExpiredDate will be calculated from.
      * @return The calculated holdback expiration date in ISO-8601 ({@link DateTimeFormatter#ISO_INSTANT}-format).
      */
-    private static String getDrHoldbackExpiredDate(DrHoldbackRuleOutputDto holdbackRule, String recordId, String startDate) {
+    private static String getDrHoldbackExpiredDate(DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto, String recordId, String startDate) {
 
         // In this case holdback cannot be calculated. Pro
-        if (holdbackRule.getName() == null || holdbackRule.getName().isEmpty()){
+        if (drHoldbackCategoryOutputDto.getName() == null || drHoldbackCategoryOutputDto.getName().isEmpty()){
             log.debug("Purpose name was empty for record with id: '{}'. Setting holdback date to 9999-01-01T00:00:00Z", recordId);
             return "9999-01-01T00:00:00Z";
         }
 
-        int holdbackDays = holdbackRule.getDays();
+        int holdbackDays = drHoldbackCategoryOutputDto.getDays();
 
         if (holdbackDays < ServiceConfig.getDrHoldbackLogicChangeDays()) {
             log.info("Calculating holdback on a daily basis for record: '{}'", recordId);
