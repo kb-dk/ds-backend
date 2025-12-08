@@ -202,6 +202,15 @@ public class EmbeddedSolrFieldAnalyseTest {
     }
 
     @Test
+    public void testSynonymTestNoMatch() throws SolrServerException, IOException {
+        // Synonyms on the title field.
+        addSynonymFieldTestDocuments3();
+        assertEquals(0, getTitleQuery("tvavisen").getNumFound()); // we do not want to find result with 'tv' 
+        assertEquals(1, getTitleQuery("tv").getNumFound()); // still find the tv hit
+        
+    }
+    
+    @Test
     public void testBondeknolden() throws SolrServerException, IOException{
         addSynonymFieldTestBondeknolden();
         assertEquals(1, getFreeTextQuery("bondeknolden"));                 
@@ -326,7 +335,7 @@ public class EmbeddedSolrFieldAnalyseTest {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "synonym1");
             document.addField("origin", "ds.test");
-            document.addField("title", "Velkommen til TVavisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
+            document.addField("title", "Velkommen til TVavisen"); // Synonym file: tva,avis, avisen, tvavis, tvavisen => tv avisen
             document.addField("broadcaster", "DR");
             document.addField("production_code_allowed", "true");
             // => tv avisen
@@ -340,6 +349,30 @@ public class EmbeddedSolrFieldAnalyseTest {
         }
     }
   
+    
+    /*
+     * Title: tv og mere tv tv!tv!
+     */
+    private static void addSynonymFieldTestDocuments3() {
+
+        try {
+            SolrInputDocument document = new SolrInputDocument();
+            document.addField("id", "synonym1");
+            document.addField("origin", "ds.test");
+            document.addField("title", "tv og mere tv tv!tv!"); // no tvavis synonyms.
+            document.addField("broadcaster", "DR");
+            document.addField("production_code_allowed", "true");
+            // => tv avisen
+
+            embeddedServer.add(document);
+            embeddedServer.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error indexing test documents");
+        }
+    }
+    
     /*
      * Title: Velkommen til TV avisen
      */
@@ -349,7 +382,7 @@ public class EmbeddedSolrFieldAnalyseTest {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "synonym1");
             document.addField("origin", "ds.test");
-            document.addField("title", "Velkommen til TV avisen"); // Synonym file: tv-avisen, tvavis, tvavisen, tv-avis
+            document.addField("title", "Velkommen til TV avisen"); // Synonym file: tva,avis, avisen, tvavis, tvavisen => tv avisen
             document.addField("broadcaster", "DR");
             // => tv avisen
 
