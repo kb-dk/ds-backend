@@ -69,6 +69,7 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.1: Add field for records restricted on title
 1.8.3: Add field contains_dr_archive_supplementary_rights_metadata
 1.8.4: Add field file_extension
+
   -->
   <field name="_ds_1.8.3_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
@@ -808,8 +809,8 @@ When adding fields to this schema please have the following guidelines in mind:
   </field>
 
   <field name="file_extension" type="string">
-    <?description Extension for the file, to be used when uploadin file to kaltura.?>
-    <?example     .mp4?>
+    <?description Extension for the file, to be used when uploading file to kaltura.?>
+    <?example .mp4?>
   </field>
 
   <field name="temporal_start_year" type="string" docValues="true">
