@@ -71,7 +71,7 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.4: Add field file_extension
 
   -->
-  <field name="_ds_1.8.3_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.4_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
