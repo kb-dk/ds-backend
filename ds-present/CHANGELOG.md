@@ -9,7 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Removed
+
+### Fixed
+
+## [3.0.5](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.5) 2025-12-08
+
+### Added
+- Added solr field for indexint file extension
+
+### Changed
 - Minor change for synonyms for tv-avisen,tva etc. Will no longer find results with tv only. Require full reindex, but can wait for more important causes.
+- Solr (schema.xml) version bumped to v. 1.8.4
 
 ### Removed
 
