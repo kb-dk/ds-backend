@@ -303,7 +303,7 @@ public class RightsModuleStorageTest extends UnitTestUtil {
         String key = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
-        String expectedMessage = "Referential integrity constraint violation: \"CONSTRAINT_35: public.dr_holdback_ranges FOREIGN KEY(dr_holdback_category_key) REFERENCES public.dr_holdback_categories";
+        String expectedMessage = "Referential integrity constraint violation: \"CONSTRAINT_353: public.dr_holdback_ranges FOREIGN KEY(dr_holdback_category_key) REFERENCES public.dr_holdback_categories";
 
         long id = storage.createDrHoldbackCategory(key, name, days);
 

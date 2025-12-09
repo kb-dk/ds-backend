@@ -71,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     * Response body `DrHoldbackRangeOutputDto`
 - Renamed endpoint `GET /rights/getDrHoldbackValueFromContentAndForm` ->
   `GET /rights/getDrHoldbackCategoryByContentAndForm`.
+- Refactored validate methods for input Strings and Integers.
 
 ### Fixed
 
