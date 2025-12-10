@@ -45,7 +45,7 @@ pipeline {
                 }
             }
             steps {
-                script {
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
                     sh "mvn versions:set -DnewVersion=${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT"
                     echo "Changing MVN version to: ${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT"
                 }
@@ -60,12 +60,14 @@ pipeline {
             }
             steps {
                 script {
-                    switch (params.ORIGINAL_JOB) {
-                        case ['ds-parent']:
-                            sh "mvn versions:use-dep-version -Dincludes=dk.kb.dsparent:* -DdepVersion=${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-ds-parent-SNAPSHOT -DforceVersion=true"
-
-                            echo "Changing MVN dependency ds-parent to: ${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-ds-parent-SNAPSHOT"
-                            break
+                    withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
+                        switch (params.ORIGINAL_JOB) {
+                            case ['ds-parent']:
+                                sh "mvn versions:use-dep-version -Dincludes=dk.kb.dsparent:* -DdepVersion=${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-ds-parent-SNAPSHOT -DforceVersion=true"
+    
+                                echo "Changing MVN dependency ds-parent to: ${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-ds-parent-SNAPSHOT"
+                                break
+                        }
                     }
                 }
             }
