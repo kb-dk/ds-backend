@@ -46,6 +46,7 @@ pipeline {
             }
             steps {
                 script {
+                    // We don't want to build child modules so we use this flag to disable it --non-recursive https://maven.apache.org/guides/mini/guide-multiple-modules.html#command-line-options
                     sh "mvn versions:set -DnewVersion=${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT --non-recursive"
                     echo "Changing MVN version to: ${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT"
                 }
@@ -56,7 +57,8 @@ pipeline {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
                     // Execute Maven build
-                    sh "mvn -s clean package --non-recursive"
+                    // We don't want to build child modules so we use this flag to disable it --non-recursive https://maven.apache.org/guides/mini/guide-multiple-modules.html#command-line-options
+                    sh "mvn clean package --non-recursive"
                 }
             }
         }
@@ -70,6 +72,7 @@ pipeline {
             }
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
+                    // We don't want to build child modules so we use this flag to disable it --non-recursive https://maven.apache.org/guides/mini/guide-multiple-modules.html#command-line-options
                     sh "mvn clean deploy -DskipTests=true --non-recursive"
                 }
             }
