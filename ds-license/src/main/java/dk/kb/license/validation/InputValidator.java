@@ -79,9 +79,9 @@ public class InputValidator {
      *
      * @param drHoldbackValue to be validated
      */
-    public void validateDrHoldbackValue(String drHoldbackValue) {
+    public void validateString(String drHoldbackValue, String parameterName) {
         if (StringUtils.isBlank(drHoldbackValue)) {
-            final String errorMessage = "'drHoldbackValue' cannot be empty";
+            final String errorMessage = "'" + parameterName + "' cannot be empty";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }

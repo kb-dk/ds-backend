@@ -321,8 +321,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
     @Override
     public RecordsCountDto deleteAttributeType(String key, DeleteReasonDto deleteReasonDto) {
         try {
-            LicenseModuleFacade.deleteAttributeType(key, null);
-            return new RecordsCountDto();
+            return LicenseModuleFacade.deleteAttributeType(key, null, deleteReasonDto);
         } catch (Exception e) {
             throw handleException(e);
         }

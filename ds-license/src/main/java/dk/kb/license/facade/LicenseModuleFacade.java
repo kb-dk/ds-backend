@@ -308,7 +308,12 @@ public class LicenseModuleFacade {
      * @param attributeTypeName The unique name of the AttributeType.
      *                          If the AttributeType is actively used by any licenses, it can not be deleted.
      */
-    public static void deleteAttributeType(String attributeTypeName, HttpSession session) {
+    public static RecordsCountDto deleteAttributeType(String attributeTypeName, HttpSession session, DeleteReasonDto deleteReasonDto) {
+        inputValidator.validateString(attributeTypeName, "attributeTypeName");
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
+
+        // Retrieve object from database
+
         BaseModuleStorage.performStorageAction("deleteAttributeType(" + attributeTypeName + ")", LicenseModuleStorage.class, storage -> {
             long id = ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
             String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute

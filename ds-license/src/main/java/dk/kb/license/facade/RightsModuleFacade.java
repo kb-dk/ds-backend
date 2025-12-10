@@ -478,7 +478,7 @@ public class RightsModuleFacade {
      * @throws NotFoundServiceException if no rule is found for the specified drHoldbackValue.
      */
     public static DrHoldbackRuleOutputDto getDrHoldbackRuleByDrHoldbackValue(String drHoldbackValue) {
-        inputValidator.validateDrHoldbackValue(drHoldbackValue);
+        inputValidator.validateString(drHoldbackValue, "drHoldbackValue");
 
         return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
             DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = ((RightsModuleStorage) storage).getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
@@ -552,7 +552,7 @@ public class RightsModuleFacade {
      * @param drHoldbackRuleInputDto
      */
     public static DrHoldbackRuleOutputDto createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
-        inputValidator.validateDrHoldbackValue(drHoldbackRuleInputDto.getDrHoldbackValue());
+        inputValidator.validateString(drHoldbackRuleInputDto.getDrHoldbackValue(), "drHoldbackValue");
 
         return BaseModuleStorage.performStorageAction("Create DR holdback rule", RightsModuleStorage.class, storage -> {
             long id = ((RightsModuleStorage) storage).createDrHoldbackRule(drHoldbackRuleInputDto.getDrHoldbackValue(), drHoldbackRuleInputDto.getName(), drHoldbackRuleInputDto.getDays());
@@ -633,7 +633,7 @@ public class RightsModuleFacade {
      * @throws NotFoundServiceException if no rule is found for the specified drHoldbackValue.
      */
     public static List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackValue) {
-        inputValidator.validateDrHoldbackValue(drHoldbackValue);
+        inputValidator.validateString(drHoldbackValue, "drHoldbackValue");
 
         return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> {
             List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = ((RightsModuleStorage) storage).getDrHoldbackRangesByDrHoldbackValue(drHoldbackValue);
@@ -656,7 +656,7 @@ public class RightsModuleFacade {
      * @param drHoldbackRangeInputDto
      */
     public static List<DrHoldbackRangeOutputDto> createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
-        inputValidator.validateDrHoldbackValue(drHoldbackRangeInputDto.getDrHoldbackValue());
+        inputValidator.validateString(drHoldbackRangeInputDto.getDrHoldbackValue(), "drHoldbackValue");
 
         // Check if the drHoldbackValue has correspondent DR holdback rule
         getDrHoldbackRuleByDrHoldbackValue(drHoldbackRangeInputDto.getDrHoldbackValue());
@@ -685,7 +685,7 @@ public class RightsModuleFacade {
      * @param deleteReasonDto comment about why object gets deleted
      */
     public static RecordsCountDto deleteDrHoldbackRanges(String drHoldbackValue, DeleteReasonDto deleteReasonDto) {
-        inputValidator.validateDrHoldbackValue(drHoldbackValue);
+        inputValidator.validateString(drHoldbackValue, "drHoldbackValue");
         inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
 
         // Check if the drHoldbackValue has correspondent DR holdback ranges
