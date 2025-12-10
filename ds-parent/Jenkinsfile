@@ -10,7 +10,6 @@ pipeline {
     }
 
     environment {
-        MVN_SETTINGS = '/etc/m2/settings.xml' //This should be changed in Jenkins config for the DS agent
         PROJECT = 'ds-parent'
         BUILD_TO_TRIGGER = 'ds-shared'
     }
@@ -55,13 +54,12 @@ pipeline {
 
         stage('Build') {
             steps {
-                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true) {
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
                     // Execute Maven build
-                    sh "mvn -s ${env.MVN_SETTINGS} clean package --non-recursive"
+                    sh "mvn -s clean package --non-recursive"
                 }
             }
         }
-
         stage('Push to Nexus') {
             when {
                 // Check if Build was successful
@@ -70,8 +68,8 @@ pipeline {
                 }
             }
             steps {
-                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true) {
-                    sh "mvn -s ${env.MVN_SETTINGS} clean deploy -DskipTests=true --non-recursive"
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
+                    sh "mvn clean deploy -DskipTests=true --non-recursive"
                 }
             }
         }
