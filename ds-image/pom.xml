@@ -70,11 +70,9 @@
         <dependency>
             <groupId>dk.kb.kaltura</groupId>
             <artifactId>ds-kaltura</artifactId>
-            <version>3.0.2</version>
+            <version>3.0.3</version>
             <type>jar</type>
         </dependency>
-
-
 
         <!-- Apache CXF and servlet stuff -->
         <dependency>
