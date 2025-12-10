@@ -46,7 +46,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "mvn -s ${env.MVN_SETTINGS} versions:set -DnewVersion=${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT --non-recursive"
+                    sh "mvn versions:set -DnewVersion=${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT --non-recursive"
                     echo "Changing MVN version to: ${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT"
                 }
             }
