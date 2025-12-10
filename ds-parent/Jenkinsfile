@@ -1,25 +1,120 @@
 pipeline {
-    agent { label 'DS agent' }
-
-    stages {
-        stage('Build') {
-            steps {
-                script {
-                    // Checkout the source code from the repository
-                    checkout scm
-                }
-                // Execute Maven build
-                sh 'mvn clean install'
-            }
-        }
+    agent {
+        label 'DS agent'
     }
 
-    post {
-        success {
-            echo 'Build completed successfully.'
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 40, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
+
+    environment {
+        PROJECT = 'ds-parent'
+        BUILD_TO_TRIGGER = 'ds-shared'
+    }
+
+    triggers {
+        // This triggers the pipeline when a PR is opened or updated or so I hope
+        githubPush()
+    }
+
+    parameters {
+        string(name: 'ORIGINAL_BRANCH', defaultValue: "${env.BRANCH_NAME}", description: 'Branch of first job to run, will also be PI_ID for a PR')
+        string(name: 'ORIGINAL_JOB', defaultValue: "ds-parent", description: 'What job was the first to build?')
+        string(name: 'TARGET_BRANCH', defaultValue: "${env.CHANGE_TARGET}", description: 'Target branch if PR')
+        string(name: 'SOURCE_BRANCH', defaultValue: "${env.CHANGE_BRANCH}", description: 'Source branch if PR')
+    }
+
+    stages {
+        stage('Echo Environment Variables') {
+            steps {
+                echo "PROJECT: ${env.PROJECT}"
+                echo "BUILD_TO_TRIGGER: ${env.BUILD_TO_TRIGGER}"
+                echo "ORIGINAL_BRANCH: ${params.ORIGINAL_BRANCH}"
+                echo "ORIGINAL_JOB: ${params.ORIGINAL_JOB}"
+                echo "TARGET_BRANCH: ${params.TARGET_BRANCH}"
+                echo "SOURCE_BRANCH: ${params.SOURCE_BRANCH}"
+            }
         }
-        failure {
-            echo 'Build failed.'
+
+        stage('Change version if part of PR') {
+            when {
+                expression {
+                    params.ORIGINAL_BRANCH ==~ 'PR-[0-9]+'
+                }
+            }
+            steps {
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
+                    // We don't want to build child modules so we use this flag to disable it --non-recursive https://maven.apache.org/guides/mini/guide-multiple-modules.html#command-line-options
+                    sh "mvn versions:set -DnewVersion=${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT --non-recursive"
+                    echo "Changing MVN version to: ${params.ORIGINAL_BRANCH}-${params.ORIGINAL_JOB}-${env.PROJECT}-SNAPSHOT"
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
+                    // Execute Maven build
+                    // We don't want to build child modules so we use this flag to disable it --non-recursive https://maven.apache.org/guides/mini/guide-multiple-modules.html#command-line-options
+                    sh "mvn clean package --non-recursive"
+                }
+            }
+        }
+
+        stage('Push to Nexus') {
+            when {
+                // Check if Build was successful
+                expression {
+                    currentBuild.currentResult == "SUCCESS" && params.ORIGINAL_BRANCH ==~ "master|release_v[0-9]+|PR-[0-9]+"
+                }
+            }
+            steps {
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
+                    // We don't want to build child modules so we use this flag to disable it --non-recursive https://maven.apache.org/guides/mini/guide-multiple-modules.html#command-line-options
+                    sh "mvn clean deploy -DskipTests=true --non-recursive"
+                }
+            }
+        }
+
+        stage('Trigger ds-shared Build') {
+            when {
+                expression {
+                    currentBuild.currentResult == "SUCCESS" && params.ORIGINAL_BRANCH ==~ "master|release_v[0-9]+|PR-[0-9]+"
+                }
+            }
+            steps {
+                script {
+                    if (params.ORIGINAL_BRANCH ==~ "PR-[0-9]+") {
+                        // Check the next job to trigger, if there is a branch with same name as the source branch (if a task has involved multiple repositories)
+                        def EMPTY_IF_NO_BRANCH = sh(script: "git ls-remote --heads https://github.com/kb-dk/${env.BUILD_TO_TRIGGER}.git | grep 'refs/heads/${params.SOURCE_BRANCH}' || echo empty", returnStdout: true).trim()
+                        echo "EMPTY_IF_NO_BRANCH: ${EMPTY_IF_NO_BRANCH}"
+
+                        if ("${EMPTY_IF_NO_BRANCH}" == "empty") {
+                            BRANCH_TO_USE = "${params.TARGET_BRANCH}"
+                        } else {
+                            BRANCH_TO_USE = "${params.SOURCE_BRANCH}"
+                        }
+
+                        echo "Triggering: DS-GitHub/${env.BUILD_TO_TRIGGER}/${BRANCH_TO_USE}"
+
+                        build job: "DS-GitHub/${env.BUILD_TO_TRIGGER}/${BRANCH_TO_USE}",
+                            parameters: [
+                                string(name: 'ORIGINAL_BRANCH', value: params.ORIGINAL_BRANCH),
+                                string(name: 'ORIGINAL_JOB', value: params.ORIGINAL_JOB),
+                                string(name: 'TARGET_BRANCH', value: params.TARGET_BRANCH),
+                                string(name: 'SOURCE_BRANCH', value: params.SOURCE_BRANCH)
+                            ],
+                            wait: true // Wait for the pipeline to finish
+                    } else if (params.ORIGINAL_BRANCH ==~ "master|release_v[0-9]+") {
+                        echo "Triggering: DS-GitHub/${env.BUILD_TO_TRIGGER}/${params.ORIGINAL_BRANCH}"
+
+                        build job: "DS-GitHub/${env.BUILD_TO_TRIGGER}/${params.ORIGINAL_BRANCH}",
+                            wait: false // Don't wait for the pipeline to finish
+                    }
+                }
+            }
         }
     }
 }
