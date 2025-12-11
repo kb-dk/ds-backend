@@ -69,7 +69,8 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.1: Add field for records restricted on title
 1.8.2: Add field for platform
 1.8.3: Add field contains_dr_archive_supplementary_rights_metadata
-1.8.5: Add field file_extension
+1.8.4: Add field file_extension
+1.8.5: Merge release_v2 into master
 
   -->
   <field name="_ds_1.8.5_" type="string" indexed="false" stored="false"/>
