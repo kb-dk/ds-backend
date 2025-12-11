@@ -4,13 +4,13 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.2-SNAPSHOT</version>
     </parent>
 
     <name>ds-discover</name> <!-- Human readable name, uppercase and spaces welcome -->
     <groupId>dk.kb.discover</groupId>
     <artifactId>ds-discover</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.3-SNAPSHOT</version>
 
     <packaging>war</packaging>
     <description>ds-discover by the Royal Danish Library</description>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>dk.kb.present</groupId>
             <artifactId>ds-present</artifactId>
-            <version>3.0.5-SNAPSHOT</version>
+            <version>3.0.6-SNAPSHOT</version>
             <type>jar</type>
             <classifier>classes</classifier>
             <exclusions>
