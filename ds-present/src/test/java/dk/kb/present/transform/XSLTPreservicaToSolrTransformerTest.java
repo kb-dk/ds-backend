@@ -452,6 +452,8 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testFileIdAndPath(){
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"");
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_path\":\"c8\\/d2\\/e7\\/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"");
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_extension\":\"mp4\"");
+
     }
 
     @Test
