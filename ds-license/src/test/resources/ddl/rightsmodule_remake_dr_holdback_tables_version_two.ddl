@@ -1,21 +1,12 @@
-CREATE TABLE IF NOT EXISTS restricted_ids (
-    id       BIGINT PRIMARY KEY,
-    id_value VARCHAR(256)   NOT NULL,
-    id_type  VARCHAR(32)    NOT NULL,
-    platform VARCHAR(32)    NOT NULL,
-    title    VARCHAR(4096)  NULL,
-    comment  VARCHAR(16384) NOT NULL
-);
 
-CREATE UNIQUE INDEX IF NOT EXISTS unique_restricted_id ON restricted_ids (id_value, id_type, platform);
-CREATE UNIQUE INDEX IF NOT EXISTS restricted_ids_id_in ON restricted_ids (id);
-CREATE INDEX IF NOT EXISTS restricted_ids_id_value_platform_in ON restricted_ids (id_value, platform);
+DROP TABLE dr_holdback_ranges;
+DROP TABLE dr_holdback_rules;
 
 CREATE TABLE IF NOT EXISTS dr_holdback_categories (
-    id     BIGINT PRIMARY KEY,
+    id   BIGINT PRIMARY KEY,
     "key"  VARCHAR(256) UNIQUE,
-    name   VARCHAR(256),
-    days   int
+    name VARCHAR(256),
+    days int
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS dr_holdback_categories_id_in ON dr_holdback_categories (id);

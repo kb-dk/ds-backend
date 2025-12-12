@@ -1,10 +1,10 @@
 package dk.kb.license.storage;
 
+import dk.kb.license.mapper.DrHoldbackCategoryOutputDtoMapper;
 import dk.kb.license.mapper.DrHoldbackRangeOutputDtoMapper;
-import dk.kb.license.mapper.DrHoldbackRuleOutputDtoMapper;
 import dk.kb.license.mapper.RestrictedIdOutputDtoMapper;
+import dk.kb.license.model.v1.DrHoldbackCategoryOutputDto;
 import dk.kb.license.model.v1.DrHoldbackRangeOutputDto;
-import dk.kb.license.model.v1.DrHoldbackRuleOutputDto;
 import dk.kb.license.model.v1.RestrictedIdOutputDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleStorage.class);
 
     private final static RestrictedIdOutputDtoMapper restrictedIdOutputDtoMapper = new RestrictedIdOutputDtoMapper();
-    private final static DrHoldbackRuleOutputDtoMapper drHoldbackRuleOutputDtoMapper = new DrHoldbackRuleOutputDtoMapper();
+    private final static DrHoldbackCategoryOutputDtoMapper drHoldbackCategoryOutputDtoMapper = new DrHoldbackCategoryOutputDtoMapper();
     private final static DrHoldbackRangeOutputDtoMapper drHoldbackRangeOutputDtoMapper = new DrHoldbackRangeOutputDtoMapper();
 
     private final String RESTRICTED_ID_TABLE = "restricted_ids";
@@ -52,48 +52,48 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
 
     private final String allRestrictedIdsQuery = "SELECT * FROM " + RESTRICTED_ID_TABLE + " WHERE " + RESTRICTED_ID_IDTYPE + " = ? AND " + RESTRICTED_ID_PLATFORM + " = ?";
 
-    private final String DR_HOLDBACK_RULES_TABLE = "DR_HOLDBACK_RULES";
-    private final String DR_HOLDBACK_RULES_ID = "id";
-    private final String DR_HOLDBACK_RULES_VALUE = "dr_holdback_value";
-    private final String DR_HOLDBACK_RULES_NAME = "name";
-    private final String DR_HOLDBACK_RULES_DAYS = "days";
+    private final String DR_HOLDBACK_CATEGORIES_TABLE = "dr_holdback_categories";
+    private final String DR_HOLDBACK_CATEGORIES_ID = "id";
+    private final String DR_HOLDBACK_CATEGORIES_KEY = "key";
+    private final String DR_HOLDBACK_CATEGORIES_NAME = "name";
+    private final String DR_HOLDBACK_CATEGORIES_DAYS = "days";
 
-    private final String DR_HOLDBACK_RANGES_TABLE = "DR_HOLDBACK_RANGES";
+    private final String DR_HOLDBACK_RANGES_TABLE = "dr_holdback_ranges";
     private final String DR_HOLDBACK_RANGES_ID = "id";
     private final String DR_HOLDBACK_RANGES_CONTENT_FROM = "content_range_from";
     private final String DR_HOLDBACK_RANGES_CONTENT_TO = "content_range_to";
     private final String DR_HOLDBACK_RANGES_FORM_FROM = "form_range_from";
     private final String DR_HOLDBACK_RANGES_FORM_TO = "form_range_to";
-    private final String DR_HOLDBACK_RANGES_VALUE = "dr_holdback_value";
+    private final String DR_HOLDBACK_RANGES_DR_HOLDBACK_CATEGORY_KEY = "dr_holdback_category_key";
 
-    private final String createDrHoldbackRuleQuery = "INSERT INTO " + DR_HOLDBACK_RULES_TABLE +
-            " (" + DR_HOLDBACK_RULES_ID + "," + DR_HOLDBACK_RULES_VALUE + "," + DR_HOLDBACK_RULES_NAME + "," + DR_HOLDBACK_RULES_DAYS + ")" +
+    private final String createDrHoldbackCategoryQuery = "INSERT INTO " + DR_HOLDBACK_CATEGORIES_TABLE +
+            " (" + DR_HOLDBACK_CATEGORIES_ID + ", \"" + DR_HOLDBACK_CATEGORIES_KEY + "\" ," + DR_HOLDBACK_CATEGORIES_NAME + ", " + DR_HOLDBACK_CATEGORIES_DAYS + ")" +
             " VALUES (?,?,?,?)";
-    private final String updateDrHoldbackRuleQuery = "UPDATE " + DR_HOLDBACK_RULES_TABLE
-            + " SET " + DR_HOLDBACK_RULES_DAYS + " = ?"
-            + " WHERE " + DR_HOLDBACK_RULES_ID + " = ?";
-    private final String deleteDrHoldbackRuleQuery = "DELETE FROM " + DR_HOLDBACK_RULES_TABLE +
-            " WHERE " + DR_HOLDBACK_RULES_ID + " = ?";
-    private final String getDrHoldbackRuleByNameQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
-            + " WHERE " + DR_HOLDBACK_RULES_NAME + " = ?";
-    private final String getDrHoldbackRuleByIdQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
-            + " WHERE " + DR_HOLDBACK_RULES_ID + " = ?";
-    private final String getDrHoldbackRuleByDrHoldbackValueQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE
-            + " WHERE " + DR_HOLDBACK_RULES_VALUE + " = ?";
-    private final String getDrHoldbackRulesQuery = "SELECT * FROM " + DR_HOLDBACK_RULES_TABLE;
+    private final String updateDrHoldbackCategoryQuery = "UPDATE " + DR_HOLDBACK_CATEGORIES_TABLE
+            + " SET " + DR_HOLDBACK_CATEGORIES_DAYS + " = ?"
+            + " WHERE " + DR_HOLDBACK_CATEGORIES_ID + " = ?";
+    private final String deleteDrHoldbackCategoryQuery = "DELETE FROM " + DR_HOLDBACK_CATEGORIES_TABLE +
+            " WHERE " + DR_HOLDBACK_CATEGORIES_ID + " = ?";
+    private final String getDrHoldbackCategoryByNameQuery = "SELECT * FROM " + DR_HOLDBACK_CATEGORIES_TABLE
+            + " WHERE " + DR_HOLDBACK_CATEGORIES_NAME + " = ?";
+    private final String getDrHoldbackCategoryByIdQuery = "SELECT * FROM " + DR_HOLDBACK_CATEGORIES_TABLE
+            + " WHERE " + DR_HOLDBACK_CATEGORIES_ID + " = ?";
+    private final String getDrHoldbackCategoryByKeyQuery = "SELECT * FROM " + DR_HOLDBACK_CATEGORIES_TABLE
+            + " WHERE \"" + DR_HOLDBACK_CATEGORIES_KEY + "\" = ?";
+    private final String getDrHoldbackCategoriesQuery = "SELECT * FROM " + DR_HOLDBACK_CATEGORIES_TABLE;
     private final String createDrHoldbackRangeQuery = "INSERT INTO " + DR_HOLDBACK_RANGES_TABLE +
-            "(" + DR_HOLDBACK_RANGES_ID + "," + DR_HOLDBACK_RANGES_CONTENT_FROM + "," + DR_HOLDBACK_RANGES_CONTENT_TO + "," + DR_HOLDBACK_RANGES_FORM_FROM + "," + DR_HOLDBACK_RANGES_FORM_TO + "," + DR_HOLDBACK_RANGES_VALUE + ")" +
+            "(" + DR_HOLDBACK_RANGES_ID + "," + DR_HOLDBACK_RANGES_CONTENT_FROM + "," + DR_HOLDBACK_RANGES_CONTENT_TO + "," + DR_HOLDBACK_RANGES_FORM_FROM + "," + DR_HOLDBACK_RANGES_FORM_TO + "," + DR_HOLDBACK_RANGES_DR_HOLDBACK_CATEGORY_KEY + ")" +
             " VALUES (?,?,?,?,?,?)";
 
-    private final String getDrHoldbackValueByContentAndFormQuery = "SELECT " + DR_HOLDBACK_RANGES_VALUE +
+    private final String getDrHoldbackCategoryKeyByContentAndFormQuery = "SELECT " + DR_HOLDBACK_RANGES_DR_HOLDBACK_CATEGORY_KEY +
             " FROM " + DR_HOLDBACK_RANGES_TABLE + " WHERE "
             + DR_HOLDBACK_RANGES_CONTENT_FROM + " <= ? AND "
             + DR_HOLDBACK_RANGES_CONTENT_TO + " >= ?  AND "
             + DR_HOLDBACK_RANGES_FORM_FROM + " <= ? AND "
             + DR_HOLDBACK_RANGES_FORM_TO + " >= ? ";
 
-    private final String getDrHoldbackRangesByDrHoldbackValueQuery = "SELECT * FROM " + DR_HOLDBACK_RANGES_TABLE + " WHERE " + DR_HOLDBACK_RANGES_VALUE + " = ?";
-    private final String deleteRangesByDrHoldbackValueQuery = "DELETE FROM " + DR_HOLDBACK_RANGES_TABLE + " WHERE " + DR_HOLDBACK_RANGES_VALUE + " = ?";
+    private final String getDrHoldbackRangesByDrHoldbackCategoryKeyQuery = "SELECT * FROM " + DR_HOLDBACK_RANGES_TABLE + " WHERE " + DR_HOLDBACK_RANGES_DR_HOLDBACK_CATEGORY_KEY + " = ?";
+    private final String deleteDrHoldbackRangesByDrHoldbackCategoryKeyQuery = "DELETE FROM " + DR_HOLDBACK_RANGES_TABLE + " WHERE " + DR_HOLDBACK_RANGES_DR_HOLDBACK_CATEGORY_KEY + " = ?";
 
     public RightsModuleStorage() throws SQLException {
         super();
@@ -281,24 +281,24 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
     }
 
     /**
-     * Create a holdback rule for DR content
+     * Create a holdback category for DR content
      *
-     * @param drHoldbackValue value of the rule
-     * @param name            name of the rule
-     * @param days            number of holdback days
-     * @return uniqueId       id of the rule
+     * @param key  value of the DR holdback category
+     * @param name name of the DR holdback category
+     * @param days number of holdback days of the DR holdback category
+     * @return uniqueId       id of the DR holdback category
      * @throws SQLException
      */
-    public long createDrHoldbackRule(String drHoldbackValue, String name, int days) throws SQLException {
+    public long createDrHoldbackCategory(String key, String name, int days) throws SQLException {
         long uniqueId = generateUniqueID();
-        try (PreparedStatement stmt = connection.prepareStatement(createDrHoldbackRuleQuery)) {
+        try (PreparedStatement stmt = connection.prepareStatement(createDrHoldbackCategoryQuery)) {
             stmt.setLong(1, uniqueId);
-            stmt.setString(2, drHoldbackValue);
+            stmt.setString(2, key);
             stmt.setString(3, name);
             stmt.setInt(4, days);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in createDrHoldbackRule", e);
+            log.error("SQL Exception in createDrHoldbackCategory", e);
             throw e;
         }
 
@@ -306,140 +306,136 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
     }
 
     /**
-     * update the number of holdback days of a holdback rule
+     * update the number of holdback days of a holdback category
      *
-     * @param id value of the holdback rule
-     * @param days            number of days
+     * @param id   value of the holdback category
+     * @param days number of days
      * @throws SQLException
      */
-    public void updateDrHoldbackRule(Long id, int days) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackRuleQuery)) {
+    public void updateDrHoldbackCategory(Long id, int days) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(updateDrHoldbackCategoryQuery)) {
             stmt.setInt(1, days);
             stmt.setLong(2, id);
             stmt.execute();
         } catch (SQLException e) {
-            log.error("SQL Exception in updateDrHoldbackRule", e);
+            log.error("SQL Exception in updateDrHoldbackCategory", e);
             throw e;
         }
     }
 
     /**
-     * Delete a holdback rule for DR content
+     * Delete a holdback category for DR content
      *
-     * @param id value of the holdback rule
+     * @param id value of the holdback category
      * @throws SQLException
      */
-    public int deleteDrHoldbackRule(Long id) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(deleteDrHoldbackRuleQuery)) {
+    public int deleteDrHoldbackCategory(Long id) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(deleteDrHoldbackCategoryQuery)) {
             stmt.setLong(1, id);
             int result = stmt.executeUpdate();
             log.info("Deleted: {} documents by id: {}", result, id);
             return result;
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteDrHoldbackRule", e);
+            log.error("SQL Exception in deleteDrHoldbackCategory", e);
             throw e;
         }
     }
 
     /**
-     * Get a DR holdback rule by id
+     * Get a DR holdback category by id
      *
-     * @param id unique id of the holdback rule
+     * @param id unique id of the holdback category
      * @return
      * @throws SQLException
      */
-    public DrHoldbackRuleOutputDto getDrHoldbackRuleById(Long id) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleByIdQuery)) {
+    public DrHoldbackCategoryOutputDto getDrHoldbackCategoryById(Long id) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackCategoryByIdQuery)) {
             stmt.setLong(1, id);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
-                return drHoldbackRuleOutputDtoMapper.map(res);
+                return drHoldbackCategoryOutputDtoMapper.map(res);
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRuleById", e);
+            log.error("SQL Exception in getDrHoldbackCategoryById", e);
             throw e;
         }
     }
 
     /**
-     * Get a DR holdback rule
-     * @param name name of holdback rule
+     * Get a DR holdback category by name
+     *
+     * @param name name of holdback category
      * @return
      * @throws SQLException
      */
-    public DrHoldbackRuleOutputDto getDrHoldbackRuleByName(String name) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleByNameQuery)) {
+    public DrHoldbackCategoryOutputDto getDrHoldbackCategoryByName(String name) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackCategoryByNameQuery)) {
             stmt.setString(1, name);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
-                DrHoldbackRuleOutputDto output = new DrHoldbackRuleOutputDto();
-                output.setId(res.getLong(DR_HOLDBACK_RULES_ID));
-                output.setDrHoldbackValue(res.getString(DR_HOLDBACK_RULES_VALUE));
-                output.setName(res.getString(DR_HOLDBACK_RULES_NAME));
-                output.setDays(res.getInt(DR_HOLDBACK_RULES_DAYS));
-                return output;
+                return drHoldbackCategoryOutputDtoMapper.map(res);
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRuleFromName: " + e.getMessage());
+            log.error("SQL Exception in getDrHoldbackCategoryFromName: " + e.getMessage());
             throw e;
         }
     }
 
     /**
-     * Get a DR holdback rule by drHoldbackValue
+     * Get a DR holdback category by key
      *
-     * @param drHoldbackValue value of the holdback rule
+     * @param key value of the holdback category
      * @return
      * @throws SQLException
      */
-    public DrHoldbackRuleOutputDto getDrHoldbackRuleByDrHoldbackValue(String drHoldbackValue) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRuleByDrHoldbackValueQuery)) {
-            stmt.setString(1, drHoldbackValue);
+    public DrHoldbackCategoryOutputDto getDrHoldbackCategoryByKey(String key) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackCategoryByKeyQuery)) {
+            stmt.setString(1, key);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
-                return drHoldbackRuleOutputDtoMapper.map(res);
+                return drHoldbackCategoryOutputDtoMapper.map(res);
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRuleByDrHoldbackValue", e);
+            log.error("SQL Exception in getDrHoldbackCategoryByKey", e);
             throw e;
         }
     }
 
     /**
-     * list all holdback rules
+     * List all DR holdback categories
      *
-     * @return a list of rules
+     * @return a list of DR holdback categories
      * @throws SQLException if fails
      */
-    public List<DrHoldbackRuleOutputDto> getDrHoldbackRules() throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRulesQuery)) {
-            List<DrHoldbackRuleOutputDto> output = new ArrayList<>();
+    public List<DrHoldbackCategoryOutputDto> getDrHoldbackCategories() throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackCategoriesQuery)) {
+            List<DrHoldbackCategoryOutputDto> output = new ArrayList<>();
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
-                DrHoldbackRuleOutputDto rule = drHoldbackRuleOutputDtoMapper.map(res);
-                output.add(rule);
+                DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto = drHoldbackCategoryOutputDtoMapper.map(res);
+                output.add(drHoldbackCategoryOutputDto);
             }
             return output;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRules", e);
+            log.error("SQL Exception in getDrHoldbackCategories", e);
             throw e;
         }
     }
 
     /**
-     * add a content and form range to a drHoldbackValue
+     * add a content and form range to a drHoldbackCategoryKey
      *
      * @param contentRangeFrom
      * @param contentRangeTo
      * @param formRangeFrom
      * @param formRangeTo
-     * @param drHoldbackValue
+     * @param drHoldbackCategoryKey
      * @throws SQLException
      */
-    public long createDrHoldbackRange(int contentRangeFrom, int contentRangeTo, int formRangeFrom, int formRangeTo, String drHoldbackValue) throws SQLException {
+    public long createDrHoldbackRange(int contentRangeFrom, int contentRangeTo, int formRangeFrom, int formRangeTo, String drHoldbackCategoryKey) throws SQLException {
         long uniqueId = generateUniqueID();
         try (PreparedStatement stmt = connection.prepareStatement(createDrHoldbackRangeQuery)) {
             stmt.setLong(1, uniqueId);
@@ -447,7 +443,7 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
             stmt.setInt(3, contentRangeTo);
             stmt.setInt(4, formRangeFrom);
             stmt.setInt(5, formRangeTo);
-            stmt.setString(6, drHoldbackValue);
+            stmt.setString(6, drHoldbackCategoryKey);
             stmt.execute();
         } catch (SQLException e) {
             log.error("SQL Exception in createDrHoldbackRange", e);
@@ -457,33 +453,33 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
     }
 
     /**
-     * Delete all holdback ranges for a drHoldbackValue
+     * Delete all holdback ranges for a drHoldbackCategoryKey
      *
-     * @param drHoldbackValue
+     * @param drHoldbackCategoryKey
      * @throws SQLException
      */
-    public int deleteRangesByDrHoldbackValue(String drHoldbackValue) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(deleteRangesByDrHoldbackValueQuery)) {
-            stmt.setString(1, drHoldbackValue);
+    public int deleteDrHoldbackRangesByDrHoldbackCategoryKey(String drHoldbackCategoryKey) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(deleteDrHoldbackRangesByDrHoldbackCategoryKeyQuery)) {
+            stmt.setString(1, drHoldbackCategoryKey);
             int result = stmt.executeUpdate();
-            log.info("Deleted: {} documents by drHoldbackValue: {}", result, drHoldbackValue);
+            log.info("Deleted: {} documents by drHoldbackCategoryKey: {}", result, drHoldbackCategoryKey);
             return result;
         } catch (SQLException e) {
-            log.error("SQL Exception in deleteRangesByDrHoldbackValue", e);
+            log.error("SQL Exception in deleteDrHoldbackRangesByDrHoldbackCategoryKey", e);
             throw e;
         }
     }
 
     /**
-     * get all form and content ranges for a drHoldbackValue
+     * get all form and content ranges for a key
      *
-     * @param drHoldbackValue
+     * @param key
      * @return
      * @throws SQLException
      */
-    public List<DrHoldbackRangeOutputDto> getDrHoldbackRangesByDrHoldbackValue(String drHoldbackValue) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRangesByDrHoldbackValueQuery)) {
-            stmt.setString(1, drHoldbackValue);
+    public List<DrHoldbackRangeOutputDto> getDrHoldbackRangesByDrHoldbackCategoryKey(String key) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackRangesByDrHoldbackCategoryKeyQuery)) {
+            stmt.setString(1, key);
             ResultSet result = stmt.executeQuery();
             List<DrHoldbackRangeOutputDto> output = new ArrayList<>();
             while (result.next()) {
@@ -492,32 +488,32 @@ public class RightsModuleStorage extends AuditLogModuleStorage {
             }
             return output;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackRangesByDrHoldbackValue", e);
+            log.error("SQL Exception in getDrHoldbackRangesByDrHoldbackCategoryKey", e);
             throw e;
         }
     }
 
     /**
-     * Get the drHoldbackValue from content and form metadata values.
+     * Get the drHoldbackCategoryKey from content and form metadata values.
      *
      * @param content the content id
      * @param form    the form id
      * @return
      * @throws SQLException
      */
-    public String getDrHoldbackValueByContentAndForm(int content, int form) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackValueByContentAndFormQuery)) {
+    public String getDrHoldbackCategoryKeyByContentAndForm(int content, int form) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement(getDrHoldbackCategoryKeyByContentAndFormQuery)) {
             stmt.setInt(1, content);
             stmt.setInt(2, content);
             stmt.setInt(3, form);
             stmt.setInt(4, form);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
-                return res.getString(DR_HOLDBACK_RANGES_VALUE);
+                return res.getString(DR_HOLDBACK_RANGES_DR_HOLDBACK_CATEGORY_KEY);
             }
             return null;
         } catch (SQLException e) {
-            log.error("SQL Exception in getDrHoldbackValueByContentAndForm", e);
+            log.error("SQL Exception in getDrHoldbackCategoryKeyByContentAndForm", e);
             throw e;
         }
     }

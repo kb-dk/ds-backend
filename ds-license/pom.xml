@@ -182,15 +182,15 @@
     The rights API exposes methods to update two types of data for calculating when the holdback of a record
     expires. The holdback calculations are only relevant for the DR Arkiv records.
 
-    #### Holdback Rules
-    A set of rules (formål) specifying the number of holdback days. The rules are identified by their name and id.
-    If the number of days is less than 365, the holdback days are added directly to the publication date. If the
+    #### Holdback Categories
+    A set of categories (formål) specifying the number of holdback days. The categories are identified by their name
+    and id. If the number of days is less than 365, the holdback days are added directly to the publication date. If the
     holdback days are equal to or greater 365, the holdback days are added to the first January 1. following the
     publication date.
 
     #### Holdback ranges
-    Each record is mapped to a holdback rule by looking at the values for their form and content (indhold).
-    The ranges are used to to map a record to a holdback rule.
+    Each record is mapped to a holdback category by looking at the values for their form and content (indhold).
+    The ranges are used to map a record to a holdback category.
 
 
     Developed and maintained by the Royal Danish Library.
