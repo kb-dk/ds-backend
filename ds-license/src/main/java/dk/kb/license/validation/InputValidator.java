@@ -25,17 +25,17 @@ public class InputValidator {
         } else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
             validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
         } else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.STRICT_TITLE) {
-            validateStrictTitle(restrictedIdInputDto.getIdValue());
+            validateString(restrictedIdInputDto.getIdValue(), "strictTitle");
         } else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.OWNPRODUCTION_CODE) {
             validateOwnProductionCode(restrictedIdInputDto.getIdValue());
         }
 
         // OWNPRODUCTION_CODE don't have title
         if (restrictedIdInputDto.getIdType() != IdTypeEnumDto.OWNPRODUCTION_CODE) {
-            validateTitle(restrictedIdInputDto.getTitle());
+            validateString(restrictedIdInputDto.getTitle(), "title");
         }
 
-        validateComment(restrictedIdInputDto.getComment());
+        validateString(restrictedIdInputDto.getComment(), "comment");
     }
 
     /**
@@ -72,13 +72,13 @@ public class InputValidator {
     }
 
     /**
-     * Validates key is not null, empty or blank
+     * Validates inputString is not null, empty or blank
      *
-     * @param key to be validated
+     * @param inputString to be validated
      */
-    public void validateKey(String key) {
-        if (StringUtils.isBlank(key)) {
-            final String errorMessage = "'key' cannot be empty";
+    public void validateString(String inputString, String parameterName) {
+        if (StringUtils.isBlank(inputString)) {
+            final String errorMessage = "'" + parameterName + "' cannot be empty";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }
@@ -110,19 +110,6 @@ public class InputValidator {
     }
 
     /**
-     * Validates that strictTitle is not null, empty or blank in the given {@link RestrictedIdInputDto}.
-     *
-     * @param strictTitle to be validated
-     */
-    public void validateStrictTitle(String strictTitle) {
-        if (StringUtils.isBlank(strictTitle)) {
-            final String errorMessage = "'strictTitle' cannot be empty";
-            log.error(errorMessage);
-            throw new InvalidArgumentServiceException(errorMessage);
-        }
-    }
-
-    /**
      * Validates that ownProductionCode is not null, empty or blank and only contains digits in the given {@link RestrictedIdInputDto}.
      *
      * @param ownProductionCode to be validated
@@ -142,52 +129,13 @@ public class InputValidator {
     }
 
     /**
-     * Validates that title is not null, empty or blank and not too long in the given {@link RestrictedIdInputDto}.
+     * Validates inputInteger is not null
      *
-     * @param title to be validated
+     * @param inputInteger to be validated.
      */
-    public void validateTitle(String title) {
-        if (StringUtils.isBlank(title)) {
-            final String errorMessage = "'title' cannot be empty";
-            log.error(errorMessage);
-            throw new InvalidArgumentServiceException(errorMessage);
-        }
-    }
-
-    /**
-     * Validates that comment is not null, empty or blank and not too long in the given {@link RestrictedIdInputDto}.
-     *
-     * @param comment to be validated
-     */
-    public void validateComment(String comment) {
-        if (StringUtils.isBlank(comment)) {
-            final String errorMessage = "'comment' cannot be empty";
-            log.error(errorMessage);
-            throw new InvalidArgumentServiceException(errorMessage);
-        }
-    }
-
-    /**
-     * Validates days in the given {@link DrHoldbackCategoryInputDto}.
-     *
-     * @param days the {@link DrHoldbackCategoryInputDto} containing the days to be validated.
-     */
-    public void validateDays(Integer days) {
-        if (days == null) {
-            final String errorMessage = "'days' cannot be null";
-            log.error(errorMessage);
-            throw new InvalidArgumentServiceException(errorMessage);
-        }
-    }
-
-    /**
-     * Validates changeComment is not null, empty or blank
-     *
-     * @param changeComment to be validated
-     */
-    public void validateChangeComment(String changeComment) {
-        if (StringUtils.isBlank(changeComment)) {
-            final String errorMessage = "'changeComment' cannot be empty";
+    public void validateInteger(Integer inputInteger, String parameterName) {
+        if (inputInteger == null) {
+            final String errorMessage = "'" + parameterName + "' cannot be null";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }

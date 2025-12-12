@@ -172,7 +172,7 @@ public class RightsModuleFacade {
      */
     public static RecordsCountDto deleteRestrictedId(Long id, boolean touchDsStorageRecord, DeleteReasonDto deleteReasonDto) {
         inputValidator.validateId(id);
-        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
 
         // Retrieve object from database
         RestrictedIdOutputDto deleteRestrictedIdOutputDto = getRestrictedIdById(id);
@@ -477,7 +477,7 @@ public class RightsModuleFacade {
      * @throws NotFoundServiceException if no DR holdback category is found for the specified key.
      */
     public static DrHoldbackCategoryOutputDto getDrHoldbackCategoryByKey(String key) {
-        inputValidator.validateKey(key);
+        inputValidator.validateString(key, "key");
 
         return BaseModuleStorage.performStorageAction("Get DR holdback category", RightsModuleStorage.class, storage -> {
             DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto = ((RightsModuleStorage) storage).getDrHoldbackCategoryByKey(key);
@@ -551,7 +551,7 @@ public class RightsModuleFacade {
      * @param drHoldbackCategoryInputDto
      */
     public static DrHoldbackCategoryOutputDto createDrHoldbackCategory(DrHoldbackCategoryInputDto drHoldbackCategoryInputDto) {
-        inputValidator.validateKey(drHoldbackCategoryInputDto.getKey());
+        inputValidator.validateString(drHoldbackCategoryInputDto.getKey(), "key");
 
         return BaseModuleStorage.performStorageAction("Create DR holdback category", RightsModuleStorage.class, storage -> {
             long id = ((RightsModuleStorage) storage).createDrHoldbackCategory(drHoldbackCategoryInputDto.getKey(), drHoldbackCategoryInputDto.getName(), drHoldbackCategoryInputDto.getDays());
@@ -575,7 +575,7 @@ public class RightsModuleFacade {
      **/
     public static DrHoldbackCategoryOutputDto updateDrHoldbackCategory(Long id, DrHoldbackCategoryInputDto drHoldbackCategoryInputDto) {
         inputValidator.validateId(id);
-        inputValidator.validateDays(drHoldbackCategoryInputDto.getDays());
+        inputValidator.validateInteger(drHoldbackCategoryInputDto.getDays(), "days");
 
         // Check if the id has a correspondent DR holdback category
         DrHoldbackCategoryOutputDto oldDrHoldbackCategoryOutputDto = getDrHoldbackCategoryById(id);
@@ -601,7 +601,7 @@ public class RightsModuleFacade {
      */
     public static RecordsCountDto deleteDrHoldbackCategory(Long id, DeleteReasonDto deleteReasonDto) {
         inputValidator.validateId(id);
-        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
 
         // Check if the id has a correspondent DR holdback category
         DrHoldbackCategoryOutputDto deleteDrHoldbackCategoryOutputDto = getDrHoldbackCategoryById(id);
@@ -632,7 +632,7 @@ public class RightsModuleFacade {
      * @throws NotFoundServiceException if no DR holdback category is found for the specified key.
      */
     public static List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackCategoryKey) {
-        inputValidator.validateKey(drHoldbackCategoryKey);
+        inputValidator.validateString(drHoldbackCategoryKey, "drHoldbackCategoryKey");
 
         return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackCategoryKey, RightsModuleStorage.class, storage -> {
             List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = ((RightsModuleStorage) storage).getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
@@ -655,7 +655,7 @@ public class RightsModuleFacade {
      * @param drHoldbackRangeInputDto
      */
     public static List<DrHoldbackRangeOutputDto> createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
-        inputValidator.validateKey(drHoldbackRangeInputDto.getDrHoldbackCategoryKey());
+        inputValidator.validateString(drHoldbackRangeInputDto.getDrHoldbackCategoryKey(), "drHoldbackCategoryKey");
 
         // Check if the key has correspondent DR holdback category
         getDrHoldbackCategoryByKey(drHoldbackRangeInputDto.getDrHoldbackCategoryKey());
@@ -684,8 +684,8 @@ public class RightsModuleFacade {
      * @param deleteReasonDto       comment about why object gets deleted
      */
     public static RecordsCountDto deleteDrHoldbackRanges(String drHoldbackCategoryKey, DeleteReasonDto deleteReasonDto) {
-        inputValidator.validateKey(drHoldbackCategoryKey);
-        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+        inputValidator.validateString(drHoldbackCategoryKey, "drHoldbackCategoryKey");
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
 
         // Check if the key has correspondent DR holdback ranges
         List<DrHoldbackRangeOutputDto> oldRanges = getDrHoldbackRanges(drHoldbackCategoryKey);
