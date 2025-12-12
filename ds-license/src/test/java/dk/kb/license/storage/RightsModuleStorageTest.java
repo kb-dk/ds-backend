@@ -43,7 +43,7 @@ public class RightsModuleStorageTest extends UnitTestUtil {
         List<String> tables = new ArrayList<>();
         tables.add("RESTRICTED_IDS");
         tables.add("DR_HOLDBACK_RANGES");
-        tables.add("DR_HOLDBACK_RULES");
+        tables.add("DR_HOLDBACK_CATEGORIES");
         storage.clearTableRecords(tables);
     }
 
@@ -199,146 +199,146 @@ public class RightsModuleStorageTest extends UnitTestUtil {
     }
 
     @Test
-    public void createDrHoldbackRule_whenCreatingDrHoldbackRule_thenReturnId() throws SQLException {
+    public void createDrHoldbackCategory_whenCreatingDrHoldbackCategory_thenReturnId() throws SQLException {
         // Arrange
-        String drHoldbackValue = "2.02";
+        String key = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
 
         // Act
-        long id = storage.createDrHoldbackRule(drHoldbackValue, name, days);
-        DrHoldbackRuleOutputDto drHoldbackRuleById = storage.getDrHoldbackRuleById(id);
-        DrHoldbackRuleOutputDto drHoldbackRuleByDrHoldbackValue = storage.getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
+        long id = storage.createDrHoldbackCategory(key, name, days);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryById = storage.getDrHoldbackCategoryById(id);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryByKey = storage.getDrHoldbackCategoryByKey(key);
 
         // Assert
-        assertEquals(id, drHoldbackRuleById.getId());
-        assertEquals(drHoldbackValue, drHoldbackRuleById.getDrHoldbackValue());
-        assertEquals(name, drHoldbackRuleById.getName());
-        assertEquals(days, drHoldbackRuleById.getDays());
+        assertEquals(id, drHoldbackCategoryById.getId());
+        assertEquals(key, drHoldbackCategoryById.getKey());
+        assertEquals(name, drHoldbackCategoryById.getName());
+        assertEquals(days, drHoldbackCategoryById.getDays());
 
-        assertEquals(id, drHoldbackRuleByDrHoldbackValue.getId());
-        assertEquals(drHoldbackValue, drHoldbackRuleByDrHoldbackValue.getDrHoldbackValue());
-        assertEquals(name, drHoldbackRuleByDrHoldbackValue.getName());
-        assertEquals(days, drHoldbackRuleByDrHoldbackValue.getDays());
+        assertEquals(id, drHoldbackCategoryByKey.getId());
+        assertEquals(key, drHoldbackCategoryByKey.getKey());
+        assertEquals(name, drHoldbackCategoryByKey.getName());
+        assertEquals(days, drHoldbackCategoryByKey.getDays());
     }
 
     @Test
-    public void createDrHoldbackRule_whenDrHoldbackRuleAlreadyExists_thenThrowSQLException() throws SQLException {
+    public void createDrHoldbackCategory_whenDrHoldbackCategoryAlreadyExists_thenThrowSQLException() throws SQLException {
         // Arrange
-        String drHoldbackValue = "2.02";
+        String key = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
         String expectedMessage = "Unique index or primary key violation";
 
-        storage.createDrHoldbackRule(drHoldbackValue, name, days);
+        storage.createDrHoldbackCategory(key, name, days);
 
         // Act
-        Exception exception = assertThrows(SQLException.class, () -> storage.createDrHoldbackRule(drHoldbackValue, name, days));
+        Exception exception = assertThrows(SQLException.class, () -> storage.createDrHoldbackCategory(key, name, days));
 
         // Assert
         assertTrue(exception.getMessage().startsWith(expectedMessage));
     }
 
     @Test
-    public void updateDrHoldbackRule_whenUpdatingDaysWithValidId_thenDaysIsUpdated() throws SQLException {
+    public void updateDrHoldbackCategory_whenUpdatingDaysWithValidId_thenDaysIsUpdated() throws SQLException {
         // Arrange
-        String drHoldbackValue = "2.02";
+        String key = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
         int newDays = 200;
 
-        long id = storage.createDrHoldbackRule(drHoldbackValue, name, days);
+        long id = storage.createDrHoldbackCategory(key, name, days);
 
         // Act
-        storage.updateDrHoldbackRule(id, newDays);
-        DrHoldbackRuleOutputDto drHoldbackRuleById = storage.getDrHoldbackRuleById(id);
-        DrHoldbackRuleOutputDto drHoldbackRuleByDrHoldbackValue = storage.getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
+        storage.updateDrHoldbackCategory(id, newDays);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryById = storage.getDrHoldbackCategoryById(id);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryByKey = storage.getDrHoldbackCategoryByKey(key);
 
         // Assert
-        assertEquals(id, drHoldbackRuleById.getId());
-        assertEquals(drHoldbackValue, drHoldbackRuleById.getDrHoldbackValue());
-        assertEquals(name, drHoldbackRuleById.getName());
-        assertEquals(newDays, drHoldbackRuleById.getDays());
+        assertEquals(id, drHoldbackCategoryById.getId());
+        assertEquals(key, drHoldbackCategoryById.getKey());
+        assertEquals(name, drHoldbackCategoryById.getName());
+        assertEquals(newDays, drHoldbackCategoryById.getDays());
 
-        assertEquals(id, drHoldbackRuleByDrHoldbackValue.getId());
-        assertEquals(drHoldbackValue, drHoldbackRuleByDrHoldbackValue.getDrHoldbackValue());
-        assertEquals(name, drHoldbackRuleByDrHoldbackValue.getName());
-        assertEquals(newDays, drHoldbackRuleByDrHoldbackValue.getDays());
+        assertEquals(id, drHoldbackCategoryByKey.getId());
+        assertEquals(key, drHoldbackCategoryByKey.getKey());
+        assertEquals(name, drHoldbackCategoryByKey.getName());
+        assertEquals(newDays, drHoldbackCategoryByKey.getDays());
     }
 
     @Test
-    public void deleteDrHoldbackRule_whenGivenId_thenDrHoldbackRuleIsDeleted() throws SQLException {
+    public void deleteDrHoldbackCategory_whenGivenId_thenDrHoldbackCategoryIsDeleted() throws SQLException {
         // Arrange
-        String drHoldbackValue = "2.02";
+        String key = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
 
-        long id = storage.createDrHoldbackRule(drHoldbackValue, name, days);
-        DrHoldbackRuleOutputDto drHoldbackRuleById = storage.getDrHoldbackRuleById(id);
-        DrHoldbackRuleOutputDto drHoldbackRuleByDrHoldbackValue = storage.getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
+        long id = storage.createDrHoldbackCategory(key, name, days);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryById = storage.getDrHoldbackCategoryById(id);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryByKey = storage.getDrHoldbackCategoryByKey(key);
 
-        assertEquals(id, drHoldbackRuleById.getId());
-        assertEquals(drHoldbackValue, drHoldbackRuleById.getDrHoldbackValue());
-        assertEquals(name, drHoldbackRuleById.getName());
-        assertEquals(days, drHoldbackRuleById.getDays());
+        assertEquals(id, drHoldbackCategoryById.getId());
+        assertEquals(key, drHoldbackCategoryById.getKey());
+        assertEquals(name, drHoldbackCategoryById.getName());
+        assertEquals(days, drHoldbackCategoryById.getDays());
 
-        assertEquals(id, drHoldbackRuleByDrHoldbackValue.getId());
-        assertEquals(drHoldbackValue, drHoldbackRuleByDrHoldbackValue.getDrHoldbackValue());
-        assertEquals(name, drHoldbackRuleByDrHoldbackValue.getName());
-        assertEquals(days, drHoldbackRuleByDrHoldbackValue.getDays());
+        assertEquals(id, drHoldbackCategoryByKey.getId());
+        assertEquals(key, drHoldbackCategoryByKey.getKey());
+        assertEquals(name, drHoldbackCategoryByKey.getName());
+        assertEquals(days, drHoldbackCategoryByKey.getDays());
 
         // Act
-        int deleteDrHoldbackRule = storage.deleteDrHoldbackRule(id);
-        DrHoldbackRuleOutputDto deletedDrHoldbackRuleById = storage.getDrHoldbackRuleById(id);
-        DrHoldbackRuleOutputDto deletedDrHoldbackRuleByDrHoldbackValue = storage.getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
+        int deleteDrHoldbackCategory = storage.deleteDrHoldbackCategory(id);
+        DrHoldbackCategoryOutputDto deletedDrHoldbackCategoryById = storage.getDrHoldbackCategoryById(id);
+        DrHoldbackCategoryOutputDto deletedDrHoldbackCategoryByKey = storage.getDrHoldbackCategoryByKey(key);
 
         // Assert
-        assertEquals(1, deleteDrHoldbackRule);
-        assertNull(deletedDrHoldbackRuleById);
-        assertNull(deletedDrHoldbackRuleByDrHoldbackValue);
+        assertEquals(1, deleteDrHoldbackCategory);
+        assertNull(deletedDrHoldbackCategoryById);
+        assertNull(deletedDrHoldbackCategoryByKey);
     }
 
     @Test
-    public void deleteDrHoldbackRule_whenThereIsADrHoldbackRange_thenThrowJdbcSQLIntegrityConstraintViolationException() throws SQLException {
-        String drHoldbackValue = "2.02";
+    public void deleteDrHoldbackCategory_whenThereIsADrHoldbackRange_thenThrowJdbcSQLIntegrityConstraintViolationException() throws SQLException {
+        String key = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
-        String expectedMessage = "Referential integrity constraint violation: \"CONSTRAINT_35: public.dr_holdback_ranges FOREIGN KEY(dr_holdback_value) REFERENCES public.dr_holdback_rules(dr_holdback_value)";
+        String expectedMessage = "Referential integrity constraint violation: \"CONSTRAINT_35: public.dr_holdback_ranges FOREIGN KEY(dr_holdback_category_key) REFERENCES public.dr_holdback_categories";
 
-        long id = storage.createDrHoldbackRule(drHoldbackValue, name, days);
+        long id = storage.createDrHoldbackCategory(key, name, days);
 
-        storage.createDrHoldbackRange(1000, 1000, 1200, 1900, drHoldbackValue);
+        storage.createDrHoldbackRange(1000, 1000, 1200, 1900, key);
 
         // Act
-        Exception exception = assertThrows(JdbcSQLIntegrityConstraintViolationException.class, () -> storage.deleteDrHoldbackRule(id));
+        Exception exception = assertThrows(JdbcSQLIntegrityConstraintViolationException.class, () -> storage.deleteDrHoldbackCategory(id));
 
         // Assert
         assertTrue(exception.getMessage().startsWith(expectedMessage));
     }
 
     @Test
-    public void getDrHoldbackRules_whenWantingAllDrHoldbackRules_thenReturnAllDrHoldbackRules() throws SQLException {
+    public void getDrHoldbackCategories_whenWantingAllDrHoldbackCategories_thenReturnAllDrHoldbackCategories() throws SQLException {
         // Arrange
-        String drHoldbackValue = "2.02";
+        String key = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
 
         // Act
-        long id = storage.createDrHoldbackRule(drHoldbackValue, name, days);
-        List<DrHoldbackRuleOutputDto> drHoldbackRuleOutputDtoList = storage.getDrHoldbackRules();
+        long id = storage.createDrHoldbackCategory(key, name, days);
+        List<DrHoldbackCategoryOutputDto> drHoldbackCategoryOutputDtoList = storage.getDrHoldbackCategories();
 
         // Assert
-        assertEquals(1, drHoldbackRuleOutputDtoList.size());
-        assertEquals(id, drHoldbackRuleOutputDtoList.get(0).getId());
-        assertEquals(drHoldbackValue, drHoldbackRuleOutputDtoList.get(0).getDrHoldbackValue());
-        assertEquals(name, drHoldbackRuleOutputDtoList.get(0).getName());
-        assertEquals(days, drHoldbackRuleOutputDtoList.get(0).getDays());
+        assertEquals(1, drHoldbackCategoryOutputDtoList.size());
+        assertEquals(id, drHoldbackCategoryOutputDtoList.get(0).getId());
+        assertEquals(key, drHoldbackCategoryOutputDtoList.get(0).getKey());
+        assertEquals(name, drHoldbackCategoryOutputDtoList.get(0).getName());
+        assertEquals(days, drHoldbackCategoryOutputDtoList.get(0).getDays());
     }
 
     @Test
     public void createDrHoldbackRange_whenCreatingRange_thenReturnId() throws SQLException {
         // Arrange
-        String drHoldbackValue = "2.02";
+        String drHoldbackCategoryKey = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
 
@@ -347,28 +347,28 @@ public class RightsModuleStorageTest extends UnitTestUtil {
         int formRangeFrom = 1200;
         int formRangeTo = 1900;
 
-        storage.createDrHoldbackRule(drHoldbackValue, name, days);
+        storage.createDrHoldbackCategory(drHoldbackCategoryKey, name, days);
 
         // Act
-        long id = storage.createDrHoldbackRange(contentRangeFrom, contentRangeTo, formRangeFrom, formRangeTo, drHoldbackValue);
-        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = storage.getDrHoldbackRangesByDrHoldbackValue(drHoldbackValue);
-        String returnedDrHoldbackValueFromContentAndForm = storage.getDrHoldbackValueByContentAndForm(contentRangeFrom, formRangeFrom);
+        long id = storage.createDrHoldbackRange(contentRangeFrom, contentRangeTo, formRangeFrom, formRangeTo, drHoldbackCategoryKey);
+        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = storage.getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
+        String returnedDrHoldbackCategoryKeyByContentAndForm = storage.getDrHoldbackCategoryKeyByContentAndForm(contentRangeFrom, formRangeFrom);
 
         // Assert
         assertEquals(1, drHoldbackRangeOutputDtoList.size());
         assertEquals(id, drHoldbackRangeOutputDtoList.get(0).getId());
-        assertEquals(drHoldbackValue, drHoldbackRangeOutputDtoList.get(0).getDrHoldbackValue());
+        assertEquals(drHoldbackCategoryKey, drHoldbackRangeOutputDtoList.get(0).getDrHoldbackCategoryKey());
         assertEquals(contentRangeFrom, drHoldbackRangeOutputDtoList.get(0).getContentRangeFrom());
         assertEquals(contentRangeTo, drHoldbackRangeOutputDtoList.get(0).getContentRangeTo());
         assertEquals(formRangeFrom, drHoldbackRangeOutputDtoList.get(0).getFormRangeFrom());
         assertEquals(formRangeTo, drHoldbackRangeOutputDtoList.get(0).getFormRangeTo());
 
-        assertEquals(drHoldbackValue, returnedDrHoldbackValueFromContentAndForm);
+        assertEquals(drHoldbackCategoryKey, returnedDrHoldbackCategoryKeyByContentAndForm);
     }
 
     @Test
-    public void deleteRangesByDrHoldbackValue_whenGivenDrHoldbackValue_thenDrHoldbackRangeIsDeleted() throws SQLException {
-        String drHoldbackValue = "2.02";
+    public void deleteDrHoldbackRangesByDrHoldbackCategoryKey_whenGivenDrHoldbackCategoryKey_thenDrHoldbackRangeIsDeleted() throws SQLException {
+        String drHoldbackCategoryKey = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
 
@@ -377,25 +377,25 @@ public class RightsModuleStorageTest extends UnitTestUtil {
         int formRangeFrom = 1200;
         int formRangeTo = 1900;
 
-        storage.createDrHoldbackRule(drHoldbackValue, name, days);
+        storage.createDrHoldbackCategory(drHoldbackCategoryKey, name, days);
 
-        long id = storage.createDrHoldbackRange(contentRangeFrom, contentRangeTo, formRangeFrom, formRangeTo, drHoldbackValue);
-        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = storage.getDrHoldbackRangesByDrHoldbackValue(drHoldbackValue);
+        long id = storage.createDrHoldbackRange(contentRangeFrom, contentRangeTo, formRangeFrom, formRangeTo, drHoldbackCategoryKey);
+        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = storage.getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
 
         assertEquals(1, drHoldbackRangeOutputDtoList.size());
         assertEquals(id, drHoldbackRangeOutputDtoList.get(0).getId());
-        assertEquals(drHoldbackValue, drHoldbackRangeOutputDtoList.get(0).getDrHoldbackValue());
+        assertEquals(drHoldbackCategoryKey, drHoldbackRangeOutputDtoList.get(0).getDrHoldbackCategoryKey());
         assertEquals(contentRangeFrom, drHoldbackRangeOutputDtoList.get(0).getContentRangeFrom());
         assertEquals(contentRangeTo, drHoldbackRangeOutputDtoList.get(0).getContentRangeTo());
         assertEquals(formRangeFrom, drHoldbackRangeOutputDtoList.get(0).getFormRangeFrom());
         assertEquals(formRangeTo, drHoldbackRangeOutputDtoList.get(0).getFormRangeTo());
 
         // Act
-        int deleteRangesByDrHoldbackValue = storage.deleteRangesByDrHoldbackValue(drHoldbackValue);
-        List<DrHoldbackRangeOutputDto> deletedDrHoldbackRangeOutputDtoList = storage.getDrHoldbackRangesByDrHoldbackValue(drHoldbackValue);
+        int deleteDrHoldbackRangesByDrHoldbackCategoryKey = storage.deleteDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
+        List<DrHoldbackRangeOutputDto> deletedDrHoldbackRangeOutputDtoList = storage.getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
 
         // Assert
-        assertEquals(1, deleteRangesByDrHoldbackValue);
+        assertEquals(1, deleteDrHoldbackRangesByDrHoldbackCategoryKey);
         assertEquals(0, deletedDrHoldbackRangeOutputDtoList.size());
     }
 

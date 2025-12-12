@@ -110,28 +110,28 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateDrHoldbackValue_whenValidDrHoldbackValue_thenDoNotThrow() {
+    public void validateKey_whenValidKey_thenDoNotThrow() {
         // Arrange
-        String drHoldbackValue = "2.04";
+        String key = "2.04";
         InputValidator inputValidator = mock(InputValidator.class);
-        doCallRealMethod().when(inputValidator).validateDrHoldbackValue(drHoldbackValue);
+        doCallRealMethod().when(inputValidator).validateKey(key);
 
         // Act and assert
         // validateDrProductionIdFormat() has return type void, so we can only check that it did not throw exception
-        assertDoesNotThrow(() -> inputValidator.validateDrHoldbackValue(drHoldbackValue));
+        assertDoesNotThrow(() -> inputValidator.validateKey(key));
 
         // and it only was called once
-        verify(inputValidator, times(1)).validateDrHoldbackValue(drHoldbackValue);
+        verify(inputValidator, times(1)).validateKey(key);
     }
 
     @Test
-    public void validateDrHoldbackValue_whenNullDrHoldbackValue_thenThrowInvalidArgumentServiceException() {
+    public void validateKey_whenNullKey_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "'drHoldbackValue' cannot be empty";
+        String expectedMessage = "'key' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrHoldbackValue(null));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateKey(null));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -142,13 +142,13 @@ public class InputValidatorTest {
             "",
             " "
     })
-    public void validateDrHoldbackValue_whenEmptyOrBlankDrHoldbackValue_thenThrowInvalidArgumentServiceException(String drHoldbackValue) {
+    public void validateKey_whenEmptyOrBlankKey_thenThrowInvalidArgumentServiceException(String key) {
         // Arrange
-        String expectedMessage = "'drHoldbackValue' cannot be empty";
+        String expectedMessage = "'key' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateDrHoldbackValue(drHoldbackValue));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateKey(key));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());

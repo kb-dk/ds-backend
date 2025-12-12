@@ -1,8 +1,8 @@
 package dk.kb.license.validation;
 
+import dk.kb.license.model.v1.DrHoldbackCategoryInputDto;
 import dk.kb.license.model.v1.IdTypeEnumDto;
 import dk.kb.license.model.v1.RestrictedIdInputDto;
-import dk.kb.license.model.v1.DrHoldbackRuleInputDto;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,14 +22,11 @@ public class InputValidator {
     public void validateRestrictedIdInputDto(RestrictedIdInputDto restrictedIdInputDto) {
         if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DS_ID) {
             validateDsId(restrictedIdInputDto.getIdValue());
-        }
-        else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
+        } else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.DR_PRODUCTION_ID) {
             validateDrProductionIdFormat(restrictedIdInputDto.getIdValue());
-        }
-        else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.STRICT_TITLE) {
+        } else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.STRICT_TITLE) {
             validateStrictTitle(restrictedIdInputDto.getIdValue());
-        }
-        else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.OWNPRODUCTION_CODE) {
+        } else if (restrictedIdInputDto.getIdType() == IdTypeEnumDto.OWNPRODUCTION_CODE) {
             validateOwnProductionCode(restrictedIdInputDto.getIdValue());
         }
 
@@ -75,13 +72,13 @@ public class InputValidator {
     }
 
     /**
-     * Validates drHoldbackValue is not null, empty or blank
+     * Validates key is not null, empty or blank
      *
-     * @param drHoldbackValue to be validated
+     * @param key to be validated
      */
-    public void validateDrHoldbackValue(String drHoldbackValue) {
-        if (StringUtils.isBlank(drHoldbackValue)) {
-            final String errorMessage = "'drHoldbackValue' cannot be empty";
+    public void validateKey(String key) {
+        if (StringUtils.isBlank(key)) {
+            final String errorMessage = "'key' cannot be empty";
             log.error(errorMessage);
             throw new InvalidArgumentServiceException(errorMessage);
         }
@@ -171,9 +168,9 @@ public class InputValidator {
     }
 
     /**
-     * Validates days in the given {@link DrHoldbackRuleInputDto}.
+     * Validates days in the given {@link DrHoldbackCategoryInputDto}.
      *
-     * @param days the {@link DrHoldbackRuleInputDto} containing the days to be validated.
+     * @param days the {@link DrHoldbackCategoryInputDto} containing the days to be validated.
      */
     public void validateDays(Integer days) {
         if (days == null) {

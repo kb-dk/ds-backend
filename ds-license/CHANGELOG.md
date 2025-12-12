@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   about how many successfully restricted ids has been deleted and a list of FailedIdDto that holds information about
   failed deleting of restricted ids and their error message.
 - Deletion of objects are saved/reflected in the audit log.
+- Added `HOLDBACK_CATEGORY` in `ObjectTypeEnumDto`.
 
 ### Changed
 
@@ -52,11 +53,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Endpoint `PUT /rights/drHoldbackDays` is removed, instead there is added a `PUT /rights/drHoldbackRule` that updates
   day in the dr_holdback_rule table.
 - Endpoint `GET /rights/restrictedId` parameter `id` has changed name to `idValue`.
+- Renamed `rightsmodule_default_holdbackrulesdata.sql.sql` -> `rightsmodule_default_dr_holdback_categories_data.sql`
+  and renamed `rightsmodule_default_holdbackrangesdata.sql` -> `rightsmodule_default_dr_holdback_ranges_data.sql`.
+- Renamed table name `dr_holdback_rules` -> `dr_holdback_categories` and renamed column `dr_holdback_value` -> `key`.
+  Renamed column name `dr_holdback_value` -> `dr_holdback_category_key` in table `dr_holdback_ranges` (*Remember:
+  Delta migrations for OPS to be found in rightsmodule_remake_dr_holdback_tables_version_two.ddl and data needs to be
+  reapplied ie run rightsmodule_default_dr_holdback_categories_data.sql and
+  rightsmodule_default_dr_holdback_ranges_data.sql*).
+- Renamed endpoints `/rights/drHoldbackRule` -> `/rights/drHoldbackCategory`, and renamed query parameter, response body
+  and request body variable `drHoldbackValue` -> `key`.
+- Renamed `DrHoldbackRule*Dto` -> `DrHoldbackCategory*Dto` to follow endpoint change.
+- Renamed `drHoldbackValue` -> `drHoldbackCategoryKey` in:
+    * `POST /rights/drHoldbackRanges/delete/{drHoldbackValue}` ->
+      `POST /rights/drHoldbackRanges/delete/{drHoldbackCategoryKey}`
+    * Query parameter `GET /rights/drHoldbackRanges`
+    * Request body `DrHoldbackRangeInputDto`
+    * Response body `DrHoldbackRangeOutputDto`
+- Renamed endpoint `GET /rights/getDrHoldbackValueFromContentAndForm` ->
+  `GET /rights/getDrHoldbackCategoryByContentAndForm`.
 
 ### Fixed
 
+### Removed
+- Removed `HOLDBACK_DAY` and `HOLDBACK_RULE` in `ObjectTypeEnumDto`.
+
 ## [3.0.3](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.3) 2025-12-01
+
 ### Added
+
 - Support for supplying holdback category when calculating rights (`POST /rights/calculate`)
 
 ## [3.0.1](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.1) 2025-09-01

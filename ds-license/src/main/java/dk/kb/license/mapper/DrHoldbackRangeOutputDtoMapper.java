@@ -22,7 +22,7 @@ public class DrHoldbackRangeOutputDtoMapper {
         output.setContentRangeTo(rs.getObject("content_range_to", Integer.class));
         output.setFormRangeFrom(rs.getObject("form_range_from", Integer.class));
         output.setFormRangeTo(rs.getObject("form_range_to", Integer.class));
-        output.setDrHoldbackValue(rs.getString("dr_holdback_value"));
+        output.setDrHoldbackCategoryKey(rs.getString("dr_holdback_category_key"));
 
         return output;
     }

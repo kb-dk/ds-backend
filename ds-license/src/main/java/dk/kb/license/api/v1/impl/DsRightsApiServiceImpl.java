@@ -5,7 +5,6 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.util.webservice.ImplBase;
-import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,83 +117,83 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * Gets a DR holdback rule
+     * Gets a DR holdback category
      *
-     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule
+     * @param key the key of the DR holdback category
      * @return
      */
     @Override
-    public DrHoldbackRuleOutputDto getDrHoldbackRuleByDrHoldbackValue(String drHoldbackValue) {
+    public DrHoldbackCategoryOutputDto getDrHoldbackCategoryByKey(String key) {
         try {
-            return RightsModuleFacade.getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
+            return RightsModuleFacade.getDrHoldbackCategoryByKey(key);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     /**
-     * Create a DR holdback rule.
+     * Create a DR holdback category
      *
-     * @param drHoldbackRuleDto
+     * @param drHoldbackCategoryInputDto
      */
     @Override
-    public DrHoldbackRuleOutputDto createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleDto) {
+    public DrHoldbackCategoryOutputDto createDrHoldbackCategory(DrHoldbackCategoryInputDto drHoldbackCategoryInputDto) {
         try {
-            return RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleDto);
+            return RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     /**
-     * Update the number of days for a DR holdback rule
+     * Update the number of days for a DR holdback category
      *
      * @param id
-     * @param drHoldbackRuleInputDto
+     * @param drHoldbackCategoryInputDto
      * @return
      */
     @Override
-    public DrHoldbackRuleOutputDto updateDrHoldbackRule(Long id, DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
-        log.debug("Updating DR holdback rule: {}, restrictedIdInputDto: {}", id, drHoldbackRuleInputDto);
+    public DrHoldbackCategoryOutputDto updateDrHoldbackCategory(Long id, DrHoldbackCategoryInputDto drHoldbackCategoryInputDto) {
+        log.debug("Updating DR holdback category: {}, drHoldbackCategoryInputDto: {}", id, drHoldbackCategoryInputDto);
         try {
-            return RightsModuleFacade.updateDrHoldbackRule(id, drHoldbackRuleInputDto);
+            return RightsModuleFacade.updateDrHoldbackCategory(id, drHoldbackCategoryInputDto);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     /**
-     * Delete a DR holdback rule
+     * Delete a DR holdback category
      *
-     * @param id id of the DR holdback rule
+     * @param id id of the DR holdback category
      */
     @Override
-    public RecordsCountDto deleteDrHoldbackRule(Long id, DeleteReasonDto deleteReasonDto) {
-        log.debug("Deleting DR holdback rule: {}", id);
+    public RecordsCountDto deleteDrHoldbackCategory(Long id, DeleteReasonDto deleteReasonDto) {
+        log.debug("Deleting DR holdback category: {}", id);
         try {
-            return RightsModuleFacade.deleteDrHoldbackRule(id, deleteReasonDto);
+            return RightsModuleFacade.deleteDrHoldbackCategory(id, deleteReasonDto);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     /**
-     * Get all holdback rules for DR
+     * Get all holdback categories for DR
      *
      * @return
      */
     @Override
-    public List<DrHoldbackRuleOutputDto> getDrHoldbackRules() {
+    public List<DrHoldbackCategoryOutputDto> getDrHoldbackCategories() {
         try {
-            return RightsModuleFacade.getDrHoldbackRules();
+            return RightsModuleFacade.getDrHoldbackCategories();
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     /**
-     * set the form and content range combinations for a drHoldbackValue
-     * This requires the drHoldbackValue to be present in the DR holdback rule table
+     * Set the form and content range combinations for a drHoldbackCategoryKey
+     * This requires the key to be present in the DR holdback category table
      *
      * @param drHoldbackRangeInputDto
      */
@@ -208,40 +207,40 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     }
 
     /**
-     * Deletes all form and content range combinations for a drHoldbackValue
+     * Deletes all form and content range combinations for a drHoldbackCategoryKey
      *
-     * @param drHoldbackValue
+     * @param drHoldbackCategoryKey
      */
     @Override
-    public RecordsCountDto deleteDrHoldbackRanges(String drHoldbackValue, DeleteReasonDto deleteReasonDto) {
-        log.debug("Deleting DR holdback ranges: {}", drHoldbackValue);
+    public RecordsCountDto deleteDrHoldbackRanges(String drHoldbackCategoryKey, DeleteReasonDto deleteReasonDto) {
+        log.debug("Deleting DR holdback ranges: {}", drHoldbackCategoryKey);
         try {
-            return RightsModuleFacade.deleteDrHoldbackRanges(drHoldbackValue, deleteReasonDto);
+            return RightsModuleFacade.deleteDrHoldbackRanges(drHoldbackCategoryKey, deleteReasonDto);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     /**
-     * Gets the drHoldbackValue from a content and form metadata values.
+     * Gets the drHoldbackCategoryKey from a content and form metadata values.
      *
      * @param content
      * @param form
      * @return
      */
     @Override
-    public String getDrHoldbackValueFromContentAndForm(Integer content, Integer form) {
+    public String getDrHoldbackCategoryKeyByContentAndForm(Integer content, Integer form) {
         try {
-            return RightsModuleFacade.getDrHoldbackValueFromContentAndFormValues(content, form);
+            return RightsModuleFacade.getDrHoldbackCategoryKeyByContentAndFormValues(content, form);
         } catch (Exception e) {
             throw handleException(e);
         }
     }
 
     @Override
-    public List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackValue) {
+    public List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackCategoryKey) {
         try {
-            return RightsModuleFacade.getDrHoldbackRanges(drHoldbackValue);
+            return RightsModuleFacade.getDrHoldbackRanges(drHoldbackCategoryKey);
         } catch (Exception e) {
             throw handleException(e);
         }
