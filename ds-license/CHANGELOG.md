@@ -24,6 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   failed deleting of restricted ids and their error message.
 - Deletion of objects are saved/reflected in the audit log.
 - Added `HOLDBACK_CATEGORY` in `ObjectTypeEnumDto`.
+- Renamed `rightsmodule_default_holdbackrulesdata.sql.sql` -> `rightsmodule_default_dr_holdback_categories_data.sql`
+  and renamed `rightsmodule_default_holdbackrangesdata.sql` -> `rightsmodule_default_dr_holdback_ranges_data.sql`.
+- Renamed table name `dr_holdback_rules` -> `dr_holdback_categories` and renamed column `dr_holdback_value` -> `key`.
+  Renamed column name `dr_holdback_value` -> `dr_holdback_category_key` in table `dr_holdback_ranges` (*Remember:
+  Delta migrations for OPS to be found in `rightsmodule_remake_dr_holdback_tables_version_two.ddl` and data needs to be
+  reapplied ie run `rightsmodule_default_dr_holdback_categories_data.sql` and
+  `rightsmodule_default_dr_holdback_ranges_data.sql`*).
 
 ### Changed
 
@@ -53,13 +60,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Endpoint `PUT /rights/drHoldbackDays` is removed, instead there is added a `PUT /rights/drHoldbackRule` that updates
   day in the dr_holdback_rule table.
 - Endpoint `GET /rights/restrictedId` parameter `id` has changed name to `idValue`.
-- Renamed `rightsmodule_default_holdbackrulesdata.sql.sql` -> `rightsmodule_default_dr_holdback_categories_data.sql`
-  and renamed `rightsmodule_default_holdbackrangesdata.sql` -> `rightsmodule_default_dr_holdback_ranges_data.sql`.
-- Renamed table name `dr_holdback_rules` -> `dr_holdback_categories` and renamed column `dr_holdback_value` -> `key`.
-  Renamed column name `dr_holdback_value` -> `dr_holdback_category_key` in table `dr_holdback_ranges` (*Remember:
-  Delta migrations for OPS to be found in rightsmodule_remake_dr_holdback_tables_version_two.ddl and data needs to be
-  reapplied ie run rightsmodule_default_dr_holdback_categories_data.sql and
-  rightsmodule_default_dr_holdback_ranges_data.sql*).
 - Renamed endpoints `/rights/drHoldbackRule` -> `/rights/drHoldbackCategory`, and renamed query parameter, response body
   and request body variable `drHoldbackValue` -> `key`.
 - Renamed `DrHoldbackRule*Dto` -> `DrHoldbackCategory*Dto` to follow endpoint change.
