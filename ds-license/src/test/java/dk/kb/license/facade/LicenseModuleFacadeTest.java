@@ -93,9 +93,9 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
             assertEquals("keyAuditTest", updateAuditLog.getIdentifier());
             assertEquals("keyAuditTest", deleteAuditLog.getIdentifier());
 
-            assertNull(createAuditLog.getChangeComment());
-            assertNull(updateAuditLog.getChangeComment());
-            assertNull(deleteAuditLog.getChangeComment());
+            assertEquals("", createAuditLog.getChangeComment());
+            assertEquals("", updateAuditLog.getChangeComment());
+            assertEquals("", deleteAuditLog.getChangeComment());
 
             assertNull(createAuditLog.getTextBefore());
             //TODO: This should be fixed together with: DRA-2085
