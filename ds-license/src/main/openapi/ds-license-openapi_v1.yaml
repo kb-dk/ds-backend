@@ -646,7 +646,7 @@ paths:
                   key: '2.03'
                   name: 'Testing'
                   days: 100
-                  changeName: null
+                  changeComment: null
       responses:
         '200':
           description: 'Created DR holdback category'
