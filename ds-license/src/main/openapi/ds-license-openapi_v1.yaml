@@ -404,7 +404,7 @@ paths:
       summary: 'Delete restricted id by id'
       operationId: deleteRestrictedId
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       parameters:
         - name: id
@@ -517,7 +517,7 @@ paths:
       summary: 'Deletes multiple restricted id by RestrictedIdInputDto'
       operationId: deleteRestrictedIds
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       parameters:
         - name: touchRecord
@@ -701,7 +701,7 @@ paths:
       summary: 'Delete DR holdback category by id'
       operationId: deleteDrHoldbackCategory
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       parameters:
         - name: id
@@ -752,7 +752,7 @@ paths:
       summary: 'Get all DR holdback ranges by drHoldbackCategoryKey'
       operationId: getDrHoldbackRanges
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-readonly
             - ds-license-admin
       parameters:
@@ -776,7 +776,7 @@ paths:
       summary: 'Creates DR holdback ranges by drHoldbackCategoryKey'
       operationId: createDrHoldbackRanges
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       requestBody:
         required: true
@@ -801,7 +801,7 @@ paths:
       summary: 'Delete DR holdback ranges by drHoldbackCategoryKey'
       operationId: deleteDrHoldbackRanges
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       parameters:
         - name: drHoldbackCategoryKey
@@ -830,7 +830,7 @@ paths:
       summary: 'Get the drHoldbackCategoryKey by content and form metadata'
       operationId: getDrHoldbackCategoryKeyByContentAndForm
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-readonly
             - ds-license-admin
       parameters:
