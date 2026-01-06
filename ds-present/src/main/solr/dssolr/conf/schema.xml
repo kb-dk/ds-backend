@@ -71,9 +71,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.3: Add field contains_dr_archive_supplementary_rights_metadata
 1.8.4: Add field file_extension
 1.8.5: Merge release_v2 into master
+1.8.6: Random sort field added that can be used to randomize order of search results. Does not require reindexing, just configuration update.
 
   -->
-  <field name="_ds_1.8.5_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.6_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -1186,6 +1187,11 @@ When adding fields to this schema please have the following guidelines in mind:
                    termOffsets="true"/>
 
 
+    <dynamicField name="random_*" type="random"/>
+    <?description Field used to returning fields in random order. No data needs to be indexed into this field?>
+    <?example     For query you need a seed such as 1234 and then sort with sort=random_1423 DESC ?>
+
+
   <!-- END FIELDS  -->
 
   <!-- START FIELDTYPE DEFINITIONS-->
@@ -1195,6 +1201,9 @@ When adding fields to this schema please have the following guidelines in mind:
   <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
   <fieldType name="pint" class="solr.IntPointField" multiValued="false" indexed="true" required="false" stored="true" docValues="false"/>
   <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+
+  <!-- Field used to returning fields in random order. No data needs to be indexed into this field -->
+  <fieldType name="random" class="solr.RandomSortField" indexed="true"/>
 
   <!-- Field is not analysed or tokenized. Used for author names, titles etc.
    This field is not usefull as search field, but good for docValues  -->
