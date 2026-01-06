@@ -73,9 +73,9 @@ public class LicenseModuleFacade {
      *
      * @param id The unique id for the license. Instead of deleting a license, you can also change valid to/from for the license to disable it instead.
      */
-    public static RecordsCountDto deleteLicense(Long id, HttpSession session) {
+    public static RecordsCountDto deleteLicense(Long id, HttpSession session, DeleteReasonDto deleteReasonDto) {
         inputValidator.validateId(id);
-        //inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
         // Retrieve object from database
         License license = getLicense(id);
 
@@ -87,7 +87,7 @@ public class LicenseModuleFacade {
 
             ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(license, null);
 
-            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), null, changes.getBefore(), changes.getAfter());
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), deleteReasonDto.getChangeComment(), changes.getBefore(), changes.getAfter());
 
 
             ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
@@ -195,17 +195,22 @@ public class LicenseModuleFacade {
      *
      * @param groupName The unique name of the grouptype
      */
-    public static void deleteLicenseGroupType(String groupName, HttpSession session) {
+    public static RecordsCountDto deleteLicenseGroupType(String groupName, HttpSession session, DeleteReasonDto deleteReasonDto) {
+
+        inputValidator.validateString(groupName, "groupName");
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
+
         BaseModuleStorage.performStorageAction("deleteLicenseGroupType(" + groupName + ")", LicenseModuleStorage.class, storage -> {
             String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute
 
             long id = ((LicenseModuleStorage) storage).deleteLicenseGroupType(groupName);
-            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.GROUP_TYPE, groupName, null, groupName, null);
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.GROUP_TYPE, groupName, deleteReasonDto.getChangeComment(), groupName, null);
             ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
 
             return null;
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
+        return null;
     }
 
     /**
@@ -215,18 +220,22 @@ public class LicenseModuleFacade {
      *
      * @param presentationName The given identifier for the PresentationType to delete.
      */
-    public static void deletePresentationType(String presentationName, HttpSession session) {
+    public static RecordsCountDto deletePresentationType(String presentationName, HttpSession session, DeleteReasonDto deleteReasonDto) {
+        inputValidator.validateString(presentationName, "presentationName");
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
+
         BaseModuleStorage.performStorageAction("deletePresentationType(" + presentationName + ")", LicenseModuleStorage.class, storage -> {
             PresentationType oldType = ((LicenseModuleStorage) storage).getPresentationTypeByKey(presentationName);
             ((LicenseModuleStorage) storage).deletePresentationType(presentationName);
             String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute
 
             ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(oldType, null);
-            AuditLogEntry auditLog = new AuditLogEntry(oldType.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.PRESENTATION_TYPE, oldType.getKey(), null, changes.getBefore(), changes.getAfter());
+            AuditLogEntry auditLog = new AuditLogEntry(oldType.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.PRESENTATION_TYPE, oldType.getKey(), deleteReasonDto.getChangeComment(), changes.getBefore(), changes.getAfter());
             ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
+        return null;
     }
 
     /**
@@ -318,11 +327,12 @@ public class LicenseModuleFacade {
             long id = ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
             String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute
 
-            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.ATTRIBUTE_NAME, attributeTypeName, null, attributeTypeName, null);
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.ATTRIBUTE_NAME, attributeTypeName, deleteReasonDto.getChangeComment(), attributeTypeName, null);
             ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
         });
-        LicenseCache.reloadCache(); // Database changed, so reload cache              
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+        return null;
     }
 
     /**

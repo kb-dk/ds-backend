@@ -581,25 +581,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
         return id;
     }
 
-    public AttributeType getAttributeTypeByName(String attributeName) throws SQLException {
-
-        try (PreparedStatement stmt = connection.prepareStatement(selectAttributeTypesByNameQuery)) {
-            stmt.setString(1, attributeName);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                Long id = rs.getLong(ID_COLUMN);
-                String value = rs.getString(VALUE_COLUMN);
-                AttributeType item = new AttributeType(value);
-                item.setId(id);
-
-            }
-            return list;
-        } catch (SQLException e) {
-            log.error("SQL Exception in getAttributes: " + e.getMessage());
-            throw e;
-        }
-    }
-
     public ArrayList<AttributeType> getAttributeTypes() throws SQLException {
 
         ArrayList<AttributeType> list = new ArrayList<AttributeType>();

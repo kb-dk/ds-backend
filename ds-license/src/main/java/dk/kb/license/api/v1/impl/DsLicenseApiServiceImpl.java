@@ -292,7 +292,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
     @Override
     public RecordsCountDto deleteLicense(Long id, DeleteReasonDto deleteReasonDto) {
         try {
-            return LicenseModuleFacade.deleteLicense(id, null);
+            return LicenseModuleFacade.deleteLicense(id, null, deleteReasonDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -301,7 +301,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
     @Override
     public RecordsCountDto deletePresentationType(String key, DeleteReasonDto deleteReasonDto) {
         try {
-            LicenseModuleFacade.deletePresentationType(key, null);
+            LicenseModuleFacade.deletePresentationType(key, null, deleteReasonDto);
             return new RecordsCountDto();
         } catch (Exception e) {
             throw handleException(e);
@@ -311,7 +311,7 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
     @Override
     public RecordsCountDto deleteGroupType(String key, DeleteReasonDto deleteReasonDto) {
         try {
-            LicenseModuleFacade.deleteLicenseGroupType(key, null);
+            LicenseModuleFacade.deleteLicenseGroupType(key, null, deleteReasonDto);
             return new RecordsCountDto();
         } catch (Exception e) {
             throw handleException(e);
