@@ -135,12 +135,12 @@ public class ConfigurationServlet extends HttpServlet {
                 String typeName = request.getParameter("typeName");
                 LicenseModuleFacade.deleteLicenseGroupType(typeName,request.getSession(), null);
             }
-//            else if ("deleteAttributeType".equals(event)) {
-//                log.debug("deleteAttributeType called");
-//                request.setAttribute("tab", "3");
-//                String typeName = request.getParameter("typeName");
-//                LicenseModuleFacade.deleteAttributeType(typeName,request.getSession());
-//            }
+            else if ("deleteAttributeType".equals(event)) {
+                log.debug("deleteAttributeType called");
+                request.setAttribute("tab", "3");
+                String typeName = request.getParameter("typeName");
+                LicenseModuleFacade.deleteAttributeType(typeName,request.getSession(), null);
+            }
             else if ("updateGroup".equals(event)) {
                 log.debug("updateGroup called");
                 request.setAttribute("tab", "2");
