@@ -71,9 +71,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.3: Add field contains_dr_archive_supplementary_rights_metadata
 1.8.4: Add field file_extension
 1.8.5: Merge release_v2 into master
+1.8.6: Random sort field added that can be used to randomize order of search results. Does not require reindexing, just configuration update.
 
   -->
-  <field name="_ds_1.8.5_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.6_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
