@@ -18,7 +18,7 @@ public class InputValidatorTest {
         doCallRealMethod().when(inputValidator).validateId(id);
 
         // Act and assert
-        // validateDrProductionIdFormat() has return type void, so we can only check that it did not throw exception
+        // validateId() has return type void, so we can only check that it did not throw exception
         assertDoesNotThrow(() -> inputValidator.validateId(id));
 
         // and it only was called once
@@ -110,28 +110,28 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateDrHoldbackValue_whenValidString_thenDoNotThrow() {
+    public void validateString_whenValidString_thenDoNotThrow() {
         // Arrange
-        String drHoldbackValue = "2.04";
+        String inputString = "2.04";
         InputValidator inputValidator = mock(InputValidator.class);
-        doCallRealMethod().when(inputValidator).validateString(drHoldbackValue, "drHoldbackValue");
+        doCallRealMethod().when(inputValidator).validateString(inputString, "inputString");
 
         // Act and assert
-        // validateDrProductionIdFormat() has return type void, so we can only check that it did not throw exception
-        assertDoesNotThrow(() -> inputValidator.validateString(drHoldbackValue, "drHoldbackValue"));
+        // validateString() has return type void, so we can only check that it did not throw exception
+        assertDoesNotThrow(() -> inputValidator.validateString(inputString, "inputString"));
 
         // and it only was called once
-        verify(inputValidator, times(1)).validateString(drHoldbackValue, "drHoldbackValue");
+        verify(inputValidator, times(1)).validateString(inputString, "inputString");
     }
 
     @Test
-    public void validateDrHoldbackValue_whenNullString_thenThrowInvalidArgumentServiceException() {
+    public void validateString_whenNullString_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "'drHoldbackValue' cannot be empty";
+        String expectedMessage = "'inputString' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateString(null, "drHoldbackValue"));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateString(null, "inputString"));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -142,13 +142,13 @@ public class InputValidatorTest {
             "",
             " "
     })
-    public void validateDrHoldbackValue_whenEmptyOrBlankString_thenThrowInvalidArgumentServiceException(String drHoldbackValue) {
+    public void validateString_whenEmptyOrBlankString_thenThrowInvalidArgumentServiceException(String inputString) {
         // Arrange
-        String expectedMessage = "'drHoldbackValue' cannot be empty";
+        String expectedMessage = "'inputString' cannot be empty";
         InputValidator inputValidator = new InputValidator();
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateString(drHoldbackValue, "drHoldbackValue"));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateString(inputString, "inputString"));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -229,51 +229,6 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateStrictTitle_whenValidStrictTitle_thenDoNotThrow() {
-        // Arrange
-        String strictTitle = "Indefra";
-        InputValidator inputValidator = mock(InputValidator.class);
-        doCallRealMethod().when(inputValidator).validateStrictTitle(strictTitle);
-
-        // Act and assert
-        // validateStrictTitle() has return type void, so we can only check that it did not throw exception
-        assertDoesNotThrow(() -> inputValidator.validateStrictTitle(strictTitle));
-
-        // and it only was called once
-        verify(inputValidator, times(1)).validateStrictTitle(strictTitle);
-    }
-
-    @Test
-    public void validateStrictTitle_whenNullStrictTitle_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        String expectedMessage = "'strictTitle' cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateStrictTitle(null));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "",
-            " "
-    })
-    public void validateStrictTitle_whenEmptyOrBlankStrictTitle_thenThrowInvalidArgumentServiceException(String strictTitle) {
-        // Arrange
-        String expectedMessage = "'strictTitle' cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateStrictTitle(strictTitle));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
     public void validateOwnProductionCode_whenValidOwnProductionCode_thenDoNotThrow() {
         // Arrange
         String ownProductionCode = "1234";
@@ -281,7 +236,7 @@ public class InputValidatorTest {
         doCallRealMethod().when(inputValidator).validateOwnProductionCode(ownProductionCode);
 
         // Act and assert
-        // validateStrictTitle() has return type void, so we can only check that it did not throw exception
+        // validateOwnProductionCode() has return type void, so we can only check that it did not throw exception
         assertDoesNotThrow(() -> inputValidator.validateOwnProductionCode(ownProductionCode));
 
         // and it only was called once
@@ -333,135 +288,28 @@ public class InputValidatorTest {
     }
 
     @Test
-    public void validateTitle_whenValidTitle_thenDoNotThrow() {
+    public void validateInteger_whenValidInteger_thenDoNotThrow() {
         // Arrange
-        String title = "Test title";
+        Integer inputInteger = 1;
         InputValidator inputValidator = mock(InputValidator.class);
-        doCallRealMethod().when(inputValidator).validateTitle(title);
+        doCallRealMethod().when(inputValidator).validateInteger(inputInteger, "inputInteger");
 
         // Act and assert
-        // validateComment() has return type void, so we can only check that it did not throw exception
-        assertDoesNotThrow(() -> inputValidator.validateTitle(title));
+        // validateInteger() has return type void, so we can only check that it did not throw exception
+        assertDoesNotThrow(() -> inputValidator.validateInteger(inputInteger, "inputInteger"));
 
         // and it only was called once
-        verify(inputValidator, times(1)).validateTitle(title);
+        verify(inputValidator, times(1)).validateInteger(inputInteger, "inputInteger");
     }
 
     @Test
-    public void validateTitle_whenNullTitle_thenThrowInvalidArgumentServiceException() {
+    public void validateInteger_whenNullInteger_thenThrowInvalidArgumentServiceException() {
         // Arrange
-        String expectedMessage = "'title' cannot be empty";
+        String expectedMessage = "'inputInteger' cannot be null";
         InputValidator inputValidator = new InputValidator();
 
         // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateTitle(null));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "",
-            " "
-    })
-    public void validateTitle_whenEmptyOrBlankTitle_thenThrowInvalidArgumentServiceException(String title) {
-        // Arrange
-        String expectedMessage = "'title' cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateTitle(title));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
-    public void validateComment_whenValidComment_thenDoNotThrow() {
-        // Arrange
-        String comment = "Here is some text";
-        InputValidator inputValidator = mock(InputValidator.class);
-        doCallRealMethod().when(inputValidator).validateComment(comment);
-
-        // Act and assert
-        // validateComment() has return type void, so we can only check that it did not throw exception
-        assertDoesNotThrow(() -> inputValidator.validateComment(comment));
-
-        // and it only was called once
-        verify(inputValidator, times(1)).validateComment(comment);
-    }
-
-    @Test
-    public void validateComment_whenNullComment_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        String expectedMessage = "'comment' cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(null));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "",
-            " "
-    })
-    public void validateComment_whenEmptyOrBlankComment_thenThrowInvalidArgumentServiceException(String comment) {
-        // Arrange
-        String expectedMessage = "'comment' cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateComment(comment));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @Test
-    public void validateChangeComment_whenValidChangeComment_thenDoNotThrow() {
-        // Arrange
-        String changeComment = "DR holdback ranges skal ikke længere bruges";
-        InputValidator inputValidator = mock(InputValidator.class);
-        doCallRealMethod().when(inputValidator).validateChangeComment(changeComment);
-
-        // Act and assert
-        // validateDrProductionIdFormat() has return type void, so we can only check that it did not throw exception
-        assertDoesNotThrow(() -> inputValidator.validateChangeComment(changeComment));
-
-        // and it only was called once
-        verify(inputValidator, times(1)).validateChangeComment(changeComment);
-    }
-
-    @Test
-    public void validateChangeComment_whenNullChangeComment_thenThrowInvalidArgumentServiceException() {
-        // Arrange
-        String expectedMessage = "'changeComment' cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateChangeComment(null));
-
-        // Assert
-        assertEquals(expectedMessage, exception.getMessage());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "",
-            " "
-    })
-    public void validateChangeComment_whenEmptyOrBlankChangeComment_thenThrowInvalidArgumentServiceException(String changeComment) {
-        // Arrange
-        String expectedMessage = "'changeComment' cannot be empty";
-        InputValidator inputValidator = new InputValidator();
-
-        // Act
-        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateChangeComment(changeComment));
+        Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> inputValidator.validateInteger(null, "inputInteger"));
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());

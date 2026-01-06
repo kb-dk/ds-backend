@@ -80,7 +80,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         ArrayList<String> tables = new ArrayList<>();
         tables.add("RESTRICTED_IDS");
         tables.add("DR_HOLDBACK_RANGES");
-        tables.add("DR_HOLDBACK_RULES");
+        tables.add("DR_HOLDBACK_CATEGORIES");
         tables.add("AUDITLOG");
         storage.clearTableRecords(tables);
     }
@@ -1906,118 +1906,118 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     }
 
     @Test
-    public void createDrHoldbackRule_whenValidDrHoldbackRuleInputDto_thenCreateRule() throws SQLException {
+    public void createDrHoldbackCategory_whenValidDrHoldbackCategoryInputDto_thenCreateDrHoldbackCategory() throws SQLException {
         // Arrange
-        String drHoldBackValue = "2.02";
-        String drHoldBackName = "Aktualitet og Debat";
-        int drHoldbackDays = 2190;
+        String key = "2.02";
+        String name = "Aktualitet og Debat";
+        int days = 2190;
 
-        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
-        drHoldbackRuleInputDto.setDays(drHoldbackDays);
-        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
-        drHoldbackRuleInputDto.setName(drHoldBackName);
+        DrHoldbackCategoryInputDto drHoldbackCategoryInputDto = new DrHoldbackCategoryInputDto();
+        drHoldbackCategoryInputDto.setDays(days);
+        drHoldbackCategoryInputDto.setKey(key);
+        drHoldbackCategoryInputDto.setName(name);
 
         // Act
-        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
-        RightsModuleFacade.getDrHoldbackRuleByDrHoldbackValue(drHoldBackValue);
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
+        DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto = RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
+        RightsModuleFacade.getDrHoldbackCategoryByKey(key);
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackCategoryOutputDto.getId());
 
         // Assert
-        assertTrue(drHoldbackRuleOutputDto.getId() > 0L);
-        assertEquals(drHoldBackValue, drHoldbackRuleOutputDto.getDrHoldbackValue());
-        assertEquals(drHoldBackName, drHoldbackRuleOutputDto.getName());
-        assertEquals(drHoldbackDays, drHoldbackRuleOutputDto.getDays());
+        assertTrue(drHoldbackCategoryOutputDto.getId() > 0L);
+        assertEquals(key, drHoldbackCategoryOutputDto.getKey());
+        assertEquals(name, drHoldbackCategoryOutputDto.getName());
+        assertEquals(days, drHoldbackCategoryOutputDto.getDays());
 
         assertEquals(1, auditLogEntriesForObject.size());
         AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
 
         assertTrue(auditLogEntryOutputDto.getId() > 0L);
-        assertEquals(drHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertEquals(drHoldbackCategoryOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
         assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
         assertEquals(userName, auditLogEntryOutputDto.getUserName());
         assertEquals(ChangeTypeEnumDto.CREATE, auditLogEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.HOLDBACK_RULE, auditLogEntryOutputDto.getChangeName());
-        assertEquals(drHoldBackValue, auditLogEntryOutputDto.getIdentifier());
+        assertEquals(ObjectTypeEnumDto.HOLDBACK_CATEGORY, auditLogEntryOutputDto.getChangeName());
+        assertEquals(key, auditLogEntryOutputDto.getIdentifier());
         assertNull(auditLogEntryOutputDto.getChangeComment());
         assertNull(auditLogEntryOutputDto.getTextBefore());
-        assertEquals(drHoldbackRuleOutputDto.toString(), auditLogEntryOutputDto.getTextAfter());
+        assertEquals(drHoldbackCategoryOutputDto.toString(), auditLogEntryOutputDto.getTextAfter());
     }
 
     @Test
-    public void updateDrHoldbackRule_whenValidDrHoldBackValue_thenUpdateRuleForRule() throws SQLException {
+    public void updateDrHoldbackCategory_whenValidKey_thenUpdateDrHoldbackCategory() throws SQLException {
         // Arrange
-        String drHoldBackValue = "2.02";
-        String drHoldBackName = "Aktualitet og Debat";
-        int drHoldbackDays = 2190;
+        String key = "2.02";
+        String name = "Aktualitet og Debat";
+        int days = 2190;
 
-        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
-        drHoldbackRuleInputDto.setDays(drHoldbackDays);
-        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
-        drHoldbackRuleInputDto.setName(drHoldBackName);
+        DrHoldbackCategoryInputDto drHoldbackCategoryInputDto = new DrHoldbackCategoryInputDto();
+        drHoldbackCategoryInputDto.setDays(days);
+        drHoldbackCategoryInputDto.setKey(key);
+        drHoldbackCategoryInputDto.setName(name);
 
-        String changeComment = "DR holdback rule skal ikke længere bruges";
-        DrHoldbackRuleInputDto updateDrHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
+        String changeComment = "DR holdback category skal ikke længere bruges";
+        DrHoldbackCategoryInputDto updateDrHoldbackCategoryInputDto = new DrHoldbackCategoryInputDto();
 
-        updateDrHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
-        updateDrHoldbackRuleInputDto.setName(drHoldBackName);
-        updateDrHoldbackRuleInputDto.setDays(10);
-        updateDrHoldbackRuleInputDto.setChangeComment(changeComment);
+        updateDrHoldbackCategoryInputDto.setKey(key);
+        updateDrHoldbackCategoryInputDto.setName(name);
+        updateDrHoldbackCategoryInputDto.setDays(10);
+        updateDrHoldbackCategoryInputDto.setChangeComment(changeComment);
 
-        DrHoldbackRuleOutputDto createdDrHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        DrHoldbackCategoryOutputDto createdDrHoldbackCategoryOutputDto = RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
 
         // Act
-        DrHoldbackRuleOutputDto updatedDrHoldbackRuleOutputDto = RightsModuleFacade.updateDrHoldbackRule(createdDrHoldbackRuleOutputDto.getId(), updateDrHoldbackRuleInputDto);
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(updatedDrHoldbackRuleOutputDto.getId());
+        DrHoldbackCategoryOutputDto updatedDrHoldbackCategoryOutputDto = RightsModuleFacade.updateDrHoldbackCategory(createdDrHoldbackCategoryOutputDto.getId(), updateDrHoldbackCategoryInputDto);
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(updatedDrHoldbackCategoryOutputDto.getId());
 
         // Assert
-        assertTrue(updatedDrHoldbackRuleOutputDto.getId() > 0L);
-        assertEquals(updateDrHoldbackRuleInputDto.getDrHoldbackValue(), updatedDrHoldbackRuleOutputDto.getDrHoldbackValue());
-        assertEquals(updateDrHoldbackRuleInputDto.getName(), updatedDrHoldbackRuleOutputDto.getName());
-        assertEquals(updateDrHoldbackRuleInputDto.getDays(), updatedDrHoldbackRuleOutputDto.getDays());
+        assertTrue(updatedDrHoldbackCategoryOutputDto.getId() > 0L);
+        assertEquals(updateDrHoldbackCategoryInputDto.getKey(), updatedDrHoldbackCategoryOutputDto.getKey());
+        assertEquals(updateDrHoldbackCategoryInputDto.getName(), updatedDrHoldbackCategoryOutputDto.getName());
+        assertEquals(updateDrHoldbackCategoryInputDto.getDays(), updatedDrHoldbackCategoryOutputDto.getDays());
 
         assertEquals(2, auditLogEntriesForObject.size());
         AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
 
         assertTrue(auditLogEntryOutputDto.getId() > 0L);
-        assertEquals(updatedDrHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertEquals(updatedDrHoldbackCategoryOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
         assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
         assertEquals(userName, auditLogEntryOutputDto.getUserName());
         assertEquals(ChangeTypeEnumDto.UPDATE, auditLogEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.HOLDBACK_DAY, auditLogEntryOutputDto.getChangeName());
-        assertEquals(drHoldBackValue, auditLogEntryOutputDto.getIdentifier());
+        assertEquals(ObjectTypeEnumDto.HOLDBACK_CATEGORY, auditLogEntryOutputDto.getChangeName());
+        assertEquals(key, auditLogEntryOutputDto.getIdentifier());
         assertEquals(changeComment, auditLogEntryOutputDto.getChangeComment());
-        assertEquals(createdDrHoldbackRuleOutputDto.toString(), auditLogEntryOutputDto.getTextBefore());
-        assertEquals(updatedDrHoldbackRuleOutputDto.toString(), auditLogEntryOutputDto.getTextAfter());
+        assertEquals(createdDrHoldbackCategoryOutputDto.toString(), auditLogEntryOutputDto.getTextBefore());
+        assertEquals(updatedDrHoldbackCategoryOutputDto.toString(), auditLogEntryOutputDto.getTextAfter());
     }
 
     @Test
-    public void deleteDrHoldbackRule_whenValidDrHoldbackValue_thenDeleteRule() throws SQLException {
+    public void deleteDrHoldbackCategory_whenValidKey_thenDeleteDrHoldbackCategory() throws SQLException {
         // Arrange
-        String drHoldBackValue = "2.02";
-        String drHoldBackName = "Aktualitet og Debat";
-        int drHoldbackDays = 2190;
+        String key = "2.02";
+        String name = "Aktualitet og Debat";
+        int days = 2190;
 
-        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
-        drHoldbackRuleInputDto.setDays(drHoldbackDays);
-        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
-        drHoldbackRuleInputDto.setName(drHoldBackName);
+        DrHoldbackCategoryInputDto drHoldbackCategoryInputDto = new DrHoldbackCategoryInputDto();
+        drHoldbackCategoryInputDto.setDays(days);
+        drHoldbackCategoryInputDto.setKey(key);
+        drHoldbackCategoryInputDto.setName(name);
 
-        String changeComment = "DR holdback rule skal ikke længere bruges";
+        String changeComment = "DR holdback category skal ikke længere bruges";
         DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
         deleteReasonDto.setChangeComment(changeComment);
 
-        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto = RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
 
         // Act
-        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRule(drHoldbackRuleOutputDto.getId(), deleteReasonDto);
+        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackCategory(drHoldbackCategoryOutputDto.getId(), deleteReasonDto);
 
-        // Make sure that the DR holdback rule is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRuleByDrHoldbackValue(drHoldBackValue));
+        // Make sure that the DR holdback category is deleted
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackCategoryByKey(key));
 
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackCategoryOutputDto.getId());
 
         // Assert
-        assertTrue(exception.getMessage().contains("DR holdback rule not found for drHoldbackValue: " + drHoldBackValue));
+        assertTrue(exception.getMessage().contains("DR holdback category not found for key: " + key));
 
         assertEquals(1, recordsCountDto.getCount());
 
@@ -2025,28 +2025,28 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         AuditLogEntryOutputDto auditLogEntryOutputDto = auditLogEntriesForObject.get(0);
 
         assertTrue(auditLogEntryOutputDto.getId() > 0L);
-        assertEquals(drHoldbackRuleOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
+        assertEquals(drHoldbackCategoryOutputDto.getId(), auditLogEntryOutputDto.getObjectId());
         assertTrue(auditLogEntryOutputDto.getModifiedTime() > 0L); //modifiedtime has been set
         assertEquals(userName, auditLogEntryOutputDto.getUserName());
         assertEquals(ChangeTypeEnumDto.DELETE, auditLogEntryOutputDto.getChangeType());
-        assertEquals(ObjectTypeEnumDto.HOLDBACK_RULE, auditLogEntryOutputDto.getChangeName());
-        assertEquals(drHoldBackValue, auditLogEntryOutputDto.getIdentifier());
+        assertEquals(ObjectTypeEnumDto.HOLDBACK_CATEGORY, auditLogEntryOutputDto.getChangeName());
+        assertEquals(key, auditLogEntryOutputDto.getIdentifier());
         assertEquals(changeComment, auditLogEntryOutputDto.getChangeComment());
-        assertEquals(drHoldbackRuleOutputDto.toString(), auditLogEntryOutputDto.getTextBefore());
+        assertEquals(drHoldbackCategoryOutputDto.toString(), auditLogEntryOutputDto.getTextBefore());
         assertNull(auditLogEntryOutputDto.getTextAfter());
     }
 
     @Test
-    public void createDrHoldbackRanges_whenInvalidDrHoldBackValue_thenThrowNotFoundServiceException() {
+    public void createDrHoldbackRanges_whenInvalidKey_thenThrowNotFoundServiceException() {
         // Arrange
-        String drHoldBackValue = "2.02";
-        String drHoldBackName = "Aktualitet og Debat";
-        int drHoldbackDays = 2190;
+        String key = "2.02";
+        String name = "Aktualitet og Debat";
+        int days = 2190;
 
-        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
-        drHoldbackRuleInputDto.setDays(drHoldbackDays);
-        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
-        drHoldbackRuleInputDto.setName(drHoldBackName);
+        DrHoldbackCategoryInputDto drHoldbackCategoryInputDto = new DrHoldbackCategoryInputDto();
+        drHoldbackCategoryInputDto.setDays(days);
+        drHoldbackCategoryInputDto.setKey(key);
+        drHoldbackCategoryInputDto.setName(name);
 
         DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
         DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
@@ -2061,33 +2061,33 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         drHoldbackRangeDtoTwo.setFormRangeFrom(1200);
         drHoldbackRangeDtoTwo.setFormRangeTo(1500);
 
-        String invalidDrHoldbackValue = "invalid";
+        String invalidKey = "invalid";
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
-        drHoldbackRangeInputDto.setDrHoldbackValue(invalidDrHoldbackValue);
+        drHoldbackRangeInputDto.setDrHoldbackCategoryKey(invalidKey);
         List<DrHoldbackRangeDto> ranges = List.of(drHoldbackRangeDtoOne, drHoldbackRangeDtoTwo);
 
         drHoldbackRangeInputDto.setRanges(ranges);
 
-        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
 
         // Act
         Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto));
 
         // Assert
-        assertTrue(exception.getMessage().contains("DR holdback rule not found for drHoldbackValue: " + invalidDrHoldbackValue));
+        assertTrue(exception.getMessage().contains("DR holdback category not found for key: " + invalidKey));
     }
 
     @Test
     public void createDrHoldbackRanges_whenDrHoldbackRangeInputDto_thenCreatesRanges() throws SQLException {
         // Arrange
-        String drHoldBackValue = "2.02";
-        String drHoldBackName = "Aktualitet og Debat";
-        int drHoldbackDays = 2190;
+        String key = "2.02";
+        String name = "Aktualitet og Debat";
+        int days = 2190;
 
-        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
-        drHoldbackRuleInputDto.setDays(drHoldbackDays);
-        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
-        drHoldbackRuleInputDto.setName(drHoldBackName);
+        DrHoldbackCategoryInputDto drHoldbackCategoryInputDto = new DrHoldbackCategoryInputDto();
+        drHoldbackCategoryInputDto.setDays(days);
+        drHoldbackCategoryInputDto.setKey(key);
+        drHoldbackCategoryInputDto.setName(name);
 
         DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
         DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
@@ -2103,13 +2103,13 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         drHoldbackRangeDtoTwo.setFormRangeTo(1500);
 
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
-        drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRangeInputDto.setDrHoldbackCategoryKey(key);
 
         List<DrHoldbackRangeDto> ranges = List.of(drHoldbackRangeDtoOne, drHoldbackRangeDtoTwo);
 
         drHoldbackRangeInputDto.setRanges(ranges);
 
-        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
 
         // Act
         List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
@@ -2118,7 +2118,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         assertEquals(drHoldbackRangeInputDto.getRanges().size(), drHoldbackRangeOutputDtoList.size());
 
         for (int i = 0; i < drHoldbackRangeOutputDtoList.size(); i++) {
-            assertEquals(drHoldbackRangeInputDto.getDrHoldbackValue(), drHoldbackRangeOutputDtoList.get(i).getDrHoldbackValue());
+            assertEquals(drHoldbackRangeInputDto.getDrHoldbackCategoryKey(), drHoldbackRangeOutputDtoList.get(i).getDrHoldbackCategoryKey());
             assertEquals(drHoldbackRangeInputDto.getRanges().get(i).getContentRangeFrom(), drHoldbackRangeOutputDtoList.get(i).getContentRangeFrom());
             assertEquals(drHoldbackRangeInputDto.getRanges().get(i).getContentRangeTo(), drHoldbackRangeOutputDtoList.get(i).getContentRangeTo());
             assertEquals(drHoldbackRangeInputDto.getRanges().get(i).getFormRangeFrom(), drHoldbackRangeOutputDtoList.get(i).getFormRangeFrom());
@@ -2133,7 +2133,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
             assertEquals(userName, auditLogEntryOutputDto.getUserName());
             assertEquals(ChangeTypeEnumDto.CREATE, auditLogEntryOutputDto.getChangeType());
             assertEquals(ObjectTypeEnumDto.HOLDBACK_RANGE, auditLogEntryOutputDto.getChangeName());
-            assertEquals(drHoldBackValue, auditLogEntryOutputDto.getIdentifier());
+            assertEquals(key, auditLogEntryOutputDto.getIdentifier());
             assertNull(auditLogEntryOutputDto.getChangeComment());
             assertNull(auditLogEntryOutputDto.getTextBefore());
             assertEquals(ranges.get(i).toString(), auditLogEntryOutputDto.getTextAfter());
@@ -2141,16 +2141,16 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     }
 
     @Test
-    public void deleteRangesForDrHoldbackValue_whenInvalidDrHoldBackValue_thenThrowNotFoundServiceException() throws SQLException {
+    public void deleteDrHoldbackRangesByDrHoldbackCategoryKey_whenInvalidKey_thenThrowNotFoundServiceException() throws SQLException {
         // Arrange
-        String drHoldBackValue = "2.02";
-        String drHoldBackName = "Aktualitet og Debat";
-        int drHoldbackDays = 2190;
+        String key = "2.02";
+        String name = "Aktualitet og Debat";
+        int days = 2190;
 
-        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
-        drHoldbackRuleInputDto.setDays(drHoldbackDays);
-        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
-        drHoldbackRuleInputDto.setName(drHoldBackName);
+        DrHoldbackCategoryInputDto drHoldbackCategoryInputDto = new DrHoldbackCategoryInputDto();
+        drHoldbackCategoryInputDto.setDays(days);
+        drHoldbackCategoryInputDto.setKey(key);
+        drHoldbackCategoryInputDto.setName(name);
 
         DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
         DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
@@ -2165,10 +2165,9 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         drHoldbackRangeDtoTwo.setFormRangeFrom(1200);
         drHoldbackRangeDtoTwo.setFormRangeTo(1500);
 
-        String invalidDrHoldbackValue = "invalid";
         String changeComment = "DR holdback ranges skal ikke længere bruges";
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
-        drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRangeInputDto.setDrHoldbackCategoryKey(key);
         DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
         deleteReasonDto.setChangeComment(changeComment);
 
@@ -2176,28 +2175,29 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
 
         drHoldbackRangeInputDto.setRanges(ranges);
 
-        RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
 
         RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
 
+        String invalidKey = "invalid";
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteDrHoldbackRanges(invalidDrHoldbackValue, deleteReasonDto));
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteDrHoldbackRanges(invalidKey, deleteReasonDto));
 
         // Assert
-        assertTrue(exception.getMessage().contains("DR holdback ranges not found for drHoldbackValue: " + invalidDrHoldbackValue));
+        assertTrue(exception.getMessage().contains("DR holdback ranges not found for drHoldbackCategoryKey: " + invalidKey));
     }
 
     @Test
-    public void deleteRangesForDrHoldbackValue_whenValidDrHoldBackValue_thenDeletesAllRanges() throws SQLException {
+    public void deleteDrHoldbackRangesByDrHoldbackCategoryKey_whenValidKey_thenDeletesAllRanges() throws SQLException {
         // Arrange
-        String drHoldBackValue = "2.02";
-        String drHoldBackName = "Aktualitet og Debat";
-        int drHoldbackDays = 2190;
+        String key = "2.02";
+        String name = "Aktualitet og Debat";
+        int days = 2190;
 
-        DrHoldbackRuleInputDto drHoldbackRuleInputDto = new DrHoldbackRuleInputDto();
-        drHoldbackRuleInputDto.setDays(drHoldbackDays);
-        drHoldbackRuleInputDto.setDrHoldbackValue(drHoldBackValue);
-        drHoldbackRuleInputDto.setName(drHoldBackName);
+        DrHoldbackCategoryInputDto drHoldbackCategoryInputDto = new DrHoldbackCategoryInputDto();
+        drHoldbackCategoryInputDto.setDays(days);
+        drHoldbackCategoryInputDto.setKey(key);
+        drHoldbackCategoryInputDto.setName(name);
 
         DrHoldbackRangeDto drHoldbackRangeDtoOne = new DrHoldbackRangeDto();
         DrHoldbackRangeDto drHoldbackRangeDtoTwo = new DrHoldbackRangeDto();
@@ -2214,7 +2214,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
 
         String changeComment = "DR holdback ranges skal ikke længere bruges";
         DrHoldbackRangeInputDto drHoldbackRangeInputDto = new DrHoldbackRangeInputDto();
-        drHoldbackRangeInputDto.setDrHoldbackValue(drHoldBackValue);
+        drHoldbackRangeInputDto.setDrHoldbackCategoryKey(key);
         DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
         deleteReasonDto.setChangeComment(changeComment);
 
@@ -2222,19 +2222,19 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
 
         drHoldbackRangeInputDto.setRanges(ranges);
 
-        DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = RightsModuleFacade.createDrHoldbackRule(drHoldbackRuleInputDto);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto = RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
 
         List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto);
 
         // Act
-        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRanges(drHoldBackValue, deleteReasonDto);
+        RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRanges(key, deleteReasonDto);
 
         // Make sure that all DR holdback ranges is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRanges(drHoldBackValue));
-        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackRuleOutputDto.getId());
+        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRanges(key));
+        auditLogEntriesForObject = storage.getAuditLogByObjectId(drHoldbackCategoryOutputDto.getId());
 
         // Assert
-        assertTrue(exception.getMessage().contains("DR holdback ranges not found for drHoldbackValue: " + drHoldBackValue));
+        assertTrue(exception.getMessage().contains("DR holdback ranges not found for drHoldbackCategoryKey: " + key));
 
         assertEquals(2, recordsCountDto.getCount());
 
@@ -2252,7 +2252,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
             assertEquals(userName, auditLogEntryOutputDto.getUserName());
             assertEquals(ChangeTypeEnumDto.DELETE, auditLogEntryOutputDto.getChangeType());
             assertEquals(ObjectTypeEnumDto.HOLDBACK_RANGE, auditLogEntryOutputDto.getChangeName());
-            assertEquals(drHoldbackRangeInputDto.getDrHoldbackValue(), auditLogEntryOutputDto.getIdentifier());
+            assertEquals(drHoldbackRangeInputDto.getDrHoldbackCategoryKey(), auditLogEntryOutputDto.getIdentifier());
             assertEquals(changeComment, auditLogEntryOutputDto.getChangeComment());
             assertEquals(drHoldbackRangeOutputDto.toString(), auditLogEntryOutputDto.getTextBefore());
             assertNull(auditLogEntryOutputDto.getTextAfter());

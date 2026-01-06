@@ -753,7 +753,7 @@ paths:
       summary: 'Delete restricted id by id'
       operationId: deleteRestrictedId
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       parameters:
         - name: id
@@ -866,7 +866,7 @@ paths:
       summary: 'Deletes multiple restricted id by RestrictedIdInputDto'
       operationId: deleteRestrictedIds
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       parameters:
         - name: touchRecord
@@ -949,36 +949,37 @@ paths:
               schema:
                 type: object
 
-  /rights/drHoldbackRule:
+  /rights/drHoldbackCategory:
     get:
       tags:
         - 'DsRights'
-      summary: 'Get a DR holdback rule by drHoldbackValue'
-      operationId: getDrHoldbackRuleByDrHoldbackValue
+      summary: 'Get a DR holdback category by key'
+      operationId: getDrHoldbackCategoryByKey
       security:
         - KBOAuth:
             - ds-license-readonly
             - ds-license-admin
       parameters:
-        - name: drHoldbackValue
+        - name: key
           in: query
+          description: 'The key of a DR holdback category'
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: 'Retrieve a DR holdback rule'
+          description: 'Retrieve a DR holdback category'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DrHoldbackRuleOutput'
+                $ref: '#/components/schemas/DrHoldbackCategoryOutput'
         '404':
           description: 'Not found'
     post:
       tags:
         - 'DsRights'
-      summary: 'Creates a DR holdback rule'
-      operationId: createDrHoldbackRule
+      summary: 'Creates a DR holdback category'
+      operationId: createDrHoldbackCategory
       security:
         - KBOAuth:
             - ds-license-admin
@@ -987,36 +988,36 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DrHoldbackRuleInput'
+              $ref: '#/components/schemas/DrHoldbackCategoryInput'
             examples:
               example1:
                 value:
-                  drHoldbackValue: '2.03'
+                  key: '2.03'
                   name: 'Testing'
                   days: 100
                   changeName: null
       responses:
         '200':
-          description: 'Created DR holdback rule'
+          description: 'Created DR holdback category'
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
+                  $ref: '#/components/schemas/DrHoldbackCategoryOutput'
 
-  /rights/drHoldbackRule/{id}:
+  /rights/drHoldbackCategory/{id}:
     put:
       tags:
         - 'DsRights'
       summary: 'Only days can be updated'
-      description: 'Updates days of a DR holdback rule. The requester should always send the information in all fields'
-      operationId: updateDrHoldbackRule
+      description: 'Updates days of a DR holdback category. The requester should always send the information in all fields'
+      operationId: updateDrHoldbackCategory
       security:
         - KBOAuth:
             - ds-license-admin
       parameters:
         - name: id
           in: path
-          description: 'The unique id of a DR holdback rule'
+          description: 'The unique id of a DR holdback category'
           required: true
           schema:
             type: integer
@@ -1026,35 +1027,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DrHoldbackRuleInput'
+              $ref: '#/components/schemas/DrHoldbackCategoryInput'
             examples:
-              drHoldbackRule:
+              drHoldbackCategory:
                 value:
-                  drHoldbackValue: '2.03'
+                  key: '2.03'
                   name: 'Testing'
                   days: 100
                   changeComment: 'Omstændighederne har ændret sig'
       responses:
         '200':
-          description: 'Updated DR holdback rule'
+          description: 'Updated DR holdback category'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DrHoldbackRuleOutput'
+                $ref: '#/components/schemas/DrHoldbackCategoryOutput'
 
-  /rights/drHoldbackRule/delete/{id}:
+  /rights/drHoldbackCategory/delete/{id}:
     post:
       tags:
         - 'DsRights'
-      summary: 'Delete DR holdback rule by drHoldbackValue'
-      operationId: deleteDrHoldbackRule
+      summary: 'Delete DR holdback category by id'
+      operationId: deleteDrHoldbackCategory
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       parameters:
         - name: id
           in: path
-          description: 'The unique id of a DR holdback rule'
+          description: 'The unique id of a DR holdback category'
           required: true
           schema:
             type: integer
@@ -1073,40 +1074,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/RecordsCount'
 
-  /rights/drHoldbackRules:
+  /rights/drHoldbackCategories:
     get:
       tags:
         - 'DsRights'
-      summary: 'Get all DR holdback rules'
-      operationId: getDrHoldbackRules
+      summary: 'Get all DR holdback categories'
+      operationId: getDrHoldbackCategories
       security:
         - KBOAuth:
             - ds-license-readonly
             - ds-license-admin
       responses:
         '200':
-          description: 'List of DR holdback rules'
+          description: 'List of DR holdback categories'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DrHoldbackRuleOutput'
+                  $ref: '#/components/schemas/DrHoldbackCategoryOutput'
 
   /rights/drHoldbackRanges:
     get:
       tags:
         - 'DsRights'
-      summary: 'Get all DR holdback ranges by drHoldbackValue'
+      summary: 'Get all DR holdback ranges by drHoldbackCategoryKey'
       operationId: getDrHoldbackRanges
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-readonly
             - ds-license-admin
       parameters:
-        - name: drHoldbackValue
+        - name: drHoldbackCategoryKey
           in: query
-          description: 'Filter on drHoldbackValue'
+          description: 'Filter on drHoldbackCategoryKey'
           schema:
             type: string
       responses:
@@ -1121,10 +1122,10 @@ paths:
     post:
       tags:
         - 'DsRights'
-      summary: 'Creates DR holdback ranges by drHoldbackValue'
+      summary: 'Creates DR holdback ranges by drHoldbackCategoryKey'
       operationId: createDrHoldbackRanges
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       requestBody:
         required: true
@@ -1142,17 +1143,17 @@ paths:
                 items:
                   $ref: '#/components/schemas/DrHoldbackRangeOutput'
 
-  /rights/drHoldbackRanges/delete/{drHoldbackValue}:
+  /rights/drHoldbackRanges/delete/{drHoldbackCategoryKey}:
     post:
       tags:
         - 'DsRights'
-      summary: 'Delete DR holdback ranges by drHoldbackValue'
+      summary: 'Delete DR holdback ranges by drHoldbackCategoryKey'
       operationId: deleteDrHoldbackRanges
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-admin
       parameters:
-        - name: drHoldbackValue
+        - name: drHoldbackCategoryKey
           in: path
           required: true
           schema:
@@ -1171,14 +1172,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/RecordsCount'
 
-  /rights/getDrHoldbackValueFromContentAndForm:
+  /rights/getDrHoldbackCategoryByContentAndForm:
     get:
       tags:
         - 'DsRights'
-      summary: 'Get the drHoldbackValue from content and form metadata'
-      operationId: getDrHoldbackValueFromContentAndForm
+      summary: 'Get the drHoldbackCategoryKey by content and form metadata'
+      operationId: getDrHoldbackCategoryKeyByContentAndForm
       security:
-        - KBOAth:
+        - KBOAuth:
             - ds-license-readonly
             - ds-license-admin
       parameters:
@@ -1711,8 +1712,7 @@ components:
         - PRESENTATION_TYPE
         - LICENSE
         - GROUP_TYPE
-        - HOLDBACK_DAY
-        - HOLDBACK_RULE
+        - HOLDBACK_CATEGORY
         - HOLDBACK_RANGE
         - ATTRIBUTE_NAME
 
@@ -1845,14 +1845,14 @@ components:
         errorMessage:
           type: string
 
-    DrHoldbackRuleInput:
+    DrHoldbackCategoryInput:
       type: object
       required:
-        - drHoldbackValue
+        - key
         - name
         - days
       properties:
-        drHoldbackValue:
+        key:
           type: string
         name:
           type: string
@@ -1861,18 +1861,18 @@ components:
         changeComment:
           type: string
 
-    DrHoldbackRuleOutput:
+    DrHoldbackCategoryOutput:
       type: object
       required:
         - id
-        - drHoldbackValue
+        - key
         - name
         - days
       properties:
         id:
           type: integer
           format: int64
-        drHoldbackValue:
+        key:
           type: string
         name:
           type: string
@@ -1899,10 +1899,10 @@ components:
     DrHoldbackRangeInput:
       type: object
       required:
-        - drHoldbackValue
+        - drHoldbackCategoryKey
         - ranges
       properties:
-        drHoldbackValue:
+        drHoldbackCategoryKey:
           type: string
         ranges:
           type: array
@@ -1917,7 +1917,7 @@ components:
         - contentRangeTo
         - formRangeFrom
         - formRangeTo
-        - drHoldbackValue
+        - drHoldbackCategoryKey
       properties:
         id:
           type: integer
@@ -1930,7 +1930,7 @@ components:
           type: integer
         formRangeTo:
           type: integer
-        drHoldbackValue:
+        drHoldbackCategoryKey:
           type: string
 
     DeleteReason:

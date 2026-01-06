@@ -22,7 +22,7 @@ public class DrHoldbackRangeOutputDtoMapperTest {
         Integer contentRangeTo = 1900;
         Integer formRangeFrom = 1000;
         Integer formRangeTo = 1000;
-        String drHoldBackValue = "2.02";
+        String drHoldbackCategoryKey = "2.02";
 
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getLong("id")).thenReturn(id);
@@ -30,7 +30,7 @@ public class DrHoldbackRangeOutputDtoMapperTest {
         when(resultSet.getObject("content_range_to", Integer.class)).thenReturn(contentRangeTo);
         when(resultSet.getObject("form_range_from", Integer.class)).thenReturn(formRangeFrom);
         when(resultSet.getObject("form_range_to", Integer.class)).thenReturn(formRangeTo);
-        when(resultSet.getString("dr_holdback_value")).thenReturn(drHoldBackValue);
+        when(resultSet.getString("dr_holdback_category_key")).thenReturn(drHoldbackCategoryKey);
 
         // Act
         DrHoldbackRangeOutputDto drHoldbackRangeOutputDto = drHoldbackRangeOutputDtoMapper.map(resultSet);
@@ -41,6 +41,6 @@ public class DrHoldbackRangeOutputDtoMapperTest {
         assertEquals(contentRangeTo, drHoldbackRangeOutputDto.getContentRangeTo());
         assertEquals(formRangeFrom, drHoldbackRangeOutputDto.getFormRangeFrom());
         assertEquals(formRangeTo, drHoldbackRangeOutputDto.getFormRangeTo());
-        assertEquals(drHoldBackValue, drHoldbackRangeOutputDto.getDrHoldbackValue());
+        assertEquals(drHoldbackCategoryKey, drHoldbackRangeOutputDto.getDrHoldbackCategoryKey());
     }
 }

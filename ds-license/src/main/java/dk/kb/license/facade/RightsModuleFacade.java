@@ -172,7 +172,7 @@ public class RightsModuleFacade {
      */
     public static RecordsCountDto deleteRestrictedId(Long id, boolean touchDsStorageRecord, DeleteReasonDto deleteReasonDto) {
         inputValidator.validateId(id);
-        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
 
         // Retrieve object from database
         RestrictedIdOutputDto deleteRestrictedIdOutputDto = getRestrictedIdById(id);
@@ -211,7 +211,7 @@ public class RightsModuleFacade {
         ProcessedRestrictedIdsOutputDtoMapper processedRestrictedIdsOutputDtoMapper = new ProcessedRestrictedIdsOutputDtoMapper();
 
         for (RestrictedIdInputDto restrictedIdInputDto : restrictedIds) {
-            log.debug("Adding restricted id idValue: {}, idType: {}, platform: {}",  restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
+            log.debug("Adding restricted id idValue: {}, idType: {}, platform: {}", restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
 
             try {
                 inputValidator.validateRestrictedIdInputDto(restrictedIdInputDto);
@@ -224,8 +224,7 @@ public class RightsModuleFacade {
                     // If the root exception is NotFoundServiceException, then create the restricted id
                     if (exception.getCause().getCause() instanceof NotFoundServiceException) {
                         createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
-                    }
-                    else {
+                    } else {
                         throw exception;
                     }
                 }
@@ -381,16 +380,16 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Retrieves the drHoldbackValue based on the specified content and form values.
-     * If no drHoldbackValue is found for the given content and form, a {@link NotFoundServiceException} is thrown.
+     * Retrieves the drHoldbackCategoryKey based on the specified content and form values.
+     * If no drHoldbackCategoryKey is found for the given content and form, a {@link NotFoundServiceException} is thrown.
      *
      * @param content the content identifier, must be a valid integer.
      * @param form    the form identifier, must be a valid integer.
-     * @return the drHoldbackValue as a {@link String} if found.
+     * @return the drHoldbackCategoryKey as a {@link String} if found.
      */
-    public static String getDrHoldbackValueFromContentAndFormValues(Integer content, Integer form) {
-        return BaseModuleStorage.performStorageAction("Get drHoldbackValue", RightsModuleStorage.class, storage -> {
-            String id = ((RightsModuleStorage) storage).getDrHoldbackValueByContentAndForm(content, form);
+    public static String getDrHoldbackCategoryKeyByContentAndFormValues(Integer content, Integer form) {
+        return BaseModuleStorage.performStorageAction("Get key", RightsModuleStorage.class, storage -> {
+            String id = ((RightsModuleStorage) storage).getDrHoldbackCategoryKeyByContentAndForm(content, form);
             if (id == null) {
                 log.warn("No DR holdback found for content: '{}' and form: '{}'. Returning an empty string", content, form);
                 return "";
@@ -469,177 +468,177 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Retrieves the DR holdback rule identified by the specified drHoldbackValue.
+     * Retrieves the DR holdback category identified by the specified key.
      * This method performs a storage action to access the RightsModuleStorage
-     * and fetch the DR holdback rule as an object.
+     * and fetch the DR holdback category as an object.
      *
-     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule to retrieve. It must not be null or empty.
-     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified drHoldbackValue if found.
-     * @throws NotFoundServiceException if no rule is found for the specified drHoldbackValue.
+     * @param key the key of the DR holdback category to retrieve. It must not be null or empty.
+     * @return the {@link DrHoldbackCategoryOutputDto} corresponding to the specified key if found.
+     * @throws NotFoundServiceException if no DR holdback category is found for the specified key.
      */
-    public static DrHoldbackRuleOutputDto getDrHoldbackRuleByDrHoldbackValue(String drHoldbackValue) {
-        inputValidator.validateString(drHoldbackValue, "drHoldbackValue");
+    public static DrHoldbackCategoryOutputDto getDrHoldbackCategoryByKey(String key) {
+        inputValidator.validateString(key, "key");
 
-        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
-            DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = ((RightsModuleStorage) storage).getDrHoldbackRuleByDrHoldbackValue(drHoldbackValue);
+        return BaseModuleStorage.performStorageAction("Get DR holdback category", RightsModuleStorage.class, storage -> {
+            DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto = ((RightsModuleStorage) storage).getDrHoldbackCategoryByKey(key);
 
-            if (drHoldbackRuleOutputDto == null) {
-                final String errorMessage = "DR holdback rule not found for drHoldbackValue: " + drHoldbackValue;
+            if (drHoldbackCategoryOutputDto == null) {
+                final String errorMessage = "DR holdback category not found for key: " + key;
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
 
-            return drHoldbackRuleOutputDto;
+            return drHoldbackCategoryOutputDto;
         });
     }
 
     /**
-     * Retrieves the DR holdback rule identified by the specified name.
+     * Retrieves the DR holdback category identified by the specified name.
      * This method performs a storage action to access the RightsModuleStorage
-     * and fetch the DR holdback rule as an object.
+     * and fetch the DR holdback category as an object.
      *
-     * @param name the name of the DR holdback rule to retrieve. It must not be null or empty.
-     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified name if found.
-     * @throws NotFoundServiceException if no rule is found for the specified name.
+     * @param name the name of the DR holdback category to retrieve. It must not be null or empty.
+     * @return the {@link DrHoldbackCategoryOutputDto} corresponding to the specified name if found.
+     * @throws NotFoundServiceException if no DR holdback category is found for the specified name.
      */
-    public static DrHoldbackRuleOutputDto getDrHoldbackRuleByName(String name) {
-        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
-            DrHoldbackRuleOutputDto output = ((RightsModuleStorage) storage).getDrHoldbackRuleByName(name);
+    public static DrHoldbackCategoryOutputDto getDrHoldbackCategoryByName(String name) {
+        return BaseModuleStorage.performStorageAction("Get DR holdback category", RightsModuleStorage.class, storage -> {
+            DrHoldbackCategoryOutputDto output = ((RightsModuleStorage) storage).getDrHoldbackCategoryByName(name);
             if (output != null) {
                 return output;
             }
-            throw new NotFoundServiceException("DR holdback rule not found for name: " + name);
+            throw new NotFoundServiceException("DR holdback category not found for name: " + name);
         });
     }
 
     /**
-     * Retrieves the DR holdback rule identified by the specified id.
+     * Retrieves the DR holdback category identified by the specified id.
      * This method performs a storage action to access the RightsModuleStorage
-     * and fetch the DR holdback rule as an object.
+     * and fetch the DR holdback category as an object.
      *
-     * @param id the id of the DR holdback rule to retrieve. It must not be null or empty.
-     * @return the {@link DrHoldbackRuleOutputDto} corresponding to the specified id if found.
-     * @throws NotFoundServiceException if no rule is found for the specified id.
+     * @param id the id of the DR holdback category to retrieve. It must not be null or empty.
+     * @return the {@link DrHoldbackCategoryOutputDto} corresponding to the specified id if found.
+     * @throws NotFoundServiceException if no DR holdback category is found for the specified id.
      */
-    public static DrHoldbackRuleOutputDto getDrHoldbackRuleById(Long id) {
+    public static DrHoldbackCategoryOutputDto getDrHoldbackCategoryById(Long id) {
         inputValidator.validateId(id);
 
-        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> {
-            DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = ((RightsModuleStorage) storage).getDrHoldbackRuleById(id);
+        return BaseModuleStorage.performStorageAction("Get DR holdback category", RightsModuleStorage.class, storage -> {
+            DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto = ((RightsModuleStorage) storage).getDrHoldbackCategoryById(id);
 
-            if (drHoldbackRuleOutputDto == null) {
-                final String errorMessage = "DR holdback rule not found for id: " + id;
+            if (drHoldbackCategoryOutputDto == null) {
+                final String errorMessage = "DR holdback category not found for id: " + id;
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
 
-            return drHoldbackRuleOutputDto;
+            return drHoldbackCategoryOutputDto;
         });
     }
 
     /**
-     * Get all DR holdback rules
+     * Get all DR holdback categories
      *
      * @return
      */
-    public static List<DrHoldbackRuleOutputDto> getDrHoldbackRules() {
-        return BaseModuleStorage.performStorageAction("Get DR holdback rule", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackRules());
+    public static List<DrHoldbackCategoryOutputDto> getDrHoldbackCategories() {
+        return BaseModuleStorage.performStorageAction("Get DR holdback category", RightsModuleStorage.class, storage -> ((RightsModuleStorage) storage).getDrHoldbackCategories());
     }
 
     /**
-     * Creates a DR holdback rule using the provided {@link DrHoldbackRuleInputDto}.
+     * Creates a DR holdback category using the provided {@link DrHoldbackCategoryInputDto}.
      *
-     * @param drHoldbackRuleInputDto
+     * @param drHoldbackCategoryInputDto
      */
-    public static DrHoldbackRuleOutputDto createDrHoldbackRule(DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
-        inputValidator.validateString(drHoldbackRuleInputDto.getDrHoldbackValue(), "drHoldbackValue");
+    public static DrHoldbackCategoryOutputDto createDrHoldbackCategory(DrHoldbackCategoryInputDto drHoldbackCategoryInputDto) {
+        inputValidator.validateString(drHoldbackCategoryInputDto.getKey(), "key");
 
-        return BaseModuleStorage.performStorageAction("Create DR holdback rule", RightsModuleStorage.class, storage -> {
-            long id = ((RightsModuleStorage) storage).createDrHoldbackRule(drHoldbackRuleInputDto.getDrHoldbackValue(), drHoldbackRuleInputDto.getName(), drHoldbackRuleInputDto.getDays());
+        return BaseModuleStorage.performStorageAction("Create DR holdback category", RightsModuleStorage.class, storage -> {
+            long id = ((RightsModuleStorage) storage).createDrHoldbackCategory(drHoldbackCategoryInputDto.getKey(), drHoldbackCategoryInputDto.getName(), drHoldbackCategoryInputDto.getDays());
 
-            DrHoldbackRuleOutputDto drHoldbackRuleOutputDto = ((RightsModuleStorage) storage).getDrHoldbackRuleByDrHoldbackValue(drHoldbackRuleInputDto.getDrHoldbackValue());
+            DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto = ((RightsModuleStorage) storage).getDrHoldbackCategoryByKey(drHoldbackCategoryInputDto.getKey());
 
-            ChangeDifferenceText change = RightsChangelogGenerator.createDrHoldbackRuleChanges(drHoldbackRuleOutputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RULE, drHoldbackRuleInputDto.getDrHoldbackValue(), null, change.getBefore(), change.getAfter());
+            ChangeDifferenceText change = RightsChangelogGenerator.createDrHoldbackCategoryChanges(drHoldbackCategoryOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_CATEGORY, drHoldbackCategoryInputDto.getKey(), null, change.getBefore(), change.getAfter());
             ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
 
-            log.info("Created DR holdback rule: {}", drHoldbackRuleOutputDto);
+            log.info("Created DR holdback category: {}", drHoldbackCategoryOutputDto);
 
-            return drHoldbackRuleOutputDto;
+            return drHoldbackCategoryOutputDto;
         });
     }
 
     /**
-     * Update the number of days for a DR holdback rule
+     * Update the number of days for a DR holdback category
      *
-     * @param id the id of the dr holdback rule
+     * @param id the id of the dr holdback category
      **/
-    public static DrHoldbackRuleOutputDto updateDrHoldbackRule(Long id, DrHoldbackRuleInputDto drHoldbackRuleInputDto) {
+    public static DrHoldbackCategoryOutputDto updateDrHoldbackCategory(Long id, DrHoldbackCategoryInputDto drHoldbackCategoryInputDto) {
         inputValidator.validateId(id);
-        inputValidator.validateDays(drHoldbackRuleInputDto.getDays());
+        inputValidator.validateInteger(drHoldbackCategoryInputDto.getDays(), "days");
 
-        // Check if the id has a correspondent rule
-        DrHoldbackRuleOutputDto oldDrHoldbackRuleOutputDto = getDrHoldbackRuleById(id);
+        // Check if the id has a correspondent DR holdback category
+        DrHoldbackCategoryOutputDto oldDrHoldbackCategoryOutputDto = getDrHoldbackCategoryById(id);
 
-        return BaseModuleStorage.performStorageAction("update DR holdback rule", RightsModuleStorage.class, storage -> {
-            ((RightsModuleStorage) storage).updateDrHoldbackRule(id, drHoldbackRuleInputDto.getDays());
+        return BaseModuleStorage.performStorageAction("update DR holdback category", RightsModuleStorage.class, storage -> {
+            ((RightsModuleStorage) storage).updateDrHoldbackCategory(id, drHoldbackCategoryInputDto.getDays());
 
-            DrHoldbackRuleOutputDto updatedDrHoldbackRuleOutputDto = ((RightsModuleStorage) storage).getDrHoldbackRuleById(id);
+            DrHoldbackCategoryOutputDto updatedDrHoldbackCategoryOutputDto = ((RightsModuleStorage) storage).getDrHoldbackCategoryById(id);
 
-            ChangeDifferenceText change = RightsChangelogGenerator.updateDrHoldbackRuleChanges(oldDrHoldbackRuleOutputDto, updatedDrHoldbackRuleOutputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_DAY, drHoldbackRuleInputDto.getDrHoldbackValue(), drHoldbackRuleInputDto.getChangeComment(), change.getBefore(), change.getAfter());
+            ChangeDifferenceText change = RightsChangelogGenerator.updateDrHoldbackCategoryChanges(oldDrHoldbackCategoryOutputDto, updatedDrHoldbackCategoryOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(id, null, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.HOLDBACK_CATEGORY, drHoldbackCategoryInputDto.getKey(), drHoldbackCategoryInputDto.getChangeComment(), change.getBefore(), change.getAfter());
             ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
-            log.info("Updated DR holdback rule: {}, updatedDrHoldbackRuleOutputDto: {}", id, updatedDrHoldbackRuleOutputDto);
-            return updatedDrHoldbackRuleOutputDto;
+            log.info("Updated DR holdback category: {}, updatedDrHoldbackCategoryOutputDto: {}", id, updatedDrHoldbackCategoryOutputDto);
+            return updatedDrHoldbackCategoryOutputDto;
         });
     }
 
     /**
-     * Delete a DR holdback rule
+     * Delete a DR holdback category
      *
-     * @param id id of the DR holdback rule
+     * @param id              id of the DR holdback category
      * @param deleteReasonDto comment about why object gets deleted
      */
-    public static RecordsCountDto deleteDrHoldbackRule(Long id, DeleteReasonDto deleteReasonDto) {
+    public static RecordsCountDto deleteDrHoldbackCategory(Long id, DeleteReasonDto deleteReasonDto) {
         inputValidator.validateId(id);
-        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
 
-        // Check if the id has a correspondent rule
-        DrHoldbackRuleOutputDto deleteDrHoldbackRuleOutputDto = getDrHoldbackRuleById(id);
+        // Check if the id has a correspondent DR holdback category
+        DrHoldbackCategoryOutputDto deleteDrHoldbackCategoryOutputDto = getDrHoldbackCategoryById(id);
 
-        return BaseModuleStorage.performStorageAction("Delete DR holdback rule", RightsModuleStorage.class, storage -> {
+        return BaseModuleStorage.performStorageAction("Delete DR holdback category", RightsModuleStorage.class, storage -> {
             // Delete entry from database
             RecordsCountDto recordsCountDto = new RecordsCountDto();
-            int deletedCount = ((RightsModuleStorage) storage).deleteDrHoldbackRule(id);
+            int deletedCount = ((RightsModuleStorage) storage).deleteDrHoldbackCategory(id);
             recordsCountDto.setCount(deletedCount);
 
-            ChangeDifferenceText change = RightsChangelogGenerator.deleteDrHoldbackRuleChanges(deleteDrHoldbackRuleOutputDto);
-            AuditLogEntry logEntry = new AuditLogEntry(deleteDrHoldbackRuleOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RULE, deleteDrHoldbackRuleOutputDto.getDrHoldbackValue(), deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
+            ChangeDifferenceText change = RightsChangelogGenerator.deleteDrHoldbackCategoryChanges(deleteDrHoldbackCategoryOutputDto);
+            AuditLogEntry logEntry = new AuditLogEntry(deleteDrHoldbackCategoryOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_CATEGORY, deleteDrHoldbackCategoryOutputDto.getKey(), deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
             ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
 
-            log.info("Deleted DR holdback rule: {} ", deleteDrHoldbackRuleOutputDto);
+            log.info("Deleted DR holdback category: {} ", deleteDrHoldbackCategoryOutputDto);
 
             return recordsCountDto;
         });
     }
 
     /**
-     * Retrieves DR holdback ranges identified by the input drHoldbackValue.
-     * This method performs a storage action to access the RightsModuleStorage
-     * and fetch the DR holdback ranges as object in a list.
+     * Retrieves DR holdback ranges identified by the input drHoldbackCategoryKey.
+     * This method performs a storage action to access the RightsModuleStorage and fetch the DR holdback ranges as
+     * object in a list.
      *
-     * @param drHoldbackValue the drHoldbackValue of the DR holdback rule to retrieve. It must not be null or empty.
-     * @return list of {@link DrHoldbackRangeOutputDto} corresponding to the specified drHoldbackValue if found.
-     * @throws NotFoundServiceException if no rule is found for the specified drHoldbackValue.
+     * @param drHoldbackCategoryKey the key of the DR holdback category to retrieve. It must not be null or empty.
+     * @return list of {@link DrHoldbackRangeOutputDto} corresponding to the specified key if found.
+     * @throws NotFoundServiceException if no DR holdback category is found for the specified key.
      */
-    public static List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackValue) {
-        inputValidator.validateString(drHoldbackValue, "drHoldbackValue");
+    public static List<DrHoldbackRangeOutputDto> getDrHoldbackRanges(String drHoldbackCategoryKey) {
+        inputValidator.validateString(drHoldbackCategoryKey, "drHoldbackCategoryKey");
 
-        return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackValue, RightsModuleStorage.class, storage -> {
-            List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = ((RightsModuleStorage) storage).getDrHoldbackRangesByDrHoldbackValue(drHoldbackValue);
+        return BaseModuleStorage.performStorageAction("Get DR holdback ranges for " + drHoldbackCategoryKey, RightsModuleStorage.class, storage -> {
+            List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = ((RightsModuleStorage) storage).getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
 
             if (drHoldbackRangeOutputDtoList.isEmpty()) {
-                final String errorMessage = "DR holdback ranges not found for drHoldbackValue: " + drHoldbackValue;
+                final String errorMessage = "DR holdback ranges not found for drHoldbackCategoryKey: " + drHoldbackCategoryKey;
                 log.error(errorMessage);
                 throw new NotFoundServiceException(errorMessage);
             }
@@ -649,24 +648,24 @@ public class RightsModuleFacade {
     }
 
     /**
-     * Creates DR holdback range from form and content range combinations for a drHoldbackValue using the provided
+     * Creates DR holdback range from form and content range combinations for a drHoldbackCategoryKey using the provided
      * {@link DrHoldbackRangeInputDto}.
-     * This requires the drHoldbackValue to be present in the DR holdback rule table
+     * This requires the key to be present in the DR holdback category table
      *
      * @param drHoldbackRangeInputDto
      */
     public static List<DrHoldbackRangeOutputDto> createDrHoldbackRanges(DrHoldbackRangeInputDto drHoldbackRangeInputDto) {
-        inputValidator.validateString(drHoldbackRangeInputDto.getDrHoldbackValue(), "drHoldbackValue");
+        inputValidator.validateString(drHoldbackRangeInputDto.getDrHoldbackCategoryKey(), "drHoldbackCategoryKey");
 
-        // Check if the drHoldbackValue has correspondent DR holdback rule
-        getDrHoldbackRuleByDrHoldbackValue(drHoldbackRangeInputDto.getDrHoldbackValue());
+        // Check if the key has correspondent DR holdback category
+        getDrHoldbackCategoryByKey(drHoldbackRangeInputDto.getDrHoldbackCategoryKey());
 
-        BaseModuleStorage.performStorageAction("Create DR holdback ranges for drHoldbackValue: " + drHoldbackRangeInputDto.getDrHoldbackValue(), RightsModuleStorage.class, storage -> {
+        BaseModuleStorage.performStorageAction("Create DR holdback ranges for key: " + drHoldbackRangeInputDto.getDrHoldbackCategoryKey(), RightsModuleStorage.class, storage -> {
             for (DrHoldbackRangeDto drHoldbackRangeDto : drHoldbackRangeInputDto.getRanges()) {
-                long objectId = ((RightsModuleStorage) storage).createDrHoldbackRange(drHoldbackRangeDto.getContentRangeFrom(), drHoldbackRangeDto.getContentRangeTo(), drHoldbackRangeDto.getFormRangeFrom(), drHoldbackRangeDto.getFormRangeTo(), drHoldbackRangeInputDto.getDrHoldbackValue());
+                long objectId = ((RightsModuleStorage) storage).createDrHoldbackRange(drHoldbackRangeDto.getContentRangeFrom(), drHoldbackRangeDto.getContentRangeTo(), drHoldbackRangeDto.getFormRangeFrom(), drHoldbackRangeDto.getFormRangeTo(), drHoldbackRangeInputDto.getDrHoldbackCategoryKey());
 
                 ChangeDifferenceText change = RightsChangelogGenerator.createDrHoldbackRangeChanges(drHoldbackRangeDto);
-                AuditLogEntry logEntry = new AuditLogEntry(objectId, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackRangeInputDto.getDrHoldbackValue(), null, change.getBefore(), change.getAfter());
+                AuditLogEntry logEntry = new AuditLogEntry(objectId, null, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackRangeInputDto.getDrHoldbackCategoryKey(), null, change.getBefore(), change.getAfter());
                 ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
 
                 log.info("Created DR holdback range: {}", drHoldbackRangeDto);
@@ -674,32 +673,32 @@ public class RightsModuleFacade {
             return null;
         });
 
-        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = getDrHoldbackRanges(drHoldbackRangeInputDto.getDrHoldbackValue());
+        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = getDrHoldbackRanges(drHoldbackRangeInputDto.getDrHoldbackCategoryKey());
         return drHoldbackRangeOutputDtoList;
     }
 
     /**
-     * Deletes all form and content range combinations for a drHoldbackValue
+     * Deletes all form and content range combinations for a drHoldbackCategoryKey
      *
-     * @param drHoldbackValue drHoldbackValue of DR holdback ranges
-     * @param deleteReasonDto comment about why object gets deleted
+     * @param drHoldbackCategoryKey key of DR holdback ranges
+     * @param deleteReasonDto       comment about why object gets deleted
      */
-    public static RecordsCountDto deleteDrHoldbackRanges(String drHoldbackValue, DeleteReasonDto deleteReasonDto) {
-        inputValidator.validateString(drHoldbackValue, "drHoldbackValue");
-        inputValidator.validateChangeComment(deleteReasonDto.getChangeComment());
+    public static RecordsCountDto deleteDrHoldbackRanges(String drHoldbackCategoryKey, DeleteReasonDto deleteReasonDto) {
+        inputValidator.validateString(drHoldbackCategoryKey, "drHoldbackCategoryKey");
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
 
-        // Check if the drHoldbackValue has correspondent DR holdback ranges
-        List<DrHoldbackRangeOutputDto> oldRanges = getDrHoldbackRanges(drHoldbackValue);
+        // Check if the key has correspondent DR holdback ranges
+        List<DrHoldbackRangeOutputDto> oldRanges = getDrHoldbackRanges(drHoldbackCategoryKey);
 
         return BaseModuleStorage.performStorageAction("Delete DR holdback ranges", RightsModuleStorage.class, storage -> {
             // Delete entry from database
             RecordsCountDto recordsCountDto = new RecordsCountDto();
-            int deletedCount = ((RightsModuleStorage) storage).deleteRangesByDrHoldbackValue(drHoldbackValue);
+            int deletedCount = ((RightsModuleStorage) storage).deleteDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
             recordsCountDto.setCount(deletedCount);
 
             for (DrHoldbackRangeOutputDto drHoldbackRangeOutputDto : oldRanges) {
                 ChangeDifferenceText change = RightsChangelogGenerator.deleteDrHoldbackRangeChanges(drHoldbackRangeOutputDto);
-                AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRangeOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackValue, deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
+                AuditLogEntry logEntry = new AuditLogEntry(drHoldbackRangeOutputDto.getId(), null, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.HOLDBACK_RANGE, drHoldbackCategoryKey, deleteReasonDto.getChangeComment(), change.getBefore(), change.getAfter());
                 ((AuditLogModuleStorage) storage).persistAuditLog(logEntry);
 
                 log.info("Deleted DR holdback range: {}", drHoldbackRangeOutputDto);
