@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Delta migrations for OPS to be found in `rightsmodule_remake_dr_holdback_tables_version_two.ddl` and data needs to be
   reapplied ie run `rightsmodule_default_dr_holdback_categories_data.sql` and
   `rightsmodule_default_dr_holdback_ranges_data.sql`*).
+- API methods for licenses, presentationType, attributeType, groupType
 
 ### Changed
 
