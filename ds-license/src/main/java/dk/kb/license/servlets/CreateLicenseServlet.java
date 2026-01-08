@@ -117,7 +117,7 @@ public class CreateLicenseServlet extends HttpServlet {
 			else if ("delete".equals(event)){			    				
 				log.info("delete license");		
 				LicenseModuleFacade.persistLicense(license,request.getSession());
-				LicenseModuleFacade.deleteLicense(licenseId,request.getSession());
+				LicenseModuleFacade.deleteLicense(licenseId,request.getSession(), null);
 				returnConfigurationPage(request, response);
 				return;
 			}			

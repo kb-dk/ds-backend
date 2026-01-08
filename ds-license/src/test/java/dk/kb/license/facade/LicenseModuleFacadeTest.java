@@ -3,6 +3,7 @@ package dk.kb.license.facade;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
+import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.*;
 import dk.kb.license.util.H2DbUtil;
@@ -58,10 +59,14 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
             String valueEnglish = "unit_test_value_en";
             String valueUpdated = "unit_test_value_updated";
             String valueEnglishUpdated = "unit_test_value_en_updated";
+            String changeComment = "changeComment";
+            DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
+            deleteReasonDto.setChangeComment(changeComment);
+
 
             long presentationTypeId = LicenseModuleFacade.persistLicensePresentationType(key, value, valueEnglish, mockedSession);
             LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated, valueEnglishUpdated, mockedSession);
-            LicenseModuleFacade.deletePresentationType(key, mockedSession);
+            LicenseModuleFacade.deletePresentationType(key, mockedSession, deleteReasonDto);
 
             ArrayList<AuditLogEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
 
@@ -95,7 +100,7 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
 
             assertNull(createAuditLog.getChangeComment());
             assertNull(updateAuditLog.getChangeComment());
-            assertNull(deleteAuditLog.getChangeComment());
+            assertEquals(changeComment, deleteAuditLog.getChangeComment());
 
             assertNull(createAuditLog.getTextBefore());
             //TODO: This should be fixed together with: DRA-2085

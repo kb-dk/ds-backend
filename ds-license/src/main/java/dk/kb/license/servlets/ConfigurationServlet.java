@@ -128,18 +128,20 @@ public class ConfigurationServlet extends HttpServlet {
                 log.debug("deletePresentationType called");
                 request.setAttribute("tab", "1");
                 String typeName = request.getParameter("typeName");
-                LicenseModuleFacade.deletePresentationType(typeName,request.getSession());
+                LicenseModuleFacade.deletePresentationType(typeName,request.getSession(), null);
             } else if ("deleteGroupType".equals(event)) {
                 log.debug("deleteGroup called");
                 request.setAttribute("tab", "2");
                 String typeName = request.getParameter("typeName");
-                LicenseModuleFacade.deleteLicenseGroupType(typeName,request.getSession());
-            } else if ("deleteAttributeType".equals(event)) {
+                LicenseModuleFacade.deleteLicenseGroupType(typeName,request.getSession(), null);
+            }
+            else if ("deleteAttributeType".equals(event)) {
                 log.debug("deleteAttributeType called");
                 request.setAttribute("tab", "3");
                 String typeName = request.getParameter("typeName");
-                LicenseModuleFacade.deleteAttributeType(typeName,request.getSession());
-            } else if ("updateGroup".equals(event)) {
+                LicenseModuleFacade.deleteAttributeType(typeName,request.getSession(), null);
+            }
+            else if ("updateGroup".equals(event)) {
                 log.debug("updateGroup called");
                 request.setAttribute("tab", "2");
 

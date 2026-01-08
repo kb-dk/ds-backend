@@ -2,9 +2,9 @@ package dk.kb.license.api.v1.impl;
 
 import dk.kb.license.api.v1.DsLicenseApi;
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.facade.LicenseModuleFacade;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.storage.License;
-import dk.kb.license.storage.PresentationType;
+import dk.kb.license.storage.*;
 import dk.kb.license.validation.LicenseValidator;
 import dk.kb.util.webservice.ImplBase;
 import org.apache.cxf.interceptor.InInterceptors;
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ds-license by the Royal Danish Library
@@ -176,5 +177,153 @@ public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
         output.setLicenses(userLicenses.getLicenses());
 
         return output;
+    }
+
+    @Override
+    public LicenseDto getLicenseById(Long id) {
+        try {
+            LicenseDto result = LicenseModuleFacade.getLicenseById(id);
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<LicenseDto> getLicenses() {
+        try {
+            ArrayList<LicenseDto> result = LicenseModuleFacade.getLicenses();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public PresentationTypeDto getPresentationTypeById(Long id) {
+        try {
+            PresentationTypeDto result = LicenseModuleFacade.getPresentationTypeById(id);
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<PresentationTypeDto> getPresentationTypes() {
+        try {
+            ArrayList<PresentationTypeDto> result = LicenseModuleFacade.getPresentationTypes();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void persistPresentationType(PresentationTypeDto presentationTypeDto) {
+        try {
+            LicenseModuleFacade.persistPresentationType(presentationTypeDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void persistGroupType(GroupTypeDto groupTypeDto) {
+        try {
+            LicenseModuleFacade.persistGroupType(groupTypeDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<AttributeTypeDto> getAttributeTypesDto() {
+        try {
+            ArrayList<AttributeTypeDto> result = LicenseModuleFacade.getAttributeTypesDto();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public GroupTypeDto getGroupTypeById(Long id) {
+        try {
+            GroupTypeDto result = LicenseModuleFacade.getGroupTypeById(id);
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<GroupTypeDto> getGroupTypes() {
+        try {
+            ArrayList<GroupTypeDto> result = LicenseModuleFacade.getGroupTypes();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void persistLicenseDto(LicenseDto licenseDto) {
+        try {
+            LicenseModuleFacade.persistLicenseDto(licenseDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void persistAttributeTypeDto(AttributeTypeDto attributeTypeDto) {
+        try {
+            LicenseModuleFacade.persistAttributeTypeDto(attributeTypeDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public RecordsCountDto deleteLicense(Long id, DeleteReasonDto deleteReasonDto) {
+        try {
+            return LicenseModuleFacade.deleteLicense(id, null, deleteReasonDto);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public RecordsCountDto deletePresentationType(String key, DeleteReasonDto deleteReasonDto) {
+        try {
+            LicenseModuleFacade.deletePresentationType(key, null, deleteReasonDto);
+            return new RecordsCountDto();
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public RecordsCountDto deleteGroupType(String key, DeleteReasonDto deleteReasonDto) {
+        try {
+            LicenseModuleFacade.deleteLicenseGroupType(key, null, deleteReasonDto);
+            return new RecordsCountDto();
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public RecordsCountDto deleteAttributeType(String key, DeleteReasonDto deleteReasonDto) {
+        try {
+            return LicenseModuleFacade.deleteAttributeType(key, null, deleteReasonDto);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 }

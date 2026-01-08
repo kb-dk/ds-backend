@@ -106,9 +106,8 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
             + VALIDFROM_COLUMN + "," + VALIDTO_COLUMN + ") VALUES (?,?,?,?,?,?,?)"; // #|?|=7
 
     private final static String selectAttributeTypesQuery = "SELECT * FROM " + ATTRIBUTETYPES_TABLE
-            + " ORDER BY " + VALUE_COLUMN;;
+            + " ORDER BY " + VALUE_COLUMN;
 
-            
     private final static String selectAttributeTypesByNameQuery = "SELECT * FROM " + ATTRIBUTETYPES_TABLE
             + " WHERE " + VALUE_COLUMN + " = ?";
 
