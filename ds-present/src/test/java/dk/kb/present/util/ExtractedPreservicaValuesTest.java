@@ -143,4 +143,12 @@ class ExtractedPreservicaValuesTest {
         assertNull(extractedPreservicaValues.getHoldbackCategory());
     }
 
+    @Test
+    void extractValuesFromPreservicaContentWithFuzzyData() throws IOException, ParserConfigurationException, SAXException {
+        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/supplementary_fuzzy_metadata/fuzzy.xml");
+        ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, "da77d411-3a7d-4f05-8ad1-05a19538f668");
+        assertNull(extractedPreservicaValues.getHoldbackCategory());
+
+    }
+
 }

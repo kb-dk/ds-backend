@@ -45,6 +45,15 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_CONTENT_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/contentsitem_typology";
     private static final String DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_ORIGIN_COUNTRY_PATH = METADATA_PATH + "/Content/record/dr_archive_supplementary_rights_metadata/productioncountry_origincountry";
 
+    private static final String FUZZY_PRODUCTION_ID_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/tpro_pnr";
+    private static final String FUZZY_ORIGIN_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/origin";
+    private static final String FUZZY_HOLDBACK_CATEGORY_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/tpro_holdback";
+    private static final String FUZZY_PURPOSE_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/intent";
+    private static final String FUZZY_FORM_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/form";
+    private static final String FUZZY_CONTENT_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/contentsitem";
+    private static final String FUZZY_ORIGIN_COUNTRY_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/productioncountry";
+
+
     private static final Map<String,String> PBCORE_EXTRACT_PATHS = Map.of(
             START_TIME_PATH,ExtractedPreservicaValues.STARTTIME_KEY,
             END_TIME_PATH,ExtractedPreservicaValues.ENDTIME_KEY
@@ -78,9 +87,20 @@ public class ElementsExtractionHandler extends DefaultHandler {
             DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_HOLDBACK_CATEGORY_PATH, ExtractedPreservicaValues.HOLDBACK_CATEGORY_KEY
     );
 
+    private static final Map<String,String> FUZZY_EXTRACT_PATHS = Map.of(
+            FUZZY_FORM_PATH,ExtractedPreservicaValues.FORM_KEY,
+            FUZZY_CONTENT_PATH,ExtractedPreservicaValues.CONTENT_KEY,
+            FUZZY_ORIGIN_PATH,ExtractedPreservicaValues.ORIGIN_KEY,
+            FUZZY_ORIGIN_COUNTRY_PATH,ExtractedPreservicaValues.ORIGIN_COUNTRY_KEY,
+            FUZZY_PURPOSE_PATH,ExtractedPreservicaValues.PURPOSE_KEY,
+            FUZZY_PRODUCTION_ID_PATH,ExtractedPreservicaValues.PRODUCTION_ID_KEY,
+            FUZZY_HOLDBACK_CATEGORY_PATH,ExtractedPreservicaValues.HOLDBACK_CATEGORY_KEY
+    );
+
     private boolean hasNielsenData = false;
     private boolean hasTvMetadata = false;
     private boolean hasDrArchiveSupplementaryRightsMetadata = false;
+    private boolean hasFuzzyMetadata = false;
 
     private boolean insideMetadata = false;
     private String metadataType;
@@ -168,6 +188,13 @@ public class ElementsExtractionHandler extends DefaultHandler {
                     extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
                 }
             }
+             if ("http://id.kb.dk/schemas/supplementary_dr_tv_1973_2005_metadata".equals(metadataType)) {
+                if (!hasDrArchiveSupplementaryRightsMetadata && !hasTvMetadata && !hasNielsenData) {
+                    hasFuzzyMetadata = true;
+                    String key = FUZZY_EXTRACT_PATHS.get(currentPath);
+                    extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
+                }
+             }
 
             if (PBCORE_TITLE_PATH.equals(currentPath)) {
                 switch (pbCoreTitleType) {
@@ -209,8 +236,8 @@ public class ElementsExtractionHandler extends DefaultHandler {
                     return TVMETER_EXTRACT_PATHS.containsKey(currentPath);
                 case "http://id.kb.dk/schemas/supplementary_nielsen_metadata":
                     return true;
-                case "http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata":
-                    return true;
+                case "http://id.kb.dk/schemas/supplementary_dr_tv_1973_2005_metadata":
+                    return FUZZY_EXTRACT_PATHS.containsKey(currentPath);
             }
         }
         return false;
