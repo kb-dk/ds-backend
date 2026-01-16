@@ -73,6 +73,7 @@ public class TestFiles {
     public static final String PVICA_DOUBLE_CHANNEL = "internal_test_files/preservica7/42de3472-0fa2-4ad3-b8a4-5e99d4ac8242.xml";
     public static final String PVICA_WITH_CORRECT_PRESENTATION = "internal_test_files/preservica7/aaa668c2-bf17-4ce7-bf24-d0ff5d29d097.xml";
     public static final String PVICA_MISSING_KANALNAVN = "internal_test_files/preservica7/28837427-9af7-4138-808b-2ad49b645297.xml";
+    public static final String PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES = "internal_test_files/preservica7/c9fe9fc0-a860-427d-92ec-a7c9f8302aba.xml";
 
     // From preservica 6, not in preservica 7 stage
     public static final String PVICA6_RECORD_00a9e71c = "internal_test_files/preservica6/00a9e71c-1264-4e57-9238-b38ec5672fb2.xml";

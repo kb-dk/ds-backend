@@ -27,6 +27,7 @@
   <!-- Start and enddate from this record. Correctly parsed and in UTC time.-->
   <xsl:param name="startTime"/>
   <xsl:param name="endTime"/>
+  <xsl:param name="referenceId"/>
   <!-- ID created by kaltura. This ID is the ID of the stream containing the newest presentation copy for this resource. Used for video and audio objects.-->
   <xsl:param name="kalturaID"/>
   <!-- Representation of when the record was last modified in the backing ds-storage. The value is a long representing time
@@ -1121,42 +1122,19 @@
       <xsl:value-of select="format-number($mTime, '0')"/>
     </f:string>
 
-    <xsl:if test="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/radiotv_access/transcoding_status']">
-
-      <xsl:variable name="filePath">
-        <xsl:value-of select="/XIP/Metadata/Content/radiotvTranscodingStatus/specificRadioTvTranscodingStatus/accessFilePath"/>
-      </xsl:variable>
-
-      <xsl:variable name="fileExtension">
-          <xsl:value-of select="/XIP/Metadata/Content/radiotvTranscodingStatus/specificRadioTvTranscodingStatus/fileExtension"/>
-      </xsl:variable>
-
-        <xsl:variable name="fileIdWithExtension">
-        <xsl:value-of select="tokenize($filePath, '/')[last()]"/>
-      </xsl:variable>
-
-      <xsl:choose>
-        <xsl:when test="contains($fileIdWithExtension, '.')">
-          <f:string key="kb:file_id">
-            <xsl:value-of select="substring-before($fileIdWithExtension, '.')"/>
-          </f:string>
-        </xsl:when>
-        <xsl:otherwise>
-          <f:string key="kb:file_id">
-            <xsl:value-of select="$fileIdWithExtension"/>
-          </f:string>
-        </xsl:otherwise>
-      </xsl:choose>
-
-      <f:string key="kb:file_path">
-        <xsl:value-of select="$filePath"/>
-      </f:string>
-
-      <xsl:if test="$fileExtension">
-        <f:string key="kb:file_extension">
-          <xsl:value-of select="$fileExtension"/>
+    <xsl:if test="$referenceId">
+      <xsl:for-each select="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/radiotv_access/transcoding_status']/Content/radiotvTranscodingStatus/
+            specificRadioTvTranscodingStatus[contains(accessFilePath, $referenceId)][1]">
+        <f:string key="kb:file_id">
+          <xsl:value-of select="$referenceId"/>
         </f:string>
-      </xsl:if>
+        <f:string key="kb:file_path">
+          <xsl:value-of select="accessFilePath"/>
+        </f:string>
+        <f:string key="kb:file_extension">
+          <xsl:value-of select="fileExtension"/>
+        </f:string>
+      </xsl:for-each>
     </xsl:if>
 
     <xsl:if test="$productionIdRestrictedDr != ''">

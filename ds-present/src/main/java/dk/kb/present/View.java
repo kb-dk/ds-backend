@@ -276,6 +276,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         metadata.put("origin", origin);
         metadata.put("mTime", record.getmTime().toString());
         metadata.put("mTimeHuman", getSolrDate(record.getmTimeHuman()));
+        metadata.put("referenceId", record.getReferenceId());
 
         if (record.getKalturaId() != null){
             metadata.put("kalturaID", record.getKalturaId());

@@ -53,21 +53,31 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
     @Test
     void testUrlDomsMig() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_WITH_TRANSCODINGSTATUS, null);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_WITH_TRANSCODINGSTATUS, Map.of("referenceId", "08909897-cf37-4bd9-a230-1b48c87cea18"));
 
         assertTrue(transformedJSON.contains("\"kb:file_id\":\"08909897-cf37-4bd9-a230-1b48c87cea18\""));
         assertTrue(transformedJSON.contains("\"kb:file_path\":\"0\\/8\\/9\\/0\\/08909897-cf37-4bd9-a230-1b48c87cea18.mp4\""));
+        assertTrue(transformedJSON.contains("\"kb:file_extension\":\"mp4\""));
     }
 
     @Test
     void testUrlPreservicaRecord() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_CORRECT_PRESENTATION, null);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_CORRECT_PRESENTATION, Map.of("referenceId", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4"));
 
         assertTrue(transformedJSON.contains("\"kb:file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\""));
         assertTrue(transformedJSON.contains("\"kb:file_path\":\"c8\\/d2\\/e7\\/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\""));
         assertTrue(transformedJSON.contains("\"kb:file_extension\":\"mp4\""));
 
     }
+
+    @Test
+    void testUrlPreservicaRecordMultipleAccessFiles() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, Map.of("referenceId", "b557f9dd-197c-47f6-b481-785d5f7accd2"));
+        assertTrue(transformedJSON.contains("\"kb:file_id\":\"b557f9dd-197c-47f6-b481-785d5f7accd2\""));
+        assertTrue(transformedJSON.contains("\"kb:file_path\":\"b5\\/57\\/b557f9dd-197c-47f6-b481-785d5f7accd2\""));
+        assertTrue(transformedJSON.contains("\"kb:file_extension\":\"mp3\""));
+    }
+
 
 
     @Test

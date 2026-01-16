@@ -450,9 +450,17 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testFileIdAndPath(){
-        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"");
-        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_path\":\"c8\\/d2\\/e7\\/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"");
-        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_extension\":\"mp4\"");
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_path\":\"c8\\/d2\\/e7\\/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_extension\":\"mp4\"", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
+
+    }
+
+    @Test
+    void testFileIdAndPathMultipeFiles(){
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_id\":\"b557f9dd-197c-47f6-b481-785d5f7accd2\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_path\":\"b5\\/57\\/b557f9dd-197c-47f6-b481-785d5f7accd2\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
+        assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_extension\":\"mp3\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
 
     }
 
@@ -632,7 +640,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
      * @param substring must be present in the transformed record.
      */
     public void assertPvicaContains(String recordFile, String substring) {
-        assertMultiTestsThroughSchemaTransformation(recordFile,
+        assertPvicaContains(recordFile,substring,null);
+    }
+
+    public void assertPvicaContains(String recordFile, String substring, String referenceId) {
+        assertMultiTestsThroughSchemaTransformation(recordFile, referenceId,
                 solrDoc -> assertTrue(solrDoc.contains(substring))
         );
     }
@@ -644,7 +656,11 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
      * @param substring must be present in the transformed record.
      */
     public void assertPvicaNotContains(String recordFile, String substring) {
-        assertMultiTestsThroughSchemaTransformation(recordFile,
+        assertPvicaNotContains(recordFile, substring, null);
+    }
+
+    public void assertPvicaNotContains(String recordFile, String substring, String referenceId) {
+        assertMultiTestsThroughSchemaTransformation(recordFile, referenceId,
                 solrDoc -> assertFalse(solrDoc.contains(substring))
         );
     }
@@ -659,13 +675,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
      * @param tests Zero or more tests to perform on the transformed record.
      */
     @SafeVarargs
-    public final void assertMultiTestsThroughSchemaTransformation(String record, Consumer<String>... tests){
+    public final void assertMultiTestsThroughSchemaTransformation(String record, String referenceId, Consumer<String>... tests) {
         if (!TestFileProvider.hasSomeTestFiles()) {
             return;  // ensureTestFiles takes care of logging is there are no internal test files
         }
         String solrString;
         try {
-            solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, record);
+            solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, record, referenceId);
             prettyPrintJson(solrString);
         } catch (Exception e) {
             throw new RuntimeException(

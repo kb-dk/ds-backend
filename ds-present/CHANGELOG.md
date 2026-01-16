@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Solr version bumped to v. 1.8.5
 - Solr version bumped to v. 1.8.6
 - Random sort field added that can be used to randomize order of search results. Does not require reindexing, just configuration update. (solr v. 1.8.6)
+- Use 'referenceId' to find file_path and file_extension from the correct specificRadioTvTranscodingStatus when transforming to solr.
 
 
 ### Removed
