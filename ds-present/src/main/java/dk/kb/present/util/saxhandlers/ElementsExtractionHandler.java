@@ -188,7 +188,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
                     extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());
                 }
             }
-             if ("http://id.kb.dk/schemas/supplementary_dr_tv_1973_2005_metadata".equals(metadataType)) {
+             if ("http://id.kb.dk/schemas/supplementary_dr_tv_1973_2005_metadata".equals(metadataType) && FUZZY_EXTRACT_PATHS.containsKey(currentPath)) {
                 if (!hasDrArchiveSupplementaryRightsMetadata && !hasTvMetadata && !hasNielsenData) {
                     hasFuzzyMetadata = true;
                     String key = FUZZY_EXTRACT_PATHS.get(currentPath);
@@ -232,6 +232,8 @@ public class ElementsExtractionHandler extends DefaultHandler {
                     return PBCORE_EXTRACT_PATHS.containsKey(currentPath) ||
                                     PBCORE_TITLE_TYPE_PATH.equals(currentPath) ||
                                     PBCORE_TITLE_VALUE_PATH.equals(currentPath);
+                case "http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata":
+                    return DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_EXTRACT_PATHS.containsKey(currentPath);
                 case "http://id.kb.dk/schemas/supplementary_tvmeter_metadata":
                     return TVMETER_EXTRACT_PATHS.containsKey(currentPath);
                 case "http://id.kb.dk/schemas/supplementary_nielsen_metadata":

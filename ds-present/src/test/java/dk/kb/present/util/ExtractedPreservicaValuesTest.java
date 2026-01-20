@@ -147,8 +147,28 @@ class ExtractedPreservicaValuesTest {
     void extractValuesFromPreservicaContentWithFuzzyData() throws IOException, ParserConfigurationException, SAXException {
         String xml = Resolver.resolveUTF8String("internal_test_files/homemade/supplementary_fuzzy_metadata/fuzzy.xml");
         ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, "da77d411-3a7d-4f05-8ad1-05a19538f668");
-        assertNull(extractedPreservicaValues.getHoldbackCategory());
+        assertEquals("1000",extractedPreservicaValues.getPurpose());
+        assertEquals("1500",extractedPreservicaValues.getFormValue());
+        assertEquals("1100",extractedPreservicaValues.getOrigin());
+        assertEquals("Musik",extractedPreservicaValues.getHoldbackCategory());
+        assertEquals("Titel",extractedPreservicaValues.getTitle());
+        assertEquals("Orig. titel",extractedPreservicaValues.getOriginalTitle());
+        assertEquals("3240",extractedPreservicaValues.getContent());
+        assertEquals("1500",extractedPreservicaValues.getFormValue());
+        assertEquals("518130440",extractedPreservicaValues.getProductionId());
+        assertEquals("1000",extractedPreservicaValues.getOriginCountry());
+        assertEquals("2005-01-05T06:30:00Z",extractedPreservicaValues.getStartTime());
+        assertEquals("2005-01-05T06:58:00Z",extractedPreservicaValues.getEndTime());
+    }
 
+    @Test
+    void extractValuesFromPreservicaContentWithFuzzyAndSupplemantaryData() throws IOException, ParserConfigurationException, SAXException {
+        String xml = Resolver.resolveUTF8String("internal_test_files/homemade/supplementary_fuzzy_metadata/fuzzyAndSupplementary.xml");
+        ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, "da77d411-3a7d-4f05-8ad1-05a19538f668");
+        assertEquals("0000",extractedPreservicaValues.getPurpose());
+        assertEquals("0000",extractedPreservicaValues.getOrigin());
+        assertEquals("Underholdning",extractedPreservicaValues.getHoldbackCategory());
+        assertEquals("0000",extractedPreservicaValues.getContent());
     }
 
 }
