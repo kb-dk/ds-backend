@@ -237,7 +237,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
                 case "http://id.kb.dk/schemas/supplementary_tvmeter_metadata":
                     return TVMETER_EXTRACT_PATHS.containsKey(currentPath);
                 case "http://id.kb.dk/schemas/supplementary_nielsen_metadata":
-                    return true;
+                    return NIELSEN_EXTRACT_PATHS.containsKey(currentPath);
                 case "http://id.kb.dk/schemas/supplementary_dr_tv_1973_2005_metadata":
                     return FUZZY_EXTRACT_PATHS.containsKey(currentPath);
             }
