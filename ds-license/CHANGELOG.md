@@ -74,6 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed endpoint `GET /rights/getDrHoldbackValueFromContentAndForm` ->
   `GET /rights/getDrHoldbackCategoryByContentAndForm`.
 - Refactored validate methods for input Strings and Integers.
+- Test deleteDrHoldbackCategory_whenThereIsADrHoldbackRange_thenThrowJdbcSQLIntegrityConstraintViolationException in Changed test in RightsModuleStorageTest.java
+  no longer relies on error message containing: `CONSTRAINT_35`.
 
 ### Fixed
 
