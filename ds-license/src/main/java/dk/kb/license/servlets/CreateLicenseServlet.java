@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.license.facade.LicenseModuleFacade;
+import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.storage.Attribute;
 import dk.kb.license.storage.AttributeGroup;
 import dk.kb.license.storage.AttributeValue;
@@ -34,7 +35,11 @@ public class CreateLicenseServlet extends HttpServlet {
 	private static final Logger log = LoggerFactory.getLogger(CreateLicenseServlet.class);
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("text/html; charset=UTF-8");
+	
+	    DeleteReasonDto deleteReason= new DeleteReasonDto();
+        deleteReason.setChangeComment("DELETE FROM JSP");
+        
+	    response.setContentType("text/html; charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
 		
 		String licenseName = request.getParameter("licenseName");
@@ -117,7 +122,7 @@ public class CreateLicenseServlet extends HttpServlet {
 			else if ("delete".equals(event)){			    				
 				log.info("delete license");		
 				LicenseModuleFacade.persistLicense(license,request.getSession());
-				LicenseModuleFacade.deleteLicense(licenseId,request.getSession(), null);
+				LicenseModuleFacade.deleteLicense(licenseId,request.getSession(), deleteReason);
 				returnConfigurationPage(request, response);
 				return;
 			}			

@@ -19,6 +19,7 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.LicenseModuleFacade;
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
+import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.GetUserQueryInputDto;
 import dk.kb.license.model.v1.GetUserQueryOutputDto;
 import dk.kb.license.model.v1.GetUsersLicensesInputDto;
@@ -44,6 +45,8 @@ public class ConfigurationServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        DeleteReasonDto deleteReason= new DeleteReasonDto();
+        deleteReason.setChangeComment("DELETE FROM JSP");
         response.setContentType("text/html; charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
 
@@ -128,18 +131,19 @@ public class ConfigurationServlet extends HttpServlet {
                 log.debug("deletePresentationType called");
                 request.setAttribute("tab", "1");
                 String typeName = request.getParameter("typeName");
-                LicenseModuleFacade.deletePresentationType(typeName,request.getSession(), null);
+
+                LicenseModuleFacade.deletePresentationType(typeName,request.getSession(), deleteReason);
             } else if ("deleteGroupType".equals(event)) {
                 log.debug("deleteGroup called");
                 request.setAttribute("tab", "2");
                 String typeName = request.getParameter("typeName");
-                LicenseModuleFacade.deleteLicenseGroupType(typeName,request.getSession(), null);
+                LicenseModuleFacade.deleteLicenseGroupType(typeName,request.getSession(), deleteReason);
             }
             else if ("deleteAttributeType".equals(event)) {
                 log.debug("deleteAttributeType called");
                 request.setAttribute("tab", "3");
                 String typeName = request.getParameter("typeName");
-                LicenseModuleFacade.deleteAttributeType(typeName,request.getSession(), null);
+                LicenseModuleFacade.deleteAttributeType(typeName,request.getSession(), deleteReason);
             }
             else if ("updateGroup".equals(event)) {
                 log.debug("updateGroup called");
