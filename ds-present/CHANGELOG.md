@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Solr field for platform
+- Extraction of values from "fuzzy" metadatafragment in rights calculations
 
 ### Changed
 - Solr version bumped to v. 1.8.5
