@@ -102,9 +102,12 @@ public class KalturaUtil {
         String tokenId = ServiceConfig.getConfig().getString("kaltura.tokenId");
         int sessionDurationSeconds = ServiceConfig.getConfig().getInteger("kaltura.sessionDurationSeconds");
         int sessionRefreshThreshold = ServiceConfig.getConfig().getInteger("kaltura.sessionRefreshThreshold");
+        int conversionQueueThreshold = 0;
+        int conversionQueueRetryDelaySeconds = 0;
 
         log.info("Creating kaltura client for partnerID: '{}'.", partnerId);
-        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl, userId, partnerId, token, tokenId, adminSecret, sessionDurationSeconds, sessionRefreshThreshold);
+        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl, userId, partnerId, token, tokenId,
+                adminSecret, sessionDurationSeconds, sessionRefreshThreshold, conversionQueueThreshold, conversionQueueRetryDelaySeconds );
         kalturaClientInstance=kalturaClient;
         return kalturaClient;    
     }

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Fixed DsKalturaClient init
 
 ## [3.0.1](https://github.com/kb-dk/ds-image/releases/tag/ds-image-3.0.1) - 2025-09-01
 
