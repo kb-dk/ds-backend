@@ -11,7 +11,7 @@
 
     <groupId>dk.kb.dsparent</groupId>
     <artifactId>ds-parent</artifactId>
-    <version>100.0.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
