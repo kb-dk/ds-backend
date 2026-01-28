@@ -15,20 +15,20 @@ pipeline {
     }
 
     parameters {
-        string(name: 'Version', defaultValue: "X.X.X", description: 'Version to release')
+        string(name: 'VERSION', defaultValue: "X.X.X", description: 'Version to release')
     }
 
     stages {
         stage('Echo Environment Variables') {
             steps {
-                echo "Version: ${params.Version}"
+                echo "Version: ${params.VERSION}"
             }
         }
 
         stage('Check Version') {
             steps {
                 script {
-                    if ( !params.Version || params.Version == 'X.X.X' ) {
+                    if ( !params.VERSION || params.VERSION == 'X.X.X' ) {
                         currentBuild.description = "No valid version"
                         currentBuild.result = 'ABORTED'
                         error("Stopping pipeline: No valid version is set.")
@@ -40,14 +40,14 @@ pipeline {
         stage('Change version') {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    sh "mvn versions:set -DnewVersion=${params.Version} --non-recursive"
+                    sh "mvn versions:set -DnewVersion=${params.VERSION} --non-recursive"
                     // We don't want to build child modules so we use this flag to disable it --non-recursive https://maven.apache.org/guides/mini/guide-multiple-modules.html#command-line-options
-                    echo "Changing MVN version to: ${params.Version}"
+                    echo "Changing MVN version to: ${params.VERSION}"
                 }
             }
         }
 
-        stage('Release') {
+        stage('Release to Nexus') {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
                     // Execute Maven deploy
