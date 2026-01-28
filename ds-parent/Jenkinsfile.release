@@ -1,43 +1,43 @@
 pipeline {
     agent {
-        label 'DS agent'
+        label "DS agent"
     }
 
     options {
         disableConcurrentBuilds()
-        timeout(time: 40, unit: 'MINUTES')
-        buildDiscarder(logRotator(numToKeepStr: '5'))
+        timeout(time: 40, unit: "MINUTES")
+        buildDiscarder(logRotator(numToKeepStr: "5"))
     }
 
     environment {
-        PROJECT = 'ds-parent'
-        BUILD_TO_TRIGGER = 'ds-shared'
+        PROJECT = "ds-parent"
+        BUILD_TO_TRIGGER = "ds-shared"
     }
 
     parameters {
-        string(name: 'VERSION', defaultValue: "X.X.X", description: 'Version to release')
+        string(name: "VERSION", defaultValue: "X.X.X", description: "Version to release")
     }
 
     stages {
-        stage('Echo Environment Variables') {
+        stage("Echo Environment Variables") {
             steps {
                 echo "Version: ${params.VERSION}"
             }
         }
 
-        stage('Check Version') {
+        stage("Check Version") {
             steps {
                 script {
-                    if ( !params.VERSION || params.VERSION == 'X.X.X' ) {
+                    if ( !params.VERSION || params.VERSION == "X.X.X" ) {
                         currentBuild.description = "No valid version"
-                        currentBuild.result = 'ABORTED'
+                        currentBuild.result = "ABORTED"
                         error("Stopping pipeline: No valid version is set.")
                     }
                 }
             }
         }
 
-        stage('Change version') {
+        stage("Change version") {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
                     sh "mvn versions:set -DnewVersion=${params.VERSION} --non-recursive"
@@ -47,7 +47,7 @@ pipeline {
             }
         }
 
-        stage('Release to Nexus') {
+        stage("Release to Nexus") {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
                     // Execute Maven deploy
