@@ -25,6 +25,18 @@ pipeline {
             }
         }
 
+        stage('Check Version') {
+            steps {
+                script {
+                    if ( !params.Version || params.Version == 'DRA-2489' ) {
+                        currentBuild.description = "No valid version"
+                        currentBuild.result = 'ABORTED'
+                        error("Stopping pipeline: No valid version is set.")
+                    }
+                }
+            }
+        }
+
         stage('Change version') {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
