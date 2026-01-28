@@ -40,7 +40,8 @@ pipeline {
         stage('Change version') {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    sh "mvn versions:set -DnewVersion=${params.Version}"
+                    sh "mvn versions:set -DnewVersion=${params.Version} --non-recursive"
+                    // We don't want to build child modules so we use this flag to disable it --non-recursive https://maven.apache.org/guides/mini/guide-multiple-modules.html#command-line-options
                     echo "Changing MVN version to: ${params.Version}"
                 }
             }
