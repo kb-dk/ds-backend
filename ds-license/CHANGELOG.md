@@ -5,7 +5,7 @@ All notable changes to ds-license will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [4.0.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-4.0.0) 2026-01-29
 - Fixed JSP pages with default DeleteReasonDto so it is still possible to delete objects from JSP GUI.
 
 ### Added
@@ -76,8 +76,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored validate methods for input Strings and Integers.
 - Test deleteDrHoldbackCategory_whenThereIsADrHoldbackRange_thenThrowJdbcSQLIntegrityConstraintViolationException in Changed test in RightsModuleStorageTest.java
   no longer relies on error message containing: `CONSTRAINT_35`.
-
-### Fixed
 
 ### Removed
 - Removed `HOLDBACK_DAY` and `HOLDBACK_RULE` in `ObjectTypeEnumDto`.
