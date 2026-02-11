@@ -17,7 +17,9 @@ package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +87,11 @@ public class FailStorage implements Storage {
     @Override
     public boolean isDefault() {
         return isDefault;
+    }
+    
+    @Override
+    public TranscriptionDto getTranscription(String fileId) throws ServiceException{
+        return null;
     }
 
     @Override

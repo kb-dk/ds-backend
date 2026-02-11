@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -331,6 +332,18 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(solrDocument.contains("\"platform\":\"DRARKIV\""));
     }
 
+    @Test
+    void transcriptionsFields() throws IOException {
+        Map<String, String> map =  new HashMap<String,String>();
+        map.put("transcription", "Dette er en transcription");
+        map.put("has_transcription", "true");
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+        System.out.println(solrDocument);
+        assertTrue(solrDocument.contains("\"transcription\":\"Dette er en transcription\""));
+    }
+
+    
+    
     @Test
     void testStartTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"startTime\":\"1987-05-04T14:45:00Z\"");

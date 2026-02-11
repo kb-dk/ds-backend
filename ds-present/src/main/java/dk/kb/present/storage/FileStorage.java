@@ -18,9 +18,10 @@ import dk.kb.util.webservice.exception.ForbiddenServiceException;
 import dk.kb.storage.model.v1.DsRecordDto;
 
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
-
+import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import org.apache.commons.io.IOUtils;
@@ -131,6 +132,11 @@ public class FileStorage implements Storage {
         return getDsRecordDto(recordID);
     }
 
+    @Override
+    public TranscriptionDto getTranscription(String fileId) throws ServiceException{
+      return null;
+    }
+    
     /**
      * Locate a file where the name is the recordID and deliver the content. Works with sub-folders.
      * @param id the ID (aka file name) for a record.

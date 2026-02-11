@@ -16,6 +16,7 @@ package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
@@ -92,6 +93,19 @@ public class DSStorage implements Storage {
         }
     }
 
+    @Override
+    public TranscriptionDto getTranscription(String fileId) throws ServiceException{
+        log.debug("getTranscription(fileid='{}') called", fileId);
+        try {
+             return storageClient.getTranscription(fileId);
+        } catch (ServiceException e) {
+            log.debug("Unable to retrieve transcription '" + fileId + "' from " + storageUrl + "...", e);
+           throw e;
+        }
+    }
+
+    
+    
     @Override
     public DsRecordDto getDSRecordTreeLocal(String id) throws ServiceException{
         log.debug("getDSRecordTreeLocal(id='{}') called", id);

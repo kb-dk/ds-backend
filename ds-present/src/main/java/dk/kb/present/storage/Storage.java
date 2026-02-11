@@ -16,6 +16,7 @@ package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.stream.ContinuationStream;
 
 /**
@@ -54,7 +55,14 @@ public interface Storage {
      * @return the record with the given ID, if available.
      */
     DsRecordDto getDSRecord(String id);
-
+    
+    /**
+     * Fetch a transcription     
+     * @param fileId fileId filename of the presentation stream.
+     * @return Transcription text. Null if none if not found
+     */
+    TranscriptionDto getTranscription(String fileId);
+    
     /**
      * Return the record as a ds-storage record where parent and children are populated for this current record.
      * This is "best effort", as some element such as {@link DsRecordDto#getcTime()} might not be available.

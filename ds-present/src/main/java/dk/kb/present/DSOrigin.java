@@ -23,6 +23,7 @@ import dk.kb.util.webservice.stream.ErrorRecord;
 import dk.kb.storage.model.v1.DsRecordDto;
 
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.Timing;
 import dk.kb.util.other.ExtractionUtils;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -169,6 +170,20 @@ public class DSOrigin {
         });
     }
 
+    
+    /**
+     * Retrieve a record with the given ID in ds-storage record format.
+     * Storages that are not {@link dk.kb.present.storage.DSStorage} will deliver best-effort {@link DsRecordDto}s,
+     * but full representation is not guaranteed.
+     * @param recordID an ID for a record.
+     * @return the record in ds-storage record format.
+     * @throws ServiceException if the record could not be retrieved.
+     */
+    public TranscriptionDto getTranscription(String fileId) throws ServiceException {
+        return storage.getTranscription(fileId);
+    }
+
+    
     /**
      * Retrieve a record with the given ID in ds-storage record format.
      * Storages that are not {@link dk.kb.present.storage.DSStorage} will deliver best-effort {@link DsRecordDto}s,

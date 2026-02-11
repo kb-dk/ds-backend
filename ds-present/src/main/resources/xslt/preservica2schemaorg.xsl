@@ -46,6 +46,8 @@
   <xsl:param name="dsIdRestricted"/>
   <xsl:param name="titleRestricted"/>
   <xsl:param name="platform"/>
+  <xsl:param name="transcription"/>
+  <xsl:param name="has_transcription"/>
   <xsl:include href="xslt/utils.xsl"/>
 
   <xsl:variable name="InternalAccessionRef">
@@ -1052,6 +1054,18 @@
       </f:string>
     </xsl:if>
 
+   <xsl:if test="$transcription != ''">
+      <f:string key="kb:transcription">
+        <xsl:value-of select="$transcription"/>
+      </f:string>
+    </xsl:if>
+   
+   <xsl:if test="$has_transcription != ''">
+      <f:string key="kb:has_transcription">
+        <xsl:value-of select="$has_transcription"/>
+      </f:string>
+    </xsl:if>
+    
     <!-- Boolean value which determins if the record has a stream available at Kaltura.-->
     <f:boolean key="kb:has_kaltura_id">
       <xsl:choose>

@@ -185,6 +185,9 @@ origin:
 transformations:
   threads: 3
 
+indexing:
+  useTransriptions: true
+
 security:
   # The security mode. Valid values are
   # OFFLINE: No validation of security tokens: All requests are accepted.

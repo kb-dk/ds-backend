@@ -777,6 +777,7 @@
         director_strict^5.0 <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
         episode_title^4.0  <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
         temporal_start_year^2.0 <!-- Always available for radio and tv. Probably also available for other collections when implemented. -->
+        transcription <!-- Full transcription text without time marker for each sentence -->
         creator <!-- Can be present in all collections -->
         actor <!-- Can be in radio and tv documents, however metadata probably doesn't have it.-->
         character <!-- Can be in all documents, however metadata for radio and tv probably doesn't have it.-->

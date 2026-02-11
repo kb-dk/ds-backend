@@ -19,10 +19,14 @@ import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.TranscriptionDto;
+import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +59,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     private static final String MIME_KEY = "mime";
     private static final String TRANSFORMERS_KEY = "transformers";
     private static final String STRATEGY_KEY = "strategy";
-
+    private static Storage storage =null;
+    
     private final String id;
     private final String origin;
     private final MediaType mime;
@@ -175,6 +180,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      */
     private void applyDrStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
         ExtractedPreservicaValues extractedValues;
+      
         try {
             extractedValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(content, record.getId());
         } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -202,6 +208,20 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadata.put("productionIdRestrictedDr", String.valueOf(rightsOutput.getDr().getDrIdRestricted()));
         }
 
+        boolean useTranscriptions=  ServiceConfig.getConfig().getBoolean("index.useTransriptions");
+        boolean hasTranscription=false;
+        //Transcription text.
+        String refrenceId = record.getReferenceId();        
+        if (refrenceId != null && useTranscriptions) {
+           String transcriptionText=getTranscriptionText(record.getReferenceId());
+           if (transcriptionText != null) {
+              log.debug("Found transcription text for fileId:"+refrenceId);
+              metadata.put("has_transcription", "true");
+              metadata.put("transcription", transcriptionText);
+              hasTranscription=true;
+           }                           
+        }        
+        metadata.put("has_transcription", ""+hasTranscription);               
         metadata.put("platform", "DRARKIV");
 
         metadata.put("dsIdRestricted", String.valueOf(rightsOutput.getDr().getDsIdRestricted()));
@@ -323,6 +343,21 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
     }
 
+   private String getTranscriptionText(String fileId) {      
+      TranscriptionDto transcription = getStorage().getTranscription(fileId);
+      return transcription.getTranscription(); // can not be null. Will be empty DTO
+    }
+    
+   private Storage getStorage() {
+       if (storage != null) {
+           log.debug("Init storage from View");
+           return storage;          
+       }
+      StorageHandler handler = new StorageHandler (ServiceConfig.getConfig());
+      storage= handler.getStorage(null);//Default storage
+      return storage;
+   }
+   
     /**
      * Add form and content values used for holdback calculation to the XSLT metadata map.
      * @param metadata map to add values to.

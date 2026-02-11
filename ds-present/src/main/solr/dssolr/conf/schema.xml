@@ -72,9 +72,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.4: Add field file_extension
 1.8.5: Merge release_v2 into master
 1.8.6: Random sort field added that can be used to randomize order of search results. Does not require reindexing, just configuration update.
-
+1.8.7: New field transcription that contains full description text. Field is not stored.
+1.8.8: New field has_transcription boolean to see if a document has a transcription. Since transcription field is not stored this can not be seen directly
   -->
-  <field name="_ds_1.8.6_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.8_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -201,6 +202,7 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
     <?example     Daguerreotypi, mål: 81 x 70 mm?>
   </field>
+
 
   <field name="originates_from" type="string">
     <?description Information on the record being migrated from another metadata system. If this value is present, the record has been migrated from another metadata system into
@@ -1166,6 +1168,18 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example ?>
   </field>
 
+
+  <!-- Contains the full transcription text without time interval for each sentence.-->
+  <field name="transcription" type="text_general" multiValued="false" indexed="true" stored="false">
+    <?description Contains the full transcription text without time interval for each sentence. ?>
+    <?example     Velkommen til tv-avisen ?>   
+  </field>
+
+  <field name="has_transcription" type="boolean" indexed="true" required="false" docValues="true" stored="true">
+    <?description ?>
+    <?example     ?>
+  </field>
+
   <!-- Most fields are copied to this field for matching. -->
   <field name="freetext" type="freetext" multiValued="true" stored="false">
     <?description Freetext field, which contains text from multiple other fields.
@@ -1406,6 +1420,7 @@ When adding fields to this schema please have the following guidelines in mind:
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>
   <copyField source="original_title" dest="freetext"/>
+  <copyField source="transcription" dest="freetext"/>
   <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->    
   <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
   <copyField source="description" dest="freetext"/>
